@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<profiles version="9">
-<profile name="codehaus" version="9">
+<profiles version="8">
+<profile name="codehaus2" version="8">
 <setting id="org.eclipse.jdt.core.formatter.align_type_members_on_columns" value="true"/>
 <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_allocation_expression" value="83"/>
 <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_enum_constant" value="17"/>
 <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_explicit_constructor_call" value="83"/>
 <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_method_invocation" value="83"/>
 <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_qualified_allocation_expression" value="83"/>
-<setting id="org.eclipse.jdt.core.formatter.alignment_for_assignment" value="0"/>
 <setting id="org.eclipse.jdt.core.formatter.alignment_for_binary_expression" value="18"/>
 <setting id="org.eclipse.jdt.core.formatter.alignment_for_compact_if" value="0"/>
 <setting id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression" value="4"/>
@@ -61,7 +60,6 @@
 <setting id="org.eclipse.jdt.core.formatter.indent_body_declarations_compare_to_enum_declaration_header" value="true"/>
 <setting id="org.eclipse.jdt.core.formatter.indent_body_declarations_compare_to_type_header" value="true"/>
 <setting id="org.eclipse.jdt.core.formatter.indent_breaks_compare_to_cases" value="true"/>
-<setting id="org.eclipse.jdt.core.formatter.indent_empty_lines" value="false"/>
 <setting id="org.eclipse.jdt.core.formatter.indent_statements_compare_to_block" value="true"/>
 <setting id="org.eclipse.jdt.core.formatter.indent_statements_compare_to_body" value="true"/>
 <setting id="org.eclipse.jdt.core.formatter.indent_switchstatements_compare_to_cases" value="true"/>
@@ -70,11 +68,11 @@
 <setting id="org.eclipse.jdt.core.formatter.insert_new_line_after_annotation" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_new_line_after_opening_brace_in_array_initializer" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_new_line_at_end_of_file_if_missing" value="do not insert"/>
-<setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_catch_in_try_statement" value="do not insert"/>
+<setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_catch_in_try_statement" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_closing_brace_in_array_initializer" value="do not insert"/>
-<setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_else_in_if_statement" value="do not insert"/>
-<setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_finally_in_try_statement" value="do not insert"/>
-<setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_while_in_do_statement" value="do not insert"/>
+<setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_else_in_if_statement" value="insert"/>
+<setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_finally_in_try_statement" value="insert"/>
+<setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_while_in_do_statement" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_new_line_in_empty_anonymous_type_declaration" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_new_line_in_empty_block" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_new_line_in_empty_enum_constant" value="insert"/>
@@ -218,7 +216,6 @@
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_switch" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_synchronized" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_while" value="insert"/>
-<setting id="org.eclipse.jdt.core.formatter.insert_space_before_parenthesized_expression_in_return" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_postfix_operator" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_prefix_operator" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_question_in_conditional" value="insert"/>
