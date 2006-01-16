@@ -170,12 +170,13 @@
 	    <organization>Cantilever Technologies</organization>
         </developer>
         <developer>
-            <name>Michael Nelae</name>
+            <name>Michael Neale</name>
             <id>5</id>
             <email>michael.neale@gmail.com</email>
             <roles>
-                <role>Decision table despot</role>
+                <role>Developer</role>
             </roles>
+			<organization>JBoss Inc.</organization>
         </developer>
     </developers>
 
