@@ -176,6 +176,7 @@
             <roles>
                 <role>Developer</role>
             </roles>
+			<timezone>+10</timezone>
 			<organization>JBoss Inc.</organization>
         </developer>
     </developers>
@@ -217,10 +218,10 @@
   </build>
 
   <modules>
-    <module>drools-core</module>
-    <module>drools-ide</module>
-    <!--module>drools-smf</module>
-    <module>drools-smftest</module>
+    <module>drools-core</module>    
+    <module>drools-smf</module>
+    <!--module>drools-smftest</module>
+	<module>drools-ide</module>
     <module>drools-base</module>
     <module>drools-java</module>
     <module>drools-groovy</module>
