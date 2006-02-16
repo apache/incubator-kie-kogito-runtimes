@@ -219,19 +219,9 @@
 
   <modules>
     <module>drools-core</module>    
-    <module>drools-smf</module>
+    <module>drools-compiler</module>       
     <!--module>drools-smftest</module>
-	<module>drools-ide</module>
-    <module>drools-base</module>
-    <module>drools-java</module>
-    <module>drools-groovy</module>
-    <module>drools-python</module>
-    <module>drools-io</module>
-    <module>drools-jsr94</module>
-    <module>drools-decisiontables</module>
-    <module>drools-spring</module>
-    <module>drools-spring-examples</module>
-    <module>drools-spring-jd5</module>
+	  <module>drools-ide</module>
     <module>drools-examples</module>
     -->
   </modules>
