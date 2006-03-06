@@ -243,7 +243,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <outputDirectory>lib</outputDirectory>
+              <outputDirectory>../drools-ide/lib</outputDirectory>
             </configuration>
           </execution>
         </executions>
