@@ -212,8 +212,21 @@
     <repository>
       <id>basedir</id>
       <url>file://${basedir}/repository</url>
-    </repository>
+    </repository>    
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Maven Snapshots</id>
+      <url>http://snapshots.maven.codehaus.org/maven2/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>  
 
    <dependencies>
      <dependency>
@@ -248,7 +261,15 @@
           </execution>
         </executions>
       </plugin>
-    </plugins>
+      
+    <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>docbook-maven-plugin</artifactId>
+      <configuration>
+        <sourceDirectory>${basedir}/documentation/manual</sourceDirectory>
+      </configuration>
+    </plugin>      
+    </plugins>        
   </build>
 
   <modules>
