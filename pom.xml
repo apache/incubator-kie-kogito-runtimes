@@ -261,14 +261,6 @@
           </execution>
         </executions>
       </plugin>
-      
-    <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>docbook-maven-plugin</artifactId>
-      <configuration>
-        <sourceDirectory>${basedir}/documentation/manual</sourceDirectory>
-      </configuration>
-    </plugin>      
     </plugins>        
   </build>
 
