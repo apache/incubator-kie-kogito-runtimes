@@ -4,7 +4,7 @@
   <artifactId>drools</artifactId>
   <packaging>pom</packaging>
   <name>Drools</name>
-  <version>3.0-M1-dev</version>
+  <version>3.0-beta-1</version>
 
   <issueManagement>
     <system>jira</system>
@@ -213,20 +213,18 @@
       <id>basedir</id>
       <url>file://${basedir}/repository</url>
     </repository>    
+    
+	  <repository>
+	    <id>Maven Snapshots</id>
+	    <url>http://snapshots.maven.codehaus.org/maven2/</url>
+	    <snapshots>
+	      <enabled>true</enabled>
+	    </snapshots>
+	    <releases>
+	      <enabled>false</enabled>
+	    </releases>
+	  </repository>    
   </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>Maven Snapshots</id>
-      <url>http://snapshots.maven.codehaus.org/maven2/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>  
 
    <dependencies>
      <dependency>
@@ -267,10 +265,6 @@
   <modules>
     <module>drools-core</module>    
     <module>drools-compiler</module>       
-    <!--module>drools-smftest</module>
-	  <module>drools-ide</module>
-    <module>drools-examples</module>
-    -->
   </modules>
 
 
