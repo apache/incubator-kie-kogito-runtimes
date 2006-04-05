@@ -4,7 +4,7 @@
   <artifactId>drools</artifactId>
   <packaging>pom</packaging>
   <name>Drools</name>
-  <version>3.0-beta-2</version>
+  <version>3.0-RC-1</version>
 
   <issueManagement>
     <system>jira</system>
@@ -259,6 +259,16 @@
           </execution>
         </executions>
       </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <minmemory>128m</minmemory>
+          <maxmemory>512</maxmemory>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>      
     </plugins>        
   </build>
 
