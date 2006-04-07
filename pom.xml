@@ -277,7 +277,6 @@
     <module>drools-compiler</module>       
     <module>drools-jsr94</module> 
 		<module>drools-decisiontables</module>
-		<module>drools-examples</module>
   </modules>
 
 
