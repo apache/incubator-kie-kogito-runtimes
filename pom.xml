@@ -241,6 +241,27 @@
      </dependency>                      
    </dependencies>
 
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clover-plugin</artifactId>
+      </plugin>
+      
+	      <plugin>
+	        <artifactId>maven-javadoc-plugin</artifactId>
+	      </plugin>
+	      <plugin>
+	        <groupId>org.codehaus.mojo</groupId>
+	        <artifactId>jxr-maven-plugin</artifactId>
+	      </plugin>      
+	    
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>	    
+    </plugins>
+  </reporting>
+
   <build>
    <plugins>
      <plugin>
@@ -268,7 +289,22 @@
           <maxmemory>512</maxmemory>
           <aggregate>true</aggregate>
         </configuration>
-      </plugin>      
+      </plugin>    
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clover-plugin</artifactId>
+        <configuration/>
+        <executions>
+          <execution>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>instrument</goal>
+              <goal>aggregate</goal>              
+            </goals>
+          </execution>
+        </executions>
+      </plugin>        
     </plugins>        
   </build>
 
