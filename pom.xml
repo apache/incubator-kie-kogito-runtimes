@@ -243,10 +243,10 @@
 
   <reporting>
     <plugins>
-      <plugin>
+      <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clover-plugin</artifactId>
-      </plugin>
+      </plugin-->
       
 	      <plugin>
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -291,7 +291,7 @@
         </configuration>
       </plugin>    
       
-      <plugin>
+      <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clover-plugin</artifactId>
         <configuration/>
@@ -304,7 +304,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>        
+      </plugin-->        
     </plugins>        
   </build>
 
