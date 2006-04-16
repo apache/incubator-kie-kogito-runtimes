@@ -182,12 +182,11 @@
         <developer>
             <name>Edson Tirelli</name>
             <id>tirelli</id>
-            <email>edson.tirelli@auster.com.br</email>
+            <email>tirelli@post.com</email>
             <roles>
                 <role>Developer</role>
             </roles>
             <timezone>-3</timezone>
-            <organization>Auster Solutions do Brasil</organization>
         </developer>
     </developers>
 
