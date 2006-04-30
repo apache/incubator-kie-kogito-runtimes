@@ -204,6 +204,11 @@
 
   <repositories>
     <repository>
+      <id>apache</id>
+      <url>http://cvs.apache.org/maven-snapshot-repository/</url>
+    </repository>      
+      
+    <repository>
       <id>ibiblio</id>
       <url>http://www.ibiblio.org/maven2/</url>
     </repository>
@@ -216,7 +221,7 @@
     <repository>
       <id>basedir</id>
       <url>file://${basedir}/repository</url>
-    </repository>    
+    </repository>           
     
 	  <repository>
 	    <id>Maven Snapshots</id>
