@@ -192,8 +192,8 @@
 
 
   <scm>
-    <connection>scm:svn:http://anonsvn.labs.jboss.com/trunk/labs/jbossrules/</connection>
-    <url>http://anonsvn.labs.jboss.com/trunk/labs/jbossrules/</url>
+    <connection>scm:svn:http://anonsvn.labs.jboss.com/labs/jbossrules/trunk/</connection>
+    <url>http://anonsvn.labs.jboss.com/labs/jbossrules/trunk/</url>
   </scm>
 
 
