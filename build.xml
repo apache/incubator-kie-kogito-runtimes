@@ -293,7 +293,7 @@
     </target>                            
     
     
-    <target name="dist-all" depends="build-all, copy-deps, ydocs, manual, dist-src, dist-bin, dist-bin-withdeps, dist-examples">
+    <target name="dist-all" depends="build-all, copy-deps, javadocs, manual, dist-src, dist-bin, dist-bin-withdeps, dist-examples">
     </target>
      
     <target name="dist-examples">        
