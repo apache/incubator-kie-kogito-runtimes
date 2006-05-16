@@ -4,7 +4,7 @@
   <artifactId>drools</artifactId>
   <packaging>pom</packaging>
   <name>Drools</name>
-  <version>3.0-RC-2</version>
+  <version>3.0-RC-3</version>
 
   <issueManagement>
     <system>jira</system>
@@ -51,124 +51,16 @@
 
     <developers>
         <developer>
-            <name>Bob McWhirter</name>
-            <id>bob</id>
-            <email>bob@werken.com</email>
-            <organization>The Werken Company</organization>
-            <roles>
-                <role>Founder</role>
-                <role>Lead Developer</role>
-            </roles>
-        </developer>
-        <developer>
             <name>Mark Proctor</name>
-            <id>mark</id>
-            <email>mproctor@codehaus.org</email>
-            <organization>Codehaus</organization>
+            <id>5</id>
+            <email>mark.proctor@jboss.com</email>
             <roles>
-                <role>Lead Developer</role>
+                <role>Project Lead</role>
             </roles>
-        </developer>
-        <developer>
-            <name>James Strachan</name>
-            <id>jstrachan</id>
-            <email>james_strachan@yahoo.co.uk</email>
-            <organization>Spiritsoft</organization>
-            <roles>
-                <role>Pontificator</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>David Cramer</name>
-            <id>dcramer</id>
-            <email>davec@fastcrypt.com</email>
-            <roles>
-                <role>Instigator</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Martin Hald</name>
-            <id>mhald</id>
-            <email>martin.hald@bigfoot.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Pete Kazmier</name>
-            <id>kaz</id>
-            <email>pete-codehaus-dev@kazmier.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>James Roome</name>
-            <id>0</id>
-            <email>refux@hotmail.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Christiaan ten Klooster</name>
-            <id>1</id>
-            <email>christiaan@dacelo.nl</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Tom Vasak</name>
-            <id>2</id>
-            <email>tomv@aic.net.au</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Matt Ho</name>
-            <id>savaki</id>
-            <email>matt@indigoegg.com</email>
-            <organization>Indigo Egg</organization>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Thomas Diesler</name>
-            <id>tdiesler</id>
-            <email>thomas.diesler@softcon-itec.de</email>
-            <roles>
-                <role>JCA Lead</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Robert Searle</name>
-            <id>3</id>
-            <email>RobertSearle@hotmail.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>N. Alex Rupp</name>
-            <id>4</id>
-            <email>alex@nrfx.com</email>
-            <roles>
-                <role>JSR-94 Lead</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Andy Barnett</name>
-            <id>dbarnett</id>
-            <email>abarnett@cantilevertech.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-	    <timezone>-5</timezone>
-	    <organization>Cantilever Technologies</organization>
-        </developer>
+			      <timezone>0</timezone>
+			      <organization>JBoss Inc.</organization>
+        </developer> 
+           
         <developer>
             <name>Michael Neale</name>
             <id>5</id>
@@ -176,9 +68,21 @@
             <roles>
                 <role>Developer</role>
             </roles>
-			<timezone>+10</timezone>
-			<organization>JBoss Inc.</organization>
+			      <timezone>+10</timezone>
+			      <organization>JBoss Inc.</organization>
         </developer>
+                
+        <developer>
+            <name>Bob McWhirter</name>
+            <id>bob</id>
+            <email>bob@werken.com</email>
+            <organization>The Werken Company</organization>
+            <roles>
+                <role>Founder</role>
+            </roles>
+        </developer>
+
+        
         <developer>
             <name>Edson Tirelli</name>
             <id>tirelli</id>
@@ -203,11 +107,6 @@
   </organization>
 
   <repositories>
-    <repository>
-      <id>apache</id>
-      <url>http://cvs.apache.org/maven-snapshot-repository/</url>
-    </repository>      
-      
     <repository>
       <id>ibiblio</id>
       <url>http://www.ibiblio.org/maven2/</url>
@@ -267,6 +166,17 @@
 
   <build>
    <plugins>
+            <plugin>
+                 <artifactId>maven-assembly-plugin</artifactId>
+                 <version>2.0-beta-1</version>
+                 <configuration>
+                   <descriptor>bin.xml</descriptor>
+                   <finalName>final_name</finalName>
+                   <outputDirectory>output/directory</outputDirectory>
+                   <workDirectory>target/assembly/work</workDirectory>
+                 </configuration>
+            </plugin>   
+   
      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>dependency-maven-plugin</artifactId>
