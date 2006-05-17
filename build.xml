@@ -399,7 +399,8 @@
       </delete>	    	    
 	    
 	   <delete dir="documentation/manual/build" />
-	    
+	   <delete dir="drools-ide/help/shared" />
+	   <delete dir="drools-ide/help/eclipse" />
 	  </target> 
         
         
@@ -419,6 +420,14 @@
     <target name="manual" unless="skip.manual">
       <delete dir="documentation/manual/build" />
 			<ant dir="documentation/manual" />			
+
+      <delete dir="drools-ide/help/eclipse" />
+      <delete dir="drools-ide/help/shared" />
+			<replace file="documentation/manual/build/en/eclipse/toc.xml" token="href=&quot;" value="href=&quot;help/eclipse/" />
+			<replace file="documentation/manual/build/en/eclipse/toc.xml" token="topic=&quot;" value="topic=&quot;help/eclipse/" />
+			<copy todir="drools-ide/help">
+        <fileset dir="documentation/manual/build/en" includes="shared/** eclipse/**" excludes="**/*.svg **/*.db" />
+			</copy>	
 			
 			<copy todir="target/docs">
         <fileset dir="documentation/manual/build/en" includes="shared/** html/** html_single/**" excludes="**/*.svg **/*.db" />
