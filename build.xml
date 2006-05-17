@@ -27,8 +27,8 @@
       <echo level="info" message="  " />
       <echo level="info" message="javadocs  - generates the javadoc at target/docs" />
       <echo level="info" message=" " />      
-      <echo level="info" message="manual    - generates the docbook documtation in" />
-      <echo level="info" message="            html and single_html format" />
+      <echo level="info" message="manual    - generates the docbook documentation in" />
+      <echo level="info" message="            html and single_html format at target/docs" />
       <echo level="info" message="  " />
       <echo level="info" message="dist-all  - generates the distribution builds for" />
       <echo level="info" message="            src, bin, bin-withdeps and examples" />
