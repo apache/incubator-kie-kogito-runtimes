@@ -44,7 +44,7 @@
       <echo level="info" message="Generates specific distribution builds:" />
       <echo level="info" message="dist-src" />
       <echo level="info" message="dist-bin" />
-      <echo level="info" message="dist-bin-withdepss" />
+      <echo level="info" message="dist-bin-withdeps" />
       <echo level="info" message="dist-examples" />
       <echo level="info" message=" " />
       <echo level="info" message="you may also pass the following system properties:" />
