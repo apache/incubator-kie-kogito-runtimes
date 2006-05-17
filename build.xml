@@ -59,7 +59,7 @@
       <echo level="info" message="-Dmanual.skip=true" />
       <echo level="info" message=" " />
       <echo level="info" message="Targets may be combined:" />
-      <echo level="info" message="ant -Dtest.skip clean-all build-all" />
+      <echo level="info" message="ant -Dtest.skip=true clean-all build-all" />
       <echo level="info" message=" " />      
       <echo level="info" message="For more help use the build system to generate the manual" />
       <echo level="info" message="or you can find the manual online at:"  />
@@ -197,8 +197,8 @@
         <fileset dir="drools-ide/lib" includes="*"/>        
       </delete>	 
 	    
-      <delete>        
-        <fileset dir="repository" includes="*"/>        
+      <delete includeEmptyDirs="true">        
+        <fileset dir="repository" includes="*/**"/>        
       </delete>	    	    
 	    
 	   <delete dir="documentation/manual/build" />
