@@ -420,9 +420,9 @@
       <delete dir="documentation/manual/build" />
 			<ant dir="documentation/manual" />			
 			
-			<move todir="target/docs">
+			<copy todir="target/docs">
         <fileset dir="documentation/manual/build/en" includes="shared/** html/** html_single/**" excludes="**/*.svg **/*.db" />
-			</move>	
+			</copy>	
 	  </target>	 
 
     <target name="javadocs" depends="build-all" unless="skip.javadocs">
