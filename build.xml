@@ -12,8 +12,8 @@
       <echo level="info" message="drools-jsr94" />
       <echo level="info" message=" " />
       <echo level="info" message="Further to this there are two Eclipse project:" />
-      <echo level="info" message="drools-examples - To use open eclipse and import." />      
-      <echo level="info" message="                  Requires the Drools eclipse plugin." />
+      <echo level="info" message="drools-examples - To use open Eclipse and import." />      
+      <echo level="info" message="                  Requires the Drools Eclipse plugin." />
       <echo level="info" message="                  Either build the plugin from drools-ide" />
       <echo level="info" message="                  or install from the Eclipse update site" />
       <echo level="info" message="                  http://anonsvn.labs.jboss.com/labs/jbossrules/updates" />
