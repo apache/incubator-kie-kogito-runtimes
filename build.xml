@@ -39,9 +39,9 @@
       <echo level="info" message="dist-all  - generates the distribution builds for" />
       <echo level="info" message="            src, bin, bin-withdeps and examples" />
       <echo level="info" message=" " />
-      <echo level="info" message="Each module can individually be executed with clean, compile, test and build." />
-      <echo level="info" message="To use simply use the following commands, replace ${module} with one of the" />
-      <echo level="info" message="module names:" />
+      <echo level="info" message="Each module can individually be executed with clean, compile," />
+      <echo level="info" message="test and build. To use simply use the following commands, " />
+      <echo level="info" message="replace ${module} with one of the module names:" />
       <echo level="info" message="clean-${module}" />
       <echo level="info" message="compile-${module}" />
       <echo level="info" message="test-${module}" />
@@ -53,7 +53,7 @@
       <echo level="info" message="dist-bin-withdeps" />
       <echo level="info" message="dist-examples" />
       <echo level="info" message=" " />
-      <echo level="info" message="you may also pass the following system properties:" />
+      <echo level="info" message="You may also pass the following system properties:" />
       <echo level="info" message="-Dtest.skip=true" />
       <echo level="info" message="-Djavadocs.skip=true" />
       <echo level="info" message="-Dmanual.skip=true" />
@@ -61,8 +61,9 @@
       <echo level="info" message="Targets may be combined:" />
       <echo level="info" message="ant -Dtest.skip clean-all build-all" />
       <echo level="info" message=" " />      
-      <echo level="info" message="for more help use the build system to generate the manual or you can find" />
-      <echo level="info" message="the manual online at http://labs.jboss.com/portal/jbossrules/docs/index.html" />
+      <echo level="info" message="For more help use the build system to generate the manual" />
+      <echo level="info" message="or you can find the manual online at:"  />
+      <echo level="info" message="http://labs.jboss.com/portal/jbossrules/docs/index.html" />
     </target>
 	        
     <target name="init" depends="init-maven">            		    	   
