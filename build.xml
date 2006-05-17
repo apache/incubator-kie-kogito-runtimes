@@ -11,9 +11,15 @@
       <echo level="info" message="drools-decisiontables" />
       <echo level="info" message="drools-jsr94" />
       <echo level="info" message=" " />
-      <echo level="info" message="Further to this there are two eclipse project:" />
-      <echo level="info" message="drools-examples - to use open eclipse and import." />
-      <echo level="info" message="drools-ide      - to use open eclipse and import." />
+      <echo level="info" message="Further to this there are two Eclipse project:" />
+      <echo level="info" message="drools-examples - To use open eclipse and import." />      
+      <echo level="info" message="                  Requires the Drools eclipse plugin." />
+      <echo level="info" message="                  Either build the plugin from drools-ide" />
+      <echo level="info" message="                  or install from the Eclipse update site" />
+      <echo level="info" message="                  http://anonsvn.labs.jboss.com/labs/jbossrules/updates" />
+      <echo level="info" message="drools-ide      - To use open Eclipse and import." />
+      <echo level="info" message="                  Select export and plugin fragements to" />
+      <echo level="info" message="                  generate the Drools Eclipse plugin" />
       <echo level="info" message="                  Depends on all the depencies being copied" />
       <echo level="info" message="                  to its lib directory at the end of build-all," />
       <echo level="info" message="                  which calls copy-deps." />
