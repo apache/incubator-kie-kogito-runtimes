@@ -13,10 +13,16 @@
 
   <ciManagement>
     <system>continuum</system>
+    <url>http://ci.codehaus.org:8001/continuum/servlet/continuum/target/Summary.vm/fid/continuumProject</url>
     <notifiers>
       <notifier>
+        <type>mail</type>
         <address>dev@drools.codehaus.org</address>
       </notifier>
+      <notifier>
+        <type>irc</type>
+        <address>irc.codehaus.org:6667#drools</address>
+      </notifier>      
     </notifiers>
   </ciManagement>
 
@@ -52,7 +58,7 @@
     <developers>
         <developer>
             <name>Mark Proctor</name>
-            <id>5</id>
+            <id>mark</id>
             <email>mark.proctor@jboss.com</email>
             <roles>
                 <role>Project Lead</role>
@@ -63,7 +69,7 @@
            
         <developer>
             <name>Michael Neale</name>
-            <id>5</id>
+            <id>mic</id>
             <email>michael.neale@gmail.com</email>
             <roles>
                 <role>Developer</role>
@@ -71,6 +77,17 @@
 			      <timezone>+10</timezone>
 			      <organization>JBoss Inc.</organization>
         </developer>
+        
+        <developer>
+            <name>Kris Verlaenen</name>
+            <id>kris</id>
+            <email>kris.verlaenen@gmail.com</email>
+            <organization>JBoss Inc.</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>        
                 
         <developer>
             <name>Bob McWhirter</name>
@@ -80,6 +97,7 @@
             <roles>
                 <role>Founder</role>
             </roles>
+            <timezone>-5</timezone>
         </developer>
 
         
