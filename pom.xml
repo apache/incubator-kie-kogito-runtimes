@@ -4,7 +4,7 @@
   <artifactId>drools</artifactId>
   <packaging>pom</packaging>
   <name>Drools</name>
-  <version>3.0-RC-3</version>
+  <version>3.0</version>
 
   <issueManagement>
     <system>jira</system>
@@ -15,14 +15,20 @@
     <system>continuum</system>
     <url>http://ci.codehaus.org:8001/continuum/servlet/continuum/target/Summary.vm/fid/continuumProject</url>
     <notifiers>
-      <notifier>
-        <type>mail</type>
-        <address>dev@drools.codehaus.org</address>
+			  <type>mail</type>
+			  <configuration>
+			    <address>dev@drools.codehaus.org</address>
+			  </configuration>        
       </notifier>
-      <notifier>
-        <type>irc</type>
-        <address>irc.codehaus.org:6667#drools</address>
-      </notifier>      
+      
+			<notifier>
+			  <type>irc</type>
+			  <configuration>
+			    <host>irc.codehaus.org</host>
+			    <port>6667</port>
+			    <channel>#drools</channel>
+			  </configuration>
+			</notifier>        
     </notifiers>
   </ciManagement>
 
