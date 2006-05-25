@@ -15,20 +15,21 @@
     <system>continuum</system>
     <url>http://ci.codehaus.org:8001/continuum/servlet/continuum/target/Summary.vm/fid/continuumProject</url>
     <notifiers>
-			  <type>mail</type>
-			  <configuration>
-			    <address>dev@drools.codehaus.org</address>
-			  </configuration>        
+      <notifier>
+        <type>mail</type>
+        <configuration>
+          <address>dev@drools.codehaus.org</address>
+        </configuration>        
       </notifier>
       
-			<notifier>
-			  <type>irc</type>
-			  <configuration>
-			    <host>irc.codehaus.org</host>
-			    <port>6667</port>
-			    <channel>#drools</channel>
-			  </configuration>
-			</notifier>        
+      <notifier>
+        <type>irc</type>
+        <configuration>
+          <host>irc.codehaus.org</host>
+          <port>6667</port>
+          <channel>#drools</channel>
+        </configuration>
+      </notifier>        
     </notifiers>
   </ciManagement>
 
@@ -69,8 +70,8 @@
             <roles>
                 <role>Project Lead</role>
             </roles>
-			      <timezone>0</timezone>
-			      <organization>JBoss Inc.</organization>
+            <timezone>0</timezone>
+            <organization>JBoss Inc.</organization>
         </developer> 
            
         <developer>
@@ -80,8 +81,8 @@
             <roles>
                 <role>Developer</role>
             </roles>
-			      <timezone>+10</timezone>
-			      <organization>JBoss Inc.</organization>
+            <timezone>+10</timezone>
+            <organization>JBoss Inc.</organization>
         </developer>
         
         <developer>
@@ -146,16 +147,16 @@
       <url>file://${basedir}/repository</url>
     </repository>           
     
-	  <repository>
-	    <id>Maven Snapshots</id>
-	    <url>http://snapshots.maven.codehaus.org/maven2/</url>
-	    <snapshots>
-	      <enabled>true</enabled>
-	    </snapshots>
-	    <releases>
-	      <enabled>false</enabled>
-	    </releases>
-	  </repository>    
+    <repository>
+      <id>Maven Snapshots</id>
+      <url>http://snapshots.maven.codehaus.org/maven2/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>    
   </repositories>
 
    <dependencies>
@@ -174,17 +175,17 @@
         <artifactId>maven-clover-plugin</artifactId>
       </plugin-->
       
-	      <plugin>
-	        <artifactId>maven-javadoc-plugin</artifactId>
-	      </plugin>
-	      <plugin>
-	        <groupId>org.codehaus.mojo</groupId>
-	        <artifactId>jxr-maven-plugin</artifactId>
-	      </plugin>      
-	    
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>jxr-maven-plugin</artifactId>
+        </plugin>      
+      
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>	    
+      </plugin>     
     </plugins>
   </reporting>
 
@@ -249,7 +250,7 @@
     <module>drools-core</module>    
     <module>drools-compiler</module>       
     <module>drools-jsr94</module> 
-		<module>drools-decisiontables</module>
+    <module>drools-decisiontables</module>
   </modules>
 
 
