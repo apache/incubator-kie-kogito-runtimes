@@ -72,381 +72,392 @@
       <echo level="info" message="or you can find the manual online at:"  />
       <echo level="info" message="http://labs.jboss.com/portal/jbossrules/docs/index.html" />
     </target>
-	        
-	 <!--
-	   **************************************************
-	   * Utility scripts
-	   *
-	   * init, init-maven and copy-deps
-	   **************************************************
-	   -->
-	        
-    <target name="init" depends="init-maven">            		    	   
+          
+   <!--
+     **************************************************
+     * Utility scripts
+     *
+     * init, init-maven and copy-deps
+     **************************************************
+     -->
+          
+    <target name="init" depends="init-maven">                        
       <mkdir dir="target/dist" />           
       <mkdir dir="target/docs" />  
     </target>   
     
     <target name="init-maven">
-	    <path id="maven.classpath">
-	      <pathelement location="lib/maven-artifact-ant-2.0.4-dep.jar" />
-	    </path>
-	
-	    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
-	      <classpath refid="maven.classpath"/>
-	    </typedef>	    	   
-	    
-	    <artifact:remoteRepository id="jboss.repository" url="http://repository.jboss.com/maven2" />	   
-	   	    
-	    <artifact:remoteRepository id="ibiblio.repository" url="http://www.ibiblio.org/maven2" />	    	        	    
-	    
-	    <artifact:remoteRepository id="drools-local.repository" url="file://${basedir}/repository" />	    	        	    
+      <path id="maven.classpath">
+        <pathelement location="lib/maven-artifact-ant-2.0.4-dep.jar" />
+      </path>
+  
+      <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+        <classpath refid="maven.classpath"/>
+      </typedef>           
+      
+      <artifact:remoteRepository id="jboss.repository" url="http://repository.jboss.com/maven2" />     
+          
+      <artifact:remoteRepository id="ibiblio.repository" url="http://www.ibiblio.org/maven2" />                     
+      
+      <artifact:remoteRepository id="drools-local.repository" url="file://${basedir}/repository" />                     
 
-		  <artifact:install>
-		    <pom file="pom.xml" />
-		  </artifact:install>		      
-	  </target>    
-	  
+      <artifact:install>
+        <pom file="pom.xml" />
+      </artifact:install>         
+    </target>    
+    
     <target name="copy-deps" depends="init-maven">    
-    	<artifact:dependencies filesetId="drools-core.dependency.fileset" verbose="false">
-	      <pom file="drools-core/pom.xml"/>
-	    </artifact:dependencies>   
-	    
-	    <artifact:dependencies filesetId="drools-compiler.dependency.fileset" verbose="false">
-	      <pom file="drools-compiler/pom.xml"/>
-	    </artifact:dependencies>   
-	    
-	    <artifact:dependencies filesetId="drools-decisiontables.dependency.fileset" verbose="false">
-	      <pom file="drools-decisiontables/pom.xml"/>
-	    </artifact:dependencies>   
-	    
-	    <artifact:dependencies filesetId="drools-jsr94.dependency.fileset" verbose="false">
-	      <pom file="drools-jsr94/pom.xml"/>
-	    </artifact:dependencies>   
-     	
-	    <copy todir="repository">
-	      <fileset refid="drools-core.dependency.fileset"/>
-	      <fileset refid="drools-compiler.dependency.fileset"/>
-	      <fileset refid="drools-decisiontables.dependency.fileset"/>
-	      <fileset refid="drools-jsr94.dependency.fileset"/>
-	    </copy>   
-	    
+      <artifact:dependencies filesetId="drools-core.dependency.fileset" verbose="false">
+        <pom file="drools-core/pom.xml"/>
+      </artifact:dependencies>   
+      
+      <artifact:dependencies filesetId="drools-compiler.dependency.fileset" verbose="false">
+        <pom file="drools-compiler/pom.xml"/>
+      </artifact:dependencies>   
+      
+      <artifact:dependencies filesetId="drools-decisiontables.dependency.fileset" verbose="false">
+        <pom file="drools-decisiontables/pom.xml"/>
+      </artifact:dependencies>   
+      
+      <artifact:dependencies filesetId="drools-jsr94.dependency.fileset" verbose="false">
+        <pom file="drools-jsr94/pom.xml"/>
+      </artifact:dependencies>   
+      
+      <copy todir="repository">
+        <fileset refid="drools-core.dependency.fileset"/>
+        <fileset refid="drools-compiler.dependency.fileset"/>
+        <fileset refid="drools-decisiontables.dependency.fileset"/>
+        <fileset refid="drools-jsr94.dependency.fileset"/>
+      </copy>   
+      
         <delete>        
             <fileset dir="drools-ide/lib" includes="*"/>        
-        </delete>	    
-	    
-	    <copy todir="drools-ide/lib"	          
-	          flatten="true">
-	      <fileset dir="repository" includes="**/*.jar" excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar" />
-	    </copy>
-    </target>  	  
+        </delete>     
+      
+      <copy todir="drools-ide/lib"            
+            flatten="true">
+        <fileset dir="repository" includes="**/*.jar" excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar" />
+      </copy>
+    </target>     
 
-	 <!--
-	   **************************************************
-	   * Module build scripts
-	   *
-	   * compile-module, test-module and build-module
-	   * The module build scripts are data driven in that
-	   * a variable, the module name, must be given.
-		 **************************************************
-	   -->        
+   <!--
+     **************************************************
+     * Module build scripts
+     *
+     * compile-module, test-module and build-module
+     * The module build scripts are data driven in that
+     * a variable, the module name, must be given.
+     **************************************************
+     -->        
 
 
-	 <!--
-	   **************************************************	 
-	   * compile-module
-	   *
-	   * compiled code in src/main/java to target/main/classes
-	   * also copies acros src/main/resources
-		 **************************************************	   
-	   -->
+   <!--
+     **************************************************  
+     * compile-module
+     *
+     * compiled code in src/main/java to target/main/classes
+     * also copies acros src/main/resources
+     **************************************************    
+     -->
     <target name="compile-module">
       <mkdir dir="${module}/target"/>
       <mkdir dir="${module}/target/classes"/>
       
-	    <artifact:dependencies pathId="${module}.dependency.classpath" filesetId="${module}.dependency.fileset" verbose="false">
-	      <pom file="${module}/pom.xml"/>
-	    </artifact:dependencies>      
+      <artifact:dependencies pathId="${module}.dependency.classpath" filesetId="${module}.dependency.fileset" verbose="false">
+        <pom file="${module}/pom.xml"/>
+      </artifact:dependencies>      
       
-		  <copy todir="${module}/target/classes">
-		    <fileset dir="${module}/src/main/resources"/>
-		  </copy>            		 		  
+      <copy todir="${module}/target/classes">
+        <fileset dir="${module}/src/main/resources"/>
+      </copy>                     
      
-			<javac srcdir="${module}/src/main/java"
-			       destdir="${module}/target/classes"
-			       source="1.4">
-			  <classpath>
-			  	<path refid="${module}.dependency.classpath" />			
-		      <fileset dir="target">
-		        <include name="drools-*-{version}.jar"/>
-		      </fileset>
-			  </classpath>
-			</javac>													
+      <javac srcdir="${module}/src/main/java"
+             destdir="${module}/target/classes"
+             source="1.4">
+        <classpath>
+          <path refid="${module}.dependency.classpath" />     
+          <fileset dir="target">
+            <include name="drools-*-{version}.jar"/>
+          </fileset>
+        </classpath>
+      </javac>                          
     </target>     
     
     
-	 <!--
-	   **************************************************	 
-	   * test-module
-	   *
-	   * compiles test code in src/test/java to target/test/classes
-	   * also copies acros src/test/resources.
-	   * specifying -Dtest.skip=true from the command line causes
-	   * this task to skip.
-		 **************************************************	   
-	   -->    
+   <!--
+     **************************************************  
+     * test-module
+     *
+     * compiles test code in src/test/java to target/test/classes
+     * also copies acros src/test/resources.
+     * specifying -Dtest.skip=true from the command line causes
+     * this task to skip.
+     **************************************************    
+     -->    
     <target name="test-module" unless="test.skip">
       <mkdir dir="${module}/target/test-classes"/>   
       <mkdir dir="${module}/target/test-reports"/>   
+      <mkdir dir="${module}/target/reports"/>   
       
-	    <artifact:dependencies pathId="${module}.dependency.classpath" filesetId="${module}.dependency.fileset" verbose="false">
-	      <pom file="${module}/pom.xml"/>
-	    </artifact:dependencies>        
+      <artifact:dependencies pathId="${module}.dependency.classpath" filesetId="${module}.dependency.fileset" verbose="false">
+        <pom file="${module}/pom.xml"/>
+      </artifact:dependencies>        
           
-		  <copy todir="${module}/target/test-classes">
-		    <fileset dir="${module}/src/test/resources"/>
-		  </copy>			
-			
-			<javac srcdir="${module}/src/test/java"
-			       destdir="${module}/target/test-classes"
-			       source="1.4">
-			  <classpath>
-			  	<path refid="${module}.dependency.classpath" />			  
-			    <pathelement location="${module}/target/classes"/>
-		      <fileset dir="target">
-		        <include name="drools-*-{version}.jar"/>
-		      </fileset>			    
-			  </classpath>
-			</javac>	    
+      <copy todir="${module}/target/test-classes">
+        <fileset dir="${module}/src/test/resources"/>
+      </copy>     
+      
+      <javac srcdir="${module}/src/test/java"
+             destdir="${module}/target/test-classes"
+             source="1.4">
+        <classpath>
+          <path refid="${module}.dependency.classpath" />       
+          <pathelement location="${module}/target/classes"/>
+          <fileset dir="target">
+            <include name="drools-*-{version}.jar"/>
+          </fileset>          
+        </classpath>
+      </javac>      
     
-			<junit printsummary="yes" haltonfailure="yes">
-			  <sysproperty key="jsr94.tck.configuration" value="${module}/target/test-classes/org/drools/jsr94/tck"/>
-			  <classpath>
-					<path refid="${module}.dependency.classpath"/>			  			  
-			    <pathelement location="${module}/target/classes"/>
-			    <pathelement location="${module}/target/test-classes"/>			    
-		      <fileset dir="target">
-		        <include name="drools-*-{version}.jar"/>
-		      </fileset>			    			    
-			  </classpath>
-			
-			  <formatter type="plain"/>
-			
-			  <batchtest fork="no" todir="${module}/target/test-reports">
-			    <fileset dir="${module}/target/test-classes">
-			      <include name="**/*Test.class"/>
-			      <exclude name="**/AllTests.class"/>
-			      <exclude name="**/Base*.class"/>
-	          <exclude name="**/ClassLoaderTest.java" />
+      <junit printsummary="yes" fork="yes" forkmode="once">
+        <sysproperty key="jsr94.tck.configuration" value="${module}/target/test-classes/org/drools/jsr94/tck"/>
+        <classpath>
+          <path refid="${module}.dependency.classpath"/>                
+          <pathelement location="${module}/target/classes"/>
+          <pathelement location="${module}/target/test-classes"/>         
+          <fileset dir="target">
+            <include name="drools-*-{version}.jar"/>
+          </fileset>                    
+        </classpath>
+      
+        <formatter type="plain"/>
+      
+        <batchtest todir="${module}/target/test-reports">
+          <fileset dir="${module}/target/test-classes">
+            <include name="**/*Test.class"/>
+            <exclude name="**/AllTests.class"/>
+            <exclude name="**/Base*.class"/>
+            <exclude name="**/ClassLoaderTest.java" />
+            <exclude name="**/*Waltz*.java" />
+            <exclude name="**/*Manners*.java" />
             <exclude name="**/RuleExecutionSetProviderTest.java" />
-			    </fileset>
-			  </batchtest>
-			</junit>	
-	  </target>    
+          </fileset>
+        </batchtest>
+      </junit>  
+      
+      <!--junitreport todir="${module}/target/reports">
+        <fileset dir="${module}/target/test-reports">
+          <include name="TEST-*.xml"/>
+        </fileset>
+        <report format="frames" todir="${module}/target/reports"/>
+      </junitreport-->
+    </target>    
 
-	 <!--
-	   **************************************************	 
-	   * build-module
-	   *
-	   * Generate a jar or the module and does an install
-	   * to the local maven repository
-		 **************************************************	   
-	   -->	  
-	  <target name="build-module">
-        <jar destfile="${module}/target/${module}-${version}.jar" basedir="${module}/target/classes"/>	      	  
+   <!--
+     **************************************************  
+     * build-module
+     *
+     * Generate a jar or the module and does an install
+     * to the local maven repository
+     **************************************************    
+     -->    
+    <target name="build-module">
+        <jar destfile="${module}/target/${module}-${version}.jar" basedir="${module}/target/classes"/>            
         <copy file="${module}/target/${module}-${version}.jar" todir="target" />
 
-		    <artifact:install file="target/${module}-${version}.jar">
-		      <pom file="${module}/pom.xml" />
-		    </artifact:install>	      
-	  </target>                   
+        <artifact:install file="target/${module}-${version}.jar">
+          <pom file="${module}/pom.xml" />
+        </artifact:install>       
+    </target>                   
 
-	 <!--
-	   **************************************************	 
-	   * compile, test and build module drivers
-	   *
-	   * Each one of these calls one of the above
-	   * targets, providing the module name as a variable
-		 **************************************************
-		 -->      	  
-	   
-	   
-	 <!--
-	   **************************************************	 
-	   * drools-core
-		 **************************************************
-		 -->      	  	  
-	  <target name="compile-core" depends="init">      	    
-			<antcall target="compile-module">
-			  <param name="module" value="drools-core"/>
-			</antcall>
-	  </target>
+   <!--
+     **************************************************  
+     * compile, test and build module drivers
+     *
+     * Each one of these calls one of the above
+     * targets, providing the module name as a variable
+     **************************************************
+     -->          
+     
+     
+   <!--
+     **************************************************  
+     * drools-core
+     **************************************************
+     -->              
+    <target name="compile-core" depends="init">           
+      <antcall target="compile-module">
+        <param name="module" value="drools-core"/>
+      </antcall>
+    </target>
 
-	  <target name="test-core" depends="compile-core">
-			<antcall target="test-module">
-			  <param name="module" value="drools-core"/>
-			</antcall>
-	  </target>
-	  
-	  <target name="build-core" depends="test-core">
-			<antcall target="build-module">
-			  <param name="module" value="drools-core"/>
-			</antcall>	  	  
-	  </target>
-	  
-	  <target name="clean-core">
-	    <delete dir="drools-core/target"/>
-	  </target>
+    <target name="test-core" depends="compile-core">
+      <antcall target="test-module">
+        <param name="module" value="drools-core"/>
+      </antcall>
+    </target>
+    
+    <target name="build-core" depends="test-core">
+      <antcall target="build-module">
+        <param name="module" value="drools-core"/>
+      </antcall>        
+    </target>
+    
+    <target name="clean-core">
+      <delete dir="drools-core/target"/>
+    </target>
 
-	 <!--
-	   **************************************************	 
-	   * drools-compiler
-	   **************************************************
-     -->      	  	  
-	  <target name="compile-compiler" depends="build-core">
-			<antcall target="compile-module">		
-			  <param name="module" value="drools-compiler"/>
-			</antcall>
-	  </target>
+   <!--
+     **************************************************  
+     * drools-compiler
+     **************************************************
+     -->              
+    <target name="compile-compiler" depends="build-core">
+      <antcall target="compile-module">   
+        <param name="module" value="drools-compiler"/>
+      </antcall>
+    </target>
 
-	  <target name="test-compiler" depends="compile-compiler">
-			<antcall target="test-module">
-			  <param name="module" value="drools-compiler"/>
-			</antcall>
-	  </target>
-	  
-	  <target name="build-compiler" depends="test-compiler">
-			<antcall target="build-module">
-			  <param name="module" value="drools-compiler"/>
-			</antcall>	  
-	  </target>
+    <target name="test-compiler" depends="compile-compiler">
+      <antcall target="test-module">
+        <param name="module" value="drools-compiler"/>
+      </antcall>
+    </target>
+    
+    <target name="build-compiler" depends="test-compiler">
+      <antcall target="build-module">
+        <param name="module" value="drools-compiler"/>
+      </antcall>    
+    </target>
 
-	  <target name="clean-compiler">
-	    <delete dir="drools-compiler/target"/>
-	  </target>
+    <target name="clean-compiler">
+      <delete dir="drools-compiler/target"/>
+    </target>
 
-	 <!--
-	   **************************************************	 
-	   * drools-decisiontables
-		 **************************************************
-		 -->      	  	  
-	  <target name="compile-decisiontables" depends="build-compiler">
-			<antcall target="compile-module">
-			  <param name="module" value="drools-decisiontables"/>
-			</antcall>
-	  </target>
+   <!--
+     **************************************************  
+     * drools-decisiontables
+     **************************************************
+     -->              
+    <target name="compile-decisiontables" depends="build-compiler">
+      <antcall target="compile-module">
+        <param name="module" value="drools-decisiontables"/>
+      </antcall>
+    </target>
 
-	  <target name="test-decisiontables" depends="compile-decisiontables">
-			<antcall target="test-module">
-			  <param name="module" value="drools-decisiontables"/>
-			</antcall>
-	  </target>
-	  
-	  <target name="build-decisiontables" depends="test-decisiontables">
-			<antcall target="build-module">
-			  <param name="module" value="drools-decisiontables"/>
-			</antcall>	  
-	  </target>
+    <target name="test-decisiontables" depends="compile-decisiontables">
+      <antcall target="test-module">
+        <param name="module" value="drools-decisiontables"/>
+      </antcall>
+    </target>
+    
+    <target name="build-decisiontables" depends="test-decisiontables">
+      <antcall target="build-module">
+        <param name="module" value="drools-decisiontables"/>
+      </antcall>    
+    </target>
 
-	  <target name="clean-decisiontables">
-	    <delete dir="drools-decisiontables/target"/>
-	  </target>
-	  
-	  <target name="compile-jsr94" depends="init">
-			<antcall target="compile-module">
-			  <param name="module" value="drools-jsr94"/>
-			</antcall>
-	  </target>
-
-	 <!--
-	   **************************************************	 
-	   * drools-jsr94
-		 **************************************************
-		 -->      	  	  
-	  <target name="test-jsr94" depends="compile-jsr94">
-			<antcall target="test-module">		
-			  <param name="module" value="drools-jsr94"/>
-			</antcall>
-	  </target>
-	  
-	  <target name="build-jsr94" depends="test-jsr94">
-			<antcall target="build-module">
-			  <param name="module" value="drools-jsr94"/>
-			</antcall>	  
-	  </target>	  
-	
-	  <target name="clean-jsr94">
-	    <delete dir="drools-jsr94/target"/>
-	  </target>	
-	  
-	 <!--
-	   **************************************************	 
-	   * "all" drivers. Each task performs its actions for
-	   * each of the 4 modules.
-	   **************************************************
-	   -->  	  
-	  
-	  <target name="compile-all" depends="compile-core, compile-compiler, compile-decisiontables, compile-jsr94">
-	  </target>
-	  
-	  <target name="test-all" depends="test-core, test-compiler, test-decisiontables, test-jsr94">
-	  </target>	  
-	  
-	  <target name="build-all" depends="build-core, build-compiler, build-decisiontables, build-jsr94, copy-deps">
-	  </target>	  	             
-	  
-	  <target name="clean-all" depends="clean-core, clean-compiler, clean-decisiontables, clean-jsr94">
-	    <delete dir="target" />
-	    
-	    <delete>        
+    <target name="clean-decisiontables">
+      <delete dir="drools-decisiontables/target"/>
+    </target>
+    
+   <!--
+     **************************************************  
+     * drools-jsr94
+     **************************************************
+     -->        
+    
+    <target name="compile-jsr94" depends="init">
+      <antcall target="compile-module">
+        <param name="module" value="drools-jsr94"/>
+      </antcall>
+    </target>
+          
+    <target name="test-jsr94" depends="compile-jsr94">
+      <antcall target="test-module">    
+        <param name="module" value="drools-jsr94"/>
+      </antcall>
+    </target>
+    
+    <target name="build-jsr94" depends="test-jsr94">
+      <antcall target="build-module">
+        <param name="module" value="drools-jsr94"/>
+      </antcall>    
+    </target>   
+  
+    <target name="clean-jsr94">
+      <delete dir="drools-jsr94/target"/>
+    </target> 
+    
+   <!--
+     **************************************************  
+     * "all" drivers. Each task performs its actions for
+     * each of the 4 modules.
+     **************************************************
+     -->      
+    
+    <target name="compile-all" depends="compile-core, compile-compiler, compile-decisiontables, compile-jsr94">
+    </target>
+    
+    <target name="test-all" depends="test-core, test-compiler, test-decisiontables, test-jsr94">
+    </target>   
+    
+    <target name="build-all" depends="build-core, build-compiler, build-decisiontables, build-jsr94, copy-deps">
+    </target>                  
+    
+    <target name="clean-all" depends="clean-core, clean-compiler, clean-decisiontables, clean-jsr94">
+      <delete dir="target" />
+      
+      <delete>        
         <fileset dir="drools-ide/lib" includes="*"/>        
-      </delete>	 
-	    
+      </delete>  
+      
       <delete includeEmptyDirs="true">        
         <fileset dir="repository" includes="*/**"/>        
-      </delete>	    	    
-	    
-	   <delete dir="documentation/manual/build" />
-	   <delete dir="drools-ide/help/shared" />
-	   <delete dir="drools-ide/help/eclipse" />
-	  </target> 
+      </delete>           
+      
+     <delete dir="documentation/manual/build" />
+     <delete dir="drools-ide/help/shared" />
+     <delete dir="drools-ide/help/eclipse" />
+    </target> 
         
         
-	 <!--
-	   **************************************************	 
-	   * Docoumentation Generation
-	   *
-	   * Javadocs, yDocs and Manual
-	   *
-	   * javadocs is the only target that should be invoked
-	   * It checks the file system to see if ydocs is present,
-	   * if it finds ydocs then it does a ydocs build otherwise
-	   * it defaults to standard javadocs.
-		 **************************************************
-		 -->          
+   <!--
+     **************************************************  
+     * Docoumentation Generation
+     *
+     * Javadocs, yDocs and Manual
+     *
+     * javadocs is the only target that should be invoked
+     * It checks the file system to see if ydocs is present,
+     * if it finds ydocs then it does a ydocs build otherwise
+     * it defaults to standard javadocs.
+     **************************************************
+     -->          
             
     <target name="manual" unless="skip.manual">
       <delete dir="documentation/manual/build" />
-			<ant dir="documentation/manual" />			
+      <ant dir="documentation/manual" />      
 
       <delete dir="drools-ide/help/eclipse" />
       <delete dir="drools-ide/help/shared" />
-			<replace file="documentation/manual/build/en/eclipse/toc.xml" token="href=&quot;" value="href=&quot;help/eclipse/" />
-			<replace file="documentation/manual/build/en/eclipse/toc.xml" token="topic=&quot;" value="topic=&quot;help/eclipse/" />
-			<copy todir="drools-ide/help">
+      <replace file="documentation/manual/build/en/eclipse/toc.xml" token="href=&quot;" value="href=&quot;help/eclipse/" />
+      <replace file="documentation/manual/build/en/eclipse/toc.xml" token="topic=&quot;" value="topic=&quot;help/eclipse/" />
+      <copy todir="drools-ide/help">
         <fileset dir="documentation/manual/build/en" includes="shared/** eclipse/**" excludes="**/*.svg **/*.db" />
-			</copy>	
-			
-			<copy todir="target/docs">
+      </copy> 
+      
+      <copy todir="target/docs">
         <fileset dir="documentation/manual/build/en" includes="shared/** html/** html_single/**" excludes="**/*.svg **/*.db" />
-			</copy>	
-	  </target>	 
+      </copy> 
+    </target>  
 
     <target name="javadocs" depends="build-all" unless="skip.javadocs">
-		  <available file="ydoc" type="dir" property="ydocs" />
-		  
-		  <antcall target="standard-javadocs" />
-		  
-		  <antcall target="ydocs" />
+      <available file="ydoc" type="dir" property="ydocs" />
+      
+      <antcall target="standard-javadocs" />
+      
+      <antcall target="ydocs" />
     </target>
 
     <target name="standard-javadocs" unless="ydocs">
@@ -514,13 +525,13 @@
        </javadoc>    
     </target>          
     
-	 <!--
-	   **************************************************	 
-	   * Distribution Builds
-	   * 
-	   * dist-all, dist-src, dist-bin, dist-bin-withdeps
-		 **************************************************	   
-	   -->          
+   <!--
+     **************************************************  
+     * Distribution Builds
+     * 
+     * dist-all, dist-src, dist-bin, dist-bin-withdeps
+     **************************************************    
+     -->          
         
     <target name="dist-all" depends="dist-src, dist-bin, dist-bin-withdeps, dist-examples">
     </target>
