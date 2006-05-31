@@ -1,5 +1,5 @@
 <project name="Drools" basedir="." xmlns:artifact="urn:maven-artifact-ant" default="help">
-    <property name="version"   value="3.0-RC-3"/>                            
+    <property name="version"   value="3.0"/>                            
             
     <target name="help">
       <echo level="info" message="Drools Build Help" />
@@ -138,6 +138,11 @@
             flatten="true">
         <fileset dir="repository" includes="**/*.jar" excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar" />
       </copy>
+      
+      <copy todir="drools-ide/lib"            
+            flatten="true">
+        <fileset dir="." includes="drools-*/target/drools-*.jar" />
+      </copy>      
     </target>     
 
    <!--
