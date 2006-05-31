@@ -372,7 +372,7 @@
      **************************************************
      -->        
     
-    <target name="compile-jsr94" depends="init">
+    <target name="compile-jsr94" depends="build-compiler">
       <antcall target="compile-module">
         <param name="module" value="drools-jsr94"/>
       </antcall>
@@ -493,7 +493,8 @@
          excludepackagenames="org.drools.asm.*"
          destdir="target/docs/apidocs"
          author="false"
-         version="false">
+         version="false"
+         source="1.4">
 
          <sourcepath>
            <pathelement path="drools-core/src/main/java" />
