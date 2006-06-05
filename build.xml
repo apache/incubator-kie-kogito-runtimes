@@ -1,5 +1,5 @@
 <project name="Drools" basedir="." xmlns:artifact="urn:maven-artifact-ant" default="help">
-    <property name="version"   value="3.0"/>                            
+    <property name="version"   value="3.0.1"/>                            
             
     <target name="help">
       <echo level="info" message="Drools Build Help" />
@@ -440,7 +440,7 @@
      **************************************************
      -->          
             
-    <target name="manual" unless="skip.manual">
+    <target name="manual" unless="manual.skip">
       <delete dir="documentation/manual/build" />
       <ant dir="documentation/manual" />      
 
@@ -457,7 +457,7 @@
       </copy> 
     </target>  
 
-    <target name="javadocs" depends="build-all" unless="skip.javadocs">
+    <target name="javadocs" depends="build-all" unless="javadocs.skip">
       <available file="ydoc" type="dir" property="ydocs" />
       
       <antcall target="standard-javadocs" />
