@@ -136,13 +136,26 @@
       
       <copy todir="drools-ide/lib"            
             flatten="true">
-        <fileset dir="repository" includes="**/*.jar" excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar" />
+        <fileset dir="repository" includes="**/*.jar" excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar **/drools-*.jar" />
       </copy>
-      
+
+		<!-- copy the drools module jars for the plug in. We will remove the version number from them -->
+		<copy tofile="drools-ide/lib/drools-core.jar" flatten="true" file="target/drools-core-${version}.jar" />
+		<copy tofile="drools-ide/lib/drools-compiler.jar" flatten="true" file="target/drools-compiler-${version}.jar" />
+		<copy tofile="drools-ide/lib/drools-decisiontables.jar" flatten="true" file="target/drools-decisiontables-${version}.jar" />
+		<copy tofile="drools-ide/lib/drools-jsr94.jar" flatten="true" file="target/drools-jsr94-${version}.jar" />
+
+	 
+
+	  <!-- Don't want to do it like this anymore....
+           But would be nice is the above copying could be automated like this.
       <copy todir="drools-ide/lib"            
             flatten="true">
         <fileset dir="." includes="drools-*/target/drools-*.jar" />
-      </copy>      
+      </copy>    
+	  
+	--> 
+
     </target>     
 
    <!--
