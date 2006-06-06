@@ -585,17 +585,8 @@
     <target name="dist-bin" depends="build-all, copy-deps, javadocs, manual">
         <zip destfile="target/dist/drools-${version}-bin.zip">
             <zipfileset dir="target/docs"
+            					  excludes="**/*.svg **/*.db"
                         prefix="docs" />
-
-            <zipfileset dir="target/docs/shared" 
-                        excludes="**/*.svg **/*.db"
-                        prefix="docs/shared" />   
-                             
-            <zipfileset dir="target/docs/html_single"
-                        prefix="docs/html_single" />                             
-                             
-            <zipfileset dir="target/docs/html"
-                        prefix="docs/html" />
                                                 
             <zipfileset dir="target"
                         includes="**/drools-*.jar" />   
@@ -605,17 +596,8 @@
     <target name="dist-bin-withdeps" depends="build-all, copy-deps, javadocs, manual">        
         <zip destfile="target/dist/drools-${version}-bin-withdeps.zip">                          
             <zipfileset dir="target/docs"
+            					  excludes="**/*.svg **/*.db"
                         prefix="docs" />
-
-            <zipfileset dir="target/docs/shared" 
-                        excludes="**/*.svg **/*.db"
-                        prefix="docs/shared" />   
-                             
-            <zipfileset dir="target/docs/html_single"
-                        prefix="docs/html_single" />                             
-                             
-            <zipfileset dir="target/docs/html"
-                        prefix="docs/html" />
                                                  
             <zipfileset dir="target"
                         includes="**/drools-*.jar" />                         
