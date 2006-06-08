@@ -483,7 +483,7 @@
          packagenames="org.drools.*"
          excludepackagenames="org.drools.asm.*"
          destdir="target/docs/apidocs"
-         author="false"
+         author="false"		 
          version="false">
 
          <sourcepath>
@@ -497,6 +497,22 @@
              <include name="target/drools-*.jar" />
            </fileset>
          </classpath>       
+
+			<group title="Runtime Core API"
+				packages="org.drools"/>
+			<group title="Compiler Core API" 
+				packages="org.drools.compiler"/>
+
+			
+			<group title="Compiler Utilities" 
+				packages="org.drools.lang:org.drools.xml"/>	
+				
+			<group title="Runtime Utilities" 
+				packages="org.drools.audit*:org.drools.event:org.drools.visualize"/>
+			<group title="Decision Tables" 
+				packages="org.drools.decisiontable"/>
+				
+
        </javadoc>    
     </target>
     
@@ -541,6 +557,22 @@
           <param name="-tag" value="y.uml"/>
           <param name="-breakiterator"/>
         </doclet>         
+
+			<group title="Runtime Core API"
+				packages="org.drools"/>
+			<group title="Compiler Core API" 
+				packages="org.drools.compiler"/>
+
+			
+			<group title="Compiler Utilities" 
+				packages="org.drools.lang:org.drools.xml"/>	
+				
+			<group title="Runtime Utilities" 
+				packages="org.drools.audit*:org.drools.event:org.drools.visualize"/>
+			<group title="Decision Tables" 
+				packages="org.drools.decisiontable"/>
+
+
        </javadoc>    
     </target>          
     
