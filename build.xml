@@ -483,7 +483,8 @@
          packagenames="org.drools.*"
          excludepackagenames="org.drools.asm.*"
          destdir="target/docs/apidocs"
-         author="false"		 
+         author="false"	
+		 Overview="drools-core/target/classes/overview.html"
          version="false">
 
          <sourcepath>
@@ -499,7 +500,7 @@
          </classpath>       
 
 			<group title="Runtime Core API"
-				packages="org.drools"/>
+				packages="org.drools:org.drools.rule"/>
 			<group title="Compiler Core API" 
 				packages="org.drools.compiler"/>
 
@@ -508,11 +509,12 @@
 				packages="org.drools.lang:org.drools.xml"/>	
 				
 			<group title="Runtime Utilities" 
-				packages="org.drools.audit*:org.drools.event:org.drools.visualize"/>
+				packages="org.drools.audit:org.drools.event:org.drools.visualize"/>
 			<group title="Decision Tables" 
 				packages="org.drools.decisiontable"/>
 				
-
+			<group title="Internal"
+				packages="org.drools*" />
        </javadoc>    
     </target>
     
@@ -523,6 +525,7 @@
          destdir="target/docs/apidocs"
          author="false"
          version="false"
+		 Overview="drools-core/target/classes/overview.html"
          source="1.4">
 
          <sourcepath>
@@ -558,8 +561,9 @@
           <param name="-breakiterator"/>
         </doclet>         
 
+
 			<group title="Runtime Core API"
-				packages="org.drools"/>
+				packages="org.drools:org.drools.rule"/>
 			<group title="Compiler Core API" 
 				packages="org.drools.compiler"/>
 
@@ -568,9 +572,12 @@
 				packages="org.drools.lang:org.drools.xml"/>	
 				
 			<group title="Runtime Utilities" 
-				packages="org.drools.audit*:org.drools.event:org.drools.visualize"/>
+				packages="org.drools.audit:org.drools.event:org.drools.visualize"/>
 			<group title="Decision Tables" 
 				packages="org.drools.decisiontable"/>
+				
+			<group title="Internal"
+				packages="org.drools*" />
 
 
        </javadoc>    
