@@ -1,4 +1,4 @@
-This is a summary of what jars you may need in your situation. Abbreviated names have been used (only the first part of the jar name) for brevity.
+This is a summary of what jars you may need in your situation. Abbreviated names have been used (only the first part of the jar name).
 
 CORE RUNTIME
 Runtime assumes that you are "compiling" rules using drools-compiler.
@@ -40,4 +40,5 @@ Decision tables use spreadsheets to generate rules.
 
 The most common use case is for COMPILER - this allows rules to be loaded from their source form, and includes the runtime engine of course. For example, if you wanted to be able to load rules from a drl source you would need: drools-core and the COMPILER jars mentioned above (not xerces, and not xml-apis), and commons-jar-eclipse, core-3.2. You will only need optional core jars if you are using those features.
 
-When building from source, the dependencies are managed by maven. In each module, there is a pom.xml file that lists the exact dependencies. 
+When building from source, the dependencies are managed by maven. In each module, there is a pom.xml file that lists the exact dependencies and exact version numbers. 
+Even if you use ant to build, the dependencies will be downloaded for you based on those pom.xml files.
