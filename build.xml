@@ -657,7 +657,9 @@
             <zipfileset dir="drools-ide/lib"
                         includes="**/*.jar"
                         excludes="**/drools-*.jar" 
-                        prefix="lib" />                                                 
+                        prefix="lib" />  
+						
+			<zipfileset file="README_DEPENDENCIES.txt" prefix="lib" />
         </zip>
   
     </target>        
