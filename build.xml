@@ -237,7 +237,7 @@
         </classpath>
       </javac>      
     
-      <junit printsummary="yes" fork="yes" forkmode="once">
+      <junit printsummary="yes" fork="yes" forkmode="once" haltonfailure="on">
         <sysproperty key="jsr94.tck.configuration" value="${module}/target/test-classes/org/drools/jsr94/tck"/>
         <classpath>
           <path refid="${module}.dependency.classpath"/>                
