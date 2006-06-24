@@ -136,7 +136,7 @@
       
       <copy todir="drools-ide/lib"            
             flatten="true">
-        <fileset dir="repository" includes="**/*.jar" excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar **/drools-*.jar" />
+        <fileset dir="repository" includes="**/*.jar" excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar **/drools-*.jar **/core-*.jar" />
       </copy>
 
 		<!-- copy the drools module jars for the plug in. We will remove the version number from them -->
