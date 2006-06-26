@@ -20,7 +20,7 @@ Rule compiler takes rules in some textual format and prepares binary Packages of
     * commons-jci-core
           o This also requires only one pair out of:
                 + commons-jci-eclipse, core-3.2 - for eclipse JDT to compile the java semantics (this is default)
-                + commons-jci-janino, janino - for janino. To use this option, set -Ddrools.compiler=true or use PackageBuilderConfiguration? class.
+                + commons-jci-janino, janino - for janino. To use this option, set -Ddrools.compiler=JANINO or use PackageBuilderConfiguration? class.
     * commons-logging - used by various dependencies.
     * commons-lang - used for string manipulation in various dependencies.
     * stringtemplate, anlr-2.7.6 - used in generating semantic code.
@@ -38,7 +38,12 @@ Decision tables use spreadsheets to generate rules.
     * drools-decisiontables - contains the spreadsheet compiler for both XLS and CSV
     * poi - for parsing Excel spreadsheets. If you are only using CSV, can skip this.
 
-The most common use case is for COMPILER - this allows rules to be loaded from their source form, and includes the runtime engine of course. For example, if you wanted to be able to load rules from a drl source you would need: drools-core and the COMPILER jars mentioned above (not xerces, and not xml-apis), and commons-jar-eclipse, core-3.2. You will only need optional core jars if you are using those features.
+The most common use case is for COMPILER - this allows rules to be loaded from their source form, 
+and includes the runtime engine of course. 
+For example, if you wanted to be able to load rules from a drl source you would need: drools-core and the COMPILER jars mentioned above 
+(not xerces, and not xml-apis), and commons-jar-eclipse, core-3.2. 
+You will only need optional core jars if you are using those features.
 
-When building from source, the dependencies are managed by maven. In each module, there is a pom.xml file that lists the exact dependencies and exact version numbers. 
-Even if you use ant to build, the dependencies will be downloaded for you based on those pom.xml files.
+When building from source, the dependencies are managed by maven. 
+In each module, there is a pom.xml file that lists the exact dependencies and exact version numbers. 
+Even if you use ant to build, the dependencies will be downloaded for you based on those pom.xml files. 
