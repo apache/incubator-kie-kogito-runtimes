@@ -645,7 +645,19 @@
         </zip>    
     </target>
     
-    <target name="dist-bin-withdeps" depends="build-all, copy-deps, javadocs, manual">        
+    <target name="dist-bin-withdeps" depends="build-all, copy-deps, javadocs, manual">   
+	
+	<!-- need to flatten the deps for the lib -->
+	<delete dir="target/dist-deps" />
+	<mkdir dir="target/dist-deps"/>
+
+	<copy todir="target/dist-deps" flatten="true">
+            <fileset dir="repository" 
+                        includes="**/*.jar" 
+                        excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar **/drools-*.jar" />			
+	</copy>
+
+     
         <zip destfile="target/dist/drools-${version}-bin-withdeps.zip">                          
             <zipfileset dir="target/docs"
             					  excludes="**/*.svg **/*.db"
@@ -654,13 +666,15 @@
             <zipfileset dir="target"
                         includes="**/drools-*.jar" />                         
                         
-            <zipfileset dir="drools-ide/lib"
-                        includes="**/*.jar"
-                        excludes="**/drools-*.jar" 
-                        prefix="lib" />  
+            <zipfileset dir="target/dist-deps" 
+                        includes="**/*"                         
+			prefix="lib" />  
 						
-			<zipfileset file="README_DEPENDENCIES.txt" prefix="lib" />
+	     <zipfileset file="README_DEPENDENCIES.txt" prefix="lib" />
         </zip>
+	
+	<!-- now cleaup the temp directory -->
+	<delete dir="target/dist-deps" />
   
     </target>        
         
