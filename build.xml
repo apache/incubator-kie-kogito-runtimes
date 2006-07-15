@@ -8,6 +8,7 @@
       <echo level="info" message="The build process is for the following four modules:" />
       <echo level="info" message="drools-core" />
       <echo level="info" message="drools-compiler" />
+      <echo level="info" message="drools-server" />      
       <echo level="info" message="drools-decisiontables" />
       <echo level="info" message="drools-jsr94" />
       <echo level="info" message=" " />
@@ -114,6 +115,10 @@
       <artifact:dependencies filesetId="drools-compiler.dependency.fileset" verbose="false">
         <pom file="drools-compiler/pom.xml"/>
       </artifact:dependencies>   
+
+      <artifact:dependencies filesetId="drools-server.dependency.fileset" verbose="false">
+        <pom file="drools-server/pom.xml"/>
+      </artifact:dependencies>   
       
       <artifact:dependencies filesetId="drools-decisiontables.dependency.fileset" verbose="false">
         <pom file="drools-decisiontables/pom.xml"/>
@@ -126,6 +131,7 @@
       <copy todir="repository">
         <fileset refid="drools-core.dependency.fileset"/>
         <fileset refid="drools-compiler.dependency.fileset"/>
+        <fileset refid="drools-server.dependency.fileset"/>        
         <fileset refid="drools-decisiontables.dependency.fileset"/>
         <fileset refid="drools-jsr94.dependency.fileset"/>
       </copy>   
@@ -142,6 +148,7 @@
 		<!-- copy the drools module jars for the plug in. We will remove the version number from them -->
 		<copy tofile="drools-ide/lib/drools-core.jar" flatten="true" file="target/drools-core-${version}.jar" />
 		<copy tofile="drools-ide/lib/drools-compiler.jar" flatten="true" file="target/drools-compiler-${version}.jar" />
+		<copy tofile="drools-ide/lib/drools-server.jar" flatten="true" file="target/drools-server-${version}.jar" />
 		<copy tofile="drools-ide/lib/drools-decisiontables.jar" flatten="true" file="target/drools-decisiontables-${version}.jar" />
 		<copy tofile="drools-ide/lib/drools-jsr94.jar" flatten="true" file="target/drools-jsr94-${version}.jar" />
 
@@ -351,6 +358,33 @@
     <target name="clean-compiler">
       <delete dir="drools-compiler/target"/>
     </target>
+    
+   <!--
+     **************************************************  
+     * drools-compiler
+     **************************************************
+     -->              
+    <target name="compile-server" depends="build-core">
+      <antcall target="compile-module">   
+        <param name="module" value="drools-server"/>
+      </antcall>
+    </target>
+
+    <target name="test-server" depends="compile-server">
+      <antcall target="test-module">
+        <param name="module" value="drools-server"/>
+      </antcall>
+    </target>
+    
+    <target name="build-server" depends="test-server">
+      <antcall target="build-module">
+        <param name="module" value="drools-server"/>
+      </antcall>    
+    </target>
+
+    <target name="clean-server">
+      <delete dir="drools-server/target"/>
+    </target>    
 
    <!--
      **************************************************  
@@ -414,16 +448,16 @@
      **************************************************
      -->      
     
-    <target name="compile-all" depends="compile-core, compile-compiler, compile-decisiontables, compile-jsr94">
+    <target name="compile-all" depends="compile-core, compile-compiler, compile-server, compile-decisiontables, compile-jsr94">
     </target>
     
-    <target name="test-all" depends="test-core, test-compiler, test-decisiontables, test-jsr94">
+    <target name="test-all" depends="test-core, test-compiler, test-server, test-decisiontables, test-jsr94">
     </target>   
     
-    <target name="build-all" depends="build-core, build-compiler, build-decisiontables, build-jsr94, copy-deps">
+    <target name="build-all" depends="build-core, build-compiler, build-server, build-decisiontables, build-jsr94, copy-deps">
     </target>                  
     
-    <target name="clean-all" depends="clean-core, clean-compiler, clean-decisiontables, clean-jsr94">
+    <target name="clean-all" depends="clean-core, clean-compiler, clean-server, clean-decisiontables, clean-jsr94">
       <delete dir="target" />
       
       <delete>        

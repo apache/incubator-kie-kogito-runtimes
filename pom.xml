@@ -190,35 +190,7 @@
   </reporting>
 
   <build>
-   <plugins>
-            <plugin>
-                 <artifactId>maven-assembly-plugin</artifactId>
-                 <version>2.0-beta-1</version>
-                 <configuration>
-                   <descriptor>bin.xml</descriptor>
-                   <finalName>final_name</finalName>
-                   <outputDirectory>output/directory</outputDirectory>
-                   <workDirectory>target/assembly/work</workDirectory>
-                 </configuration>
-            </plugin>   
-   
-     <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>dependency-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>../drools-ide/lib</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      
+   <plugins>      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -249,6 +221,7 @@
   <modules>
     <module>drools-core</module>    
     <module>drools-compiler</module>       
+    <module>drools-server</module>     
     <module>drools-jsr94</module> 
     <module>drools-decisiontables</module>
   </modules>
