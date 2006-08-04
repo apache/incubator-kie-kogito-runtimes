@@ -221,7 +221,7 @@
   <modules>
     <module>drools-core</module>    
     <module>drools-compiler</module>       
-    <module>drools-server</module>     
+    <!--module>drools-server</module-->     
     <module>drools-jsr94</module> 
     <module>drools-decisiontables</module>
   </modules>
