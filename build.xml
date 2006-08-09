@@ -244,7 +244,7 @@
         </classpath>
       </javac>      
     
-      <junit printsummary="yes" fork="yes" forkmode="once" haltonfailure="on">
+      <junit printsummary="yes" fork="yes" forkmode="once" failureproperty="test.failed">
         <sysproperty key="jsr94.tck.configuration" value="${module}/target/test-classes/org/drools/jsr94/tck"/>
         <classpath>
           <path refid="${module}.dependency.classpath"/>                
@@ -255,7 +255,7 @@
           </fileset>                    
         </classpath>
       
-        <formatter type="plain"/>
+        <formatter type="xml"/>
       
         <batchtest todir="${module}/target/test-reports">
           <fileset dir="${module}/target/test-classes">
@@ -270,12 +270,13 @@
         </batchtest>
       </junit>  
       
-      <!--junitreport todir="${module}/target/reports">
+      <junitreport todir="${module}/target/reports">
         <fileset dir="${module}/target/test-reports">
           <include name="TEST-*.xml"/>
         </fileset>
         <report format="frames" todir="${module}/target/reports"/>
-      </junitreport-->
+      </junitreport>
+      <fail message="Tests failed: check test reports." if="test.failed" />
     </target>    
 
    <!--
