@@ -36,7 +36,7 @@ Decision tables use spreadsheets to generate rules.
 
     * drools-compiler - required as rules are generated and compiled
     * drools-decisiontables - contains the spreadsheet compiler for both XLS and CSV
-    * poi - for parsing Excel spreadsheets. If you are only using CSV, can skip this.
+    * jexcelapi - for parsing Excel spreadsheets.
 
 The most common use case is for COMPILER - this allows rules to be loaded from their source form, 
 and includes the runtime engine of course. 
