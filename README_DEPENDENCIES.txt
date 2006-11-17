@@ -6,7 +6,6 @@ Runtime assumes that you are "compiling" rules using drools-compiler.
     * drools-core - the rule engine itself.
     * optional packages:
           o xpp3, xstream - if you are using the file based audit feature
-          o jung, concurrent, colt, commons-collections, xercesImpl - only if you are using the visualisation feature (most people do this in the plug in - so not needed).
 
 Note you can use the drools-core stand-alone if you are compiling "outside" your runtime application, and deploying serialized Package or RuleBase? objects.
 
