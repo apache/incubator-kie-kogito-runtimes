@@ -197,7 +197,7 @@
      
       <javac srcdir="${module}/src/main/java"
              destdir="${module}/target/classes"
-             source="1.4">
+             source="1.5">
         <classpath>
           <path refid="${module}.dependency.classpath" />     
           <fileset dir="target">
@@ -233,7 +233,7 @@
       
       <javac srcdir="${module}/src/test/java"
              destdir="${module}/target/test-classes"
-             source="1.4">
+             source="1.5">
         <classpath>
           <path refid="${module}.dependency.classpath" />       
           <pathelement location="${module}/target/classes"/>
