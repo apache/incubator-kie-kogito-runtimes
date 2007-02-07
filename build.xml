@@ -182,7 +182,7 @@
     <copy todir="${module}/target/classes">
       <fileset dir="${module}/src/main/resources"/>
     </copy>
-    <javac srcdir="${module}/src/main/java" destdir="${module}/target/classes" source="1.4">
+    <javac srcdir="${module}/src/main/java" destdir="${module}/target/classes" source="1.4" debug="true">
       <classpath>
         <path refid="${module}.dependency.classpath"/>
         <fileset dir="target">
@@ -212,7 +212,7 @@
     <copy todir="${module}/target/test-classes">
       <fileset dir="${module}/src/test/resources"/>
     </copy>
-    <javac srcdir="${module}/src/test/java" destdir="${module}/target/test-classes" source="1.4">
+    <javac srcdir="${module}/src/test/java" destdir="${module}/target/test-classes" source="1.4" debug="true">
       <classpath>
         <path refid="${module}.dependency.classpath"/>
         <pathelement location="${module}/target/classes"/>
