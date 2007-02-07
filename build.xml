@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns:artifact="urn:maven-artifact-ant" name="Drools" basedir="." default="help">
 
-  <property name="version" value="3.0.2"/>
+  <property name="version" value="3.1.0-SNAPSHOT"/>
   
   <target name="help">
     <echo level="info" message="Drools Build Help"/>
@@ -331,7 +331,7 @@
   
    <!--
      **************************************************  
-     * drools-compiler
+     * drools-server
      **************************************************
      -->
   <target name="compile-server" depends="build-core">
@@ -410,16 +410,16 @@
      * each of the 4 modules.
      **************************************************
      -->
-  <target name="compile-all" depends="compile-core, compile-compiler, compile-server, compile-decisiontables, compile-jsr94">
+  <target name="compile-all" depends="compile-core, compile-compiler,compile-decisiontables, compile-jsr94">
   </target>
       
-  <target name="test-all" depends="test-core, test-compiler, test-server, test-decisiontables, test-jsr94">
+  <target name="test-all" depends="test-core, test-compiler, test-decisiontables, test-jsr94">
   </target>
         
-  <target name="build-all" depends="build-core, build-compiler, build-server, build-decisiontables, build-jsr94, copy-deps">
+  <target name="build-all" depends="build-core, build-compiler, build-decisiontables, build-jsr94, copy-deps">
   </target>
     
-  <target name="clean-all" depends="clean-core, clean-compiler, clean-server, clean-decisiontables, clean-jsr94">
+  <target name="clean-all" depends="clean-core, clean-compiler, clean-decisiontables, clean-jsr94">
     <delete dir="temp-repository" />
     <delete dir="target"/>
     
