@@ -134,11 +134,11 @@
     </copy>
     
     <copy todir="drools-ide/lib" flatten="true">
-      <fileset dir="repository" includes="**/*.jar" excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar **/drools-*.jar **/core-*.jar **/dom4j*.jar **/jboss-*.jar **/junit-*.jar"/>
+      <fileset dir="repository" includes="**/*.jar" excludes="**/gwt-servlet-*.jar **/jcr-*.jar **/javasvn-*.jar "/>
     </copy>
     
     <copy todir="drools-ide/lib" flatten="true">
-      <fileset dir="temp-repository" includes="**/*.jar" excludes="**/jsr94-sigtest-1.1.jar **/jsr94-tck-1.0.3.jar **/drools-*.jar **/core-*.jar **/dom4j*.jar **/jboss-*.jar **/junit-*.jar"/>
+      <fileset dir="temp-repository" includes="**/*.jar" excludes="**/jsr94-sigtest-*.jar **/jsr94-tck-*.jar **/drools-*.jar **/core-*.jar **/dom4j-*.jar **/jboss-*.jar **/junit-*.jar **/commons-collections-*.jar **/commons-io-*.jar"/>
     </copy>
     
     <!-- copy the drools module jars for the plug in. We will remove the version number from them -->
