@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns:artifact="urn:maven-artifact-ant" name="Drools" basedir="." default="help">
 
-  <property name="version" value="3.1.0-SNAPSHOT"/>
+  <property name="version" value="3.1.0-M1"/>
   
   <target name="help">
     <echo level="info" message="Drools Build Help"/>

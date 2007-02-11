@@ -7,7 +7,7 @@
   <artifactId>drools</artifactId>
   <packaging>pom</packaging>
   <name>Drools</name>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>3.1.0-M1</version>
   <description>A rule production system</description>
   <url>http://www.jboss.com/products/rules</url>
 
@@ -420,85 +420,85 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-server</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-repository</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-repository</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jbrms</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jbrms</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-M1</version>
         <scope>test</scope>
       </dependency>
 
