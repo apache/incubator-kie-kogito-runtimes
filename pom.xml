@@ -162,7 +162,61 @@
       </releases>
     </repository>
   </repositories>
-  <pluginRepositories/>
+  
+  <pluginRepositories>
+    <pluginRepository>
+    	<id>basedir</id>
+      <url>file://${basedir}/repository</url>
+    </pluginRepository>  
+  </pluginRepositories>
+    
+  <profiles>
+    <profile>
+      <id>ydoc-doclet</id>
+      <activation>
+     		<property><name>ydoc.home</name></property>
+      </activation>
+
+      <reporting>
+        <plugins>
+        
+	        <plugin>
+	          <groupId>org.apache.maven.plugins</groupId>
+	          <artifactId>maven-javadoc-plugin</artifactId>	       
+	          <version>2.2-INTERNAL-r502215</version>   
+	          <configuration>	  
+	          			<aggregate>true</aggregate>          
+									<doclet>ydoc.doclets.YStandard</doclet>									
+									<docletPath>${ydoc.home}/lib/ydoc.jar${path.separator}${ydoc.home}/lib/class2svg.jar${path.separator}${ydoc.home}/resources</docletPath>																		
+									<author>false</author>
+									<bottom>true</bottom>
+									<header>JBoss Rules</header>
+									<minmemory>128m</minmemory>
+									<maxmemory>512</maxmemory>
+									<packagenames>org.drools.*</packagenames>
+									<use>true</use>
+									<version>true</version>
+									<windowtitle>${project.name} ${project.version} API</windowtitle>
+									<breakiterator>true</breakiterator>								
+									<excludePackageNames>org.drools.asm*,org.apache*</excludePackageNames>									
+									<overview>drools-core/target/classes/overview.html</overview>									
+									<groups>
+										<group title="Runtime Core API" packages="org.drools:org.drools.rule"/>
+      							<group title="Compiler Core API" packages="org.drools.compiler"/>
+      							<group title="Compiler Utilities" packages="org.drools.lang:org.drools.xml"/>
+      							<group title="Runtime Utilities" packages="org.drools.audit:org.drools.event:org.drools.visualize"/>
+      							<group title="Decision Tables" packages="org.drools.decisiontable"/>
+      						  <group title="Internal" packages="org.drools*"/>
+      						</groups>	            	            	            
+									<additionalparam>-umlautogen -tag y.precondition -tag y.postcondition -tag y.complexity -tag param -tag return -tag see -tag y.uml</additionalparam>	            	            
+	          </configuration>
+	        </plugin>   
+	        
+        </plugins>
+      </reporting>
+    </profile>
+  </profiles>    
+    
 
   <build>
     <pluginManagement>
@@ -229,6 +283,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <version>2.0.1</version>
+	        <executions>
+	          <execution>
+	            <goals>
+	              <goal>jar</goal>
+	            </goals>
+	          </execution>
+	        </executions>          
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -296,6 +357,7 @@
     </pluginManagement>
     <plugins/>
   </build>
+  
   <reporting>
     <plugins>
       <!-- Note: It's not possible to configure reporting plugins in pluginManagement in m2.0.4 -->
@@ -307,7 +369,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.2-INTERNAL-r502215</version>
         <configuration>
           <aggregate>true</aggregate>
           <links>
@@ -316,7 +378,7 @@
           <minmemory>128m</minmemory>
           <maxmemory>512</maxmemory>
         </configuration>
-      </plugin>
+      </plugin>   
 
       <!--
           TODO Changelog is unfinished:
@@ -385,9 +447,6 @@
       </plugin>
     </plugins>
   </reporting>
-  <properties/>
-
-  <profiles/>
 
   <modules>
     <module>drools-core</module>
@@ -514,6 +573,11 @@
         <artifactId>xpp3</artifactId>
         <version>1.1.3.4.O</version>
       </dependency>
+	    <dependency>
+			  <groupId>org.mvel</groupId>
+			  <artifactId>mvel14</artifactId>    
+			  <version>1.2beta13</version>
+      </dependency>            
 
       <!-- drools-compiler -->
       <!-- TODO will keep JCI local for now. Move to ibiblio when its updated -->
@@ -532,11 +596,21 @@
         <artifactId>core</artifactId>
         <version>3.2.1.v_677_R32x</version>
       </dependency>
-    <dependency>
-      <groupId>janino</groupId>
-      <artifactId>janino</artifactId>
-      <version>2.5.5</version>
-    </dependency>       
+      <dependency>
+        <groupId>janino</groupId>
+        <artifactId>janino</artifactId>
+        <version>2.5.5</version>
+      </dependency>       
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xerces</artifactId>
+        <version>2.4.0</version>
+      </dependency>     
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>1.0.b2</version>
+      </dependency>
 
       <!-- drools-jsr94 -->
       <dependency>
@@ -553,11 +627,6 @@
         <groupId>jsr94</groupId>
         <artifactId>jsr94-sigtest</artifactId>
         <version>1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <version>1.0.b2</version>
       </dependency>
 
       <!-- drools-decisiontables -->
