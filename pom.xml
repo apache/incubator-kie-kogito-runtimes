@@ -221,6 +221,15 @@
         </plugins>
       </reporting>
     </profile>
+    <profile>
+        <id>documentation</id>
+        <activation>
+              <property><name>documentation</name></property>
+        </activation>
+        <modules>
+          <module>documentation</module>
+        </modules>
+    </profile>
   </profiles>    
     
 
@@ -367,6 +376,7 @@
           <artifactId>maven-site-plugin</artifactId>
           <version>2.0-beta-5</version>
         </plugin>
+
       </plugins>
     </pluginManagement>
     <plugins/>
