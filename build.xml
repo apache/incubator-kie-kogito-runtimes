@@ -20,7 +20,7 @@
     <echo level="info" message="                  Either build the plugin from drools-ide"/>
     <echo level="info" message="                  or install from the Eclipse update site"/>
     <echo level="info" message="                  http://anonsvn.labs.jboss.com/labs/jbossrules/updates"/>
-    <echo level="info" message="drools-ide      - To use open Eclipse and import."/>
+    <echo level="info" message="drools-eclipse/drools-ide      - To use open Eclipse and import."/>
     <echo level="info" message="                  Select export and plugin fragements to"/>
     <echo level="info" message="                  generate the Drools Eclipse plugin"/>
     <echo level="info" message="                  Depends on all the depencies being copied"/>
@@ -121,7 +121,7 @@
       <pom file="drools-jsr94/pom.xml"/>
     </artifact:dependencies>
     <delete>
-      <fileset dir="drools-ide/lib" includes="*"/>
+      <fileset dir="drools-eclipse/drools-ide/lib" includes="*"/>
     </delete>
     
     <mkdir dir="temp-repository"/>
@@ -133,23 +133,23 @@
       <fileset refid="drools-jsr94.dependency.fileset"/>
     </copy>
     
-    <copy todir="drools-ide/lib" flatten="true">
+    <copy todir="drools-eclipse/drools-ide/lib" flatten="true">
       <fileset dir="repository" includes="**/*.jar" excludes="**/gwt-servlet-*.jar **/jcr-*.jar **/javasvn-*.jar "/>
     </copy>
     
-    <copy todir="drools-ide/lib" flatten="true">
+    <copy todir="drools-eclipse/drools-ide/lib" flatten="true">
       <fileset dir="temp-repository" includes="**/*.jar" excludes="**/jsr94-sigtest-*.jar **/jsr94-tck-*.jar **/drools-*.jar **/core-*.jar **/dom4j-*.jar **/jboss-*.jar **/junit-*.jar **/commons-collections-*.jar **/commons-io-*.jar"/>
     </copy>
     
     <!-- copy the drools module jars for the plug in. We will remove the version number from them -->
-    <copy tofile="drools-ide/lib/drools-core.jar" flatten="true" file="target/drools-core-${version}.jar"/>
-    <copy tofile="drools-ide/lib/drools-compiler.jar" flatten="true" file="target/drools-compiler-${version}.jar"/>
-    <copy tofile="drools-ide/lib/drools-decisiontables.jar" flatten="true" file="target/drools-decisiontables-${version}.jar"/>
-    <copy tofile="drools-ide/lib/drools-jsr94.jar" flatten="true" file="target/drools-jsr94-${version}.jar"/>
+    <copy tofile="drools-eclipse/drools-ide/lib/drools-core.jar" flatten="true" file="target/drools-core-${version}.jar"/>
+    <copy tofile="drools-eclipse/drools-ide/lib/drools-compiler.jar" flatten="true" file="target/drools-compiler-${version}.jar"/>
+    <copy tofile="drools-eclipse/drools-ide/lib/drools-decisiontables.jar" flatten="true" file="target/drools-decisiontables-${version}.jar"/>
+    <copy tofile="drools-eclipse/drools-ide/lib/drools-jsr94.jar" flatten="true" file="target/drools-jsr94-${version}.jar"/>
     
       <!-- Don't want to do it like this anymore....
            But would be nice is the above copying could be automated like this.
-      <copy todir="drools-ide/lib"            
+      <copy todir="drools-eclipse/drools-ide/lib"            
             flatten="true">
         <fileset dir="." includes="drools-*/target/drools-*.jar" />
       </copy>       
@@ -424,12 +424,12 @@
     <delete dir="target"/>
     
     <delete>
-      <fileset dir="drools-ide/lib" includes="*"/>
+      <fileset dir="drools-eclipse/drools-ide/lib" includes="*"/>
     </delete>
             
     <delete dir="documentation/manual/build"/>
-    <delete dir="drools-ide/help/shared"/>
-    <delete dir="drools-ide/help/eclipse"/>
+    <delete dir="drools-eclipse/drools-ide/help/shared"/>
+    <delete dir="drools-eclipse/drools-ide/help/eclipse"/>
   </target>
     
     <!--
@@ -447,11 +447,11 @@
   <target name="manual" unless="manual.skip">
     <delete dir="documentation/manual/build"/>
     <ant dir="documentation/manual"/>
-    <delete dir="drools-ide/help/eclipse"/>
-    <delete dir="drools-ide/help/shared"/>
+    <delete dir="drools-eclipse/drools-ide/help/eclipse"/>
+    <delete dir="drools-eclipse/drools-ide/help/shared"/>
     <replace file="documentation/manual/build/en/eclipse/toc.xml" token="href=&quot;" value="href=&quot;help/eclipse/"/>
     <replace file="documentation/manual/build/en/eclipse/toc.xml" token="topic=&quot;" value="topic=&quot;help/eclipse/"/>
-    <copy todir="drools-ide/help">
+    <copy todir="drools-eclipse/drools-ide/help">
       <fileset dir="documentation/manual/build/en" includes="shared/** eclipse/**" excludes="**/*.svg **/*.db"/>
     </copy>
     <copy todir="target/docs">
@@ -549,7 +549,7 @@
       <zipfileset dir="." includes="drools-compiler/**" excludes="drools-compiler/target/**"/>
       <zipfileset dir="." includes="drools-decisiontables/**" excludes="drools-decisiontables/target/**"/>
       <zipfileset dir="." includes="drools-jsr94/**" excludes="drools-jsr94/target/**"/>
-      <zipfileset dir="." includes="drools-ide/**" excludes="drools-ide/bin/** drools-ide/lib/**"/>
+      <zipfileset dir="." includes="drools-eclipse/drools-ide/**" excludes="drools-eclipse/drools-ide/bin/** drools-ide/lib/**"/>
       <zipfileset dir="." includes="drools-examples/**" excludes="drools-examples/target/**"/>
       <zipfileset dir="." includes="documentation/manual/**" excludes="documentation/manual/build/**"/>
     </zip>
