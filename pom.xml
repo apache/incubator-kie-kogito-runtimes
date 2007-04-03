@@ -163,10 +163,10 @@
     </repository>
     
 
-  <repository>
+   <repository>
      <id>apache.org</id>
      <name>Maven Snapshots</name>
-      url>http://people.apache.org/repo/m2-snapshot-repository
+     <url>http://people.apache.org/repo/m2-snapshot-repository</url>
      <snapshots>
        <enabled>true</enabled>
      </snapshots>      
