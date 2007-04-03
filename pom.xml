@@ -161,6 +161,19 @@
         <enabled>false</enabled>
       </releases>
     </repository>
+    
+
+  <repository>
+     <id>apache.org</id>
+     <name>Maven Snapshots</name>
+      url>http://people.apache.org/repo/m2-snapshot-repository
+     <snapshots>
+       <enabled>true</enabled>
+     </snapshots>      
+     <releases>
+       <enabled>false</enabled>
+     </releases>
+   </repository>     
 
     <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form -->
     <repository>
