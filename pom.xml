@@ -733,6 +733,10 @@
   </dependencyManagement>
 
   <distributionManagement>
+       <site>
+           <id>rules-site.jboss.org</id>
+           <url>${rules.site.deploy.dir}</url>
+       </site>
     <!-- TODO configure this if it's needed -->
     <!--<repository>-->
       <!--<id>shell.jboss.org?</id>-->
