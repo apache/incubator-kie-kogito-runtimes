@@ -244,6 +244,15 @@
             <module>documentation</module>
         </modules>
     </profile>
+    <profile>
+        <id>build-eclipse</id>
+        <activation>
+            <property><name>eclipse.home</name></property>
+        </activation>
+        <modules>
+            <module>drools-eclipse</module>
+        </modules>
+    </profile>
   </profiles>
 
 
@@ -491,7 +500,6 @@
     <module>drools-compiler</module>
     <module>drools-jsr94</module>
     <module>drools-decisiontables</module>
-    <module>drools-eclipse</module>
     <!-- TODO enable these or create a profile in which they are enabled (to avoid making the build slow) -->
     <!--module>drools-server</module-->
     <module>drools-repository</module>
