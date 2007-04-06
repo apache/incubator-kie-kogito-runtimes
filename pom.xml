@@ -148,7 +148,7 @@
 
     <repository>
       <id>basedir</id>
-      <url>file://${basedir}/repository</url>
+      <url>file://${basedir}/m2_repo</url>
     </repository>
 
     <repository>
