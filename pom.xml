@@ -247,7 +247,7 @@
     <profile>
         <id>build-eclipse</id>
         <activation>
-            <property><name>eclipse.home</name></property>
+            <property><name>eclipse</name></property>
         </activation>
         <modules>
             <module>drools-eclipse</module>
