@@ -120,6 +120,19 @@
       <timezone>-3</timezone>
     </developer>
   </developers>
+
+    <developer>
+      <name>Fernando Meyer</name>
+      <id>fmeyer</id>
+      <email>fmcamargo@gmail.com</email>
+      <organization>Red Hat/JBoss </organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>-3</timezone>
+    </developer>
+  </developers>
+
   <contributors/>
 
 
