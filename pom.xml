@@ -451,8 +451,15 @@
       <!--</plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
+        <artifactId>maven-surefire-report-plugin</artifactId>      
         <version>2.3</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>report-only</report>
+            </reports>
+          </reportSet>
+        </reportSets>          
       </plugin>
       <!--<plugin>-->
         <!--<groupId>org.apache.maven.plugins</groupId>-->
