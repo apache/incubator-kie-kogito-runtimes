@@ -545,79 +545,79 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-server</artifactId>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-server</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-repository</artifactId>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-repository</artifactId>
         <type>test-jar</type>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jbrms</artifactId>
-        <version>3.1.0-M1</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -642,16 +642,10 @@
 	    <dependency>
 			  <groupId>org.mvel</groupId>
 			  <artifactId>mvel14</artifactId>
-			  <version>1.2beta15</version>
+			  <version>1.2beta16</version>
       </dependency>
 
       <!-- drools-compiler -->
-      <!-- TODO will keep JCI local for now. Move to ibiblio when its updated -->
-      <dependency>
-        <groupId>antlr</groupId>
-        <artifactId>stringtemplate</artifactId>
-        <version>3.0</version>
-      </dependency>
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr</artifactId>
@@ -665,7 +659,7 @@
       <dependency>
         <groupId>janino</groupId>
         <artifactId>janino</artifactId>
-        <version>2.5.5</version>
+        <version>2.5.6</version>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
