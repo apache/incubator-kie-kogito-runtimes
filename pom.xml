@@ -355,6 +355,8 @@
           <descriptors>
             <descriptor>src/main/assembly/bin.xml</descriptor>
             <descriptor>src/main/assembly/src.xml</descriptor>
+            <descriptor>src/main/assembly/brms.xml</descriptor>
+            <descriptor>src/main/assembly/examples.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -590,6 +592,11 @@
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-documentation</artifactId>
+        <version>${project.version}</version>
+      </dependency>      
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-server</artifactId>
