@@ -4,8 +4,9 @@ CORE RUNTIME
 Runtime assumes that you are "compiling" rules using drools-compiler.
 
     * drools-core - the rule engine itself.
+    * mvel14-1.2beta16
     * optional packages:
-          o xpp3, xstream - if you are using the file based audit feature
+          o xpp3-1.1.3.4.O, xstream-1.1.3 - if you are using the file based audit feature
 
 Note you can use the drools-core stand-alone if you are compiling "outside" your runtime application, and deploying serialized Package or RuleBase? objects.
 
@@ -14,35 +15,31 @@ Rule compiler takes rules in some textual format and prepares binary Packages of
 
     * drools-core
     * drools-compiler - the rule compiler itself.
-    * antlr3 - only if you are using native DRL. if only using XML, you can skip this.
-    * xerces, xml-apis - only if you are using XML rules, if DRL only, can skip this.
-    * commons-jci-core
-          o This also requires only one pair out of:
-                + commons-jci-eclipse, core-3.2 - for eclipse JDT to compile the java semantics (this is default)
-                + commons-jci-janino, janino - for janino. To use this option, set -Ddrools.compiler=JANINO or use PackageBuilderConfiguration? class.
-    * commons-logging - used by various dependencies.
-    * commons-lang - used for string manipulation in various dependencies.
-    * stringtemplate, anlr-2.7.6 - used in generating semantic code.
+    * antlr3-3.0b7
+    * xerces-2.4.0, xml-apis-1.0.b2 - only if you are using XML rules, if DRL only, can skip this.
+    * eclipse-jdt-core-3.2.1.v_677_R32x - only if you want to compile with eclipse
+    * janino-2.5.6 - only if you want to compile with janino
 
 JSR-94
-This is the standard api for java rules (javax.rules). This depends on COMPILER.
+This is the standard api for java rules (javax.rules).
 
+    * drools-core
+    * drools-compiler
     * drools-jsr94 - the implementation of the standard
     * jsr94-1.1 - the standard API for javax.rules.
 
 DECISION TABLES
 Decision tables use spreadsheets to generate rules.
 
+    * drools-core
     * drools-compiler - required as rules are generated and compiled
     * drools-decisiontables - contains the spreadsheet compiler for both XLS and CSV
-    * jxl (jexcelapi) - for parsing Excel spreadsheets.
+    * jxl-2.4.2 (jexcelapi) - for parsing Excel spreadsheets.
 
 The most common use case is for COMPILER - this allows rules to be loaded from their source form, 
 and includes the runtime engine of course. 
 For example, if you wanted to be able to load rules from a drl source you would need: drools-core and the COMPILER jars mentioned above 
-(not xerces, and not xml-apis), and commons-jar-eclipse, core-3.2. 
-You will only need optional core jars if you are using those features.
+(not xerces, and not xml-apis). You will only need optional core jars if you are using those features.
 
 When building from source, the dependencies are managed by maven. 
-In each module, there is a pom.xml file that lists the exact dependencies and exact version numbers. 
-Even if you use ant to build, the dependencies will be downloaded for you based on those pom.xml files. 
+In each module, there is a pom.xml file that lists the exact dependencies and exact version numbers.
