@@ -32,8 +32,8 @@
                      
     
       <replaceregexp file="drools-eclipse/build.properties"
-                     match="jbossRulesVersion=${current}"
-                     replace="jbossRulesVersion=${new}"
+                     match="droolsVersion=${current}"
+                     replace="droolsVersion=${new}"
                      byline="true" />    
     
       <replaceregexp file="documentation/manual/en/master.xml"
