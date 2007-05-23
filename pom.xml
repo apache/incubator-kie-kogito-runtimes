@@ -658,7 +658,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr</artifactId>
-        <version>3.0b7</version>
+        <version>3.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
