@@ -657,7 +657,7 @@
       <!-- drools-compiler -->
       <dependency>
         <groupId>org.antlr</groupId>
-        <artifactId>antlr</artifactId>
+        <artifactId>antlr-runtime</artifactId>
         <version>3.0</version>
       </dependency>
       <dependency>
