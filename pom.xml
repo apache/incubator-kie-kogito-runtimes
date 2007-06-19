@@ -716,14 +716,22 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-core</artifactId>
-        <version>1.2.2</version>
+        <version>1.3</version>
       </dependency>
+      
       <dependency>
-        <!--
-          TODO This depdencency is available in another version in another groupId in the central repo:
-          org.tmate:javasvn:1.1.0.beta
-          See: http://www.mvnrepository.com/artifact/org.tmate/javasvn
-        -->
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.13</version>
+      </dependency>       
+      
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.3.0</version>
+      </dependency>   
+          
+      <dependency>
         <groupId>org.tmatesoft</groupId>
         <artifactId>svnkit</artifactId>
         <version>1.1.2</version>
