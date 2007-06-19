@@ -725,8 +725,8 @@
           See: http://www.mvnrepository.com/artifact/org.tmate/javasvn
         -->
         <groupId>org.tmatesoft</groupId>
-        <artifactId>javasvn</artifactId>
-        <version>1.1-beta5</version>
+        <artifactId>svnkit</artifactId>
+        <version>1.1.2</version>
       </dependency>
 
       <!-- drools-jbrms -->
