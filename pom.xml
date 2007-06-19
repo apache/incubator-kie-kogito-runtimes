@@ -663,7 +663,7 @@
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>core</artifactId>
-        <version>3.2.1.v_677_R32x</version>
+        <version>3.2.3.v_686_R32x</version>
       </dependency>
       <dependency>
         <groupId>janino</groupId>
