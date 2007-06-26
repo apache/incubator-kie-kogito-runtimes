@@ -23,3 +23,7 @@ mvn -Ddocumentation -Declipse -Dmaven.test.skip package javadoc:javadoc
 
 Note that install must be done first as javadoc:javadoc won't work unless the
 jars are in the local maven repo, but the tests can be skipped on the second run.
+
+assembly:assembly fails unless you increase the available memory to Maven, on windows 
+the following command worked well:
+set MAVEN_OPTS=-Xmx512m
