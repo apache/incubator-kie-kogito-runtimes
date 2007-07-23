@@ -214,7 +214,7 @@
 	        <plugin>
 	          <groupId>org.apache.maven.plugins</groupId>
 	          <artifactId>maven-javadoc-plugin</artifactId>
-	          <!--version>2.2-INTERNAL-r502215</version-->
+	          <version>2.3</version>
 	          <configuration>
 	          			<aggregate>true</aggregate>
 									<doclet>ydoc.doclets.YStandard</doclet>
@@ -229,7 +229,7 @@
 									<version>true</version>
 									<windowtitle>${project.name} ${project.version} API</windowtitle>
 									<breakiterator>true</breakiterator>
-									<excludePackageNames>org.drools.asm*,org.apache*</excludePackageNames>
+									<excludePackageNames>org.drools.asm*,org.drools.objenesis.*,org.drools.commons.jci.*</excludePackageNames>
 									<overview>drools-core/target/classes/overview.html</overview>
 									<groups>
 										<group title="Runtime Core API" packages="org.drools:org.drools.rule"/>
@@ -431,7 +431,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
         <configuration>
           <aggregate>true</aggregate>
           <links>

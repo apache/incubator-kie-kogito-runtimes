@@ -27,3 +27,7 @@ jars are in the local maven repo, but the tests can be skipped on the second run
 assembly:assembly fails unless you increase the available memory to Maven, on windows 
 the following command worked well:
 set MAVEN_OPTS=-Xmx512m
+
+If you have a ydoc license then you can build the javadocs with uml images using the ydoc doclet. 
+Simple add the following to the mvn command line:
+-Dydoc.home=<path to ydoc>
