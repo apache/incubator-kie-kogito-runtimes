@@ -331,6 +331,7 @@
 	          <execution>
 	            <goals>
 	              <goal>jar</goal>
+                  <goal>test-jar</goal>
 	            </goals>
 	          </execution>
 	        </executions>
@@ -411,7 +412,13 @@
 
       </plugins>
     </pluginManagement>
-    <plugins/>
+    <plugins>
+        <plugin>
+          <!-- Entry needed to create, install and deploy sources jars -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+        </plugin>
+    </plugins>
   </build>
 
   <reporting>
