@@ -158,6 +158,12 @@
       <url>http://repository.jboss.com/maven2/</url>
     </repository>
 
+    <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form -->
+    <repository>
+        <id>softeu-repo</id>
+        <url>http://maven.softeu.cz/</url>
+    </repository>
+
     <repository>
       <id>basedir</id>
       <url>file://${basedir}/m2_repo</url>
