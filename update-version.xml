@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Drools" basedir="." default="help">
+<project name="Drools" basedir="." default="usage">
 
   <target name="usage">
       <echo>ant -f update-version.xml -Dcurrent="3.1.0.M1" -Dnew="4.0.0.SNAPSHOT" updateVersion</echo>
