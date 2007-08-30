@@ -31,3 +31,13 @@ set MAVEN_OPTS=-Xmx512m
 If you have a ydoc license then you can build the javadocs with uml images using the ydoc doclet. 
 Simple add the following to the mvn command line:
 -Dydoc.home=<path to ydoc>
+
+KNOWN PROBLEMS:
+
+* Functions can't be called from MVEL code blocks. Although, static methods
+from previously existing classes are working fine.
+
+* There are still some issues with MVEL code completion.
+
+* MVEL debug is not working.
+
