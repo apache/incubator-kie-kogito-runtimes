@@ -679,7 +679,7 @@
 	    <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel14</artifactId>
-        <version>1.2rc4rv913</version>
+        <version>1.2rc6</version>
       </dependency>
 
       <!-- drools-compiler -->
