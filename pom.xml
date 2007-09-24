@@ -130,6 +130,16 @@
       </roles>
       <timezone>-3</timezone>
     </developer>
+
+    <developer>
+      <id>ge0ffrey</id>
+      <name>Geoffrey De Smet</name>
+      <email>ge0ffrey.spam AT gmail DOT com</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
   </developers>
 
   <contributors/>
@@ -263,6 +273,12 @@
         </activation>
         <modules>
             <module>drools-eclipse</module>
+        </modules>
+    </profile>
+    <profile>
+        <id>solver</id>
+        <modules>
+            <module>drools-solver</module>
         </modules>
     </profile>
   </profiles>
@@ -412,8 +428,12 @@
           <version>2.1</version>
           <configuration>
             <downloadSources>true</downloadSources>
-            <!--<downloadJavadocs>true</downloadJavadocs>-->
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.1-beta-1</version>
         </plugin>
 
         <!--Site -->
@@ -542,6 +562,7 @@
     <module>drools-repository</module>
     <module>drools-jbrms</module>
     <!--module>drools-examples</module-->
+    <!--module>drools-solver</module--><!-- Use the profile solver to add it -->
   </modules>
 
   <dependencies>
@@ -662,6 +683,17 @@
         <type>test-jar</type>
         <version>${project.version}</version>
         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.drools.solver</groupId>
+        <artifactId>drools-solver-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools.solver</groupId>
+        <artifactId>drools-solver-examples</artifactId>
+        <version>${project.version}</version>
       </dependency>
 
       <!-- External dependencies -->
@@ -816,6 +848,23 @@
         <groupId>com.jgoodies</groupId>
         <artifactId>forms</artifactId>
         <version>1.0.7</version><!-- TODO test that the upgrade from 1.0.4 isn't a problem -->
+      </dependency>
+
+      <!-- drools-solver -->
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>1.3.2</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.0.4</version>
       </dependency>
 
       <!--
