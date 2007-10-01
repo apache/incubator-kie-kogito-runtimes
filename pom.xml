@@ -167,6 +167,12 @@
       <id>jboss</id>
       <url>http://repository.jboss.com/maven2/</url>
     </repository>
+    <repository>
+        <id>jboss-snapshot</id>
+        <url>http://snapshots.jboss.org/</url>
+    </repository>
+
+
 
     <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form -->
     <repository>
