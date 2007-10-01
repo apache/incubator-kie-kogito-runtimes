@@ -169,7 +169,7 @@
     </repository>
     <repository>
         <id>jboss-snapshot</id>
-        <url>http://snapshots.jboss.org/</url>
+        <url>http://snapshots.jboss.org/maven2</url>
     </repository>
 
 
