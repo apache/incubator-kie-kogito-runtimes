@@ -5,7 +5,7 @@ CORE RUNTIME
 Runtime assumes that you are "compiling" rules using drools-compiler.
 
     * drools-core - the rule engine itself.
-    * mvel14-1.2rc4rv908
+    * mvel14-1.2.8
     * optional packages:
           o xpp3-1.1.3.4.O, xstream-1.2.2 - if you are using the file based
 audit feature
@@ -24,7 +24,7 @@ rules for deployment. This depends on the CORE RUNTIME.
 only, can skip this.
     * eclipse-jdt-core-3.2.3.v_686_R32x - only if you want to compile with
 eclipse
-    * janino-2.5.7 - only if you want to compile with janino
+    * janino-2.5.10 - only if you want to compile with janino
 
 JSR-94
 This is the standard api for java rules (javax.rules).
