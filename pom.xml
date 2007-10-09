@@ -7,7 +7,7 @@
   <artifactId>drools</artifactId>
   <packaging>pom</packaging>
   <name>Drools</name>
-  <version>4.0.2.SNAPSHOT</version>
+  <version>4.1.0.SNAPSHOT</version>
   <description>A rule production system</description>
   <url>http://www.jboss.com/products/rules</url>
 
@@ -226,6 +226,11 @@
 
       <reporting>
         <plugins>
+	
+			<plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>cobertura-maven-plugin</artifactId>
+			</plugin>	
 
 	        <plugin>
 	          <groupId>org.apache.maven.plugins</groupId>
@@ -298,6 +303,27 @@
             2006-12-03
             See http://news.gmane.org/gmane.comp.apache.maven.announce
         -->
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <configuration>
+          <instrumentation>
+            <excludes>
+              <exclude>org/drools/**/*Test.class</exclude>
+            </excludes>
+          </instrumentation>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+
 
         <!-- Building -->
         <plugin>
@@ -462,6 +488,18 @@
 
   <reporting>
     <plugins>
+	
+		<plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>cobertura-maven-plugin</artifactId>
+		        <configuration>
+		          <formats>
+		            <format>html</format>
+		            <format>xml</format>
+		          </formats>
+		        </configuration>
+		      </plugin>	
+	
       <!-- Note: It's not possible to configure reporting plugins in pluginManagement in m2.0.4 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
