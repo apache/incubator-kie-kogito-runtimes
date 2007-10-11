@@ -296,6 +296,15 @@
 
 
   <build>
+
+	<extensions>
+	  <extension>
+	    <groupId>org.apache.maven.wagon</groupId>
+	    <artifactId>wagon-webdav</artifactId>
+	    <version>1.0-beta-2</version>
+	  </extension>
+	</extensions>
+	
     <pluginManagement>
       <plugins>
         <!--
@@ -939,6 +948,13 @@
            <id>rules-site.jboss.org</id>
            <url>${rules.site.deploy.dir}</url>
        </site>
+
+	 <snapshotRepository>
+	      <id>snapshots.jboss.org</id>
+	      <name>JBoss Snapshot Repository</name>
+	      <url>dav:https://snapshots.jboss.org/maven2</url>
+	 </snapshotRepository>
+	
     <!-- TODO configure this if it's needed -->
     <!--<repository>-->
       <!--<id>shell.jboss.org?</id>-->
