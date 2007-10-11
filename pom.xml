@@ -944,10 +944,10 @@
       <!--<id>shell.jboss.org?</id>-->
       <!--<url>scp://???.jboss.org/???/maven2</url>-->
     <!--</repository>-->
-    <!--<snapshotRepository>-->
-      <!--<id>shell.jboss.org?</id>-->
+    <snapshotRepository>-->
+      <id>snapshots.jboss.org</id>
       <!--<url>scp://???.jboss.org/???/maven2snapshots???</url>-->
-    <!--</snapshotRepository>-->
+    </snapshotRepository>
     <!--<site>-->
       <!--<id>shell.jboss.org?</id>-->
       <!--<url>scp://???/???/</url>-->
