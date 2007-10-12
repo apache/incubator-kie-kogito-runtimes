@@ -174,11 +174,12 @@
 
 
 
-    <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form -->
+    <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form
     <repository>
         <id>softeu-repo</id>
         <url>http://maven.softeu.cz/</url>
     </repository>
+ -->
 
     <repository>
       <id>basedir</id>
