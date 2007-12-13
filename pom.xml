@@ -372,6 +372,7 @@
             <excludes>
               <exclude>**/*AbstractTest.java</exclude>
             </excludes>
+	    <argLine>-Xmx1024m</argLine>
           </configuration>
         </plugin>
 
@@ -755,7 +756,7 @@
         <scope>test</scope>
       </dependency>
 
-      <dependency>
+<argLine>-Xmx1024m</argLine>       <dependency>
         <groupId>org.drools.solver</groupId>
         <artifactId>drools-solver-core</artifactId>
         <version>${project.version}</version>
