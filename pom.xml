@@ -914,6 +914,11 @@
         <artifactId>commons-fileupload</artifactId>
         <version>1.1.1</version>
       </dependency>
+      <dependency>
+	<groupId>com.gwtext</groupId>
+	<artifactId>gwtext</artifactId>
+	<version>0.9.3</version>
+      </dependency>
 
       <!-- drools-examples -->
       <dependency>
