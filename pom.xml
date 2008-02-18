@@ -774,7 +774,7 @@
         <scope>test</scope>
       </dependency>
 
-<argLine>-Xmx1024m</argLine>       <dependency>
+      <dependency>
         <groupId>org.drools.solver</groupId>
         <artifactId>drools-solver-core</artifactId>
         <version>${project.version}</version>
