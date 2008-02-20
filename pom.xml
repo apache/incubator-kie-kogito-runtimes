@@ -293,7 +293,7 @@
             <property><name>documentation</name></property>
         </activation>
         <modules>
-            <module>documentation</module>
+            <module>drools-docs</module>
         </modules>
     </profile>
     <profile>
@@ -707,7 +707,7 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-documentation</artifactId>
+        <artifactId>drools-docs</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
