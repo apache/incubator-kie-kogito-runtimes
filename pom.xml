@@ -173,8 +173,6 @@
         <url>http://snapshots.jboss.org/maven2</url>
     </repository>
 
-
-
     <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form
     <repository>
         <id>softeu-repo</id>
@@ -190,6 +188,17 @@
     <repository>
       <id>Maven Snapshots</id>
       <url>http://snapshots.maven.codehaus.org/maven2/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+
+    <repository>
+      <id>Maven Snapshots</id>
+      <url>http://snapshots.jboss.org/maven2</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -915,6 +924,15 @@
         <artifactId>jcr</artifactId>
         <version>1.0</version>
       </dependency>
+
+
+	  <!-- temporary dependency for tests -->
+      <dependency>
+         <groupId>hsqldb</groupId>
+         <artifactId>hsqldb</artifactId>
+         <version>1.8.0.2</version>
+      </dependency>
+
 
       <dependency>
         <groupId>org.tmatesoft</groupId>
