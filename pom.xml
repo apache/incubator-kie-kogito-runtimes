@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-
+gin
   <groupId>org.drools</groupId>
   <artifactId>drools</artifactId>
   <packaging>pom</packaging>
@@ -173,6 +173,8 @@
         <url>http://snapshots.jboss.org/maven2</url>
     </repository>
 
+
+
     <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form
     <repository>
         <id>softeu-repo</id>
@@ -188,17 +190,6 @@
     <repository>
       <id>Maven Snapshots</id>
       <url>http://snapshots.maven.codehaus.org/maven2/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-
-    <repository>
-      <id>Maven Snapshots</id>
-      <url>http://snapshots.jboss.org/maven2</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -366,12 +357,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-help-plugin</artifactId>
-          <version>2.0.1</version>
+          <version>2.0.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>2.1.1</version>
+          <version>2.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -390,7 +381,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.4.2</version>
           <configuration>
             <includes>
               <include>**/*Test.java</include>
@@ -406,7 +397,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.1</version>
+          <version>2.2</version>
           <executions>
             <execution>
               <goals>
@@ -426,7 +417,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.0.2</version>
+          <version>2.0.4</version>
           <executions>
             <execution>
               <goals>
@@ -439,20 +430,25 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
-          <version>2.0</version>
+          <version>2.1-alpha-1</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.0-alpha-4</version>
+        </plugin>        
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-1</version>
+        <version>2.2-beta-2</version>
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/bin.xml</descriptor>
-            <descriptor>src/main/assembly/src.xml</descriptor>
+            <!--descriptor>src/main/assembly/src.xml</descriptor>
             <descriptor>src/main/assembly/brms.xml</descriptor>
             <descriptor>src/main/assembly/eclipse.xml</descriptor>
-            <descriptor>src/main/assembly/examples.xml</descriptor>
+            <descriptor>src/main/assembly/examples.xml</descriptor-->
           </descriptors>
         </configuration>
       </plugin>
@@ -460,22 +456,22 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-archetype-plugin</artifactId>
-          <version>1.0-alpha-4</version>
+          <version>1.0-alpha-7</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>2.1</version>
+          <version>2.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.2.1</version>
+          <version>2.3</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.0-beta-4</version>
+          <version>2.0-beta-7</version>
           <configuration>
             <tagBase>
               http://anonsvn.labs.jboss.com/labs/jbossrules/tags
@@ -487,7 +483,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.4</version>
           <configuration>
             <!--<downloadSources>true</downloadSources>-->
           </configuration>
@@ -510,7 +506,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>2.0-beta-5</version>
+          <version>2.0-beta-6</version>
         </plugin>
 
       </plugins>
@@ -571,7 +567,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.3</version>
+        <version>2.4.2</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -597,7 +593,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.1</version>
       </plugin>
       <!--<plugin>-->
         <!--<groupId>org.codehaus.mojo</groupId>-->
@@ -623,12 +619,12 @@
         <!-- In 2.0-beta-1 an aggegate works after running "mvn site" twice -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javancss-maven-plugin</artifactId>
-        <version>2.0-beta-1</version>
+        <version>2.0-beta-2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.1</version>
       </plugin>
     </plugins>
   </reporting>
@@ -925,20 +921,17 @@
         <version>1.0</version>
       </dependency>
 
-
-	  <!-- temporary dependency for tests -->
-      <dependency>
-         <groupId>hsqldb</groupId>
-         <artifactId>hsqldb</artifactId>
-         <version>1.8.0.2</version>
-      </dependency>
-
-
       <dependency>
         <groupId>org.tmatesoft</groupId>
         <artifactId>svnkit</artifactId>
         <version>1.1.2</version>
       </dependency>
+      
+      <dependency>
+         <groupId>hsqldb</groupId>
+         <artifactId>hsqldb</artifactId>
+         <version>1.8.0.2</version>
+      </dependency>      
 
       <!-- drools-jbrms -->
       <dependency>
