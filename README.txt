@@ -9,6 +9,9 @@ however this only needs to be done once; if you wish you can move that eclipse
 download into another location and specify it with
 -DlocalEclipseDrop=/folder/jboss-rules/local-eclipse-drop-mirror.
 
+NOTE: you MUST use maven version 2.0.8 or later to build because of surefire
+maven plugin classpath problems.
+
 The following builds all the jars, the documentation and the eclipse zip with a
 local folder specified to avoid downloading eclipse:
  mvn -Declipse=true -Ddocumentation=true clean install 
