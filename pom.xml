@@ -1,1016 +1,1028 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
-gin
-  <groupId>org.drools</groupId>
-  <artifactId>drools</artifactId>
-  <packaging>pom</packaging>
-  <name>Drools</name>
-  <!-- TODO Use -SNAPSHOT instead of .SNAPSHOT (gives problems with building the drools eclipse plugin) -->
-  <version>5.0.0.SNAPSHOT</version>
-  <description>A rule production system</description>
-  <url>http://www.jboss.com/products/rules</url>
+    <modelVersion>4.0.0</modelVersion>
+    gin
+    <groupId>org.drools</groupId>
+    <artifactId>drools</artifactId>
+    <packaging>pom</packaging>
+    <name>Drools</name>
+    <!-- TODO Use -SNAPSHOT instead of .SNAPSHOT (gives problems with building the drools eclipse plugin) -->
+    <version>5.0.0.SNAPSHOT</version>
+    <description>A rule production system</description>
+    <url>http://www.jboss.com/products/rules</url>
 
-  <issueManagement>
-    <system>jira</system>
-    <url>http://jira.jboss.com/jira/browse/JBRULES</url>
-  </issueManagement>
-  <ciManagement>
-    <system>continuum</system>
-    <url>http://ci.codehaus.org:8001/continuum/servlet/continuum/target/Summary.vm/fid/continuumProject</url>
-    <notifiers>
-      <notifier>
-        <type>mail</type>
-        <configuration>
-          <address>dev@drools.codehaus.org</address>
-        </configuration>
-      </notifier>
+    <issueManagement>
+        <system>jira</system>
+        <url>http://jira.jboss.com/jira/browse/JBRULES</url>
+    </issueManagement>
+    <ciManagement>
+        <system>continuum</system>
+        <url>http://ci.codehaus.org:8001/continuum/servlet/continuum/target/Summary.vm/fid/continuumProject</url>
+        <notifiers>
+            <notifier>
+                <type>mail</type>
+                <configuration>
+                    <address>dev@drools.codehaus.org</address>
+                </configuration>
+            </notifier>
 
-      <notifier>
-        <type>irc</type>
-        <configuration>
-          <host>irc.codehaus.org</host>
-          <port>6667</port>
-          <channel>#drools</channel>
-        </configuration>
-      </notifier>
-    </notifiers>
-  </ciManagement>
-  <inceptionYear>2001</inceptionYear>
+            <notifier>
+                <type>irc</type>
+                <configuration>
+                    <host>irc.codehaus.org</host>
+                    <port>6667</port>
+                    <channel>#drools</channel>
+                </configuration>
+            </notifier>
+        </notifiers>
+    </ciManagement>
+    <inceptionYear>2001</inceptionYear>
 
-  <mailingLists>
-    <mailingList>
-      <name>announce</name>
-      <subscribe>announce-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>announce-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/announce/</archive>
-    </mailingList>
-    <mailingList>
-      <name>user</name>
-      <subscribe>user-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>user-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/user/</archive>
-    </mailingList>
-    <mailingList>
-      <name>dev</name>
-      <subscribe>dev-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>dev-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/dev/</archive>
-    </mailingList>
-    <mailingList>
-      <name>drools cvs messages</name>
-      <subscribe>scm-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>scm-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/scm/</archive>
-    </mailingList>
-  </mailingLists>
+    <mailingLists>
+        <mailingList>
+            <name>announce</name>
+            <subscribe>announce-subscribe@drools.codehaus.org</subscribe>
+            <unsubscribe>announce-unsubscribe@drools.codehaus.org</unsubscribe>
+            <archive>http://archive.drools.codehaus.org/announce/</archive>
+        </mailingList>
+        <mailingList>
+            <name>user</name>
+            <subscribe>user-subscribe@drools.codehaus.org</subscribe>
+            <unsubscribe>user-unsubscribe@drools.codehaus.org</unsubscribe>
+            <archive>http://archive.drools.codehaus.org/user/</archive>
+        </mailingList>
+        <mailingList>
+            <name>dev</name>
+            <subscribe>dev-subscribe@drools.codehaus.org</subscribe>
+            <unsubscribe>dev-unsubscribe@drools.codehaus.org</unsubscribe>
+            <archive>http://archive.drools.codehaus.org/dev/</archive>
+        </mailingList>
+        <mailingList>
+            <name>drools cvs messages</name>
+            <subscribe>scm-subscribe@drools.codehaus.org</subscribe>
+            <unsubscribe>scm-unsubscribe@drools.codehaus.org</unsubscribe>
+            <archive>http://archive.drools.codehaus.org/scm/</archive>
+        </mailingList>
+    </mailingLists>
 
-  <developers>
-    <developer>
-      <name>Mark Proctor</name>
-      <id>mark</id>
-      <email>mark.proctor@jboss.com</email>
-      <organization>JBoss Inc.</organization>
-      <roles>
-        <role>Project Lead</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
+    <developers>
+        <developer>
+            <name>Mark Proctor</name>
+            <id>mark</id>
+            <email>mark.proctor@jboss.com</email>
+            <organization>JBoss Inc.</organization>
+            <roles>
+                <role>Project Lead</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
 
-    <developer>
-      <name>Michael Neale</name>
-      <id>mic</id>
-      <email>michael.neale@gmail.com</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+10</timezone>
-      <organization>JBoss Inc.</organization>
-    </developer>
+        <developer>
+            <name>Michael Neale</name>
+            <id>mic</id>
+            <email>michael.neale@gmail.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+10</timezone>
+            <organization>JBoss Inc.</organization>
+        </developer>
 
-    <developer>
-      <name>Kris Verlaenen</name>
-      <id>kris</id>
-      <email>kris.verlaenen@gmail.com</email>
-      <organization>JBoss Inc.</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
+        <developer>
+            <name>Kris Verlaenen</name>
+            <id>kris</id>
+            <email>kris.verlaenen@gmail.com</email>
+            <organization>JBoss Inc.</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
 
-    <developer>
-      <name>Bob McWhirter</name>
-      <id>bob</id>
-      <email>bob@werken.com</email>
-      <organization>The Werken Company</organization>
-      <roles>
-        <role>Founder</role>
-      </roles>
-      <timezone>-5</timezone>
-    </developer>
+        <developer>
+            <name>Bob McWhirter</name>
+            <id>bob</id>
+            <email>bob@werken.com</email>
+            <organization>The Werken Company</organization>
+            <roles>
+                <role>Founder</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
 
-    <developer>
-      <name>Edson Tirelli</name>
-      <id>tirelli</id>
-      <email>tirelli@post.com</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-3</timezone>
-    </developer>
+        <developer>
+            <name>Edson Tirelli</name>
+            <id>tirelli</id>
+            <email>tirelli@post.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>-3</timezone>
+        </developer>
 
-    <developer>
-      <name>Fernando Meyer</name>
-      <id>fmeyer</id>
-      <email>fmcamargo@gmail.com</email>
-      <organization>Red Hat/JBoss </organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-3</timezone>
-    </developer>
+        <developer>
+            <name>Fernando Meyer</name>
+            <id>fmeyer</id>
+            <email>fmcamargo@gmail.com</email>
+            <organization>Red Hat/JBoss</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>-3</timezone>
+        </developer>
 
-    <developer>
-      <id>ge0ffrey</id>
-      <name>Geoffrey De Smet</name>
-      <email>ge0ffrey.spam AT gmail DOT com</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
-  </developers>
+        <developer>
+            <id>ge0ffrey</id>
+            <name>Geoffrey De Smet</name>
+            <email>ge0ffrey.spam AT gmail DOT com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
 
-  <contributors/>
-
-
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <scm>
-    <connection>scm:svn:http://anonsvn.labs.jboss.com/labs/jbossrules/trunk/</connection>
-    <!-- TODO developerConnection-->
-    <url>http://anonsvn.labs.jboss.com/labs/jbossrules/trunk/</url>
-  </scm>
-  <organization>
-    <name>JBoss Inc.</name>
-    <url>http://www.jboss.org/</url>
-  </organization>
-
-  <repositories>
-    <repository>
-      <id>jboss</id>
-      <url>http://repository.jboss.com/maven2/</url>
-    </repository>
-    <repository>
-        <id>jboss-snapshot</id>
-        <url>http://snapshots.jboss.org/maven2</url>
-    </repository>
+    <contributors/>
 
 
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:svn:http://anonsvn.labs.jboss.com/labs/jbossrules/trunk/</connection>
+        <!-- TODO developerConnection-->
+        <url>http://anonsvn.labs.jboss.com/labs/jbossrules/trunk/</url>
+    </scm>
+    <organization>
+        <name>JBoss Inc.</name>
+        <url>http://www.jboss.org/</url>
+    </organization>
 
-    <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form
-    <repository>
-        <id>softeu-repo</id>
-        <url>http://maven.softeu.cz/</url>
-    </repository>
- -->
-
-    <repository>
-      <id>basedir</id>
-      <url>file://${basedir}/m2_repo</url>
-    </repository>
-    
-    <repository>
-      <id>Maven Snapshots</id>
-      <url>http://snapshots.maven.codehaus.org/maven2/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-
-
-   <repository>
-     <id>apache.org</id>
-     <name>Maven Snapshots</name>
-     <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-     <snapshots>
-       <enabled>true</enabled>
-     </snapshots>
-     <releases>
-       <enabled>false</enabled>
-     </releases>
-   </repository>
+    <repositories>
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.com/maven2/</url>
+        </repository>
+        <repository>
+            <id>jboss-snapshot</id>
+            <url>http://snapshots.jboss.org/maven2</url>
+        </repository>
+        <repository>
+            <id>codehaus-snapshot</id>
+            <url>http://snapshots.repository.codehaus.org/</url>
+        </repository>
 
 
-
-   <repository>
-     <id>apache.org</id>
-     <name>Maven Releases</name>
-     <url>http://people.apache.org/repo/m2-ibiblio-rsync-repository</url>
-     <snapshots>
-       <enabled>false</enabled>
-     </snapshots>
-     <releases>
-       <enabled>true</enabled>
-     </releases>
-   </repository>
-
-
-   
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>basedir</id>
-      <url>file://${basedir}/repository</url>
-    </pluginRepository>
-  </pluginRepositories>
-
-  <profiles>
-    <profile>
-      <id>ydoc-doclet</id>
-      <activation>
-         <property><name>ydoc.home</name></property>
-      </activation>
-
-      <reporting>
-        <plugins>
-
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>cobertura-maven-plugin</artifactId>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.3</version>
-            <configuration>
-                  <aggregate>true</aggregate>
-                  <doclet>ydoc.doclets.YStandard</doclet>
-                  <docletPath>${ydoc.home}/lib/ydoc.jar${path.separator}${ydoc.home}/lib/class2svg.jar${path.separator}${ydoc.home}/resources</docletPath>
-                  <author>false</author>
-                  <bottom>true</bottom>
-                  <header>JBoss Rules</header>
-                  <minmemory>128m</minmemory>
-                  <maxmemory>512</maxmemory>
-                  <packagenames>org.drools.*</packagenames>
-                  <use>true</use>
-                  <version>true</version>
-                  <windowtitle>${project.name} ${project.version} API</windowtitle>
-                  <breakiterator>true</breakiterator>
-                  <excludePackageNames>org.drools.asm*,org.drools.objenesis.*,org.drools.commons.jci.*</excludePackageNames>
-                  <overview>drools-core/target/classes/overview.html</overview>
-                  <groups>
-                    <group title="Runtime Core API" packages="org.drools:org.drools.rule"/>
-                    <group title="Compiler Core API" packages="org.drools.compiler"/>
-                    <group title="Compiler Utilities" packages="org.drools.lang:org.drools.xml"/>
-                    <group title="Runtime Utilities" packages="org.drools.audit:org.drools.event:org.drools.visualize"/>
-                    <group title="Decision Tables" packages="org.drools.decisiontable"/>
-                    <group title="Internal" packages="org.drools*"/>
-                  </groups>
-                  <additionalparam>-umlautogen -tag y.precondition -tag y.postcondition -tag y.complexity -tag param -tag return -tag see -tag y.uml</additionalparam>
-            </configuration>
-          </plugin>
-
-        </plugins>
-      </reporting>
-    </profile>
-
-    <profile>
-        <id>documentation</id>
-        <activation>
-            <property><name>documentation</name></property>
-        </activation>
-        <modules>
-            <module>drools-docs</module>
-        </modules>
-    </profile>
-    <profile>
-        <id>build-eclipse</id>
-        <activation>
-            <property><name>eclipse</name></property>
-        </activation>
-        <modules>
-            <module>drools-eclipse</module>
-        </modules>
-    </profile>
-    <profile>
-        <id>solver</id>
-        <modules>
-            <module>drools-solver</module>
-        </modules>
-    </profile>
-  </profiles>
-
-
-  <build>
-
-  <extensions>
-    <extension>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-webdav</artifactId>
-      <version>1.0-beta-2</version>
-    </extension>
-  </extensions>
-
-    <pluginManagement>
-      <plugins>
-        <!--
-            Last time synchronized with the latest plugin releases:
-            2006-12-03
-            See http://news.gmane.org/gmane.comp.apache.maven.announce
+        <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form
+           <repository>
+               <id>softeu-repo</id>
+               <url>http://maven.softeu.cz/</url>
+           </repository>
         -->
 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <configuration>
-          <instrumentation>
-            <excludes>
-              <exclude>org/drools/**/*Test.class</exclude>
-            </excludes>
-          </instrumentation>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+        <repository>
+            <id>basedir</id>
+            <url>file://${basedir}/m2_repo</url>
+        </repository>
+
+        <repository>
+            <id>Maven Snapshots</id>
+            <url>http://snapshots.maven.codehaus.org/maven2/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
 
 
+        <repository>
+            <id>apache.org</id>
+            <name>Maven Snapshots</name>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
 
-        <!-- Building -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-help-plugin</artifactId>
-          <version>2.0.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>2.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>2.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.0.2</version>
-          <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.4.2</version>
-          <configuration>
-            <includes>
-              <include>**/*Test.java</include>
-            </includes>
-            <excludes>
-              <exclude>**/*AbstractTest.java</exclude>
-            </excludes>
-            <argLine>-Xmx1024m</argLine>
-          </configuration>
-        </plugin>
+        <repository>
+            <id>apache.org</id>
+            <name>Maven Releases</name>
+            <url>http://people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
 
-        <!-- Packaging -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>2.2</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>test-jar</goal>
-              </goals>
-            </execution>
-          </executions>
-          <configuration>
-            <archive>
-              <manifest>
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              </manifest>
-            </archive>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>2.0.4</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>jar</goal>
-                  <goal>test-jar</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-war-plugin</artifactId>
-          <version>2.1-alpha-1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.0-alpha-4</version>
-        </plugin>        
+    </repositories>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-2</version>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/bin.xml</descriptor>
-            <!--descriptor>src/main/assembly/src.xml</descriptor>
-            <descriptor>src/main/assembly/brms.xml</descriptor>
-            <descriptor>src/main/assembly/eclipse.xml</descriptor>
-            <descriptor>src/main/assembly/examples.xml</descriptor-->
-          </descriptors>
-        </configuration>
-      </plugin>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>basedir</id>
+            <url>file://${basedir}/repository</url>
+        </pluginRepository>
+    </pluginRepositories>
 
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-archetype-plugin</artifactId>
-          <version>1.0-alpha-7</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.3</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.0-beta-7</version>
-          <configuration>
-            <tagBase>
-              http://anonsvn.labs.jboss.com/labs/jbossrules/tags
-            </tagBase>
-          </configuration>
-        </plugin>
+    <profiles>
+        <profile>
+            <id>ydoc-doclet</id>
+            <activation>
+                <property>
+                    <name>ydoc.home</name>
+                </property>
+            </activation>
 
-        <!-- IDE -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.4</version>
-          <configuration>
-            <!--<downloadSources>true</downloadSources>-->
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-idea-plugin</artifactId>
-          <version>2.1</version>
-          <configuration>
-            <downloadSources>true</downloadSources>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>1.1-beta-1</version>
-        </plugin>
+            <reporting>
+                <plugins>
 
-        <!--Site -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>2.0-beta-6</version>
-        </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>cobertura-maven-plugin</artifactId>
+                    </plugin>
 
-      </plugins>
-    </pluginManagement>
-    <plugins>
-        <plugin>
-          <!-- Entry needed to create, install and deploy sources jars -->
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-        </plugin>
-    </plugins>
-  </build>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.3</version>
+                        <configuration>
+                            <aggregate>true</aggregate>
+                            <doclet>ydoc.doclets.YStandard</doclet>
+                            <docletPath>
+                                ${ydoc.home}/lib/ydoc.jar${path.separator}${ydoc.home}/lib/class2svg.jar${path.separator}${ydoc.home}/resources
+                            </docletPath>
+                            <author>false</author>
+                            <bottom>true</bottom>
+                            <header>JBoss Rules</header>
+                            <minmemory>128m</minmemory>
+                            <maxmemory>512</maxmemory>
+                            <packagenames>org.drools.*</packagenames>
+                            <use>true</use>
+                            <version>true</version>
+                            <windowtitle>${project.name} ${project.version} API</windowtitle>
+                            <breakiterator>true</breakiterator>
+                            <excludePackageNames>org.drools.asm*,org.drools.objenesis.*,org.drools.commons.jci.*
+                            </excludePackageNames>
+                            <overview>drools-core/target/classes/overview.html</overview>
+                            <groups>
+                                <group title="Runtime Core API" packages="org.drools:org.drools.rule"/>
+                                <group title="Compiler Core API" packages="org.drools.compiler"/>
+                                <group title="Compiler Utilities" packages="org.drools.lang:org.drools.xml"/>
+                                <group title="Runtime Utilities"
+                                       packages="org.drools.audit:org.drools.event:org.drools.visualize"/>
+                                <group title="Decision Tables" packages="org.drools.decisiontable"/>
+                                <group title="Internal" packages="org.drools*"/>
+                            </groups>
+                            <additionalparam>-umlautogen -tag y.precondition -tag y.postcondition -tag y.complexity -tag
+                                param -tag return -tag see -tag y.uml
+                            </additionalparam>
+                        </configuration>
+                    </plugin>
 
-  <reporting>
-    <plugins>
+                </plugins>
+            </reporting>
+        </profile>
 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <configuration>
-          <formats>
-            <format>html</format>
-            <format>xml</format>
-          </formats>
-        </configuration>
-      </plugin>
+        <profile>
+            <id>documentation</id>
+            <activation>
+                <property>
+                    <name>documentation</name>
+                </property>
+            </activation>
+            <modules>
+                <module>drools-docs</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>build-eclipse</id>
+            <activation>
+                <property>
+                    <name>eclipse</name>
+                </property>
+            </activation>
+            <modules>
+                <module>drools-eclipse</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>solver</id>
+            <modules>
+                <module>drools-solver</module>
+            </modules>
+        </profile>
+    </profiles>
 
-      <!-- Note: It's not possible to configure reporting plugins in pluginManagement in m2.0.4 -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.0.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <aggregate>true</aggregate>
-          <links>
-            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-          </links>
-          <minmemory>128m</minmemory>
-          <maxmemory>512</maxmemory>
-        </configuration>
-      </plugin>
 
-      <!--
-          TODO Changelog is unfinished:
-          - has also a problem with the netbeans (cvs)lib dependency
-          - is moving from mojo.codehaus.org to maven.apache.org
-      -->
-      <!--<plugin>-->
-      <!--<groupId>org.apache.maven.plugins</groupId>-->
-      <!--<artifactId>maven-changelog-plugin</artifactId>-->
-      <!--<version>2.0-beta-1</version>-->
-      <!--</plugin>-->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.4.2</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>report-only</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <!--<plugin>-->
-        <!--<groupId>org.apache.maven.plugins</groupId>-->
-        <!--<artifactId>maven-clover-plugin</artifactId>-->
-        <!--<configuration/>-->
-        <!--<executions>-->
-          <!--<execution>-->
+    <build>
+
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+        </extensions>
+
+        <pluginManagement>
+            <plugins>
+                <!--
+                    Last time synchronized with the latest plugin releases:
+                    2006-12-03
+                    See http://news.gmane.org/gmane.comp.apache.maven.announce
+                -->
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <configuration>
+                        <instrumentation>
+                            <excludes>
+                                <exclude>org/drools/**/*Test.class</exclude>
+                            </excludes>
+                        </instrumentation>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+
+                <!-- Building -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-help-plugin</artifactId>
+                    <version>2.0.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>2.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.0.2</version>
+                    <configuration>
+                        <source>1.5</source>
+                        <target>1.5</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.4.2</version>
+                    <configuration>
+                        <includes>
+                            <include>**/*Test.java</include>
+                        </includes>
+                        <excludes>
+                            <exclude>**/*AbstractTest.java</exclude>
+                        </excludes>
+                        <argLine>-Xmx1024m</argLine>
+                    </configuration>
+                </plugin>
+
+                <!-- Packaging -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.2</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.0.4</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                                <goal>test-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.1-alpha-1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.0-alpha-4</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.2-beta-2</version>
+                    <configuration>
+                        <descriptors>
+                            <descriptor>src/main/assembly/bin.xml</descriptor>
+                            <!--descriptor>src/main/assembly/src.xml</descriptor>
+                            <descriptor>src/main/assembly/brms.xml</descriptor>
+                            <descriptor>src/main/assembly/eclipse.xml</descriptor>
+                            <descriptor>src/main/assembly/examples.xml</descriptor-->
+                        </descriptors>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-archetype-plugin</artifactId>
+                    <version>1.0-alpha-7</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.0-beta-7</version>
+                    <configuration>
+                        <tagBase>
+                            http://anonsvn.labs.jboss.com/labs/jbossrules/tags
+                        </tagBase>
+                    </configuration>
+                </plugin>
+
+                <!-- IDE -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-eclipse-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <!--<downloadSources>true</downloadSources>-->
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-idea-plugin</artifactId>
+                    <version>2.1</version>
+                    <configuration>
+                        <downloadSources>true</downloadSources>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.1-beta-1</version>
+                </plugin>
+
+                <!--Site -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>2.0-beta-6</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <!-- Entry needed to create, install and deploy sources jars -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <reporting>
+        <plugins>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <configuration>
+                    <formats>
+                        <format>html</format>
+                        <format>xml</format>
+                    </formats>
+                </configuration>
+            </plugin>
+
+            <!-- Note: It's not possible to configure reporting plugins in pluginManagement in m2.0.4 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.0.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                    </links>
+                    <minmemory>128m</minmemory>
+                    <maxmemory>512</maxmemory>
+                </configuration>
+            </plugin>
+
+            <!--
+                TODO Changelog is unfinished:
+                - has also a problem with the netbeans (cvs)lib dependency
+                - is moving from mojo.codehaus.org to maven.apache.org
+            -->
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-changelog-plugin</artifactId>-->
+            <!--<version>2.0-beta-1</version>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.4.2</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>report-only</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-clover-plugin</artifactId>-->
+            <!--<configuration/>-->
+            <!--<executions>-->
+            <!--<execution>-->
             <!--<phase>pre-site</phase>-->
             <!--<goals>-->
-              <!--<goal>instrument</goal>-->
-              <!--<goal>aggregate</goal>-->
+            <!--<goal>instrument</goal>-->
+            <!--<goal>aggregate</goal>-->
             <!--</goals>-->
-          <!--</execution>-->
-        <!--</executions>-->
-      <!--</plugin>-->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>taglist-maven-plugin</artifactId>
-        <version>2.1</version>
-      </plugin>
-      <!--<plugin>-->
-        <!--<groupId>org.codehaus.mojo</groupId>-->
-        <!--<artifactId>findbugs-maven-plugin</artifactId>-->
-        <!--<version>1.0-beta-1</version>-->
-      <!--</plugin>-->
-      <!--<plugin>-->
-        <!--<groupId>org.apache.maven.plugins</groupId>-->
-        <!--<artifactId>maven-pmd-plugin</artifactId>-->
-        <!--<version>2.0</version>-->
-      <!--</plugin>-->
-      <!--<plugin>-->
-        <!--<groupId>org.apache.maven.plugins</groupId>-->
-        <!--<artifactId>maven-checkstyle-plugin</artifactId>-->
-        <!--<version>2.1</version>-->
-      <!--</plugin>-->
-      <!--<plugin>-->
-        <!--<groupId>org.codehaus.mojo</groupId>-->
-        <!--<artifactId>jdepend-maven-plugin</artifactId>-->
-        <!--<version>2.0-beta-1</version>-->
-      <!--</plugin>-->
-      <plugin>
-        <!-- In 2.0-beta-1 an aggegate works after running "mvn site" twice -->
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>javancss-maven-plugin</artifactId>
-        <version>2.0-beta-2</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.1</version>
-      </plugin>
-    </plugins>
-  </reporting>
+            <!--</execution>-->
+            <!--</executions>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>taglist-maven-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
+            <!--<plugin>-->
+            <!--<groupId>org.codehaus.mojo</groupId>-->
+            <!--<artifactId>findbugs-maven-plugin</artifactId>-->
+            <!--<version>1.0-beta-1</version>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-pmd-plugin</artifactId>-->
+            <!--<version>2.0</version>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-checkstyle-plugin</artifactId>-->
+            <!--<version>2.1</version>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+            <!--<groupId>org.codehaus.mojo</groupId>-->
+            <!--<artifactId>jdepend-maven-plugin</artifactId>-->
+            <!--<version>2.0-beta-1</version>-->
+            <!--</plugin>-->
+            <plugin>
+                <!-- In 2.0-beta-1 an aggegate works after running "mvn site" twice -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javancss-maven-plugin</artifactId>
+                <version>2.0-beta-2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
-  <modules>
-    <module>drools-core</module>
-    <module>drools-compiler</module>
-    <module>drools-jsr94</module>
-    <module>drools-decisiontables</module>
-    <!-- TODO enable these or create a profile in which they are enabled (to avoid making the build slow) -->
-    <!--module>drools-server</module-->
-    <module>drools-analytics</module>
-    <module>drools-ant</module>
-    <module>drools-repository</module>
-    <module>drools-jbrms</module>
-    <module>drools-clips</module>
-    <!--module>drools-examples</module-->
-    <!--module>drools-solver</module--><!-- Use the profile solver to add it -->
-  </modules>
+    <modules>
+        <module>drools-core</module>
+        <module>drools-compiler</module>
+        <module>drools-jsr94</module>
+        <module>drools-decisiontables</module>
+        <!-- TODO enable these or create a profile in which they are enabled (to avoid making the build slow) -->
+        <!--module>drools-server</module-->
+        <module>drools-analytics</module>
+        <module>drools-ant</module>
+        <module>drools-repository</module>
+        <module>drools-jbrms</module>
+        <module>drools-clips</module>
+        <!--module>drools-examples</module-->
+        <!--module>drools-solver</module--><!-- Use the profile solver to add it -->
+    </modules>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-
-  <dependencyManagement>
     <dependencies>
-      <!--
-          Declare all dependency versions and default scopes here, but not optional.
-          Each module should declare it's direct dependency and possibily overwrite scope/optional.
-      -->
-
-      <!-- Internal dependencies -->
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-core</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-compiler</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-compiler</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-jsr94</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-jsr94</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-decisiontables</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-decisiontables</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-docs</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-server</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-ant</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-ant</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-analytics</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-analytics</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-server</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-repository</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-repository</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-jbrms</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-jbrms</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.drools.solver</groupId>
-        <artifactId>drools-solver-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools.solver</groupId>
-        <artifactId>drools-solver-examples</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <!-- External dependencies -->
-      <!-- drools-core -->
-      <dependency>
-        <groupId>com.thoughtworks.xstream</groupId>
-        <artifactId>xstream</artifactId>
-        <version>1.2.2</version>
-      </dependency>
-      <dependency><!-- TODO remove me as xstream brings in xpp3_min -->
-        <groupId>xpp3</groupId>
-        <artifactId>xpp3</artifactId>
-        <version>1.1.3.4.O</version>
-      </dependency>
-      <dependency><!-- TODO deploy mvel to the jboss repo or snapshot repo, instead of the dir m2_repo hack -->
-        <groupId>org.mvel</groupId>
-        <artifactId>mvel</artifactId>
-        <version>2.0-alpha2-dp3-java1.5</version>
-      </dependency>
-
-      <!-- drools-compiler -->
-      <dependency>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr-runtime</artifactId>
-        <version>3.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jdt</groupId>
-        <artifactId>core</artifactId>
-        <version>3.2.3.v_686_R32x</version>
-      </dependency>
-      <dependency>
-        <groupId>janino</groupId>
-        <artifactId>janino</artifactId>
-        <version>2.5.10</version>
-      </dependency>
-      <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xercesImpl</artifactId>
-        <version>2.4.0</version>
-      </dependency>
-      <dependency>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <version>1.0.b2</version>
-      </dependency>
-
-      <!-- drools-jsr94 -->
-      <dependency>
-        <groupId>jsr94</groupId>
-        <artifactId>jsr94</artifactId>
-        <version>1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>jsr94</groupId>
-        <artifactId>jsr94-tck</artifactId>
-        <version>1.0.3</version>
-      </dependency>
-      <dependency>
-        <groupId>jsr94</groupId>
-        <artifactId>jsr94-sigtest</artifactId>
-        <version>1.1</version>
-      </dependency>
-
-      <!-- drools-decisiontables -->
-      <dependency>
-        <groupId>jexcelapi</groupId>
-        <artifactId>jxl</artifactId>
-        <version>2.4.2</version>
-      </dependency>
-
-      <!-- drools-server -->
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-remoting</artifactId>
-        <version>1.4.1_final</version>
-      </dependency>
-
-      <!-- Logging for drools-repository and drools-solver -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.3.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>1.3.0</version>
-        <!--<scope>runtime</scope> TODO default me on runtime-->
-      </dependency>
-      <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.13</version>
-        <!--<scope>runtime</scope> TODO default me on runtime-->
-      </dependency>
-
-      <!-- drools-repository -->
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-core</artifactId>
-        <version>1.4.1</version>
-        <!-- and getting rid of some annoying transitive junk not really needed for us -->
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>pdfbox</groupId>
-          <artifactId>pdfbox</artifactId>
-        </exclusion>
-          <exclusion>
-          <groupId>poi</groupId>
-          <artifactId>poi</artifactId>
-        </exclusion>
-          <exclusion>
-            <groupId>org.textmining</groupId>
-          <artifactId>tm-extractors</artifactId>
-          </exclusion>
-          <exclusion>
-          <groupId>nekohtml</groupId>
-        <artifactId>nekohtml</artifactId>
-        </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>javax.jcr</groupId>
-        <artifactId>jcr</artifactId>
-        <version>1.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.tmatesoft</groupId>
-        <artifactId>svnkit</artifactId>
-        <version>1.1.2</version>
-      </dependency>
-      
-      <dependency>
-         <groupId>hsqldb</groupId>
-         <artifactId>hsqldb</artifactId>
-         <version>1.8.0.2</version>
-      </dependency>      
-
-      <!-- drools-jbrms -->
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.3</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-servlet</artifactId>
-        <version>1.4.60</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-fileupload</groupId>
-        <artifactId>commons-fileupload</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-	<groupId>com.gwtext</groupId>
-	<artifactId>gwtext</artifactId>
-	<version>2.0.1</version>
-      </dependency>
-
-      <!-- drools-examples -->
-      <dependency>
-        <groupId>foxtrot</groupId>
-        <artifactId>foxtrot</artifactId>
-        <version>2.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.jgoodies</groupId>
-        <artifactId>forms</artifactId>
-        <version>1.0.7</version><!-- TODO test that the upgrade from 1.0.4 isn't a problem -->
-      </dependency>
-
-      <!-- drools-solver -->
-      <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>1.3.2</version>
-      </dependency>
-
-      <!--
-        TODO looks like jsr170:jcr:1.0 isn't used any more, remove it from /repository/jsr170/jcr/1.0
-        It's also in the central repo: http://www.mvnrepository.com/artifact/javax.jcr/jcr
-      -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-  </dependencyManagement>
 
-  <distributionManagement>
-    <site>
-      <id>rules-site.jboss.org</id>
-      <url>${rules.site.deploy.dir}</url>
-    </site>
+    <dependencyManagement>
+        <dependencies>
+            <!--
+                Declare all dependency versions and default scopes here, but not optional.
+                Each module should declare it's direct dependency and possibily overwrite scope/optional.
+            -->
 
-    <snapshotRepository>
-      <id>snapshots.jboss.org</id>
-      <name>JBoss Snapshot Repository</name>
-      <url>dav:https://snapshots.jboss.org/maven2</url>
-    </snapshotRepository>
+            <!-- Internal dependencies -->
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-core</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-compiler</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-compiler</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-jsr94</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-jsr94</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-decisiontables</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-decisiontables</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-docs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-ant</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-ant</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-    <!-- TODO configure this if it's needed -->
-    <!--<repository>-->
-      <!--<id>shell.jboss.org?</id>-->
-      <!--<url>scp://???.jboss.org/???/maven2</url>-->
-    <!--</repository>-->
-<!--    <snapshotRepository>
-      <id>snapshots.jboss.org</id>
-    </snapshotRepository> -->
-    <!--<site>-->
-      <!--<id>shell.jboss.org?</id>-->
-      <!--<url>scp://???/???/</url>-->
-    <!--</site>-->
-  </distributionManagement>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-analytics</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-analytics</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-server</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-repository</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-repository</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-jbrms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-jbrms</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.drools.solver</groupId>
+                <artifactId>drools-solver-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools.solver</groupId>
+                <artifactId>drools-solver-examples</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- External dependencies -->
+            <!-- drools-core -->
+            <dependency>
+                <groupId>com.thoughtworks.xstream</groupId>
+                <artifactId>xstream</artifactId>
+                <version>1.2.2</version>
+            </dependency>
+            <dependency><!-- TODO remove me as xstream brings in xpp3_min -->
+                <groupId>xpp3</groupId>
+                <artifactId>xpp3</artifactId>
+                <version>1.1.3.4.O</version>
+            </dependency>
+            <dependency><!-- TODO deploy mvel to the jboss repo or snapshot repo, instead of the dir m2_repo hack -->
+                <groupId>org.mvel</groupId>
+                <artifactId>mvel</artifactId>
+                <version>2.0-SNAPSHOT</version>
+            </dependency>
+
+            <!-- drools-compiler -->
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr-runtime</artifactId>
+                <version>3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jdt</groupId>
+                <artifactId>core</artifactId>
+                <version>3.2.3.v_686_R32x</version>
+            </dependency>
+            <dependency>
+                <groupId>janino</groupId>
+                <artifactId>janino</artifactId>
+                <version>2.5.10</version>
+            </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>2.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>1.0.b2</version>
+            </dependency>
+
+            <!-- drools-jsr94 -->
+            <dependency>
+                <groupId>jsr94</groupId>
+                <artifactId>jsr94</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jsr94</groupId>
+                <artifactId>jsr94-tck</artifactId>
+                <version>1.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>jsr94</groupId>
+                <artifactId>jsr94-sigtest</artifactId>
+                <version>1.1</version>
+            </dependency>
+
+            <!-- drools-decisiontables -->
+            <dependency>
+                <groupId>jexcelapi</groupId>
+                <artifactId>jxl</artifactId>
+                <version>2.4.2</version>
+            </dependency>
+
+            <!-- drools-server -->
+            <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jboss-remoting</artifactId>
+                <version>1.4.1_final</version>
+            </dependency>
+
+            <!-- Logging for drools-repository and drools-solver -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.3.0</version>
+                <!--<scope>runtime</scope> TODO default me on runtime-->
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.13</version>
+                <!--<scope>runtime</scope> TODO default me on runtime-->
+            </dependency>
+
+            <!-- drools-repository -->
+            <dependency>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>jackrabbit-core</artifactId>
+                <version>1.4.1</version>
+                <!-- and getting rid of some annoying transitive junk not really needed for us -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.geronimo.specs</groupId>
+                        <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>pdfbox</groupId>
+                        <artifactId>pdfbox</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>poi</groupId>
+                        <artifactId>poi</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.textmining</groupId>
+                        <artifactId>tm-extractors</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>nekohtml</groupId>
+                        <artifactId>nekohtml</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.jcr</groupId>
+                <artifactId>jcr</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.tmatesoft</groupId>
+                <artifactId>svnkit</artifactId>
+                <version>1.1.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>hsqldb</groupId>
+                <artifactId>hsqldb</artifactId>
+                <version>1.8.0.2</version>
+            </dependency>
+
+            <!-- drools-jbrms -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.3</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-servlet</artifactId>
+                <version>1.4.60</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.gwtext</groupId>
+                <artifactId>gwtext</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+
+            <!-- drools-examples -->
+            <dependency>
+                <groupId>foxtrot</groupId>
+                <artifactId>foxtrot</artifactId>
+                <version>2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jgoodies</groupId>
+                <artifactId>forms</artifactId>
+                <version>1.0.7</version>
+                <!-- TODO test that the upgrade from 1.0.4 isn't a problem -->
+            </dependency>
+
+            <!-- drools-solver -->
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>1.3.2</version>
+            </dependency>
+
+            <!--
+              TODO looks like jsr170:jcr:1.0 isn't used any more, remove it from /repository/jsr170/jcr/1.0
+              It's also in the central repo: http://www.mvnrepository.com/artifact/javax.jcr/jcr
+            -->
+        </dependencies>
+    </dependencyManagement>
+
+    <distributionManagement>
+        <site>
+            <id>rules-site.jboss.org</id>
+            <url>${rules.site.deploy.dir}</url>
+        </site>
+
+        <snapshotRepository>
+            <id>snapshots.jboss.org</id>
+            <name>JBoss Snapshot Repository</name>
+            <url>dav:https://snapshots.jboss.org/maven2</url>
+        </snapshotRepository>
+
+        <!-- TODO configure this if it's needed -->
+        <!--<repository>-->
+        <!--<id>shell.jboss.org?</id>-->
+        <!--<url>scp://???.jboss.org/???/maven2</url>-->
+        <!--</repository>-->
+        <!--    <snapshotRepository>
+         <id>snapshots.jboss.org</id>
+       </snapshotRepository> -->
+        <!--<site>-->
+        <!--<id>shell.jboss.org?</id>-->
+        <!--<url>scp://???/???/</url>-->
+        <!--</site>-->
+    </distributionManagement>
 
 </project>
