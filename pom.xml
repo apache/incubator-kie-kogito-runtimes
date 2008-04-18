@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    gin
     <groupId>org.drools</groupId>
     <artifactId>drools</artifactId>
     <packaging>pom</packaging>
@@ -166,33 +165,38 @@
 
     <repositories>
         <repository>
-            <id>jboss</id>
-            <url>http://repository.jboss.com/maven2/</url>
+            <id>repository.jboss.org</id>
+            <url>http://repository.jboss.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+               <enabled>true</enabled>
+            </releases>
         </repository>
         <repository>
-            <id>jboss-snapshot</id>
-            <url>http://snapshots.jboss.org/maven2</url>
+            <id>snapshots.jboss.org</id>
+            <url>http://snapshots.jboss.org/maven2/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+               <enabled>false</enabled>
+            </releases>
         </repository>
-        <repository>
+        
+        <repository><!-- TODO dead code, this probably isn't used anymore -->
             <id>codehaus-snapshot</id>
             <url>http://snapshots.repository.codehaus.org/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+               <enabled>false</enabled>
+            </releases> 
         </repository>
-
-
-        <!-- this is needed for Seam which is not in the jboss repo or the maven one in a useful form
-           <repository>
-               <id>softeu-repo</id>
-               <url>http://maven.softeu.cz/</url>
-           </repository>
-        -->
-
-        <repository>
-            <id>basedir</id>
-            <url>file://${basedir}/m2_repo</url>
-        </repository>
-
-        <repository>
-            <id>Maven Snapshots</id>
+        <repository><!-- TODO dead code, this probably isn't used anymore -->
+            <id>maven-snapshots</id>
             <url>http://snapshots.maven.codehaus.org/maven2/</url>
             <snapshots>
                 <enabled>true</enabled>
@@ -201,9 +205,7 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-
-
-        <repository>
+        <repository><!-- TODO dead code, this probably isn't used anymore -->
             <id>apache.org</id>
             <name>Maven Snapshots</name>
             <url>http://people.apache.org/repo/m2-snapshot-repository</url>
@@ -214,9 +216,8 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-
-        <repository>
-            <id>apache.org</id>
+        <repository><!-- TODO dead code, this probably isn't used anymore -->
+            <id>apache.org</id><!-- TODO this id clashes with previous repository: that's bad -->
             <name>Maven Releases</name>
             <url>http://people.apache.org/repo/m2-ibiblio-rsync-repository</url>
             <snapshots>
@@ -227,9 +228,35 @@
             </releases>
         </repository>
 
+        <repository>
+            <id>basedir</id>
+            <url>file://${basedir}/m2_repo</url>
+        </repository>
+
     </repositories>
 
     <pluginRepositories>
+        <pluginRepository>
+            <id>repository.jboss.org</id>
+            <url>http://repository.jboss.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+               <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>snapshots.jboss.org</id>
+            <url>http://snapshots.jboss.org/maven2/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+               <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+
         <pluginRepository>
             <id>basedir</id>
             <url>file://${basedir}/repository</url>
