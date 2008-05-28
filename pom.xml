@@ -589,7 +589,7 @@
                     </links>
                     <minmemory>128m</minmemory>
                     <maxmemory>512</maxmemory>
-		    <excludePackageNames>org.drools.brms.client.*</excludePackageNames>
+		    <excludePackageNames>org.drools.brms.client</excludePackageNames>
                 </configuration>
             </plugin>
 
