@@ -676,7 +676,7 @@
         <module>drools-decisiontables</module>
         <!-- TODO enable these or create a profile in which they are enabled (to avoid making the build slow) -->
         <!--module>drools-server</module-->
-        <module>drools-analytics</module>
+        <module>drools-verifier</module>
         <module>drools-ant</module>
         <module>drools-repository</module>
         <module>drools-jbrms</module>
@@ -775,12 +775,12 @@
 
             <dependency>
                 <groupId>org.drools</groupId>
-                <artifactId>drools-analytics</artifactId>
+                <artifactId>drools-verifier</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
-                <artifactId>drools-analytics</artifactId>
+                <artifactId>drools-verifier</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
