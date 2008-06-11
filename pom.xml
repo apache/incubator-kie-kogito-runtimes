@@ -344,12 +344,12 @@
                 <module>drools-eclipse</module>
             </modules>
         </profile>
-        <profile>
+        <!--<profile> TODO remove me, as drools-solver is now included in the main build
             <id>solver</id>
             <modules>
                 <module>drools-solver</module>
             </modules>
-        </profile>
+        </profile>-->
     </profiles>
 
 
@@ -682,7 +682,7 @@
         <module>drools-jbrms</module>
         <module>drools-clips</module>
         <!--module>drools-examples</module-->
-        <!--module>drools-solver</module--><!-- Use the profile solver to add it -->
+        <module>drools-solver</module>
     </modules>
 
     <dependencies>
