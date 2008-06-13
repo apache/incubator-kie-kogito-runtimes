@@ -682,7 +682,7 @@
         <module>drools-jbrms</module>
         <module>drools-clips</module>
         <!--module>drools-examples</module-->
-        <!--<module>drools-solver</module>-->
+        <module>drools-solver</module>
     </modules>
 
     <dependencies>
