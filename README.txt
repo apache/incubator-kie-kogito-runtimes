@@ -14,12 +14,12 @@ maven plugin classpath problems.
 
 The following builds all the jars, the documentation and the eclipse zip with a
 local folder specified to avoid downloading eclipse:
- mvn -Declipse=true -Ddocumentation=true clean install 
+ mvn -Declipse -Ddocumentation clean install 
      -DlocalEclipseDrop=/folder/jboss-rules/local-eclipse-drop-mirror
 
 You can produce distribution builds, which puts everything into zips, as
 follows:
-mvn -Declipse=true -Ddocumentation=true clean install
+mvn -Declipse -Ddocumentation clean install
     -DlocalEclipseDrop=/folder/jboss-rules/local-eclipse-drop-mirror
 mvn -Ddocumentation -Declipse -Dmaven.test.skip package javadoc:javadoc
      assembly:assembly -DlocalEclipseDrop=/folder/jboss-rules/local-eclipse-drop-mirror
