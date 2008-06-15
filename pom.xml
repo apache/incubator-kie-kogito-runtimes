@@ -143,9 +143,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:svn:http://anonsvn.labs.jboss.com/labs/jbossrules/trunk/</connection>
+        <connection>scm:svn:http://anonsvn.labs.jboss.com/labs/jbossrules/trunk</connection>
         <!-- TODO developerConnection-->
-        <url>http://anonsvn.labs.jboss.com/labs/jbossrules/trunk/</url>
+        <url>http://anonsvn.labs.jboss.com/labs/jbossrules/trunk</url>
     </scm>
     <organization>
         <name>JBoss Inc.</name>
@@ -155,7 +155,7 @@
     <repositories>
         <repository>
             <id>repository.jboss.org</id>
-            <url>http://repository.jboss.org/maven2/</url>
+            <url>http://repository.jboss.org/maven2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -165,7 +165,7 @@
         </repository>
         <repository>
             <id>snapshots.jboss.org</id>
-            <url>http://snapshots.jboss.org/maven2/</url>
+            <url>http://snapshots.jboss.org/maven2</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -176,7 +176,7 @@
         
         <repository><!-- TODO dead code, this probably isn't used anymore -->
             <id>codehaus-snapshot</id>
-            <url>http://snapshots.repository.codehaus.org/</url>
+            <url>http://snapshots.repository.codehaus.org</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -186,7 +186,7 @@
         </repository>
         <repository><!-- TODO dead code, this probably isn't used anymore -->
             <id>maven-snapshots</id>
-            <url>http://snapshots.maven.codehaus.org/maven2/</url>
+            <url>http://snapshots.maven.codehaus.org/maven2</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -227,7 +227,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>repository.jboss.org</id>
-            <url>http://repository.jboss.org/maven2/</url>
+            <url>http://repository.jboss.org/maven2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -237,7 +237,7 @@
         </pluginRepository>
         <pluginRepository>
             <id>snapshots.jboss.org</id>
-            <url>http://snapshots.jboss.org/maven2/</url>
+            <url>http://snapshots.jboss.org/maven2</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -829,7 +829,7 @@
             <dependency><!-- TODO deploy mvel to the jboss repo or snapshot repo, instead of the dir m2_repo hack -->
                 <groupId>org.mvel</groupId>
                 <artifactId>mvel</artifactId>
-                <version>2.0</version>
+                <version>2.0-SNAPSHOT</version>
             </dependency>
 
             <!-- drools-compiler -->
