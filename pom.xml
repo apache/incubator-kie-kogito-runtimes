@@ -122,17 +122,6 @@
         </developer>
 
         <developer>
-            <name>Fernando Meyer</name>
-            <id>fmeyer</id>
-            <email>fmcamargo@gmail.com</email>
-            <organization>Red Hat/JBoss</organization>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <timezone>-3</timezone>
-        </developer>
-
-        <developer>
             <id>ge0ffrey</id>
             <name>Geoffrey De Smet</name>
             <email>ge0ffrey.spam AT gmail DOT com</email>
@@ -255,11 +244,6 @@
             <releases>
                <enabled>false</enabled>
             </releases>
-        </pluginRepository>
-
-        <pluginRepository>
-            <id>basedir</id>
-            <url>file://${basedir}/repository</url>
         </pluginRepository>
     </pluginRepositories>
 
@@ -483,11 +467,11 @@
                     <configuration>
                         <descriptors>
                             <descriptor>src/main/assembly/bin.xml</descriptor>
-			    <descriptor>src/main/assembly/brms.xml</descriptor>
-                            <!--descriptor>src/main/assembly/src.xml</descriptor>
-                            
+			                <descriptor>src/main/assembly/brms.xml</descriptor>
+                            <descriptor>src/main/assembly/src.xml</descriptor>                            
                             <descriptor>src/main/assembly/eclipse.xml</descriptor>
-                            <descriptor>src/main/assembly/examples.xml</descriptor-->
+                            <descriptor>src/main/assembly/examples.xml</descriptor>
+                            <descriptor>src/main/assembly/docs.xml</descriptor>                            
                         </descriptors>
                     </configuration>
                 </plugin>
@@ -845,7 +829,7 @@
             <dependency><!-- TODO deploy mvel to the jboss repo or snapshot repo, instead of the dir m2_repo hack -->
                 <groupId>org.mvel</groupId>
                 <artifactId>mvel</artifactId>
-                <version>2.0-SNAPSHOT</version>
+                <version>2.0</version>
             </dependency>
 
             <!-- drools-compiler -->
@@ -867,12 +851,12 @@
             <dependency>
                 <groupId>xerces</groupId>
                 <artifactId>xercesImpl</artifactId>
-                <version>2.4.0</version>
+                <version>2.8.0</version>
             </dependency>
             <dependency>
                 <groupId>xml-apis</groupId>
                 <artifactId>xml-apis</artifactId>
-                <version>1.0.b2</version>
+                <version>2.0.2</version>
             </dependency>
 
             <!-- drools-jsr94 -->
