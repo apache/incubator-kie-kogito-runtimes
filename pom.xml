@@ -461,7 +461,7 @@
                     <configuration>
                         <descriptors>
                             <descriptor>src/main/assembly/bin.xml</descriptor>
-			                <descriptor>src/main/assembly/brms.xml</descriptor>
+			                <descriptor>src/main/assembly/guvnor.xml</descriptor>
                             <descriptor>src/main/assembly/src.xml</descriptor>                            
                             <descriptor>src/main/assembly/eclipse.xml</descriptor>
                             <descriptor>src/main/assembly/examples.xml</descriptor>
@@ -658,7 +658,7 @@
         <module>drools-verifier</module>
         <module>drools-ant</module>
         <module>drools-repository</module>
-        <module>drools-jbrms</module>
+        <module>drools-guvnor</module>
         <module>drools-clips</module>
         <!--module>drools-examples</module-->
         <module>drools-solver</module>
@@ -799,12 +799,12 @@
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
-                <artifactId>drools-jbrms</artifactId>
+                <artifactId>drools-guvnor</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
-                <artifactId>drools-jbrms</artifactId>
+                <artifactId>drools-guvnor</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -964,7 +964,7 @@
                 <version>1.8.0.2</version>
             </dependency>
 
-            <!-- drools-jbrms -->
+            <!-- drools-guvnor -->
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
