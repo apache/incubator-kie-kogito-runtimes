@@ -651,6 +651,7 @@
         <module>drools-core</module>
         <module>drools-compiler</module>
         <module>drools-jsr94</module>
+        <module>drools-templates</module>
         <module>drools-decisiontables</module>
         <!-- TODO enable these or create a profile in which they are enabled (to avoid making the build slow) -->
         <!--module>drools-server</module-->
@@ -712,6 +713,18 @@
             <dependency>
                 <groupId>org.drools</groupId>
                 <artifactId>drools-jsr94</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-templates</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-templates</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
