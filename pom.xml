@@ -496,8 +496,9 @@
                     <version>2.0-beta-7</version>
                     <configuration>
                         <tagBase>
-                            http://anonsvn.labs.jboss.com/labs/jbossrules/tags
+                            https://svn.labs.jboss.com/labs/jbossrules/tags
                         </tagBase>
+                        <preparationGoals>-Declipse=true -Ddocumentation=true clean install</preparationGoals>
                     </configuration>
                 </plugin>
 
