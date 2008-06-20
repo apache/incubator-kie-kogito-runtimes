@@ -21,6 +21,8 @@ echo
 
 echo "*************************************************************"
 echo "------> Preparing the release"
-echo $MVN --batch-mode release:prepare -DdryRun=true
+echo $MVN --batch-mode release:prepare 
 
- 
+echo "*************************************************************"
+echo "------> Generating artifacts"
+echo $MVN -Ddocumentation -Declipse -Dmaven.test.skip -Dydoc.home=$YDOC_HOME package javadoc:javadoc assembly:assembly
