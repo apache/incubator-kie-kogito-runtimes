@@ -21,7 +21,7 @@ echo
 
 echo "*************************************************************"
 echo "------> Preparing the release"
-echo $MVN --batch-mode release:prepare 
+echo $MVN --batch-mode release:clean release:prepare 
 
 echo "*************************************************************"
 echo "------> Generating artifacts"
