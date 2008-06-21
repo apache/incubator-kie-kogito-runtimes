@@ -467,10 +467,11 @@
                         <descriptors>
                             <descriptor>src/main/assembly/bin.xml</descriptor>
 			                <descriptor>src/main/assembly/guvnor.xml</descriptor>
-                            <descriptor>src/main/assembly/src.xml</descriptor>                            
+                            <descriptor>src/main/assembly/src.xml</descriptor>
                             <descriptor>src/main/assembly/eclipse.xml</descriptor>
                             <descriptor>src/main/assembly/examples.xml</descriptor>
-                            <descriptor>src/main/assembly/docs.xml</descriptor>                            
+                            <descriptor>src/main/assembly/solver.xml</descriptor>
+                            <descriptor>src/main/assembly/docs.xml</descriptor>
                         </descriptors>
                     </configuration>
                 </plugin>
