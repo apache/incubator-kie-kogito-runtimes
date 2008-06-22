@@ -77,28 +77,28 @@ echo
 
 echo "*************************************************************"
 echo "------> Updating release version in configuration files"
-echo $ANT -f update-version.xml -Dcurrent="$CURRENT_VERSION" -Dnew="$RELEASE_VERSION" updateVersion
+$ANT -f update-version.xml -Dcurrent="$CURRENT_VERSION" -Dnew="$RELEASE_VERSION" updateVersion
 check_error "****** Error updating version numbers. Exiting. ******"
 echo
 
 echo "*************************************************************"
 echo "------> Commiting new version into trunk"
-echo $SVN commit -m "$JIRA_TICKET : preparing release. Updating files from version $CURRENT_VERSION to $RELEASE_VERSION"
+$SVN commit -m "$JIRA_TICKET : preparing release. Updating files from version $CURRENT_VERSION to $RELEASE_VERSION"
 check_error "****** Error commiting update files to trunk. Exiting. ******"
 echo
 
 echo "*************************************************************"
 echo "------> Preparing the release"
-echo $MVN release:clean
+$MVN release:clean
 check_error "****** Error cleaning up for the release. Exiting. ******"
 create_release_file $RELEASE_VERSION $NEW_VERSION $TAG_NAME
-echo $MVN --batch-mode release:prepare 
+$MVN --batch-mode release:prepare 
 check_error "****** Error preparing the release. Exiting. ******"
 echo
 
 echo "*************************************************************"
 echo "------> Generating artifacts"
-echo $MVN -Ddocumentation -Declipse -Dmaven.test.skip -Dydoc.home=$YDOC_HOME -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror package javadoc:javadoc assembly:assembly
+$MVN -Ddocumentation -Declipse -Dmaven.test.skip -Dydoc.home=$YDOC_HOME -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror package javadoc:javadoc assembly:assembly
 check_error "****** Error generating distribution artifacts. Exiting. ******"
 echo
  
