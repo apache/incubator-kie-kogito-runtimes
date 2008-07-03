@@ -981,13 +981,18 @@
             <dependency>
                 <groupId>com.google.gwt</groupId>
                 <artifactId>gwt-servlet</artifactId>
-                <version>1.4.60</version>
+                <version>1.4.62</version>
             </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
-                <version>1.1.1</version>
+                <version>1.2.1</version>
             </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>1.4</version>
+            </dependency>            
             <dependency>
                 <groupId>com.gwtext</groupId>
                 <artifactId>gwtext</artifactId>
