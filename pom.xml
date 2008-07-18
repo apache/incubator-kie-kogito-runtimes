@@ -338,6 +338,7 @@
 
     <build>
 
+
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
@@ -353,6 +354,12 @@
                     2006-12-03
                     See http://news.gmane.org/gmane.comp.apache.maven.announce
                 -->
+
+         <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-dependency-plugin</artifactId>
+           <version>2.0</version>
+         </plugin>
 
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
