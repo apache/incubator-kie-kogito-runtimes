@@ -858,7 +858,12 @@
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr-runtime</artifactId>
-                <version>3.0</version>
+                <version>3.0.1</version>
+            </dependency>
+            <dependency>
+			    <groupId>org.antlr</groupId>
+			    <artifactId>gunit</artifactId>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jdt</groupId>
