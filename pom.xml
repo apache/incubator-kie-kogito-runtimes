@@ -670,7 +670,7 @@
         <module>drools-clips</module>
         <module>drools-dataloaders</module>      
         <!-- TODO enable these or create a profile in which they are enabled (to avoid making the build slow) -->
-        <!--module>drools-server</module-->
+        <module>drools-server</module>
         <module>drools-verifier</module>
         <module>drools-ant</module>
         <module>drools-repository</module>
@@ -841,7 +841,7 @@
             <dependency>
                 <groupId>com.thoughtworks.xstream</groupId>
                 <artifactId>xstream</artifactId>
-                <version>1.2.2</version>
+                <version>1.3</version>
             </dependency>
             <dependency><!-- TODO remove me as xstream brings in xpp3_min -->
                 <groupId>xpp3</groupId>
