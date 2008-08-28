@@ -13,7 +13,7 @@
     <url>http://www.jboss.com/products/rules</url>
 
     <properties>
-        <mvel.dep.version>2.0-dp4</mvel.dep.version>
+        <mvel.dep.version>2.0M1</mvel.dep.version>
     </properties>
 
 
@@ -221,6 +221,10 @@
                 <enabled>true</enabled>
             </releases>
         </repository>
+        <repository>
+    	    <id>codehaus-snapshot</id>
+    	    <url>http://snapshots.repository.codehaus.org</url>
+    	</repository>        
     </repositories>
 
     <pluginRepositories>
@@ -337,7 +341,6 @@
 
 
     <build>
-
 
         <extensions>
             <extension>
