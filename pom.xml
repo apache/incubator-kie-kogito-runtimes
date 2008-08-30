@@ -671,10 +671,11 @@
         <module>drools-templates</module>
         <module>drools-decisiontables</module>
         <module>drools-clips</module>
-        <module>drools-dataloaders</module>      
+        <module>drools-dataloaders</module>    
+        <module>drools-process</module>                  
         <!-- TODO enable these or create a profile in which they are enabled (to avoid making the build slow) -->
         <module>drools-server</module>
-        <module>drools-verifier</module>
+        <module>drools-verifier</module>        
         <module>drools-ant</module>
         <module>drools-repository</module>
         <module>drools-guvnor</module>
@@ -861,12 +862,28 @@
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr-runtime</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.1</version>        
+                <exclusions>
+                  <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>stringtemplate</artifactId>
+                  </exclusion>                                  
+                </exclusions>                        
             </dependency>
             <dependency>
 			    <groupId>org.antlr</groupId>
 			    <artifactId>gunit</artifactId>
                 <version>1.0.1</version>
+                <exclusions>
+                  <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>stringtemplate</artifactId>
+                  </exclusion>          
+                  <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-project</artifactId>
+                  </exclusion>                                                                
+                </exclusions>                                             
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jdt</groupId>
