@@ -331,12 +331,32 @@
                 <module>drools-eclipse</module>
             </modules>
         </profile>
-        <!--<profile> TODO remove me, as drools-solver is now included in the main build
-            <id>solver</id>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
             <modules>
-                <module>drools-solver</module>
+                <module>drools-docs</module>
+                <module>drools-eclipse</module>
+                <module>drools-examples</module>
             </modules>
-        </profile>-->
+        </profile>
+        <profile>
+            <id>cibuild</id>
+            <activation>
+                <property>
+                    <name>cibuild</name>
+                </property>
+            </activation>
+            <modules>
+                <module>drools-docs</module>
+                <module>drools-eclipse</module>
+                <module>drools-examples</module>
+            </modules>
+        </profile>
     </profiles>
 
 
@@ -673,13 +693,11 @@
         <module>drools-clips</module>
         <module>drools-dataloaders</module>    
         <module>drools-process</module>                  
-        <!-- TODO enable these or create a profile in which they are enabled (to avoid making the build slow) -->
         <module>drools-server</module>
         <module>drools-verifier</module>        
         <module>drools-ant</module>
         <module>drools-repository</module>
         <module>drools-guvnor</module>
-        <!--module>drools-examples</module-->
         <module>drools-solver</module>
     </modules>
 
