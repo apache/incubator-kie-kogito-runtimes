@@ -912,7 +912,7 @@
             <dependency>
                 <groupId>org.eclipse.jdt</groupId>
                 <artifactId>core</artifactId>
-                <version>3.2.3.v_686_R32x</version>
+                <version>3.4.2.v_883_R34x</version>
             </dependency>
             <dependency>
                 <groupId>janino</groupId>
