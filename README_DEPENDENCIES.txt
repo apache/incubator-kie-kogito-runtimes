@@ -22,7 +22,7 @@ rules for deployment. This depends on the CORE RUNTIME.
     * antlr3-runtime-3.0.1
     * xerces-2.4.0, xml-apis-1.0.b2 - only if you are using XML rules, if DRL
 only, can skip this.
-    * eclipse-jdt-core-3.2.3.v_686_R32x - only if you want to compile with
+    * eclipse-jdt-core-3.4.1.v_883_R34x - only if you want to compile with
 eclipse
     * janino-2.5.15 - only if you want to compile with janino
 
