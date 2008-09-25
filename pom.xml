@@ -529,7 +529,7 @@
                         <tagBase>
                             https://svn.labs.jboss.com/labs/jbossrules/tags
                         </tagBase>
-                        <preparationGoals>-Declipse=true -Ddocumentation=true clean install -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror</preparationGoals>
+                        <preparationGoals>-Drelease=true clean install -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror</preparationGoals>
                     </configuration>
                 </plugin>
 
