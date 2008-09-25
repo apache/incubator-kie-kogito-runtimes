@@ -98,8 +98,7 @@ echo
 
 echo "*************************************************************"
 echo "------> Generating artifacts"
-echo $MVN -Drelease=true -Dmaven.test.skip -Dydoc.home=$YDOC_HOME -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror package javadoc:javadoc assembly:assembly
-$MVN -Drelease=true -Dmaven.test.skip -Dydoc.home=$YDOC_HOME package javadoc:javadoc assembly:assembly
+echo $MVN -Drelease=true -Dmaven.test.skip -Dydoc.home=$YDOC_HOME -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror -Drules.site.deploy.dir=file://$WORKSPACE/rules-ouput package site:site site:deploy javadoc:javadoc assembly:assembly
 check_error "****** Error generating distribution artifacts. Exiting. ******"
 echo
  
@@ -108,9 +107,9 @@ echo "------> Uploading artifacts"
 mkdir target/$RELEASE_VERSION
 mv target/drools*.zip target/$RELEASE_VERSION
 check_error "****** Error preparing artifacts for upload. Exiting. ******"
-scp -r -i ~/.ssh/id_rsa target/$RELEASE_VERSION jbossqa@downloads.jboss.com:htdocs/drools/release/$RELEASE_VERSION
+scp -Br -i ~/.ssh/id_rsa target/$RELEASE_VERSION jbossqa@downloads.jboss.com:htdocs/drools/release/$RELEASE_VERSION
 check_error "****** Error uploading artifacts. Exiting. ******"
-scp -r -i ~/.ssh/id_rsa target/site jbossqa@downloads.jboss.com:htdocs/drools/docs/$RELEASE_VERSION
+scp -Br -i ~/.ssh/id_rsa target/site jbossqa@downloads.jboss.com:htdocs/drools/docs/$RELEASE_VERSION
 check_error "****** Error uploading documentation. Exiting. ******"
 echo
 
