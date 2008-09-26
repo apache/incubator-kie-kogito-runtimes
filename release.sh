@@ -1,5 +1,25 @@
 #/bin/sh
 
+# ...........................................................
+#
+# Drools Release script
+#
+# This script tries to automate as much as possible of the
+# release process for Drools trunk. 
+#
+# To use it, make sure you update the file release.env 
+# appropriately and then run 
+#
+# ./release.sh 
+# 
+# Optionaly you may pass a parameter to this script in order 
+# to run it locally (non-hudson environment):
+#
+# ./release.sh local
+#
+# @author: etirelli@redhat.com
+#
+
 #
 #  Checks if there is an error flag active and if so,
 #  shows an error message and terminates the script
@@ -66,6 +86,11 @@ EOF
 #
 #  Main script
 #
+if [ "local" == "$1" ]
+then
+    LOCAL_BUILD=true
+fi
+
 echo "*************************************************************"
 echo "------> Importing release configuration"
 . release.env
@@ -98,20 +123,28 @@ echo
 
 echo "*************************************************************"
 echo "------> Generating artifacts"
-echo $MVN -Drelease=true -Dmaven.test.skip -Dydoc.home=$YDOC_HOME -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror -Drules.site.deploy.dir=file://$WORKSPACE/rules-ouput package site:site site:deploy javadoc:javadoc assembly:assembly
+if [ -z "$LOCAL_BUILD" ] 
+then
+   $MVN -Drelease=true -Dmaven.test.skip -Dydoc.home=$YDOC_HOME -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror -Drules.site.deploy.dir=file://$WORKSPACE/rules-ouput package site:site site:deploy javadoc:javadoc assembly:assembly
+else
+   $MVN -Drelease=true -Dmaven.test.skip -Dydoc.home=$YDOC_HOME package javadoc:javadoc assembly:assembly
+fi
 check_error "****** Error generating distribution artifacts. Exiting. ******"
 echo
- 
-echo "*************************************************************"
-echo "------> Uploading artifacts"
-mkdir target/$RELEASE_VERSION
-mv target/drools*.zip target/$RELEASE_VERSION
-check_error "****** Error preparing artifacts for upload. Exiting. ******"
-scp -Br -i ~/.ssh/id_rsa target/$RELEASE_VERSION jbossqa@downloads.jboss.com:htdocs/drools/release/$RELEASE_VERSION
-check_error "****** Error uploading artifacts. Exiting. ******"
-scp -Br -i ~/.ssh/id_rsa target/site jbossqa@downloads.jboss.com:htdocs/drools/docs/$RELEASE_VERSION
-check_error "****** Error uploading documentation. Exiting. ******"
-echo
+
+if [ -z "$LOCAL_BUILD" ]
+then 
+    echo "*************************************************************"
+    echo "------> Uploading artifacts"
+    mkdir target/$RELEASE_VERSION
+    mv target/drools*.zip target/$RELEASE_VERSION
+    check_error "****** Error preparing artifacts for upload. Exiting. ******"
+    scp -Br -i ~/.ssh/id_rsa target/$RELEASE_VERSION jbossqa@downloads.jboss.com:htdocs/drools/release/$RELEASE_VERSION
+    check_error "****** Error uploading artifacts. Exiting. ******"
+    scp -Br -i ~/.ssh/id_rsa target/site jbossqa@downloads.jboss.com:htdocs/drools/docs/$RELEASE_VERSION
+    check_error "****** Error uploading documentation. Exiting. ******"
+    echo
+fi
 
 
 
