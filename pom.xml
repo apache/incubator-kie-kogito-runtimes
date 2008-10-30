@@ -704,6 +704,7 @@
     </reporting>
 
     <modules>
+        <module>drools-api</module>    
         <module>drools-core</module>
         <module>drools-compiler</module>
         <module>drools-jsr94</module>
@@ -743,6 +744,11 @@
             -->
 
             <!-- Internal dependencies -->
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>              
             <dependency>
                 <groupId>org.drools</groupId>
                 <artifactId>drools-core</artifactId>
