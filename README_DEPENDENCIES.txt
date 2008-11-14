@@ -5,6 +5,7 @@ CORE RUNTIME
 Runtime assumes that you are "compiling" rules using drools-compiler.
 
     * drools-core - the rule engine itself.
+    * drools-api
     * mvel-2.0M2
     * optional packages:
           o xpp3-1.1.3.4.O, xstream-1.2.2 - if you are using the file based
@@ -18,6 +19,7 @@ Rule compiler takes rules in some textual format and prepares binary Packages of
 rules for deployment. This depends on the CORE RUNTIME.
 
     * drools-core
+    * drools-api
     * drools-compiler - the rule compiler itself.
     * antlr3-runtime-3.0.1
     * xerces-2.4.0, xml-apis-1.0.b2 - only if you are using XML rules, if DRL
@@ -30,6 +32,7 @@ JSR-94
 This is the standard api for java rules (javax.rules).
 
     * drools-core
+    * drools-api
     * drools-compiler
     * drools-jsr94 - the implementation of the standard
     * jsr94-1.1 - the standard API for javax.rules.
@@ -38,6 +41,7 @@ DECISION TABLES
 Decision tables use spreadsheets to generate rules.
 
     * drools-core
+    * drools-api
     * drools-compiler - required as rules are generated and compiled
     * drools-decisiontables - contains the spreadsheet compiler for both XLS and
 CSV
