@@ -256,7 +256,7 @@
     </pluginRepositories>
 
     <profiles>
-        <profile>
+        <!--profile>
             <id>ydoc-doclet</id>
             <activation>
                 <property>
@@ -275,9 +275,9 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.3</version>
+                        <version>2.5</version>
                         <configuration>
-                            <aggregate>true</aggregate>
+                            <aggregate>false</aggregate>
                             <doclet>ydoc.doclets.YStandard</doclet>
                             <docletPath>
                                 ${ydoc.home}/lib/ydoc.jar${path.separator}${ydoc.home}/lib/class2svg.jar${path.separator}${ydoc.home}/resources
@@ -312,7 +312,7 @@
 
                 </plugins>
             </reporting>
-        </profile>
+        </profile-->
 
         <profile>
             <id>documentation</id>
@@ -396,12 +396,6 @@
                     See http://news.gmane.org/gmane.comp.apache.maven.announce
                 -->
 
-         <plugin>
-           <groupId>org.apache.maven.plugins</groupId>
-           <artifactId>maven-dependency-plugin</artifactId>
-           <version>2.0</version>
-         </plugin>
-
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>cobertura-maven-plugin</artifactId>
@@ -426,7 +420,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-help-plugin</artifactId>
-                    <version>2.0.2</version>
+                    <version>2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -436,7 +430,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.2</version>
+                    <version>2.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -450,7 +444,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.4.2</version>
+                    <version>2.4.3</version>
                     <configuration>
                         <includes>
                             <include>**/*Test.java</include>
@@ -504,7 +498,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.0-alpha-4</version>
+                    <version>2.0</version>
                 </plugin>
 
                 <plugin>
@@ -513,14 +507,15 @@
                     <version>2.2-beta-2</version>
                     <configuration>
                         <descriptors>
-                            <descriptor>src/main/assembly/pre-bin.xml</descriptor>
+                            <!--descriptor>src/main/assembly/pre-bin.xml</descriptor>
                             <descriptor>src/main/assembly/bin.xml</descriptor>
 			                <descriptor>src/main/assembly/guvnor.xml</descriptor>
                             <descriptor>src/main/assembly/src.xml</descriptor>
                             <descriptor>src/main/assembly/eclipse.xml</descriptor>
                             <descriptor>src/main/assembly/examples.xml</descriptor>
                             <descriptor>src/main/assembly/solver.xml</descriptor>
-                            <descriptor>src/main/assembly/docs.xml</descriptor>
+                            <descriptor>src/main/assembly/docs.xml</descriptor-->
+                            <descriptor>src/main/assembly/javadocs.xml</descriptor>
                         </descriptors>
                     </configuration>
                 </plugin>
@@ -528,7 +523,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-archetype-plugin</artifactId>
-                    <version>1.0-alpha-7</version>
+                    <version>2.0-alpha-4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -538,12 +533,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.3</version>
+                    <version>2.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.0-beta-7</version>
+                    <version>2.0-beta-8</version>
                     <configuration>
                         <tagBase>
                             https://svn.labs.jboss.com/labs/jbossrules/tags
@@ -556,7 +551,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-eclipse-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>2.5</version>
                     <configuration>
                         <!--<downloadSources>true</downloadSources>-->
                     </configuration>
@@ -564,7 +559,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-idea-plugin</artifactId>
-                    <version>2.1</version>
+                    <version>2.2</version>
                     <configuration>
                         <downloadSources>true</downloadSources>
                     </configuration>
@@ -572,14 +567,14 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.1-beta-1</version>
+                    <version>1.1</version>
                 </plugin>
 
                 <!--Site -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>2.0-beta-6</version>
+                    <version>2.0-beta-7</version>
                 </plugin>
 
             </plugins>
@@ -616,14 +611,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.5</version>
                 <configuration>
-                    <aggregate>true</aggregate>
+                    <aggregate>false</aggregate>
                     <links>
                         <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
                     </links>
                     <minmemory>128m</minmemory>
                     <maxmemory>512</maxmemory>
+                    <author>false</author>
+                    <bottom>true</bottom>
+                    <header>JBoss Drools</header>
+                    <packagenames>org.drools.*</packagenames>
+                    <use>true</use>
+                    <version>true</version>
+                    <windowtitle>${project.name} ${project.version} API</windowtitle>
+                    <breakiterator>true</breakiterator>
 		    <excludePackageNames>org.drools.brms.client</excludePackageNames>
                 </configuration>
             </plugin>
