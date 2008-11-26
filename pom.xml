@@ -934,6 +934,21 @@
                 </exclusions>                        
             </dependency>
             <dependency>
+		<groupId>org.antlr</groupId>
+		<artifactId>antlr</artifactId>
+                <version>3.1.1</version>
+                <exclusions>
+                  <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>stringtemplate</artifactId>
+                  </exclusion>      
+                  <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-project</artifactId>
+                  </exclusion>                                                                
+                </exclusions>                                             
+            </dependency>
+            <dependency>
                 <groupId>org.eclipse.jdt</groupId>
                 <artifactId>core</artifactId>
                 <version>3.4.2.v_883_R34x</version>
