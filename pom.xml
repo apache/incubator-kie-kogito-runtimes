@@ -920,6 +920,11 @@
                 <artifactId>mvel2</artifactId>
                 <version>${mvel.dep.version}</version>
             </dependency>
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>1.5.2</version>
+            </dependency>
 
             <!-- drools-compiler -->
             <dependency>
