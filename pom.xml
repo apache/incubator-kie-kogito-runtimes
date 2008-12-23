@@ -714,7 +714,7 @@
         <module>drools-templates</module>
         <module>drools-decisiontables</module>
         <module>drools-clips</module>
-        <module>drools-dataloaders</module>    
+        <module>drools-pipeline</module>    
         <module>drools-process</module>                  
         <module>drools-server</module>
         <module>drools-verifier</module>        
