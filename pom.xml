@@ -998,6 +998,12 @@
                 <artifactId>jxl</artifactId>
                 <version>2.4.2</version>
             </dependency>
+            
+            <dependency>
+              <groupId>net.sf.jxls</groupId>
+              <artifactId>jxls-reader</artifactId> 
+              <version>0.9.6</version>              
+            </dependency>             
 
             <!-- drools-server -->
             <dependency>
