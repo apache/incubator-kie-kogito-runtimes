@@ -874,6 +874,43 @@
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
+            
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-pipeline</artifactId>
+                <version>${project.version}</version>
+            </dependency>       
+            
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-transformer-jaxb</artifactId>
+                <version>${project.version}</version>
+            </dependency>  
+
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-transformer-jxls</artifactId>
+                <version>${project.version}</version>
+            </dependency>  
+            
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-transformer-smooks</artifactId>
+                <version>${project.version}</version>
+            </dependency>    
+            
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-transformer-xstream</artifactId>
+                <version>${project.version}</version>
+            </dependency>       
+
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-messenger-jms</artifactId>
+                <version>${project.version}</version>
+            </dependency>   
+            
             <dependency>
                 <groupId>org.drools</groupId>
                 <artifactId>drools-guvnor</artifactId>
