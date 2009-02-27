@@ -817,6 +817,7 @@
         <!--module>drools-clips</module-->
         <module>drools-pipeline</module>    
         <module>drools-process</module>                  
+        <module>drools-persistence.jpa</module>                  
         <module>drools-server</module>
         <module>drools-verifier</module>        
         <module>drools-ant</module>
