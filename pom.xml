@@ -13,7 +13,7 @@
     <url>http://www.jboss.com/products/rules</url>
 
     <properties>
-        <mvel.dep.version>2.0.7-SNAPSHOT</mvel.dep.version>
+        <mvel.dep.version>2.0.8-SNAPSHOT</mvel.dep.version>
     </properties>
 
 
@@ -179,7 +179,7 @@
             </releases>
         </repository>
         
-        <repository><!-- TODO dead code, this probably isn't used anymore -->
+        <repository><!-- used by mvel to publish snapshots -->
             <id>codehaus-snapshot</id>
             <url>http://snapshots.repository.codehaus.org</url>
             <snapshots>
@@ -222,8 +222,8 @@
             </releases>
         </repository>
         <repository>
-    	    <id>codehaus-snapshot</id>
-    	    <url>http://snapshots.repository.codehaus.org</url>
+    	    <id>codehaus</id>
+    	    <url>http://repository.codehaus.org</url>
     	</repository>        
         <repository>
             <id>apache-incubating</id>
