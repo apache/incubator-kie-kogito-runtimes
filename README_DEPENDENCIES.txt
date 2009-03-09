@@ -1,5 +1,12 @@
 This is a summary of what jars you may need in your situation. Abbreviated names
 have been used (only the first part of the jar name).
+API
+    * jaxb-impl 2.1.9
+    * jaxb-xjc 2.1.9
+    * milyn-smooks-javabean 1.1
+    * jxls-reader 0.9.6
+    * xstream 1.3.1 
+    * jms 1.1
 
 CORE RUNTIME
 Runtime assumes that you are "compiling" rules using drools-compiler.
@@ -48,6 +55,34 @@ Decision tables use spreadsheets to generate rules.
     * drools-decisiontables - contains the spreadsheet compiler for both XLS and
 CSV
     * jxl-2.4.2 (jexcelapi) - for parsing Excel spreadsheets.
+
+ANT
+Ant tasks for creating rule and knowledge packages and to verify rules.
+
+    * drools-api
+    * drools-core
+    * drools-compiler
+    * drools-decisiontables
+    * ant 1.6.5
+    * ant-nodeps 1.6.5
+    * xstream 1.3.1
+    * drools-verifier - If you are using the verifier ant task
+
+SERVER
+    * drools-compiler
+    * xstream 1.3.1 
+    * stax 1.2.0
+    * jettison 1.0.1
+    * servlet-api 2.3
+
+TEMPLATES
+    * drools-core
+    * drools-compiler
+
+VERIFIER
+    * drools-compiler
+    * xstream 1.3.1 - If you are using the XML report
+
 
 The most common use case is for COMPILER - this allows rules to be loaded from
 their source form,
