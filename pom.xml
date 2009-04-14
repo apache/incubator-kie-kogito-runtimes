@@ -16,7 +16,9 @@
         <mvel.dep.version>2.0.8-SNAPSHOT</mvel.dep.version>
     </properties>
 
-
+    <prerequisites>
+        <maven>2.0.9</maven>
+    </prerequisites>
     <issueManagement>
         <system>jira</system>
         <url>http://jira.jboss.com/jira/browse/JBRULES</url>
