@@ -21,7 +21,7 @@ You can produce distribution builds, which puts everything into zips, as
 follows:
 mvn -Declipse -Ddocumentation clean install
     -DlocalEclipseDrop=/folder/jboss-rules/local-eclipse-drop-mirror
-mvn -Ddocumentation -Declipse -Dmaven.test.skip package javadoc:javadoc assembly:assembly 
+mvn -Ddocumentation -Declipse -DskipTests package javadoc:javadoc assembly:assembly 
     -DlocalEclipseDrop=/folder/jboss-rules/local-eclipse-drop-mirror
 
 Note that install must be done first as javadoc:javadoc won't work unless the
