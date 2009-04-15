@@ -815,7 +815,7 @@
         <module>drools-core</module>
         <module>drools-compiler</module>
         <module>drools-jsr94</module>
-        <!--module>drools-templates</module-->
+        <module>drools-templates</module>
         <module>drools-decisiontables</module>
         <!--module>drools-clips</module-->
         <module>drools-pipeline</module>    
