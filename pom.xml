@@ -617,7 +617,7 @@
                             <descriptor>src/main/assembly/src.xml</descriptor>
                             <descriptor>src/main/assembly/eclipse.xml</descriptor>
                             <descriptor>src/main/assembly/examples.xml</descriptor>
-                            <!--descriptor>src/main/assembly/solver.xml</descriptor-->
+                            <descriptor>src/main/assembly/solver.xml</descriptor>
                             <descriptor>src/main/assembly/docs.xml</descriptor>
                             <descriptor>src/main/assembly/javadocs.xml</descriptor>
                         </descriptors>
@@ -817,7 +817,7 @@
         <module>drools-jsr94</module>
         <module>drools-templates</module>
         <module>drools-decisiontables</module>
-        <!--module>drools-clips</module-->
+        <module>drools-clips</module>
         <module>drools-pipeline</module>    
         <module>drools-process</module>                  
 	<module>drools-persistence-jpa</module>  
@@ -826,7 +826,7 @@
         <module>drools-ant</module>
         <module>drools-repository</module>
         <module>drools-guvnor</module>
-        <!--module>drools-solver</module-->
+        <module>drools-solver</module>
         <module>drools-container/drools-mc</module>
     </modules>
 
