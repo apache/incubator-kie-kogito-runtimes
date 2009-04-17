@@ -432,9 +432,9 @@
 	            <module>drools-pipeline</module>    
 	            <module>drools-process</module>                  
 	            <module>drools-atom</module>                  
-	            <module>drools-bpel</module>                 
+	            <!-- <module>drools-bpel</module>                 
 	            <module>drools-jpdl</module>                 
-	            <module>drools-osworkflow</module>          
+	            <module>drools-osworkflow</module>          -->
 	            <module>drools-server</module>
 	            <module>drools-verifier</module>        
 	            <module>drools-ant</module>
