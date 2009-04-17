@@ -1317,10 +1317,10 @@
         </snapshotRepository>
 
         <!-- TODO configure this if it's needed -->
-        <repository>
-           <id>maven.jboss.org</id>
-           <url>https://svn.jboss.org/repos/repository.jboss.org/maven2</url>
-        </repository>
+        <!--<repository>-->
+         <!--  <id>maven.jboss.org</id>-->
+          <!-- <url>https://svn.jboss.org/repos/repository.jboss.org/maven2</url>-->
+        <!--/repository>-->
         <!--    <snapshotRepository>
          <id>snapshots.jboss.org</id>
        </snapshotRepository> -->
