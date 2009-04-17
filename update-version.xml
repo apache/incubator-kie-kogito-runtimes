@@ -23,7 +23,7 @@
       </replaceregexp>             
 
       <replaceregexp match="&lt;releaseinfo&gt;${current}&lt;/releaseinfo&gt;"
-                     replace="&lt;versioninfo&gt;${new}&lt;/infoversion&gt;" 
+                     replace="&lt;releaseinfo&gt;${new}&lt;/releaseinfo&gt;" 
                      byline="true">
         <fileset dir="." includes="drools-docs/drools-*/src/main/docbook/**/master.xml"/>
       </replaceregexp> 
