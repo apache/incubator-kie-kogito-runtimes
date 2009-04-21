@@ -13,7 +13,7 @@
     <url>http://www.jboss.com/products/rules</url>
 
     <properties>
-        <mvel.dep.version>2.0.9pre2</mvel.dep.version>
+        <mvel.dep.version>2.0.9-SNAPSHOT</mvel.dep.version>
     </properties>
 
     <prerequisites>
