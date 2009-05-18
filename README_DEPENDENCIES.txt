@@ -13,7 +13,7 @@ Runtime assumes that you are "compiling" rules using drools-compiler.
 
     * drools-core - the rule engine itself.
     * drools-api
-    * mvel2-2.0.8pre2
+    * mvel2-2.0.10
     * joda-time-1.6
     * optional packages:
           o xpp3_min-1.1.4c, xstream-1.3.1 - if you are using the file based
@@ -32,7 +32,7 @@ rules for deployment. This depends on the CORE RUNTIME.
     * antlr3-runtime-3.1.1
     * xerces-2.9.1, xml-apis-2.0.2 - only if you are using XML rules, if DRL
 only, can skip this.
-    * eclipse-jdt-core-3.4.1.v_883_R34x - only if you want to compile with
+    * eclipse-jdt-core-3.4.2.v_883_R34x - only if you want to compile with
 eclipse
     * janino-2.5.15 - only if you want to compile with janino
 
