@@ -935,6 +935,11 @@
             </dependency>            
             <dependency>
                 <groupId>org.drools</groupId>
+                <artifactId>drools-bam</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
                 <artifactId>drools-docs</artifactId>
                 <version>${project.version}</version>
             </dependency>
