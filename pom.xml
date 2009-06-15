@@ -1193,7 +1193,7 @@
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>jackrabbit-core</artifactId>
-                <version>1.4.5</version>
+                <version>1.5.5</version>
                 <!-- and getting rid of some annoying transitive junk not really needed for us -->
                 <exclusions>
                     <exclusion>
