@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.drools</groupId>
+    <groupId>org.drools</groupId>`
     <artifactId>drools</artifactId>
     <packaging>pom</packaging>
     <name>Drools</name>
@@ -232,6 +232,16 @@
             <name>Apache Incubating Repository</name>
             <url>http://people.apache.org/repo/m2-incubating-repository/</url>
         </repository>
+        <repository>
+            <id>rio-project.org</id>
+            <url>http://www.rio-project.org/maven2</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+               <enabled>true</enabled>
+            </releases>
+        </repository>           
     </repositories>
 
     <pluginRepositories>
@@ -425,6 +435,7 @@
                 <module>drools-api</module>    
                 <module>drools-core</module>
                 <module>drools-compiler</module>
+                <module>drools-simulator</module>
                 <module>drools-jsr94</module>
                 <module>drools-templates</module>
                 <module>drools-decisiontables</module>
@@ -832,13 +843,14 @@
         <module>drools-guvnor</module>
         <module>drools-solver</module>
         <module>drools-container/drools-mc</module>
+        <module>drools-agent-jini</module>
     </modules>
 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
