@@ -1115,8 +1115,8 @@
                 </exclusions>                        
             </dependency>
             <dependency>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr</artifactId>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr</artifactId>
                 <version>3.1.1</version>
                 <exclusions>
                   <exclusion>
