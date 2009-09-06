@@ -844,7 +844,7 @@
         <module>drools-guvnor</module>
         <module>drools-solver</module>
         <module>drools-container/drools-mc</module>
-        <module>drools-agent-jini</module>
+        <!--module>drools-agent-jini</module-->
         <module>drools-vsm</module>
     </modules>
 
