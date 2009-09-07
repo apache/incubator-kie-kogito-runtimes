@@ -1065,6 +1065,22 @@
             
             <dependency>
                 <groupId>org.drools</groupId>
+                <artifactId>drools-gwt-console</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-gwt-graph</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-gwt-form</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.drools</groupId>
                 <artifactId>drools-eclipse-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>            
