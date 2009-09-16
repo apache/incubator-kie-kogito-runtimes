@@ -1080,6 +1080,12 @@
             
             <dependency>
                 <groupId>org.drools</groupId>
+                <artifactId>drools-persistence-jpa</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.drools</groupId>
                 <artifactId>drools-gwt-console</artifactId>
                 <version>${project.version}</version>
             </dependency>
