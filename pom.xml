@@ -393,6 +393,7 @@
                 <module>drools-process</module>                  
                 <module>drools-server</module-->
                 <module>drools-verifier</module>        
+                <module>drools-doc</module>        
                 <module>drools-ant</module>
                 <module>drools-repository</module>
                 <module>drools-guvnor</module>
@@ -448,6 +449,7 @@
                 <module>drools-osworkflow</module>          -->
                 <module>drools-server</module>
                 <module>drools-verifier</module>        
+                <module>drools-doc</module>        
                 <module>drools-ant</module>
                 <module>drools-repository</module>
                 <module>drools-guvnor</module>
@@ -839,6 +841,7 @@
         <module>drools-persistence-jpa</module>  
         <module>drools-server</module>
         <module>drools-verifier</module>        
+        <module>drools-doc</module>        
         <module>drools-ant</module>
         <module>drools-repository</module>
         <module>drools-guvnor</module>
@@ -993,6 +996,18 @@
                 <scope>test</scope>
             </dependency>
 
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-doc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-doc</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
 
             <dependency>
                 <groupId>org.drools</groupId>
