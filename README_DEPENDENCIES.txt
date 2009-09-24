@@ -13,10 +13,10 @@ Runtime assumes that you are "compiling" rules using drools-compiler.
 
     * drools-core - the rule engine itself.
     * drools-api
-    * mvel2-2.0.10
+    * mvel2-2.0.12
     * joda-time-1.6
     * optional packages:
-          o xpp3_min-1.1.4c, xstream-1.3.1 - if you are using the file based
+          o xpp3_min-1.1.3.4.0, xstream-1.3.1 - if you are using the file based
 audit feature
 
 Note you can use the drools-core stand-alone if you are compiling "outside" your
