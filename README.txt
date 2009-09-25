@@ -42,5 +42,3 @@ from previously existing classes are working fine.
 
 * There are still some issues with MVEL code completion.
 
-* MVEL debug is not working.
-
