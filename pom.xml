@@ -831,12 +831,13 @@
         <module>drools-api</module>    
         <module>drools-core</module>
         <module>drools-compiler</module>
+        <module>drools-vsm</module>  
+        <module>drools-pipeline</module>                    
         <module>drools-simulator</module>
         <module>drools-jsr94</module>
         <module>drools-templates</module>
         <module>drools-decisiontables</module>
         <module>drools-clips</module>
-        <module>drools-pipeline</module>    
         <module>drools-process</module>                  
         <module>drools-persistence-jpa</module>  
         <module>drools-server</module>
@@ -848,7 +849,6 @@
         <module>drools-solver</module>
         <module>drools-container/drools-mc</module>
         <!--module>drools-agent-jini</module-->
-        <module>drools-vsm</module>
     </modules>
 
     <dependencies>
