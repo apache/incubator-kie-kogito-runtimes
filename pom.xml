@@ -832,7 +832,8 @@
         <module>drools-core</module>
         <module>drools-compiler</module>
         <module>drools-vsm</module>  
-        <module>drools-pipeline</module>                    
+        <module>drools-pipeline</module>   
+        <module>drools-container</module>         
         <module>drools-simulator</module>
         <module>drools-jsr94</module>
         <module>drools-templates</module>
