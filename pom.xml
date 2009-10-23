@@ -971,6 +971,19 @@
                 <artifactId>drools-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-vsm</artifactId>
+                <version>${project.version}</version>
+            </dependency>      
+
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-spring</artifactId>
+                <version>${project.version}</version>
+            </dependency>    
+            
             <dependency>
                 <groupId>org.drools</groupId>
                 <artifactId>drools-ant</artifactId>
