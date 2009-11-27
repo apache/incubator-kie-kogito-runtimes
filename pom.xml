@@ -243,10 +243,10 @@
             </releases>
         </repository>     
         <repository>
-	  <id>java.net</id>
-	  <url>http://download.java.net/maven/2</url>
-	  <layout>legacy</layout>
-	</repository>    
+          <id>java.net</id>
+          <url>http://download.java.net/maven/2</url>
+          <layout>legacy</layout>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -462,29 +462,29 @@
                 <module>drools-container/drools-mc</module>
             </modules>
             <build>
-                    <pluginManagement>
-                        <plugins>
-                            <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-assembly-plugin</artifactId>
-                            <version>2.2-beta-2</version>
-                            <configuration>
-                                <descriptors>
-                                    <descriptor>src/main/assembly/pre-bin.xml</descriptor>
-                                    <descriptor>src/main/assembly/bin.xml</descriptor>
-                        <descriptor>src/main/assembly/guvnor.xml</descriptor>
-                                    <descriptor>src/main/assembly/src.xml</descriptor>
-                                    <descriptor>src/main/assembly/eclipse.xml</descriptor>
-                                    <descriptor>src/main/assembly/examples.xml</descriptor>
-                                    <descriptor>src/main/assembly/solver.xml</descriptor>
-                                    <descriptor>src/main/assembly/docs.xml</descriptor>
-                                    <descriptor>src/main/assembly/javadocs.xml</descriptor>
-                                </descriptors>
-                            </configuration>
-                            
-                            </plugin>
-                        </plugins>
-                    </pluginManagement>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2-beta-2</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/pre-bin.xml</descriptor>
+                                <descriptor>src/main/assembly/bin.xml</descriptor>
+                                <descriptor>src/main/assembly/guvnor.xml</descriptor>
+                                <descriptor>src/main/assembly/src.xml</descriptor>
+                                <descriptor>src/main/assembly/eclipse.xml</descriptor>
+                                <descriptor>src/main/assembly/examples.xml</descriptor>
+                                <descriptor>src/main/assembly/solver.xml</descriptor>
+                                <descriptor>src/main/assembly/docs.xml</descriptor>
+                                <descriptor>src/main/assembly/javadocs.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
             </build>
     
         </profile>        
