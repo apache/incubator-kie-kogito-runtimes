@@ -402,7 +402,7 @@
                 <module>drools-ant</module>
                 <module>drools-repository</module>
                 <module>drools-guvnor</module>
-                <!--module>drools-solver</module-->
+                <!--module>drools-planner</module-->
                 <module>drools-container/drools-mc</module>
             </modules>
             <build>
@@ -416,14 +416,14 @@
                                 <descriptors>
                                     <descriptor>src/main/assembly/pre-bin_soaversion.xml</descriptor>
                                     <descriptor>src/main/assembly/bin.xml</descriptor>
-                        <descriptor>src/main/assembly/guvnor_soaversion.xml</descriptor>
+                                    <descriptor>src/main/assembly/guvnor_soaversion.xml</descriptor>
                                     <descriptor>src/main/assembly/src_soaversion.xml</descriptor>
                                     <descriptor>src/main/assembly/eclipse.xml</descriptor>
                                     <descriptor>src/main/assembly/examples.xml</descriptor>
                                     <descriptor>src/main/assembly/solver.xml</descriptor>
                                     <descriptor>src/main/assembly/docs_soaversion.xml</descriptor>
                                     <descriptor>src/main/assembly/javadocs_soaversion.xml</descriptor>
-                                            <descriptor>src/main/assembly/soa.xml</descriptor>
+                                    <descriptor>src/main/assembly/soa.xml</descriptor>
                                 </descriptors>
                             </configuration>
                             
@@ -458,7 +458,7 @@
                 <module>drools-ant</module>
                 <module>drools-repository</module>
                 <module>drools-guvnor</module>
-                <module>drools-solver</module>
+                <module>drools-planner</module>
                 <module>drools-container/drools-mc</module>
             </modules>
             <build>
@@ -852,7 +852,7 @@
         <module>drools-ant</module>
         <module>drools-repository</module>
         <module>drools-guvnor</module>
-        <module>drools-solver</module>
+        <module>drools-planner</module>
         <module>drools-container/drools-mc</module>
         <!--module>drools-agent-jini</module-->
     </modules>
@@ -1126,13 +1126,13 @@
             </dependency>            
 
             <dependency>
-                <groupId>org.drools.solver</groupId>
-                <artifactId>drools-solver-core</artifactId>
+                <groupId>org.drools.planner</groupId>
+                <artifactId>drools-planner-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.drools.solver</groupId>
-                <artifactId>drools-solver-examples</artifactId>
+                <groupId>org.drools.planner</groupId>
+                <artifactId>drools-planner-examples</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -1245,7 +1245,7 @@
                 <version>1.4.4</version>
             </dependency>
 
-            <!-- Logging for drools-repository and drools-solver -->
+            <!-- Logging for drools-repository and drools-planner -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -1358,7 +1358,7 @@
                 <version>1.2.1</version>
             </dependency>
 
-            <!-- drools-solver -->
+            <!-- drools-planner -->
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
