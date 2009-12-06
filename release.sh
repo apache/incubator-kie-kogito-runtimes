@@ -55,14 +55,14 @@ scm.tag=$TAG_VERSION
 project.rel.org.drools\:drools-ant=$REL_VERSION
 project.dev.org.drools\:drools-templates=$DEV_VERSION
 project.dev.org.drools\:drools-clips=$DEV_VERSION
-project.dev.org.drools.solver\:drools-solver=$DEV_VERSION
+project.dev.org.drools.planner\:drools-planner=$DEV_VERSION
 project.dev.org.drools\:drools-repository=$DEV_VERSION
 project.rel.org.drools\:drools-repository=$REL_VERSION
-project.rel.org.drools.solver\:drools-solver-core=$REL_VERSION
+project.rel.org.drools.planner\:drools-planner-core=$REL_VERSION
 project.rel.org.drools\:drools-clips=$REL_VERSION
-project.rel.org.drools.solver\:drools-solver=$REL_VERSION
+project.rel.org.drools.planner\:drools-planner=$REL_VERSION
 project.dev.org.drools\:drools-decisiontables=$DEV_VERSION
-project.dev.org.drools.solver\:drools-solver-examples=$DEV_VERSION
+project.dev.org.drools.planner\:drools-planner-examples=$DEV_VERSION
 project.dev.org.drools\:drools-compiler=$DEV_VERSION
 project.rel.org.drools\:drools-core=$REL_VERSION
 project.dev.org.drools\:drools-verifier=$DEV_VERSION
@@ -74,12 +74,12 @@ project.rel.org.drools\:drools-decisiontables=$REL_VERSION
 project.rel.org.drools\:drools-templates=$REL_VERSION
 project.dev.org.drools\:drools-jsr94=$DEV_VERSION
 project.rel.org.drools\:drools-guvnor=$REL_VERSION
-project.dev.org.drools.solver\:drools-solver-core=$DEV_VERSION
+project.dev.org.drools.planner\:drools-planner-core=$DEV_VERSION
 project.rel.org.drools\:drools=$REL_VERSION
 project.rel.org.drools\:drools-jsr94=$REL_VERSION
 project.dev.org.drools\:drools=$DEV_VERSION
 project.dev.org.drools\:drools-core=$DEV_VERSION
-project.rel.org.drools.solver\:drools-solver-examples=$REL_VERSION
+project.rel.org.drools.planner\:drools-planner-examples=$REL_VERSION
 EOF
 }
 

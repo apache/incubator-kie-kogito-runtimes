@@ -19,7 +19,7 @@
 				   drools-docs/docbook-*/pom.xml,
 				   drools-dataloaders/**/pom.xml,
 				   drools-container/**/pom.xml,
-                                   drools-solver/**/pom.xml, drools-process/**/pom.xml"/>
+                                   drools-planner/**/pom.xml, drools-process/**/pom.xml"/>
       </replaceregexp>             
 
       <replaceregexp match="&lt;releaseinfo&gt;${current}&lt;/releaseinfo&gt;"
