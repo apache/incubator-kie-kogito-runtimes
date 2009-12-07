@@ -565,6 +565,9 @@
                     <configuration>
                         <source>1.5</source>
                         <target>1.5</target>
+                        <fork>true</fork>
+                        <meminitial>128m</meminitial>
+                        <maxmem>512m</maxmem>
                     </configuration>
                 </plugin>
                 <plugin>
