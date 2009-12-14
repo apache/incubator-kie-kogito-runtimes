@@ -822,7 +822,7 @@
             <!--<version>2.0-beta-1</version>-->
             <!--</plugin>-->
             <plugin>
-                <!-- In 2.0-beta-1 an aggegate works after running "mvn site" twice -->
+                <!-- In 2.0-beta-1 an aggregate works after running "mvn site" twice -->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javancss-maven-plugin</artifactId>
                 <version>2.0-beta-2</version>
@@ -885,7 +885,7 @@
         <dependencies>
             <!--
                 Declare all dependency versions and default scopes here, but not optional.
-                Each module should declare it's direct dependency and possibily overwrite scope/optional.
+                Each module should declare it's direct dependency and possibly overwrite scope/optional.
             -->
 
             <!-- Internal dependencies -->
