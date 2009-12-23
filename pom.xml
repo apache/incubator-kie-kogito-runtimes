@@ -350,6 +350,7 @@
                 </property>
             </activation>
             <modules>
+	            <!--module>drools-assistant</module-->
                 <module>drools-eclipse</module>
             </modules>
         </profile>
@@ -362,6 +363,7 @@
             </activation>
             <modules>
                 <module>drools-docs</module>
+                <!--module>drools-assistant</module-->
                 <module>drools-eclipse</module>
                 <module>drools-examples</module>
             </modules>
@@ -375,6 +377,7 @@
             </activation>
             <modules>
                 <module>drools-docs</module>
+                <!--module>drools-assistant</module-->
                 <module>drools-eclipse</module>
                 <module>drools-examples</module>
             </modules>
