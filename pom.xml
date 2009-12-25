@@ -438,7 +438,7 @@
         <profile>
             <id>default</id>
             <activation>
-                    <activeByDefault>true</activeByDefault> 
+                <activeByDefault>true</activeByDefault> 
             </activation>            
             <modules>
                 <module>drools-api</module>    
@@ -468,28 +468,26 @@
                 <pluginManagement>
                     <plugins>
                         <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.2-beta-2</version>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/pre-bin.xml</descriptor>
-                                <descriptor>src/main/assembly/bin.xml</descriptor>
-                                <descriptor>src/main/assembly/guvnor.xml</descriptor>
-                                <descriptor>src/main/assembly/src.xml</descriptor>
-                                <descriptor>src/main/assembly/eclipse.xml</descriptor>
-                                <descriptor>src/main/assembly/examples.xml</descriptor>
-                                <descriptor>src/main/assembly/planner.xml</descriptor>
-                                <descriptor>src/main/assembly/docs.xml</descriptor>
-                                <descriptor>src/main/assembly/javadocs.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-assembly-plugin</artifactId>
+                            <version>2.2-beta-2</version>
+                            <configuration>
+                                <descriptors>
+                                    <descriptor>src/main/assembly/pre-bin.xml</descriptor>
+                                    <descriptor>src/main/assembly/bin.xml</descriptor>
+                                    <descriptor>src/main/assembly/guvnor.xml</descriptor>
+                                    <descriptor>src/main/assembly/src.xml</descriptor>
+                                    <descriptor>src/main/assembly/eclipse.xml</descriptor>
+                                    <descriptor>src/main/assembly/examples.xml</descriptor>
+                                    <descriptor>src/main/assembly/planner.xml</descriptor>
+                                    <descriptor>src/main/assembly/docs.xml</descriptor>
+                                    <descriptor>src/main/assembly/javadocs.xml</descriptor>
+                                </descriptors>
+                            </configuration>
                         </plugin>
                     </plugins>
                 </pluginManagement>
             </build>
-    
         </profile>        
     </profiles>
 
@@ -543,7 +541,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
 
                 <!-- Building -->
                 <plugin>
@@ -686,14 +683,6 @@
                     <version>2.5</version>
                     <configuration>
                         <!--<downloadSources>true</downloadSources>-->
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-idea-plugin</artifactId>
-                    <version>2.2</version>
-                    <configuration>
-                        <downloadSources>true</downloadSources>
                     </configuration>
                 </plugin>
                 <plugin>
