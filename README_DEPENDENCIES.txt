@@ -42,6 +42,7 @@ This is the standard api for java rules (javax.rules).
     * drools-core
     * drools-api
     * drools-compiler
+    * drools-decisiontables
     * drools-jsr94 - the implementation of the standard
     * jsr94-1.1 - the standard API for javax.rules.
 
@@ -80,8 +81,14 @@ TEMPLATES
     * drools-compiler
 
 VERIFIER
+    * drools-api
     * drools-compiler
     * xstream 1.3.1 - If you are using the XML report
+
+DROOLSDOC
+Creates a PDF documentation from DRL
+    * itext 2.1.2
+
 
 
 The most common use case is for COMPILER - this allows rules to be loaded from
