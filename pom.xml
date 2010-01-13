@@ -1091,7 +1091,7 @@
             <dependency>  
                <groupId>org.osgi</groupId>  
                <artifactId>org.osgi.core</artifactId>  
-               <version>4.1.0.build-200702212030</version> 
+               <version>r4v42</version> 
             </dependency>
             
             <!-- drools-core -->
