@@ -1141,7 +1141,7 @@
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>gunit</artifactId>
-                <version>3.2</version>
+                <version>3.1.3</version>
             </dependency>              
            <dependency>  
               <groupId>org.apache.jasper.springsource</groupId>  
@@ -1225,7 +1225,13 @@
              <groupId>org.slf4j</groupId>  
              <artifactId>com.springsource.slf4j.log4j</artifactId>  
              <version>1.5.3</version> 
-            </dependency>      
+            </dependency>    
+
+            <dependency>  
+               <groupId>org.slf4j</groupId>  
+               <artifactId>com.springsource.slf4j.juli</artifactId>  
+               <version>1.5.10</version> 
+            </dependency>            
           
             <dependency>  
              <groupId>org.apache.log4j</groupId>  
