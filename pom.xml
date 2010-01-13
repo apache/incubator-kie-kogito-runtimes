@@ -1088,48 +1088,49 @@
             </dependency>
 
             <!-- External dependencies -->
+            <dependency>  
+               <groupId>org.osgi</groupId>  
+               <artifactId>org.osgi.core</artifactId>  
+               <version>4.1.0.build-200702212030</version> 
+            </dependency>
+            
             <!-- drools-core -->
-            <dependency>
-                <groupId>com.thoughtworks.xstream</groupId>
-                <artifactId>xstream</artifactId>
-                <version>1.3.1</version>
-            </dependency>
-            <dependency><!-- TODO remove me as xstream brings in xpp3_min -->
-                <groupId>xpp3</groupId>
-                <artifactId>xpp3</artifactId>
-                <version>1.1.3.4.O</version>
-            </dependency>
+           <dependency>  
+              <groupId>com.thoughtworks.xstream</groupId>  
+              <artifactId>com.springsource.com.thoughtworks.xstream</artifactId>  
+              <version>1.3.1</version> 
+           </dependency>
             <dependency>
                 <groupId>org.mvel</groupId>
                 <artifactId>mvel2</artifactId>
                 <version>${mvel.dep.version}</version>
             </dependency>
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>1.6</version>
-            </dependency>
+            <dependency>  
+              <groupId>org.joda</groupId>  
+              <artifactId>com.springsource.org.joda.time</artifactId>  
+              <version>1.6.0</version> 
+            </dependency>  
 
             <!-- drools-compiler -->
             <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr-runtime</artifactId>
-                <version>3.1.1</version>        
+               <groupId>org.antlr</groupId>  
+               <artifactId>com.springsource.org.antlr.runtime</artifactId> 
+                <version>3.1.3</version>        
                 <exclusions>
                   <exclusion>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>stringtemplate</artifactId>
+                   <groupId>org.antlr</groupId>  
+                   <artifactId>com.springsource.org.antlr.stringtemplate</artifactId> 
                   </exclusion>                                  
                 </exclusions>                        
             </dependency>
             <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr</artifactId>
-                <version>3.1.1</version>
+               <groupId>org.antlr</groupId>  
+               <artifactId>com.springsource.org.antlr</artifactId> 
+                <version>3.1.3</version>
                 <exclusions>
                   <exclusion>
                     <groupId>org.antlr</groupId>
-                    <artifactId>stringtemplate</artifactId>
+                    <artifactId>com.springsource.org.antlr.stringtemplate</artifactId>
                   </exclusion>      
                   <exclusion>
                     <groupId>org.apache.maven</groupId>
@@ -1142,26 +1143,33 @@
                 <artifactId>gunit</artifactId>
                 <version>3.2</version>
             </dependency>              
-            <dependency>
-                <groupId>org.eclipse.jdt</groupId>
-                <artifactId>core</artifactId>
-                <version>3.4.2.v_883_R34x</version>
-            </dependency>
-            <dependency>
-                <groupId>janino</groupId>
-                <artifactId>janino</artifactId>
-                <version>2.5.15</version>
-            </dependency>
-            <dependency>
-                <groupId>xerces</groupId>
-                <artifactId>xercesImpl</artifactId>
-                <version>2.9.1</version>
-            </dependency>
-            <dependency>
-                <groupId>xml-apis</groupId>
-                <artifactId>xml-apis</artifactId>
-                <version>2.0.2</version>
-            </dependency>
+           <dependency>  
+              <groupId>org.apache.jasper.springsource</groupId>  
+              <artifactId>com.springsource.org.apache.jasper.org.eclipse.jdt.springsource</artifactId>  
+              <version>6.0.20.S2-r5956</version> 
+           </dependency>
+          <dependency>  
+              <groupId>org.codehaus.janino</groupId>  
+              <artifactId>com.springsource.org.codehaus.janino</artifactId>  
+              <version>2.5.15</version> 
+          </dependency>  
+          <dependency>  
+              <groupId>javax.xml.stream</groupId>  
+              <artifactId>com.springsource.javax.xml.stream</artifactId>  
+              <version>1.0.1</version> 
+          </dependency>      
+
+          <dependency>  
+             <groupId>org.apache.xerces</groupId>  
+             <artifactId>com.springsource.org.apache.xerces</artifactId>  
+             <version>2.9.1</version>
+          </dependency>      
+          
+          <dependency>  
+             <groupId>org.apache.xmlcommons</groupId>  
+             <artifactId>com.springsource.org.apache.xmlcommons</artifactId>  
+             <version>1.3.4</version> 
+          </dependency> 
 
             <!-- drools-jsr94 -->
             <dependency>
@@ -1181,12 +1189,11 @@
             </dependency>
 
             <!-- drools-decisiontables -->
-            <dependency>
-                <groupId>jexcelapi</groupId>
-                <artifactId>jxl</artifactId>
-                <version>2.4.2</version>
-
-            </dependency>
+            <dependency>  
+              <groupId>net.sourceforge.jexcelapi</groupId>  
+              <artifactId>com.springsource.jxl</artifactId>  
+              <version>2.6.6</version> 
+            </dependency>  
             
             <dependency>
               <groupId>net.sf.jxls</groupId>
@@ -1208,23 +1215,23 @@
             </dependency>
 
             <!-- Logging for drools-repository and drools-planner -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.5.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>1.5.0</version>
-                <!--<scope>runtime</scope> TODO default me on runtime-->
-            </dependency>
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.14</version>
-                <!--<scope>runtime</scope> TODO default me on runtime-->
-            </dependency>
+            <dependency>  
+             <groupId>org.slf4j</groupId>  
+             <artifactId>com.springsource.slf4j.api</artifactId>  
+             <version>1.5.10</version>
+            </dependency>    
+          
+            <dependency>  
+             <groupId>org.slf4j</groupId>  
+             <artifactId>com.springsource.slf4j.log4j</artifactId>  
+             <version>1.5.3</version> 
+            </dependency>      
+          
+            <dependency>  
+             <groupId>org.apache.log4j</groupId>  
+             <artifactId>com.springsource.org.apache.log4j</artifactId>  
+             <version>1.2.15</version> 
+            </dependency>  
 
             <!-- drools-repository -->
             <dependency>
@@ -1268,10 +1275,10 @@
                 <version>1.1.2</version>
             </dependency>
 
-            <dependency>
-                <groupId>hsqldb</groupId>
-                <artifactId>hsqldb</artifactId>
-                <version>1.8.0.2</version>
+            <dependency>  
+                <groupId>org.hsqldb</groupId>  
+                <artifactId>com.springsource.org.hsqldb</artifactId>  
+                <version>1.8.0.10</version> 
             </dependency>
 
             <!-- drools-guvnor -->
@@ -1291,11 +1298,11 @@
                 <artifactId>commons-fileupload</artifactId>
                 <version>1.2.1</version>
             </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>1.4</version>
-            </dependency>            
+            <dependency>  
+             <groupId>org.apache.commons</groupId>  
+             <artifactId>com.springsource.org.apache.commons.io</artifactId>  
+             <version>1.4.0</version> 
+            </dependency>             
             <dependency>
                 <groupId>com.gwtext</groupId>
                 <artifactId>gwtext</artifactId>
@@ -1321,16 +1328,16 @@
             </dependency>
 
             <!-- drools-planner -->
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>1.3.2</version>
-            </dependency>
+            <dependency>  
+              <groupId>org.apache.commons</groupId>  
+              <artifactId>com.springsource.org.apache.commons.lang</artifactId>  
+              <version>2.4.0</version> 
+            </dependency>   
+            <dependency>  
+              <groupId>org.apache.commons</groupId>  
+              <artifactId>com.springsource.org.apache.commons.io</artifactId>  
+              <version>1.4.0</version> 
+            </dependency> 
             <dependency>
                 <groupId>jfree</groupId>
                 <artifactId>jfreechart</artifactId>
@@ -1344,97 +1351,12 @@
                 <version>2.0.0.GA</version>
             </dependency>
             
-          <!-- spring bundle dependencies -->  
-          <dependency>  
-              <groupId>org.antlr</groupId>  
-              <artifactId>com.springsource.org.antlr.runtime</artifactId>  
-              <version>3.1.3</version> 
-          </dependency>
-          <dependency>  
-             <groupId>org.antlr</groupId>  
-             <artifactId>com.springsource.org.antlr</artifactId>  
-             <version>3.1.3</version> 
-          </dependency>          
+          <!-- spring bundle dependencies -->           
           <dependency>  
               <groupId>com.opensymphony.quartz</groupId>  
               <artifactId>com.springsource.org.quartz</artifactId>  
               <version>1.6.2</version>
-          </dependency>          
-          <dependency>  
-              <groupId>net.sourceforge.jexcelapi</groupId>  
-              <artifactId>com.springsource.jxl</artifactId>  
-              <version>2.4.2</version> 
-          </dependency>  
-          <dependency>  
-              <groupId>org.joda</groupId>  
-              <artifactId>com.springsource.org.joda.time</artifactId>  
-              <version>1.6.0</version> 
-          </dependency>      
-          <dependency>  
-              <groupId>com.thoughtworks.xstream</groupId>  
-              <artifactId>com.springsource.com.thoughtworks.xstream</artifactId>  
-              <version>1.3.1</version> 
-          </dependency>  
-          <dependency>  
-              <groupId>javax.xml.stream</groupId>  
-              <artifactId>com.springsource.javax.xml.stream</artifactId>  
-              <version>1.0.1</version> 
-          </dependency>      
-          <!-- missing xpp3 and xpp3_min-->      
-          
-          <!-- Apache Jasper JDT bundle 6.0.20.S2-r5956 -->
-          <dependency>  
-             <groupId>org.apache.jasper.springsource</groupId>  
-             <artifactId>com.springsource.org.apache.jasper.org.eclipse.jdt.springsource</artifactId>  
-             <version>6.0.20.S2-r5956</version> 
-          </dependency>
-          
-          <dependency>  
-              <groupId>org.codehaus.janino</groupId>  
-              <artifactId>com.springsource.org.codehaus.janino</artifactId>  
-              <version>2.5.15</version> 
-          </dependency>  
-
-          <dependency>  
-             <groupId>org.apache.xerces</groupId>  
-             <artifactId>com.springsource.org.apache.xerces</artifactId>  
-             <version>2.9.1</version>
-          </dependency>      
-          
-          <dependency>  
-             <groupId>org.apache.xmlcommons</groupId>  
-             <artifactId>com.springsource.org.apache.xmlcommons</artifactId>  
-             <version>1.3.4</version> 
-          </dependency>    
-          
-          <dependency>  
-             <groupId>org.slf4j</groupId>  
-             <artifactId>com.springsource.slf4j.api</artifactId>  
-             <version>1.5.10</version>
-          </dependency>    
-          
-          <dependency>  
-             <groupId>org.slf4j</groupId>  
-             <artifactId>com.springsource.slf4j.log4j</artifactId>  
-             <version>1.5.3</version> 
-          </dependency>      
-          
-          <dependency>  
-             <groupId>org.apache.log4j</groupId>  
-             <artifactId>com.springsource.org.apache.log4j</artifactId>  
-             <version>1.2.15</version> 
-          </dependency>  
-
-          <dependency>  
-             <groupId>org.apache.commons</groupId>  
-             <artifactId>com.springsource.org.apache.commons.lang</artifactId>  
-             <version>2.4.0</version> 
-          </dependency>   
-          <dependency>  
-             <groupId>org.apache.commons</groupId>  
-             <artifactId>com.springsource.org.apache.commons.io</artifactId>  
-             <version>1.4.0</version> 
-          </dependency>  
+          </dependency>              
           
         <dependency>  
            <groupId>org.apache.commons</groupId>  
