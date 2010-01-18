@@ -416,7 +416,7 @@
                 <activeByDefault>true</activeByDefault> 
             </activation>            
             <modules>
-                <module>bundle-repository</module>            
+                <!--module>bundle-repository</module-->            
                 <module>drools-api</module>    
                 <module>drools-core</module>
                 <module>drools-compiler</module>
@@ -1088,17 +1088,22 @@
             </dependency>
 
             <!-- External dependencies -->
-            <dependency>  
-               <groupId>org.eclipse.equinox</groupId>  
-               <artifactId>org.eclipse.osgi</artifactId>  
-               <version>3.5.1</version> 
-            </dependency>            
-            <dependency>  
-               <groupId>org.eclipse.equinox</groupId>  
-               <artifactId>org.eclipse.osgi.util</artifactId>  
-               <version>3.5.1</version> 
+            <dependency>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>org.osgi.core</artifactId>
+              <version>1.4.0</version>
             </dependency>
-            
+            <dependency>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>org.osgi.foundation</artifactId>
+              <version>1.2.0</version>
+            </dependency>            
+            <dependency>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>org.osgi.compendium</artifactId>
+              <version>1.4.0</version>
+            </dependency>                                   
+                                   
             <!-- drools-core -->
            <dependency>  
               <groupId>com.thoughtworks.xstream</groupId>  
