@@ -229,6 +229,32 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </releases>
       </pluginRepository>
    </pluginRepositories>
+   
+<modules>
+<module>drools-api</module>
+<module>drools-core</module>
+<module>drools-compiler</module>
+<module>drools-vsm</module>
+<module>drools-pipeline</module>
+<module>drools-container</module>
+<module>drools-simulator</module>
+<module>drools-jsr94</module>
+<module>drools-templates</module>
+<module>drools-decisiontables</module>
+<module>drools-clips</module>
+<module>drools-process</module>
+<module>drools-persistence-jpa</module>
+<module>drools-server</module>
+<module>drools-verifier</module>
+<module>drools-doc</module>
+<module>drools-ant</module>
+<module>drools-repository</module>
+<module>drools-guvnor</module>
+<module>drools-planner</module>
+<module>drools-container/drools-mc</module>
+<!--module>drools-agent-jini</module-->
+</modules>   
+   
    <profiles>
       <!--profile>
             <id>ydoc-doclet</id>
@@ -288,6 +314,61 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             </reporting>
         </profile-->
       <profile>
+         <id>default</id>
+         <activation>
+            <activeByDefault>true</activeByDefault>
+         </activation>
+         <modules>
+            <!--module>bundle-repository</module-->
+            <module>drools-api</module>
+            <module>drools-core</module>
+            <module>drools-compiler</module>
+            <module>drools-simulator</module>
+            <module>drools-jsr94</module>
+            <module>drools-templates</module>
+            <module>drools-decisiontables</module>
+            <module>drools-clips</module>
+            <module>drools-pipeline</module>
+            <module>drools-process</module>
+            <!-- <module>drools-atom</module> -->
+            <!-- <module>drools-bpel</module>                 
+                <module>drools-jpdl</module>                 
+                <module>drools-osworkflow</module>          -->
+            <module>drools-server</module>
+            <module>drools-verifier</module>
+            <module>drools-doc</module>
+            <module>drools-ant</module>
+            <module>drools-repository</module>
+            <module>drools-guvnor</module>
+            <module>drools-planner</module>
+            <module>drools-container/drools-mc</module>
+         </modules>
+         <build>
+            <pluginManagement>
+               <plugins>
+                  <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-assembly-plugin</artifactId>
+                     <version>2.2-beta-2</version>
+                     <configuration>
+                        <descriptors>
+                           <descriptor>src/main/assembly/pre-bin.xml</descriptor>
+                           <descriptor>src/main/assembly/bin.xml</descriptor>
+                           <descriptor>src/main/assembly/guvnor.xml</descriptor>
+                           <descriptor>src/main/assembly/src.xml</descriptor>
+                           <descriptor>src/main/assembly/eclipse.xml</descriptor>
+                           <descriptor>src/main/assembly/examples.xml</descriptor>
+                           <descriptor>src/main/assembly/planner.xml</descriptor>
+                           <descriptor>src/main/assembly/docs.xml</descriptor>
+                           <descriptor>src/main/assembly/javadocs.xml</descriptor>
+                        </descriptors>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
+         </build>
+      </profile>		
+      <profile>
          <id>documentation</id>
          <activation>
             <property>
@@ -299,7 +380,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </modules>
       </profile>
       <profile>
-         <id>build-eclipse</id>
+         <id>build-
+</id>
          <activation>
             <property>
                <name>eclipse</name>
@@ -383,61 +465,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                            <descriptor>src/main/assembly/docs_soaversion.xml</descriptor>
                            <descriptor>src/main/assembly/javadocs_soaversion.xml</descriptor>
                            <descriptor>src/main/assembly/soa.xml</descriptor>
-                        </descriptors>
-                     </configuration>
-                  </plugin>
-               </plugins>
-            </pluginManagement>
-         </build>
-      </profile>
-      <profile>
-         <id>default</id>
-         <activation>
-            <activeByDefault>true</activeByDefault>
-         </activation>
-         <modules>
-            <!--module>bundle-repository</module-->
-            <module>drools-api</module>
-            <module>drools-core</module>
-            <module>drools-compiler</module>
-            <module>drools-simulator</module>
-            <module>drools-jsr94</module>
-            <module>drools-templates</module>
-            <module>drools-decisiontables</module>
-            <module>drools-clips</module>
-            <module>drools-pipeline</module>
-            <module>drools-process</module>
-            <!-- <module>drools-atom</module> -->
-            <!-- <module>drools-bpel</module>                 
-                <module>drools-jpdl</module>                 
-                <module>drools-osworkflow</module>          -->
-            <module>drools-server</module>
-            <module>drools-verifier</module>
-            <module>drools-doc</module>
-            <module>drools-ant</module>
-            <module>drools-repository</module>
-            <module>drools-guvnor</module>
-            <module>drools-planner</module>
-            <module>drools-container/drools-mc</module>
-         </modules>
-         <build>
-            <pluginManagement>
-               <plugins>
-                  <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-assembly-plugin</artifactId>
-                     <version>2.2-beta-2</version>
-                     <configuration>
-                        <descriptors>
-                           <descriptor>src/main/assembly/pre-bin.xml</descriptor>
-                           <descriptor>src/main/assembly/bin.xml</descriptor>
-                           <descriptor>src/main/assembly/guvnor.xml</descriptor>
-                           <descriptor>src/main/assembly/src.xml</descriptor>
-                           <descriptor>src/main/assembly/eclipse.xml</descriptor>
-                           <descriptor>src/main/assembly/examples.xml</descriptor>
-                           <descriptor>src/main/assembly/planner.xml</descriptor>
-                           <descriptor>src/main/assembly/docs.xml</descriptor>
-                           <descriptor>src/main/assembly/javadocs.xml</descriptor>
                         </descriptors>
                      </configuration>
                   </plugin>
