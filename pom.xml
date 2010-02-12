@@ -601,6 +601,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                   <descriptors>
                      <descriptor>src/main/assembly/pre-bin.xml</descriptor>
                      <descriptor>src/main/assembly/bin.xml</descriptor>
+					 <descriptor>src/main/assembly/osgi-bundles.xml</descriptor>
                      <descriptor>src/main/assembly/guvnor.xml</descriptor>
                      <descriptor>src/main/assembly/src.xml</descriptor>
                      <descriptor>src/main/assembly/eclipse.xml</descriptor>
