@@ -1073,11 +1073,31 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.foundation</artifactId>
             <version>1.2.0</version>
+			<exclusions>
+			    <exclusion>
+		            <groupId>org.apache.felix</groupId>
+		            <artifactId>org.osgi.foundation</artifactId>				
+				</exclusion>
+			    <exclusion>
+		            <groupId>org.apache.felix</groupId>
+		            <artifactId>javax.servlet</artifactId>				
+				</exclusion>				
+			</exclusions>			
          </dependency>
          <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <version>1.4.0</version>
+			<exclusions>
+			    <exclusion>
+		            <groupId>org.apache.felix</groupId>
+		            <artifactId>org.osgi.foundation</artifactId>				
+				</exclusion>
+			    <exclusion>
+		            <groupId>org.apache.felix</groupId>
+		            <artifactId>javax.servlet</artifactId>				
+				</exclusion>				
+			</exclusions>
          </dependency>
 		 <!-- api -->
 		<dependency>
