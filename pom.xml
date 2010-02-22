@@ -324,7 +324,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <activeByDefault>true</activeByDefault>
          </activation>
          <modules>
-            <!--module>osgi-bundles</module-->
+            <module>osgi-bundles</module>
             <module>drools-api</module>
             <module>drools-core</module>
             <module>drools-compiler</module>
