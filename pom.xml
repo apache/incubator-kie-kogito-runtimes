@@ -357,6 +357,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                      <version>2.2-beta-2</version>
                      <configuration>
                         <descriptors>
+						   <descriptor>src/main/assembly/osgi-bundles.xml</descriptor>
                            <descriptor>src/main/assembly/pre-bin.xml</descriptor>
                            <descriptor>src/main/assembly/bin.xml</descriptor>
                            <descriptor>src/main/assembly/guvnor.xml</descriptor>
@@ -385,8 +386,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </modules>
       </profile>
       <profile>
-         <id>build-
-</id>
+         <id>build-eclipse</id>
          <activation>
             <property>
                <name>eclipse</name>
