@@ -803,19 +803,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
-         <version>4.6</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.jmock</groupId>
-         <artifactId>jmock</artifactId>
-         <version>2.5.1</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.jmock</groupId>
-         <artifactId>jmock-legacy</artifactId>
-         <version>2.5.1</version>
+         <version>4.8.1</version>
          <scope>test</scope>
       </dependency>
       <dependency>
