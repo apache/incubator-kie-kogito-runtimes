@@ -255,6 +255,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 <module>drools-ant</module>
 <module>drools-repository</module>
 <module>drools-guvnor</module>
+<module>drools-factconstraint</module>
 <module>drools-planner</module>
 <module>drools-container/drools-mc</module>
 <!--module>drools-agent-jini</module-->
@@ -345,6 +346,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <module>drools-ant</module>
             <module>drools-repository</module>
             <module>drools-guvnor</module>
+            <module>drools-factconstraint</module>
             <module>drools-planner</module>
             <module>drools-container/drools-mc</module>
          </modules>
@@ -448,6 +450,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <module>drools-ant</module>
             <module>drools-repository</module>
             <module>drools-guvnor</module>
+            <module>drools-factconstraint</module>
             <!--module>drools-planner</module-->
             <module>drools-container/drools-mc</module>
          </modules>
@@ -660,6 +663,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <plugin>
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>cobertura-maven-plugin</artifactId>
+               <version>2.3</version>
                <configuration>
                   <instrumentation>
                      <excludes>
@@ -1018,6 +1022,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </dependency>
          <dependency>
             <groupId>org.drools</groupId>
+            <artifactId>drools-factconstraint</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.drools</groupId>
             <artifactId>drools-guvnor</artifactId>
             <type>test-jar</type>
             <version>${project.version}</version>
@@ -1106,12 +1115,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 			<artifactId>jaxb-xjc</artifactId>
 			<version>2.1.7</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.milyn</groupId>
-			<artifactId>milyn-smooks-javabean</artifactId>
-			<version>1.1</version>
-		</dependency>	
 
 		<dependency>
 			<groupId>javax.jms</groupId>
