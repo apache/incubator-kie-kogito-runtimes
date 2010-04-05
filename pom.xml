@@ -918,7 +918,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </dependency>
          <dependency>
             <groupId>org.drools</groupId>
-            <artifactId>drools-server</artifactId>
+            <artifactId>drools-server-app</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-server-spring</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
