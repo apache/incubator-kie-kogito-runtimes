@@ -239,7 +239,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 <module>drools-api</module>
 <module>drools-core</module>
 <module>drools-compiler</module>
-<module>drools-vsm</module>
 <module>drools-grid</module>
 <module>drools-pipeline</module>
 <module>drools-container</module>
@@ -924,11 +923,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-server-spring</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-vsm</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
