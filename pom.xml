@@ -258,6 +258,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 <module>drools-factconstraint</module>
 <module>drools-planner</module>
 <module>drools-container/drools-mc</module>
+<module>drools-ide-common</module>
 <!--module>drools-agent-jini</module-->
 </modules>   
    
@@ -276,6 +277,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>cobertura-maven-plugin</artifactId>
+                        <version>2.3</version>
                     </plugin>
 
                     <plugin>
@@ -1065,6 +1067,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <dependency>
             <groupId>org.drools.planner</groupId>
             <artifactId>drools-planner-examples</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-ide-common</artifactId>
             <version>${project.version}</version>
          </dependency>
          <!-- External dependencies -->
