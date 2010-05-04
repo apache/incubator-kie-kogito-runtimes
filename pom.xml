@@ -148,7 +148,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
    <repositories>
       <repository>
          <id>repository.jboss.org</id>
-         <url>http://repository.jboss.org/maven2</url>
+         <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
          <snapshots>
             <enabled>false</enabled>
          </snapshots>
@@ -158,7 +158,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       </repository>
       <repository>
          <id>snapshots.jboss.org</id>
-         <url>http://snapshots.jboss.org/maven2</url>
+         <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
          <snapshots>
             <enabled>true</enabled>
          </snapshots>
