@@ -1400,11 +1400,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <id>rules-site.jboss.org</id>
          <url>${rules.site.deploy.dir}</url>
       </site>
-      <snapshotRepository>
+      <!--snapshotRepository>
          <id>snapshots.jboss.org</id>
          <name>JBoss Snapshot Repository</name>
          <url>dav:https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
-      </snapshotRepository>
+      </snapshotRepository-->
       <!-- TODO configure this if it's needed -->
       <!--<repository>-->
       <!--  <id>maven.jboss.org</id>-->
