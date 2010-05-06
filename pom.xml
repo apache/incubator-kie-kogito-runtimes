@@ -1309,11 +1309,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                </exclusion>
             </exclusions>
          </dependency>
-         <dependency>
+         <!--dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
             <version>1.0</version>
-         </dependency>
+         </dependency-->
          <dependency>
             <groupId>org.tmatesoft</groupId>
             <artifactId>svnkit</artifactId>
