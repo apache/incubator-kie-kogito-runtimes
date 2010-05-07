@@ -1403,7 +1403,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <snapshotRepository>
          <id>jboss-snapshots-repository</id>
          <name>JBoss Snapshot Repository</name>
-         <url>dav:https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+         <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
       </snapshotRepository>
       <!-- TODO configure this if it's needed -->
       <!--<repository>-->
