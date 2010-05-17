@@ -1284,7 +1284,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-core</artifactId>
-            <version>1.6.0</version>
+            <version>2.1.0</version>
             <!-- and getting rid of some annoying transitive junk not really needed for us -->
             <exclusions>
                <exclusion>
@@ -1312,7 +1312,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <!--dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
-            <version>1.0</version>
+            <version>2.0</version>
          </dependency-->
          <dependency>
             <groupId>org.tmatesoft</groupId>
