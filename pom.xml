@@ -161,6 +161,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           </snapshots>
         </repository>
       <repository>
+          <id>jboss-deprecated</id>
+          <name>JBoss Deprecated</name>
+          <url>https://repository.jboss.org/nexus/content/repositories/deprecated/</url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      <repository>
          <!-- used by mvel to publish snapshots -->
          <id>codehaus-snapshot</id>
          <url>http://snapshots.repository.codehaus.org</url>
