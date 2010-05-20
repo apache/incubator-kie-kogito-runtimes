@@ -146,46 +146,20 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <url>http://www.jboss.org/</url>
    </organization>
    <repositories>
-      <repository>
-         <id>repository.jboss.org</id>
-         <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
-         <snapshots>
-            <enabled>false</enabled>
-         </snapshots>
-         <releases>
+        <repository>
+          <id>jboss-public-repository-group</id>
+          <name>JBoss Public Maven Repository Group</name>
+          <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+          <layout>default</layout>
+          <releases>
             <enabled>true</enabled>
-         </releases>
-      </repository>
-      <repository>
-         <id>snapshots.jboss.org</id>
-         <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
-         <snapshots>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
             <enabled>true</enabled>
-         </snapshots>
-         <releases>
-            <enabled>false</enabled>
-         </releases>
-      </repository>
-      <repository>
-         <id>repository.jboss.org</id>
-         <url>http://repository.jboss.org/maven2</url>
-         <snapshots>
-            <enabled>false</enabled>
-         </snapshots>
-         <releases>
-            <enabled>true</enabled>
-         </releases>
-      </repository>
-      <repository>
-         <id>snapshots.jboss.org</id>
-         <url>http://snapshots.jboss.org/maven2</url>
-         <snapshots>
-            <enabled>true</enabled>
-         </snapshots>
-         <releases>
-            <enabled>false</enabled>
-         </releases>
-      </repository>
+            <updatePolicy>never</updatePolicy>
+          </snapshots>
+        </repository>
       <repository>
          <!-- used by mvel to publish snapshots -->
          <id>codehaus-snapshot</id>
