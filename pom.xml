@@ -368,7 +368,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                      <version>2.2-beta-2</version>
                      <configuration>
                         <descriptors>
-						   <descriptor>src/main/assembly/osgi-bundles.xml</descriptor>
+                           <descriptor>src/main/assembly/osgi-bundles.xml</descriptor>
                            <descriptor>src/main/assembly/pre-bin.xml</descriptor>
                            <descriptor>src/main/assembly/bin.xml</descriptor>
                            <descriptor>src/main/assembly/guvnor.xml</descriptor>
@@ -376,6 +376,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                            <descriptor>src/main/assembly/eclipse.xml</descriptor>
                            <descriptor>src/main/assembly/examples.xml</descriptor>
                            <descriptor>src/main/assembly/planner.xml</descriptor>
+                           <descriptor>src/main/assembly/gwt-console.xml</descriptor>
                            <descriptor>src/main/assembly/docs.xml</descriptor>
                            <descriptor>src/main/assembly/javadocs.xml</descriptor>
                         </descriptors>
@@ -612,13 +613,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                <configuration>
                   <descriptors>
                      <descriptor>src/main/assembly/pre-bin.xml</descriptor>
-                     <descriptor>src/main/assembly/bin.xml</descriptor>
-					 <descriptor>src/main/assembly/osgi-bundles.xml</descriptor>
+                     <descriptor>src/main/assembly/bin.xml</descriptor>                     <descriptor>src/main/assembly/osgi-bundles.xml</descriptor>
                      <descriptor>src/main/assembly/guvnor.xml</descriptor>
                      <descriptor>src/main/assembly/src.xml</descriptor>
                      <descriptor>src/main/assembly/eclipse.xml</descriptor>
                      <descriptor>src/main/assembly/examples.xml</descriptor>
                      <descriptor>src/main/assembly/planner.xml</descriptor>
+                     <descriptor>src/main/assembly/gwt-console.xml</descriptor>
                      <descriptor>src/main/assembly/docs.xml</descriptor>
                      <descriptor>src/main/assembly/javadocs.xml</descriptor>
                   </descriptors>
