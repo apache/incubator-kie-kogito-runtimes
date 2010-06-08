@@ -379,6 +379,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                            <descriptor>src/main/assembly/gwt-console.xml</descriptor>
                            <descriptor>src/main/assembly/docs.xml</descriptor>
                            <descriptor>src/main/assembly/javadocs.xml</descriptor>
+                           <descriptor>src/main/assembly/install.xml</descriptor>
                         </descriptors>
                      </configuration>
                   </plugin>
@@ -622,6 +623,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                      <descriptor>src/main/assembly/gwt-console.xml</descriptor>
                      <descriptor>src/main/assembly/docs.xml</descriptor>
                      <descriptor>src/main/assembly/javadocs.xml</descriptor>
+                     <descriptor>src/main/assembly/install.xml</descriptor>
                   </descriptors>
                </configuration>
             </plugin>
