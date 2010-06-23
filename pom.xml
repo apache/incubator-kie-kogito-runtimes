@@ -614,7 +614,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                <configuration>
                   <descriptors>
                      <descriptor>src/main/assembly/pre-bin.xml</descriptor>
-                     <descriptor>src/main/assembly/bin.xml</descriptor>                     <descriptor>src/main/assembly/osgi-bundles.xml</descriptor>
+                     <descriptor>src/main/assembly/bin.xml</descriptor>
+                     <descriptor>src/main/assembly/osgi-bundles.xml</descriptor>
                      <descriptor>src/main/assembly/guvnor.xml</descriptor>
                      <descriptor>src/main/assembly/src.xml</descriptor>
                      <descriptor>src/main/assembly/eclipse.xml</descriptor>
@@ -1269,33 +1270,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </dependency>
          <!-- Logging for drools-repository and drools-planner -->
             <dependency>
-
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.5.10</version>
+                <version>1.6.0</version>
             </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
 
-                <version>1.5.10</version>
-                <!--<scope>runtime</scope> TODO default me on runtime-->
-            </dependency>
-       <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.14</version>
-
-                <!--<scope>runtime</scope> TODO default me on runtime-->
-            </dependency>
-			
-
-         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>com.springsource.slf4j.juli</artifactId>
-            <version>1.5.10</version>
-         </dependency>
-
+	      <dependency>
+			 <groupId>org.slf4j</groupId>
+			 <artifactId>slf4j-log4j12</artifactId>
+			 <version>1.6.0</version>
+	      </dependency>
          <!-- drools-repository -->
          <dependency>
             <groupId>org.apache.jackrabbit</groupId>
