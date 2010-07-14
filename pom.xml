@@ -1436,6 +1436,31 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <artifactId>spring</artifactId>
             <version>${springframework-version}</version>
         </dependency>
+    	 <dependency>
+    		<groupId>org.springframework</groupId>
+    		<artifactId>spring-core</artifactId>
+            <version>${springframework-version}</version>			
+    	</dependency>
+    	 <dependency>
+    		<groupId>org.springframework</groupId>
+    		<artifactId>spring-beans</artifactId>
+            <version>${springframework-version}</version>			
+    	</dependency>
+    	 <dependency>
+    		<groupId>org.springframework</groupId>
+    		<artifactId>spring-orm</artifactId>
+            <version>${springframework-version}</version>
+    	</dependency>
+    	 <dependency>
+    		<groupId>org.springframework</groupId>
+    		<artifactId>spring-jdbc</artifactId>
+            <version>${springframework-version}</version>
+    	</dependency>
+    	 <dependency>
+    		<groupId>org.springframework</groupId>
+    		<artifactId>spring-context</artifactId>
+            <version>${springframework-version}</version>			
+    	</dependency>		
         <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
