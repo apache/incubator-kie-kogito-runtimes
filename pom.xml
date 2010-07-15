@@ -259,7 +259,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 <module>drools-clips</module>
 <module>drools-process</module>
 <module>drools-persistence-jpa</module>
-<module>drools-server</module>
+<!--module>drools-server</module-->
 <module>drools-verifier</module>
 <module>drools-doc</module>
 <module>drools-ant</module>
@@ -352,7 +352,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <!-- <module>drools-bpel</module>                 
                 <module>drools-jpdl</module>                 
                 <module>drools-osworkflow</module>          -->
-            <module>drools-server</module>
+            <!--module>drools-server</module-->
             <module>drools-verifier</module>
             <module>drools-doc</module>
             <module>drools-ant</module>
