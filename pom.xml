@@ -703,6 +703,20 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
          </plugin>
+                  <plugin>
+                      <groupId>com.mycila.maven-license-plugin</groupId>
+                      <artifactId>maven-license-plugin</artifactId>
+                      <configuration>
+                          <header>../LICENSE-HEADER.txt</header>
+	                  <includes>
+                              <include>**/*.java</include>
+                              <include>**/*.drl</include>
+                          </includes>
+                          <mapping>
+                              <drl>JAVADOC_STYLE</drl>
+                          </mapping>
+                      </configuration>
+                  </plugin>
       </plugins>
    </build>
    <reporting>
