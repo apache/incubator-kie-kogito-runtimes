@@ -1032,31 +1032,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </dependency>
          <dependency>
             <groupId>org.drools</groupId>
-            <artifactId>drools-transformer-jaxb</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-transformer-jxls</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-transformer-smooks</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-transformer-xstream</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-messenger-jms</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.drools</groupId>
             <artifactId>drools-guvnor</artifactId>
             <version>${project.version}</version>
          </dependency>
@@ -1149,18 +1124,23 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 			</exclusions>
          </dependency>
 		 <!-- api -->
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.1.7</version>
-		</dependency>
 
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.2.1</version>
+    </dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-xjc</artifactId>
-			<version>2.1.7</version>
+			<version>2.2.1.1</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.2.1.1</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>jms</artifactId>
@@ -1168,6 +1148,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 			<scope>provided</scope>
 		</dependency>
 
+		
 		<dependency>
 			<groupId>org.opensymphony.quartz</groupId>
 			<artifactId>quartz</artifactId>
