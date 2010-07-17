@@ -1808,6 +1808,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <version>2.0.0.GA</version>
       </dependency>
 	  
+      <dependency>
+         <groupId>ant</groupId>
+         <artifactId>ant</artifactId>
+         <version>1.6.5</version>
+      </dependency>	  
+	  
                <dependency>
                   <groupId>ant</groupId>
                   <artifactId>ant-nodeps</artifactId>
