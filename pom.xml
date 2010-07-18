@@ -13,7 +13,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
    <properties>
       <mvel.dep.version>2.0.16</mvel.dep.version>
       <camel-version>2.4.0</camel-version>	  
+	  <cxf-version>2.2.9</cxf-version>	  
 	  <springframework-version>2.5.6</springframework-version>
+	  
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
    <prerequisites>
@@ -1473,22 +1475,22 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 	    <dependency>
 	      <groupId>org.apache.cxf</groupId>
 	      <artifactId>cxf-rt-bindings-http</artifactId>
-	      <version>2.2.6</version>
+	      <version>${cxf-version}</version>
 	    </dependency>		
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>2.2.6</version>
+			<version>${cxf-version}</version>
 		</dependency>
 	    <dependency>
 	      <groupId>org.apache.cxf</groupId>
 	      <artifactId>cxf-rt-transports-http-jetty</artifactId>
-	      <version>2.2.6</version>
+	      <version>${cxf-version}</version>
 	    </dependency>		
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-testutils</artifactId>
-      <version>2.2.6</version>
+      <version>${cxf-version}</version>
     </dependency>		
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
@@ -1499,7 +1501,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-bundle-jaxrs</artifactId>
-			<version>2.2.6</version>
+			<version>${cxf-version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>xerces</groupId>
