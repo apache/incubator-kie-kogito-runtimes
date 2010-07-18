@@ -1290,7 +1290,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     	<dependency>
     		<groupId>org.slf4j</groupId>
     		<artifactId>slf4j-jdk14</artifactId>
-    		<version>1.5.2</version>
+    		<version>1.6.0</version>
     		<scope>test</scope>
     	</dependency>     		 
          <dependency>
