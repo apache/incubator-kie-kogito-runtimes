@@ -377,6 +377,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                            <descriptor>src/main/assembly/pre-bin.xml</descriptor>
                            <descriptor>src/main/assembly/bin.xml</descriptor>
                            <descriptor>src/main/assembly/guvnor.xml</descriptor>
+						   <descriptor>src/main/assembly/server.xml</descriptor>
                            <descriptor>src/main/assembly/src.xml</descriptor>
                            <descriptor>src/main/assembly/eclipse.xml</descriptor>
                            <descriptor>src/main/assembly/examples.xml</descriptor>
@@ -481,6 +482,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                            <descriptor>src/main/assembly/pre-bin_soaversion.xml</descriptor>
                            <descriptor>src/main/assembly/bin.xml</descriptor>
                            <descriptor>src/main/assembly/guvnor_soaversion.xml</descriptor>
+                           <descriptor>src/main/assembly/server.xml</descriptor>						   
                            <descriptor>src/main/assembly/src_soaversion.xml</descriptor>
                            <descriptor>src/main/assembly/eclipse.xml</descriptor>
                            <descriptor>src/main/assembly/examples.xml</descriptor>
