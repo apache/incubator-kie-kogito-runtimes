@@ -249,25 +249,25 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
 <!-- default modules -->
 <modules>
+    <module>drools-ant</module>
 	<module>drools-api</module>
+	<module>drools-camel</module>	
+	<module>drools-compiler</module>	
 	<module>drools-core</module>
-	<module>drools-compiler</module>
-	<module>drools-grid</module>
-	<module>drools-container</module>
-	<module>drools-camel</module>
-	<module>drools-jsr94</module>
-	<module>drools-templates</module>
-	<module>drools-decisiontables</module>	
-	<module>drools-process</module>
-	<module>drools-persistence-jpa</module>
-	<module>drools-server</module>
-	<module>drools-verifier</module>
-	<module>drools-doc</module>
-	<module>drools-ant</module>
-	<module>drools-repository</module>
-	<module>drools-guvnor</module>
+	<module>drools-container</module>	
+	<module>drools-decisiontables</module>		
+	<module>drools-doc</module>	
 	<module>drools-factconstraint</module>
-	<module>drools-ide-common</module>
+	<module>drools-grid</module>
+	<module>drools-guvnor</module>
+	<module>drools-ide-common</module>	
+	<module>drools-jsr94</module>
+	<module>drools-persistence-jpa</module>	
+	<module>drools-process</module>
+	<module>drools-repository</module>
+	<module>drools-server</module>
+	<module>drools-templates</module>	
+	<module>drools-verifier</module>
 </modules>   
    
    <profiles>
@@ -332,7 +332,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <profile>
          <id>default</id>
          <activation>
-            <activeByDefault>true</activeByDefault>
+            <property>
+               <name>!soa</name>
+            </property>
          </activation>
          <modules>
             <module>drools-clips</module>
@@ -381,6 +383,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <module>drools-docs</module>
          </modules>
       </profile>
+	  
       <profile>
          <id>build-eclipse</id>
          <activation>
