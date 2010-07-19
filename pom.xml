@@ -344,7 +344,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <module>osgi-bundles</module>		
          </modules>
          <build>
-            <pluginManagement>
                <plugins>
                   <plugin>
                      <groupId>org.apache.maven.plugins</groupId>
@@ -368,7 +367,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                      </configuration>
                   </plugin>
                </plugins>
-            </pluginManagement>
          </build>
       </profile>
 	  
@@ -435,7 +433,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             </property>
          </activation>
          <build>
-            <pluginManagement>
                <plugins>
                   <plugin>
                      <groupId>org.apache.maven.plugins</groupId>
@@ -459,7 +456,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                      </configuration>
                   </plugin>
                </plugins>
-            </pluginManagement>
          </build>
       </profile>
    </profiles>
@@ -490,6 +486,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <plugins>				  
          <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
+			<version>1.4</version>
 				 <dependencies>
 	                     <dependency>
 	                        <groupId>ant</groupId>
@@ -727,27 +724,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                               <drl>JAVADOC_STYLE</drl>
                           </mapping>
                       </configuration>
-                  </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-assembly-plugin</artifactId>
-               <configuration>
-                  <descriptors>
-                     <descriptor>src/main/assembly/pre-bin.xml</descriptor>
-                     <descriptor>src/main/assembly/bin.xml</descriptor>
-                     <descriptor>src/main/assembly/osgi-bundles.xml</descriptor>
-                     <descriptor>src/main/assembly/guvnor.xml</descriptor>
-                     <descriptor>src/main/assembly/src.xml</descriptor>
-                     <descriptor>src/main/assembly/eclipse.xml</descriptor>
-                     <descriptor>src/main/assembly/examples.xml</descriptor>
-                     <descriptor>src/main/assembly/planner.xml</descriptor>
-                     <descriptor>src/main/assembly/gwt-console.xml</descriptor>
-                     <descriptor>src/main/assembly/docs.xml</descriptor>
-                     <descriptor>src/main/assembly/javadocs.xml</descriptor>
-                     <descriptor>src/main/assembly/install.xml</descriptor>
-                  </descriptors>
-               </configuration>
-            </plugin>				  
+                  </plugin>				  
       </plugins>
    </build>
    <reporting>
