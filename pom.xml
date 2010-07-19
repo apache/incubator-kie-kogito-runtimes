@@ -246,33 +246,28 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </releases>
       </pluginRepository>
    </pluginRepositories>
-   
+
+<!-- default modules -->
 <modules>
-<module>drools-api</module>
-<module>drools-core</module>
-<module>drools-compiler</module>
-<module>drools-grid</module>
-<module>drools-pipeline</module>
-<module>drools-container</module>
-<module>drools-camel</module>
-<module>drools-simulator</module>
-<module>drools-jsr94</module>
-<module>drools-templates</module>
-<module>drools-decisiontables</module>
-<module>drools-clips</module>
-<module>drools-process</module>
-<module>drools-persistence-jpa</module>
-<module>drools-server</module>
-<module>drools-verifier</module>
-<module>drools-doc</module>
-<module>drools-ant</module>
-<module>drools-repository</module>
-<module>drools-guvnor</module>
-<module>drools-factconstraint</module>
-<module>drools-planner</module>
-<module>drools-container/drools-mc</module>
-<module>drools-ide-common</module>
-<!--module>drools-agent-jini</module-->
+	<module>drools-api</module>
+	<module>drools-core</module>
+	<module>drools-compiler</module>
+	<module>drools-grid</module>
+	<module>drools-container</module>
+	<module>drools-camel</module>
+	<module>drools-jsr94</module>
+	<module>drools-templates</module>
+	<module>drools-decisiontables</module>	
+	<module>drools-process</module>
+	<module>drools-persistence-jpa</module>
+	<module>drools-server</module>
+	<module>drools-verifier</module>
+	<module>drools-doc</module>
+	<module>drools-ant</module>
+	<module>drools-repository</module>
+	<module>drools-guvnor</module>
+	<module>drools-factconstraint</module>
+	<module>drools-ide-common</module>
 </modules>   
    
    <profiles>
@@ -340,30 +335,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <activeByDefault>true</activeByDefault>
          </activation>
          <modules>
-            <module>osgi-bundles</module>
-            <module>drools-api</module>
-            <module>drools-core</module>
-            <module>drools-compiler</module>
-            <module>drools-simulator</module>
-            <module>drools-jsr94</module>
-            <module>drools-templates</module>
-            <module>drools-decisiontables</module>
             <module>drools-clips</module>
+            <module>drools-planner</module>	
             <module>drools-pipeline</module>
-            <module>drools-process</module>
-            <!-- <module>drools-atom</module> -->
-            <!-- <module>drools-bpel</module>                 
-                <module>drools-jpdl</module>                 
-                <module>drools-osworkflow</module>          -->
-            <module>drools-server</module>
-            <module>drools-verifier</module>
-            <module>drools-doc</module>
-            <module>drools-ant</module>
-            <module>drools-repository</module>
-            <module>drools-guvnor</module>
-            <module>drools-factconstraint</module>
-            <module>drools-planner</module>
-            <module>drools-container/drools-mc</module>
+            <module>drools-simulator</module>
+            <module>osgi-bundles</module>		
          </modules>
          <build>
             <pluginManagement>
@@ -392,7 +368,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                </plugins>
             </pluginManagement>
          </build>
-      </profile>		
+      </profile>
+	  
       <profile>
          <id>documentation</id>
          <activation>
@@ -416,6 +393,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <module>drools-eclipse</module>
          </modules>
       </profile>
+	  
       <profile>
          <id>release</id>
          <activation>
@@ -430,6 +408,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <module>drools-examples</module>
          </modules>
       </profile>
+	  
       <profile>
          <id>cibuild</id>
          <activation>
@@ -444,6 +423,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <module>drools-examples</module>
          </modules>
       </profile>
+	  
       <profile>
          <id>soa</id>
          <activation>
@@ -451,26 +431,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                <name>soa</name>
             </property>
          </activation>
-         <modules>
-            <module>drools-api</module>
-            <module>drools-core</module>
-            <module>drools-compiler</module>
-            <module>drools-jsr94</module>
-            <!--module>drools-templates</module-->
-            <module>drools-decisiontables</module>
-            <!--module>drools-clips</module>
-                <module>drools-pipeline</module>    
-                <module>drools-process</module>                  
-                <module>drools-server</module-->
-            <module>drools-verifier</module>
-            <module>drools-doc</module>
-            <module>drools-ant</module>
-            <module>drools-repository</module>
-            <module>drools-guvnor</module>
-            <module>drools-factconstraint</module>
-            <!--module>drools-planner</module-->
-            <module>drools-container/drools-mc</module>
-         </modules>
          <build>
             <pluginManagement>
                <plugins>
@@ -481,7 +441,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                         <descriptors>
                            <descriptor>src/main/assembly/pre-bin_soaversion.xml</descriptor>
                            <descriptor>src/main/assembly/bin.xml</descriptor>
-                           <descriptor>src/main/assembly/guvnor_soaversion.xml</descriptor>
+                           <descriptor>src/main/assembly/guvnor.xml</descriptor>
+						   <descriptor>src/main/assembly/install.xml</descriptor>						
+                           <descriptor>src/main/assembly/gwt-console.xml</descriptor>
                            <descriptor>src/main/assembly/server.xml</descriptor>						   
                            <descriptor>src/main/assembly/src_soaversion.xml</descriptor>
                            <descriptor>src/main/assembly/eclipse.xml</descriptor>
