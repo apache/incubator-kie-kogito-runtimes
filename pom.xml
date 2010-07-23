@@ -1733,6 +1733,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 		<version>1.4</version>  
     </dependency>  
 	
+    <dependency>  	
+		<groupId>net.java.dev.glazedlists</groupId>
+		<artifactId>glazedlists_java15</artifactId>
+		<version>1.8.0</version>	
+      </dependency>
+	  
       <dependency>
          <groupId>com.google.collections</groupId>
          <artifactId>google-collections</artifactId>
