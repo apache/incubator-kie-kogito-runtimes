@@ -1209,12 +1209,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <version>1.1</version>
          </dependency>
          <!-- drools-decisiontables -->
-            <dependency>
-                <groupId>jexcelapi</groupId>
-                <artifactId>jxl</artifactId>
-                <version>2.4.2</version>
-            </dependency>
-            
+			<dependency>
+			    <groupId>net.sourceforge.jexcelapi</groupId>
+			    <artifactId>jxl</artifactId>
+			    <version>2.6.10</version>
+			</dependency>
+
             <dependency>
               <groupId>net.sf.jxls</groupId>
               <artifactId>jxls-reader</artifactId> 
