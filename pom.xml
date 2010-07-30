@@ -1800,27 +1800,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 		</dependency>				   
       </dependencies>
    </dependencyManagement>
-   <distributionManagement>
-      <site>
-         <id>rules-site.jboss.org</id>
-         <url>${rules.site.deploy.dir}</url>
-      </site>
+  
+
+<distributionManagement>
+      <repository>
+      <id>jboss-releases-repository</id>
+      <name>JBoss Releases Repository</name>
+      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
       <snapshotRepository>
          <id>jboss-snapshots-repository</id>
          <name>JBoss Snapshot Repository</name>
          <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
       </snapshotRepository>
-      <!-- TODO configure this if it's needed -->
-      <!--<repository>-->
-      <!--  <id>maven.jboss.org</id>-->
-      <!-- <url>https://svn.jboss.org/repos/repository.jboss.org/maven2</url>-->
-      <!--/repository>-->
-      <!--    <snapshotRepository>
-         <id>snapshots.jboss.org</id>
-       </snapshotRepository> -->
-      <!--<site>-->
-      <!--<id>shell.jboss.org?</id>-->
-      <!--<url>scp://???/???/</url>-->
-      <!--</site>-->
+
    </distributionManagement>
 </project>
