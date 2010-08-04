@@ -469,12 +469,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
    
    
    <build>
-      <extensions>
+      <!--extensions>
          <extension>
             <groupId>org.apache.maven.wagon</groupId>
             <artifactId>wagon-webdav</artifactId>
          </extension>
-      </extensions>
+      </extensions-->
       <testResources>
          <testResource>
             <directory>src/test/java</directory>
@@ -513,11 +513,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 	            </dependencies>			
 			</plugin>
 			
-			<plugin>
+			<!--plugin>
 	            <groupId>org.apache.maven.wagon</groupId>
 	            <artifactId>wagon-webdav</artifactId>
 	            <version>1.0-beta-2</version>			
-			</plugin>
+			</plugin-->
             <plugin>
 	            <groupId>org.apache.felix</groupId>
 	            <artifactId>maven-bundle-plugin</artifactId>
@@ -881,9 +881,44 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          </dependency>
          <dependency>
             <groupId>org.drools</groupId>
-            <artifactId>drools-grid-core</artifactId>
+            <artifactId>drools-grid-api</artifactId>
             <version>${project.version}</version>
-         </dependency>		 
+         </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-grid-local</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-grid-remote-api</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-grid-remote-dir-mina</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+           <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-grid-remote-mina</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+           <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-grid-task</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-grid-services</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-grid-distributed-api</artifactId>
+            <version>${project.version}</version>
+         </dependency>
          <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-compiler</artifactId>
