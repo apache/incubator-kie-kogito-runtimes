@@ -370,8 +370,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                            <descriptor>src/main/assembly/docs.xml</descriptor>
                            <descriptor>src/main/assembly/javadocs.xml</descriptor>
                            <descriptor>src/main/assembly/install.xml</descriptor>
-                           <!--descriptor>src/main/assembly/drools-grid-remote-mina.xml</descriptor>
-                           <descriptor>src/main/assembly/drools-grid-remote-dir-mina.xml</descriptor-->
+                           <descriptor>src/main/assembly/drools-grid-remote-mina-pre.xml</descriptor>
+                           <descriptor>src/main/assembly/drools-grid-remote-mina.xml</descriptor>
+                           <descriptor>src/main/assembly/drools-grid-remote-dir-mina-pre.xml</descriptor>
+                           <descriptor>src/main/assembly/drools-grid-remote-dir-mina.xml</descriptor>
                         </descriptors>
                      </configuration>
                   </plugin>
@@ -461,8 +463,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                            <descriptor>src/main/assembly/docs_soaversion.xml</descriptor>
                            <descriptor>src/main/assembly/javadocs_soaversion.xml</descriptor>
                            <descriptor>src/main/assembly/soa.xml</descriptor>
-                           <!--descriptor>src/main/assembly/drools-grid-remote-mina.xml</descriptor>
-                           <descriptor>src/main/assembly/drools-grid-remote-dir-mina.xml</descriptor-->
+                           <descriptor>src/main/assembly/drools-grid-remote-mina-pre.xml</descriptor>
+                           <descriptor>src/main/assembly/drools-grid-remote-mina.xml</descriptor>
+                           <descriptor>src/main/assembly/drools-grid-remote-dir-mina-pre.xml</descriptor>
+                           <descriptor>src/main/assembly/drools-grid-remote-dir-mina.xml</descriptor>
                         </descriptors>
                      </configuration>
                   </plugin>
