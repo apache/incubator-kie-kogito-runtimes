@@ -1399,6 +1399,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
          <version>2.0</version>
       </dependency>
       <dependency>
+      	<groupId>jdom</groupId>
+      	<artifactId>jdom</artifactId>
+      	<version>1.0</version>
+      </dependency>
+      <dependency>
          <groupId>org.apache.ftpserver</groupId>
          <artifactId>ftpserver-core</artifactId>
          <version>1.0.4</version>
