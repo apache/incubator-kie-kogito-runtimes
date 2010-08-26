@@ -1370,6 +1370,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                 <artifactId>commons-io</artifactId>
                 <version>1.4</version>
             </dependency>  
+	<dependency>
+             <groupId>org.freemarker</groupId>
+             <artifactId>freemarker</artifactId>
+             <version>2.3.15</version>
+          </dependency>
+
 			
       <dependency>
          <groupId>org.apache.commons</groupId>
