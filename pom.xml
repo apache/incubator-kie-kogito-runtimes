@@ -11,7 +11,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
    <description>A rule production system</description>
    <url>http://www.jboss.com/products/rules</url>
    <properties>
-      <mvel.dep.version>2.0.18-RC4</mvel.dep.version>
+      <mvel.dep.version>2.0.18-RC5</mvel.dep.version>
       <camel-version>2.4.0</camel-version>	  
 	  <cxf-version>2.2.9</cxf-version>	  
 	  <springframework-version>2.5.6</springframework-version>
