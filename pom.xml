@@ -262,6 +262,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 	<module>drools-compiler</module>	
 	<module>drools-core</module>
 	<module>drools-flow-core</module>
+	<module>drools-flow-compiler</module>
 	<module>drools-container</module>	
 	<module>drools-decisiontables</module>		
 	<module>drools-doc</module>	
