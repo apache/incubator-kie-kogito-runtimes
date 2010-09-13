@@ -40,20 +40,32 @@ Code style
 
 Correct number of spaces for tabs:
 - Open menu "Window", menu item "Preferences".
-
 - Open tree item "Java", tree item "Code Style", tree item "Formatter".
 -- If you imported the trunk/eclipse-formatter.xml file,
-  you don't need to set it here, but you do need to set it for XML
+   you don't need to set it here,
+   but you do need to set it for XML anyway!
 -- Click button "Edit" of the active profile
 -- Tab "Indentation"
 --- Combobox "Tab policy": spaces only
 --- Indentation size: 4
 --- Tab size: 4
--- You might need to change the name of the active profile with the top textfield
-
+-- If it is a build in profile, you need to change its name with the textfield on top
 - Open tree item "XML", tree item "XML Files", tree item "Editor".
 -- Radio button "Indent using space": on
 -- Indentation size: 2
+
+Correct file encoding (UTF-8 except for properties files) and EOL (unix):
+- Open menu "Window", menu item "Preferences".
+- Open tree item "General", tree item "Workspace".
+-- Label "Text file encoding", radiobutton "Other", combobox "UTF-8"
+-- Label "New text file delimiter", radiobutton "Other", combobox "Unix"
+- Open tree item "XML", tree item "XML Files".
+-- Combobox "Encoding": ISO 10646/Unicode(UTF-8)
+- Open tree item "CSS", tree item "CSS Files".
+-- Combobox "Encoding": ISO 10646/Unicode(UTF-8)
+- Open tree item "HTML", tree item "HTML Files".
+-- Combobox "Encoding": ISO 10646/Unicode(UTF-8)
+- Note: i18n properties files must be in ISO-8859-1 as specified by the java ResourceBundle contract.
 
 License header
 --------------
@@ -85,7 +97,6 @@ but you can configure it for new files.
 Configuring IntelliJ
 ====================
 
---
 Code style
 ----------
 
@@ -102,6 +113,14 @@ Correct number of spaces for tabs:
 -- Textfield "Tab size": 2
 -- Textfield "Indent": 2
 -- Textfield "Continuation indent": 4
+
+Correct file encoding (UTF-8 except for properties files) and EOL (unix):
+- Open menu "File", menu item "Settings".
+- Open tree item "Code Style", tree item "General".
+-- Combobox "Line seperator (for new files)": Unix
+- Open tree item "File Encodings".
+-- Combobox "IDE Encoding": "UTF-8"
+-- Combobox "Default encoding for properties files": ISO-8859-1
 
 License header
 --------------
