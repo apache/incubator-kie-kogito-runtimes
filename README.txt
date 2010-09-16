@@ -40,6 +40,7 @@ Code style
 
 Correct number of spaces for tabs:
 - Open menu "Window", menu item "Preferences".
+-- If you have project specific settings enabled, right click on the project and click the menu item "Properties".
 - Open tree item "Java", tree item "Code Style", tree item "Formatter".
 -- If you imported the trunk/eclipse-formatter.xml file,
    you don't need to set it here,
@@ -73,6 +74,7 @@ License header
 Eclipse JEE Helios currently has no build-in support of license headers,
 but you can configure it for new files.
 - Open menu "Window", menu item "Preferences".
+-- If you have project specific settings enabled, right click on the project and click the menu item "Properties".
 - Open tree item "Java", tree item "Code Style", tree item "Copy templates".
 -- Open tree item "Comments", tree item "Files".
 -- Replace the text area with this:
