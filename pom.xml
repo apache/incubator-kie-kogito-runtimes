@@ -272,6 +272,7 @@
     <module>drools-ide-common</module>
     <module>drools-jsr94</module>
     <module>drools-persistence-jpa</module>
+    <module>drools-flow-persistence-jpa</module>
     <module>drools-process</module>
     <module>drools-repository</module>
     <module>drools-server</module>
@@ -1029,6 +1030,11 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-persistence-jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-flow-persistence-jpa</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
