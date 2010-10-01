@@ -1020,12 +1020,13 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-guvnor</artifactId>
+        <artifactId>drools-factconstraint</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-factconstraint</artifactId>
+        <artifactId>drools-guvnor</artifactId>
+        <type>war</type>
         <version>${project.version}</version>
       </dependency>
       <dependency>
