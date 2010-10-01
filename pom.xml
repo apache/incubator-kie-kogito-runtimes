@@ -1376,6 +1376,11 @@
         <artifactId>gwt-user</artifactId>
         <version>${gwt.version}</version>
       </dependency>
+      <dependency><!-- Only use for a plugin dependency, not as a normal dependency -->
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${gwt.version}</version>
+      </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>

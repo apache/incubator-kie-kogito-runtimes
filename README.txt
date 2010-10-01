@@ -32,6 +32,15 @@ assembly:assembly fails unless you increase the available memory to Maven, on wi
 the following command worked well:
 set MAVEN_OPTS=-Xmx512m
 
+Configuring settings.xml for maven
+----------------------------------
+
+Read this document:
+  http://community.jboss.org/wiki/MavenGettingStarted-Developers
+so you can:
+ - deploy artifacts to the jboss repository
+ - easily use the jboss plugins
+
 Configuring Eclipse
 ===================
 
