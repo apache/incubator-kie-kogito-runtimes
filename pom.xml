@@ -33,7 +33,7 @@
       <notifier>
         <type>mail</type>
         <configuration>
-          <address>dev@drools.codehaus.org</address>
+          <address>rules-dev@lists.jboss.org</address>
         </configuration>
       </notifier>
       <notifier>
