@@ -87,7 +87,7 @@
     <developer>
       <name>Michael Neale</name>
       <id>mic</id>
-      <email>michael.neale@gmail.com</email>
+      <email>michael.neale at gmail.com</email>
       <roles>
         <role>Developer</role>
       </roles>
@@ -97,7 +97,7 @@
     <developer>
       <name>Kris Verlaenen</name>
       <id>kris</id>
-      <email>kris.verlaenen@gmail.com</email>
+      <email>kris.verlaenen at gmail.com</email>
       <organization>JBoss Inc.</organization>
       <roles>
         <role>Developer</role>
@@ -107,7 +107,7 @@
     <developer>
       <name>Bob McWhirter</name>
       <id>bob</id>
-      <email>bob@werken.com</email>
+      <email>bob at werken.com</email>
       <organization>JBoss Inc.</organization>
       <roles>
         <role>Founder</role>
@@ -117,7 +117,7 @@
     <developer>
       <name>Edson Tirelli</name>
       <id>tirelli</id>
-      <email>tirelli@post.com</email>
+      <email>tirelli at post.com</email>
       <organization>JBoss Inc.</organization>
       <roles>
         <role>Developer</role>
@@ -127,14 +127,20 @@
     <developer>
       <id>ge0ffrey</id>
       <name>Geoffrey De Smet</name>
-      <email>ge0ffrey.spam AT gmail DOT com</email>
+      <email>ge0ffrey.spam at gmail.com</email>
       <roles>
         <role>Developer</role>
       </roles>
       <timezone>+1</timezone>
     </developer>
+    <!-- Add yourself to this list if you belong here -->
   </developers>
-  <contributors/>
+  <contributors>
+    <contributor>
+      <name>All contributors are listed on the team website</name>
+      <url>http://www.jboss.org/drools/team</url>
+    </contributor>
+  </contributors>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -1363,12 +1369,6 @@
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
-        <version>${gwt.version}</version>
-      </dependency>
-
-      <dependency><!-- Only use for a plugin dependency, not as a normal dependency -->
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
         <version>${gwt.version}</version>
       </dependency>
       <dependency>
