@@ -891,7 +891,7 @@
         <artifactId>drools-grid-impl</artifactId>
         <version>${project.version}</version>
       </dependency>	  
-      <!--dependency>
+      <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-api</artifactId>
         <version>${project.version}</version>
@@ -901,7 +901,7 @@
         <artifactId>drools-grid-local</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-remote-api</artifactId>
         <version>${project.version}</version>
