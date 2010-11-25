@@ -7,7 +7,7 @@
   <packaging>pom</packaging>
   <name>Drools</name>
   <!-- TODO Use -SNAPSHOT instead of .SNAPSHOT (gives problems with building the drools eclipse plugin) -->
-  <version>5.2.0.SNAPSHOT</version>
+  <version>5.2.0-SNAPSHOT</version>
   <description>A rule production system</description>
   <url>http://www.jboss.com/products/rules</url>
   
@@ -20,7 +20,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <prerequisites>
-    <maven>2.2.1</maven>
+    <maven>3.0.0</maven>
   </prerequisites>
   <issueManagement>
     <system>jira</system>
@@ -890,7 +890,7 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-impl</artifactId>
         <version>${project.version}</version>
-      </dependency>	  
+      </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-api</artifactId>
