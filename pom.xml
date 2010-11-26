@@ -272,7 +272,6 @@
     <module>drools-flow-compiler</module>
     <module>drools-container</module>
     <module>drools-decisiontables</module>
-    <module>drools-doc</module>
     <module>drools-factconstraint</module>
     <module>drools-grid</module>
     <module>drools-guvnor</module>
@@ -994,11 +993,6 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-verifier</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-doc</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
