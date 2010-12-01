@@ -284,6 +284,7 @@
     <module>drools-server</module>
     <module>drools-templates</module>
     <module>drools-verifier</module>
+    <module>drools-eclipse</module>
   </modules>
 
   <profiles>
@@ -345,18 +346,6 @@
     </profile>
 
     <profile>
-      <id>build-eclipse</id>
-      <activation>
-        <property>
-          <name>eclipse</name>
-        </property>
-      </activation>
-      <modules>
-        <module>drools-eclipse</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>release</id>
       <activation>
         <property>
@@ -365,7 +354,6 @@
       </activation>
       <modules>
         <module>drools-docs</module>
-        <module>drools-eclipse</module>
         <module>drools-examples</module>
       </modules>
     </profile>
@@ -379,7 +367,6 @@
       </activation>
       <modules>
         <module>drools-docs</module>
-        <module>drools-eclipse</module>
         <module>drools-examples</module>
       </modules>
     </profile>
