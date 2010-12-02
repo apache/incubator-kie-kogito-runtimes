@@ -604,6 +604,22 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>com.mycila.maven-license-plugin</groupId>
+          <artifactId>maven-license-plugin</artifactId>
+          <version>1.8.0</version>
+          <configuration>
+            <header>${basedir}/../LICENSE-HEADER.txt</header><!-- TODO this is buggy as it only works for first level modules -->
+            <includes>
+              <include>**/*.java</include>
+              <include>**/*.drl</include>
+            </includes>
+            <mapping>
+              <drl>JAVADOC_STYLE</drl>
+            </mapping>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -611,20 +627,6 @@
         <!-- Entry needed to create, install and deploy sources jars -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-        <configuration>
-          <header>../LICENSE-HEADER.txt</header>
-          <includes>
-            <include>**/*.java</include>
-            <include>**/*.drl</include>
-          </includes>
-          <mapping>
-            <drl>JAVADOC_STYLE</drl>
-          </mapping>
-        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -659,6 +661,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.6</version>
         <reportSets>
           <reportSet>
             <reports>
