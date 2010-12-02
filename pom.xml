@@ -609,7 +609,7 @@
           <artifactId>maven-license-plugin</artifactId>
           <version>1.8.0</version>
           <configuration>
-            <header>${basedir}/../LICENSE-HEADER.txt</header><!-- TODO this is buggy as it only works for first level modules -->
+            <header>${basedir}/../LICENSE-ASL-2.0-HEADER.txt</header><!-- TODO this is buggy as it only works for first level modules -->
             <includes>
               <include>**/*.java</include>
               <include>**/*.drl</include>
