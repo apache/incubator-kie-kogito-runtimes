@@ -284,7 +284,6 @@
     <module>drools-server</module>
     <module>drools-templates</module>
     <module>drools-verifier</module>
-    <module>drools-eclipse</module>
   </modules>
 
   <profiles>
@@ -334,40 +333,11 @@
     </profile>
 
     <profile>
-      <id>documentation</id>
-      <activation>
-        <property>
-          <name>documentation</name>
-        </property>
-      </activation>
-      <modules>
-        <module>drools-docs</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>release</id>
-      <activation>
-        <property>
-          <name>release</name>
-        </property>
-      </activation>
+      <id>full</id>
       <modules>
         <module>drools-docs</module>
         <module>drools-examples</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>cibuild</id>
-      <activation>
-        <property>
-          <name>cibuild</name>
-        </property>
-      </activation>
-      <modules>
-        <module>drools-docs</module>
-        <module>drools-examples</module>
+        <module>drools-eclipse</module>
       </modules>
     </profile>
 
@@ -827,6 +797,7 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-docs</artifactId>
+        <type>pom</type>
         <version>${project.version}</version>
       </dependency>
       <dependency>
