@@ -3,27 +3,68 @@ Welcome to Drools
 
 Read this document if you want to build or contribute to the drools project.
 
-Building with maven
+Drools uses Maven 3 to build the project and all it's modules.
+
+Installing Maven
+================
+
+1) Get and configure Maven.
+
+Download Maven from http://maven.apache.org/
+Follow the installation instructions.
+
+Linux:
+Hint: unzip maven to ~/opt/build
+and create a link to place in your PATH:
+$ cd ~/opt/build/
+$ ln -s apache-maven-3.0.1 apache-maven
+$ export PATH="~/opt/build/apache-maven/bin/:$PATH"
+
+2) Give more memory to maven, it will need it to build this big project.
+
+Linux:
+$ export MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+
+Windows:
+> set MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+
+3) Check if maven is installed correctly.
+$ mvn --version
+
+Building with Maven
 ===================
 
-Drools uses maven to build the system. There are two profiles available which
-enable the associated modules "documentation" and "eclipse"; this enables
-quicker building of the core modules for developers.
+Go into the project base directory.
+$ cd drools
+$ ls
+You'll find this README.txt file in there.
+Notice you also see a pom.xml. Those pom.xml files are the heart of Maven.
 
-The following builds all the jars, the documentation and the eclipse updatesite zip with a
-local folder specified to avoid downloading eclipse:
- mvn -Declipse -Ddocumentation clean install
+Run the build
+$ mvn -DskipTests clean install
 
-You can produce distribution builds, which puts everything into zips, as follows:
-mvn -Declipse -Ddocumentation clean install
-mvn -Ddocumentation -Declipse -DskipTests package javadoc:javadoc assembly:assembly
+Or better yet, run the full build (so with the profile "full")
+$ mvn -Pfull -DskipTests clean install
+
+The first build will take a long time, because a lot of dependencies will be downloaded (and cached locally).
+It might even fail, if certain servers are offline or experience hiccups.
+In that case, you 'll see an IO error and just run the build again.
+After the first successful build, any next build should be fast and stable.
+
+There are 3 profiles:
+- default (no profile): Fast, for during development
+- full: Slow, but builds everything (including eclipse plugins and documentation). Used by hudson and during releases.
+- soa: prunes away the non-enterprise stuff
+
+Releasing
+=========
+
+To produce distribution builds use:
+$ mvn -Pfull clean install
+$ mvn -Pfull -DskipTests package javadoc:javadoc assembly:assembly
 
 Note that install must be done first as javadoc:javadoc won't work unless the
 jars are in the local maven repo, but the tests can be skipped on the second run.
-
-assembly:assembly fails unless you increase the available memory to Maven, on windows 
-the following command worked well:
-set MAVEN_OPTS=-Xmx512m
 
 Configuring settings.xml for maven
 ----------------------------------
@@ -36,6 +77,27 @@ so you can:
 
 Configuring Eclipse
 ===================
+
+There are 2 ways to configure Eclipse based on Maven's poms.
+
+The maven-eclipse-plugin way
+----------------------------
+
+The maven-eclipse-plugin plugin is a plugin in Maven for Eclipse.
+This is the old, stable way.
+Run this command to generate .project and .classpath files.
+$ mvn -Pfull eclipse:eclipse
+- Open Eclipse
+- Import existing projects, navigate to the project base directory, select all the projects (=modules) it lists.
+
+The m2eclipse plugin way
+------------------------
+
+The m2eclipse plugin is a plugin in Eclipse for Maven.
+This is the new, deluxe way.
+- Open Eclipse
+- Just open the main pom.xml with the m2eclipse plugin.
+- Select the profile "full".
 
 Code style
 ----------
@@ -101,6 +163,15 @@ but you can configure it for new files.
 Configuring IntelliJ
 ====================
 
+Don't use the maven-intellij-plugin: it's dead.
+
+IntelliJ has very good build-in support for Maven.
+- Open IntelliJ.
+- Open new project.
+- Open the main pom.xml file from the project base directory.
+- Select profile "full".
+- Go grab a coffee while it's indexing.
+
 Code style
 ----------
 
@@ -150,19 +221,3 @@ limitations under the License.
 -- Do not start or end with a newline character
 - Open tree item "Copyright"
 -- Combobox "Default project copyright": JBoss Inc
-
-Other notes
-===========
-
-If you have a ydoc license then you can build the javadocs with uml images using the ydoc doclet. 
-Simple add the following to the mvn command line:
--Dydoc.home=<path to ydoc>
-
-Known problems
-==============
-
-* Functions can't be called from MVEL code blocks. Although, static methods
-from previously existing classes are working fine.
-
-* There are still some issues with MVEL code completion.
-
