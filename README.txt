@@ -43,16 +43,16 @@ Notice you also see a pom.xml. Those pom.xml files are the heart of Maven.
 Run the build
 $ mvn -DskipTests clean install
 
-Or better yet, run the full build (so with the profile "full")
-$ mvn -Pfull -DskipTests clean install
+Or better yet, run the full build (this actives the profile "fullProfile")
+$ mvn -Dfull -DskipTests clean install
 
 The first build will take a long time, because a lot of dependencies will be downloaded (and cached locally).
 It might even fail, if certain servers are offline or experience hiccups.
 In that case, you 'll see an IO error and just run the build again.
 After the first successful build, any next build should be fast and stable.
 
-There are 3 profiles:
-- default (no profile): Fast, for during development
+There are 3 profile activation properties:
+- <default>: Fast, for during development
 - full: Slow, but builds everything (including eclipse plugins and documentation). Used by hudson and during releases.
 - soa: prunes away the non-enterprise stuff
 
@@ -60,8 +60,8 @@ Releasing
 =========
 
 To produce distribution builds use:
-$ mvn -Pfull clean install
-$ mvn -Pfull -DskipTests package javadoc:javadoc assembly:assembly
+$ mvn -Dfull clean install
+$ mvn -Dfull -DskipTests package javadoc:javadoc assembly:assembly
 
 Note that install must be done first as javadoc:javadoc won't work unless the
 jars are in the local maven repo, but the tests can be skipped on the second run.
@@ -86,7 +86,7 @@ The maven-eclipse-plugin way
 The maven-eclipse-plugin plugin is a plugin in Maven for Eclipse.
 This is the old, stable way.
 Run this command to generate .project and .classpath files.
-$ mvn -Pfull eclipse:eclipse
+$ mvn -Dfull eclipse:eclipse
 - Open Eclipse
 - Import existing projects, navigate to the project base directory, select all the projects (=modules) it lists.
 
@@ -97,7 +97,7 @@ The m2eclipse plugin is a plugin in Eclipse for Maven.
 This is the new, deluxe way.
 - Open Eclipse
 - Just open the main pom.xml with the m2eclipse plugin.
-- Select the profile "full".
+- Select the profiles "notSoaProfile" and "fullProfile".
 
 Code style
 ----------
@@ -169,7 +169,7 @@ IntelliJ has very good build-in support for Maven.
 - Open IntelliJ.
 - Open new project.
 - Open the main pom.xml file from the project base directory.
-- Select profile "full".
+- Select the profiles "notSoaProfile" and "fullProfile".
 - Go grab a coffee while it's indexing.
 
 Code style

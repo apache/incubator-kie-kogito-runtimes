@@ -261,8 +261,8 @@
     </pluginRepository>
   </pluginRepositories>
 
-  <!-- default modules -->
   <modules>
+    <!-- These are just the soa modules -->
     <module>drools-ant</module>
     <module>drools-api</module>
     <module>drools-camel</module>
@@ -284,11 +284,12 @@
     <module>drools-server</module>
     <module>drools-templates</module>
     <module>drools-verifier</module>
+    <!-- Other modules are defined in the not-soa profile -->
   </modules>
 
   <profiles>
     <profile>
-      <id>default</id>
+      <id>notSoaProfile</id>
       <activation>
         <property>
           <name>!soa</name>
@@ -333,7 +334,12 @@
     </profile>
 
     <profile>
-      <id>full</id>
+      <id>fullProfile</id>
+      <activation>
+        <property>
+          <name>full</name>
+        </property>
+      </activation>
       <modules>
         <module>drools-docs</module>
         <module>drools-examples</module>
@@ -342,7 +348,7 @@
     </profile>
 
     <profile>
-      <id>soa</id>
+      <id>soaProfile</id>
       <activation>
         <property>
           <name>soa</name>
