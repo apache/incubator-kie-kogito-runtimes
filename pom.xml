@@ -5,7 +5,7 @@
   <groupId>org.drools</groupId>
   <artifactId>drools</artifactId>
   <packaging>pom</packaging>
-  <!-- On updating the version, also look for these variaties for OSGi stuff: "5.2.0.qualifier" and "5.2.0.SNAPSHOT" -->
+  <!-- On updating the version, also look for these variations for OSGi stuff: "5.2.0.qualifier" and "5.2.0.SNAPSHOT" -->
   <version>5.2.0-SNAPSHOT</version>
   <name>Drools</name>
   <description>A rule production system</description>
