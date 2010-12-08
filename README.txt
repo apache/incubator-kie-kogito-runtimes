@@ -84,19 +84,25 @@ The maven-eclipse-plugin way
 ----------------------------
 
 The maven-eclipse-plugin plugin is a plugin in Maven for Eclipse.
-This is the old, stable way.
+This is the old way.
 Run this command to generate .project and .classpath files.
-$ mvn -Dfull eclipse:eclipse
+$ mvn eclipse:eclipse
 - Open Eclipse
 - Import existing projects, navigate to the project base directory, select all the projects (=modules) it lists.
+
+Important note: mvn eclipse:eclipse does not work for drools-eclipse because it is not compatible with tycho
+(and never will be).
 
 The m2eclipse plugin way
 ------------------------
 
 The m2eclipse plugin is a plugin in Eclipse for Maven.
-This is the new, deluxe way.
+This is the new, deluxe way (and compatible with tycho).
 - Open Eclipse
-- Just open the main pom.xml with the m2eclipse plugin.
+- Follow the installation instructions of m2eclipse: http://m2eclipse.sonatype.org/
+-- Follow the link Installing m2eclipse at the bottom.
+- Menu File, menu item Import, tree item Maven, tree item Existing Maven Projects
+- Open the main pom.xml with the m2eclipse plugin.
 - Select the profiles "notSoaProfile" and "fullProfile".
 
 Code style
