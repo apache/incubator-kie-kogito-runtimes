@@ -20,7 +20,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <prerequisites>
-    <maven>3.0.0</maven>
+    <maven>3.0.1</maven>
   </prerequisites>
   <issueManagement>
     <system>jira</system>
