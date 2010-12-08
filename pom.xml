@@ -280,7 +280,7 @@
     <module>drools-persistence-jpa</module>
     <module>drools-flow-persistence-jpa</module>
     <module>drools-process</module>
-    <module>drools-repository</module>
+    <module>drools-repo</module>
     <module>drools-server</module>
     <module>drools-templates</module>
     <module>drools-verifier</module>
