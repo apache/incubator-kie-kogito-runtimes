@@ -10,7 +10,7 @@
   <name>Drools</name>
   <description>A rule production system</description>
   <url>http://www.jboss.com/products/rules</url>
-  
+
   <properties>
     <mvel.dep.version>2.0.19</mvel.dep.version>
     <camel-version>2.4.0</camel-version>
@@ -585,7 +585,8 @@
           <artifactId>maven-license-plugin</artifactId>
           <version>1.8.0</version>
           <configuration>
-            <header>${basedir}/../LICENSE-ASL-2.0-HEADER.txt</header><!-- TODO this is buggy as it only works for first level modules -->
+            <!-- TODO this is buggy as it only works for first level modules -->
+            <header>${basedir}/../LICENSE-ASL-2.0-HEADER.txt</header>
             <includes>
               <include>**/*.java</include>
               <include>**/*.drl</include>
