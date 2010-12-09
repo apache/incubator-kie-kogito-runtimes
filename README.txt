@@ -59,6 +59,8 @@ There are 3 profile activation properties:
 Releasing
 =========
 
+Use JDK 1.6, because in JDK 1.5 the module drools-repository-modeshape-connector is not build.
+
 To produce distribution builds use:
 $ mvn -Dfull clean install
 $ mvn -Dfull -DskipTests package javadoc:javadoc assembly:assembly
