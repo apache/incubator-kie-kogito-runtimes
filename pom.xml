@@ -829,7 +829,27 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-repository-parent</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-repository</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-repository-jcr-connector</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-repository-jackrabbit-connector</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-repository-modeshape-connector</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
