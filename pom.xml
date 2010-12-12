@@ -18,6 +18,7 @@
     <springframework-version>2.5.6</springframework-version>
     <gwt.version>2.1.0</gwt.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jbpm.version>5.0-CR1</jbpm.version>
   </properties>
   <prerequisites>
     <maven>3.0.1</maven>
@@ -268,8 +269,8 @@
     <module>drools-camel</module>
     <module>drools-compiler</module>
     <module>drools-core</module>
-    <module>drools-flow-core</module>
-    <module>drools-flow-compiler</module>
+    <!--module>drools-flow-core</module>
+    <module>drools-flow-compiler</module-->
     <module>drools-container</module>
     <module>drools-decisiontables</module>
     <module>drools-factconstraint</module>
@@ -278,8 +279,8 @@
     <module>drools-ide-common</module>
     <module>drools-jsr94</module>
     <module>drools-persistence-jpa</module>
-    <module>drools-flow-persistence-jpa</module>
-    <module>drools-process</module>
+    <!--module>drools-flow-persistence-jpa</module-->
+    <!--module>drools-process</module-->
     <module>drools-repository-parent</module>
     <module>drools-server</module>
     <module>drools-templates</module>
@@ -711,11 +712,11 @@
         <artifactId>drools-core</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-flow-core</artifactId>
         <version>${project.version}</version>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-impl</artifactId>
@@ -766,11 +767,11 @@
         <artifactId>drools-compiler</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-flow-compiler</artifactId>
         <version>${project.version}</version>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
@@ -786,7 +787,7 @@
         <artifactId>drools-decisiontables</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-bpmn2</artifactId>
         <version>${project.version}</version>
@@ -800,7 +801,7 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-bam</artifactId>
         <version>${project.version}</version>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-docs</artifactId>
@@ -873,7 +874,7 @@
         <artifactId>drools-persistence-jpa</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-flow-persistence-jpa</artifactId>
         <version>${project.version}</version>
@@ -897,7 +898,7 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-gwt-form</artifactId>
         <version>${project.version}</version>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-eclipse-plugin</artifactId>
@@ -917,6 +918,41 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-ide-common</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-flow</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-flow-builder</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-persistence-jpa</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bpmn2</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bam</artifactId>
+        <version>${jbpm.version}</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
