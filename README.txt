@@ -171,6 +171,12 @@ but you can configure it for new files.
 Configuring IntelliJ
 ====================
 
+The project is big, so you will want to give your IntelliJ more memory.
+Open $IDEA_HOME/bin/idea.vmoptions and change the first 3 values to this:
+-Xms512m
+-Xmx1024m
+-XX:MaxPermSize=512m
+
 Don't use the maven-intellij-plugin: it's dead.
 
 IntelliJ has very good build-in support for Maven.
