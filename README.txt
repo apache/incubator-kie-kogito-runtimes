@@ -80,6 +80,16 @@ so you can:
 Configuring Eclipse
 ===================
 
+Open ECLIPSE_HOME/eclipse.ini and set this:
+-vmargs
+-Xms512m
+-Xmx512m
+-Xss1024k
+-XX:PermSize=512m
+-XX:MaxPermSize=512m
+
+Note that the -Xss1024k is very important or you 'll get a StackOverflowError when building.
+
 There are 2 ways to configure Eclipse based on Maven's poms.
 
 The maven-eclipse-plugin way
@@ -185,6 +195,13 @@ IntelliJ has very good build-in support for Maven.
 - Open the main pom.xml file from the project base directory.
 - Select the profiles "notSoaProfile" and "fullProfile".
 - Go grab a coffee while it's indexing.
+
+Verify other settings:
+- Open menu File, menu item settings:
+- Tree item Compiler, change the contents of the textfield resource patterns to "!?*.java" (without the double quotes)
+- Tree item compiler, tree item Java Compiler, textfield additional command line parameters
+-- add " -J-Xss1024k" so it becomes something like "-target 1.5 -J-Xss1024k"
+-- This is to avoid an StackOverflowError when building
 
 Code style
 ----------
