@@ -80,13 +80,11 @@ so you can:
 Configuring Eclipse
 ===================
 
-Open ECLIPSE_HOME/eclipse.ini and set this:
--vmargs
--Xms512m
--Xmx512m
--Xss1024k
--XX:PermSize=512m
+Open ECLIPSE_HOME/eclipse.ini and add/change this on openFile -vmargs:
 -XX:MaxPermSize=512m
+-Xms512m
+-Xmx1024m
+-Xss1024k
 
 Note that the -Xss1024k is very important or you 'll get a StackOverflowError when building.
 
