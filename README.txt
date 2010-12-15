@@ -221,7 +221,7 @@ Correct number of spaces for tabs:
 Correct file encoding (UTF-8 except for properties files) and EOL (unix):
 - Open menu "File", menu item "Settings".
 - Open tree item "Code Style", tree item "General".
--- Combobox "Line seperator (for new files)": Unix
+-- Combobox "Line separator (for new files)": Unix
 - Open tree item "File Encodings".
 -- Combobox "IDE Encoding": "UTF-8"
 -- Combobox "Default encoding for properties files": ISO-8859-1
