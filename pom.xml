@@ -1210,12 +1210,20 @@
             <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>pdfbox</groupId>
+            <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>poi</groupId>
+            <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-scratchpad</artifactId>
           </exclusion>
           <exclusion>
             <groupId>org.textmining</groupId>
