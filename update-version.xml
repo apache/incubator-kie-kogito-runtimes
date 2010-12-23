@@ -19,7 +19,10 @@
 				   drools-docs/docbook-*/pom.xml,
 				   drools-dataloaders/**/pom.xml,
 				   drools-container/**/pom.xml,
-                                   drools-planner/**/pom.xml, drools-process/**/pom.xml"/>
+                                   drools-planner/**/pom.xml, 
+                                   drools-process/**/pom.xml,
+                                   drools-repository-parent/**/pom.xml,
+                                   drools-grid/**/pom.xml"/>
       </replaceregexp>             
 
       <replaceregexp match="&lt;releaseinfo&gt;${current}&lt;/releaseinfo&gt;"
@@ -59,10 +62,10 @@
       </replaceregexp>                     
                      
     
-      <replaceregexp file="drools-eclipse/build.properties"
+      <!--replaceregexp file="drools-eclipse/build.properties"
                      match="droolsVersion=${current}"
                      replace="droolsVersion=${new}"
-                     byline="true" />    
+                     byline="true" /-->    
     
       <replaceregexp match="&lt;releaseinfo&gt;${current}&lt;/releaseinfo&gt;"
                      replace="&lt;releaseinfo&gt;${new}&lt;/releaseinfo&gt;"
