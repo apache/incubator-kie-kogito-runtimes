@@ -12,7 +12,7 @@
 #
 # ./release.sh 
 # 
-# Optionaly you may pass a parameter to this script in order 
+# Optionally you may pass a parameter to this script in order
 # to run it locally (non-hudson environment):
 #
 # ./release.sh local
