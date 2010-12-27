@@ -125,9 +125,9 @@ echo "*************************************************************"
 echo "------> Generating artifacts"
 if [ -z "$LOCAL_BUILD" ] 
 then
-   $MVN -Drelease=true -Dmaven.test.skip -Dydoc.home=$YDOC_HOME -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror -Drules.site.deploy.dir=file://$WORKSPACE/rules-ouput package site:site site:deploy javadoc:javadoc assembly:assembly
+   $MVN -Dfull -DskipTests -Drules.site.deploy.dir=file://$WORKSPACE/rules-ouput package site:site site:deploy javadoc:javadoc assembly:assembly
 else
-   $MVN -Drelease=true -Dmaven.test.skip -Dydoc.home=$YDOC_HOME package javadoc:javadoc assembly:assembly
+   $MVN -Dfull -DskipTests package javadoc:javadoc assembly:assembly
 fi
 check_error "****** Error generating distribution artifacts. Exiting. ******"
 echo
