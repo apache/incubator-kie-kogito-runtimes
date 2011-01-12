@@ -1048,7 +1048,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
-        <version>3.2</version>
+        <version>3.3</version>
         <exclusions>
           <exclusion>
             <groupId>org.antlr</groupId>
@@ -1059,7 +1059,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>gunit</artifactId>
-        <version>3.2</version>
+        <version>3.3</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -1077,7 +1077,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr</artifactId>
-        <version>3.2</version>
+        <version>3.3</version>
         <scope>compile</scope>
         <exclusions>
           <exclusion>
@@ -1089,7 +1089,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>stringtemplate</artifactId>
-        <version>3.2</version>
+        <version>3.2.1</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
