@@ -159,11 +159,11 @@
     <url>http://www.jboss.org/</url>
   </organization>
   <repositories>
+    <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
     <repository>
       <id>jboss-public-repository-group</id>
-      <name>JBoss Public Maven Repository Group</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-      <layout>default</layout>
+      <name>JBoss Public Repository Group</name>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>never</updatePolicy>
@@ -177,7 +177,6 @@
       <id>jboss-deprecated</id>
       <name>JBoss Deprecated</name>
       <url>https://repository.jboss.org/nexus/content/repositories/deprecated/</url>
-      <layout>default</layout>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>never</updatePolicy>
@@ -186,78 +185,29 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-    <repository>
-      <!-- used by mvel to publish snapshots -->
-      <id>codehaus-snapshot</id>
-      <url>http://snapshots.repository.codehaus.org</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-    <repository>
-      <id>codehaus</id>
-      <url>http://repository.codehaus.org</url>
-    </repository>
-    <repository>
-      <id>apache-incubating</id>
-      <name>Apache Snapshot Repository</name>
-      <url>http://people.apache.org/repo/m2-snapshot-repository/</url>
-    </repository>
-    <repository>
-      <id>rio-project.org</id>
-      <url>http://www.rio-project.org/maven2</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.release</id>
-      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/release</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/external</url>
-    </repository>
-    <repository>
-      <id>repo.openehealth.org</id>
-      <name>Open Health (eclipse)</name>
-      <url>http://repo.openehealth.org/maven2/releases</url>
-    </repository>
+    <!--<repository>-->
+      <!--&lt;!&ndash; Contains mvel snapshots - should be commented out during release &ndash;&gt;-->
+      <!--<id>codehaus-snapshots</id>-->
+      <!--<url>http://snapshots.repository.codehaus.org</url>-->
+      <!--<releases>-->
+        <!--<enabled>false</enabled>-->
+      <!--</releases>-->
+      <!--<snapshots>-->
+        <!--<enabled>true</enabled>-->
+        <!--<updatePolicy>never</updatePolicy>-->
+      <!--</snapshots>-->
+    <!--</repository>-->
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>jboss-public-repository-group</id>
-      <name>JBoss Public Maven Repository Group</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-      <layout>default</layout>
+      <name>JBoss Public Repository Group</name>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
       <releases>
         <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
       </releases>
       <snapshots>
         <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>jboss-deprecated</id>
-      <name>JBoss Deprecated</name>
-      <url>https://repository.jboss.org/nexus/content/repositories/deprecated/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
@@ -1573,12 +1523,6 @@
         <groupId>wsdl4j</groupId>
         <artifactId>wsdl4j</artifactId>
         <version>1.6.2</version>
-      </dependency>
-
-      <dependency>
-        <groupId>apache-slide</groupId>
-        <artifactId>webdavlib</artifactId>
-        <version>2.0</version>
       </dependency>
 
       <dependency>
