@@ -219,8 +219,6 @@
     <module>drools-camel</module>
     <module>drools-compiler</module>
     <module>drools-core</module>
-    <!--module>drools-flow-core</module>
-    <module>drools-flow-compiler</module-->
     <module>drools-container</module>
     <module>drools-decisiontables</module>
     <module>drools-factconstraint</module>
@@ -229,8 +227,6 @@
     <module>drools-ide-common</module>
     <module>drools-jsr94</module>
     <module>drools-persistence-jpa</module>
-    <!--module>drools-flow-persistence-jpa</module-->
-    <!--module>drools-process</module-->
     <module>drools-repository-parent</module>
     <module>drools-server</module>
     <module>drools-templates</module>
@@ -669,12 +665,8 @@
         <artifactId>drools-core</artifactId>
         <version>${project.version}</version>
         <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
-      <!--dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-flow-core</artifactId>
-        <version>${project.version}</version>
-      </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-impl</artifactId>
@@ -725,11 +717,6 @@
         <artifactId>drools-compiler</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!--dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-flow-compiler</artifactId>
-        <version>${project.version}</version>
-      </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
@@ -745,21 +732,6 @@
         <artifactId>drools-decisiontables</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!--dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-bpmn2</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-process-task</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-bam</artifactId>
-        <version>${project.version}</version>
-      </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-docs</artifactId>
@@ -832,31 +804,6 @@
         <artifactId>drools-persistence-jpa</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!--dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-flow-persistence-jpa</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-workitems</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-gwt-console</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-gwt-graph</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-gwt-form</artifactId>
-        <version>${project.version}</version>
-      </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-eclipse-plugin</artifactId>
