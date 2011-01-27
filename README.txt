@@ -196,10 +196,15 @@ IntelliJ has very good build-in support for Maven.
 
 Verify other settings:
 - Open menu File, menu item settings:
-- Tree item Compiler, change the contents of the textfield resource patterns to "!?*.java" (without the double quotes)
-- Tree item compiler, tree item Java Compiler, textfield additional command line parameters
+- Tree item Compiler, textfield Resource patterns
+-- Change the contents "!?*.java" (without the double quotes)
+-- This is to avoid that changes in some resources are ignored in the next run/debug (and you are forced to use mvn)
+- Tree item compiler, tree item Java Compiler, textfield Additional command line parameters
 -- add " -J-Xss1024k" so it becomes something like "-target 1.5 -J-Xss1024k"
 -- This is to avoid an StackOverflowError when building
+- Tree item File Types, in the list Recognized File Types, select XML Files.
+-- Add Registered Pattern "*.rf" (without the double quotes)
+-- This is to avoid that the XML ruleflow files are not included in searches/refactors
 
 Code style
 ----------
