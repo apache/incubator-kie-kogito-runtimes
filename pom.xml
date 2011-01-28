@@ -344,20 +344,6 @@
         <version>1.0-beta-6</version>
       </extension>
     </extensions>
-    <testResources>
-      <testResource><!-- TODO FIXME src/test/java should not contain resources -->
-        <directory>src/test/java</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <includes>
-          <include>**</include>
-        </includes>
-      </testResource>
-    </testResources>
     <pluginManagement>
       <plugins>
         <plugin>
