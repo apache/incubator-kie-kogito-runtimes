@@ -18,7 +18,7 @@
     <springframework-version>2.5.6</springframework-version>
     <gwt.version>2.1.1</gwt.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jbpm.version>5.0-SNAPSHOT</jbpm.version>
+    <jbpm.version>5.0.0</jbpm.version>
   </properties>
   <prerequisites>
     <maven>3.0.1</maven>
