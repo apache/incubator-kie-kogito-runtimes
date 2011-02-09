@@ -244,7 +244,7 @@
       </activation>
       <modules>
         <module>drools-clips</module>
-        <module>drools-planner</module>
+        <!--<module>drools-planner</module>--><!-- Already split-off to separate repo -->
         <module>drools-pipeline</module>
         <module>drools-simulator</module>
         <module>osgi-bundles</module>
