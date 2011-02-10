@@ -214,7 +214,7 @@
 
   <modules>
     <!-- These are just the soa modules -->
-    <module>drools-ant</module>
+    <!--<module>drools-ant</module>--><!-- Already split-off to separate repo -->
     <module>drools-api</module>
     <module>drools-camel</module>
     <module>drools-compiler</module>
@@ -291,7 +291,7 @@
       <modules>
         <module>drools-docs</module>
         <module>drools-examples</module>
-        <module>drools-eclipse</module>
+        <!--<module>drools-eclipse</module>--><!-- Already split-off to separate repo -->
       </modules>
     </profile>
 
