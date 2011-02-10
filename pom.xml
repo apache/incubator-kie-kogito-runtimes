@@ -903,7 +903,7 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-docs-planner</artifactId>
+        <artifactId>drools-planner-docs</artifactId>
         <type>jdocbook</type>
         <version>${project.version}</version>
       </dependency>
