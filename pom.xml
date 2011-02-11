@@ -221,7 +221,6 @@
     <module>drools-core</module>
     <module>drools-container</module>
     <module>drools-decisiontables</module>
-    <!--<module>drools-factconstraint</module>--><!-- Already split-off to separate repo -->
     <module>drools-grid</module>
     <!--<module>drools-guvnor</module>--><!-- Already split-off to separate repo -->
     <!--<module>drools-ide-common</module>--><!-- Already split-off to separate repo -->
@@ -839,11 +838,6 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-pipeline</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-factconstraint</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
