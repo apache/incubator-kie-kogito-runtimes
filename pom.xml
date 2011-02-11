@@ -12,7 +12,7 @@
   <url>http://www.jboss.com/products/rules</url>
 
   <properties>
-    <mvel.dep.version>2.1.RC1</mvel.dep.version>
+    <mvel.dep.version>2.1-SNAPSHOT</mvel.dep.version>
     <camel-version>2.4.0</camel-version>
     <cxf-version>2.2.9</cxf-version>
     <springframework-version>2.5.6</springframework-version>
@@ -214,7 +214,7 @@
 
   <modules>
     <!-- These are just the soa modules -->
-    <module>drools-ant</module>
+    <!--<module>drools-ant</module>--><!-- Already split-off to separate repo -->
     <module>drools-api</module>
     <module>drools-camel</module>
     <module>drools-compiler</module>
@@ -243,7 +243,7 @@
       </activation>
       <modules>
         <module>drools-clips</module>
-        <module>drools-planner</module>
+        <!--<module>drools-planner</module>--><!-- Already split-off to separate repo -->
         <module>drools-pipeline</module>
         <module>drools-simulator</module>
         <module>osgi-bundles</module>
@@ -290,7 +290,7 @@
       <modules>
         <module>drools-docs</module>
         <module>drools-examples</module>
-        <module>drools-eclipse</module>
+        <!--<module>drools-eclipse</module>--><!-- Already split-off to separate repo -->
       </modules>
     </profile>
 
@@ -445,6 +445,69 @@
           <version>2.1.1</version>
         </plugin>
         <plugin>
+          <groupId>org.jboss.maven.plugins</groupId>
+          <artifactId>maven-jdocbook-plugin</artifactId>
+          <version>2.3.4</version>
+          <extensions>true</extensions>
+
+          <dependencies>
+            <dependency>
+              <groupId>org.jboss</groupId>
+              <artifactId>jbossorg-docbook-xslt-ns</artifactId>
+              <version>1.1.2</version>
+            </dependency>
+            <dependency>
+              <groupId>org.jboss</groupId>
+              <artifactId>jbossorg-jdocbook-style</artifactId>
+              <version>1.1.1</version>
+              <type>jdocbook-style</type>
+            </dependency>
+          </dependencies>
+
+          <configuration>
+            <sourceDocumentName>master.xml</sourceDocumentName>
+            <masterTranslation>en-US</masterTranslation>
+            <imageResource>
+              <directory>${basedir}/src/main/docbook/en-US</directory>
+              <includes>
+                <include>images/</include>
+              </includes>
+            </imageResource>
+            <formats>
+              <format>
+                <formatName>html_single</formatName>
+                <stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
+                <finalName>index.html</finalName>
+                <!-- <profilingTypeName>two_pass</profilingTypeName> -->
+              </format>
+              <format>
+                <formatName>html</formatName>
+                <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
+                <finalName>index.html</finalName>
+                <!-- <profilingTypeName>two_pass</profilingTypeName> -->
+              </format>
+              <format>
+                <formatName>pdf</formatName>
+                <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
+                <finalName>${project.artifactId}.pdf</finalName>
+              </format>
+              <!--<format>-->
+                <!--<formatName>eclipse</formatName>-->
+                <!--<stylesheetResource>classpath:/xslt/org/jboss/eclipse.xsl</stylesheetResource>-->
+                <!--<finalName>${project.artifactId}.html</finalName>-->
+              <!--</format>-->
+            </formats>
+            <options>
+              <xmlTransformerType>saxon</xmlTransformerType>
+              <xincludeSupported>true</xincludeSupported>
+              <useRelativeImageUris>true</useRelativeImageUris>
+              <!-- TODO Probably obsolete after the upgrade to maven-jdocbook-plugin 2.3.0 -->
+              <docbookVersion>1.72.0</docbookVersion>
+              <!-- <localeSeparator>-</localeSeparator> -->
+            </options>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <version>2.1</version>
@@ -531,6 +594,20 @@
             <encoding>UTF-8</encoding>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.7</version>
+          <configuration>
+            <links>
+              <link>http://download.oracle.com/javase/1.5.0/docs/api</link>
+            </links>
+            <minmemory>128m</minmemory>
+            <maxmemory>512m</maxmemory>
+            <author>false</author>
+            <breakiterator>true</breakiterator>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -538,6 +615,11 @@
         <!-- Entry needed to create, install and deploy sources jars -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- Entry needed to enable jdocbook packaging -->
+        <groupId>org.jboss.maven.plugins</groupId>
+        <artifactId>maven-jdocbook-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
@@ -553,21 +635,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
         <version>2.2</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <aggregate>false</aggregate>
-          <links>
-            <link>http://download.oracle.com/javase/1.5.0/docs/api</link>
-          </links>
-          <minmemory>128m</minmemory>
-          <maxmemory>512m</maxmemory>
-          <author>false</author>
-          <breakiterator>true</breakiterator>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -802,6 +869,42 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-ide-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-docs-introduction</artifactId>
+        <type>jdocbook</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-docs-expert</artifactId>
+        <type>jdocbook</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-docs-fusion</artifactId>
+        <type>jdocbook</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-docs-guvnor</artifactId>
+        <type>jdocbook</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-planner-docs</artifactId>
+        <type>jdocbook</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-docs-integration</artifactId>
+        <type>jdocbook</type>
         <version>${project.version}</version>
       </dependency>
       <dependency>
