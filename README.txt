@@ -5,6 +5,7 @@ Read this document if you want to build or contribute to the drools project.
 
 Drools uses Maven 3 to build the project and all it's modules.
 
+
 Installing Maven
 ================
 
@@ -31,6 +32,7 @@ Windows:
 3) Check if maven is installed correctly.
 $ mvn --version
 
+
 Building with Maven
 ===================
 
@@ -56,6 +58,7 @@ There are 3 profile activation properties:
 - full: Slow, but builds everything (including eclipse plugins and documentation). Used by hudson and during releases.
 - soa: prunes away the non-enterprise stuff
 
+
 Releasing
 =========
 
@@ -77,16 +80,16 @@ so you can:
  - deploy artifacts to the jboss repository
  - easily use the jboss plugins
 
+
 Configuring Eclipse
 ===================
 
+Avoid a StackOverflowError when building:
 Open ECLIPSE_HOME/eclipse.ini and add/change this on openFile -vmargs:
 -XX:MaxPermSize=512m
 -Xms512m
 -Xmx1024m
 -Xss1024k
-
-Note that the -Xss1024k is very important or you 'll get a StackOverflowError when building.
 
 There are 2 ways to configure Eclipse based on Maven's poms.
 
@@ -148,6 +151,14 @@ Correct file encoding (UTF-8 except for properties files) and EOL (unix):
 -- Combobox "Encoding": ISO 10646/Unicode(UTF-8)
 - Note: i18n properties files must be in ISO-8859-1 as specified by the java ResourceBundle contract.
 
+Correct file headers (do not include @author or a meaningless javadoc):
+- Open menu "Window", menu item "Preferences".
+-- Tree item "Java", tree item "Code Style", tree item "Code Templates"
+--- Tree "Configure generated code and comments", tree item "Comments", tree item "types"
+--- Remove "@author Your Name" line.
+---- We do not accept @author lines in source files, see FAQ below.
+
+
 License header
 --------------
 
@@ -176,6 +187,7 @@ but you can configure it for new files.
 -- Do not start or end with a newline character
 -- Update the year (2010) every year.
 
+
 Configuring IntelliJ
 ====================
 
@@ -200,7 +212,7 @@ Verify other settings:
 -- Change the contents "!?*.java" (without the double quotes)
 -- This is to avoid that changes in some resources are ignored in the next run/debug (and you are forced to use mvn)
 - Tree item compiler, tree item Java Compiler, textfield Additional command line parameters
--- add " -J-Xss1024k" so it becomes something like "-target 1.5 -J-Xss1024k"
+-- Add " -J-Xss1024k" so it becomes something like "-target 1.5 -J-Xss1024k"
 -- This is to avoid an StackOverflowError when building
 - Tree item File Types, in the list Recognized File Types, select XML Files.
 -- Add Registered Pattern "*.rf" (without the double quotes)
@@ -231,6 +243,14 @@ Correct file encoding (UTF-8 except for properties files) and EOL (unix):
 -- Combobox "IDE Encoding": "UTF-8"
 -- Combobox "Default encoding for properties files": ISO-8859-1
 
+Correct file headers (do not include @author or a meaningless javadoc):
+- Open menu "File", menu item "Settings".
+- Tree item File templates, tab Includes, list item File Header
+-- Delete the contents of the text area.
+--- Remove "@author Your Name" line.
+---- We do not accept @author lines in source files, see FAQ below.
+--- Do not include an empty or meaningless javadoc. Only add a javadoc if it has meaningful content.
+
 License header
 --------------
 
@@ -255,3 +275,28 @@ limitations under the License.
 -- Do not start or end with a newline character
 - Open tree item "Copyright"
 -- Combobox "Default project copyright": JBoss Inc
+
+
+FAQ
+===
+
+Why do you not accept author lines in your source code?
+- Becuase the author tags in the java files are a maintenance nightmare
+-- A large percentage is wrong, incomplete or inaccurate.
+--- Most of the time, it only contains the original author. Many files are completely refactored/expanded by other authors.
+-- Git is accurate, that is the canonical source to find the correct author.
+- Because the author tags promote "code ownership", which is bad in the long run.
+-- If people work on a piece they perceive as being owned by someone else, they tend to:
+--- only fix what they are assigned to fix, not everything that's broken.
+--- discard responsibility if that code doesn't work properly.
+--- be scared of stepping of the feet of the owner
+-- More info: How to get a healthy open source project? http://video.google.com/videoplay?docid=-4216011961522818645#
+
+Credit to the author of peices of code is given:
+- on the team page: http://www.jboss.org/drools/team
+-- Please contact Geoffrey (or any of us) if you want to change/expand your entry in the team page. Don't be shy!
+- on the blog: http://blog.athico.com
+-- Just request write permission if you don't have it yet and want to write an article.
+- with ohloh, which also has statistics: https://www.ohloh.net/p/jboss-drools/contributors
+- in the github web interface
+
