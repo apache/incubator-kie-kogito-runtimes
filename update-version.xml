@@ -21,7 +21,7 @@
 				   drools-container/**/pom.xml,
                                    drools-planner/**/pom.xml, 
                                    drools-process/**/pom.xml,
-                                   drools-repository-parent/**/pom.xml,
+                                   guvnor-repository-connector/**/pom.xml,
                                    drools-grid/**/pom.xml"/>
       </replaceregexp>             
 
