@@ -170,7 +170,7 @@ but you can configure it for new files.
 -- Open tree item "Comments", tree item "Files".
 -- Replace the text area with this:
 /*
- * Copyright 2010 JBoss Inc
+ * Copyright 2011 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -185,7 +185,7 @@ but you can configure it for new files.
  * limitations under the License.
  */
 -- Do not start or end with a newline character
--- Update the year (2010) every year.
+-- Update the year (2011) every year.
 
 
 Configuring IntelliJ
