@@ -216,18 +216,18 @@
     <!-- These are just the soa modules -->
     <!--<module>drools-ant</module>--><!-- Already split-off to separate repo -->
     <module>drools-api</module>
-    <module>drools-camel</module>
+    <!--<module>drools-camel</module>--><!-- Already split-off to separate repo -->
     <module>drools-compiler</module>
     <module>drools-core</module>
-    <module>drools-container</module>
+    <!--<module>drools-container</module>--><!-- Already split-off to separate repo -->
     <module>drools-decisiontables</module>
-    <module>drools-grid</module>
+    <!--<module>drools-grid</module>--><!-- Already split-off to separate repo -->
     <!--<module>drools-guvnor</module>--><!-- Already split-off to separate repo -->
     <!--<module>drools-ide-common</module>--><!-- Already split-off to separate repo -->
     <module>drools-jsr94</module>
     <module>drools-persistence-jpa</module>
     <!--<module>drools-repository-parent</module>--><!-- Already split-off to separate repo -->
-    <module>drools-server</module>
+    <!--<module>drools-server</module>--><!-- Already split-off to separate repo -->
     <module>drools-templates</module>
     <module>drools-verifier</module>
     <!-- Other modules are defined in the not-soa profile -->
@@ -244,8 +244,8 @@
       <modules>
         <module>drools-clips</module>
         <!--<module>drools-planner</module>--><!-- Already split-off to separate repo -->
-        <module>drools-pipeline</module>
-        <module>drools-simulator</module>
+        <!--<module>drools-pipeline</module>--><!-- Already split-off to separate repo -->
+        <!--<module>drools-simulator</module>--><!-- Already split-off to separate repo -->
         <module>osgi-bundles</module>
       </modules>
       <build>
