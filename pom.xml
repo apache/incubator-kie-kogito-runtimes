@@ -863,7 +863,7 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-ide-common</artifactId>
+        <artifactId>droolsjbpm-ide-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
