@@ -835,6 +835,11 @@
         <artifactId>drools-pipeline</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <!--<dependency>--><!-- JBRULES-2707 Split up guvnor-webapp into guvnor-gwt-client and guvnor-webapp -->
+        <!--<groupId>org.drools</groupId>-->
+        <!--<artifactId>guvnor-gwt-client</artifactId>-->
+        <!--<version>${project.version}</version>-->
+      <!--</dependency>-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-webapp</artifactId>
