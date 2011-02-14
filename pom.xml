@@ -837,7 +837,7 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-guvnor</artifactId>
+        <artifactId>guvnor-webapp</artifactId>
         <type>war</type>
         <version>${project.version}</version>
       </dependency>
@@ -1226,7 +1226,7 @@
         <artifactId>hsqldb</artifactId>
         <version>1.8.0.10</version>
       </dependency>
-      <!-- drools-guvnor -->
+      <!-- guvnor-webapp -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
