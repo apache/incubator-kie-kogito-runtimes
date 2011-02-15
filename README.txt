@@ -217,6 +217,14 @@ Verify other settings:
 - Tree item File Types, in the list Recognized File Types, select XML Files.
 -- Add Registered Pattern "*.rf" (without the double quotes)
 -- This is to avoid that the XML ruleflow files are not included in searches/refactors
+- Tree item File Types, in the list Recognized File Types
+-- Button Add...
+--- Textfield name "DRL files"
+--- Textfield Line comment "//", textfield Block comment start "/*", textfield Block comment end "*/"
+--- Check the checkboxes Support paired braces, Support paired brackets, Support parens
+--- Add some keywords, such as rule, when, then, end
+--- Button ok
+-- Add Registered Pattern "*.drl" and "*.mvel".
 
 Code style
 ----------
