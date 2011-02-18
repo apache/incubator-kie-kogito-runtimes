@@ -91,6 +91,10 @@ Open ECLIPSE_HOME/eclipse.ini and add/change this on openFile -vmargs:
 -Xmx1024m
 -Xss1024k
 
+Force language level 5 (not 6), to fail-fast on implemented interface methods that are annotated with @Override
+- Open menu Window, menu item Preferences
+-- Tree item Java, Tree item Compiler, section JDK Compliance, combobox Compiler compliance level should be "1.5"
+
 There are 2 ways to configure Eclipse based on Maven's poms.
 
 The maven-eclipse-plugin way
@@ -225,6 +229,10 @@ Verify other settings:
 --- Add some keywords, such as rule, when, then, end
 --- Button ok
 -- Add Registered Pattern "*.drl" and "*.mvel".
+
+Force language level 5 (not 6), to fail-fast on implemented interface methods that are annotated with @Override
+- Open menu File, menu item Project Structure
+-- List item Modules, for each module, tab Sources, combobox Language level should be "5.0 ..."
 
 Code style
 ----------
