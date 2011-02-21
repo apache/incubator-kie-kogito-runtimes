@@ -17,8 +17,6 @@
 #
 # ./release.sh local
 #
-# @author: etirelli@redhat.com
-#
 
 #
 #  Checks if there is an error flag active and if so,
