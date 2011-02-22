@@ -6,10 +6,11 @@ scriptDir="$( cd "$( dirname "$0" )" && pwd )"
 
 startDateTime=`date +%s`
 
-cd $scriptDir
-gitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
-gitUrlPrefix=`echo $gitUrlPrefix | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git\s*(fetch)$//g'`
-echo "gitUrl: $gitUrlPrefix"
+gitUrlPrefix="git@github.com:droolsjbpm/"
+# TODO dynamic gitUrlPrefix detection does not work on mac
+# cd $scriptDir
+# gitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
+# gitUrlPrefix=`echo $gitUrlPrefix | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git\s*(fetch)$//g'`
 
 droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
