@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Runs a mvn command on all droolsjbpm repositories.
+# Runs a git command on all droolsjbpm repositories.
 
 scriptDir="$( cd "$( dirname "$0" )" && pwd )"
 echo ScriptDir: $scriptDir
@@ -8,11 +8,11 @@ echo ScriptDir: $scriptDir
 if [ $# = 0 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 [arguments of mvn]"
+    echo "  $0 [arguments of git]"
     echo "For example:"
-    echo "  $0 --version"
-    echo "  $0 -DskipTests clean install"
-    echo "  $0 -Dfull clean install"
+    echo "  $0 fetch"
+    echo "  $0 pull --rebase"
+    echo "  $0 commit -m\"JIRAKEY-1 Fix typo\""
     echo
     exit 1
 fi
@@ -32,10 +32,10 @@ for repository in $repositories ; do
     echo "==============================================================================="
     echo
     cd $repository
-    mvn $*
-    mvnReturnCode=$?
+    git $*
+    gitReturnCode=$?
     cd ..
-    if [ $mvnReturnCode != 0 ] ; then
+    if [ $gitReturnCode != 0 ] ; then
         exit $?
     fi
 done
