@@ -17,6 +17,8 @@ if [ $# = 0 ] ; then
     exit 1
 fi
 
+startDateTime=`date +%s`
+
 droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
 
@@ -31,8 +33,16 @@ for repository in $repositories ; do
     echo
     cd $repository
     mvn $*
+    mvnReturnCode=$?
     cd ..
-    if [ $? != 0 ] ; then
+    if [ $mvnReturnCode != 0 ] ; then
         exit $?
     fi
 done
+
+endDateTime=`date +%s`
+spentSeconds=`expr $endDateTime - $startDateTime`
+
+echo
+echo "Total time: ${spentSeconds}s"
+echo
