@@ -3,7 +3,6 @@
 # Runs a git command on all droolsjbpm repositories.
 
 scriptDir="$( cd "$( dirname "$0" )" && pwd )"
-echo ScriptDir: $scriptDir
 
 if [ $# = 0 ] ; then
     echo
@@ -22,10 +21,7 @@ startDateTime=`date +%s`
 droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
 
-repositories="droolsjbpm-build-bootstrap;droolsjbpm-knowledge;drools;drools-planner;droolsjbpm-integration;guvnor;droolsjbpm-tools;droolsjbpm-build-distribution"
-repositories="$(echo $repositories | sed 's/;/\n/g')" # convert to array
-
-for repository in $repositories ; do
+for repository in `cat ${scriptDir}/repository-list.txt` ; do
     echo
     echo "==============================================================================="
     echo "Repository: $repository"

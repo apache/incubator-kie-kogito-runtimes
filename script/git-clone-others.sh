@@ -3,7 +3,6 @@
 # Git clone the other repositories
 
 scriptDir="$( cd "$( dirname "$0" )" && pwd )"
-echo ScriptDir: $scriptDir
 
 startDateTime=`date +%s`
 
@@ -15,14 +14,15 @@ echo "gitUrl: $gitUrlPrefix"
 droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
 
-repositories="droolsjbpm-knowledge;drools;drools-planner;droolsjbpm-integration;guvnor;droolsjbpm-tools;droolsjbpm-build-distribution"
-repositories="$(echo $repositories | sed 's/;/\n/g')" # convert to array
-
-for repository in $repositories ; do
+for repository in `cat ${scriptDir}/repository-list.txt` ; do
     if [ -d $repository ] ; then
         echo "This directory already exists: $repository"
     else
-        echo "Cloning: $repository"
+        echo
+        echo "==============================================================================="
+        echo "Repository: $repository"
+        echo "==============================================================================="
+        echo
         git clone ${gitUrlPrefix}${repository}.git ${repository}
         if [ $? != 0 ] ; then
             exit $?
@@ -30,7 +30,10 @@ for repository in $repositories ; do
     fi
 done
 
-for repository in $repositories ; do
+echo
+echo Disk size:
+
+for repository in `cat ${scriptDir}/repository-list.txt` ; do
     du -sh $repository
 done
 

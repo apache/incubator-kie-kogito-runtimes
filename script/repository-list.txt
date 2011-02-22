@@ -1,0 +1,8 @@
+droolsjbpm-build-bootstrap
+droolsjbpm-knowledge
+drools
+drools-planner
+droolsjbpm-integration
+guvnor
+droolsjbpm-tools
+droolsjbpm-build-distribution
