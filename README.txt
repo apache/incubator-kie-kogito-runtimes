@@ -1,13 +1,22 @@
-Welcome to Drools
-=================
+Developing Drools and jBPM
+==========================
 
 Read this document if you want to build or contribute to the drools project.
 
 Drools uses Maven 3 to build the project and all it's modules.
 
 
+Getting the sources with git
+============================
+
+TODO
+
+
+Building with Maven
+===================
+
 Installing Maven
-================
+----------------
 
 1) Get and configure Maven.
 
@@ -32,9 +41,8 @@ Windows:
 3) Check if maven is installed correctly.
 $ mvn --version
 
-
 Building with Maven
-===================
+-------------------
 
 Go into the project base directory.
 $ cd drools
@@ -57,19 +65,6 @@ There are 3 profile activation properties:
 - <default>: Fast, for during development
 - full: Slow, but builds everything (including eclipse plugins and documentation). Used by hudson and during releases.
 - soa: prunes away the non-enterprise stuff
-
-
-Releasing
-=========
-
-Use JDK 1.6, because in JDK 1.5 the module guvnor-repository-connector-modeshape is not build.
-
-To produce distribution builds use:
-$ mvn -Dfull clean install
-$ mvn -Dfull -DskipTests package javadoc:javadoc assembly:assembly
-
-Note that install must be done first as javadoc:javadoc won't work unless the
-jars are in the local maven repo, but the tests can be skipped on the second run.
 
 Configuring settings.xml for maven
 ----------------------------------
@@ -291,6 +286,19 @@ limitations under the License.
 -- Do not start or end with a newline character
 - Open tree item "Copyright"
 -- Combobox "Default project copyright": JBoss Inc
+
+
+Releasing
+=========
+
+Use JDK 1.6, because in JDK 1.5 the module guvnor-repository-connector-modeshape is not build.
+
+To produce distribution builds use:
+$ mvn -Dfull clean install
+$ mvn -Dfull -DskipTests package javadoc:javadoc assembly:assembly
+
+Note that install must be done first as javadoc:javadoc won't work unless the
+jars are in the local maven repo, but the tests can be skipped on the second run.
 
 
 FAQ
