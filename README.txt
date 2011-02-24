@@ -9,8 +9,14 @@ Drools uses Maven 3 to build the project and all it's modules.
 Getting the sources with git
 ============================
 
-TODO
+Fork the repository you want to work on.
 
+# First make a directory
+$ mkdir droolsjbpm
+$ cd droolsjbpm
+$ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
+$ cd guvnor
+$ ls
 
 Building with Maven
 ===================
