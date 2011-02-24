@@ -3,125 +3,174 @@ Developing Drools and jBPM
 
 Read this document if you want to build or contribute to the drools project.
 
-Drools uses Maven 3 to build the project and all it's modules.
-
-
 Getting the sources with git
 ============================
 
 Fork the repository you want to work on.
 
-# First make a directory
-$ mkdir droolsjbpm
-$ cd droolsjbpm
-$ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
-$ cd guvnor
-$ ls
+    # First make a directory
+    $ mkdir droolsjbpm
+    $ cd droolsjbpm
+    $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
+    $ cd guvnor
+    $ ls
 
 Building with Maven
 ===================
+
+All projects uses Maven 3 to build all their modules.
 
 Installing Maven
 ----------------
 
-1) Get and configure Maven.
+* Get Maven
 
-Download Maven from http://maven.apache.org/
-Follow the installation instructions.
+    * [Download Maven](http://maven.apache.org/) and follow the installation instructions.
 
-Linux:
-Hint: unzip maven to ~/opt/build
-and create a link to place in your PATH:
-$ cd ~/opt/build/
-$ ln -s apache-maven-3.0.1 apache-maven
-$ export PATH="~/opt/build/apache-maven/bin/:$PATH"
+        Linux note: the `apt-get` version of maven is probably not up-to-date enough.
 
-2) Give more memory to maven, it will need it to build this big project.
+    * Linux trick to easily upgrade to future versions:
 
-Linux:
-$ export MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+        * Unzip maven to `~/opt/build`
+    
+        * Create a version-independent link:
 
-Windows:
-> set MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+                $ cd ~/opt/build/
+                $ ln -s apache-maven-3.0.1 apache-maven
 
-3) Check if maven is installed correctly.
-$ mvn --version
+        * And add that link to your `PATH` (before any `apt-get` maven installation):
+
+                $ export PATH="~/opt/build/apache-maven/bin/:$PATH"
+
+* Give more memory to maven, it will need it to build this big project.
+
+    * Linux:
+
+            $ export MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+
+    * Windows:
+
+            > set MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+
+* Check if maven is installed correctly.
+
+        $ mvn --version
 
 Building with Maven
 -------------------
 
-Go into the project base directory.
-$ cd drools
-$ ls
-You'll find this README.txt file in there.
-Notice you also see a pom.xml. Those pom.xml files are the heart of Maven.
+* Go into the project's base directory, for example `guvnor`:
 
-Run the build
-$ mvn -DskipTests clean install
+        $ cd guvnor
+        $ ls
 
-Or better yet, run the full build (this actives the profile "fullProfile")
-$ mvn -Dfull -DskipTests clean install
+    Notice you see a `pom.xml` there. Those `pom.xml` files are the heart of Maven.
 
-The first build will take a long time, because a lot of dependencies will be downloaded (and cached locally).
-It might even fail, if certain servers are offline or experience hiccups.
-In that case, you 'll see an IO error and just run the build again.
-After the first successful build, any next build should be fast and stable.
+* Run the build:
 
-There are 3 profile activation properties:
-- <default>: Fast, for during development
-- full: Slow, but builds everything (including eclipse plugins and documentation). Used by hudson and during releases.
-- soa: prunes away the non-enterprise stuff
+        $ mvn -DskipTests clean install
 
-Configuring settings.xml for maven
-----------------------------------
+    The first build will take a long time, because a lot of dependencies will be downloaded (and cached locally).
 
-Read this document:
-  http://community.jboss.org/wiki/MavenGettingStarted-Developers
-so you can:
- - deploy artifacts to the jboss repository
- - easily use the jboss plugins
+    It might even fail, if certain servers are offline or experience hiccups.
+    In that case, you 'll see an IO error, so just run the build again.
 
+    **After the first successful build, any next build should be fast and stable.**
+
+* Try running a different profile by using the option `-D<profileActivationProperty>`:
+
+        $ mvn -Dfull -DskipTests clean install
+
+    There are 3 profile activation properties:
+
+    * *none*: Fast, for during development
+
+    * `full`: Slow, but builds everything (including documentation). Used by hudson and during releases.
+
+    * `soa`: prunes away the non-enterprise stuff
+
+Configuring Maven
+-----------------
+
+To deploy snapshots and releases to nexus, you need to add this to the file `~/.m2/settings.xml`:
+
+     <settings>
+       ...
+       <servers>
+         <server>
+           <id>jboss-snapshots-repository</id>
+           <username>jboss.org_username</username>
+           <password>jboss.org_password</password>
+         </server>
+         <server>
+           <id>jboss-releases-repository</id>
+           <username>jboss.org_username</username>
+           <password>jboss.org_password</password>
+         </server>
+       </servers>
+       ...
+     </settings>
+
+More info in [the JBoss.org guide to get started with Maven](http://community.jboss.org/wiki/MavenGettingStarted-Developers).
 
 Configuring Eclipse
 ===================
 
-Avoid a StackOverflowError when building:
-Open ECLIPSE_HOME/eclipse.ini and add/change this on openFile -vmargs:
--XX:MaxPermSize=512m
--Xms512m
--Xmx1024m
--Xss1024k
+Before starting Eclipse
+-----------------------
 
-Force language level 5 (not 6), to fail-fast on implemented interface methods that are annotated with @Override
-- Open menu Window, menu item Preferences
--- Tree item Java, Tree item Compiler, section JDK Compliance, combobox Compiler compliance level should be "1.5"
+* Avoid an `OutOfMemoryException` and a `StackOverflowError` when building.
 
-There are 2 ways to configure Eclipse based on Maven's poms.
+    Open `ECLIPSE_HOME/eclipse.ini` and add/change this: on openFile -vmargs:
 
-The maven-eclipse-plugin way
-----------------------------
+        openFile
+        -vmargs
+        ...
+        -XX:MaxPermSize=512m
+        -Xms512m
+        -Xmx1024m
+        -Xss1024k
 
-The maven-eclipse-plugin plugin is a plugin in Maven for Eclipse.
-This is the old way.
-Run this command to generate .project and .classpath files.
-$ mvn eclipse:eclipse
-- Open Eclipse
-- Import existing projects, navigate to the project base directory, select all the projects (=modules) it lists.
+* Force language level 5 (not 6), to fail-fast on implemented interface methods that are annotated with `@Override`.
 
-Important note: mvn eclipse:eclipse does not work for drools-eclipse because it is not compatible with tycho
-(and never will be).
+    * Open menu *Window*, menu item *Preferences*
 
-The m2eclipse plugin way
-------------------------
+    * Tree item *Java*, tree item *Compiler*, section *JDK Compliance*, combobox *Compiler compliance level* should be `1.5`.
+
+Configuring the project with the m2eclipse plugin
+-------------------------------------------------
 
 The m2eclipse plugin is a plugin in Eclipse for Maven.
-This is the new, deluxe way (and compatible with tycho).
-- Open Eclipse
-- Follow the installation instructions of m2eclipse: http://m2eclipse.sonatype.org/
--- Follow the link Installing m2eclipse at the bottom.
-- Menu File, menu item Import, tree item Maven, tree item Existing Maven Projects
-- Open the main pom.xml with the m2eclipse plugin.
-- Select the profiles "notSoaProfile" and "fullProfile".
+This is the new way (and compatible with tycho).
+
+* Open Eclipse
+
+* Follow [the installation instructions of m2eclipse](http://m2eclipse.sonatype.org/)
+
+    * Follow the link *Installing m2eclipse* at the bottom.
+
+* Menu *File*, menu item *Import*, tree item *Maven*, tree item *Existing Maven Projects*
+
+* Open the top level project `pom.xml` file with the m2eclipse plugin.
+
+* Select the profiles `notSoaProfile` and `fullProfile`.
+
+Configuring the project with the deprecated maven-eclipse-plugin
+----------------------------------------------------------------
+
+The maven-eclipse-plugin plugin is a plugin in Maven for Eclipse.
+This is the old way (of which the development has stopped).
+
+Run this command to generate `.project` and `.classpath` files:
+
+    $ mvn eclipse:eclipse
+
+* Open Eclipse
+
+* Import existing projects, navigate to the project base directory, select all the projects (= modules) it lists.
+
+Important note: `mvn eclipse:eclipse` does not work for our eclipse plugin because it is not compatible with tycho
+(and never will be).
 
 Code style
 ----------
