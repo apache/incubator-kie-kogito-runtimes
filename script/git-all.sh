@@ -2,8 +2,8 @@
 
 # Runs a git command on all droolsjbpm repositories.
 
-scriptDir=$(readlink -f  $(dirname $0))
-
+scriptDir=$(dirname $(readlink -e $0))
+ 
 if [ $# = 0 ] ; then
     echo
     echo "Usage:"
