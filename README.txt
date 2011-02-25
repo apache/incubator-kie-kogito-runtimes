@@ -15,10 +15,10 @@ Fork the repository you want to work on.
     $ cd guvnor
     $ ls
 
-Building with Maven
-===================
+Developing with Maven
+=====================
 
-All projects uses Maven 3 to build all their modules.
+All projects use Maven 3 to build all their modules.
 
 Installing Maven
 ----------------
@@ -27,9 +27,11 @@ Installing Maven
 
     * [Download Maven](http://maven.apache.org/) and follow the installation instructions.
 
-        Linux note: the `apt-get` version of maven is probably not up-to-date enough.
+* Linux
 
-    * Linux trick to easily upgrade to future versions:
+    * Note: the `apt-get` version of maven is probably not up-to-date enough.
+
+    * Linux trick to easily upgrade to future versions later:
 
         * Unzip maven to `~/opt/build`
     
@@ -38,23 +40,32 @@ Installing Maven
                 $ cd ~/opt/build/
                 $ ln -s apache-maven-3.0.1 apache-maven
 
-        * And add that link to your `PATH` (before any `apt-get` maven installation):
+            Next time you only have to remove the link and add it to the new version.
 
-                $ export PATH="~/opt/build/apache-maven/bin/:$PATH"
+        * Add this to your `~/.bashrc` file:
 
-* Give more memory to maven, it will need it to build this big project.
+                export M3_HOME="~/opt/build/apache-maven"
+                export PATH="$M3_HOME/bin:$PATH"
 
-    * Linux:
+    * Give more memory to maven, so it can the big projects too:
 
-            $ export MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+        * Add this to your `~/.bashrc` file:
 
-    * Windows:
+            export MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
 
-            > set MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+* Windows:
+
+    * Give more memory to maven, so it can the big projects too:
+
+        * Open menu *Configuration screen*, menu item *System*, tab *Advanced*, button *environment variables*:
+
+            set MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
 
 * Check if maven is installed correctly.
 
         $ mvn --version
+
+    Verify the mavens and java versions.
 
 Building with Maven
 -------------------
@@ -113,11 +124,11 @@ To deploy snapshots and releases to nexus, you need to add this to the file `~/.
 
 More info in [the JBoss.org guide to get started with Maven](http://community.jboss.org/wiki/MavenGettingStarted-Developers).
 
-Configuring Eclipse
-===================
+Developing with Eclipse
+=======================
 
-Before starting Eclipse
------------------------
+Before running Eclipse
+----------------------
 
 * Avoid an `OutOfMemoryException` and a `StackOverflowError` when building.
 
@@ -131,11 +142,115 @@ Before starting Eclipse
         -Xmx1024m
         -Xss1024k
 
+Configuring Eclipse
+-------------------
+
 * Force language level 5 (not 6), to fail-fast on implemented interface methods that are annotated with `@Override`.
 
     * Open menu *Window*, menu item *Preferences*
 
-    * Tree item *Java*, tree item *Compiler*, section *JDK Compliance*, combobox *Compiler compliance level* should be `1.5`.
+    * Click tree item *Java*, tree item *Compiler*, section *JDK Compliance*, combobox *Compiler compliance level* should be `1.5`.
+
+* Set the correct file encoding (UTF-8 except for properties files) and end-of-line characters (unix):
+
+    * Open menu *Window*, menu item *Preferences*.
+
+    * Click tree item *General*, tree item *Workspace*
+
+        * Label *Text file encoding*, radiobutton *Other*, combobox `UTF-8`.
+
+        * Label *New text file delimiter*, radiobutton *Other*, combobox `Unix`.
+
+    * Click tree item *XML*, tree item *XML Files*.
+
+        * Combobox *Encoding*: `ISO 10646/Unicode(UTF-8)`.
+
+    * Click tree item *CSS*, tree item *CSS Files*.
+
+        * Combobox *Encoding*: `ISO 10646/Unicode(UTF-8)`.
+
+    * Open tree item *HTML*, tree item *HTML Files*.
+
+        * Combobox *Encoding*: `ISO 10646/Unicode(UTF-8)`.
+
+    * Note: i18n properties files must be in `ISO-8859-1` as specified by the java `ResourceBundle` contract.
+
+* Set the correct number of spaces for tabs:
+
+    * Warning: If you imported the `eclipse-formatter.xml` file, you don't need to set it for Java, but you do need to set it for XML anyway!
+
+    * Open menu *Window*, menu item *Preferences*.
+
+        * If you have project specific settings enabled instead, right click on the project and click the menu item *Properties*.
+
+    * Click tree item *Java*, tree item *Code Style*, tree item *Formatter*.
+
+        * Click button *Edit* of the active profile, tab *Indentation*
+
+        * Combobox *Tab policy*: `spaces only`
+
+        * Indentation size: `4`
+
+        * Tab size: `4`
+
+        * Note: If it is a build-in profile, you 'll need to change its name with the textfield on top.
+
+    * Click tree item *XML*, tree item *XML Files*, tree item *Editor*.
+
+        * Radio button *Indent using space*: `on`
+
+        * Indentation size: `2`
+
+* Set the correct file headers (do not include @author or a meaningless javadoc):
+
+    * Open menu *Window*, menu item *Preferences*.
+    
+    * Click tree item *Java*, tree item *Code Style*, tree item *Code Templates*.
+
+    * Click tree *Configure generated code and comments*, tree item *Comments*, tree item *types*.
+
+    * Remove *@author Your Name* line.
+
+        * We do not accept `@author` lines in source files, see FAQ below.
+
+    * Remove the entire javadoc as automatically templated date is meaningless.
+
+* Set the correct license header
+
+    Eclipse JEE Helios currently has no build-in support of license headers, but you can configure it for new files.
+
+    * Open menu *Window*, menu item *Preferences*.
+
+        * If you have project specific settings enabled instead, right click on the project and click the menu item *Properties*.
+
+    * Click tree item *Java*, tree item *Code Style*, tree item *Copy templates*.
+
+    * Click tree item *Comments*, tree item *Files*.
+
+    * Replace the text area with the java multi-line comment version of
+    ` droolsjbpm-build-bootstrap/ide-configuration/LICENSE-ASL-2.0-HEADER.txt`:
+
+        /*
+         * Copyright 2011 JBoss Inc
+         *
+         * Licensed under the Apache License, Version 2.0 (the "License");
+         * you may not use this file except in compliance with the License.
+         * You may obtain a copy of the License at
+         *
+         *       http://www.apache.org/licenses/LICENSE-2.0
+         *
+         * Unless required by applicable law or agreed to in writing, software
+         * distributed under the License is distributed on an "AS IS" BASIS,
+         * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+         * See the License for the specific language governing permissions and
+         * limitations under the License.
+         */
+
+    * Note: Do not start or end with a newline character
+
+    * Note: Do not start with `/**`: it is not a valid javadoc.
+
+    * Update the year (2011) every year.
 
 Configuring the project with the m2eclipse plugin
 -------------------------------------------------
@@ -149,7 +264,7 @@ This is the new way (and compatible with tycho).
 
     * Follow the link *Installing m2eclipse* at the bottom.
 
-* Menu *File*, menu item *Import*, tree item *Maven*, tree item *Existing Maven Projects*
+* Click menu *File*, menu item *Import*, tree item *Maven*, tree item *Existing Maven Projects*.
 
 * Open the top level project `pom.xml` file with the m2eclipse plugin.
 
@@ -167,79 +282,10 @@ Run this command to generate `.project` and `.classpath` files:
 
 * Open Eclipse
 
-* Import existing projects, navigate to the project base directory, select all the projects (= modules) it lists.
+* Menu item *Import existing projects*, navigate to the project base directory, select all the projects (= modules) it lists.
 
 Important note: `mvn eclipse:eclipse` does not work for our eclipse plugin because it is not compatible with tycho
 (and never will be).
-
-Code style
-----------
-
-Correct number of spaces for tabs:
-- Open menu "Window", menu item "Preferences".
--- If you have project specific settings enabled, right click on the project and click the menu item "Properties".
-- Open tree item "Java", tree item "Code Style", tree item "Formatter".
--- If you imported the trunk/eclipse-formatter.xml file,
-   you don't need to set it here,
-   but you do need to set it for XML anyway!
--- Click button "Edit" of the active profile
--- Tab "Indentation"
---- Combobox "Tab policy": spaces only
---- Indentation size: 4
---- Tab size: 4
--- If it is a build in profile, you need to change its name with the textfield on top
-- Open tree item "XML", tree item "XML Files", tree item "Editor".
--- Radio button "Indent using space": on
--- Indentation size: 2
-
-Correct file encoding (UTF-8 except for properties files) and EOL (unix):
-- Open menu "Window", menu item "Preferences".
-- Open tree item "General", tree item "Workspace".
--- Label "Text file encoding", radiobutton "Other", combobox "UTF-8"
--- Label "New text file delimiter", radiobutton "Other", combobox "Unix"
-- Open tree item "XML", tree item "XML Files".
--- Combobox "Encoding": ISO 10646/Unicode(UTF-8)
-- Open tree item "CSS", tree item "CSS Files".
--- Combobox "Encoding": ISO 10646/Unicode(UTF-8)
-- Open tree item "HTML", tree item "HTML Files".
--- Combobox "Encoding": ISO 10646/Unicode(UTF-8)
-- Note: i18n properties files must be in ISO-8859-1 as specified by the java ResourceBundle contract.
-
-Correct file headers (do not include @author or a meaningless javadoc):
-- Open menu "Window", menu item "Preferences".
--- Tree item "Java", tree item "Code Style", tree item "Code Templates"
---- Tree "Configure generated code and comments", tree item "Comments", tree item "types"
---- Remove "@author Your Name" line.
----- We do not accept @author lines in source files, see FAQ below.
-
-
-License header
---------------
-
-Eclipse JEE Helios currently has no build-in support of license headers,
-but you can configure it for new files.
-- Open menu "Window", menu item "Preferences".
--- If you have project specific settings enabled, right click on the project and click the menu item "Properties".
-- Open tree item "Java", tree item "Code Style", tree item "Copy templates".
--- Open tree item "Comments", tree item "Files".
--- Replace the text area with this:
-/*
- * Copyright 2011 JBoss Inc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
--- Do not start or end with a newline character
--- Update the year (2011) every year.
 
 
 Configuring IntelliJ
