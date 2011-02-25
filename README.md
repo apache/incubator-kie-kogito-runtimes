@@ -493,6 +493,13 @@ Source control with git
         $ cd guvnor
         $ ls
 
+* Another Linux Tip:
+
+    You can create a symblink to git-all.sh script to directory that is the PATH (drools-git is a good name), for example ~/bin.
+    Then if your distro has git completions scripts for the console you can add the following line to your ~/.bashrc:   
+        `$ complete -o bashdefault -o default -o nospace -F _git drools-git`
+
+
 Releasing
 =========
 
