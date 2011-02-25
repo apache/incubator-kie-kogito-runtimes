@@ -135,7 +135,7 @@ Before running Eclipse
 
 * Avoid an `OutOfMemoryException` and a `StackOverflowError` when building.
 
-    Open `ECLIPSE_HOME/eclipse.ini` and add/change this: on openFile -vmargs:
+    Open `$ECLIPSE_HOME/eclipse.ini` and add/change this: on openFile -vmargs:
 
         openFile
         -vmargs
@@ -144,6 +144,41 @@ Before running Eclipse
         -Xms512m
         -Xmx1024m
         -Xss1024k
+
+Configuring the project with the m2eclipse plugin
+-------------------------------------------------
+
+The m2eclipse plugin is a plugin in Eclipse for Maven.
+This is the new way (and compatible with tycho).
+
+* Open Eclipse
+
+* Follow [the installation instructions of m2eclipse](http://m2eclipse.sonatype.org/)
+
+    * Follow the link *Installing m2eclipse* at the bottom.
+
+* Click menu *File*, menu item *Import*, tree item *Maven*, tree item *Existing Maven Projects*.
+
+* Open the top level project `pom.xml` file with the m2eclipse plugin.
+
+* Select the profiles `notSoaProfile` and `fullProfile`.
+
+Configuring the project with the deprecated maven-eclipse-plugin
+----------------------------------------------------------------
+
+The maven-eclipse-plugin plugin is a plugin in Maven for Eclipse.
+This is the old way (of which the development has stopped).
+
+Run this command to generate `.project` and `.classpath` files:
+
+    $ mvn eclipse:eclipse
+
+* Open Eclipse
+
+* Menu item *Import existing projects*, navigate to the project base directory, select all the projects (= modules) it lists.
+
+Important note: `mvn eclipse:eclipse` does not work for our eclipse plugin because it is not compatible with tycho
+(and never will be).
 
 Configuring Eclipse
 -------------------
@@ -178,7 +213,7 @@ Configuring Eclipse
 
     * Note: i18n properties files must be in `ISO-8859-1` as specified by the java `ResourceBundle` contract.
 
-* Set the correct number of spaces for tabs:
+* Set the correct number of spaces when pressing tab:
 
     * Warning: If you imported the `eclipse-formatter.xml` file, you don't need to set it for Java, but you do need to set it for XML anyway!
 
@@ -212,11 +247,11 @@ Configuring Eclipse
 
     * Click tree *Configure generated code and comments*, tree item *Comments*, tree item *types*.
 
-    * Remove *@author Your Name* line.
+    * Remove the line *@author Your Name*.
 
         * We do not accept `@author` lines in source files, see FAQ below.
 
-    * Remove the entire javadoc as automatically templated date is meaningless.
+    * Remove the entire javadoc as automatically templated data is meaningless.
 
 * Set the correct license header
 
@@ -255,141 +290,175 @@ Configuring Eclipse
 
     * Update the year (2011) every year.
 
-Configuring the project with the m2eclipse plugin
--------------------------------------------------
+Developing with IntelliJ
+========================
 
-The m2eclipse plugin is a plugin in Eclipse for Maven.
-This is the new way (and compatible with tycho).
+Before running IntelliJ
+-----------------------
 
-* Open Eclipse
+* Avoid an `OutOfMemoryException` while editing or building.
 
-* Follow [the installation instructions of m2eclipse](http://m2eclipse.sonatype.org/)
+    Open `$IDEA_HOME/bin/idea.vmoptions` and change the first 3 values to this:
 
-    * Follow the link *Installing m2eclipse* at the bottom.
+    -Xms512m
+    -Xmx1024m
+    -XX:MaxPermSize=512m
 
-* Click menu *File*, menu item *Import*, tree item *Maven*, tree item *Existing Maven Projects*.
-
-* Open the top level project `pom.xml` file with the m2eclipse plugin.
-
-* Select the profiles `notSoaProfile` and `fullProfile`.
-
-Configuring the project with the deprecated maven-eclipse-plugin
-----------------------------------------------------------------
-
-The maven-eclipse-plugin plugin is a plugin in Maven for Eclipse.
-This is the old way (of which the development has stopped).
-
-Run this command to generate `.project` and `.classpath` files:
-
-    $ mvn eclipse:eclipse
-
-* Open Eclipse
-
-* Menu item *Import existing projects*, navigate to the project base directory, select all the projects (= modules) it lists.
-
-Important note: `mvn eclipse:eclipse` does not work for our eclipse plugin because it is not compatible with tycho
-(and never will be).
-
-
-Configuring IntelliJ
-====================
-
-The project is big, so you will want to give your IntelliJ more memory.
-Open $IDEA_HOME/bin/idea.vmoptions and change the first 3 values to this:
--Xms512m
--Xmx1024m
--XX:MaxPermSize=512m
-
-Don't use the maven-intellij-plugin: it's dead.
+Configuring the project with the maven integration
+--------------------------------------------------
 
 IntelliJ has very good build-in support for Maven.
-- Open IntelliJ.
-- Open new project.
-- Open the main pom.xml file from the project base directory.
-- Select the profiles "notSoaProfile" and "fullProfile".
-- Go grab a coffee while it's indexing.
 
-Verify other settings:
-- Open menu File, menu item settings:
-- Tree item Compiler, textfield Resource patterns
--- Change the contents "!?*.java" (without the double quotes)
--- This is to avoid that changes in some resources are ignored in the next run/debug (and you are forced to use mvn)
-- Tree item compiler, tree item Java Compiler, textfield Additional command line parameters
--- Add " -J-Xss1024k" so it becomes something like "-target 1.5 -J-Xss1024k"
--- This is to avoid an StackOverflowError when building
-- Tree item File Types, in the list Recognized File Types, select XML Files.
--- Add Registered Pattern "*.rf" (without the double quotes)
--- This is to avoid that the XML ruleflow files are not included in searches/refactors
-- Tree item File Types, in the list Recognized File Types
--- Button Add...
---- Textfield name "DRL files"
---- Textfield Line comment "//", textfield Block comment start "/*", textfield Block comment end "*/"
---- Check the checkboxes Support paired braces, Support paired brackets, Support parens
---- Add some keywords, such as rule, when, then, end
---- Button ok
--- Add Registered Pattern "*.drl" and "*.mvel".
+    * Open IntelliJ.
 
-Force language level 5 (not 6), to fail-fast on implemented interface methods that are annotated with @Override
-- Open menu File, menu item Project Structure
--- List item Modules, for each module, tab Sources, combobox Language level should be "5.0 ..."
+    * Click menu *File*, menu item *New project*.
 
-Code style
-----------
+    * Open the main `pom.xml` file from the project base directory.
 
-Correct number of spaces for tabs:
-- Open menu "File", menu item "Settings".
-- Open tree item "Code Style", tree item "General".
-- Open tab "Java"
--- Checkbox "Use tab character": off
--- Textfield "Tab size": 4
--- Textfield "Indent": 4
--- Textfield "Continuation indent": 8
-- Open tab "XML"
--- Checkbox "Use tab character": off
--- Textfield "Tab size": 2
--- Textfield "Indent": 2
--- Textfield "Continuation indent": 4
+    * Select the profiles `notSoaProfile` and `fullProfile`.
 
-Correct file encoding (UTF-8 except for properties files) and EOL (unix):
-- Open menu "File", menu item "Settings".
-- Open tree item "Code Style", tree item "General".
--- Combobox "Line separator (for new files)": Unix
-- Open tree item "File Encodings".
--- Combobox "IDE Encoding": "UTF-8"
--- Combobox "Default encoding for properties files": ISO-8859-1
+    * Go grab a coffee while it's indexing.
 
-Correct file headers (do not include @author or a meaningless javadoc):
-- Open menu "File", menu item "Settings".
-- Tree item File templates, tab Includes, list item File Header
--- Delete the contents of the text area.
---- Remove "@author Your Name" line.
----- We do not accept @author lines in source files, see FAQ below.
---- Do not include an empty or meaningless javadoc. Only add a javadoc if it has meaningful content.
+Note: Don't use the `maven-idea-plugin` on the command line with `mvn`: it's dead.
 
-License header
---------------
+Configuring IntelliJ
+--------------------
 
-- Open menu "File", menu item "Settings".
-- Open tree item "Copyright", tree item "Copyright profiles".
-- Add Copyright profile
--- Textfield name: JBoss Inc
--- Fill this into the text area:
-Copyright $today.year JBoss Inc
+* Force language level 5 (not 6), to fail-fast on implemented interface methods that are annotated with `@Override`.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+    * Open menu *File*, menu item *Project Structure*
 
-      http://www.apache.org/licenses/LICENSE-2.0
+    * Click list item *Modules*, for each module, tab *Sources*, combobox *Language level* should be automatically set to `5.0 ...`
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--- Do not start or end with a newline character
-- Open tree item "Copyright"
--- Combobox "Default project copyright": JBoss Inc
+* Avoid that changes in some resources are ignored in the next run/debug (and you are forced to use mvn)
+
+    * Open menu *File*, menu item *Settings*
+
+    * Click tree item *Compiler*, textfield *Resource patterns*: change to `!?*.java` (remove other content)
+
+* Avoid a `StackOverflowError` when building
+
+    * Open menu *File*, menu item *Settings*
+
+    * Click tree item *Compiler*, tree item *Java Compiler*, textfield *Additional command line parameters*
+
+    * Add ` -J-Xss1024k` so it becomes something like `-target 1.5 -J-Xss1024k`
+
+* Include files with non-default extensions in your searches and refactors
+
+    * Open menu *File*, menu item *Settings*
+
+    * Click tree item *File Types*, in the list *Recognized File Types*:
+
+        * Next to list *Recognized File Types*, click on the button *Add...*
+
+            * Textfield *name*: `DRL files`
+
+            * Textfield *Line comment*: `//`
+
+            * Textfield *Block comment start*: `/*`
+
+            * Textfield *Block comment end*: `*/`
+
+            * Check the checkboxes *Support paired braces*, *Support paired brackets* and *Support parens*
+
+            * Add some *keywords*: `rule`, `when`, `then`, `end`, ...
+
+            * Click button *ok*
+
+        * Next to the list *Registered Patterns*, use the button *Add...*:
+
+            * For `DRL files`, add `*.drl`, `*.mvel`, `*.drt`, `*.dslr`
+
+            * For `Properties files`, add `*.dsl`
+
+            * For `XML Files`, add `*.rf`
+
+* Set the correct file encoding (UTF-8 except for properties files) and end-of-line characters (unix):
+
+    * Open menu *File*, menu item *Settings*
+
+    * Click tree item *Code Style*, tree item *General*
+
+        * Combobox *Line separator (for new files)*: `Unix`
+
+    * Click tree item *File Encodings*
+
+         * Combobox *IDE Encoding*: `UTF-8`
+
+         * Combobox *Default encoding for properties files*: `ISO-8859-1`
+
+* Set the correct number of spaces when pressing tab:
+
+    * Open menu *File*, menu item *Settings*
+
+    * Click tree item *Code Style*, tree item *General*
+
+    * Click tab *Java*
+
+        * Checkbox *Use tab character*: `off`
+
+        * Textfield *Tab size*: `4`
+
+        * Textfield *Indent*: `4`
+
+        * Textfield *Continuation indent*: `8`
+
+    * Open tab *XML*
+
+        * Checkbox *Use tab character*: `off`
+
+        * Textfield *Tab size*: `2`
+
+        * Textfield *Indent*: `2`
+
+        * Textfield *Continuation indent*: `4`
+
+* Set the correct file headers (do not include @author or a meaningless javadoc):
+
+    * Open menu *File*, menu item *Settings*
+
+    * Click tree item *File templates*, tab *Includes*, list item `File Header`
+
+    * Remove the line *@author Your Name*.
+
+        * We do not accept `@author` lines in source files, see FAQ below.
+
+    * Remove the entire javadoc as automatically templated data is meaningless.
+
+* Set the correct license header
+
+    * Open menu *File*, menu item *Settings*
+
+    * Click tree item *Copyright*, tree item *Copyright profiles*
+
+        * Click button *+* to add a *Copyright profile*
+
+        * Textfield *name*: `JBoss Inc`
+
+        * Textarea with content:
+
+            Copyright $today.year JBoss Inc
+
+            Licensed under the Apache License, Version 2.0 (the "License");
+            you may not use this file except in compliance with the License.
+            You may obtain a copy of the License at
+
+                  http://www.apache.org/licenses/LICENSE-2.0
+
+            Unless required by applicable law or agreed to in writing, software
+            distributed under the License is distributed on an "AS IS" BASIS,
+            WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            See the License for the specific language governing permissions and
+            limitations under the License.
+
+        * Note: Do not start or end with a newline character
+
+        * Note: Do not start with `/**`: it is not a valid javadoc.
+
+    * Click tree item *Copyright*
+
+        * Combobox *Default project copyright*: `JBoss Inc`
 
 Releasing
 =========
