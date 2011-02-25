@@ -32,7 +32,7 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
     gitReturnCode=$?
     cd ..
     if [ $gitReturnCode != 0 ] ; then
-        exit $?
+        exit $gitReturnCode
     fi
 done
 
