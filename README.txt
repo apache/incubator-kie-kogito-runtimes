@@ -3,6 +3,9 @@ Developing Drools and jBPM
 
 Read this document if you want to build or contribute to the drools project.
 
+If you discover tips and tricks not described here,
+please update this document using the [markdown syntax](http://daringfireball.net/projects/markdown/syntax).
+
 Getting the sources with git
 ============================
 
@@ -388,40 +391,54 @@ limitations under the License.
 - Open tree item "Copyright"
 -- Combobox "Default project copyright": JBoss Inc
 
-
 Releasing
 =========
 
-Use JDK 1.6, because in JDK 1.5 the module guvnor-repository-connector-modeshape is not build.
+Use JDK 1.6, because in JDK 1.5 the module `guvnor-repository-connector-modeshape` is not build.
 
 To produce distribution builds use:
-$ mvn -Dfull clean install
-$ mvn -Dfull -DskipTests package javadoc:javadoc assembly:assembly
 
-Note that install must be done first as javadoc:javadoc won't work unless the
+    $ mvn -Dfull clean install
+    $ mvn -Dfull -DskipTests package javadoc:javadoc assembly:assembly
+
+Note: That install must be done first as `javadoc:javadoc` won't work unless the
 jars are in the local maven repo, but the tests can be skipped on the second run.
-
 
 FAQ
 ===
 
-Why do you not accept author lines in your source code?
-- Becuase the author tags in the java files are a maintenance nightmare
--- A large percentage is wrong, incomplete or inaccurate.
---- Most of the time, it only contains the original author. Many files are completely refactored/expanded by other authors.
--- Git is accurate, that is the canonical source to find the correct author.
-- Because the author tags promote "code ownership", which is bad in the long run.
--- If people work on a piece they perceive as being owned by someone else, they tend to:
---- only fix what they are assigned to fix, not everything that's broken.
---- discard responsibility if that code doesn't work properly.
---- be scared of stepping of the feet of the owner
--- More info: How to get a healthy open source project? http://video.google.com/videoplay?docid=-4216011961522818645#
+* Why do you not accept `@author` lines in your source code?
 
-Credit to the author of peices of code is given:
-- on the team page: http://www.jboss.org/drools/team
--- Please contact Geoffrey (or any of us) if you want to change/expand your entry in the team page. Don't be shy!
-- on the blog: http://blog.athico.com
--- Just request write permission if you don't have it yet and want to write an article.
-- with ohloh, which also has statistics: https://www.ohloh.net/p/jboss-drools/contributors
-- in the github web interface
+    * Because the author tags in the java files are a maintenance nightmare
 
+        * A large percentage is wrong, incomplete or inaccurate.
+
+        * Most of the time, it only contains the original author. Many files are completely refactored/expanded by other authors.
+
+        * Git is accurate, that is the canonical source to find the correct author.
+
+    * Because the author tags promote *code ownership*, which is bad in the long run.
+
+        * If people work on a piece they perceive as being owned by someone else, they tend to:
+
+            * only fix what they are assigned to fix, instead of everything that's broken
+
+            * discard responsibility if that code doesn't work properly
+
+            * be scared of stepping on the feet of the owner.
+
+        * For more motivation, see [this video on How to get a healthy open source project?](http://video.google.com/videoplay?docid=-4216011961522818645#)
+
+    * Credit to the authors is given:
+
+        * on [the team page](http://www.jboss.org/drools/team)
+
+             * Please contact Geoffrey (or any of us) if you want to add/change/expand your entry in the team page. Don't be shy!
+
+        * on [the blog](http://blog.athico.com)
+
+            * Write an article about the improvements you did! Contact us if you don't have write authorization on the blog yet.
+
+        * with [ohloh](https://www.ohloh.net/p/jboss-drools/contributors) which also has statistics
+
+        * in [the github web interface](https://github.com/droolsjbpm).
