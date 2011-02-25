@@ -22,17 +22,21 @@ droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
-    echo
-    echo "==============================================================================="
-    echo "Repository: $repository"
-    echo "==============================================================================="
-    echo
-    cd $repository
-    git $*
-    gitReturnCode=$?
-    cd ..
-    if [ $gitReturnCode != 0 ] ; then
-        exit $gitReturnCode
+    if [ -d $droolsjbpmOrganizationDir/$repository ] ; then
+        echo -e "\n==============================================================================="
+        echo "Repository: $repository"
+        echo -e "===============================================================================\n"
+        cd $repository
+        git $*
+        gitReturnCode=$?
+        cd ..
+        if [ $gitReturnCode != 0 ] ; then
+            exit $gitReturnCode
+        fi
+    else
+        echo -e "\n==============================================================================="
+        echo "Missing Repository: $repository. Skipping"
+        echo -e "===============================================================================\n" 
     fi
 done
 
