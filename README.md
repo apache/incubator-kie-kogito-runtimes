@@ -1,3 +1,5 @@
+!TOC
+
 Developing Drools and jBPM
 ==========================
 
@@ -5,6 +7,8 @@ Read this document if you want to build or contribute to the drools project.
 
 If you discover tips and tricks not described here,
 please update this document using the [markdown syntax](http://daringfireball.net/projects/markdown/syntax).
+
+!TOC
 
 Getting the sources with git
 ============================
