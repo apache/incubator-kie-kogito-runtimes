@@ -23,17 +23,21 @@ cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
     echo
-    echo "==============================================================================="
-    echo "Repository: $repository"
+    echo "==============================================================================="      
+    if [ -d $droolsjbpmOrganizationDir/$repository ] ; then
+        echo "Repository: $repository"
+        cd $repository
+        mvn $*
+        mvnReturnCode=$?
+        cd ..
+        if [ $mvnReturnCode != 0 ] ; then
+            exit $mvnReturnCode
+        fi
+    else
+        echo "Missing Repository: $repository. Skipping" 
+    fi
     echo "==============================================================================="
     echo
-    cd $repository
-    mvn $*
-    mvnReturnCode=$?
-    cd ..
-    if [ $mvnReturnCode != 0 ] ; then
-        exit $?
-    fi
 done
 
 endDateTime=`date +%s`
