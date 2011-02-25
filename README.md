@@ -79,15 +79,29 @@ Installing Maven
 
         $ mvn --version
 
-    Verify the mavens and java versions.
+    Verify the maven and java versions.
 
 Running the build
 -----------------
 
-* Go into the project's base directory, for example `guvnor`:
+* Go into a project's base directory, for example `guvnor`:
 
+        $ cd ~/projects/droolsjbpm
+        $ ls
+        drools
+        droolsjbpm-build-bootstrap
+        droolsjbpm-build-distribution
+        droolsjbpm-integration
+        droolsjbpm-knowledge
+        droolsjbpm-tools
+        drools-planner
+        guvnor
         $ cd guvnor
         $ ls
+        ...
+        guvnor-repository
+        guvnor-webapp
+        pom.xml
 
     Notice you see a `pom.xml` there. Those `pom.xml` files are the heart of Maven.
 
@@ -113,6 +127,13 @@ Running the build
     * `full`: Slow, but builds everything (including documentation). Used by hudson and during releases.
 
     * `soa`: prunes away the non-enterprise stuff
+
+* To run a maven build over all repositories (only works if you cloned all repositories):
+
+        $ cd ~/projects/droolsjbpm
+        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -DskipTests clean install
+
+    * Note: the `mvn-all.sh` script is working directory independent.
 
 Configuring Maven
 -----------------
@@ -324,11 +345,27 @@ IntelliJ has very good build-in support for Maven.
 
     * Click menu *File*, menu item *New project*.
 
-    * Open the main `pom.xml` file from the project base directory.
+        * Click radiobutton *Create project from scratch*, button *Next*
 
-    * Select the profiles `notSoaProfile` and `fullProfile`.
+        * Textfield *name*: `droolsjbpm`
 
-    * Go grab a coffee while it's indexing.
+        * Textfield *Project files location*: `~/projects/droolsjbpm`
+
+        * Checkbox *Create module*: `off`
+
+    * Click menu *File*, menu item *New module*
+
+        * Radiobutton *Import from external model*, button *Next*, button *Next*
+
+        * Textfield *Root directory*: `~/projects/droolsjbpm/guvnor`
+
+            * That is the directory that contains the multiproject `pom.xml` file from a project base directory.
+
+        * Button *Next*, check in the *Selected profiles* `notSoaProfile` and `fullProfile`, button *Next*, button *Finish*.
+
+        * Go grab a coffee while it's indexing.
+        
+        * Repeat if you want to work on more than 1 droolsjbpm project.
 
 Note: Don't use the `maven-idea-plugin` on the command line with `mvn`: it's dead.
 
@@ -490,8 +527,20 @@ Source control with git
         $ mkdir droolsjbpm
         $ cd droolsjbpm
         $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
+        # Optionally clone other droolsjbpm repositories too
         $ cd guvnor
         $ ls
+
+* TODO describe topic branch workflow
+
+* TODO describe making pull requests
+
+* To run a git command (except clone) over all repositories (only works if you cloned all repositories):
+
+        $ cd ~/projects/droolsjbpm
+        $ droolsjbpm-build-bootstrap/script/git-all.sh push
+
+    * Note: the `git-all.sh` script is working directory independent.
 
 Releasing
 =========
