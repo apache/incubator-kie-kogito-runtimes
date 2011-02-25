@@ -1,25 +1,36 @@
 Developing Drools and jBPM
 ==========================
 
-Read this document if you want to build or contribute to the drools project.
+*Read this document if you want to build or contribute to a droolsjbpm projects.*
 
-If you discover tips and tricks not described here,
-please update this document using the [markdown syntax](http://daringfireball.net/projects/markdown/syntax).
+*This document will save you and us a lot of time by setting up your development environment correctly.*
+It solves all known pitfalls that can disrupt your development.
+It also describes all guidelines, tips and tricks.
+If you want your pull requests (or patches) to be merged into master, please follow those guidelines.
 
-Getting the sources with git
-============================
+If you are reading this document with a normal text editor, please take a look
+at the more readable [formatted version](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/README.md).
 
-Fork the repository you want to work on.
+If you discover pitfalls, tips and tricks not described in this document,
+please update it using the [markdown syntax](http://daringfireball.net/projects/markdown/syntax).
 
-    # First make a directory
-    $ mkdir droolsjbpm
-    $ cd droolsjbpm
-    $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
-    $ cd guvnor
-    $ ls
+Table of content
+----------------
 
-Developing with Maven
-=====================
+* **Building with Maven**
+
+* **Developing with Eclipse**
+
+* **Developing with IntelliJ**
+
+* **Source control with Git**
+
+* **Releasing**
+
+* **FAQ**
+
+Building with Maven
+===================
 
 All projects use Maven 3 to build all their modules.
 
@@ -70,8 +81,8 @@ Installing Maven
 
     Verify the mavens and java versions.
 
-Building with Maven
--------------------
+Running the build
+-----------------
 
 * Go into the project's base directory, for example `guvnor`:
 
@@ -461,6 +472,26 @@ Configuring IntelliJ
     * Click tree item *Copyright*
 
         * Combobox *Default project copyright*: `JBoss Inc`
+
+Source control with git
+=======================
+
+* First fork the repository you want to work on, for example `guvnor`:
+
+    * Surf to [the blessed repositories on github](https://github.com/droolsjbpm) and log in.
+
+    * Surf to [the specific repository (guvnor)](https://github.com/droolsjbpm/guvnor)
+
+    * Click the top right button *Fork*
+
+* Then clone that fork locally:
+
+        # First make a directory
+        $ mkdir droolsjbpm
+        $ cd droolsjbpm
+        $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
+        $ cd guvnor
+        $ ls
 
 Releasing
 =========
