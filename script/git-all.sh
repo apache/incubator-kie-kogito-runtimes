@@ -2,7 +2,7 @@
 
 # Runs a git command on all droolsjbpm repositories.
 
-scriptDir="$( cd "$( dirname "$0" )" && pwd )"
+scriptDir=$(readlink -f  $(dirname $0))
 
 if [ $# = 0 ] ; then
     echo
