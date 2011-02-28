@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Runs a git command on all droolsjbpm repositories.
 

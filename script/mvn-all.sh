@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Runs a mvn command on all droolsjbpm repositories.
 

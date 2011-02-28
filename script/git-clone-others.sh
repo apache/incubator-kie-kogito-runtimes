@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Git clone the other repositories
 
