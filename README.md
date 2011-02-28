@@ -343,9 +343,9 @@ Before running IntelliJ
 
     Open `$IDEA_HOME/bin/idea.vmoptions` and change the first 3 values to this:
 
-    -Xms512m
-    -Xmx1024m
-    -XX:MaxPermSize=512m
+        -Xms512m
+        -Xmx1024m
+        -XX:MaxPermSize=512m
 
 Configuring the project with the maven integration
 --------------------------------------------------
