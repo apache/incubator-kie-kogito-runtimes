@@ -2,8 +2,8 @@
 
 # Runs a git command on all droolsjbpm repositories.
 
-scriptDir="$( cd "$( dirname "$0" )" && pwd )"
-
+scriptDir=$(dirname $(readlink -e $0))
+ 
 if [ $# = 0 ] ; then
     echo
     echo "Usage:"
@@ -22,18 +22,22 @@ droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
-    echo
+    echo 
     echo "==============================================================================="
-    echo "Repository: $repository"
-    echo "==============================================================================="
-    echo
-    cd $repository
-    git $*
-    gitReturnCode=$?
-    cd ..
-    if [ $gitReturnCode != 0 ] ; then
-        exit $?
+    if [ -d $droolsjbpmOrganizationDir/$repository ] ; then
+        echo "Repository: $repository"
+        cd $repository
+        git $*
+        gitReturnCode=$?
+        cd ..
+        if [ $gitReturnCode != 0 ] ; then
+            exit $gitReturnCode
+        fi
+    else
+        echo "Missing Repository: $repository. Skipping"
     fi
+    echo "==============================================================================="
+    echo
 done
 
 endDateTime=`date +%s`

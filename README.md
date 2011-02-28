@@ -542,6 +542,14 @@ Source control with git
 
     * Note: the `git-all.sh` script is working directory independent.
 
+    * Linux tip: Create a symbolic link to the `git-all.sh` script and place it in your `PATH` by linking it in `~/bin`:
+
+            $ ln -s ~/projects/droolsjbpm/droolsjbpm-build-bootstrap/script/git-all.sh ~/bin/droolsjbpm-git
+
+        For command line completion, add the following line in `~/.bashrc`:
+
+            $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
+
 Releasing
 =========
 

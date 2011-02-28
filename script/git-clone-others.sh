@@ -2,7 +2,7 @@
 
 # Git clone the other repositories
 
-scriptDir="$( cd "$( dirname "$0" )" && pwd )"
+scriptDir=$(dirname $(readlink -e $0))
 
 startDateTime=`date +%s`
 
