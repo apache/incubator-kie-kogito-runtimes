@@ -22,10 +22,11 @@ droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
-    echo 
-    echo "==============================================================================="
+    echo
     if [ -d $droolsjbpmOrganizationDir/$repository ] ; then
+        echo "==============================================================================="
         echo "Repository: $repository"
+        echo "==============================================================================="
         cd $repository
         git $*
         gitReturnCode=$?
@@ -34,10 +35,10 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
             exit $gitReturnCode
         fi
     else
+        echo "==============================================================================="
         echo "Missing Repository: $repository. Skipping"
+        echo "==============================================================================="
     fi
-    echo "==============================================================================="
-    echo
 done
 
 endDateTime=`date +%s`
@@ -45,4 +46,3 @@ spentSeconds=`expr $endDateTime - $startDateTime`
 
 echo
 echo "Total time: ${spentSeconds}s"
-echo

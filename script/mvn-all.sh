@@ -23,9 +23,10 @@ cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
     echo
-    echo "==============================================================================="      
     if [ -d $droolsjbpmOrganizationDir/$repository ] ; then
+        echo "==============================================================================="
         echo "Repository: $repository"
+        echo "==============================================================================="
         cd $repository
         mvn $*
         mvnReturnCode=$?
@@ -34,10 +35,10 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
             exit $mvnReturnCode
         fi
     else
-        echo "Missing Repository: $repository. Skipping" 
+        echo "==============================================================================="
+        echo "Missing Repository: $repository. Skipping"
+        echo "==============================================================================="
     fi
-    echo "==============================================================================="
-    echo
 done
 
 endDateTime=`date +%s`
@@ -45,4 +46,3 @@ spentSeconds=`expr $endDateTime - $startDateTime`
 
 echo
 echo "Total time: ${spentSeconds}s"
-echo
