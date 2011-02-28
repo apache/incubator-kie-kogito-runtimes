@@ -78,8 +78,10 @@ Installing Maven
 * Check if maven is installed correctly.
 
         $ mvn --version
+        Apache Maven 3.0.1 (...)
+        Java version: 1.6.0_24
 
-    Verify the maven and java versions.
+    Note: the enforcer plugin enforces a minimum maven and java version. for the actua
 
 Running the build
 -----------------
@@ -322,6 +324,15 @@ Configuring Eclipse
 
     * Update the year (2011) every year.
 
+Extra Eclipse plugins
+---------------------
+
+* Enable git support
+
+    * Open menu *Help*, menu item *Install new software*.
+
+    * Click combobox *Update site* `Helios`, tree item *Collaboration*, tree item *Eclipse EGit*.
+
 Developing with IntelliJ
 ========================
 
@@ -510,8 +521,60 @@ Configuring IntelliJ
 
         * Combobox *Default project copyright*: `JBoss Inc`
 
+Extra IntelliJ plugins
+----------------------
+
+* Enable git support
+
+    * Open menu *File*, menu item *Other Settings*, menu item *Configure plugins*.
+
+    * Check *Git*.
+
 Source control with git
 =======================
+
+Installing and configuring git
+------------------------------
+
+* Install it in your OS:
+
+    * Linux: Install the package git (and optionally gitk)
+
+             $ sudo apt-get install git
+
+        Tip: Also install *gitk* to visually your git log:
+
+            $ sudo apt-get install gitk
+
+    * Windows, Mac OSX: Download from [the git website](http://git-scm.com).
+
+        Tip for Mac OSX: Also install [*gitx*](http://gitx.frim.nl/) to visually your git log.
+
+* Check if git is installed correctly.
+
+        $ git --version
+        git version 1.7.1
+
+* Configure git correctly:
+
+        $ git config --global user.name "My Full Name"
+        $ git config --global user.email myAccount@gmail.com
+        $ git config --global -l
+        user.name=Geoffrey De Smet
+        user.email=gds...@gmail.com
+
+    * Warning: the field `user.name` is your full name, *not your username*.
+
+    * Note: the field `user.email` should match an email address of your github account.
+
+    * More info on [github](http://help.github.com/git-email-settings/).
+
+* Get a github account
+
+    * And add your public key on github: [Follow these instructions](http://github.com/guides/providing-your-ssh-key).
+
+Getting the sources locally
+---------------------------
 
 * First fork the repository you want to work on, for example `guvnor`:
 
@@ -521,19 +584,27 @@ Source control with git
 
     * Click the top right button *Fork*
 
-* Then clone that fork locally:
+    * Note: by forking the repository, you can commit and push your changes without our consent
+    and we can easily accept or reject your changes for the official repository.
 
-        # First make a directory
+* Clone that fork locally:
+
+        # First make a directory to hold all the droolsjbpm projects
         $ mkdir droolsjbpm
         $ cd droolsjbpm
+
+        # Then clone the repository you want to clone.
         $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
         # Optionally clone other droolsjbpm repositories too
         $ cd guvnor
         $ ls
 
-* TODO describe topic branch workflow
+    * Note: it's highly recommended to name the cloned directory the same the repository, so the helper scripts work.
 
-* TODO describe making pull requests
+Working with git
+----------------
+
+* TODO describe topic branch workflow
 
 * To run a git command (except clone) over all repositories (only works if you cloned all repositories):
 
@@ -549,6 +620,25 @@ Source control with git
         For command line completion, add the following line in `~/.bashrc`:
 
             $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
+
+Pull requests: patches on steroids
+----------------------------------
+
+* Creating a pull request
+
+    * Push all your commits to your fork on github (if you haven't already).
+
+    * Surf to your fork on github.
+
+    * Click the button *Pull Request* on the top of the page.
+
+* Accepting a pull request
+
+    * Surf to the pull request page on github.
+
+    * Review the changes
+
+    * Click the button *Merge help* on the bottom of the page and follow the instructions of github to apply those changes on master.
 
 Releasing
 =========
