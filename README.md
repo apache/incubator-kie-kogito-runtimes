@@ -341,31 +341,31 @@ Configuring the project with the maven integration
 
 IntelliJ has very good build-in support for Maven.
 
-    * Open IntelliJ.
+* Open IntelliJ.
 
-    * Click menu *File*, menu item *New project*.
+* Click menu *File*, menu item *New project*.
 
-        * Click radiobutton *Create project from scratch*, button *Next*
+    * Click radiobutton *Create project from scratch*, button *Next*
 
-        * Textfield *name*: `droolsjbpm`
+    * Textfield *name*: `droolsjbpm`
 
-        * Textfield *Project files location*: `~/projects/droolsjbpm`
+    * Textfield *Project files location*: `~/projects/droolsjbpm`
 
-        * Checkbox *Create module*: `off`
+    * Checkbox *Create module*: `off`
 
-    * Click menu *File*, menu item *New module*
+* Click menu *File*, menu item *New module*
 
-        * Radiobutton *Import from external model*, button *Next*, button *Next*
+    * Radiobutton *Import from external model*, button *Next*, button *Next*
 
-        * Textfield *Root directory*: `~/projects/droolsjbpm/guvnor`
+    * Textfield *Root directory*: `~/projects/droolsjbpm/guvnor`
 
-            * That is the directory that contains the multiproject `pom.xml` file from a project base directory.
+        * That is the directory that contains the multiproject `pom.xml` file from a project base directory.
 
-        * Button *Next*, check in the *Selected profiles* `notSoaProfile` and `fullProfile`, button *Next*, button *Finish*.
+    * Button *Next*, check in the *Selected profiles* `notSoaProfile` and `fullProfile`, button *Next*, button *Finish*.
 
-        * Go grab a coffee while it's indexing.
-        
-        * Repeat if you want to work on more than 1 droolsjbpm project.
+    * Go grab a coffee while it's indexing.
+
+    * Repeat if you want to work on more than 1 droolsjbpm project.
 
 Note: Don't use the `maven-idea-plugin` on the command line with `mvn`: it's dead.
 
