@@ -90,24 +90,14 @@ Running the build
 
         $ cd ~/projects/droolsjbpm
         $ ls
-        drools
-        droolsjbpm-build-bootstrap
-        droolsjbpm-build-distribution
-        droolsjbpm-integration
-        droolsjbpm-knowledge
-        droolsjbpm-tools
-        drools-planner
-        guvnor
+        drools  droolsjbpm-build-bootstrap  droolsjbpm-build-distribution  droolsjbpm-integration  droolsjbpm-knowledge  droolsjbpm-tools  drools-planner  guvnor
         $ cd guvnor
         $ ls
-        ...
-        guvnor-repository
-        guvnor-webapp
-        pom.xml
+        ...  guvnor-repository  guvnor-webapp  pom.xml
 
-    Notice you see a `pom.xml` there. Those `pom.xml` files are the heart of Maven.
+    Notice you see a `pom.xml` file there. Those `pom.xml` files are the heart of Maven.
 
-* Run the build:
+* **Run the build**:
 
         $ mvn -DskipTests clean install
 
@@ -116,7 +106,7 @@ Running the build
     It might even fail, if certain servers are offline or experience hiccups.
     In that case, you 'll see an IO error, so just run the build again.
 
-    **After the first successful build, any next build should be fast and stable.**
+    After the first successful build, any next build should be fast and stable.
 
 * Try running a different profile by using the option `-D<profileActivationProperty>`:
 
