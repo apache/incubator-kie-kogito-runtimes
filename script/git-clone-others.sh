@@ -16,14 +16,15 @@ droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
+    echo
     if [ -d $repository ] ; then
+        echo "==============================================================================="
         echo "This directory already exists: $repository"
+        echo "==============================================================================="
     else
-        echo
         echo "==============================================================================="
         echo "Repository: $repository"
         echo "==============================================================================="
-        echo
         git clone ${gitUrlPrefix}${repository}.git ${repository}
         if [ $? != 0 ] ; then
             exit $?
@@ -43,4 +44,3 @@ spentSeconds=`expr $endDateTime - $startDateTime`
 
 echo
 echo "Total time: ${spentSeconds}s"
-echo
