@@ -643,8 +643,6 @@ To develop a great project as a team, we need to communicate efficiently as a te
 
     * If you push a change that can severely hinder or disrupt other developers (such as a compilation failure), notify the dev list.
 
-* Join us on IRC: irc.codehaus.org #drools #jbpm #guvnor
-
 * Subscribe to the RSS feeds.
 
     * **It's recommend to subscribe at least to the RSS feeds of the project/repostories you're working on.**
@@ -661,29 +659,29 @@ To develop a great project as a team, we need to communicate efficiently as a te
 
     * Subscribe to jira issue changes:
 
-        * [https://issues.jboss.org/plugins/servlet/streams?key=JBRULES&os_authType=basic](JBRULES)
+        * [JBRULES](https://issues.jboss.org/plugins/servlet/streams?key=JBRULES&os_authType=basic)
 
-        * [https://issues.jboss.org/plugins/servlet/streams?key=JBPM&os_authType=basic](JBPM)
+        * [JBPM](https://issues.jboss.org/plugins/servlet/streams?key=JBPM&os_authType=basic)
 
-        * [https://issues.jboss.org/plugins/servlet/streams?key=GUVNOR&os_authType=basic](GUVNOR)
+        * [GUVNOR](https://issues.jboss.org/plugins/servlet/streams?key=GUVNOR&os_authType=basic)
 
     * Subscribe to github repository commits:
 
-        * [https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom]
+        * [droolsjbpm-build-bootstrap](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom)
 
-        * [https://github.com/droolsjbpm/droolsjbpm-knowledge/commits/master.atom]
+        * [droolsjbpm-knowledge](https://github.com/droolsjbpm/droolsjbpm-knowledge/commits/master.atom)
 
-        * [https://github.com/droolsjbpm/drools/commits/master.atom]
+        * [drools](https://github.com/droolsjbpm/drools/commits/master.atom)
 
-        * [https://github.com/droolsjbpm/drools-planner/commits/master.atom]
+        * [drools-planner](https://github.com/droolsjbpm/drools-planner/commits/master.atom)
 
-        * [https://github.com/droolsjbpm/droolsjbpm-integration/commits/master.atom]
+        * [droolsjbpm-integration](https://github.com/droolsjbpm/droolsjbpm-integration/commits/master.atom)
 
-        * [https://github.com/droolsjbpm/guvnor/commits/master.atom]
+        * [guvnor](https://github.com/droolsjbpm/guvnor/commits/master.atom)
 
-        * [https://github.com/droolsjbpm/droolsjbpm-tools/commits/master.atom]
+        * [droolsjbpm-tools](https://github.com/droolsjbpm/droolsjbpm-tools/commits/master.atom)
 
-        * [https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom]
+        * [droolsjbpm-build-bootstrap](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom)
 
     * Subscribe to [hudson](https://hudson.jboss.org/hudson/view/Drools%20jBPM/)
 
@@ -697,11 +695,13 @@ To develop a great project as a team, we need to communicate efficiently as a te
 
             * Go to the hudson job of the projects you're working on:
 
-                * [https://hudson.jboss.org/hudson/view/Drools%20jBPM/job/guvnor/]
+                * [guvnor](https://hudson.jboss.org/hudson/view/Drools%20jBPM/job/guvnor/)
 
                 * ...
 
             * Right click in the lower left corner on the *All* feed link, menu item *Add link to jenkins build monitor*.
+
+* Join us on IRC: irc.codehaus.org #drools #jbpm #guvnor
 
 Releasing
 =========
