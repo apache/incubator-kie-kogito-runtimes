@@ -1,7 +1,7 @@
 Developing Drools and jBPM
 ==========================
 
-**If you want to build or contribute to a droolsjbpm project, [read this document](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/README.md).**
+**If you want to build or contribute to a droolsjbpm project, read this document.**
 
 **This document will save you and us a lot of time by setting up your development environment correctly.**
 It solves all known pitfalls that can disrupt your development.
@@ -24,6 +24,8 @@ Table of content
 * **Developing with IntelliJ**
 
 * **Source control with Git**
+
+* **Team communication**
 
 * **Releasing**
 
@@ -629,6 +631,77 @@ Pull requests: patches on steroids
     * Review the changes
 
     * Click the button *Merge help* on the bottom of the page and follow the instructions of github to apply those changes on master.
+
+Team communication
+==================
+
+To develop a great project as a team, we need to communicate efficiently as a team.
+
+* **[Subscribe to the dev list](http://www.jboss.org/drools/lists) and check it daily.**
+
+    * Send a summary of every important organizational or structural decision to the dev list.
+
+    * If you push a change that can severely hinder or disrupt other developers (such as a compilation failure), notify the dev list.
+
+* Join us on IRC: irc.codehaus.org #drools #jbpm #guvnor
+
+* Subscribe to the RSS feeds.
+
+    * **It's recommend to subscribe at least to the RSS feeds of the project/repostories you're working on.**
+
+    * Prefer an RSS reader which shows which RSS articles you've already read, such as:
+        
+        * Thunderbird
+
+            * Open menu *File*, menu item *Subscribe*.
+            
+            * Tip: create a new, seperate directory for each feed: some feeds (such as about the project you are working on) are more important to you than others.
+
+        * [Google Reader](http://www.google.com/reader)
+
+    * Subscribe to jira issue changes:
+
+        * [https://issues.jboss.org/plugins/servlet/streams?key=JBRULES&os_authType=basic](JBRULES)
+
+        * [https://issues.jboss.org/plugins/servlet/streams?key=JBPM&os_authType=basic](JBPM)
+
+        * [https://issues.jboss.org/plugins/servlet/streams?key=GUVNOR&os_authType=basic](GUVNOR)
+
+    * Subscribe to github repository commits:
+
+        * [https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom]
+
+        * [https://github.com/droolsjbpm/droolsjbpm-knowledge/commits/master.atom]
+
+        * [https://github.com/droolsjbpm/drools/commits/master.atom]
+
+        * [https://github.com/droolsjbpm/drools-planner/commits/master.atom]
+
+        * [https://github.com/droolsjbpm/droolsjbpm-integration/commits/master.atom]
+
+        * [https://github.com/droolsjbpm/guvnor/commits/master.atom]
+
+        * [https://github.com/droolsjbpm/droolsjbpm-tools/commits/master.atom]
+
+        * [https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom]
+
+    * Subscribe to [hudson](https://hudson.jboss.org/hudson/view/Drools%20jBPM/)
+
+        * with [the Firefox plugin](https://addons.mozilla.org/en-us/firefox/addon/jenkins-build-monitor/) to easily see in your status bar which builds are failing (recommended):
+
+            * After installation, right click on the hudson icon in the lower right corner.
+
+            * Click menu item *Preferences*, tab *Feed*, textfield *poll interval* `30` *minutes*.
+
+            * Click menu item *Preferences*, tab *Display*, combox *Display* `latest build` *on status bar*.
+
+            * Go to the hudson job of the projects you're working on:
+
+                * [https://hudson.jboss.org/hudson/view/Drools%20jBPM/job/guvnor/]
+
+                * ...
+
+            * Right click in the lower left corner on the *All* feed link, menu item *Add link to jenkins build monitor*.
 
 Releasing
 =========
