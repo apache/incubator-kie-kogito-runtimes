@@ -27,6 +27,8 @@ Table of content
 
 * **Team communication**
 
+* **Writing documentation**
+
 * **Releasing**
 
 * **FAQ**
@@ -158,6 +160,8 @@ Developing with Eclipse
 
 Before running Eclipse
 ----------------------
+
+* Do not use an Eclipse version older than `3.6 (helios)`.
 
 * Avoid an `OutOfMemoryException` and a `StackOverflowError` when building.
 
@@ -324,6 +328,10 @@ Extra Eclipse plugins
     * Open menu *Help*, menu item *Install new software*.
 
     * Click combobox *Update site* `Helios`, tree item *Collaboration*, tree item *Eclipse EGit*.
+
+* GWT plugin
+
+    * [Download and install the Eclipse GWT plugin](http://code.google.com/intl/en/eclipse/docs/getting_started.html)
 
 Developing with IntelliJ
 ========================
@@ -572,12 +580,15 @@ Getting the sources locally
 
     * Surf to [the blessed repositories on github](https://github.com/droolsjbpm) and log in.
 
-    * Surf to [the specific repository (guvnor)](https://github.com/droolsjbpm/guvnor)
+        * Note: **Every git repository can build alone.**
+        You only need to fork/clone the repositories you're interested in (`guvnor` in this case).
+
+    * Surf to [the specific repository (`guvnor`)](https://github.com/droolsjbpm/guvnor)
 
     * Click the top right button *Fork*
 
     * Note: by forking the repository, you can commit and push your changes without our consent
-    and we can easily accept or reject your changes for the official repository.
+    and we can easily accept or reject your changes for the blessed repository.
 
 * Clone that fork locally:
 
@@ -702,6 +713,21 @@ To develop a great project as a team, we need to communicate efficiently as a te
             * Right click in the lower left corner on the *All* feed link, menu item *Add link to jenkins build monitor*.
 
 * Join us on IRC: irc.codehaus.org #drools #jbpm #guvnor
+
+Writing documentation
+=====================
+
+* Install a DocBook editor, such as [XMLmind Personal Edition](http://www.xmlmind.com/xmleditor/download.shtml)
+
+* To generate the html and pdf output run maven with `-Dfull`:
+
+        $ cd droolsjbpm
+        $ cd guvnor/guvnor-docs
+        $ mvn clean install -Dfull
+        ...
+        $ firefox target/docbook/publish/en-US/html_single/index.html
+
+* [Read and follow the documentation guidelines](documentation-guidelines.txt).
 
 Releasing
 =========
