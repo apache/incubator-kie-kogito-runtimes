@@ -27,6 +27,8 @@ Table of content
 
 * **Team communication**
 
+* **Writing documentation**
+
 * **Releasing**
 
 * **FAQ**
@@ -159,6 +161,8 @@ Developing with Eclipse
 Before running Eclipse
 ----------------------
 
+* Do not use an Eclipse version older than `3.6 (helios)`.
+
 * Avoid an `OutOfMemoryException` and a `StackOverflowError` when building.
 
     Open `$ECLIPSE_HOME/eclipse.ini` and add/change this: on openFile -vmargs:
@@ -179,15 +183,15 @@ This is the new way (and compatible with tycho).
 
 * Open Eclipse
 
-* Follow [the installation instructions of m2eclipse](http://m2eclipse.sonatype.org/)
+* Follow [the installation instructions of m2eclipse](http://m2eclipse.sonatype.org/).
 
     * Follow the link *Installing m2eclipse* at the bottom.
 
 * Click menu *File*, menu item *Import*, tree item *Maven*, tree item *Existing Maven Projects*.
 
-* Open the top level project `pom.xml` file with the m2eclipse plugin.
+* Click button *Browse*, select a repository directory. For example `~/projects/droolsjbpm/guvnor`.
 
-* Select the profiles `notSoaProfile` and `fullProfile`.
+* Unfold *Advanced*, textfield *Profiles*: `notSoaProfile,fullProfile`.
 
 Configuring the project with the deprecated maven-eclipse-plugin
 ----------------------------------------------------------------
@@ -203,7 +207,7 @@ Run this command to generate `.project` and `.classpath` files:
 
 * Menu item *Import existing projects*, navigate to the project base directory, select all the projects (= modules) it lists.
 
-Important note: `mvn eclipse:eclipse` does not work for our eclipse plugin because it is not compatible with tycho
+Important note: `mvn eclipse:eclipse` does not work for our eclipse plugins because it is not compatible with tycho
 (and never will be).
 
 Configuring Eclipse
@@ -324,6 +328,56 @@ Extra Eclipse plugins
     * Open menu *Help*, menu item *Install new software*.
 
     * Click combobox *Update site* `Helios`, tree item *Collaboration*, tree item *Eclipse EGit*.
+
+* GWT plugin
+
+    * [Download and install the Eclipse GWT plugin](http://code.google.com/intl/en/eclipse/docs/getting_started.html)
+
+        * Note: it is recommended to keep your Eclipse GWT plugin version in sync with the GWT version that we use.
+
+    * In *Package Explorer*, right click on the project `guvnor-webapp`, menu item *Properties*.
+
+        * Enable the GWT aspect:
+
+            * Click tree item *Google*, tree item *Web Toolkit Settings...*
+
+            * Checkbox *Use google Web Tookit*: `on`
+
+            * List *Entry Point Modules* should contain `Guvnor - org.drools.guvnor` (and optionally `FastCompiledGuvnor` too).
+
+        * The gwt-dev jar needs to be first on the compilation classpath (the `java.lang.NoSuchFieldError: warningThreshold` problem)
+
+            * Click tree item *Java Build Path*
+
+            * Tab *Libraries*, button *Add Library...*, list item *Google Web Toolkit*, button *Next*, button *Finish*
+
+            * Tab *Order and Export*, select `GWT SDK ...`, button *Top*
+
+    * Verify that you have a web browser configured in Eclipse:
+
+        * Open menu *Window*, menu item *Preferences*.
+
+        * Click tree *General*, tree item *Web Browser*, radiobutton *Use external web browser*.
+
+        * Click button *New...*, textfield *Name* `firefox`, textfield *Location* `/usr/bin/firefox`, textfield *Parameters* `%URL%`, button *OK*.
+
+        * Check the checkbox next to `firefox`.
+
+    * Run GWT in hosted mode
+
+        * Open menu *Run*, menu item *Run configurations...*
+
+        * In the list, select *Web Application*, button *new launch configuration*
+
+        * Tab *Main*, Project: `guvnor-webapp`
+
+        * Tab *GWT*, list *Available Modules*: `Guvnor - org.drools.guvnor`
+
+        * Tab *GWT*, textfield *URL*: `org.drools.guvnor.Guvnor/Guvnor.html`
+
+        * Button *Run*.
+
+    * In your workspace, in the tab *Development Mode*, double click on the `Guvnor` URL.
 
 Developing with IntelliJ
 ========================
@@ -522,6 +576,16 @@ Extra IntelliJ plugins
 
     * Check *Git*.
 
+* GWT plugin
+
+    * Open menu *File*, menu item *Project structure*
+
+    * For the module `guvnor-webapp`, add the new aspect *GWT* if you haven't already.
+
+    * Open menu *Run*, menu item *Edit configurations*
+
+    * Add new *GWT configuration*, combobox *module* `guvnor-webapp`. Run that configuration.
+
 Source control with git
 =======================
 
@@ -572,12 +636,15 @@ Getting the sources locally
 
     * Surf to [the blessed repositories on github](https://github.com/droolsjbpm) and log in.
 
-    * Surf to [the specific repository (guvnor)](https://github.com/droolsjbpm/guvnor)
+        * Note: **Every git repository can build alone.**
+        You only need to fork/clone the repositories you're interested in (`guvnor` in this case).
+
+    * Surf to [the specific repository (`guvnor`)](https://github.com/droolsjbpm/guvnor)
 
     * Click the top right button *Fork*
 
     * Note: by forking the repository, you can commit and push your changes without our consent
-    and we can easily accept or reject your changes for the official repository.
+    and we can easily accept or reject your changes for the blessed repository.
 
 * Clone that fork locally:
 
@@ -702,6 +769,21 @@ To develop a great project as a team, we need to communicate efficiently as a te
             * Right click in the lower left corner on the *All* feed link, menu item *Add link to jenkins build monitor*.
 
 * Join us on IRC: irc.codehaus.org #drools #jbpm #guvnor
+
+Writing documentation
+=====================
+
+* Install a DocBook editor, such as [XMLmind Personal Edition](http://www.xmlmind.com/xmleditor/download.shtml)
+
+* To generate the html and pdf output run maven with `-Dfull`:
+
+        $ cd droolsjbpm
+        $ cd guvnor/guvnor-docs
+        $ mvn clean install -Dfull
+        ...
+        $ firefox target/docbook/publish/en-US/html_single/index.html
+
+* [Read and follow the documentation guidelines](documentation-guidelines.txt).
 
 Releasing
 =========
