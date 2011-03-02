@@ -183,15 +183,15 @@ This is the new way (and compatible with tycho).
 
 * Open Eclipse
 
-* Follow [the installation instructions of m2eclipse](http://m2eclipse.sonatype.org/)
+* Follow [the installation instructions of m2eclipse](http://m2eclipse.sonatype.org/).
 
     * Follow the link *Installing m2eclipse* at the bottom.
 
 * Click menu *File*, menu item *Import*, tree item *Maven*, tree item *Existing Maven Projects*.
 
-* Open the top level project `pom.xml` file with the m2eclipse plugin.
+* Click button *Browse*, select a repository directory. For example `~/projects/droolsjbpm/guvnor`.
 
-* Select the profiles `notSoaProfile` and `fullProfile`.
+* Unfold *Advanced*, textfield *Profiles*: `notSoaProfile,fullProfile`.
 
 Configuring the project with the deprecated maven-eclipse-plugin
 ----------------------------------------------------------------
@@ -207,7 +207,7 @@ Run this command to generate `.project` and `.classpath` files:
 
 * Menu item *Import existing projects*, navigate to the project base directory, select all the projects (= modules) it lists.
 
-Important note: `mvn eclipse:eclipse` does not work for our eclipse plugin because it is not compatible with tycho
+Important note: `mvn eclipse:eclipse` does not work for our eclipse plugins because it is not compatible with tycho
 (and never will be).
 
 Configuring Eclipse
@@ -332,6 +332,52 @@ Extra Eclipse plugins
 * GWT plugin
 
     * [Download and install the Eclipse GWT plugin](http://code.google.com/intl/en/eclipse/docs/getting_started.html)
+
+        * Note: it is recommended to keep your Eclipse GWT plugin version in sync with the GWT version that we use.
+
+    * In *Package Explorer*, right click on the project `guvnor-webapp`, menu item *Properties*.
+
+        * Enable the GWT aspect:
+
+            * Click tree item *Google*, tree item *Web Toolkit Settings...*
+
+            * Checkbox *Use google Web Tookit*: `on`
+
+            * List *Entry Point Modules* should contain `Guvnor - org.drools.guvnor` (and optionally `FastCompiledGuvnor` too).
+
+        * The gwt-dev jar needs to be first on the compilation classpath (the `java.lang.NoSuchFieldError: warningThreshold` problem)
+
+            * Click tree item *Java Build Path*
+
+            * Tab *Libraries*, button *Add Library...*, list item *Google Web Toolkit*, button *Next*, button *Finish*
+
+            * Tab *Order and Export*, select `GWT SDK ...`, button *Top*
+
+    * Verify that you have a web browser configured in Eclipse:
+
+        * Open menu *Window*, menu item *Preferences*.
+
+        * Click tree *General*, tree item *Web Browser*, radiobutton *Use external web browser*.
+
+        * Click button *New...*, textfield *Name* `firefox`, textfield *Location* `/usr/bin/firefox`, textfield *Parameters* `%URL%`, button *OK*.
+
+        * Check the checkbox next to `firefox`.
+
+    * Run GWT in hosted mode
+
+        * Open menu *Run*, menu item *Run configurations...*
+
+        * In the list, select *Web Application*, button *new launch configuration*
+
+        * Tab *Main*, Project: `guvnor-webapp`
+
+        * Tab *GWT*, list *Available Modules*: `Guvnor - org.drools.guvnor`
+
+        * Tab *GWT*, textfield *URL*: `org.drools.guvnor.Guvnor/Guvnor.html`
+
+        * Button *Run*.
+
+    * In your workspace, in the tab *Development Mode*, double click on the `Guvnor` URL.
 
 Developing with IntelliJ
 ========================
@@ -529,6 +575,16 @@ Extra IntelliJ plugins
     * Open menu *File*, menu item *Other Settings*, menu item *Configure plugins*.
 
     * Check *Git*.
+
+* GWT plugin
+
+    * Open menu *File*, menu item *Project structure*
+
+    * For the module `guvnor-webapp`, add the new aspect *GWT* if you haven't already.
+
+    * Open menu *Run*, menu item *Edit configurations*
+
+    * Add new *GWT configuration*, combobox *module* `guvnor-webapp`. Run that configuration.
 
 Source control with git
 =======================
