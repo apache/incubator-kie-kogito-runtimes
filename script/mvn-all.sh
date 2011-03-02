@@ -2,7 +2,7 @@
 
 # Runs a mvn command on all droolsjbpm repositories.
 
-scriptDir=$(dirname $(readlink -e $0))
+scriptDir="$( cd "$( dirname "$0" )" && pwd -P )"
 
 if [ $# = 0 ] ; then
     echo
