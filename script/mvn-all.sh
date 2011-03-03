@@ -2,30 +2,24 @@
 
 # Runs a mvn command on all droolsjbpm repositories.
 
-realpath() {
+initializeWorkingDirAndScriptDir() {
+    # Set working directory and remove all symbolic links
+    workingDir=`pwd -P`
 
-    TARGET_FILE=$1
-
-    cd `dirname $TARGET_FILE`
-    TARGET_FILE=`basename $TARGET_FILE`
-
-    # Iterate down a (possible) chain of symlinks
-    while [ -L "$TARGET_FILE" ]
-    do
-        TARGET_FILE=`readlink $TARGET_FILE`
-        cd `dirname $TARGET_FILE`
-        TARGET_FILE=`basename $TARGET_FILE`
+    # Go the script directory
+    cd `dirname $0`
+    # If the file itself is a symbolic link (ignoring parent directory links), then follow that link recursively
+    # Note that scriptDir=`pwd -P` does not do that and cannot cope with a link directly to the file
+    scriptFileBasename=`basename $0`
+    while [ -L "$scriptFileBasename" ] ; do
+        scriptFileBasename=`readlink $scriptFileBasename` # Follow the link
+        cd `dirname $scriptFileBasename`
+        scriptFileBasename=`basename $scriptFileBasename`
     done
-
-
-    # Compute the canonicalized name by finding the physical path 
-    # for the directory we're in and appending the target file.
-    PHYS_DIR=`pwd -P`
-    scriptDir=$PHYS_DIR
-    echo $RESULT
+    # Set script directory and remove all symbolic links (including parent directory links)
+    scriptDir=`pwd -P`
 }
-
-realpath $0
+initializeWorkingDirAndScriptDir
 
 if [ $# = 0 ] ; then
     echo
