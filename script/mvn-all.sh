@@ -16,7 +16,7 @@ initializeWorkingDirAndScriptDir() {
         cd `dirname $scriptFileBasename`
         scriptFileBasename=`basename $scriptFileBasename`
     done
-    # Set script directory and remove all symbolic links (including parent directory links)
+    # Set script directory and remove other symbolic links (parent directory links)
     scriptDir=`pwd -P`
 }
 initializeWorkingDirAndScriptDir
