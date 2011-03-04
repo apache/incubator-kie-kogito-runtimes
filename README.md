@@ -257,17 +257,29 @@ Configuring Eclipse
 
         * Combobox *Tab policy*: `spaces only`
 
-        * Indentation size: `4`
+        * Textfield *Indentation size*: `4`
 
-        * Tab size: `4`
+        * Textfield *Tab size*: `4`
 
         * Note: If it is a build-in profile, you 'll need to change its name with the textfield on top.
 
     * Click tree item *XML*, tree item *XML Files*, tree item *Editor*.
 
-        * Radio button *Indent using space*: `on`
+        * Radiobutton *Indent using space*: `on`
 
-        * Indentation size: `2`
+        * Textfield *Indentation size*: `2`
+
+    * Click tree item *General*, tree item *Editors*, tree item *Text Editors*.
+
+        * Checkbox *Insert spaces for tabs*: `on`
+
+        * Textfield *Displayed tab width*: `4`
+
+    * Click tree item *CSS Files*, tree item *Editor*.
+
+        * Radiobutton *Indent using space*: `on`
+
+        * Textfield *Indentation size*: `4`
 
 * Set the correct file headers (do not include @author or a meaningless javadoc):
 
