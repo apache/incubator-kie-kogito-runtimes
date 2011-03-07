@@ -241,7 +241,9 @@ Configuring Eclipse
 
         * Combobox *Encoding*: `ISO 10646/Unicode(UTF-8)`.
 
-    * Note: i18n properties files must be in `ISO-8859-1` as specified by the java `ResourceBundle` contract.
+    * Note: normal i18n properties files must be in `ISO-8859-1` as specified by the java `ResourceBundle` contract.
+
+        * Note on note: GWT i18n properties files override that and must be in `UTF-8` as specified by the GWT contract.
 
 * Set the correct number of spaces when pressing tab:
 
@@ -503,9 +505,13 @@ Configuring IntelliJ
 
     * Click tree item *File Encodings*
 
-         * Combobox *IDE Encoding*: `UTF-8`
+        * Combobox *IDE Encoding*: `UTF-8`
 
-         * Combobox *Default encoding for properties files*: `ISO-8859-1`
+        * Combobox *Default encoding for properties files*: `ISO-8859-1`
+
+            * Note: normal i18n properties files must be in `ISO-8859-1` as specified by the java `ResourceBundle` contract.
+
+                * Note on note: GWT i18n properties files override that and must be in `UTF-8` as specified by the GWT contract.
 
 * Set the correct number of spaces when pressing tab:
 
