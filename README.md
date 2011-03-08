@@ -624,6 +624,8 @@ Installing and configuring git
 
         Tip for Mac OSX: Also install [*gitx*](http://gitx.frim.nl/) to visually your git log.
 
+    * More info [in github's git installation instructions](http://help.github.com/git-installation-redirect)
+
 * Check if git is installed correctly.
 
         $ git --version
@@ -646,6 +648,8 @@ Installing and configuring git
 * Get a github account
 
     * And add your public key on github: [Follow these instructions](http://github.com/guides/providing-your-ssh-key).
+
+* To learn more about git, read the free book [Git Pro](http://progit.org/book/).
 
 Getting the sources locally
 ---------------------------
@@ -676,27 +680,41 @@ Getting the sources locally
         $ cd guvnor
         $ ls
 
+    * Warning: Always clone with the *SSH URL*, never clone with the *HTTPS URL* because the latter is unreliable.
+
     * Note: it's highly recommended to name the cloned directory the same the repository, so the helper scripts work.
+
+    * By default you will be looking at the sources of the master branch, which can be very unstable.
+
+        * Use git checkout to switch to a more stable branch or tag:
+
+                $ git checkout 5.2.0
 
 Working with git
 ----------------
 
 * TODO describe topic branch workflow
 
-* To run a git command (except clone) over all repositories (only works if you cloned all repositories):
+* Tips and tricks
 
-        $ cd ~/projects/droolsjbpm
-        $ droolsjbpm-build-bootstrap/script/git-all.sh push
+    * To see the details of your local, unpushed commits:
 
-    * Note: the `git-all.sh` script is working directory independent.
+            $ git diff origin...HEAD
 
-    * Linux tip: Create a symbolic link to the `git-all.sh` script and place it in your `PATH` by linking it in `~/bin`:
+    * To run a git command (except clone) over all repositories (only works if you cloned all repositories):
 
-            $ ln -s ~/projects/droolsjbpm/droolsjbpm-build-bootstrap/script/git-all.sh ~/bin/droolsjbpm-git
+            $ cd ~/projects/droolsjbpm
+            $ droolsjbpm-build-bootstrap/script/git-all.sh push
 
-        For command line completion, add the following line in `~/.bashrc`:
+        * Note: the `git-all.sh` script is working directory independent.
 
-            $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
+        * Linux tip: Create a symbolic link to the `git-all.sh` script and place it in your `PATH` by linking it in `~/bin`:
+
+                $ ln -s ~/projects/droolsjbpm/droolsjbpm-build-bootstrap/script/git-all.sh ~/bin/droolsjbpm-git
+
+            For command line completion, add the following line in `~/.bashrc`:
+
+                $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
 
 Pull requests: patches on steroids
 ----------------------------------
