@@ -395,7 +395,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.2</version>
+          <version>2.2.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -744,6 +744,12 @@
       <dependency>
         <groupId>org.drools.planner</groupId>
         <artifactId>drools-planner-examples</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools.planner</groupId>
+        <artifactId>drools-planner-docs</artifactId>
+        <type>jdocbook</type>
         <version>${project.version}</version>
       </dependency>
       <dependency>
