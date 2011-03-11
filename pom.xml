@@ -19,7 +19,7 @@
     <camel-version>2.4.0</camel-version>
     <cxf-version>2.2.9</cxf-version>
     <springframework-version>2.5.6</springframework-version>
-    <gwt.version>2.1.1</gwt.version>
+    <gwt.version>2.2.0</gwt.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jbpm.version>5.0-SNAPSHOT</jbpm.version>
   </properties>
