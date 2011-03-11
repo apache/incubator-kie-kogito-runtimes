@@ -824,15 +824,39 @@ Writing documentation
 Releasing
 =========
 
-Use JDK 1.6, because in JDK 1.5 the module `guvnor-repository-connector-modeshape` is not build.
+Warning: Use JDK 1.6, because in JDK 1.5 the module `guvnor-repository-connector-modeshape` is not build.
 
-To produce distribution builds use:
+To produce the distribution zips, build with `-Dfull`:
 
     $ mvn -Dfull clean install
-    $ mvn -Dfull -DskipTests package javadoc:javadoc assembly:assembly
 
-Note: That install must be done first as `javadoc:javadoc` won't work unless the
-jars are in the local maven repo, but the tests can be skipped on the second run.
+The distribution zips are in the directory's `*-distribution/target/`.
+
+If everything is perfect (tested by QA etc):
+
+* Define the version and adjust the poms.
+
+    * Note: Always use at least 3 numbers in the version: '1.0.0' is fine, `1.0` is not fine.
+
+* Create the tag:
+
+        $ git tag 1.0.0
+
+* Deploy the artifacts:
+
+        $ mvn -Dfull clean deploy
+
+* Warning: The slightest change after you created the tag requires the use of the next version number!
+
+    * **NEVER TAG OR DEPLOY A VERSION THAT ALREADY EXISTS AS A TAG OR A DEPLOY!!!**
+
+        * Except deploying `SNAPSHOT` versions.
+
+        * Git tags are cached on developer machines forever and are never refreshed.
+
+        * Maven non-snapshot versions are cached on developer machines and proxies forever and are never refreshed.
+
+    * So even if the release is broken, do not reuse the same version number! Create a hotfix version.
 
 FAQ
 ===
