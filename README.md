@@ -809,7 +809,26 @@ To develop a great project as a team, we need to communicate efficiently as a te
 Writing documentation
 =====================
 
-* Install a DocBook editor, such as [XMLmind Personal Edition](http://www.xmlmind.com/xmleditor/download.shtml)
+* Optionally install a DocBook editor to write documentation more comfortably, such as:
+
+    * [XMLmind Personal Edition](http://www.xmlmind.com/xmleditor/download.shtml)
+
+        * Open menu *Options*, menu item *Preferences...*.
+
+        * Click tree item *Save*
+
+            * Combobox *Encoding*: `UTF-8`
+
+            * Textfield *Identation*: `2`
+
+            * Textfield *Max. line length*: `120`
+
+            * Checkbox *Before saving, make a backup copy of the file*: `off`
+
+                * To avoid committing backups to source control.
+
+                * Source control history is better than backups.
+            
 
 * To generate the html and pdf output run maven with `-Dfull`:
 
@@ -819,7 +838,7 @@ Writing documentation
         ...
         $ firefox target/docbook/publish/en-US/html_single/index.html
 
-* [Read and follow the documentation guidelines](documentation-guidelines.txt).
+* **[Read and follow the documentation guidelines](documentation-guidelines.txt).**
 
 Releasing
 =========
