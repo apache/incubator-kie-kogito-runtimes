@@ -16,6 +16,10 @@
   </description>
   <url>http://www.jboss.org/drools</url>
   <inceptionYear>2001</inceptionYear>
+  <organization>
+    <name>JBoss Inc.</name>
+    <url>http://www.jboss.org/</url>
+  </organization>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -91,23 +95,19 @@
     </pluginRepository>
   </pluginRepositories>
 
-  <organization>
-    <name>JBoss Inc.</name>
-    <url>http://www.jboss.org/</url>
-  </organization>
-  <issueManagement>
-    <system>jira</system>
-    <url>https://issues.jboss.org/browse/JBRULES</url>
-  </issueManagement>
   <scm>
-    <connection>scm:svn:http://anonsvn.labs.jboss.com/labs/jbossrules/trunk</connection>
-    <!-- TODO developerConnection-->
-    <url>http://anonsvn.labs.jboss.com/labs/jbossrules/trunk</url>
+    <connection>scm:git:git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git</connection>
+    <developerConnection>scm:git:git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git</developerConnection>
+    <url>https://github.com/droolsjbpm/droolsjbpm-build-bootstrap</url>
   </scm>
   <ciManagement>
     <system>hudson</system>
     <url>https://hudson.jboss.org/hudson/view/Drools%20jBPM/</url>
   </ciManagement>
+  <issueManagement>
+    <system>jira</system>
+    <url>https://issues.jboss.org/browse/JBRULES</url>
+  </issueManagement>
   <developers>
     <developer>
       <name>All developers are listed on the team website</name>
