@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.drools</groupId>
-  <artifactId>drools</artifactId>
+  <artifactId>droolsjbpm-parent</artifactId>
   <packaging>pom</packaging>
   <!-- On updating the version, also look for these variations for OSGi stuff: "5.2.0.qualifier" and "5.2.0.SNAPSHOT" -->
   <version>5.2.0-SNAPSHOT</version>
