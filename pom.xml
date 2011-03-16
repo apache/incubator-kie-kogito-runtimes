@@ -10,10 +10,23 @@
   <!-- On updating the version, also look for these variations for OSGi stuff: "5.2.0.qualifier" and "5.2.0.SNAPSHOT" -->
   <version>5.2.0-SNAPSHOT</version>
 
-  <name>Drools</name>
-  <description>A rule production system</description>
-  <url>http://www.jboss.com/products/rules</url>
+  <name>Drools and jBPM build bootstrap (parent pom)</name>
+  <description>
+    The build bootstrap contains the parent pom, guidelines and scripts for Drools and jBPM.
+  </description>
+  <url>http://www.jboss.org/drools</url>
+  <inceptionYear>2001</inceptionYear>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
+  <prerequisites>
+    <maven>3.0.1</maven>
+  </prerequisites>
   <properties>
     <mvel.dep.version>2.1-SNAPSHOT</mvel.dep.version>
     <camel-version>2.4.0</camel-version>
@@ -23,144 +36,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jbpm.version>5.0-SNAPSHOT</jbpm.version>
   </properties>
-  <prerequisites>
-    <maven>3.0.1</maven>
-  </prerequisites>
-  <issueManagement>
-    <system>jira</system>
-    <url>http://jira.jboss.com/jira/browse/JBRULES</url>
-  </issueManagement>
-  <ciManagement>
-    <system>continuum</system>
-    <url>http://ci.codehaus.org:8001/continuum/servlet/continuum/target/Summary.vm/fid/continuumProject</url>
-    <notifiers>
-      <notifier>
-        <type>mail</type>
-        <configuration>
-          <address>rules-dev@lists.jboss.org</address>
-        </configuration>
-      </notifier>
-      <notifier>
-        <type>irc</type>
-        <configuration>
-          <host>irc.codehaus.org</host>
-          <port>6667</port>
-          <channel>#drools</channel>
-        </configuration>
-      </notifier>
-    </notifiers>
-  </ciManagement>
-  <inceptionYear>2001</inceptionYear>
-  <mailingLists>
-    <mailingList>
-      <name>announce</name>
-      <subscribe>announce-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>announce-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/announce/</archive>
-    </mailingList>
-    <mailingList>
-      <name>user</name>
-      <subscribe>user-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>user-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/user/</archive>
-    </mailingList>
-    <mailingList>
-      <name>dev</name>
-      <subscribe>dev-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>dev-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/dev/</archive>
-    </mailingList>
-    <mailingList>
-      <name>drools cvs messages</name>
-      <subscribe>scm-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>scm-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/scm/</archive>
-    </mailingList>
-  </mailingLists>
-  <developers>
-    <developer>
-      <name>Mark Proctor</name>
-      <id>mark</id>
-      <email>mark.proctor@jboss.com</email>
-      <organization>JBoss Inc.</organization>
-      <roles>
-        <role>Co Founder, Project Lead</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <name>Michael Neale</name>
-      <id>mic</id>
-      <email>michael.neale at gmail.com</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+10</timezone>
-      <organization>JBoss Inc.</organization>
-    </developer>
-    <developer>
-      <name>Kris Verlaenen</name>
-      <id>kris</id>
-      <email>kris.verlaenen at gmail.com</email>
-      <organization>JBoss Inc.</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
-      <name>Bob McWhirter</name>
-      <id>bob</id>
-      <email>bob at werken.com</email>
-      <organization>JBoss Inc.</organization>
-      <roles>
-        <role>Founder</role>
-      </roles>
-      <timezone>-5</timezone>
-    </developer>
-    <developer>
-      <name>Edson Tirelli</name>
-      <id>tirelli</id>
-      <email>tirelli at post.com</email>
-      <organization>JBoss Inc.</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-3</timezone>
-    </developer>
-    <developer>
-      <id>ge0ffrey</id>
-      <name>Geoffrey De Smet</name>
-      <email>ge0ffrey.spam at gmail.com</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
-    <!-- Add yourself to this list if you belong here -->
-  </developers>
-  <contributors>
-    <contributor>
-      <name>All contributors are listed on the team website</name>
-      <url>http://www.jboss.org/drools/team</url>
-    </contributor>
-  </contributors>
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <scm>
-    <connection>scm:svn:http://anonsvn.labs.jboss.com/labs/jbossrules/trunk</connection>
-    <!-- TODO developerConnection-->
-    <url>http://anonsvn.labs.jboss.com/labs/jbossrules/trunk</url>
-  </scm>
-  <organization>
-    <name>JBoss Inc.</name>
-    <url>http://www.jboss.org/</url>
-  </organization>
+
   <repositories>
     <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
     <repository>
@@ -214,6 +90,50 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <organization>
+    <name>JBoss Inc.</name>
+    <url>http://www.jboss.org/</url>
+  </organization>
+  <issueManagement>
+    <system>jira</system>
+    <url>https://issues.jboss.org/browse/JBRULES</url>
+  </issueManagement>
+  <scm>
+    <connection>scm:svn:http://anonsvn.labs.jboss.com/labs/jbossrules/trunk</connection>
+    <!-- TODO developerConnection-->
+    <url>http://anonsvn.labs.jboss.com/labs/jbossrules/trunk</url>
+  </scm>
+  <ciManagement>
+    <system>hudson</system>
+    <url>https://hudson.jboss.org/hudson/view/Drools%20jBPM/</url>
+  </ciManagement>
+  <developers>
+    <developer>
+      <name>All developers are listed on the team website</name>
+      <url>http://www.jboss.org/drools/team</url>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>All contributors are listed on the team website</name>
+      <url>http://www.jboss.org/drools/team</url>
+    </contributor>
+  </contributors>
+  <mailingLists>
+    <mailingList>
+      <name>user</name>
+      <subscribe>user-subscribe@drools.codehaus.org</subscribe>
+      <unsubscribe>user-unsubscribe@drools.codehaus.org</unsubscribe>
+      <archive>http://archive.drools.codehaus.org/user/</archive>
+    </mailingList>
+    <mailingList>
+      <name>dev</name>
+      <subscribe>dev-subscribe@drools.codehaus.org</subscribe>
+      <unsubscribe>dev-unsubscribe@drools.codehaus.org</unsubscribe>
+      <archive>http://archive.drools.codehaus.org/dev/</archive>
+    </mailingList>
+  </mailingLists>
 
   <build>
     <extensions>
