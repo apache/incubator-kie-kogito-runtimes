@@ -1460,13 +1460,11 @@
         <groupId>javax.el</groupId>
         <artifactId>el-api</artifactId>
         <version>1.2</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.el</groupId>
         <artifactId>el-ri</artifactId>
         <version>1.2</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
