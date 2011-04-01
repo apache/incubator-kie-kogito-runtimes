@@ -531,7 +531,7 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-api</artifactId>
+        <artifactId>knowledge-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
