@@ -723,7 +723,7 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.droolsjbpm</groupId>
+        <groupId>org.drools</groupId>
         <artifactId>guvnor-docs</artifactId>
         <type>jdocbook</type>
         <version>${project.version}</version>
