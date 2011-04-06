@@ -509,19 +509,22 @@
     <dependencies>
       <!--
           Declare all dependency versions and default scopes here, but not optional.
-          Each module should declare it's direct dependency and possibly overwrite scope/optional.
+          Each module should declare it's direct dependencies and possibly overwrite scope/optional.
       -->
-      <!-- Internal dependencies -->
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>bundle-repository</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+      <!-- droolsjbpm-knowledge -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>knowledge-api</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-introduction-docs</artifactId>
+        <type>jdocbook</type>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- drools -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
@@ -534,6 +537,120 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-compiler</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-jsr94</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-clips</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-verifier</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-persistence-jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-templates</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-decisiontables</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-expert-docs</artifactId>
+        <type>jdocbook</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-fusion-docs</artifactId>
+        <type>jdocbook</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-expert-examples</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-fusion-examples</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- drools-planner -->
+      <dependency>
+        <groupId>org.drools.planner</groupId>
+        <artifactId>drools-planner-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools.planner</groupId>
+        <artifactId>drools-planner-examples</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools.planner</groupId>
+        <artifactId>drools-planner-docs</artifactId>
+        <type>jdocbook</type>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- jbpm -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-flow</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-flow-builder</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-persistence-jpa</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bpmn2</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bam</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+
+      <!-- droolsjbpm-integration -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-impl</artifactId>
@@ -581,32 +698,6 @@
       </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-compiler</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-jsr94</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-templates</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-decisiontables</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-docs</artifactId>
-        <type>pom</type>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
         <artifactId>drools-spring</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -617,14 +708,17 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-ant</artifactId>
+        <artifactId>drools-pipeline</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-verifier</artifactId>
+        <artifactId>droolsjbpm-integration-docs</artifactId>
+        <type>jdocbook</type>
         <version>${project.version}</version>
       </dependency>
+      
+      <!-- guvnor -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-repository</artifactId>
@@ -647,7 +741,7 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-pipeline</artifactId>
+        <artifactId>droolsjbpm-ide-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!--<dependency>--><!-- JBRULES-2707 Split up guvnor-webapp into guvnor-gwt-client and guvnor-webapp -->
@@ -663,106 +757,19 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-persistence-jpa</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-eclipse-plugin</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-examples</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-docs</artifactId>
-        <type>jdocbook</type>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>droolsjbpm-ide-common</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-docs-introduction</artifactId>
-        <type>jdocbook</type>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-docs-expert</artifactId>
-        <type>jdocbook</type>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-docs-fusion</artifactId>
-        <type>jdocbook</type>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
         <artifactId>guvnor-docs</artifactId>
         <type>jdocbook</type>
         <version>${project.version}</version>
       </dependency>
+
+      <!-- droolsjbpm-tools -->
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-planner-docs</artifactId>
-        <type>jdocbook</type>
+        <artifactId>drools-ant</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-docs-integration</artifactId>
-        <type>jdocbook</type>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-flow</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-flow-builder</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-persistence-jpa</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-workitems</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bpmn2</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bam</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
+
+      <!-- General dependencies -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -809,8 +816,8 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- api -->
 
+      <!-- api -->
       <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
