@@ -68,18 +68,6 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-    <!--<repository>-->
-      <!--&lt;!&ndash; Contains mvel snapshots - should be commented out during release &ndash;&gt;-->
-      <!--<id>codehaus-snapshots</id>-->
-      <!--<url>http://snapshots.repository.codehaus.org</url>-->
-      <!--<releases>-->
-        <!--<enabled>false</enabled>-->
-      <!--</releases>-->
-      <!--<snapshots>-->
-        <!--<enabled>true</enabled>-->
-        <!--<updatePolicy>daily</updatePolicy>-->
-      <!--</snapshots>-->
-    <!--</repository>-->
   </repositories>
   <pluginRepositories>
     <pluginRepository>
