@@ -45,7 +45,11 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
-        mvn $*
+        if [ -a $M3_HOME/bin/mvn ] ; then
+            $M3_HOME/bin/mvn $*
+        else
+            mvn $*
+        fi
         mvnReturnCode=$?
         cd ..
         if [ $mvnReturnCode != 0 ] ; then
