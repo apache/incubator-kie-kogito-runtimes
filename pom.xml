@@ -38,7 +38,7 @@
     <springframework-version>2.5.6</springframework-version>
     <gwt.version>2.2.0</gwt.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jbpm.version>5.0-SNAPSHOT</jbpm.version>
+    <jbpm.version>5.1-SNAPSHOT</jbpm.version>
   </properties>
 
   <repositories>
