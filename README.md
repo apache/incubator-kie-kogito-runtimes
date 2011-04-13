@@ -103,7 +103,7 @@ Running the build
 
 * **Run the build**:
 
-        $ mvn -DskipTests clean install
+        $ mvn clean install -DskipTests
 
     The first build will take a long time, because a lot of dependencies will be downloaded (and cached locally).
 
@@ -114,7 +114,7 @@ Running the build
 
 * Try running a different profile by using the option `-D<profileActivationProperty>`:
 
-        $ mvn -Dfull -DskipTests clean install
+        $ mvn clean install -DskipTests -Dfull
 
     There are 3 profile activation properties:
 
@@ -130,6 +130,22 @@ Running the build
         $ droolsjbpm-build-bootstrap/script/mvn-all.sh -DskipTests clean install
 
     * Note: the `mvn-all.sh` script is working directory independent.
+
+* Warning: The first `mvn` build of a day will download the latest SNAPSHOT dependencies of other droolsjbpm projects,
+unless you build all those droolsjbpm projects from source.
+Those SNAPSHOTS were build and deployed last night by hudson jobs.
+
+    * If you 've pulled all changes (or cloned a repository) today, this is a good thing:
+    it saves you from having to download and build all those other latest droolsjbpm projects from source.
+
+    * If you haven't pulled all changes today, this is probably a bad thing:
+    you 're probably not ready to deal with those new snapshots.
+
+        In that case, add `-nsu` (= `--no-snapshot-updates`) to the `mvn` command to avoid downloading those snapshots:
+
+            $ mvn clean install -DskipTests -nsu
+
+        Note that using `-nsu` will also make the build faster.
 
 Configuring Maven
 -----------------
