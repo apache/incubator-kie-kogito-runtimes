@@ -582,6 +582,11 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-expert-examples</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-expert-docs</artifactId>
         <type>jdocbook</type>
         <version>${project.version}</version>
@@ -590,16 +595,6 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-fusion-docs</artifactId>
         <type>jdocbook</type>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-expert-examples</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-fusion-examples</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -728,6 +723,11 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-simulator</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>droolsjbpm-integration-examples</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
