@@ -816,8 +816,6 @@ To develop a great project as a team, we need to communicate efficiently as a te
 
                 * [guvnor](https://hudson.jboss.org/hudson/view/Drools%20jBPM/job/guvnor/)
 
-                * ...
-
             * Right click in the lower left corner on the *All* feed link, menu item *Add link to jenkins build monitor*.
 
 * Join us on IRC: irc.codehaus.org #drools #jbpm #guvnor
