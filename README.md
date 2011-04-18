@@ -191,6 +191,15 @@ Before running Eclipse
         -Xmx1024m
         -Xss1024k
 
+* Only on Mac, also add these lines to avoid a Mac-specific p2 bug with tycho 0.11.0 in droolsjbpm-tools:
+
+        -startup
+        ../../../plugins/org.eclipse.equinox.launcher_1.1.0.v20100507.jar
+        --launcher.library
+        ../../../plugins/org.eclipse.equinox.launcher.cocoa.macosx.x86_64_1.1.1.R36x_v20100810
+
+    TODO: Remove this note when we upgrade to tycho 0.12.0 (if that uses a p2 director that fixes it)
+
 Configuring the project with the m2eclipse plugin
 -------------------------------------------------
 
