@@ -866,6 +866,23 @@ Writing documentation
 Releasing
 =========
 
+Creating a release branch
+-------------------------
+
+A release branch name should always end with `.x` so it looks different from a tag name and a topic branch name.
+
+* Simply use the script `script/create-release-branches.sh` with the drools and jbpm *release branch name*:
+
+        $ droolsjbpm-build-bootstrap/script/create-release-branches.sh 5.2.x 5.1.x
+
+    * It does something like this for every repository:
+
+            $ git checkout -b 5.2.x
+            $ git push origin 5.2.x
+
+Releasing from a release branch
+-------------------------------
+
 Warning: Use JDK 1.6, because in JDK 1.5 the module `guvnor-repository-connector-modeshape` is not build.
 
 To produce the distribution zips, build with `-Dfull`:
