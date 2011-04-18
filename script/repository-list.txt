@@ -2,6 +2,7 @@ droolsjbpm-build-bootstrap
 droolsjbpm-knowledge
 drools
 drools-planner
+jbpm
 droolsjbpm-integration
 guvnor
 droolsjbpm-tools
