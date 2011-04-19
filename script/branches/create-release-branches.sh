@@ -38,7 +38,7 @@ read ok
 
 startDateTime=`date +%s`
 
-droolsjbpmOrganizationDir="$scriptDir/../.."
+droolsjbpmOrganizationDir="$scriptDir/../../.."
 cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
