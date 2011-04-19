@@ -20,8 +20,8 @@ initializeWorkingDirAndScriptDir() {
     scriptDir=`pwd -P`
 }
 initializeWorkingDirAndScriptDir
- 
-if [ $# <> 2 ] ; then
+
+if [ $# != 2 ] ; then
     echo
     echo "Usage:"
     echo "  $0 droolsReleaseBranchName jbpmReleaseBranchName"
@@ -31,9 +31,9 @@ if [ $# <> 2 ] ; then
     exit 1
 fi
 
-echo "The drools, guvnor, ... release branch name will be $1"
-echo "The jbpm release branch name will be $2"
-echo -e "Is this ok? (Hit control-c if is not): "
+echo "The drools, guvnor, ... release branch name is $1"
+echo "The jbpm release branch name is $2"
+echo -n "Is this ok? (Hit control-c if is not): "
 read ok
 
 startDateTime=`date +%s`
@@ -71,3 +71,4 @@ spentSeconds=`expr $endDateTime - $startDateTime`
 
 echo
 echo "Total time: ${spentSeconds}s"
+echo "Warning: your working branches are now those release branches, NOT master."
