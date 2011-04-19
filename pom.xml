@@ -32,7 +32,7 @@
     <maven>3.0.1</maven>
   </prerequisites>
   <properties>
-    <mvel.dep.version>2.1-SNAPSHOT</mvel.dep.version>
+    <mvel.dep.version>2.1.beta2</mvel.dep.version><!-- Warning: This is NOT 2.1.Beta2, which is a rogue, older version -->
     <camel-version>2.4.0</camel-version>
     <cxf-version>2.2.9</cxf-version>
     <springframework-version>2.5.6</springframework-version>
