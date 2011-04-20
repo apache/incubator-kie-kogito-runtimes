@@ -893,9 +893,9 @@ Warning: Use JDK 1.6, because in JDK 1.5 the module `guvnor-repository-connector
 
 To produce the distribution zips, build with `-Dfull`:
 
-    $ mvn -Dfull clean install
+    $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull clean install
 
-The distribution zips are in the directory's `*-distribution/target/`.
+The distribution zips are in the directory `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
 
 If everything is perfect (tested by QA etc):
 
@@ -905,11 +905,19 @@ If everything is perfect (tested by QA etc):
 
 * Create the tag:
 
-        $ git tag 1.0.0
+        $ droolsjbpm-build-bootstrap/script/branches/create-tags.sh 5.2.0 5.1.0
 
 * Deploy the artifacts:
 
-        $ mvn -Dfull clean deploy
+        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull clean install
+
+* Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, find your staging repository.
+
+    * Button *close*
+
+    * Button *release*
+
+* Go to the JIRA projects and release those versions.
 
 * Warning: The slightest change after you created the tag requires the use of the next version number!
 
