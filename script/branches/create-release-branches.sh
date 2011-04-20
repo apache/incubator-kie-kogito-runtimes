@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Runs a git command on all droolsjbpm repositories.
+# Creates a release branch for all git repositories
 
 initializeWorkingDirAndScriptDir() {
     # Set working directory and remove all symbolic links

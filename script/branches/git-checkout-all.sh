@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Runs a git command on all droolsjbpm repositories.
+# Checkout another branch for all git repositories
 
 initializeWorkingDirAndScriptDir() {
     # Set working directory and remove all symbolic links
