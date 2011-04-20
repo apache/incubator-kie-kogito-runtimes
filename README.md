@@ -880,11 +880,16 @@ A release branch name should always end with `.x` so it looks different from a t
             $ git checkout -b 5.2.x
             $ git push origin 5.2.x
 
-* To switch back and forth from master to the release branches for all git repositories,
-    you can use `script/branches/git-checkout-all.sh` with the drools and jbpm *release branch name*:
+* Switch back and forth from master to the release branches for all git repositories
 
-        $ droolsjbpm-build-bootstrap/script/branches/git-checkout-all.sh master master
-        $ droolsjbpm-build-bootstrap/script/branches/git-checkout-all.sh 5.2.x 5.1.x
+    * If you haven't made the branches yourself, first make sure your local repository knows about them:
+
+            $ droolsjbpm-build-bootstrap/script/git-all.sh fetch
+
+    * Use `script/branches/git-checkout-all.sh` with the drools and jbpm *release branch name*:
+
+            $ droolsjbpm-build-bootstrap/script/branches/git-checkout-all.sh master master
+            $ droolsjbpm-build-bootstrap/script/branches/git-checkout-all.sh 5.2.x 5.1.x
 
 Releasing from a release branch
 -------------------------------
@@ -917,7 +922,7 @@ If everything is perfect (tested by QA etc):
 
     * Button *release*
 
-* Go to the JIRA projects and release those versions.
+* Go to th
 
 * Warning: The slightest change after you created the tag requires the use of the next version number!
 
