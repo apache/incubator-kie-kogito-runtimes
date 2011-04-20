@@ -871,14 +871,20 @@ Creating a release branch
 
 A release branch name should always end with `.x` so it looks different from a tag name and a topic branch name.
 
-* Simply use the script `script/create-release-branches.sh` with the drools and jbpm *release branch name*:
+* Simply use the script `script/branches/create-release-branches.sh` with the drools and jbpm *release branch name*:
 
-        $ droolsjbpm-build-bootstrap/script/create-release-branches.sh 5.2.x 5.1.x
+        $ droolsjbpm-build-bootstrap/script/branches/create-release-branches.sh 5.2.x 5.1.x
 
     * It does something like this for every repository:
 
             $ git checkout -b 5.2.x
             $ git push origin 5.2.x
+
+* To switch back and forth from master to the release branches for all git repositories,
+    you can use `script/branches/git-checkout-all.sh` with the drools and jbpm *release branch name*:
+
+        $ droolsjbpm-build-bootstrap/script/branches/git-checkout-all.sh master master
+        $ droolsjbpm-build-bootstrap/script/branches/git-checkout-all.sh 5.2.x 5.1.x
 
 Releasing from a release branch
 -------------------------------
