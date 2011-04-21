@@ -54,6 +54,8 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         fi
         git checkout -b $releaseBranchName
         git push origin $releaseBranchName
+        # Set up the local branch to track the remote branch
+        git branch --set-upstream $releaseBranchName origin/$releaseBranchName
         gitReturnCode=$?
         cd ..
         if [ $gitReturnCode != 0 ] ; then
