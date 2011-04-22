@@ -922,7 +922,11 @@ If everything is perfect (tested by QA etc):
 
     * Button *release*
 
-* Go to th
+* Go to [jira](https://issues.jboss.org) and for each of our JIRA projects:
+
+    * Open menu item *Administration*, link *Manage versions*, release the version.
+
+    * Create new versions if needed.
 
 * Warning: The slightest change after you created the tag requires the use of the next version number!
 
