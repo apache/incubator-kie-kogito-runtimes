@@ -803,6 +803,8 @@ To develop a great project as a team, we need to communicate efficiently as a te
 
         * [drools-planner](https://github.com/droolsjbpm/drools-planner/commits/master.atom)
 
+        * [jbpm](https://github.com/droolsjbpm/jbpm/commits/master.atom)
+
         * [droolsjbpm-integration](https://github.com/droolsjbpm/droolsjbpm-integration/commits/master.atom)
 
         * [guvnor](https://github.com/droolsjbpm/guvnor/commits/master.atom)
@@ -922,7 +924,7 @@ If everything is perfect (tested by QA etc):
 
     * Button *release*
 
-* Go to [jira](https://issues.jboss.org) and for each of our JIRA projects:
+* Go to [jira](https://issues.jboss.org) and for each of our JIRA projects (JBRULES, GUVNOR, JBPM):
 
     * Open menu item *Administration*, link *Manage versions*, release the version.
 
