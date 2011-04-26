@@ -28,9 +28,6 @@
     </license>
   </licenses>
 
-  <prerequisites>
-    <maven>3.0.3</maven>
-  </prerequisites>
   <properties>
     <mvel.dep.version>2.1.beta2</mvel.dep.version><!-- Warning: This is NOT 2.1.Beta2, which is a rogue, older version -->
     <camel-version>2.4.0</camel-version>
@@ -133,6 +130,28 @@
     </extensions>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>1.0</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <inherited>true</inherited>
+              <configuration>
+                <rules>
+                  <requireJavaVersion>
+                    <version>[1.5.0,)</version>
+                  </requireJavaVersion>
+                  <requireMavenVersion>
+                    <version>[3.0.3,)</version>
+                  </requireMavenVersion>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
         <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>1.4</version>
@@ -407,6 +426,9 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
       <plugin>
         <!-- Entry needed to create, install and deploy sources jars -->
         <groupId>org.apache.maven.plugins</groupId>
