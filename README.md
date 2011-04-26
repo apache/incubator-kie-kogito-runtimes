@@ -85,7 +85,7 @@ Installing Maven
         Apache Maven 3.0.1 (...)
         Java version: 1.6.0_24
 
-    Note: the enforcer plugin enforces a minimum maven and java version. for the actua
+    Note: the enforcer plugin enforces a minimum maven and java version.
 
 Running the build
 -----------------

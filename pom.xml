@@ -29,7 +29,7 @@
   </licenses>
 
   <prerequisites>
-    <maven>3.0.1</maven>
+    <maven>3.0.3</maven>
   </prerequisites>
   <properties>
     <mvel.dep.version>2.1.beta2</mvel.dep.version><!-- Warning: This is NOT 2.1.Beta2, which is a rogue, older version -->
