@@ -56,7 +56,7 @@ Installing Maven
         * Create a version-independent link:
 
                 $ cd ~/opt/build/
-                $ ln -s apache-maven-3.0.1 apache-maven
+                $ ln -s apache-maven-3.0.3 apache-maven
 
             Next time you only have to remove the link and add it to the new version.
 
@@ -82,7 +82,7 @@ Installing Maven
 * Check if maven is installed correctly.
 
         $ mvn --version
-        Apache Maven 3.0.1 (...)
+        Apache Maven 3.0.3 (...)
         Java version: 1.6.0_24
 
     Note: the enforcer plugin enforces a minimum maven and java version.
