@@ -781,7 +781,7 @@ To develop a great project as a team, we need to communicate efficiently as a te
 
             * Open menu *File*, menu item *Subscribe*.
             
-            * Tip: create a new, seperate directory for each feed: some feeds (such as about the project you are working on) are more important to you than others.
+            * Tip: create a new, separate directory for each feed: some feeds (such as about the project you are working on) are more important to you than others.
 
         * [Google Reader](http://www.google.com/reader)
 
