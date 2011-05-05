@@ -916,7 +916,7 @@ If everything is perfect (tested by QA etc):
 
 * Deploy the artifacts:
 
-        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull clean install
+        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull clean deploy
 
 * Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, find your staging repository.
 
