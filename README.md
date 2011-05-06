@@ -942,6 +942,19 @@ If everything is perfect (tested by QA etc):
 
     * So even if the release is broken, do not reuse the same version number! Create a hotfix version.
 
+Notifying people of the release
+-------------------------------
+
+* Create a blog entry
+
+    * Include a link to that blog entry in all other correspondence.
+
+* Send a mail to the BRMS QE Lead (Lukáš Petrovický)
+
+* If it's final release:
+
+    * Notify TheServerSide and Dzone's Daily Dose.
+
 FAQ
 ===
 
