@@ -218,6 +218,8 @@ This is the new way (and compatible with tycho).
 
 * Unfold *Advanced*, textfield *Profiles*: `notSoaProfile,fullProfile`.
 
+For more information, see [the m2eclipse book](http://www.sonatype.com/books/m2eclipse-book/reference/)
+
 Configuring the project with the deprecated maven-eclipse-plugin
 ----------------------------------------------------------------
 
