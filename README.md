@@ -870,6 +870,16 @@ Writing documentation
 Releasing
 =========
 
+Expecting a release
+-------------------
+
+* Use a non-SNAPSHOT version for all dependencies. Get those dependencies (for example mvel) released if needed.
+
+* Run findbugs on all projects:
+
+        $ mvn site
+        $ firefox */target/site/findbugs.html
+
 Creating a release branch
 -------------------------
 
