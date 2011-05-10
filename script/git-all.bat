@@ -1,21 +1,22 @@
 @echo off
 
-rem Runs a mvn command on all droolsjbpm repositories.
+rem Runs a git command on all droolsjbpm repositories.
 
 call :initializeWorkingDirAndScriptDir
-
+ 
 if  "%*" == "" (
     echo.
     echo Usage:
-    echo   %~n0%~x0 [arguments of mvn]
+    echo   %~n0%~x0 [arguments of git]
     echo For example:
-    echo   %~n0%~x0 --version
-    echo   %~n0%~x0 -DskipTests clean install
-    echo   %~n0%~x0 -Dfull clean install
+    echo   %~n0%~x0 fetch
+    echo   %~n0%~x0 pull --rebase
+    echo   %~n0%~x0 commit -m"JIRAKEY-1 Fix typo"
     echo.
     goto:eof
 )
-rem set startDateTime='date +%s'
+
+rem set startDateTime=`date +%s`
 
 set droolsjbpmOrganizationDir="%scriptDir%\..\.."
 cd %droolsjbpmOrganizationDir%
@@ -27,16 +28,11 @@ for /F %%r in ('type %scriptDir%\repository-list.txt') do (
         echo Repository: %%r
         echo ===============================================================================
         cd %%r
-        if exist "%M3_HOME%\bin\mvn.bat" (
-            call "%M3_HOME%\bin\mvn.bat" %* 
-            set mvnReturnCode=%ERRORLEVEL%
-        ) else (
-            call mvn %*
-            set mvnReturnCode=%ERRORLEVEL%
-        )
+        call git %*
+        set gitReturnCode=%ERRORLEVEL%
         cd ..
-        if "%mvnReturnCode%" neq "0" (
-            echo maven failed: %mvnReturnCode%
+        if "%gitReturnCode%" neq "0" (
+            echo git failed: %gitReturnCode%
             goto :end
         )
     ) else (
@@ -46,12 +42,10 @@ for /F %%r in ('type %scriptDir%\repository-list.txt') do (
     )
 )
 
-:end
+:end 
 
-rem set endDateTime='date +%s'
-rem set spentSeconds='expr %endDateTime% - %startDateTime%'
-
-cd %workingDir%
+rem endDateTime=`date +%s`
+rem spentSeconds=`expr $endDateTime - $startDateTime`
 
 echo.
 echo Total time: %spentSeconds%s
