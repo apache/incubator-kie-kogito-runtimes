@@ -1241,6 +1241,7 @@
 
       <dependency>
         <groupId>org.apache.cxf</groupId>
+        <!-- TODO JBRULES-3026 use cxf-rt-frontend-jaxrs instead -->
         <artifactId>cxf-bundle-jaxrs</artifactId>
         <version>${cxf-version}</version>
         <exclusions>
