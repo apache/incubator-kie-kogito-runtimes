@@ -58,7 +58,7 @@ Installing Maven
                 $ cd ~/opt/build/
                 $ ln -s apache-maven-3.0.3 apache-maven
 
-            Next time you only have to remove the link and add it to the new version.
+            Next time you only have to remove the link and recreate the link to the new version.
 
         * Add this to your `~/.bashrc` file:
 
@@ -771,11 +771,11 @@ To develop a great project as a team, we need to communicate efficiently as a te
 
     * Send a summary of every important organizational or structural decision to the dev list.
 
-    * If you push a change that can severely hinder or disrupt other developers (such as a compilation failure), notify the dev list.
+    * If you (accidentally) push a change that can severely hinder or disrupt other developers (such as a compilation failure), notify the dev list.
 
 * Subscribe to the RSS feeds.
 
-    * **It's recommend to subscribe at least to the RSS feeds of the project/repostories you're working on.**
+    * **It's recommend to subscribe at least to the RSS feeds of the project/repositories you're working on.**
 
     * Prefer an RSS reader which shows which RSS articles you've already read, such as:
         
