@@ -19,7 +19,7 @@ Table of content
 
 * **Source control with Git**
 
-* **Building with Maven**
+* **[Building with Maven](BuildingWithMaven)**
 
 * **Developing with Eclipse**
 
@@ -184,6 +184,7 @@ A pull request is like a patch file, but easier to apply, more powerfull and you
 
     * Click the button *Merge help* on the bottom of the page and follow the instructions of github to apply those changes on master.
 
+# BuildingWithMaven
 Building with Maven
 ===================
 
