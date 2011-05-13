@@ -19,7 +19,7 @@ Table of content
 
 * **Source control with Git**
 
-* **[Building with Maven](BuildingWithMaven)**
+* **[Building with Maven](#BuildingWithMaven)**
 
 * **Developing with Eclipse**
 
