@@ -17,7 +17,7 @@ please update it using the [markdown syntax](http://daringfireball.net/projects/
 Table of content
 ----------------
 
-* **Getting the sources with Git**
+* **Source control with Git**
 
 * **Building with Maven**
 
@@ -33,27 +33,27 @@ Table of content
 
 * **FAQ**
 
-Getting the sources with Git
-============================
+Source control with Git
+=======================
 
 Installing and configuring git
 ------------------------------
 
 * Install it in your OS:
 
-    * Linux: Install the package git (and optionally gitk)
+    * Linux: Install the package git
 
-             $ sudo apt-get install git
+            $ sudo apt-get install git
 
-        Tip: Also install *gitk* to visually your git log:
+        Tip: Also install *gitk* to visualize your git log:
 
             $ sudo apt-get install gitk
 
     * Windows, Mac OSX: Download from [the git website](http://git-scm.com).
 
-        Tip for Mac OSX: Also install [*gitx*](http://gitx.frim.nl/) to visually your git log.
+        Tip for Mac OSX: Also install [*gitx*](http://gitx.frim.nl/) to visualize your git log.
 
-    * More info [in github's git installation instructions](http://help.github.com/git-installation-redirect)
+    * More info [in github's git installation instructions](http://help.github.com/git-installation-redirect).
 
 * Check if git is installed correctly.
 
@@ -83,11 +83,15 @@ Installing and configuring git
 Getting the sources locally
 ---------------------------
 
+Because you 'll probably want to change our code, it's recommened to fork our code before cloning it,
+so it's easier to share your changes with us later.
+For more info on forking, read [Github's help on forking](http://help.github.com/fork-a-repo/).
+
 * First fork the repository you want to work on, for example `guvnor`:
 
     * Surf to [the blessed repositories on github](https://github.com/droolsjbpm) and log in.
 
-        * Note: **Every git repository can build alone.**
+        * Note: **Every git repository can be build alone.**
         You only need to fork/clone the repositories you're interested in (`guvnor` in this case).
 
     * Surf to [the specific repository (`guvnor`)](https://github.com/droolsjbpm/guvnor)
@@ -95,23 +99,22 @@ Getting the sources locally
     * Click the top right button *Fork*
 
     * Note: by forking the repository, you can commit and push your changes without our consent
-    and we can easily accept or reject your changes for the blessed repository.
+    and we can easily review and then merge your changes into the blessed repository.
 
-* Clone that fork locally:
+* **Clone your fork locally:**
 
         # First make a directory to hold all the droolsjbpm projects
         $ mkdir droolsjbpm
         $ cd droolsjbpm
 
         # Then clone the repository you want to clone.
-        $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
-        # Optionally clone other droolsjbpm repositories too
+        $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git
         $ cd guvnor
         $ ls
 
     * Warning: Always clone with the *SSH URL*, never clone with the *HTTPS URL* because the latter is unreliable.
 
-    * Note: it's highly recommended to name the cloned directory the same the repository, so the helper scripts work.
+    * Note: it's highly recommended to name the cloned directory the same as the repository (which is the default), so the helper scripts work.
 
     * By default you will be looking at the sources of the master branch, which can be very unstable.
 
@@ -119,10 +122,23 @@ Getting the sources locally
 
                 $ git checkout 5.2.0
 
+* Add the blessed repository as upstream (if you've directly cloned the blessed repository, don't do this):
+
+        $ git remote add upstream git@github.com:droolsjbpm/guvnor.git
+        $ git fetch upstream
+
 Working with git
 ----------------
 
-* TODO describe topic branch workflow
+* Commit and push your changes to your fork
+
+        $ git commit -m"Fix typo in documentation"
+        $ git push
+
+* Get the latest changes from the blessed repository
+
+        $ git fetch upstream
+        $ git merge upstream/master
 
 * Tips and tricks
 
@@ -145,14 +161,18 @@ Working with git
 
                 $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
 
-Pull requests: patches on steroids
-----------------------------------
+Share your changes with a pull request
+--------------------------------------
+
+A pull request is like a patch file, but easier to apply, more powerfull and you'll be credited as the author.
 
 * Creating a pull request
 
-    * Push all your commits to your fork on github (if you haven't already).
+    * Push all your commits to a topic branch on your fork on github (if you haven't already).
 
-    * Surf to your fork on github.
+        * You can only have 1 pull request per branch, so it's advicable to use topic branches to avoid mixing your changes.
+
+    * Surf to that topic branch on your fork on github.
 
     * Click the button *Pull Request* on the top of the page.
 
