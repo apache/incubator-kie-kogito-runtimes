@@ -17,13 +17,13 @@ please update it using the [markdown syntax](http://daringfireball.net/projects/
 Table of content
 ----------------
 
+* **Getting the sources with Git**
+
 * **Building with Maven**
 
 * **Developing with Eclipse**
 
 * **Developing with IntelliJ**
-
-* **Source control with Git**
 
 * **Team communication**
 
@@ -32,6 +32,137 @@ Table of content
 * **Releasing**
 
 * **FAQ**
+
+Getting the sources with Git
+============================
+
+Installing and configuring git
+------------------------------
+
+* Install it in your OS:
+
+    * Linux: Install the package git (and optionally gitk)
+
+             $ sudo apt-get install git
+
+        Tip: Also install *gitk* to visually your git log:
+
+            $ sudo apt-get install gitk
+
+    * Windows, Mac OSX: Download from [the git website](http://git-scm.com).
+
+        Tip for Mac OSX: Also install [*gitx*](http://gitx.frim.nl/) to visually your git log.
+
+    * More info [in github's git installation instructions](http://help.github.com/git-installation-redirect)
+
+* Check if git is installed correctly.
+
+        $ git --version
+        git version 1.7.1
+
+* Configure git correctly:
+
+        $ git config --global user.name "My Full Name"
+        $ git config --global user.email myAccount@gmail.com
+        $ git config --global -l
+        user.name=Geoffrey De Smet
+        user.email=gds...@gmail.com
+
+    * Warning: the field `user.name` is your full name, *not your username*.
+
+    * Note: the field `user.email` should match an email address of your github account.
+
+    * More info on [github](http://help.github.com/git-email-settings/).
+
+* Get a github account
+
+    * And add your public key on github: [Follow these instructions](http://github.com/guides/providing-your-ssh-key).
+
+* To learn more about git, read the free book [Git Pro](http://progit.org/book/).
+
+Getting the sources locally
+---------------------------
+
+* First fork the repository you want to work on, for example `guvnor`:
+
+    * Surf to [the blessed repositories on github](https://github.com/droolsjbpm) and log in.
+
+        * Note: **Every git repository can build alone.**
+        You only need to fork/clone the repositories you're interested in (`guvnor` in this case).
+
+    * Surf to [the specific repository (`guvnor`)](https://github.com/droolsjbpm/guvnor)
+
+    * Click the top right button *Fork*
+
+    * Note: by forking the repository, you can commit and push your changes without our consent
+    and we can easily accept or reject your changes for the blessed repository.
+
+* Clone that fork locally:
+
+        # First make a directory to hold all the droolsjbpm projects
+        $ mkdir droolsjbpm
+        $ cd droolsjbpm
+
+        # Then clone the repository you want to clone.
+        $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
+        # Optionally clone other droolsjbpm repositories too
+        $ cd guvnor
+        $ ls
+
+    * Warning: Always clone with the *SSH URL*, never clone with the *HTTPS URL* because the latter is unreliable.
+
+    * Note: it's highly recommended to name the cloned directory the same the repository, so the helper scripts work.
+
+    * By default you will be looking at the sources of the master branch, which can be very unstable.
+
+        * Use git checkout to switch to a more stable branch or tag:
+
+                $ git checkout 5.2.0
+
+Working with git
+----------------
+
+* TODO describe topic branch workflow
+
+* Tips and tricks
+
+    * To see the details of your local, unpushed commits:
+
+            $ git diff origin...HEAD
+
+    * To run a git command (except clone) over all repositories (only works if you cloned all repositories):
+
+            $ cd ~/projects/droolsjbpm
+            $ droolsjbpm-build-bootstrap/script/git-all.sh push
+
+        * Note: the `git-all.sh` script is working directory independent.
+
+        * Linux tip: Create a symbolic link to the `git-all.sh` script and place it in your `PATH` by linking it in `~/bin`:
+
+                $ ln -s ~/projects/droolsjbpm/droolsjbpm-build-bootstrap/script/git-all.sh ~/bin/droolsjbpm-git
+
+            For command line completion, add the following line in `~/.bashrc`:
+
+                $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
+
+Pull requests: patches on steroids
+----------------------------------
+
+* Creating a pull request
+
+    * Push all your commits to your fork on github (if you haven't already).
+
+    * Surf to your fork on github.
+
+    * Click the button *Pull Request* on the top of the page.
+
+* Accepting a pull request
+
+    * Surf to the pull request page on github.
+
+    * Review the changes
+
+    * Click the button *Merge help* on the bottom of the page and follow the instructions of github to apply those changes on master.
 
 Building with Maven
 ===================
@@ -630,137 +761,6 @@ Extra IntelliJ plugins
     * Open menu *Run*, menu item *Edit configurations*
 
     * Add new *GWT configuration*, combobox *module* `guvnor-webapp`. Run that configuration.
-
-Source control with git
-=======================
-
-Installing and configuring git
-------------------------------
-
-* Install it in your OS:
-
-    * Linux: Install the package git (and optionally gitk)
-
-             $ sudo apt-get install git
-
-        Tip: Also install *gitk* to visually your git log:
-
-            $ sudo apt-get install gitk
-
-    * Windows, Mac OSX: Download from [the git website](http://git-scm.com).
-
-        Tip for Mac OSX: Also install [*gitx*](http://gitx.frim.nl/) to visually your git log.
-
-    * More info [in github's git installation instructions](http://help.github.com/git-installation-redirect)
-
-* Check if git is installed correctly.
-
-        $ git --version
-        git version 1.7.1
-
-* Configure git correctly:
-
-        $ git config --global user.name "My Full Name"
-        $ git config --global user.email myAccount@gmail.com
-        $ git config --global -l
-        user.name=Geoffrey De Smet
-        user.email=gds...@gmail.com
-
-    * Warning: the field `user.name` is your full name, *not your username*.
-
-    * Note: the field `user.email` should match an email address of your github account.
-
-    * More info on [github](http://help.github.com/git-email-settings/).
-
-* Get a github account
-
-    * And add your public key on github: [Follow these instructions](http://github.com/guides/providing-your-ssh-key).
-
-* To learn more about git, read the free book [Git Pro](http://progit.org/book/).
-
-Getting the sources locally
----------------------------
-
-* First fork the repository you want to work on, for example `guvnor`:
-
-    * Surf to [the blessed repositories on github](https://github.com/droolsjbpm) and log in.
-
-        * Note: **Every git repository can build alone.**
-        You only need to fork/clone the repositories you're interested in (`guvnor` in this case).
-
-    * Surf to [the specific repository (`guvnor`)](https://github.com/droolsjbpm/guvnor)
-
-    * Click the top right button *Fork*
-
-    * Note: by forking the repository, you can commit and push your changes without our consent
-    and we can easily accept or reject your changes for the blessed repository.
-
-* Clone that fork locally:
-
-        # First make a directory to hold all the droolsjbpm projects
-        $ mkdir droolsjbpm
-        $ cd droolsjbpm
-
-        # Then clone the repository you want to clone.
-        $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git guvnor
-        # Optionally clone other droolsjbpm repositories too
-        $ cd guvnor
-        $ ls
-
-    * Warning: Always clone with the *SSH URL*, never clone with the *HTTPS URL* because the latter is unreliable.
-
-    * Note: it's highly recommended to name the cloned directory the same the repository, so the helper scripts work.
-
-    * By default you will be looking at the sources of the master branch, which can be very unstable.
-
-        * Use git checkout to switch to a more stable branch or tag:
-
-                $ git checkout 5.2.0
-
-Working with git
-----------------
-
-* TODO describe topic branch workflow
-
-* Tips and tricks
-
-    * To see the details of your local, unpushed commits:
-
-            $ git diff origin...HEAD
-
-    * To run a git command (except clone) over all repositories (only works if you cloned all repositories):
-
-            $ cd ~/projects/droolsjbpm
-            $ droolsjbpm-build-bootstrap/script/git-all.sh push
-
-        * Note: the `git-all.sh` script is working directory independent.
-
-        * Linux tip: Create a symbolic link to the `git-all.sh` script and place it in your `PATH` by linking it in `~/bin`:
-
-                $ ln -s ~/projects/droolsjbpm/droolsjbpm-build-bootstrap/script/git-all.sh ~/bin/droolsjbpm-git
-
-            For command line completion, add the following line in `~/.bashrc`:
-
-                $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
-
-Pull requests: patches on steroids
-----------------------------------
-
-* Creating a pull request
-
-    * Push all your commits to your fork on github (if you haven't already).
-
-    * Surf to your fork on github.
-
-    * Click the button *Pull Request* on the top of the page.
-
-* Accepting a pull request
-
-    * Surf to the pull request page on github.
-
-    * Review the changes
-
-    * Click the button *Merge help* on the bottom of the page and follow the instructions of github to apply those changes on master.
 
 Team communication
 ==================
