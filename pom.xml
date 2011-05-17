@@ -710,11 +710,11 @@
         <type>war</type>
         <version>${jbpm.version}</version>
       </dependency>
-      <!--<dependency>-->
-        <!--<groupId>org.jbpm</groupId>-->
-        <!--<artifactId>jbpm-examples</artifactId>-->
-        <!--<version>${jbpm.version}</version>-->
-      <!--</dependency>-->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-examples</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-docs</artifactId>
