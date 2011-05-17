@@ -29,13 +29,16 @@
   </licenses>
 
   <properties>
+    <drools.version>5.3.0-SNAPSHOT</drools.version>
+    <drools.osgi.version>5.3.0.SNAPSHOT</drools.osgi.version>
+    <jbpm.version>5.2.0-SNAPSHOT</jbpm.version>
+    <jbpm.osgi.version>5.2.0.SNAPSHOT</jbpm.osgi.version>
     <mvel.dep.version>2.1-SNAPSHOT</mvel.dep.version><!-- Warning: This is NOT 2.1.Beta2, which is a rogue, older version -->
     <camel.version>2.4.0</camel.version>
     <cxf.version>2.2.9</cxf.version>
     <springframework.version>2.5.6</springframework.version>
     <gwt.version>2.2.0</gwt.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jbpm.version>5.2.0-SNAPSHOT</jbpm.version>
   </properties>
 
   <repositories>
@@ -545,97 +548,103 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>knowledge-api</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-introduction-docs</artifactId>
         <type>jdocbook</type>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
 
       <!-- drools -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-clips</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-verifier</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-persistence-jpa</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-persistence-jpa</artifactId>
+        <type>test-jar</type>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-templates</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-examples</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-expert-docs</artifactId>
         <type>jdocbook</type>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-fusion-docs</artifactId>
         <type>jdocbook</type>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
 
       <!-- drools-planner -->
       <dependency>
         <groupId>org.drools.planner</groupId>
         <artifactId>drools-planner-core</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools.planner</groupId>
         <artifactId>drools-planner-examples</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools.planner</groupId>
         <artifactId>drools-planner-docs</artifactId>
         <type>jdocbook</type>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
 
       <!-- jbpm -->
@@ -656,7 +665,7 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-workitems</artifactId>
+        <artifactId>jbpm-bam</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
       <dependency>
@@ -666,12 +675,50 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bam</artifactId>
+        <artifactId>jbpm-gwt-core</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-gwt-form</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-gwt-graph</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-gwt-console</artifactId>
+        <type>war</type>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-gwt-console-server</artifactId>
+        <type>war</type>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <!--<dependency>-->
+        <!--<groupId>org.jbpm</groupId>-->
+        <!--<artifactId>jbpm-examples</artifactId>-->
+        <!--<version>${jbpm.version}</version>-->
+      <!--</dependency>-->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-docs</artifactId>
+        <type>jdocbook</type>
         <version>${jbpm.version}</version>
       </dependency>
 
@@ -679,135 +726,135 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-impl</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
-      <dependency>
+      <!--<dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-api</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-local</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
-      <!--dependency>
+      dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-remote-api</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-remote-dir-mina</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-remote-mina</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-task</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-services</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-distributed-api</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-spring</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-camel</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-camel-server</artifactId>
         <type>war</type>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-pipeline</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-simulator</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-integration-examples</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-integration-docs</artifactId>
         <type>jdocbook</type>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       
       <!-- guvnor -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-repository</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-repository-connector-jcr</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-repository-connector-jackrabbit</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-repository-connector-modeshape</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-ide-common</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <!--<dependency>--><!-- JBRULES-2707 Split up guvnor-webapp into guvnor-gwt-client and guvnor-webapp -->
         <!--<groupId>org.drools</groupId>-->
         <!--<artifactId>guvnor-gwt-client</artifactId>-->
-        <!--<version>${project.version}</version>-->
+        <!--<version>${drools.version}</version>-->
       <!--</dependency>-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-webapp</artifactId>
         <type>war</type>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-docs</artifactId>
         <type>jdocbook</type>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
 
       <!-- droolsjbpm-tools -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-ant</artifactId>
-        <version>${project.version}</version>
+        <version>${drools.version}</version>
       </dependency>
 
       <!-- General dependencies -->
