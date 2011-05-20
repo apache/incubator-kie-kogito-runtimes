@@ -140,6 +140,17 @@ Working with git
         $ git fetch upstream
         $ git merge upstream/master
 
+    * If there are merge conflicts:
+
+            $ git mergetool
+            $ git commit
+            
+        or
+
+            $ gedit conflicted-file.txt
+            $ git add conflicted-file.txt
+            $ git commit
+
 * Tips and tricks
 
     * To see the details of your local, unpushed commits:
