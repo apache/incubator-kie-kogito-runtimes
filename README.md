@@ -582,6 +582,13 @@ Extra Eclipse plugins
 
     * In your workspace, in the tab *Development Mode*, double click on the `Guvnor` URL.
 
+Eclipse plugin development
+--------------------------
+
+* Installing a droolsjbpm eclipse plugin into a fresh Eclipse from a local update site.
+
+    * Follow the intructions in [the description entity in the org.drools.updatesite pom.xml file](https://github.com/droolsjbpm/droolsjbpm-tools/blob/master/drools-eclipse/org.drools.updatesite/pom.xml).
+
 Developing with IntelliJ
 ========================
 
