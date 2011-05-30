@@ -869,6 +869,12 @@ To develop a great project as a team, we need to communicate efficiently as a te
 
             * Right click in the lower left corner on the *All* feed link, menu item *Add link to jenkins build monitor*.
 
+        * Otherwise, check [the hudson website](https://hudson.jboss.org/hudson/view/Drools%20jBPM/) often.
+
+            * Note: the public hudson is a mirror of the VPN internal Red Hat hudson and is sometimes stale.
+
+                * If you think this can be the case, check the build times.
+
 * Join us on IRC: irc.codehaus.org #drools #jbpm #guvnor
 
 Writing documentation
