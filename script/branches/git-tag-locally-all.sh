@@ -52,8 +52,8 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         if [ $repository = 'jbpm' ]; then
             releaseTagName=$2
         fi
+        # note when retagging you 'll need add -f in here:
         git tag -a $releaseTagName -m 'Tagging $releaseTagName'
-        git push origin $releaseTagName
         gitReturnCode=$?
         cd ..
         if [ $gitReturnCode != 0 ] ; then
