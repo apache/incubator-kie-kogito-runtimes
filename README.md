@@ -966,17 +966,67 @@ If everything is perfect (tested by QA etc):
 
     * Note: Always use at least 3 numbers in the version: '1.0.0' is fine, `1.0` is not fine.
 
-* Create the tag:
+    * Search all the files for `x.y.z-SNAPSHOT`, `x.y.z.SNAPSHOT` and `x.y.z.qualifier` where `x.y.z` is the version.
 
-        $ droolsjbpm-build-bootstrap/script/branches/create-tags.sh 5.2.0 5.1.0
+        * You should find that at least in `pom.xml`, in drooljbpm-tools `MANIFEST.MF` files and in the osgi-bundles.
+
+            * Note: unlike many of the other `MANIFEST.MF` files, those in droolsjbpm-tools are *not* generated.
+
+        * Replace that with `x.y.z` (or `x.y.z.M1` or `x.y.z.CR1`)
+
+            * Excluding generated files (for example the drools `MANIFEST.MF` files, but not those of droolsjbpm-tools)
+
+* Create the tag locally:
+
+        $ droolsjbpm-build-bootstrap/script/branches/git-tag-locally-all.sh 5.2.0 5.1.0
 
 * Deploy the artifacts:
 
-        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull clean deploy
+        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull -DskipTests clean deploy
+
+        * The release skips the tests because jbpm and guvnor have random failing tests
 
 * Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, find your staging repository.
 
+    * Look at the files in the repository
+
+        * Right click on `org/drools/org.eclipse.webdav/` and delete it if it's still version `3.0.101`. TODO FIXME
+
     * Button *close*
+
+        * This will validate the nexus rules. If any fail: fix the issues, and force retag locally.
+
+* Do a sanity check of the artifacts.
+
+    * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target` and check the zips
+
+        * Start the `examples.sh` script for drools, droolsjbpm-integration and drools-planner
+
+        * Deploy the guvnor jboss-as-5.1 war to guvnor and surf to it:
+
+            * Install the mortgages examples, build it and run the test scenario's
+
+        * Warning: the manual dirs have been known to have zip problems: they look fine zipped, but are empty unzipped.
+
+* This is **the point of no return**.
+
+    * Warning: The slightest change after this requires the use of the next version number!
+
+        * **NEVER TAG OR DEPLOY A VERSION THAT ALREADY EXISTS AS A PUSHED TAG OR A DEPLOY!!!**
+
+            * Except deploying `SNAPSHOT` versions.
+
+            * Git tags are cached on developer machines forever and are never refreshed.
+
+            * Maven non-snapshot versions are cached on developer machines and proxies forever and are never refreshed.
+
+        * So even if the release is broken, do not reuse the same version number! Create a hotfix version.
+
+* Push the tag to the blessed repository.
+
+        $ droolsjbpm-build-bootstrap/script/branches/git-push-tag-all.sh 5.2.0 5.1.0
+
+* Release your staging repository on [nexus](https://repository.jboss.org/nexus)
 
     * Button *release*
 
@@ -986,17 +1036,21 @@ If everything is perfect (tested by QA etc):
 
     * Create new versions if needed.
 
-* Warning: The slightest change after you created the tag requires the use of the next version number!
+* Prepare the next development iteration
 
-    * **NEVER TAG OR DEPLOY A VERSION THAT ALREADY EXISTS AS A TAG OR A DEPLOY!!!**
+    * Get `x.y.z-SNAPSHOT`, `x.y.z.SNAPSHOT` and `x.y.z.qualifier` back on the correct places
 
-        * Except deploying `SNAPSHOT` versions.
+        * Easiest way is to revert the specific commit that changed them with `git revert commitId`.
 
-        * Git tags are cached on developer machines forever and are never refreshed.
+* Announce the release:
 
-        * Maven non-snapshot versions are cached on developer machines and proxies forever and are never refreshed.
+    * Announce it on [the droolsjbpm blog](http://blog.athico.com/)
 
-    * So even if the release is broken, do not reuse the same version number! Create a hotfix version.
+        * Twitter the blog link.
+
+        * Mail the blog link to the user list.
+
+    * If it's a final release, announce it on Dzone's daily dose and TheServerSide.
 
 Notifying people of the release
 -------------------------------
