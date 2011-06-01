@@ -966,15 +966,20 @@ If everything is perfect (tested by QA etc):
 
     * Note: Always use at least 3 numbers in the version: '1.0.0' is fine, `1.0` is not fine.
 
-    * Search all the files for `x.y.z-SNAPSHOT`, `x.y.z.SNAPSHOT` and `x.y.z.qualifier` where `x.y.z` is the version.
+    * Search all the files for `a.b.x-SNAPSHOT`, `a.b.x.SNAPSHOT` and `a.b.x.qualifier` where `a.b.x` is the version.
 
         * You should find that at least in `pom.xml`, in drooljbpm-tools `MANIFEST.MF` files and in the osgi-bundles.
 
             * Note: unlike many of the other `MANIFEST.MF` files, those in droolsjbpm-tools are *not* generated.
 
-        * Replace that with `x.y.z` (or `x.y.z.M1` or `x.y.z.CR1`)
+        * Replace that with `a.b.x` (or `a.b.x.M1` or `a.b.x.CR1`)
 
             * Excluding generated files (for example the drools `MANIFEST.MF` files, but not those of droolsjbpm-tools)
+
+    * TODO: Experiment with [the tycho set-version goal](https://docs.sonatype.org/display/M2ECLIPSE/Staging+and+releasing+new+M2Eclipse+release)
+
+            $ cd droolsjbpm-tools/drools-eclipse
+            $ mvn -Dtycho.mode=maven org.sonatype.tycho:tycho-versions-plugin:set-version -DnewVersion=a.b.x
 
 * Create the tag locally:
 
@@ -1038,9 +1043,16 @@ If everything is perfect (tested by QA etc):
 
 * Prepare the next development iteration
 
-    * Get `x.y.z-SNAPSHOT`, `x.y.z.SNAPSHOT` and `x.y.z.qualifier` back on the correct places
+    * Get `a.b.x-SNAPSHOT`, `a.b.x.SNAPSHOT` and `a.b.x.qualifier` back on the correct places
 
         * Easiest way is to revert the specific commit that changed them with `git revert commitId`.
+
+            * And if it's final replace them separately by `a.b.y-SNAPSHOT`, `a.b.y.SNAPSHOT` and `a.b.y.qualifier`
+
+    * TODO: Experiment with [the tycho set-version goal](https://docs.sonatype.org/display/M2ECLIPSE/Staging+and+releasing+new+M2Eclipse+release)
+
+            $ cd droolsjbpm-tools/drools-eclipse
+            $ mvn -Dtycho.mode=maven org.sonatype.tycho:tycho-versions-plugin:set-version -DnewVersion=a.b.y-SNAPSHOT
 
 * Announce the release:
 
