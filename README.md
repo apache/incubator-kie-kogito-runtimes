@@ -33,6 +33,25 @@ Table of content
 
 * **FAQ**
 
+Quick start
+===========
+
+If you don't want to contribute to this project and you know git and maven, these build instructions should suffice:
+
+* To build 1 repository, for example `guvnor`:
+
+        $ git clone git@github.com:droolsjbpm/guvnor.git
+        $ cd guvnor
+        $ mvn clean install -DskipTests
+
+* To build all repositories:
+
+        $ git clone git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git
+        $ droolsjbpm-build-bootstrap/script/git-clone-others.sh
+        $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -DskipTests
+
+**If you want to contribute to this project, read the rest this file!**
+
 Source control with Git
 =======================
 
