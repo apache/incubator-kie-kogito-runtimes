@@ -918,7 +918,6 @@ Writing documentation
                 * To avoid committing backups to source control.
 
                 * Source control history is better than backups.
-            
 
 * To generate the html and pdf output run maven with `-Dfull`:
 
@@ -929,6 +928,11 @@ Writing documentation
         $ firefox target/docbook/publish/en-US/html_single/index.html
 
 * **[Read and follow the documentation guidelines](documentation-guidelines.txt).**
+
+* The Drools Expert manual uses railroad diagrams.
+    
+    These are generated from a BNF file into images files with the application
+    [Ebnf2ps, Automatic Railroad Diagram Drawing](http://www.informatik.uni-freiburg.de/~thiemann/haskell/ebnf2ps/)
 
 Releasing
 =========
