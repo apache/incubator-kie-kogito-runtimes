@@ -26,7 +26,7 @@ if [ $# != 2 ] ; then
     echo "Usage:"
     echo "  $0 droolsReleaseTagName jbpmReleaseTagName"
     echo "For example:"
-    echo "  $0 5.2.0 5.1.0"
+    echo "  $0 5.2.0.Final 5.1.0.Final"
     echo
     exit 1
 fi

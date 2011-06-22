@@ -139,7 +139,7 @@ For more info on forking, read [Github's help on forking](http://help.github.com
 
         * Use git checkout to switch to a more stable branch or tag:
 
-                $ git checkout 5.2.0
+                $ git checkout 5.2.0.Final
 
 * Add the blessed repository as upstream (if you've directly cloned the blessed repository, don't do this):
 
@@ -987,7 +987,7 @@ If everything is perfect (tested by QA etc):
 
 * Define the version and adjust the poms.
 
-    * Note: Always use at least 3 numbers in the version: '1.0.0' is fine, `1.0` is not fine.
+    * Note: Always use 3 numbers with a qualifier in the version: '1.0.0.Final' is fine, `1.0` or `1.0.0` is not fine.
 
     * Search all the files for `a.b.x-SNAPSHOT`, `a.b.x.SNAPSHOT` and `a.b.x.qualifier` where `a.b.x` is the version.
 
@@ -995,7 +995,11 @@ If everything is perfect (tested by QA etc):
 
             * Note: unlike many of the other `MANIFEST.MF` files, those in droolsjbpm-tools are *not* generated.
 
-        * Replace that with `a.b.x` (or `a.b.x.M1` or `a.b.x.CR1`)
+        * Replace that with `a.b.x.Final` (or `a.b.x.Alpha1` or `a.b.x.Beta1` or `a.b.x.CR1`)
+
+            * See the [JBoss version conventions](http://community.jboss.org/wiki/JBossProjectVersioning)
+
+                * Not following those, for example `a.b.x` or `a.b.x.M1` results in OSGi eclipse updatesite corruption.
 
             * Excluding generated files (for example the drools `MANIFEST.MF` files, but not those of droolsjbpm-tools)
 
@@ -1006,7 +1010,7 @@ If everything is perfect (tested by QA etc):
 
 * Create the tag locally:
 
-        $ droolsjbpm-build-bootstrap/script/branches/git-tag-locally-all.sh 5.2.0 5.1.0
+        $ droolsjbpm-build-bootstrap/script/branches/git-tag-locally-all.sh 5.2.0.Final 5.1.0.Final
 
 * Deploy the artifacts:
 
@@ -1052,7 +1056,7 @@ If everything is perfect (tested by QA etc):
 
 * Push the tag to the blessed repository.
 
-        $ droolsjbpm-build-bootstrap/script/branches/git-push-tag-all.sh 5.2.0 5.1.0
+        $ droolsjbpm-build-bootstrap/script/branches/git-push-tag-all.sh 5.2.0.Final 5.1.0.Final
 
 * Release your staging repository on [nexus](https://repository.jboss.org/nexus)
 
