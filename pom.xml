@@ -227,7 +227,7 @@
             <excludes>
               <exclude>**/*AbstractTest.java</exclude>
             </excludes>
-            <argLine>-Xmx1024m -XX:MaxPermSize=1024m</argLine>
+            <argLine>-Xmx1024m -XX:MaxPermSize=128m</argLine>
           </configuration>
         </plugin>
         <!-- Packaging -->
