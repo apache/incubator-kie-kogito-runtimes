@@ -102,7 +102,7 @@ Installing and configuring git
 Getting the sources locally
 ---------------------------
 
-Because you 'll probably want to change our code, it's recommened to fork our code before cloning it,
+Because you 'll probably want to change our code, it's recommended to fork our code before cloning it,
 so it's easier to share your changes with us later.
 For more info on forking, read [Github's help on forking](http://help.github.com/fork-a-repo/).
 
@@ -149,10 +149,21 @@ For more info on forking, read [Github's help on forking](http://help.github.com
 Working with git
 ----------------
 
-* Commit and push your changes to your fork
+* If you're going to make multiple, unrelated changes, use topic branches:
+
+        $ git checkout -b myFirstTopic
+
+* Make changes, run, test and document them, then commit them:
 
         $ git commit -m"Fix typo in documentation"
+
+* Push those commits to your fork
+
         $ git push
+
+    * If you used a topic branch, push like this instead:
+
+            $ git push myFirstTopic
 
 * Get the latest changes from the blessed repository
 
@@ -200,7 +211,7 @@ A pull request is like a patch file, but easier to apply, more powerfull and you
 
     * Push all your commits to a topic branch on your fork on github (if you haven't already).
 
-        * You can only have 1 pull request per branch, so it's advicable to use topic branches to avoid mixing your changes.
+        * You can only have 1 pull request per branch, so it's advisable to use topic branches to avoid mixing your changes.
 
     * Surf to that topic branch on your fork on github.
 
@@ -349,6 +360,8 @@ To deploy snapshots and releases to nexus, you need to add this to the file `~/.
        </servers>
        ...
      </settings>
+
+Furthermore, you'll need nexus rights to be able to do this.
 
 More info in [the JBoss.org guide to get started with Maven](http://community.jboss.org/wiki/MavenGettingStarted-Developers).
 
@@ -813,13 +826,35 @@ Extra IntelliJ plugins
 
     * Open menu *File*, menu item *Project structure*
 
-    * For the module `guvnor-webapp`, add the new aspect *GWT* if you haven't already.
+        * For the module `guvnor-webapp`, add the new aspect *GWT* if you haven't already.
 
-        * Textfield *Compiler maximum heap size (Mb)*: `512`
+            * Textfield *Compiler maximum heap size (Mb)*: `512`
 
     * Open menu *Run*, menu item *Edit configurations*
 
-    * Add new *GWT configuration*, combobox *module* `guvnor-webapp`. Run that configuration.
+        * Add new *GWT configuration*
+
+            * Combobox *module* `guvnor-webapp`.
+
+        * Run that configuration.
+
+* Tomcat exploded war deployment
+
+    * Open menu *File*, menu item *Project structure*
+
+        * Select tree item *Artifacts*, list item `guvnor-webapp:war exploded`
+
+            * Checkbox *Build on make*: `on`
+
+    * Open menu *Run*, menu item *Edit configurations*
+
+        * Add new *Tomcat server*, *local*
+
+            * Tab *deployment*, add *Artifact* `guvnor-webapp:war exploded`.
+
+            * Panel *Before launch*, checkbox *Build 'guvnor-webapp:war exploded' artifact*: `on`
+
+        * Run that configuration.
 
 Team communication
 ==================
