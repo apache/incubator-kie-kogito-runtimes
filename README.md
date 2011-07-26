@@ -815,6 +815,8 @@ Extra IntelliJ plugins
 
     * For the module `guvnor-webapp`, add the new aspect *GWT* if you haven't already.
 
+        * Textfield *Compiler maximum heap size (Mb)*: `512`
+
     * Open menu *Run*, menu item *Edit configurations*
 
     * Add new *GWT configuration*, combobox *module* `guvnor-webapp`. Run that configuration.
