@@ -126,15 +126,18 @@
   <mailingLists>
     <mailingList>
       <name>user</name>
-      <subscribe>user-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>user-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/user/</archive>
+      <subscribe>https://lists.jboss.org/mailman/listinfo/rules-users</subscribe>
+      <unsubscribe>https://lists.jboss.org/mailman/listinfo/rules-users</unsubscribe>
+      <archive>http://dir.gmane.org/gmane.comp.java.drools.user</archive>
+      <otherArchives>
+        <otherArchive>http://drools.46999.n3.nabble.com/Drools-User-forum-f47000.html</otherArchive>
+      </otherArchives>
     </mailingList>
     <mailingList>
       <name>dev</name>
-      <subscribe>dev-subscribe@drools.codehaus.org</subscribe>
-      <unsubscribe>dev-unsubscribe@drools.codehaus.org</unsubscribe>
-      <archive>http://archive.drools.codehaus.org/dev/</archive>
+      <subscribe>https://lists.jboss.org/mailman/listinfo/rules-dev</subscribe>
+      <unsubscribe>https://lists.jboss.org/mailman/listinfo/rules-dev</unsubscribe>
+      <archive>http://dir.gmane.org/gmane.comp.java.drools.devel</archive>
     </mailingList>
   </mailingLists>
 
@@ -1629,7 +1632,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
 
   <distributionManagement>
     <repository>
