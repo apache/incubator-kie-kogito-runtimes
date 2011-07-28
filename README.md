@@ -1059,8 +1059,6 @@ If everything is perfect (tested by QA etc):
 
     * Look at the files in the repository
 
-        * Right click on `org/drools/org.eclipse.webdav/` and delete it if it's still version `3.0.101`. TODO FIXME
-
     * Button *close*
 
         * This will validate the nexus rules. If any fail: fix the issues, and force retag locally.
