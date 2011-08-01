@@ -379,6 +379,7 @@
           <configuration>
             <!-- Manually push changes (including git tags) after nexus staged repo is successfully closed -->
             <pushChanges>false</pushChanges>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
         </plugin>
         <!-- IDE -->
