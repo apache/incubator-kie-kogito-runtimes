@@ -375,12 +375,10 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.1</version>
+          <version>2.2</version>
           <configuration>
-            <tagBase>https://svn.labs.jboss.com/labs/jbossrules/tags</tagBase>
-            <preparationGoals>-Drelease=true clean install
-              -DlocalEclipseDrop=/home/hudson/configs/jboss-rules/local-eclipse-drop-mirror
-            </preparationGoals>
+            <!-- Manually push changes (including git tags) after nexus staged repo is successfully closed -->
+            <pushChanges>false</pushChanges>
           </configuration>
         </plugin>
         <!-- IDE -->
