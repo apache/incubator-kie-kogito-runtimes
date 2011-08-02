@@ -549,6 +549,27 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>soaProfile</id>
+      <activation>
+        <property>
+          <name>soa</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.jboss.seam</groupId>
+          <artifactId>jboss-seam-remoting</artifactId>
+          <version>2.2.4.EAP5</version>
+        </dependency>
+        <dependency>
+          <groupId>org.jboss.seam</groupId>
+          <artifactId>jboss-seam</artifactId>
+          <version>2.2.4.EAP5</version>
+        </dependency>
+      </dependencies>
+
+    </profile>
   </profiles>
 
   <dependencies>
