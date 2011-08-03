@@ -32,9 +32,9 @@ if [ $# != 2 ] && [ $# != 4 ] ; then
     exit 1
 fi
 
-echo "The drools, guvnor, ... old is $1"
+echo "The drools, guvnor, ... version: old is $1 - new is $2"
 if [ $withoutJbpm != 'true' ]; then
-    echo "The jbpm release tag name is $2"
+    echo "The jbpm version: old is $3 - new is $4"
 fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
