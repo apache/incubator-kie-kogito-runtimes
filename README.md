@@ -989,9 +989,9 @@ Creating a release branch
 
 A release branch name should always end with `.x` so it looks different from a tag name and a topic branch name.
 
-* Simply use the script `script/branches/create-release-branches.sh` with the drools and jbpm *release branch name*:
+* Simply use the script `script/release/create-release-branches.sh` with the drools and jbpm *release branch name*:
 
-        $ droolsjbpm-build-bootstrap/script/branches/create-release-branches.sh 5.2.x 5.1.x
+        $ droolsjbpm-build-bootstrap/script/release/create-release-branches.sh 5.2.x 5.1.x
 
     * It does something like this for every repository:
 
@@ -1004,10 +1004,10 @@ A release branch name should always end with `.x` so it looks different from a t
 
             $ droolsjbpm-build-bootstrap/script/git-all.sh fetch
 
-    * Use `script/branches/git-checkout-all.sh` with the drools and jbpm *release branch name*:
+    * Use `script/git-checkout-all.sh` with the drools and jbpm *release branch name*:
 
-            $ droolsjbpm-build-bootstrap/script/branches/git-checkout-all.sh master master
-            $ droolsjbpm-build-bootstrap/script/branches/git-checkout-all.sh 5.2.x 5.1.x
+            $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh master master
+            $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh 5.2.x 5.1.x
 
 Releasing from a release branch
 -------------------------------
@@ -1047,7 +1047,7 @@ If everything is perfect (tested by QA etc):
 
 * Create the tag locally:
 
-        $ droolsjbpm-build-bootstrap/script/branches/git-tag-locally-all.sh 5.2.0.Final 5.1.0.Final
+        $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 5.2.0.Final 5.1.0.Final
 
 * Deploy the artifacts:
 
@@ -1091,7 +1091,7 @@ If everything is perfect (tested by QA etc):
 
 * Push the tag to the blessed repository.
 
-        $ droolsjbpm-build-bootstrap/script/branches/git-push-tag-all.sh 5.2.0.Final 5.1.0.Final
+        $ droolsjbpm-build-bootstrap/script/release/git-push-tag-all.sh 5.2.0.Final 5.1.0.Final
 
 * Release your staging repository on [nexus](https://repository.jboss.org/nexus)
 
