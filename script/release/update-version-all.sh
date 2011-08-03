@@ -65,7 +65,9 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             oldVersion=$3
             newVersion=$4
         fi
-        mvn --batch-mode release:update-versions -DdevelopmentVersion=$newVersion
+        # WARNING: Requires a fix for http://jira.codehaus.org/browse/MRELEASE-699 to work!
+        # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
+        mvn --batch-mode org.apache.maven.plugins:maven-release-plugin:2.2.2-SNAPSHOT:update-versions -DreleaseVersion=$newVersion
         if [ $repository = 'droolsjbpm-tools' ]; then
             cd drools-eclipse
             mvn tycho-versions-plugin:set-version -DnewVersion=$newVersion
