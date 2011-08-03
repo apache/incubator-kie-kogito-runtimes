@@ -22,19 +22,20 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 
-if [ $# != 2 ] ; then
+if [ $# != 1 ] || [ $# != 2 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 droolsReleaseTagName jbpmReleaseTagName"
+    echo "  $0 droolsReleaseTagName [jbpmReleaseTagName]"
     echo "For example:"
     echo "  $0 5.2.0.Final 5.1.0.Final"
-    echo "  $0 5.3.x -withoutJbpm"
     echo
     exit 1
 fi
 
 echo "The drools, guvnor, ... release tag name is $1"
-echo "The jbpm release tag name is $2"
+if [ $withoutJbpm != 'true' ]; then
+    echo "The jbpm release tag name is $2"
+fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
 
@@ -44,7 +45,15 @@ cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/../repository-list.txt` ; do
     echo
-    if [ -d $droolsjbpmOrganizationDir/$repository ] ; then
+    if [ ! -d $droolsjbpmOrganizationDir/$repository ]; then
+        echo "==============================================================================="
+        echo "Missing Repository: $repository. Skipping"
+        echo "==============================================================================="
+    elif [ $repository = 'jbpm' ] && [ $withoutJbpm = 'true' ]; then
+        echo "==============================================================================="
+        echo "Without repository: $repository. Skipping"
+        echo "==============================================================================="
+    else
         echo "==============================================================================="
         echo "Repository: $repository"
         echo "==============================================================================="
@@ -55,16 +64,12 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             releaseTagName=$2
         fi
         git push origin $releaseTagName
-        
+
         returnCode=$?
         cd ..
         if [ $returnCode != 0 ] ; then
             exit $returnCode
         fi
-    else
-        echo "==============================================================================="
-        echo "Missing Repository: $repository. Skipping"
-        echo "==============================================================================="
     fi
 done
 

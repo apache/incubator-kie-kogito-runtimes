@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Runs a mvn command on all droolsjbpm repositories.
+# Run a mvn command on all droolsjbpm repositories.
 
 initializeWorkingDirAndScriptDir() {
     # Set working directory and remove all symbolic links
@@ -40,12 +40,20 @@ cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
     echo
-    if [ -d $droolsjbpmOrganizationDir/$repository ] ; then
+    if [ ! -d $droolsjbpmOrganizationDir/$repository ]; then
+        echo "==============================================================================="
+        echo "Missing Repository: $repository. SKIPPING!"
+        echo "==============================================================================="
+    elif [ $repository = 'jbpm' ] && [ $withoutJbpm = 'true' ]; then
+        echo "==============================================================================="
+        echo "Without repository: $repository. SKIPPING!"
+        echo "==============================================================================="
+    else
         echo "==============================================================================="
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
-        
+
         if [ -a $M3_HOME/bin/mvn ] ; then
             $M3_HOME/bin/mvn $*
         else
@@ -57,10 +65,6 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         if [ $returnCode != 0 ] ; then
             exit $returnCode
         fi
-    else
-        echo "==============================================================================="
-        echo "Missing Repository: $repository. Skipping"
-        echo "==============================================================================="
     fi
 done
 

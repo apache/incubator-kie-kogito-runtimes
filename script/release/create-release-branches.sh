@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Creates a release branch for all git repositories
+# Create a release branch for all git repositories
 
 initializeWorkingDirAndScriptDir() {
     # Set working directory and remove all symbolic links
@@ -22,19 +22,20 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 
-if [ $# != 2 ] ; then
+if [ $# != 1 ] || [ $# != 2 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 droolsReleaseBranchName jbpmReleaseBranchName"
+    echo "  $0 droolsReleaseBranchName [jbpmReleaseBranchName]"
     echo "For example:"
     echo "  $0 5.2.x 5.1.x"
-    echo "  $0 5.3.x -withoutJbpm"
     echo
     exit 1
 fi
 
 echo "The drools, guvnor, ... release branch name is $1"
-echo "The jbpm release branch name is $2"
+if [ $withoutJbpm != 'true' ]; then
+    echo "The jbpm release branch name is $2"
+fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
 
@@ -48,7 +49,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         echo "Missing Repository: $repository. Skipping"
         echo "==============================================================================="
-    elif [ $repository = 'jbpm' && $2 = '-withoutJbpm' ]; then
+    elif [ $repository = 'jbpm' ] && [ $withoutJbpm = 'true' ]; then
         echo "==============================================================================="
         echo "Without repository: $repository. Skipping"
         echo "==============================================================================="
@@ -57,7 +58,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
-        
+
         releaseBranchName=$1
         if [ $repository = 'jbpm' ]; then
             releaseBranchName=$2
