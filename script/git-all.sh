@@ -20,6 +20,7 @@ initializeWorkingDirAndScriptDir() {
     scriptDir=`pwd -P`
 }
 initializeWorkingDirAndScriptDir
+droolsjbpmOrganizationDir="$scriptDir/../.."
  
 if [ $# = 0 ] ; then
     echo
@@ -35,7 +36,6 @@ fi
 
 startDateTime=`date +%s`
 
-droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
@@ -45,11 +45,13 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
+        
         git $*
-        gitReturnCode=$?
+
+        returnCode=$?
         cd ..
-        if [ $gitReturnCode != 0 ] ; then
-            exit $gitReturnCode
+        if [ $returnCode != 0 ] ; then
+            exit $returnCode
         fi
     else
         echo "==============================================================================="

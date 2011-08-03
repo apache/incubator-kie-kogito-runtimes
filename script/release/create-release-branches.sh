@@ -20,6 +20,7 @@ initializeWorkingDirAndScriptDir() {
     scriptDir=`pwd -P`
 }
 initializeWorkingDirAndScriptDir
+droolsjbpmOrganizationDir="$scriptDir/../../.."
 
 if [ $# != 2 ] ; then
     echo
@@ -27,6 +28,7 @@ if [ $# != 2 ] ; then
     echo "  $0 droolsReleaseBranchName jbpmReleaseBranchName"
     echo "For example:"
     echo "  $0 5.2.x 5.1.x"
+    echo "  $0 5.3.x -withoutJbpm"
     echo
     exit 1
 fi
@@ -38,16 +40,24 @@ read ok
 
 startDateTime=`date +%s`
 
-droolsjbpmOrganizationDir="$scriptDir/../../.."
 cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/../repository-list.txt` ; do
     echo
-    if [ -d $droolsjbpmOrganizationDir/$repository ] ; then
+    if [ ! -d $droolsjbpmOrganizationDir/$repository ]; then
+        echo "==============================================================================="
+        echo "Missing Repository: $repository. Skipping"
+        echo "==============================================================================="
+    elif [ $repository = 'jbpm' && $2 = '-withoutJbpm' ]; then
+        echo "==============================================================================="
+        echo "Without repository: $repository. Skipping"
+        echo "==============================================================================="
+    else
         echo "==============================================================================="
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
+        
         releaseBranchName=$1
         if [ $repository = 'jbpm' ]; then
             releaseBranchName=$2
@@ -56,15 +66,12 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         git push origin $releaseBranchName
         # Set up the local branch to track the remote branch
         git branch --set-upstream $releaseBranchName origin/$releaseBranchName
-        gitReturnCode=$?
+
+        returnCode=$?
         cd ..
-        if [ $gitReturnCode != 0 ] ; then
-            exit $gitReturnCode
+        if [ $returnCode != 0 ] ; then
+            exit $returnCode
         fi
-    else
-        echo "==============================================================================="
-        echo "Missing Repository: $repository. Skipping"
-        echo "==============================================================================="
     fi
 done
 

@@ -29,14 +29,14 @@ for /F %%r in ('type %scriptDir%\repository-list.txt') do (
         cd %%r
         if exist "%M3_HOME%\bin\mvn.bat" (
             call "%M3_HOME%\bin\mvn.bat" %* 
-            set mvnReturnCode=%ERRORLEVEL%
+            set returnCode=%ERRORLEVEL%
         ) else (
             call mvn %*
-            set mvnReturnCode=%ERRORLEVEL%
+            set returnCode=%ERRORLEVEL%
         )
         cd ..
-        if "%mvnReturnCode%" neq "0" (
-            echo maven failed: %mvnReturnCode%
+        if "%returnCode%" neq "0" (
+            echo maven failed: %returnCode%
             goto :end
         )
     ) else (

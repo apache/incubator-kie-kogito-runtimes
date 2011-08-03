@@ -20,6 +20,7 @@ initializeWorkingDirAndScriptDir() {
     scriptDir=`pwd -P`
 }
 initializeWorkingDirAndScriptDir
+droolsjbpmOrganizationDir="$scriptDir/../.."
 
 if [ $# = 0 ] ; then
     echo
@@ -35,7 +36,6 @@ fi
 
 startDateTime=`date +%s`
 
-droolsjbpmOrganizationDir="$scriptDir/../.."
 cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
@@ -45,15 +45,17 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
+        
         if [ -a $M3_HOME/bin/mvn ] ; then
             $M3_HOME/bin/mvn $*
         else
             mvn $*
         fi
-        mvnReturnCode=$?
+
+        returnCode=$?
         cd ..
-        if [ $mvnReturnCode != 0 ] ; then
-            exit $mvnReturnCode
+        if [ $returnCode != 0 ] ; then
+            exit $returnCode
         fi
     else
         echo "==============================================================================="

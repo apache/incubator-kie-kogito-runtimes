@@ -20,6 +20,7 @@ initializeWorkingDirAndScriptDir() {
     scriptDir=`pwd -P`
 }
 initializeWorkingDirAndScriptDir
+cd $droolsjbpmOrganizationDir
 
 if [ $# != 2 ] ; then
     echo
@@ -27,6 +28,7 @@ if [ $# != 2 ] ; then
     echo "  $0 droolsReleaseTagName jbpmReleaseTagName"
     echo "For example:"
     echo "  $0 5.2.0.Final 5.1.0.Final"
+    echo "  $0 5.3.x -withoutJbpm"
     echo
     exit 1
 fi
@@ -39,7 +41,6 @@ read ok
 startDateTime=`date +%s`
 
 droolsjbpmOrganizationDir="$scriptDir/../../.."
-cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/../repository-list.txt` ; do
     echo
@@ -48,16 +49,18 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
+
         releaseTagName=$1
         if [ $repository = 'jbpm' ]; then
             releaseTagName=$2
         fi
         # note when retagging you 'll need add -f in here:
         git tag -a $releaseTagName -m 'Tagging $releaseTagName'
-        gitReturnCode=$?
+        
+        returnCode=$?
         cd ..
-        if [ $gitReturnCode != 0 ] ; then
-            exit $gitReturnCode
+        if [ $returnCode != 0 ] ; then
+            exit $returnCode
         fi
     else
         echo "==============================================================================="

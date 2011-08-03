@@ -29,10 +29,10 @@ for /F %%r in ('type %scriptDir%\repository-list.txt') do (
         echo ===============================================================================
         cd %%r
         call git %*
-        set gitReturnCode=%ERRORLEVEL%
+        set returnCode=%ERRORLEVEL%
         cd ..
-        if "%gitReturnCode%" neq "0" (
-            echo git failed: %gitReturnCode%
+        if "%returnCode%" neq "0" (
+            echo git failed: %returnCode%
             goto :end
         )
     ) else (
