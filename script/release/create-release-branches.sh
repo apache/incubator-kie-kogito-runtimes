@@ -22,7 +22,7 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 
-if [ $# != 1 ] || [ $# != 2 ] ; then
+if [ $# != 1 ] && [ $# != 2 ] ; then
     echo
     echo "Usage:"
     echo "  $0 droolsReleaseBranchName [jbpmReleaseBranchName]"

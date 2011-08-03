@@ -22,7 +22,7 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 
-if [ $# != 2 ] || [ $# != 4 ] ; then
+if [ $# != 2 ] && [ $# != 4 ] ; then
     echo
     echo "Usage:"
     echo "  $0 droolsOldVersion droolsNewVersion [jbpmOldVersion jbpmNewVersion]"
