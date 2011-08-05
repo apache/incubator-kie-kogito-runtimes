@@ -65,16 +65,21 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             oldVersion=$3
             newVersion=$4
         fi
-        # WARNING: Requires a fix for http://jira.codehaus.org/browse/MRELEASE-699 to work!
-        # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
-        mvn --batch-mode org.apache.maven.plugins:maven-release-plugin:2.2.2-SNAPSHOT:update-versions -DreleaseVersion=$newVersion
-        returnCode=$?
-        if [ $repository = 'droolsjbpm-tools' ] && [ $returnCode == 0 ]; then
+        # tycho-versions must go first or it doesn't do anything
+        if [ $repository = 'droolsjbpm-tools' ]; then
             cd drools-eclipse
             mvn tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
             cd ..
+            if [ $returnCode != 0 ] ; then
+                cd ..
+                exit $returnCode
+            fi
         fi
+        # WARNING: Requires a fix for http://jira.codehaus.org/browse/MRELEASE-699 to work!
+        # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
+        mvn --batch-mode org.apache.maven.plugins:maven-release-plugin:2.2.2-SNAPSHOT:update-versions -DreleaseVersion=$newVersion
+        returnCode=$?
 
         cd ..
         if [ $returnCode != 0 ] ; then
