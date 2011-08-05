@@ -69,11 +69,11 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         # WARNING: Requires a fix for http://jira.codehaus.org/browse/MRELEASE-699 to work!
         # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
         if [ $repository != 'droolsjbpm-tools' ]; then
-            mvn --batch-mode org.apache.maven.plugins:maven-release-plugin:2.2.2-SNAPSHOT:update-versions -DreleaseVersion=$newVersion
+            mvn --batch-mode -Dfull org.apache.maven.plugins:maven-release-plugin:2.2.2-SNAPSHOT:update-versions -DreleaseVersion=$newVersion
             returnCode=$?
         else
             cd drools-eclipse
-            mvn tycho-versions:set-version -DnewVersion=$newVersion
+            mvn -Dfull tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
             cd ..
 
