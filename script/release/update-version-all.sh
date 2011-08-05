@@ -88,15 +88,15 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             exit $returnCode
         fi
     fi
-
-    cd droolsjbpm-build-distribution
-    mvn antrun:run -N -DoldVersion=5.3.0-SNAPSHOT -DnewVersion=5.3.0.Beta1
-    returnCode=$?
-    cd ..
-    if [ $returnCode != 0 ] ; then
-        exit $returnCode
-    fi
 done
+
+cd droolsjbpm-build-distribution
+mvn antrun:run -N -DoldVersion=5.3.0-SNAPSHOT -DnewVersion=5.3.0.Beta1
+returnCode=$?
+cd ..
+if [ $returnCode != 0 ] ; then
+    exit $returnCode
+fi
 
 endDateTime=`date +%s`
 spentSeconds=`expr $endDateTime - $startDateTime`
