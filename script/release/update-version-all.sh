@@ -71,7 +71,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         returnCode=$?
         if [ $repository = 'droolsjbpm-tools' ] && [ $returnCode == 0 ]; then
             cd drools-eclipse
-            mvn tycho-versions-plugin:set-version -DnewVersion=$newVersion
+            mvn tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
             cd ..
         fi
