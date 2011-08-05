@@ -71,14 +71,14 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             mvn --batch-mode org.apache.maven.plugins:maven-release-plugin:2.2.2-SNAPSHOT:update-versions -DreleaseVersion=$newVersion
             returnCode=$?
         else
-            mvn antrun:run -N -DoldVersion=5.3.0-SNAPSHOT -DnewVersion=5.3.0.Beta1
+            cd drools-eclipse
+            mvn tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
+            cd ..
 
             if [ $returnCode != 0 ]; then
-                cd drools-eclipse
-                mvn tycho-versions:set-version -DnewVersion=$newVersion
+                mvn antrun:run -N -DoldVersion=5.3.0-SNAPSHOT -DnewVersion=5.3.0.Beta1
                 returnCode=$?
-                cd ..
             fi
         fi
 
