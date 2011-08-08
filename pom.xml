@@ -568,7 +568,6 @@
           <version>2.2.4.EAP5</version>
         </dependency>
       </dependencies>
-
     </profile>
   </profiles>
 
@@ -599,6 +598,18 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>knowledge-api</artifactId>
+        <version>${drools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>knowledge-api</artifactId>
+        <version>${drools.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-introduction-docs</artifactId>
         <type>jdocbook</type>
         <version>${drools.version}</version>
@@ -614,6 +625,12 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
         <version>${drools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-core</artifactId>
+        <version>${drools.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
@@ -624,8 +641,20 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-compiler</artifactId>
+        <version>${drools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
         <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-jsr94</artifactId>
+        <version>${drools.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -634,13 +663,31 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-clips</artifactId>
+        <version>${drools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-verifier</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-verifier</artifactId>
+        <version>${drools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-persistence-jpa</artifactId>
         <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-persistence-jpa</artifactId>
         <version>${drools.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -655,13 +702,31 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-templates</artifactId>
+        <version>${drools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-decisiontables</artifactId>
+        <version>${drools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-examples</artifactId>
         <version>${drools.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-examples</artifactId>
         <version>${drools.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -684,8 +749,26 @@
       </dependency>
       <dependency>
         <groupId>org.drools.planner</groupId>
+        <artifactId>drools-planner-core</artifactId>
+        <version>${drools-planner.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools.planner</groupId>
+        <artifactId>drools-planner-core</artifactId>
+        <version>${drools-planner.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools.planner</groupId>
         <artifactId>drools-planner-examples</artifactId>
         <version>${drools-planner.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools.planner</groupId>
+        <artifactId>drools-planner-examples</artifactId>
+        <version>${drools-planner.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools.planner</groupId>
@@ -702,8 +785,20 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-flow</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-flow-builder</artifactId>
         <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-flow-builder</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -712,8 +807,20 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-persistence-jpa</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-bam</artifactId>
         <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bam</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -722,8 +829,20 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bpmn2</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-workitems</artifactId>
         <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -732,8 +851,20 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-gwt-core</artifactId>
         <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-gwt-core</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -742,8 +873,20 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-gwt-form</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-gwt-graph</artifactId>
         <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-gwt-graph</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -753,14 +896,34 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-gwt-console</artifactId>
+        <type>war</type>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-gwt-console-server</artifactId>
         <type>war</type>
         <version>${jbpm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-gwt-console-server</artifactId>
+        <type>war</type>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-examples</artifactId>
         <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-examples</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -774,6 +937,12 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-grid-impl</artifactId>
         <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-grid-impl</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--<dependency>
         <groupId>org.drools</groupId>
@@ -822,8 +991,20 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-spring</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-camel</artifactId>
         <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-camel</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -833,8 +1014,20 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-camel-server</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-pipeline</artifactId>
         <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-pipeline</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -843,8 +1036,20 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-simulator</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-integration-examples</artifactId>
         <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>droolsjbpm-integration-examples</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -861,8 +1066,20 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>guvnor-repository</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>guvnor-repository-connector-jcr</artifactId>
         <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-repository-connector-jcr</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -871,18 +1088,43 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>guvnor-repository-connector-jackrabbit</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>guvnor-repository-connector-modeshape</artifactId>
         <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-repository-connector-modeshape</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-ide-common</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
-      <!--<dependency>--><!-- JBRULES-2707 Split up guvnor-webapp into guvnor-gwt-client and guvnor-webapp -->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>droolsjbpm-ide-common</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!-- JBRULES-2707 Split up guvnor-webapp into guvnor-gwt-client and guvnor-webapp -->
+      <!--<dependency>-->
         <!--<groupId>org.drools</groupId>-->
         <!--<artifactId>guvnor-gwt-client</artifactId>-->
         <!--<version>${guvnor.version}</version>-->
+      <!--</dependency>-->
+      <!--<dependency>-->
+        <!--<groupId>org.drools</groupId>-->
+        <!--<artifactId>guvnor-gwt-client</artifactId>-->
+        <!--<version>${guvnor.version}</version>-->
+        <!--<classifier>sources</classifier>-->
       <!--</dependency>-->
       <dependency>
         <groupId>org.drools</groupId>
@@ -892,8 +1134,41 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>guvnor-webapp</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-distribution-wars</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+        <classifier>jboss-as-5.1</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-distribution-wars</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+        <classifier>jboss-as-6.0</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-distribution-wars</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+        <classifier>tomcat-6.0</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>guvnor-examples</artifactId>
         <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-examples</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -908,8 +1183,79 @@
         <artifactId>drools-ant</artifactId>
         <version>${droolsjbpm-tools.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-ant</artifactId>
+        <version>${droolsjbpm-tools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>org.drools.eclipse</artifactId>
+        <version>${droolsjbpm-tools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>org.drools.eclipse.task</artifactId>
+        <version>${droolsjbpm-tools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>org.guvnor.tools</artifactId>
+        <version>${droolsjbpm-tools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>org.drools.updatesite</artifactId>
+        <type>zip</type>
+        <version>${droolsjbpm-tools.version}</version>
+        <classifier>assembly</classifier>
+      </dependency>
 
+      <!-- droolsjbpm-build-distribution -->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-distribution</artifactId>
+        <version>${drools.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools.planner</groupId>
+        <artifactId>drools-planner-distribution</artifactId>
+        <version>${drools-planner.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>droolsjbpm-integration-distribution</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-distribution</artifactId>
+        <version>${guvnor.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>droolsjbpm-tools-distribution</artifactId>
+        <version>${droolsjbpm-tools.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-osgi-bundles-distribution</artifactId>
+        <version>${droolsjbpm-build-distribution.version}</version>
+        <type>zip</type>
+      </dependency>
+
+      <!-- ################################################################################ -->
       <!-- General dependencies -->
+      <!-- ################################################################################ -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
