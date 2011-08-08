@@ -21,6 +21,7 @@ initializeWorkingDirAndScriptDir() {
 }
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../.."
+withoutJbpm="$withoutJbpm"
 
 startDateTime=`date +%s`
 
