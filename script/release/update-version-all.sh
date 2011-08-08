@@ -79,7 +79,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             cd ..
 
             if [ $returnCode == 0 ]; then
-                mvn antrun:run -N -DoldVersion=5.3.0-SNAPSHOT -DnewVersion=5.3.0.Beta1
+                mvn antrun:run -N -DoldVersion=$oldVersion -DnewVersion=$newVersion
                 returnCode=$?
             fi
         fi
@@ -92,7 +92,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 done
 
 cd droolsjbpm-build-distribution
-mvn antrun:run -N -DoldVersion=5.3.0-SNAPSHOT -DnewVersion=5.3.0.Beta1
+mvn antrun:run -N -DoldVersion=$oldVersion -DnewVersion=$newVersion
 returnCode=$?
 cd ..
 if [ $returnCode != 0 ] ; then
