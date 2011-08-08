@@ -78,8 +78,8 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
         if [ $repository != 'droolsjbpm-tools' ]; then
             case $newVersion in
-                 *SNAPSHOT) releasePluginParameter=releaseVersion;;
-                 *) releasePluginParameter=developmentVersion;;
+                 *SNAPSHOT) releasePluginParameter=developmentVersion;;
+                 *) releasePluginParameter=releaseVersion;;
             esac
             mvn --batch-mode -Dfull org.apache.maven.plugins:maven-release-plugin:2.2.2-SNAPSHOT:update-versions -D$releasePluginParameter=$newVersion
             returnCode=$?
