@@ -23,19 +23,26 @@ initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 withoutJbpm="$withoutJbpm"
 
-if [ $# != 2 ] && [ $# != 4 ] ; then
+if [ $# != 4 ] && [ $# != 8 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 droolsOldVersion droolsNewVersion [jbpmOldVersion jbpmNewVersion]"
+    echo "  $0 droolsOldVersion droolsOldOsgiVersion droolsNewVersion droolsNewOsgiVersion [jbpmOldVersion jbpmOldOsgiVersion jbpmNewVersion jbpmNewOsgiVersion]"
     echo "For example:"
-    echo "  $0 5.2.0.Final 5.1.0.Final"
+    echo "  $0 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.2.0.Final 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.1.0.Final 5.1.0.Final"
     echo
     exit 1
 fi
-
-echo "The drools, guvnor, ... version: old is $1 - new is $2"
+droolsOldVersion=$1
+droolsOldOsgiVersion=$2
+droolsNewVersion=$3
+droolsNewOsgiVersion=$4
+echo "The drools, guvnor, ... version: old is $droolsOldVersion (osgi: $droolsOldOsgiVersion) - new is $droolsNewVersion (osgi: $droolsNewOsgiVersion)"
 if [ $withoutJbpm != 'true' ]; then
-    echo "The jbpm version: old is $3 - new is $4"
+    jbpmOldVersion=$5
+    jbpmOldOsgiVersion=$6
+    jbpmNewVersion=$7
+    jbpmNewOsgiVersion=$8
+    echo "The jbpm version: old is jbpmOldVersion (osgi: jbpmOldOsgiVersion) - new is jbpmNewVersion (osgi: jbpmNewOsgiVersion)"
 fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
@@ -61,11 +68,11 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         cd $repository
 
-        oldVersion=$1
-        newVersion=$2
+        oldVersion=$droolsOldVersion
+        newVersion=$droolsNewVersion
         if [ $repository = 'jbpm' ]; then
-            oldVersion=$3
-            newVersion=$4
+            oldVersion=$jbpmOldVersion
+            newVersion=$jbpmNewVersion
         fi
         # WARNING: Requires a fix for http://jira.codehaus.org/browse/MRELEASE-699 to work!
         # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
@@ -92,7 +99,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 done
 
 cd droolsjbpm-build-distribution
-mvn antrun:run -N -DoldVersion=$oldVersion -DnewVersion=$newVersion
+mvn antrun:run -N -DoldVersion=$droolsOldVersion -DoldOsgiVersion=$droolsOldOsgiVersion -DnewVersion=$droolsNewVersion -DnewOsgiVersion=$droolsNewOsgiVersion
 returnCode=$?
 cd ..
 if [ $returnCode != 0 ] ; then
