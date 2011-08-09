@@ -984,6 +984,14 @@ Expecting a release
         $ mvn site
         $ firefox */target/site/findbugs.html
 
+* Releasing Drools with or without jBPM?
+
+    * If jBPM must not be released, then do this in any shell before running the first release command:
+
+            $ export withoutJbpm=true
+
+    * Furthermore, verify that the `droolsjbpm-parent` pom's properties are not using a SNAPSHOT version of jBPM.
+
 Creating a release branch
 -------------------------
 
