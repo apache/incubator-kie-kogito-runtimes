@@ -21,7 +21,8 @@ initializeWorkingDirAndScriptDir() {
 }
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../.."
- 
+withoutJbpm="$withoutJbpm"
+
 if [ $# = 0 ] ; then
     echo
     echo "Usage:"
@@ -40,12 +41,20 @@ cd $droolsjbpmOrganizationDir
 
 for repository in `cat ${scriptDir}/repository-list.txt` ; do
     echo
-    if [ -d $droolsjbpmOrganizationDir/$repository ] ; then
+    if [ ! -d $droolsjbpmOrganizationDir/$repository ]; then
+        echo "==============================================================================="
+        echo "Missing Repository: $repository. SKIPPING!"
+        echo "==============================================================================="
+    elif [ $repository = 'jbpm' ] && [ $withoutJbpm = 'true' ]; then
+        echo "==============================================================================="
+        echo "Without repository: $repository. SKIPPING!"
+        echo "==============================================================================="
+    else
         echo "==============================================================================="
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
-        
+
         git $*
 
         returnCode=$?
@@ -53,10 +62,6 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         if [ $returnCode != 0 ] ; then
             exit $returnCode
         fi
-    else
-        echo "==============================================================================="
-        echo "Missing Repository: $repository. Skipping"
-        echo "==============================================================================="
     fi
 done
 
