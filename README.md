@@ -1022,28 +1022,39 @@ The distribution zips are in the directory `droolsjbpm-build-distribution/drools
 
 If everything is perfect (tested by QA etc):
 
-* Define the version and adjust the poms.
+* Define the version and adjust the sources accordingly:
 
-    * Note: Always use 3 numbers with a qualifier in the version: '1.0.0.Final' is fine, `1.0` or `1.0.0` is not fine.
+    * First define the version.
 
-    * Search all the files for `a.b.x-SNAPSHOT`, `a.b.x.SNAPSHOT` and `a.b.x.qualifier` where `a.b.x` is the version.
+        * There are only 4 acceptable patterns:
 
-        * You should find that at least in `pom.xml`, in drooljbpm-tools `MANIFEST.MF` files and in the osgi-bundles.
+            * `major.minor.micro.Alpha[n]`, for example `1.2.3.Alpha1`
 
-            * Note: unlike many of the other `MANIFEST.MF` files, those in droolsjbpm-tools are *not* generated.
+            * `major.minor.micro.Beta[n]`, for example `1.2.3.Beta1`
 
-        * Replace that with `a.b.x.Final` (or `a.b.x.Alpha1` or `a.b.x.Beta1` or `a.b.x.CR1`)
+            * `major.minor.micro.CR[n]`, for example `1.2.3.CR1`
+            
+            * `major.minor.micro.Final`, for example `1.2.3.Final`
 
-            * See the [JBoss version conventions](http://community.jboss.org/wiki/JBossProjectVersioning)
+        * The OSGi version is exactly the same as the pom version.
 
-                * Not following those, for example `a.b.x` or `a.b.x.M1` results in OSGi eclipse updatesite corruption.
+        * See the [JBoss version conventions](http://community.jboss.org/wiki/JBossProjectVersioning)
 
-            * Excluding generated files (for example the drools `MANIFEST.MF` files, but not those of droolsjbpm-tools)
+            * Not following those, for example `1.2.3` or `1.2.3.M1` results in OSGi eclipse updatesite corruption.
 
-    * TODO: Experiment with [the tycho set-version goal](https://docs.sonatype.org/display/M2ECLIPSE/Staging+and+releasing+new+M2Eclipse+release)
+        * **The version has 3 numbers and qualifier. The qualifier is case-sensitive and starts with a capital.**
 
-            $ cd droolsjbpm-tools/drools-eclipse
-            $ mvn -Dtycho.mode=maven org.sonatype.tycho:tycho-versions-plugin:set-version -DnewVersion=a.b.x
+            * Use the exact same version everywhere (especially in URL's).
+
+    * Adjust the version in the poms, manifests and other eclipse stuff:
+
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.2.0.Final 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.1.0.Final 5.1.0.Final
+
+        * Note: the arguments are twice `oldVersion oldOsgiVersion newVersion newOsgiVersion`.
+
+        * Commit those changes (so you can tag them properly):
+
+                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
 
 * Create the tag locally:
 
@@ -1053,7 +1064,7 @@ If everything is perfect (tested by QA etc):
 
         $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull -DskipTests clean deploy
 
-        * The release skips the tests because jbpm and guvnor have random failing tests
+    * The release skips the tests because jbpm and guvnor have random failing tests
 
 * Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, find your staging repository.
 
@@ -1089,7 +1100,33 @@ If everything is perfect (tested by QA etc):
 
         * So even if the release is broken, do not reuse the same version number! Create a hotfix version.
 
-* Push the tag to the blessed repository.
+* Define the next development version an adjust the sources accordingly:
+
+    * Define the next development version.
+
+        * There are only 1 acceptable pattern:
+
+            * `major.minor.micro-SNAPSHOT`, for example `1.2.0-SNAPSHOT` or `1.2.1-SNAPSHOT`
+
+        * The OSGi version ends in `.SNAPSHOT` instead of `-SNAPSHOT`.
+
+    * Adjust the version in the poms, manifests and other eclipse stuff:
+
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0.Final 5.2.0.Final  5.3.0-SNAPSHOT 5.3.0.SNAPSHOT 5.1.0.Final 5.1.0.Final 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT
+
+        * TODO: that doesn't work yet (please fix). If you're releasing an Alpha, Beta or CR, this also does the job:
+
+                $ lnscript/git-all.sh revert HEAD
+
+        * Commit those changes:
+
+                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set next development version: 5.3.0-SNAPSHOT"
+
+        * Push all changes, both the first and the last version change commit, to the repository *together*:
+
+                $ droolsjbpm-build-bootstrap/script/git-all.sh push
+
+* Push the local tag to the remote blessed repository.
 
         $ droolsjbpm-build-bootstrap/script/release/git-push-tag-all.sh 5.2.0.Final 5.1.0.Final
 
@@ -1103,18 +1140,15 @@ If everything is perfect (tested by QA etc):
 
     * Create new versions if needed.
 
-* Prepare the next development iteration
+* Upload the zips and documentation and update the website
 
-    * Get `a.b.x-SNAPSHOT`, `a.b.x.SNAPSHOT` and `a.b.x.qualifier` back on the correct places
+    * Zips go to [download.jboss.org](http://download.jboss.org/drools/release/)
 
-        * Easiest way is to revert the specific commit that changed them with `git revert commitId`.
+        * Update [the download webpage](http://www.jboss.org/drools/downloads) accordingly
 
-            * And if it's final replace them separately by `a.b.y-SNAPSHOT`, `a.b.y.SNAPSHOT` and `a.b.y.qualifier`
+    * Documentation goes to [docs.jboss.org](http://download.docs.org/drools/release/)
 
-    * TODO: Experiment with [the tycho set-version goal](https://docs.sonatype.org/display/M2ECLIPSE/Staging+and+releasing+new+M2Eclipse+release)
-
-            $ cd droolsjbpm-tools/drools-eclipse
-            $ mvn -Dtycho.mode=maven org.sonatype.tycho:tycho-versions-plugin:set-version -DnewVersion=a.b.y-SNAPSHOT
+        * Update [the documentation webpage](http://www.jboss.org/drools/documentation) accordingly
 
 * Announce the release:
 
