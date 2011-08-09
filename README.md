@@ -1158,22 +1158,16 @@ If everything is perfect (tested by QA etc):
 
         * Update [the documentation webpage](http://www.jboss.org/drools/documentation) accordingly
 
-* Announce the release:
+Announcing the the release
+--------------------------
 
-    * Announce it on [the droolsjbpm blog](http://blog.athico.com/)
-
-        * Twitter the blog link.
-
-        * Mail the blog link to the user list.
-
-    * If it's a final release, announce it on Dzone's daily dose and TheServerSide.
-
-Notifying people of the release
--------------------------------
-
-* Create a blog entry
+* Create a blog entry on [the droolsjbpm blog](http://blog.athico.com/)
 
     * Include a link to that blog entry in all other correspondence.
+
+    * Twitter the blog link.
+
+    * Mail the blog link to the user list.
 
 * Send a mail to the BRMS QE Lead (Lukáš Petrovický)
 
