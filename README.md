@@ -723,6 +723,20 @@ Configuring IntelliJ
 
             * For `XML Files`, add `*.rf`
 
+* Optionally import one of our code styles:
+
+    * If you don't do this, you need to set the file encoding and number of spaces correctly manually.
+
+    * Choose the correct one from `droolsjbpm-build-bootstrap/ide-configuration`
+
+        * The `droolsjbpm-knowledge` and `drools` repositories use original, not java-conventions.
+
+    * Copy to `~/.IntelliJIdea10/config/codestyles/` (on mac: `~/Library/Preferences/IntelliJIdea10/config/codestyles/`)
+
+    * Restart, open menu *File*, menu item *Settings*
+
+    * Click tree item *Code Style* and select it.
+
 * Set the correct file encoding (UTF-8 except for properties files) and end-of-line characters (unix):
 
     * Open menu *File*, menu item *Settings*
