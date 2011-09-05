@@ -77,22 +77,31 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         # WARNING: Requires a fix for http://jira.codehaus.org/browse/MRELEASE-699 to work!
         # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
         if [ $repository != 'droolsjbpm-tools' ]; then
-            case $newVersion in
-                 *SNAPSHOT) releasePluginParameter=developmentVersion;;
-                 *) releasePluginParameter=releaseVersion;;
-            esac
-            mvn --batch-mode -Dfull org.apache.maven.plugins:maven-release-plugin:2.2.2-SNAPSHOT:update-versions -D$releasePluginParameter=$newVersion
+            if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
+                mvn -Dfull versions:set -DoldVersion=$oldVersion -DnewVersion=$newVersion
+                # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
+                mvn clean install -DskipTests
+            else
+                mvn -Dfull versions:update-parent -DparentVersion=$newVersion
+                mvn -Dfull versions:update-child-modules -DoldVersion=$oldVersion -DnewVersion=$newVersion
+            fi
             returnCode=$?
         else
             cd drools-eclipse
             mvn -Dfull tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
             cd ..
-
             if [ $returnCode == 0 ]; then
-                mvn antrun:run -N -DoldVersion=$oldVersion -DnewVersion=$newVersion
+                mvn -Dfull versions:update-parent -N -DparentVersion=$newVersion
+                # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
+                mvn clean install -N -DskipTests
+                cd drools-eclipse
+                mvn -Dfull versions:update-parent -N -DparentVersion=$newVersion
+                cd ..
+                mvn -Dfull versions:update-child-modules -DoldVersion=$oldVersion -DnewVersion=$newVersion
                 returnCode=$?
             fi
+            # TODO drools-ant, drools-eclipse, droolsjbpm-tools-distribution
         fi
 
         cd ..
