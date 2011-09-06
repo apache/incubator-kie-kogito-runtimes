@@ -170,10 +170,10 @@ Working with git
 
     * Set your master equal to the blessed master:
 
-        $ git fetch upstream
-        $ git checkout master
-        # Warning: this deletes all changes/commits on your local master branch, but you shouldn't have any!
-        $ git reset --hard upstream/master
+            $ git fetch upstream
+            $ git checkout master
+            # Warning: this deletes all changes/commits on your local master branch, but you shouldn't have any!
+            $ git reset --hard upstream/master
 
     * Start a new topic branch and set the code the same as the blessed master:
 
@@ -181,8 +181,8 @@ Working with git
 
     * If you have a long-running topic branch, merge master into it:
 
-        $ git fetch upstream
-        $ git merge upstream/master
+            $ git fetch upstream
+            $ git merge upstream/master
 
         * If there are merge conflicts:
 
