@@ -149,37 +149,57 @@ For more info on forking, read [Github's help on forking](http://help.github.com
 Working with git
 ----------------
 
-* If you're going to make multiple, unrelated changes, use topic branches:
+* First make a topic branch:
 
+        $ git checkout master
         $ git checkout -b myFirstTopic
+
+    * Don't litter your local `master` branch: keep it equal to `remotes/upstream/master`
+
+    * 1 branch can have only 1 pull request, because the pull requests evolves as you add more commits on that branch.
 
 * Make changes, run, test and document them, then commit them:
 
         $ git commit -m"Fix typo in documentation"
 
-* Push those commits to your fork
+* Push those commits on your topic branch to your fork
 
-        $ git push
-
-    * If you used a topic branch, push like this instead:
-
-            $ git push myFirstTopic
+        $ git push myFirstTopic
 
 * Get the latest changes from the blessed repository
+
+    * Set your master equal to the blessed master:
+
+        $ git fetch upstream
+        $ git checkout master
+        # Warning: this deletes all changes/commits on your local master branch, but you shouldn't have any!
+        $ git reset --hard upstream/master
+
+    * Start a new topic branch and set the code the same as the blessed master:
+
+        $ git fetch upstream && git checkout -b mySecondTopic && git reset --hard upstream/master
+
+    * If you have a long-running topic branch, merge master into it:
 
         $ git fetch upstream
         $ git merge upstream/master
 
-    * If there are merge conflicts:
+        * If there are merge conflicts:
 
-            $ git mergetool
-            $ git commit
-            
-        or
+                $ git mergetool
+                $ git commit
 
-            $ gedit conflicted-file.txt
-            $ git add conflicted-file.txt
-            $ git commit
+            or
+
+                $ git status
+                $ gedit conflicted-file.txt
+                $ git add conflicted-file.txt
+                $ git commit
+
+            Many people get confused when a merge conflict occurs, because you're *in limbo*.
+            Just fix the merge conflicts and commit (even if the git seems to contain many files),
+            only then is the merge over. Then run `git log` to see what happened.
+            The many files in the merge conflict resolving commit are a side-affect of non-linear history.
 
 * Tips and tricks
 
@@ -205,7 +225,7 @@ Working with git
 Share your changes with a pull request
 --------------------------------------
 
-A pull request is like a patch file, but easier to apply, more powerfull and you'll be credited as the author.
+A pull request is like a patch file, but easier to apply, more powerful and you'll be credited as the author.
 
 * Creating a pull request
 
@@ -223,7 +243,9 @@ A pull request is like a patch file, but easier to apply, more powerfull and you
 
     * Review the changes
 
-    * Click the button *Merge help* on the bottom of the page and follow the instructions of github to apply those changes on master.
+    * Click the button *Merge help* on the bottom of the page and follow the instructions of github to apply those changes on the blessed master.
+
+        * Or use the button *Merge* if there are no merge conflicts.
 
 Building with Maven
 ===================
