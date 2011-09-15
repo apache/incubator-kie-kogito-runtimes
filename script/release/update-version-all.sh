@@ -37,7 +37,7 @@ droolsOldOsgiVersion=$2
 droolsNewVersion=$3
 droolsNewOsgiVersion=$4
 echo "The drools, guvnor, ... version: old is $droolsOldVersion (osgi: $droolsOldOsgiVersion) - new is $droolsNewVersion (osgi: $droolsNewOsgiVersion)"
-if [ $withoutJbpm != 'true' ]; then
+if [ "$withoutJbpm" != 'true' ]; then
     jbpmOldVersion=$5
     jbpmOldOsgiVersion=$6
     jbpmNewVersion=$7
@@ -58,7 +58,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         echo "Missing Repository: $repository. Skipping"
         echo "==============================================================================="
-    elif [ $repository = 'jbpm' ] && [ $withoutJbpm = 'true' ]; then
+    elif [ $repository = 'jbpm' ] && [ "$withoutJbpm" = 'true' ]; then
         echo "==============================================================================="
         echo "Without repository: $repository. Skipping"
         echo "==============================================================================="

@@ -35,7 +35,7 @@ if [ $# != 1 ] && [ $# != 2 ] ; then
 fi
 
 echo "The drools, guvnor, ... release branch name is $1"
-if [ $withoutJbpm != 'true' ]; then
+if [ "$withoutJbpm" != 'true' ]; then
     echo "The jbpm release branch name is $2"
 fi
 echo -n "Is this ok? (Hit control-c if is not): "
@@ -51,7 +51,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         echo "Missing Repository: $repository. Skipping"
         echo "==============================================================================="
-    elif [ $repository = 'jbpm' ] && [ $withoutJbpm = 'true' ]; then
+    elif [ $repository = 'jbpm' ] && [ "$withoutJbpm" = 'true' ]; then
         echo "==============================================================================="
         echo "Without repository: $repository. Skipping"
         echo "==============================================================================="

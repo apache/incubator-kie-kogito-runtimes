@@ -39,7 +39,7 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "==============================================================================="
         echo "This directory already exists: $repository"
         echo "==============================================================================="
-    elif [ $repository = 'jbpm' ] && [ $withoutJbpm = 'true' ]; then
+    elif [ $repository = 'jbpm' ] && [ "$withoutJbpm" = 'true' ]; then
         echo "==============================================================================="
         echo "Without repository: $repository. Skipping"
         echo "==============================================================================="
