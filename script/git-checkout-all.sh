@@ -45,7 +45,7 @@ startDateTime=`date +%s`
 
 cd $droolsjbpmOrganizationDir
 
-for repository in `cat ${scriptDir}/../repository-list.txt` ; do
+for repository in `cat ${scriptDir}/repository-list.txt` ; do
     echo
     if [ ! -d $droolsjbpmOrganizationDir/$repository ]; then
         echo "==============================================================================="
