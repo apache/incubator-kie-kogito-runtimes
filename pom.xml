@@ -1526,10 +1526,9 @@
             <artifactId>bcmail-jdk15</artifactId>
           </exclusion>  
           <exclusion>
-	    <groupId>org.bouncycastle</groupId>
-	    <artifactId>bcprov-jdk15</artifactId>
-          </exclusion> 
-          
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15</artifactId>
+          </exclusion>           
           <exclusion>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
