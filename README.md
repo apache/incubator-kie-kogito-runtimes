@@ -1017,7 +1017,7 @@ Expecting a release
 
 * Run findbugs on all projects:
 
-        $ mvn site
+        $ mvn site -DskipTests
         $ firefox */target/site/findbugs.html
 
 * Releasing Drools with or without jBPM?
