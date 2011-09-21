@@ -1203,7 +1203,7 @@ Announcing the the release
 
 * Send a mail to the BRMS QE Lead (Lukáš Petrovický)
 
-* If it's final release:
+* If it's a final release:
 
     * Notify TheServerSide and Dzone's Daily Dose.
 
