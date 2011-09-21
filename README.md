@@ -1158,10 +1158,6 @@ If everything is perfect (tested by QA etc):
 
             $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0.Final 5.2.0.Final  5.3.0-SNAPSHOT 5.3.0.SNAPSHOT 5.1.0.Final 5.1.0.Final 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT
 
-        * TODO: that doesn't work yet (please fix). If you're releasing an Alpha, Beta or CR, this also does the job:
-
-                $ lnscript/git-all.sh revert HEAD
-
         * Commit those changes:
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set next development version: 5.3.0-SNAPSHOT"
