@@ -40,11 +40,11 @@
     <drools.version>5.3.0-SNAPSHOT</drools.version>
     <drools.osgi.version>5.3.0.SNAPSHOT</drools.osgi.version>
     <drools-planner.version>${drools.version}</drools-planner.version>
-    <!-- HACK Drools 5.3.0 is released without a jBPM release --><!-- TODO hack is tmp undone here and in jbpm parent pom -->
-    <!--<jbpm.version>5.1.0.Final</jbpm.version>-->
-    <jbpm.version>5.2.0-SNAPSHOT</jbpm.version>
-    <!--<jbpm.osgi.version>5.1.0.Final</jbpm.osgi.version>-->
-    <jbpm.osgi.version>5.2.0.SNAPSHOT</jbpm.osgi.version>
+    <!-- HACK Drools 5.3.0 is released without a jBPM release --><!-- TODO hack is done here and in jbpm parent pom -->
+    <jbpm.version>5.1.1.Final</jbpm.version>
+    <!--<jbpm.version>5.2.0-SNAPSHOT</jbpm.version>-->
+    <jbpm.osgi.version>5.1.1.Final</jbpm.osgi.version>
+    <!--<jbpm.osgi.version>5.2.0.SNAPSHOT</jbpm.osgi.version>-->
     <droolsjbpm-integration.version>${drools.version}</droolsjbpm-integration.version>
     <guvnor.version>${drools.version}</guvnor.version>
     <droolsjbpm-tools.version>${drools.version}</droolsjbpm-tools.version>
