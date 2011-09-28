@@ -1048,9 +1048,16 @@ A release branch name should always end with `.x` so it looks different from a t
 
             $ droolsjbpm-build-bootstrap/script/git-all.sh fetch
 
-    * Use `script/git-checkout-all.sh` with the drools and jbpm *release branch name*:
+    * Switch to master with `script/git-checkout-all.sh`
 
             $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh master master
+
+    * Update master to the next SNAPSHOT version to avoid clashing the artifacts on nexus of master and the release branch:
+
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.3.0-SNAPSHOT 5.3.0.SNAPSHOT 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT
+
+    * Switch back to the *release branch name* with `script/git-checkout-all.sh`:
+
             $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh 5.2.x 5.1.x
 
 Releasing from a release branch
