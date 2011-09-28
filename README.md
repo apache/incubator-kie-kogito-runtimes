@@ -1064,9 +1064,11 @@ To produce the distribution zips, build with `-Dfull`:
 
     $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull clean install
 
-The distribution zips are in the directory `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
+* Do a sanity check of the artifacts by running the examples from the zips.
 
-If everything is perfect (tested by QA etc):
+    * The distribution zips are in the directory `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
+
+If everything is perfect (compiles, hudson is all blue and sanity checks succeed):
 
 * Define the version and adjust the sources accordingly:
 
@@ -1120,7 +1122,7 @@ If everything is perfect (tested by QA etc):
 
         * This will validate the nexus rules. If any fail: fix the issues, and force retag locally.
 
-* Do a sanity check of the artifacts.
+* Do another sanity check of the artifacts by running the examples from the zips.
 
     * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target` and check the zips
 
@@ -1130,7 +1132,11 @@ If everything is perfect (tested by QA etc):
 
             * Install the mortgages examples, build it and run the test scenario's
 
-        * Warning: the manual dirs have been known to have zip problems: they look fine zipped, but are empty unzipped.
+        * Warning: the `manual` dir in some zips have been known to have zip problems: they look fine zipped, but are empty unzipped.
+
+            * This regularly occurs on ge0ffrey's machine for `droolsjbpm-integration` and `drools-planner` on the directories `manual` and `javadocs`.
+
+            * Solution: unzip them, grab the good content from the relevant *-distribution module and rezip it (yes nexus zip's are wrong).
 
 * This is **the point of no return**.
 
