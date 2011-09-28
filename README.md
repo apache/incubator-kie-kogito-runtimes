@@ -1037,11 +1037,6 @@ A release branch name should always end with `.x` so it looks different from a t
 
         $ droolsjbpm-build-bootstrap/script/release/create-release-branches.sh 5.2.x 5.1.x
 
-    * It does something like this for every repository:
-
-            $ git checkout -b 5.2.x
-            $ git push origin 5.2.x
-
 * Switch back and forth from master to the release branches for all git repositories
 
     * If you haven't made the branches yourself, first make sure your local repository knows about them:
