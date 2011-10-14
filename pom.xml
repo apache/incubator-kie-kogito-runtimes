@@ -48,7 +48,7 @@
     <droolsjbpm-build-distribution.version>${drools.version}</droolsjbpm-build-distribution.version>
 
     <!-- External dependencies -->
-    <mvel.dep.version>2.1.Beta6</mvel.dep.version>
+    <mvel.dep.version>2.1.0.drools3</mvel.dep.version>
     <camel.version>2.4.0</camel.version>
     <cxf.version>2.4.1</cxf.version>
     <springframework.version>2.5.6</springframework.version>
