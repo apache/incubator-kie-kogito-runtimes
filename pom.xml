@@ -84,6 +84,7 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
+    <!-- TODO Remove this repository once gwt-dnd synchronises with Maven Central -->
     <!-- Additional repo for gwt-dnd see http://code.google.com/p/gwt-dnd/issues/detail?id=149 -->
     <repository>
       <id>sonatype</id>
