@@ -53,6 +53,7 @@
     <cxf.version>2.4.1</cxf.version>
     <springframework.version>2.5.6</springframework.version>
     <gwt.version>2.3.0</gwt.version>
+    <gwt-dnd.version>3.1.2</gwt-dnd.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -75,6 +76,19 @@
       <id>jboss-deprecated</id>
       <name>JBoss Deprecated</name>
       <url>https://repository.jboss.org/nexus/content/repositories/deprecated/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <!-- Additional repo for gwt-dnd see http://code.google.com/p/gwt-dnd/issues/detail?id=149 -->
+    <repository>
+      <id>sonatype</id>
+      <name>Releases</name>
+      <url>https://oss.sonatype.org/content/repositories/releases/</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>never</updatePolicy>
