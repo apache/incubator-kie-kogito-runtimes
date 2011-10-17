@@ -53,7 +53,6 @@
     <cxf.version>2.4.1</cxf.version>
     <springframework.version>2.5.6</springframework.version>
     <gwt.version>2.3.0</gwt.version>
-    <gwt-dnd.version>3.1.2</gwt-dnd.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -1626,6 +1625,11 @@
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
         <version>${gwt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.allen-sauer.gwt.dnd</groupId>
+        <artifactId>gwt-dnd</artifactId>
+        <version>3.1.2</version>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
