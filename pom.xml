@@ -1983,9 +1983,9 @@
         <version>2.2.2.Final</version>
       </dependency>
       <dependency>
-        <groupId>javassist</groupId>
+        <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.12.0.GA</version>
+        <version>3.14.0-GA</version>
       </dependency>
 
       <dependency>
