@@ -1014,6 +1014,7 @@ Expecting a release
 -------------------
 
 * Use a non-SNAPSHOT version for all dependencies. Get those dependencies (for example mvel) released if needed.
+    * The MVEL release usually becomes a blocker for the Drools release, try to get MVEL released one week before the Drools release. This way you have time to test with the real thing.
 
 * Run findbugs on all projects:
 
@@ -1054,6 +1055,8 @@ A release branch name should always end with `.x` so it looks different from a t
     * Switch back to the *release branch name* with `script/git-checkout-all.sh`:
 
             $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh 5.2.x 5.1.x
+
+    * Do a sanity check with `grep -lir "5.2.x" * | grep -v "target"`. This lists all the files that are still using the old version, if there are any.
 
 Releasing from a release branch
 -------------------------------
