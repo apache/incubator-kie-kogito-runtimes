@@ -1052,7 +1052,7 @@ A release branch name should always end with `.x` so it looks different from a t
 
             $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.3.0-SNAPSHOT 5.3.0.SNAPSHOT 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT
 
-    * Switch back to the *release branch name* with `script/git-checkout-all.sh`:
+    * Switch back to the *release branch name* with `script/git-checkout-all.sh` with drools and jbpm *release branch name*:
 
             $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh 5.2.x 5.1.x
 
@@ -1097,7 +1097,7 @@ If everything is perfect (compiles, hudson is all blue and sanity checks succeed
 
             * Use the exact same version everywhere (especially in URL's).
 
-    * Adjust the version in the poms, manifests and other eclipse stuff:
+    * Adjust the version in the poms, manifests and other eclipse stuff. The arguments are current drools version, current drools osgi version, new drools version, new drools osgi version, current jbpm version, current jbpm osgi version, new jbpm version, new jbpm osgi version:
 
             $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.2.0.Final 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.1.0.Final 5.1.0.Final
 
@@ -1107,7 +1107,7 @@ If everything is perfect (compiles, hudson is all blue and sanity checks succeed
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
 
-* Create the tag locally:
+* Create the tag locally. The arguments are the Drools version, the jBPM version:
 
         $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 5.2.0.Final 5.1.0.Final
 
