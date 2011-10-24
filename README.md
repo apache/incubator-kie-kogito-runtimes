@@ -1212,8 +1212,6 @@ Announcing the the release
 
     * Mail the blog link to the user list.
 
-* Send a mail to the BRMS QE Lead (Lukáš Petrovický)
-
 * If it's a final release:
 
     * Notify TheServerSide and Dzone's Daily Dose.
