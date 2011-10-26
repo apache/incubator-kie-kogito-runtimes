@@ -1157,11 +1157,15 @@ If everything is perfect (compiles, hudson is all blue and sanity checks succeed
 
 * Define the next development version an adjust the sources accordingly:
 
-    * Define the next development version.
+    * Define the next development version on the branch from which you are releasing.
 
         * There are only 1 acceptable pattern:
 
             * `major.minor.micro-SNAPSHOT`, for example `1.2.0-SNAPSHOT` or `1.2.1-SNAPSHOT`
+
+        * Warning: This release branch should never have the same SNAPSHOT version as master or another branch.
+
+            * If you're releasing a Final, increment the micro number, not the minor number.
 
         * The OSGi version ends in `.SNAPSHOT` instead of `-SNAPSHOT`.
 
@@ -1189,7 +1193,7 @@ If everything is perfect (compiles, hudson is all blue and sanity checks succeed
 
     * Open menu item *Administration*, link *Manage versions*, release the version.
 
-    * Create new versions if needed.
+    * Create a new version if needed. There should be at least 2 unreleased non-FUTURE versions.
 
 * Upload the zips and documentation and update the website
 
@@ -1206,11 +1210,13 @@ Announcing the the release
 
 * Create a blog entry on [the droolsjbpm blog](http://blog.athico.com/)
 
-    * Include a link to that blog entry in all other correspondence.
+    * Include a direct link to the new and noteworthy section and to that blog entry in all other correspondence.
 
-    * Twitter the blog link.
+    * Twitter and Google+ the links.
 
-    * Mail the blog link to the user list.
+        * Most people just want to read the new and noteworthy, so link that first.
+
+    * Mail the links to the user list.
 
 * If it's a final release:
 
