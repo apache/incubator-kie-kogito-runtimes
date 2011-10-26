@@ -1097,15 +1097,17 @@ If everything is perfect (compiles, hudson is all blue and sanity checks succeed
 
             * Use the exact same version everywhere (especially in URL's).
 
-    * Adjust the version in the poms, manifests and other eclipse stuff. The arguments are current drools version, current drools osgi version, new drools version, new drools osgi version, current jbpm version, current jbpm osgi version, new jbpm version, new jbpm osgi version:
+    * Adjust the version in the poms, manifests and other eclipse stuff.
 
             $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.2.0.Final 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.1.0.Final 5.1.0.Final
 
-        * Note: the arguments are twice `oldVersion oldOsgiVersion newVersion newOsgiVersion`.
+        * Note: the arguments are `droolsOldVersion droolsOldOsgiVersion droolsNewVersion droolsNewOsgiVersion jbpmOldVersion jbpmOldOsgiVersion jbpmNewVersion jbpmNewOsgiVersion`.
 
         * Commit those changes (so you can tag them properly):
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
+
+    * Update the *Compatibility matrix* in `droolsjbpm-knowledge/droolsjbpm-introduction-docs/src/main/docbook/en-US/Chapter-Compatibility/Chapter-Compatibility_matrix.xml`.
 
 * Create the tag locally. The arguments are the Drools version, the jBPM version:
 
