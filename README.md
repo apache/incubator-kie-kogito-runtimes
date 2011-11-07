@@ -622,15 +622,27 @@ Extra Eclipse plugins
 
     * Run GWT in hosted mode
 
+        * Open project context menu *Properties*, Google->Web application->
+
+               * This project has a WAR directory, tick
+
+               * WAR directory, `target/guvnor-webapp-5.4.0-SNAPSHOT` (this will differ for different releases)
+
+               * You will need to have completed a maven install, as explained above to generate the `target/guvnor-webapp-5.4.0-SNAPSHOT` directory
+
+               * Launch and deploy from this directory, tick
+
         * Open menu *Run*, menu item *Run configurations...*
 
         * In the list, select *Web Application*, button *new launch configuration*
 
         * Tab *Main*, Project: `guvnor-webapp`
 
+        * Tab *Main*, Ensure `Main class` is: `com.google.gwt.dev.DevMode`
+
         * Tab *GWT*, list *Available Modules*: `Guvnor - org.drools.guvnor`
 
-        * Tab *GWT*, textfield *URL*: `org.drools.guvnor.Guvnor/Guvnor.html`
+        * Tab *Arguments*, Ensure `Program Arguments` are : `-war /home/manstis/workspaces/git/droolsjbpm/guvnor/guvnor-webapp/target/guvnor-webapp-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`
 
         * Button *Run*.
 
