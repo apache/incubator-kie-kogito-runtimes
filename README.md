@@ -642,7 +642,9 @@ Extra Eclipse plugins
 
         * Tab *GWT*, list *Available Modules*: `Guvnor - org.drools.guvnor`
 
-        * Tab *Arguments*, Ensure `Program Arguments` are : `-war /home/manstis/workspaces/git/droolsjbpm/guvnor/guvnor-webapp/target/guvnor-webapp-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`
+        * Tab *Arguments*, Ensure `Program Arguments` are : `-war <path-to-war-folder> -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`. 
+
+               * For example: `-war /home/manstis/workspaces/git/droolsjbpm/guvnor/guvnor-webapp/target/guvnor-webapp-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`
 
         * Button *Run*.
 
