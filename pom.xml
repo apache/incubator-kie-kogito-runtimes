@@ -50,7 +50,7 @@
     <!-- External dependencies -->
     <mvel.dep.version>2.1.0.drools4</mvel.dep.version>
     <camel.version>2.4.0</camel.version>
-    <cxf.version>2.4.1</cxf.version>
+    <cxf.version>2.4.4</cxf.version>
     <springframework.version>2.5.6</springframework.version>
     <gwt.version>2.3.0</gwt.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
