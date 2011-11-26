@@ -650,6 +650,12 @@ Extra Eclipse plugins
 
     * In your workspace, in the tab *Development Mode*, double click on the `Guvnor` URL.
 
+    * If you encounter a java.lang.NoSuchFieldError: warningThreshold error you need to follow the steps [here](http://code.google.com/p/google-web-toolkit/issues/detail?id=4479), i.e. 
+
+        * Add GWT-SDK to your classpath (even though it is a Maven dependency)
+
+        * On your Java Build Path, Order and Export tab, move GWT-SDK to the top
+
 Eclipse plugin development
 --------------------------
 
