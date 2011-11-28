@@ -837,9 +837,14 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bpmn2</artifactId>
+        <artifactId>jbpm-test</artifactId>
         <version>${jbpm.version}</version>
-        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-test</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
