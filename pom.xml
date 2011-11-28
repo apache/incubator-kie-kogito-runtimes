@@ -2127,11 +2127,11 @@
         <version>2.1</version>
         <type>war</type>
       </dependency>
-     <dependency>
-       <groupId>org.jboss.bpm</groupId>
-       <artifactId>gwt-console-server-integration</artifactId>
-       <version>2.1</version>
-     </dependency>
+      <dependency>
+        <groupId>org.jboss.bpm</groupId>
+        <artifactId>gwt-console-server-integration</artifactId>
+        <version>2.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
