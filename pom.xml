@@ -1147,7 +1147,13 @@
       <!--</dependency>-->
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>guvnor-webapp</artifactId>
+        <artifactId>guvnor-webapp-core</artifactId>
+        <type>jar</type>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-webapp-drools</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
       </dependency>
