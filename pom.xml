@@ -1153,8 +1153,13 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-webapp-core</artifactId>
-        <type>jar</type>
         <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-webapp-core</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -1164,7 +1169,7 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>guvnor-webapp</artifactId>
+        <artifactId>guvnor-webapp-drools</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
