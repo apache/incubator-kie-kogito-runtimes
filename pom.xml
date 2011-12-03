@@ -1163,6 +1163,12 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>guvnor-webapp-core</artifactId>
+        <version>${guvnor.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>guvnor-webapp-drools</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
