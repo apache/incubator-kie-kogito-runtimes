@@ -1217,15 +1217,17 @@ If everything is perfect (compiles, hudson is all blue and sanity checks succeed
 
     * Create a new version if needed. There should be at least 2 unreleased non-FUTURE versions.
 
-* Upload the zips and documentation and update the website
+* Upload the zips, documentation and javadocs and update the website.
 
-    * Zips go to [download.jboss.org](http://download.jboss.org/drools/release/)
+    * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
+
+    * `download_jboss_org` goes into [download.jboss.org](http://download.jboss.org/drools/release/)
 
         * Update [the download webpage](http://www.jboss.org/drools/downloads) accordingly
 
-    * Documentation goes to [docs.jboss.org](http://download.docs.org/drools/release/)
+    * `docs_jboss_org` goes into [docs.jboss.org](http://download.docs.org/drools/release/)
 
-        * Update [the documentation webpage](http://www.jboss.org/drools/documentation) accordingly
+        * Use `documentation_table.txt` to update [the documentation webpage](http://www.jboss.org/drools/documentation).
 
 Announcing the the release
 --------------------------
