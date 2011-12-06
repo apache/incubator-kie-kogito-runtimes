@@ -1081,13 +1081,19 @@ A release branch name should always end with `.x` so it looks different from a t
 Releasing from a release branch
 -------------------------------
 
-Warning: Use JDK 1.6, because in JDK 1.5 the module `guvnor-repository-connector-modeshape` is not build.
+* To produce the distribution zips, build with `-Dfull`:
 
-To produce the distribution zips, build with `-Dfull`:
+        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull clean install
 
-    $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull clean install
+    * Warning: Use JDK 1.6, because in JDK 1.5 the module `guvnor-repository-connector-modeshape` is not build.
 
-* Do a sanity check of the artifacts by running the examples from the zips.
+    * Warning: Verify that workspace contains no uncommitted changes or rogue module directories of older branches:
+
+            $ droolsjbpm-build-bootstrap/script/git-all.sh status
+
+        * Otherwise the sources in a distribution zip might contain archived module directories with old binaries.
+
+* Do a sanity check of the artifacts by running each runExamples.sh from the zips.
 
     * The distribution zips are in the directory `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
 
