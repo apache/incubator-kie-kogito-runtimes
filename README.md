@@ -1159,7 +1159,7 @@ If everything is perfect (compiles, hudson is all blue and sanity checks succeed
 
         * Start the `examples.sh` script for drools, droolsjbpm-integration and drools-planner
 
-        * Deploy the guvnor jboss-as-5.1 war to guvnor and surf to it:
+        * Deploy the guvnor jboss-as-7.0 war to guvnor and surf to it:
 
             * Install the mortgages examples, build it and run the test scenario's
 
