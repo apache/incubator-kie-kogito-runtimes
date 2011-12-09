@@ -1175,6 +1175,12 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>guvnor-webapp-soa</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>guvnor-webapp-drools</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
