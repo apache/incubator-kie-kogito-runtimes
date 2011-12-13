@@ -41,7 +41,7 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "==============================================================================="
     elif [ $repository = 'jbpm' ] && [ "$withoutJbpm" = 'true' ]; then
         echo "==============================================================================="
-        echo "Without repository: $repository. Skipping"
+        echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
     else
         echo "==============================================================================="

@@ -56,11 +56,11 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 
     if [ ! -d $droolsjbpmOrganizationDir/$repository ]; then
         echo "==============================================================================="
-        echo "Missing Repository: $repository. Skipping"
+        echo "Missing Repository: $repository. SKIPPING!"
         echo "==============================================================================="
     elif [ $repository = 'jbpm' ] && [ "$withoutJbpm" = 'true' ]; then
         echo "==============================================================================="
-        echo "Without repository: $repository. Skipping"
+        echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
     else
         echo "==============================================================================="
