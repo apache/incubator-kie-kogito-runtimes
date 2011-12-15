@@ -361,6 +361,23 @@ Those SNAPSHOTS were build and deployed last night by hudson jobs.
 
         Note that using `-nsu` will also make the build faster.
 
+
+Running tests
+-------------
+
+Guvnor uses Arquillian to run tests in a J2EE container and hence tests need to be ran differently to others.
+
+* Guvnor
+
+        $ cd ~/projects/droolsjbpm/guvnor/guvnor-webapp-drools
+        $ mvn integration-test [-Dtest=ATestClassName]
+
+* All other modules
+
+        $ cd ~/projects/droolsjbpm/drools
+        $ mvn test [-Dtest=ATestClassName]
+
+
 Configuring Maven
 -----------------
 
