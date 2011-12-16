@@ -479,6 +479,16 @@ Configuring Eclipse
 
     * Click tree item *Java*, tree item *Compiler*, section *JDK Compliance*, combobox *Compiler compliance level* should be `1.5`.
 
+* Remove the test resources Java Build Path exclusion filter to ensure JUnit tests ran inside Eclipse can find the necessary resources.
+
+    * Right-click the project
+
+    * Select menu item *Build Path*, sub-menu item *Configure build path...*
+
+    * On the *Sources* tab, scroll down to `<project>\src\test\resources` and expand tree
+
+    * Select `Excluded` and click *Remove*. The filter should show as `(none)` 
+
 * Set the correct file encoding (UTF-8 except for properties files) and end-of-line characters (unix):
 
     * Open menu *Window*, menu item *Preferences*.
