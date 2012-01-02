@@ -1164,6 +1164,8 @@ If everything is perfect (compiles, hudson is all blue and sanity checks succeed
 
     * Update the *Compatibility matrix* in `droolsjbpm-knowledge/droolsjbpm-introduction-docs/src/main/docbook/en-US/Chapter-Compatibility/Chapter-Compatibility_matrix.xml`.
 
+        * Cherry pick that change to master too.
+
 * Create the tag locally. The arguments are the Drools version, the jBPM version:
 
         $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 5.2.0.Final 5.1.0.Final
