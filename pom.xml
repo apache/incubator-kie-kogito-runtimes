@@ -53,6 +53,8 @@
     <cxf.version>2.4.4</cxf.version>
     <springframework.version>2.5.6</springframework.version>
     <gwt.version>2.3.0</gwt.version>
+    <weld.version>1.1.5.Final</weld.version>
+    <seam.version>3.1.0.Final</seam.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -2024,16 +2026,38 @@
         <version>3.1.5.GA</version>
       </dependency>
 
+      <!-- Weld (Context and Dependency Injection) -->
       <dependency>
-        <groupId>org.jboss.seam</groupId>
-        <artifactId>jboss-seam-remoting</artifactId>
-        <version>2.2.2.Final</version>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-core</artifactId>
+        <version>${weld.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.seam</groupId>
-        <artifactId>jboss-seam</artifactId>
-        <version>2.2.2.Final</version>
+        <groupId>org.jboss.weld.servlet</groupId>
+        <artifactId>weld-servlet-core</artifactId>
+        <version>${weld.version}</version>
       </dependency>
+      <!-- Seam 3 (goodies for weld) -->
+      <dependency>
+        <groupId>org.jboss.solder</groupId>
+        <artifactId>solder-impl</artifactId>
+        <version>${seam.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam.security</groupId>
+        <artifactId>seam-security</artifactId>
+        <version>${seam.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam.remoting</groupId>
+        <artifactId>seam-remoting</artifactId>
+        <version>${seam.version}</version>
+      </dependency>
+      <!--<dependency>-->
+      <!--<groupId>org.jboss.seam.rest</groupId>-->
+      <!--<artifactId>seam-rest</artifactId>-->
+      <!--</dependency>-->
+
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
