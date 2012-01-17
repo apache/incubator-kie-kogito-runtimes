@@ -1943,6 +1943,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>3.4.0.GA</version>
+        <exclusions>
+          <exclusion><!-- TODO remove me when hibernate is upgraded to version 4.0+ -->
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -1958,6 +1964,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>3.3.2.GA</version>
+        <exclusions>
+          <exclusion><!-- TODO remove me when hibernate is upgraded to version 4.0+ -->
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
