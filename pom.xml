@@ -1843,6 +1843,11 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>woodstox-core-asl</artifactId>
+        <version>4.1.1</version>
+      </dependency>
 
       <dependency>
         <groupId>org.apache.camel</groupId>
@@ -1882,6 +1887,11 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
+        <version>${springframework.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
         <version>${springframework.version}</version>
       </dependency>
       <dependency>
