@@ -944,6 +944,37 @@ Team communication
 
 To develop a great project as a team, we need to communicate efficiently as a team.
 
+Team workflows
+--------------
+
+* Fixing a community issue in JIRA:
+
+    * Find/create the issue in JIRA ([Drools](https://issues.jboss.org/browse/JBRULES),
+    [jBPM](https://issues.jboss.org/browse/JBPM], [Guvnor](https://issues.jboss.org/browse/GUVNOR)
+
+    * Fix the issue and push those changes to the appropriate branch(es) on github.
+
+    * Change the *Status* to `Resolved`.
+
+        * Once the reporter verifies the fix, he changes *Status* to `Closed`. Or we bulk change it to `Closed` after a year.
+
+* (Red Hat developers only) Fixing BRMS issues in Bugzilla:
+
+    * Find an issue in Bugzilla. Change *Status* to `ASSIGNED` and *Assigned To* to yourself.
+
+    * Fix the issue and push those changes to the appropriate branch(es) on github.
+
+        * This will likely require back porting or forward porting, because the issue must be fixed on master too.
+
+    * Change the *Status* to `MODIFIED`.
+
+        * Once the new product version is build, they change *Status* to `ON_QA`.
+
+        * Once QA verifies the fix, they change *Status* to `Verified`.
+
+Knowing what's going on
+-----------------------
+
 * **[Subscribe to the dev list](http://www.jboss.org/drools/lists) and check it daily.**
 
     * Send a summary of every important organizational or structural decision to the dev list.
