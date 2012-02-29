@@ -49,7 +49,7 @@
 
     <!-- External dependencies -->
     <mvel.dep.version>2.1.0.drools8</mvel.dep.version>
-    <camel.version>2.4.0</camel.version>
+    <camel.version>2.8.1</camel.version>
     <cxf.version>2.4.4</cxf.version>
     <springframework.version>2.5.6</springframework.version>
     <gwt.version>2.3.0</gwt.version>
@@ -1398,17 +1398,17 @@
       <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
-        <version>2.2.4</version>
+        <version>2.2.5</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
-        <version>2.2.4</version>
+        <version>2.2.5</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-xjc</artifactId>
-        <version>2.2.4</version>
+        <version>2.2.5</version>
       </dependency>
 
       <dependency>
