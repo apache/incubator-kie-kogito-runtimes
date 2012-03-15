@@ -334,7 +334,7 @@ Running the build
 
     * *none*: Fast, for during development
 
-    * `full`: Slow, but builds everything (including documentation). Used by hudson and during releases.
+    * `full`: Slow, but builds everything (including documentation). Used by jenkins and during releases.
 
     * `soa`: prunes away the non-enterprise stuff
 
@@ -347,7 +347,7 @@ Running the build
 
 * Warning: The first `mvn` build of a day will download the latest SNAPSHOT dependencies of other droolsjbpm projects,
 unless you build all those droolsjbpm projects from source.
-Those SNAPSHOTS were build and deployed last night by hudson jobs.
+Those SNAPSHOTS were build and deployed last night by jenkins jobs.
 
     * If you 've pulled all changes (or cloned a repository) today, this is a good thing:
     it saves you from having to download and build all those other latest droolsjbpm projects from source.
@@ -1023,25 +1023,25 @@ Knowing what's going on
 
         * [droolsjbpm-build-bootstrap](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom)
 
-    * Subscribe to [hudson](https://hudson.jboss.org/hudson/view/Drools%20jBPM/)
+    * Subscribe to [jenkins](https://hudson.jboss.org/hudson/view/Drools%20jBPM/)
 
         * with [the Firefox plugin](https://addons.mozilla.org/en-us/firefox/addon/jenkins-build-monitor/) to easily see in your status bar which builds are failing (recommended):
 
-            * After installation, right click on the hudson icon in the lower right corner.
+            * After installation, right click on the jenkins icon in the lower right corner.
 
             * Click menu item *Preferences*, tab *Feed*, textfield *poll interval* `30` *minutes*.
 
             * Click menu item *Preferences*, tab *Display*, combox *Display* `latest build` *on status bar*.
 
-            * Go to the hudson job of the projects you're working on:
+            * Go to the jenkins job of the projects you're working on:
 
                 * [guvnor](https://hudson.jboss.org/hudson/view/Drools%20jBPM/job/guvnor/)
 
             * Right click in the lower left corner on the *All* feed link, menu item *Add link to jenkins build monitor*.
 
-        * Otherwise, check [the hudson website](https://hudson.jboss.org/hudson/view/Drools%20jBPM/) often.
+        * Otherwise, check [the jenkins website](https://hudson.jboss.org/hudson/view/Drools%20jBPM/) often.
 
-            * Note: the public hudson is a mirror of the VPN internal Red Hat hudson and is sometimes stale.
+            * Note: the public jenkins is a mirror of the VPN internal Red Hat jenkins and is sometimes stale.
 
                 * If you think this can be the case, check the build times.
 
@@ -1112,6 +1112,8 @@ Creating a release branch
 
 A release branch name should always end with `.x` so it looks different from a tag name and a topic branch name.
 
+* Alert the IRC channel that you're going to branch master.
+
 * Simply use the script `script/release/create-release-branches.sh` with the drools and jbpm *release branch name*:
 
         $ droolsjbpm-build-bootstrap/script/release/create-release-branches.sh 5.2.x 5.1.x
@@ -1136,6 +1138,20 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * Do a sanity check with `grep -lir "5.2.x" * | grep -v "target"`. This lists all the files that are still using the old version, if there are any.
 
+* Set up jenkins build jobs for the branch.
+
+    * Go to the internal jenkins website inside the VPN.
+
+    * Clone each of the master build jobs for every git repo that was branched.
+
+        * Suffix the build job name with the branch name, for example `drools-5.2.x` and `droolsjbpm-integration-5.2.x`.
+
+        * Change the build job configuration to use the git repo branch, for example `5.2.x`.
+
+* Alert the dev mailing list and the IRC channel that the branch has been made.
+
+    * Remind everyone clearly that every new commit to `master` will not make the upcoming CR and Final release, unless they cherry-pick it to this new branch.
+
 Releasing from a release branch
 -------------------------------
 
@@ -1155,7 +1171,7 @@ Releasing from a release branch
 
     * The distribution zips are in the directory `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
 
-If everything is perfect (compiles, hudson is all blue and sanity checks succeed):
+If everything is perfect (compiles, jenkins is all blue and sanity checks succeed):
 
 * Define the version and adjust the sources accordingly:
 
