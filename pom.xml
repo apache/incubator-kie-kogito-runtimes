@@ -51,7 +51,7 @@
     <mvel.dep.version>2.1.0.drools10</mvel.dep.version>
     <camel.version>2.9.0</camel.version>
     <cxf.version>2.4.4</cxf.version>
-    <springframework.version>2.5.6</springframework.version>
+    <springframework.version>3.0.6.RELEASE</springframework.version>
     <gwt.version>2.3.0</gwt.version>
     <weld.version>1.1.5.Final</weld.version>
     <seam.version>3.1.0.Final</seam.version>
