@@ -53,8 +53,7 @@
     <cxf.version>2.4.4</cxf.version>
     <springframework.version>3.0.6.RELEASE</springframework.version>
     <gwt.version>2.3.0</gwt.version>
-    <weld.version>1.1.5.Final</weld.version>
-    <seam.version>3.1.0.Final</seam.version>
+    <weld.version>1.1.6.Final</weld.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -2180,17 +2179,17 @@
       <dependency>
         <groupId>org.jboss.solder</groupId>
         <artifactId>solder-impl</artifactId>
-        <version>${seam.version}</version>
+        <version>3.1.1.Final</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam.security</groupId>
         <artifactId>seam-security</artifactId>
-        <version>${seam.version}</version>
+        <version>3.1.0.Final</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam.remoting</groupId>
         <artifactId>seam-remoting</artifactId>
-        <version>${seam.version}</version>
+        <version>3.1.0.Final</version>
       </dependency>
       <!--<dependency>-->
       <!--<groupId>org.jboss.seam.rest</groupId>-->
