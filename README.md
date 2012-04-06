@@ -1205,6 +1205,8 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
 
+        * **WARNING: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.**
+
         * Commit those changes (so you can tag them properly):
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
