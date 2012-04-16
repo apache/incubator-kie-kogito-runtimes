@@ -164,7 +164,7 @@ Working with git
 
 * Push those commits on your topic branch to your fork
 
-        $ git push myFirstTopic
+        $ git push origin myFirstTopic
 
 * Get the latest changes from the blessed repository
 
@@ -200,6 +200,11 @@ Working with git
             Just fix the merge conflicts and commit (even if the git seems to contain many files),
             only then is the merge over. Then run `git log` to see what happened.
             The many files in the merge conflict resolving commit are a side-affect of non-linear history.
+
+* You may delete your topic branch after your pull request is closed (first one deletes remotely, second one locally):
+
+        $ git push origin :myTopicBranch
+        $ git branch -D myTopicBranch
 
 * Tips and tricks
 
