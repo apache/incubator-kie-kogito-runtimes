@@ -1201,7 +1201,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
 
-        * **WARNING: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.**
+        * WARNING: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
 
         * Commit those changes (so you can tag them properly):
 
@@ -1239,11 +1239,13 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
             * Install the mortgages examples, build it and run the test scenario's
 
-        * Warning: the `manual` dir in some zips have been known to have zip problems: they look fine zipped, but are empty unzipped.
+        * WARNING: the `manual` dir in some zips have been known to have zip problems: they look fine zipped, but when unzipped, they are empty on linux, fail on windows and OK on Mac.
 
-            * This regularly occurs on ge0ffrey's machine for `droolsjbpm-integration` and `drools-planner` on the directories `manual` and `javadocs`.
+            * This regularly occurs on Linux or Mac builds for `droolsjbpm-integration` and `drools-planner` on the directories `manual` and `javadocs`.
 
-            * Solution: unzip them, grab the good content from the relevant *-distribution module and rezip it (yes nexus zip's are wrong).
+            * Solution: unzip them, grab the good content from the relevant *-distribution module and rezip it. (Ignore that the nexus zip's are wrong).
+
+            * TODO For 5.4.0.Final and 5.5.0.Beta1 we upgraded the maven-assembly-plugin to 2.2.2 from 2.2.1 which might fix it. Check if it still happens these days.
 
 * This is **the point of no return**.
 
