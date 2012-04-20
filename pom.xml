@@ -1207,6 +1207,11 @@
       <!-- guvnor -->
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>guvnor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>guvnor-repository</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
