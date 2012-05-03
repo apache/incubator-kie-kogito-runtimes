@@ -992,6 +992,12 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-war</artifactId>
+        <version>${jbpm.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-gwt-core</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
