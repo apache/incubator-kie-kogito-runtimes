@@ -1003,6 +1003,13 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-core</artifactId>
+        <version>${jbpm.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task-mina</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
