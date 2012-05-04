@@ -981,12 +981,45 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task</artifactId>
+        <artifactId>jbpm-human-task-core</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task</artifactId>
+        <artifactId>jbpm-human-task-mina</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-hornetq</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-jms</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-core</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-mina</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-hornetq</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-jms</artifactId>
         <version>${jbpm.version}</version>
         <classifier>sources</classifier>
       </dependency>
