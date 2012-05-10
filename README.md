@@ -33,6 +33,7 @@ Table of content
 
 * **FAQ**
 
+* auto-gen TOC:
 {:toc}
 
 Quick start
