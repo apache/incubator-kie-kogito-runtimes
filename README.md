@@ -17,6 +17,10 @@ please update it using the [markdown syntax](http://daringfireball.net/projects/
 Table of content
 ----------------
 
+* auto-gen TOC:
+{:toc}
+
+
 * **Source control with Git**
 
 * **Building with Maven**
@@ -32,9 +36,6 @@ Table of content
 * **Releasing**
 
 * **FAQ**
-
-* auto-gen TOC:
-{:toc}
 
 Quick start
 ===========
