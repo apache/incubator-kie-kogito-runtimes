@@ -33,6 +33,8 @@ Table of content
 
 * **FAQ**
 
+{:toc}
+
 Quick start
 ===========
 
