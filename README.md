@@ -17,11 +17,6 @@ please update it using the [markdown syntax](http://daringfireball.net/projects/
 Table of content
 ----------------
 
-* auto-gen TOC:
-{:toc}
-
-TODO fixme
-
 * **Source control with Git**
 
 * **Building with Maven**
