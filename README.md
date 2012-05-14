@@ -1239,13 +1239,13 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
             * Install the mortgages examples, build it and run the test scenario's
 
-        * WARNING: the `manual` dir in some zips have been known to have zip problems: they look fine zipped, but when unzipped, they are empty on linux, fail on windows and OK on Mac.
+        * WARNING: the `reference_manual` dir in some zips have been known to have zip problems: they look fine zipped, but when unzipped, they are empty on linux, fail on windows and OK on Mac.
 
-            * This regularly occurs on Linux or Mac builds for `droolsjbpm-integration` and `drools-planner` on the directories `manual` and `javadocs`.
+            * This randomly occurs on Linux or Mac builds for `droolsjbpm-integration` or `drools-planner` on the directory `reference_manual`, usually 1 one of them.
 
-            * Solution: unzip them, grab the good content from the relevant *-distribution module and rezip it. (Ignore that the nexus zip's are wrong).
+            * Solution: One linux, unzip them, grab the good content from the relevant *-distribution module and rezip it. (Ignore that the nexus zip's are wrong).
 
-            * TODO For 5.4.0.Final and 5.5.0.Beta1 we upgraded the maven-assembly-plugin to 2.2.2 from 2.2.1 which might fix it. Check if it still happens these days.
+            * TODO For 5.5.0.Beta1 we have specified a directoryMode which might fix it. Check if it still happens now, if not remove this warning.
 
 * This is **the point of no return**.
 
