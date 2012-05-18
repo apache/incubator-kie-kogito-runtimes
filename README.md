@@ -669,6 +669,8 @@ Extra Eclipse plugins
 
                * For example: `-war /home/manstis/workspaces/git/droolsjbpm/guvnor/guvnor-webapp/target/guvnor-webapp-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`
 
+        * Tab *Arguments*, it is recommended to set `VM Arguments` to: `-XX:MaxPermSize=512m -Xms512m -Xmx2048m`. You might be able to try smaller values, but these are known to work.
+
         * Button *Run*.
 
     * In your workspace, in the tab *Development Mode*, double click on the `Guvnor` URL.
