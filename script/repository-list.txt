@@ -7,3 +7,4 @@ droolsjbpm-integration
 guvnor
 droolsjbpm-tools
 droolsjbpm-build-distribution
+jbpm-form-builder
