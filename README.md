@@ -1136,6 +1136,20 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * Do a sanity check with `grep -lir "5.2.x" * | grep -v "target"`. This lists all the files that are still using the old version, if there are any.
 
+* Guvnor translations
+
+    * WARNING: THIS IS EXPERIMENTAL. THESE STEPS SHOULD BE TREATED WITH CAUTION AND COULD WELL NEED CHANGING WHEN WE DO THE FIRST RELEASE USING ZANATA
+
+    * Translations into different locales are handled within Zanata (https://translate.jboss.org/)
+
+    * The most recent translations need to be pulled into the release branch. Assuming you have set-up your Zanata configuration correctly, this can be achieved with:
+
+            $ mvn zanata:pull -Dfull -Dngsoa -Dngsoafull -Dbpm
+
+    * NOTE: The above Maven switches specify Guvnor Profiles to examine for translation files. Drools Guvnor (`-Dfull`) is essential. SOA (`-Dngsoa` and `-Dngsoafull`) and BPM Console (`-Dbpm`) are optional.
+
+    * NOTE: If releasing a new version number (major, minor or micro) a new version of the translations should be setup in Zanata.
+
 * Set up jenkins build jobs for the branch.
 
     * Go to the internal jenkins website inside the VPN.
