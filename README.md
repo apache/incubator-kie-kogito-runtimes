@@ -1089,13 +1089,9 @@ Releasing
 Expecting a release
 -------------------
 
-* Use a non-SNAPSHOT version for all dependencies. Get those dependencies (for example mvel) released if needed.
-    * The MVEL release usually becomes a blocker for the Drools release, try to get MVEL released one week before the Drools release. This way you have time to test with the real thing.
+* Use a non-SNAPSHOT version for all dependencies. Get those dependencies (for example mvel and bpm-console) released if needed.
 
-* Run findbugs on all projects:
-
-        $ mvn site -DskipTests
-        $ firefox */target/site/findbugs.html
+    * Try to get those dependencies (mvel, bpm-console) released one week before the droolsjbpm release. This way, the final artifact gets tested.
 
 * Releasing Drools with or without jBPM?
 
