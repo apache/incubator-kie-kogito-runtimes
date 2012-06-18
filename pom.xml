@@ -1401,6 +1401,11 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
+       <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-jbpm-console-server</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>    
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-jbpm-console-shared</artifactId>
