@@ -1111,7 +1111,6 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-gwt-console</artifactId>
-        <type>war</type>
         <version>${jbpm.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -1124,7 +1123,6 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-gwt-console-server</artifactId>
-        <type>war</type>
         <version>${jbpm.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -1411,7 +1409,6 @@
         <groupId>org.drools</groupId>
         <artifactId>guvnor-jbpm-console-server</artifactId>
         <version>${guvnor.version}</version>
-        <type>war</type>
         <classifier>sources</classifier>
       </dependency>    
       <dependency>
