@@ -42,7 +42,7 @@ if [ "$withoutJbpm" != 'true' ]; then
     jbpmOldOsgiVersion=$6
     jbpmNewVersion=$7
     jbpmNewOsgiVersion=$8
-    echo "The jbpm version: old is jbpmOldVersion (osgi: $jbpmOldOsgiVersion) - new is jbpmNewVersion (osgi: $jbpmNewOsgiVersion)"
+    echo "The jbpm version: old is $jbpmOldVersion (osgi: $jbpmOldOsgiVersion) - new is $jbpmNewVersion (osgi: $jbpmNewOsgiVersion)"
 fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
