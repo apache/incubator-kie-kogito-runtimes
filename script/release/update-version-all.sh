@@ -42,7 +42,7 @@ if [ "$withoutJbpm" != 'true' ]; then
     jbpmOldOsgiVersion=$6
     jbpmNewVersion=$7
     jbpmNewOsgiVersion=$8
-    echo "The jbpm version: old is jbpmOldVersion (osgi: jbpmOldOsgiVersion) - new is jbpmNewVersion (osgi: jbpmNewOsgiVersion)"
+    echo "The jbpm version: old is jbpmOldVersion (osgi: $jbpmOldOsgiVersion) - new is jbpmNewVersion (osgi: $jbpmNewOsgiVersion)"
 fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
@@ -78,12 +78,12 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
         if [ $repository != 'droolsjbpm-tools' ]; then
             if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
-                mvn -Dfull versions:set -DoldVersion=$oldVersion -DnewVersion=$newVersion -DallowSnapshots=true
+                mvn -Dfull versions:set -DoldVersion=$oldVersion -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
                 # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
                 mvn clean install -DskipTests
             else
-                mvn -Dfull versions:update-parent -DparentVersion=[$newVersion] -DallowSnapshots=true
-                mvn -Dfull versions:update-child-modules -DallowSnapshots=true
+                mvn -Dfull versions:update-parent -DparentVersion=[$newVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
+                mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
             fi
             returnCode=$?
         else
@@ -92,13 +92,13 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             returnCode=$?
             cd ..
             if [ $returnCode == 0 ]; then
-                mvn -Dfull versions:update-parent -N -DparentVersion=[$newVersion] -DallowSnapshots=true
+                mvn -Dfull versions:update-parent -N -DparentVersion=[$newVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
                 mvn clean install -N -DskipTests
                 cd drools-eclipse
-                mvn -Dfull versions:update-parent -N -DparentVersion=[$newVersion] -DallowSnapshots=true
+                mvn -Dfull versions:update-parent -N -DparentVersion=[$newVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 cd ..
-                mvn -Dfull versions:update-child-modules -DallowSnapshots=true
+                mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
                 returnCode=$?
             fi
             # TODO drools-ant, drools-eclipse, droolsjbpm-tools-distribution
