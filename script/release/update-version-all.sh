@@ -68,35 +68,33 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         cd $repository
 
-        oldVersion=$droolsOldVersion
-        newVersion=$droolsNewVersion
-        if [ $repository = 'jbpm' ]; then
-            oldVersion=$jbpmOldVersion
-            newVersion=$jbpmNewVersion
-        fi
         # WARNING: Requires a fix for http://jira.codehaus.org/browse/MRELEASE-699 to work!
         # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
         if [ $repository != 'droolsjbpm-tools' ]; then
             if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
-                mvn -Dfull versions:set -DoldVersion=$oldVersion -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
+                mvn -Dfull versions:set -DoldVersion=$droolsOldVersion -DnewVersion=$droolsNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
                 # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
                 mvn clean install -DskipTests
+            elif [ $repository == 'jbpm' ]; then
+                mvn -Dfull versions:set -DoldVersion=$jbpmOldVersion -DnewVersion=$jbpmNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
+                mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
+                mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
             else
-                mvn -Dfull versions:update-parent -DparentVersion=[$newVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
+                mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
             fi
             returnCode=$?
         else
             cd drools-eclipse
-            mvn -Dfull tycho-versions:set-version -DnewVersion=$newVersion
+            mvn -Dfull tycho-versions:set-version -DnewVersion=$droolsNewVersion
             returnCode=$?
             cd ..
             if [ $returnCode == 0 ]; then
-                mvn -Dfull versions:update-parent -N -DparentVersion=[$newVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
+                mvn -Dfull versions:update-parent -N -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
                 mvn clean install -N -DskipTests
                 cd drools-eclipse
-                mvn -Dfull versions:update-parent -N -DparentVersion=[$newVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
+                mvn -Dfull versions:update-parent -N -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 cd ..
                 mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
                 returnCode=$?
