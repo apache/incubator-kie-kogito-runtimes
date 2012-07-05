@@ -112,7 +112,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 done
 
 cd droolsjbpm-build-distribution
-mvn antrun:run -N -DoldVersion=$droolsOldVersion -DoldOsgiVersion=$droolsOldOsgiVersion -DnewVersion=$droolsNewVersion -DnewOsgiVersion=$droolsNewOsgiVersion
+mvn antrun:run -N -DdroolsOldVersion=$droolsOldVersion -DdroolsOldOsgiVersion=$droolsOldOsgiVersion -DdroolsNewVersion=$droolsNewVersion -DdroolsNewOsgiVersion=$droolsNewOsgiVersion -DjbpmOldVersion=$jbpmOldVersion -DjbpmOldOsgiVersion=$jbpmOldOsgiVersion -DjbpmNewVersion=$jbpmNewVersion -DjbpmNewOsgiVersion=$jbpmNewOsgiVersion
 returnCode=$?
 cd ..
 if [ $returnCode != 0 ] ; then
