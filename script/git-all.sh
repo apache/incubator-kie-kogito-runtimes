@@ -55,7 +55,7 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "==============================================================================="
         cd $repository
 
-        git $*
+        git "$@"
 
         returnCode=$?
         cd ..
