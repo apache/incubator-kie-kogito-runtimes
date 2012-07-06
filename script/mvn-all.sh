@@ -56,9 +56,9 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         cd $repository
 
         if [ -a $M3_HOME/bin/mvn ] ; then
-            $M3_HOME/bin/mvn $*
+            $M3_HOME/bin/mvn "$@"
         else
-            mvn $*
+            mvn "$@"
         fi
 
         returnCode=$?
