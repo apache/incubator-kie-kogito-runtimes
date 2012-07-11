@@ -903,7 +903,7 @@ Extra IntelliJ plugins
 
     * Check *Git*.
 
-* GWT plugin
+* GWT plugin (to run in GWT hosted mode)
 
     * Open menu *File*, menu item *Project structure*
 
@@ -915,7 +915,13 @@ Extra IntelliJ plugins
 
         * Add new *GWT configuration*
 
-            * Combobox *module* `guvnor-webapp-drools`.
+            * Combobox *Module*: `guvnor-webapp-drools`
+
+            * Combobox *GWT Module to load*: `org.drools.guvnor.FastCompiledGuvnor`
+
+            * Textfield *VM options*: `-Xmx1024m -XX:MaxPermSize=256m`
+
+            * Textfield *Start page*: `org.drools.guvnor.Guvnor/Guvnor.html` (Second entry, not the first)
 
         * Run that configuration.
 
