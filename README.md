@@ -316,7 +316,7 @@ Running the build
         drools  droolsjbpm-build-bootstrap  droolsjbpm-build-distribution  droolsjbpm-integration  droolsjbpm-knowledge  droolsjbpm-tools  drools-planner  guvnor
         $ cd guvnor
         $ ls
-        ...  guvnor-repository  guvnor-webapp  pom.xml
+        ...  guvnor-repository  guvnor-webapp-drools  pom.xml
 
     Notice you see a `pom.xml` file there. Those `pom.xml` files are the heart of Maven.
 
@@ -649,9 +649,9 @@ Extra Eclipse plugins
 
                * This project has a WAR directory, tick
 
-               * WAR directory, `target/guvnor-webapp-5.4.0-SNAPSHOT` (this will differ for different releases)
+               * WAR directory, `target/guvnor-webapp-drools-5.4.0-SNAPSHOT` (this will differ for different releases)
 
-               * You will need to have completed a maven install, as explained above to generate the `target/guvnor-webapp-5.4.0-SNAPSHOT` directory
+               * You will need to have completed a maven install, as explained above to generate the `target/guvnor-webapp-drools-5.4.0-SNAPSHOT` directory
 
                * Launch and deploy from this directory, tick
 
@@ -659,7 +659,7 @@ Extra Eclipse plugins
 
         * In the list, select *Web Application*, button *new launch configuration*
 
-        * Tab *Main*, Project: `guvnor-webapp`
+        * Tab *Main*, Project: `guvnor-webapp-drools`
 
         * Tab *Main*, Ensure `Main class` is: `com.google.gwt.dev.DevMode`
 
@@ -667,7 +667,7 @@ Extra Eclipse plugins
 
         * Tab *Arguments*, Ensure `Program Arguments` are : `-war <path-to-war-folder> -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`. 
 
-               * For example: `-war /home/manstis/workspaces/git/droolsjbpm/guvnor/guvnor-webapp/target/guvnor-webapp-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`
+               * For example: `-war /home/manstis/workspaces/git/droolsjbpm/guvnor/guvnor-webapp-drools/target/guvnor-webapp-drools-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`
 
         * Tab *Arguments*, it is recommended to set `VM Arguments` to: `-XX:MaxPermSize=512m -Xms512m -Xmx2048m`. You might be able to try smaller values, but these are known to work.
 
@@ -907,7 +907,7 @@ Extra IntelliJ plugins
 
     * Open menu *File*, menu item *Project structure*
 
-        * For the module `guvnor-webapp`, add the new aspect *GWT* if you haven't already.
+        * For the module `guvnor-webapp-drools`, add the new aspect *GWT* if you haven't already.
 
             * Textfield *Compiler maximum heap size (Mb)*: `512`
 
@@ -915,7 +915,7 @@ Extra IntelliJ plugins
 
         * Add new *GWT configuration*
 
-            * Combobox *module* `guvnor-webapp`.
+            * Combobox *module* `guvnor-webapp-drools`.
 
         * Run that configuration.
 
@@ -923,7 +923,7 @@ Extra IntelliJ plugins
 
     * Open menu *File*, menu item *Project structure*
 
-        * Select tree item *Artifacts*, list item `guvnor-webapp:war exploded`
+        * Select tree item *Artifacts*, list item `guvnor-webapp-drools:war exploded`
 
             * Checkbox *Build on make*: `on`
 
@@ -931,9 +931,9 @@ Extra IntelliJ plugins
 
         * Add new *Tomcat server*, *local*
 
-            * Tab *deployment*, add *Artifact* `guvnor-webapp:war exploded`.
+            * Tab *deployment*, add *Artifact* `guvnor-webapp-drools:war exploded`.
 
-            * Panel *Before launch*, checkbox *Build 'guvnor-webapp:war exploded' artifact*: `on`
+            * Panel *Before launch*, checkbox *Build 'guvnor-webapp-drools:war exploded' artifact*: `on`
 
         * Run that configuration.
 
