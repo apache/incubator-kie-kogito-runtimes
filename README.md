@@ -329,6 +329,10 @@ Running the build
     It might even fail, if certain servers are offline or experience hiccups.
     In that case, you 'll see an IO error, so just run the build again.
 
+    If you consistently get `Could not transfer artifact ... Connection timed out`
+    and you are behind a non-transparent proxy server,
+    [configure your proxy server in Maven](http://maven.apache.org/settings.html#Proxies).
+
     After the first successful build, any next build should be fast and stable.
 
 * Try running a different profile by using the option `-D<profileActivationProperty>`:
