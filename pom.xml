@@ -2563,15 +2563,22 @@
       <!-- org.jboss.bpm (bpm-console) -->
       <dependency>
         <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console-jbpm</artifactId>
-        <type>war</type>
+        <artifactId>gwt-console-server</artifactId>
         <version>${bpm.console.version}</version>
+        <classifier>jbpm</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.bpm</groupId>
+        <artifactId>gwt-console-jbpm</artifactId>
+        <version>${bpm.console.version}</version>
+        <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console-server-jbpm</artifactId>
-        <type>war</type>
         <version>${bpm.console.version}</version>
+        <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jboss.bpm</groupId>
@@ -2587,8 +2594,8 @@
       <dependency>
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console</artifactId>
-        <classifier>jbpm</classifier>
         <version>${bpm.console.version}</version>
+        <classifier>jbpm</classifier>
         <type>war</type>
       </dependency>
       <dependency>
@@ -2623,6 +2630,7 @@
         </exclusions>
       </dependency>
 
+      <!-- console NG? -->
       <dependency>
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console-screens</artifactId>
