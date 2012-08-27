@@ -2559,6 +2559,31 @@
         <artifactId>jsr173</artifactId>
         <version>1.0</version>
       </dependency>
+
+      <!-- org.jboss.bpm (bpm-console) -->
+      <dependency>
+        <groupId>org.jboss.bpm</groupId>
+        <artifactId>gwt-console-jbpm</artifactId>
+        <type>war</type>
+        <version>${bpm.console.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.bpm</groupId>
+        <artifactId>gwt-console-server-jbpm</artifactId>
+        <type>war</type>
+        <version>${bpm.console.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.bpm</groupId>
+        <artifactId>gwt-console-server-integration</artifactId>
+        <version>${bpm.console.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
       <dependency>
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console</artifactId>
@@ -2568,17 +2593,37 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console-server</artifactId>
-        <classifier>jbpm</classifier>
-        <version>${bpm.console.version}</version>
-        <type>war</type>
+        <artifactId>activity-monitor-model</artifactId>
+        <version>1.0.0.Final</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-common-annotations</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-tools</artifactId>
+          </exclusion>
+          <exclusion>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
+
       <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console-server-integration</artifactId>
-        <version>${bpm.console.version}</version>
-      </dependency>
-       <dependency>
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console-screens</artifactId>
         <version>${bpm.console.version}</version>
