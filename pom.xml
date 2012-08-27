@@ -48,6 +48,7 @@
     <droolsjbpm-build-distribution.version>${drools.version}</droolsjbpm-build-distribution.version>
 
     <!-- External dependencies -->
+    <bpm.console.version>2.3.6.Final</bpm.console.version>
     <mvel.dep.version>2.1.1.Final</mvel.dep.version>
     <camel.version>2.9.0</camel.version>
     <cxf.version>2.4.4</cxf.version>
@@ -2562,25 +2563,25 @@
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console</artifactId>
         <classifier>jbpm</classifier>
-        <version>${jbpm.version}</version>
+        <version>${bpm.console.version}</version>
         <type>war</type>
       </dependency>
-       <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console-screens</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-        <dependency>
+      <dependency>
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console-server</artifactId>
         <classifier>jbpm</classifier>
-        <version>2.1</version>
+        <version>${bpm.console.version}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console-server-integration</artifactId>
-        <version>2.1</version>
+        <version>${bpm.console.version}</version>
+      </dependency>
+       <dependency>
+        <groupId>org.jboss.bpm</groupId>
+        <artifactId>gwt-console-screens</artifactId>
+        <version>${bpm.console.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
