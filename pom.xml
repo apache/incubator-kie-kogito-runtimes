@@ -55,7 +55,7 @@
     <springframework.version>3.0.6.RELEASE</springframework.version>
     <gwt.version>2.5.0-rc1</gwt.version>
     <weld.version>1.1.7.Final</weld.version>
-    <errai.version>2.0.Beta3</errai.version>
+    <errai.version>2.1.0.Beta1</errai.version>
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
     <resteasy.version>2.2.3.GA</resteasy.version>
