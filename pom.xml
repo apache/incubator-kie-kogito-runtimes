@@ -49,7 +49,7 @@
 
     <!-- External dependencies -->
     <bpm.console.version>2.3.6.Final</bpm.console.version>
-    <mvel.dep.version>2.1.1.Final</mvel.dep.version>
+    <mvel.dep.version>2.1.2.Final</mvel.dep.version>
     <camel.version>2.9.0</camel.version>
     <cxf.version>2.4.4</cxf.version>
     <springframework.version>3.0.6.RELEASE</springframework.version>
