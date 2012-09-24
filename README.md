@@ -1142,20 +1142,6 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * Do a sanity check with `grep -lir "5.2.x" * | grep -v "target"`. This lists all the files that are still using the old version, if there are any.
 
-* Guvnor translations
-
-    * WARNING: THIS IS EXPERIMENTAL. THESE STEPS SHOULD BE TREATED WITH CAUTION AND COULD WELL NEED CHANGING WHEN WE DO THE FIRST RELEASE USING ZANATA
-
-    * Translations into different locales are handled within Zanata (https://translate.jboss.org/)
-
-    * The most recent translations need to be pulled into the release branch. Assuming you have set-up your Zanata configuration correctly, this can be achieved with:
-
-            $ mvn zanata:pull -Dfull -Dngsoa -Dngsoafull -Dbpm
-
-    * NOTE: The above Maven switches specify Guvnor Profiles to examine for translation files. Drools Guvnor (`-Dfull`) is essential. SOA (`-Dngsoa` and `-Dngsoafull`) and BPM Console (`-Dbpm`) are optional.
-
-    * NOTE: If releasing a new version number (major, minor or micro) a new version of the translations should be setup in Zanata.
-
 * Set up jenkins build jobs for the branch.
 
     * Go to the internal jenkins website inside the VPN.
@@ -1172,6 +1158,34 @@ A release branch name should always end with `.x` so it looks different from a t
 
 Releasing from a release branch
 -------------------------------
+
+* Guvnor translations
+
+    * Translations into different locales are handled within Zanata (https://translate.jboss.org/)
+
+    * Email Zanata mailing list that a release is about to be made.
+
+    * The most recent translations need to be pulled into the release branch. Assuming you have set-up your Zanata configuration correctly, this can be achieved with:
+
+            $ mvn zanata:pull -Dfull -Dngsoa -Dngsoafull -Dbpm
+
+    * NOTE: The above Maven switches specify Guvnor Profiles to examine for translation files. Drools Guvnor (`-Dfull`) is essential. SOA (`-Dngsoa` and `-Dngsoafull`) and BPM Console (`-Dbpm`) are optional.
+
+    * NOTE: If releasing a new version number (major, minor or micro) a new version of the translations should be setup in Zanata.
+
+    * The fr_FR translation files need to have the single quote correctly escaped. 
+
+        * Open guvnor-webapp-core\src\main\java\org.drools.guvnor.client.messages\ConstantsCore_fr_FR.properties search for '' and replace with '. Then seach and replace ' with ''. 
+
+        * Open guvnor-webapp-drools\src\main\java\org.drools.guvnor.client.messages\Constants_fr_FR.properties search for '' and replace with '. Then seach and replace ' with ''. 
+
+    * Test compile guvnor to check there are no other translation issues. 
+
+            $ mvn clean install -Dfull -DskipTests
+
+        * Sometime the variable place-holders {0}, {1}... are missing. 
+
+        * Append missing variable place-holders {0}, {1}... to the end of the translated text and email the Zanata mailing list.
 
 * To produce the distribution zips, build with `-Dfull`:
 
