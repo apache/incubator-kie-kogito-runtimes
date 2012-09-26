@@ -1193,9 +1193,13 @@ Releasing from a release branch
 
     * Warning: Use JDK 1.6, because in JDK 1.5 the module `guvnor-repository-connector-modeshape` is not build.
 
+    * Warning: It is not uncommon to run out of either PermGen space or Heap Space. The following settings are known (@Sept-2012) to work:-
+
+        $ export MAVEN_OPTS='-Xms512m -Xmx2200m -XX:MaxPermSize=512m'
+
     * Warning: Verify that workspace contains no uncommitted changes or rogue module directories of older branches:
 
-            $ droolsjbpm-build-bootstrap/script/git-all.sh status
+        $ droolsjbpm-build-bootstrap/script/git-all.sh status
 
         * Otherwise the sources in a distribution zip might contain archived module directories with old binaries.
 
@@ -1241,6 +1245,8 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         * Commit those changes (so you can tag them properly):
 
+                $ droolsjbpm-build-bootstrap/script/git-all.sh add .
+
                 $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
 
     * Update the *Compatibility matrix* in `droolsjbpm-knowledge/droolsjbpm-introduction-docs/src/main/docbook/en-US/Chapter-Compatibility/Chapter-Compatibility_matrix.xml`.
@@ -1283,6 +1289,8 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
             * TODO For 5.5.0.Beta1 we have specified a directoryMode which might fix it. Check if it still happens now, if not remove this warning.
 
+            * TODO The directoryMode appeared to fix for 5.5.0.Beta1 but keeping the warning until we are sure this is the case when built on different PCs.
+
 * This is **the point of no return**.
 
     * Warning: The slightest change after this requires the use of the next version number!
@@ -1305,7 +1313,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
             * `major.minor.micro-SNAPSHOT`, for example `1.2.0-SNAPSHOT` or `1.2.1-SNAPSHOT`
 
-        * Warning: This release branch should never have the same SNAPSHOT version as master or another branch.
+        * Warning: The release branch should never have the same SNAPSHOT version as any other branch.
 
             * If you're releasing a Final, increment the micro number, not the minor number.
 
@@ -1317,11 +1325,17 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         * Commit those changes:
 
+                $ droolsjbpm-build-bootstrap/script/git-all.sh add .
+
                 $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set next development version: 5.3.0-SNAPSHOT"
 
         * Push all changes, both the first and the last version change commit, to the repository *together*:
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh push
+
+        * Warning: If releasing from master (i.e. a Beta release) and the push fails as there have been other commits to the remote master branch it might be necessary to pull.
+
+                $ droolsjbpm-build-bootstrap/script/git-all.sh pull
 
 * Push the local tag to the remote blessed repository.
 
