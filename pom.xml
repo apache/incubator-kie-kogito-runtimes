@@ -1814,12 +1814,6 @@
         <artifactId>milyn-smooks-javabean</artifactId>
         <version>1.2</version>
       </dependency>
-      <!-- drools-server -->
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-remoting</artifactId>
-        <version>1.4.4</version>
-      </dependency>
       <!-- Logging for guvnor-repository and drools-planner -->
       <dependency>
         <groupId>org.slf4j</groupId>
