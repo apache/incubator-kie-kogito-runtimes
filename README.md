@@ -1195,11 +1195,11 @@ Releasing from a release branch
 
     * Warning: It is not uncommon to run out of either PermGen space or Heap Space. The following settings are known (@Sept-2012) to work:-
 
-        $ export MAVEN_OPTS='-Xms512m -Xmx2200m -XX:MaxPermSize=512m'
+            $ export MAVEN_OPTS='-Xms512m -Xmx2200m -XX:MaxPermSize=512m'
 
     * Warning: Verify that workspace contains no uncommitted changes or rogue module directories of older branches:
 
-        $ droolsjbpm-build-bootstrap/script/git-all.sh status
+            $ droolsjbpm-build-bootstrap/script/git-all.sh status
 
         * Otherwise the sources in a distribution zip might contain archived module directories with old binaries.
 
