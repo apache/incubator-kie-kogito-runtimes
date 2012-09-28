@@ -59,6 +59,7 @@
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
     <resteasy.version>2.2.3.GA</resteasy.version>
+    <dom4j.version>1.6.1</dom4j.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -1613,6 +1614,11 @@
         <version>1.9.0</version>
       </dependency>
       <!-- External dependencies -->
+      <dependency>
+        <groupId>dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>${dom4j.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
