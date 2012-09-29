@@ -54,9 +54,9 @@
     <cxf.version>2.4.4</cxf.version>
     <springframework.version>3.0.6.RELEASE</springframework.version>
     <gwt.version>2.5.0-rc1</gwt.version>
-    <weld.version>1.1.7.Final</weld.version>
+    <weld.version>1.1.8.Final</weld.version>
     <cdi.version>1.0-SP4</cdi.version>
-    <errai.version>2.1.0.Beta1</errai.version>
+    <errai.version>2.1.0.FINAL</errai.version>
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
     <resteasy.version>2.2.3.GA</resteasy.version>
@@ -64,11 +64,11 @@
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
- 
+
     <!-- hibernate 4 build profile versions -->
     <hibernate.4.ORM.version>4.1.1.Final</hibernate.4.ORM.version>
     <hibernate.4.commons.version>4.0.1.Final</hibernate.4.commons.version>
-    <hibernate.4.validator.version>4.2.0.Final</hibernate.4.validator.version> 
+    <hibernate.4.validator.version>4.2.0.Final</hibernate.4.validator.version>
    </properties>
 
   <repositories>
@@ -1289,7 +1289,7 @@
         <type>jdocbook</type>
         <version>${droolsjbpm-integration.version}</version>
       </dependency>
-      
+
       <!-- guvnor -->
       <dependency>
         <groupId>org.drools</groupId>
@@ -1412,25 +1412,25 @@
         <groupId>org.drools</groupId>
         <artifactId>guvnor-jbpm-console-server</artifactId>
         <version>${guvnor.version}</version>
-      </dependency> 
+      </dependency>
        <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-jbpm-console-server</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency> 
+      </dependency>
        <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-jbpm-console-war</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
-      </dependency> 
+      </dependency>
        <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-jbpm-console-war</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>       
+      </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-jbpm-console-shared</artifactId>
@@ -1868,11 +1868,11 @@
           <exclusion>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcmail-jdk15</artifactId>
-          </exclusion>  
+          </exclusion>
           <exclusion>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15</artifactId>
-          </exclusion>           
+          </exclusion>
           <exclusion>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
@@ -2280,7 +2280,7 @@
         <artifactId>ejb-api</artifactId>
         <version>3.0</version>
       </dependency>
-      
+
       <!-- Hibernate -->
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -2413,7 +2413,12 @@
         <groupId>org.jboss.weld.se</groupId>
         <artifactId>weld-se</artifactId>
         <version>${weld.version}</version>
-      </dependency>      
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.se</groupId>
+        <artifactId>weld-se-core</artifactId>
+        <version>${weld.version}</version>
+      </dependency>
       <!-- Seam 3 (goodies for weld) -->
       <dependency>
         <groupId>org.jboss.solder</groupId>
@@ -2429,6 +2434,21 @@
         <groupId>org.jboss.seam.remoting</groupId>
         <artifactId>seam-remoting</artifactId>
         <version>3.1.0.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.enterprise</groupId>
+        <artifactId>cdi-api</artifactId>
+        <version>1.0-SP4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian</groupId>
+        <artifactId>arquillian-bom</artifactId>
+        <version>1.0.2.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian.junit</groupId>
+        <artifactId>arquillian-junit-container</artifactId>
+        <version>1.0.2.Final</version>
       </dependency>
       <!--<dependency>-->
       <!--<groupId>org.jboss.seam.rest</groupId>-->
@@ -2547,7 +2567,7 @@
         <artifactId>jackson-mapper-asl</artifactId>
         <version>1.5.5</version>
       </dependency>
-    
+
     <!--  jbpm-gwt -->
       <dependency>
         <groupId>commons-codec</groupId>
