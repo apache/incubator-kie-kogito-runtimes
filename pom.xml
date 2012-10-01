@@ -48,7 +48,7 @@
     <droolsjbpm-build-distribution.version>${drools.version}</droolsjbpm-build-distribution.version>
 
     <!-- External dependencies -->
-    <bpm.console.version>2.3.6.Final</bpm.console.version>
+    <bpm.console.version>2.3.8.Final</bpm.console.version>
     <mvel.dep.version>2.1.3.Final</mvel.dep.version>
     <camel.version>2.9.0</camel.version>
     <cxf.version>2.4.4</cxf.version>
