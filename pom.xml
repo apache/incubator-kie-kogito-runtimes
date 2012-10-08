@@ -1176,46 +1176,6 @@
         <version>${droolsjbpm-integration.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--<dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-grid-api</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-grid-local</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-grid-remote-api</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-grid-remote-dir-mina</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-grid-remote-mina</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-grid-task</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-grid-services</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-grid-distributed-api</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-spring</artifactId>
