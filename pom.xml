@@ -1275,6 +1275,12 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>guvnor-repository</artifactId>
+        <version>${guvnor.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>guvnor-repository-connector-jcr</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
