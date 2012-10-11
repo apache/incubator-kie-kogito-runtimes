@@ -53,7 +53,8 @@
     <camel.version>2.9.0</camel.version>
     <cxf.version>2.4.4</cxf.version>
     <springframework.version>3.0.6.RELEASE</springframework.version>
-    <gwt.version>2.5.0-rc1</gwt.version>
+    <gwt.version>2.4.0</gwt.version>
+    <gwt.maven.version>2.4.0</gwt.maven.version>
     <weld.version>1.1.8.Final</weld.version>
     <cdi.version>1.0-SP4</cdi.version>
     <errai.version>2.1.0.Beta1</errai.version>
