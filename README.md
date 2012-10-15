@@ -1136,6 +1136,18 @@ A release branch name should always end with `.x` so it looks different from a t
 
             $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.3.0-SNAPSHOT 5.3.0.SNAPSHOT 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT
 
+        * Note: the arguments are `droolsOldVersion droolsOldOsgiVersion droolsNewVersion droolsNewOsgiVersion jbpmOldVersion jbpmOldOsgiVersion jbpmNewVersion jbpmNewOsgiVersion`.
+
+        * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
+
+        * WARNING: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
+
+        * Commit those changes (so you can tag them properly):
+
+                $ droolsjbpm-build-bootstrap/script/git-all.sh add .
+
+                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
+
     * Switch back to the *release branch name* with `script/git-checkout-all.sh` with drools and jbpm *release branch name*:
 
             $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh 5.2.x 5.1.x
@@ -1151,6 +1163,10 @@ A release branch name should always end with `.x` so it looks different from a t
         * Suffix the build job name with the branch name, for example `drools-5.2.x` and `droolsjbpm-integration-5.2.x`.
 
         * Change the build job configuration to use the git repo branch, for example `5.2.x`.
+
+* Set up a new Jenkins view for the related release builds
+
+    * https://jenkins.mw.lab.eng.bos.redhat.com/hudson/me/my-views/view/All/
 
 * Alert the dev mailing list and the IRC channel that the branch has been made.
 
