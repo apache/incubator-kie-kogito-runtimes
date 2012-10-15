@@ -1407,7 +1407,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
             * Specify that you would like access to drools@filemgmt.jboss.org
             * Attach the *.pub that you created above
 
-Announcing the the release
+Announcing the release
 --------------------------
 
 * Create a blog entry on [the droolsjbpm blog](http://blog.athico.com/)
