@@ -1031,29 +1031,30 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task-core</artifactId>
         <version>${jbpm.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task-mina</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task-hornetq</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task-jms</artifactId>
-        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task-core</artifactId>
         <version>${jbpm.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-services</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-services</artifactId>
+        <version>${jbpm.version}</version>
         <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-mina</artifactId>
+        <version>${jbpm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -1065,7 +1066,17 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task-hornetq</artifactId>
         <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-hornetq</artifactId>
+        <version>${jbpm.version}</version>
         <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-jms</artifactId>
+        <version>${jbpm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -1078,6 +1089,12 @@
         <artifactId>jbpm-human-task-war</artifactId>
         <version>${jbpm.version}</version>
         <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-war</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -2401,6 +2418,11 @@
       <!--<groupId>org.jboss.seam.rest</groupId>-->
       <!--<artifactId>seam-rest</artifactId>-->
       <!--</dependency>-->
+      <dependency>
+        <groupId>org.jboss.seam.persistence</groupId>
+        <artifactId>seam-persistence</artifactId>
+        <version>3.1.0.Final</version>
+      </dependency>
       <dependency>
         <groupId>org.jboss.arquillian</groupId>
         <artifactId>arquillian-bom</artifactId>
