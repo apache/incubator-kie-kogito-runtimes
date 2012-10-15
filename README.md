@@ -17,21 +17,21 @@ please update it using the [markdown syntax](http://daringfireball.net/projects/
 Table of content
 ----------------
 
-* **Source control with Git**
+* **[Source control with Git](#source-control-with-git)**
 
-* **Building with Maven**
+* **[Building with Maven](#building-with-maven)**
 
-* **Developing with Eclipse**
+* **[Developing with Eclipse](#developing-with-eclipse)**
 
-* **Developing with IntelliJ**
+* **[Developing with IntelliJ](#developing-with-intellij)**
 
-* **Team communication**
+* **[Team communication](#team-communication)**
 
-* **Writing documentation**
+* **[Writing documentation](#writing-documentation)**
 
-* **Releasing**
+* **[Releasing](#releasing)**
 
-* **FAQ**
+* **[FAQ](#faq)**
 
 Quick start
 ===========
