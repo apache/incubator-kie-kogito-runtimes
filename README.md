@@ -1168,6 +1168,8 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * https://jenkins.mw.lab.eng.bos.redhat.com/hudson/me/my-views/view/All/
 
+        * Note: Add all Drools, jBPM and Guvnor jobs manually or use a regex pattern similar to `^((drools|guvnor).*5\.5|jbpm.*5\.4).*$`
+
 * Alert the dev mailing list and the IRC channel that the branch has been made.
 
     * Remind everyone clearly that every new commit to `master` will not make the upcoming CR and Final release, unless they cherry-pick it to this new branch.
