@@ -51,7 +51,7 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "==============================================================================="
         echo "Missing Repository: $repository. SKIPPING!"
         echo "==============================================================================="
-    elif [ $repository = 'jbpm' ] && [ "$withoutJbpm" = 'true' ]; then
+    elif [ "$repository" == jbpm* ] && [ "$withoutJbpm" = 'true' ]; then
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
@@ -62,7 +62,7 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         cd $repository
 
         releaseBranchName=$1
-        if [ $repository = 'jbpm' ]; then
+        if [ "$repository" == jbpm* ]; then
             releaseBranchName=$2
         fi
         git checkout $releaseBranchName
