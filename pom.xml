@@ -57,7 +57,7 @@
     <gwt.maven.version>2.4.0</gwt.maven.version>
     <weld.version>1.1.8.Final</weld.version>
     <cdi.version>1.0-SP4</cdi.version>
-    <errai.version>2.1.0.Beta1</errai.version>
+    <errai.version>2.1.0.Final</errai.version>
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
     <resteasy.version>2.2.3.GA</resteasy.version>
@@ -513,6 +513,11 @@
             <author>false</author>
             <breakiterator>true</breakiterator>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>gwt-maven-plugin</artifactId>
+          <version>${gwt.maven.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
