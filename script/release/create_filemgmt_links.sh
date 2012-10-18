@@ -40,7 +40,7 @@ if [ $# != 1 ] && [ $# != 2 ] ; then
     exit 1
 fi
 droolsVersion=$1
-echo "The drools, guvnor, ... version: $droolsVersion"
+echo "The drools, guvnor, ... version: ${droolsVersion}"
 if [ "$withoutJbpm" != 'true' ]; then
     jbpmVersion=$2
     echo "The jbpm version: $jbpmVersion"
@@ -55,18 +55,49 @@ cd filemgmt_links
 
 urlBase="drools@filemgmt.jboss.org:"
 
-touch $droolsVersion
+###############################################################################
+# latest links
+###############################################################################
+touch ${droolsVersion}
 rm latest
-ln -s $droolsVersion latest
+ln -s ${droolsVersion} latest
 echo "Uploading normal links..."
-rsync -a --protocol=28  latest $urlBase/downloads_htdocs/drools/release/
-rsync -a --protocol=28  latest $urlBase/docs_htdocs/drools/release/
-# TODO JBRULES-3470 but the "ln " trick does not work from a normal developer machine
-# echo "ln ../../../../../../drools/release/$droolsVersion/org.drools.updatesite $droolsVersion" | sftp $urlBase/downloads_htdocs/tools/updates/stable/indigo/soa-tooling/droolsjbpm/
-if [[ "$droolsVersion" == *Final* ]]; then
+rsync -a --protocol=28 latest $urlBase/downloads_htdocs/drools/release/
+rsync -a --protocol=28 latest $urlBase/docs_htdocs/drools/release/
+
+echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/drools-distribution-${droolsVersion}.zip\">" > drools-latest.html
+echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/drools-planner-distribution-${droolsVersion}.zip\">" > drools-planner-latest.html
+echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/droolsjbpm-integration-distribution-${droolsVersion}.zip\">" > droolsjbpm-integration-latest.html
+echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/guvnor-distribution-${droolsVersion}.zip\">" > guvnor-distribution-latest.html
+echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/droolsjbpm-tools-distribution-${droolsVersion}.zip\">" > droolsjbpm-tools-latest.html
+echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/drools-osgi-bundles-distribution-${droolsVersion}.zip\">" > drools-osgi-bundles-latest.html
+rsync -a --protocol=28  *-latest.html $urlBase/downloads_htdocs/drools/release/
+
+###############################################################################
+# latestFinal links
+###############################################################################
+if [[ "${droolsVersion}" == *Final* ]]; then
     rm latestFinal
-    ln -s $droolsVersion latestFinal
+    ln -s ${droolsVersion} latestFinal
     echo "Uploading Final links..."
     rsync -a --protocol=28  latestFinal $urlBase/downloads_htdocs/drools/release/
     rsync -a --protocol=28  latestFinal $urlBase/docs_htdocs/drools/release/
+
+    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/drools-distribution-${droolsVersion}.zip\">" > drools-latestFinal.html
+    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/drools-planner-distribution-${droolsVersion}.zip\">" > drools-planner-latestFinal.html
+    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/droolsjbpm-integration-distribution-${droolsVersion}.zip\">" > droolsjbpm-integration-latestFinal.html
+    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/guvnor-distribution-${droolsVersion}.zip\">" > guvnor-distribution-latestFinal.html
+    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/droolsjbpm-tools-distribution-${droolsVersion}.zip\">" > droolsjbpm-tools-latestFinal.html
+    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/drools-osgi-bundles-distribution-${droolsVersion}.zip\">" > drools-osgi-bundles-latestFinal.html
+    rsync -a --protocol=28  *-latestFinal.html $urlBase/downloads_htdocs/drools/release/
 fi
+
+###############################################################################
+# JBoss Tools links
+###############################################################################
+mkdir jbosstools
+cd jbosstools
+rm ${droolsVersion}
+ln ../../../../../../drools/release/${droolsVersion}/org.drools.updatesite ${droolsVersion}
+rsync -a --protocol=28 ${droolsVersion} $urlBase/downloads_htdocs/tools/updates/stable/indigo/soa-tooling/droolsjbpm/
+cd ..
