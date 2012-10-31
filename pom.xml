@@ -974,6 +974,12 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-persistence-jpa</artifactId>
+        <type>test-jar</type>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-persistence-jpa</artifactId>
         <version>${jbpm.version}</version>
         <classifier>sources</classifier>
       </dependency>
