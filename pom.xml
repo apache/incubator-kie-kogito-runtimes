@@ -2432,6 +2432,11 @@
         <version>3.1.0.Final</version>
       </dependency>
       <dependency>
+        <groupId>org.jboss.seam.international</groupId>
+        <artifactId>seam-international</artifactId>
+        <version>3.1.0.Final</version>
+      </dependency>
+      <dependency>
         <groupId>org.jboss.seam.remoting</groupId>
         <artifactId>seam-remoting</artifactId>
         <version>3.1.0.Final</version>
