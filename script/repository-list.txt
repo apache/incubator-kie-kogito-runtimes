@@ -4,6 +4,7 @@ drools
 drools-planner
 jbpm
 droolsjbpm-integration
+uberfire
 guvnor
 droolsjbpm-tools
 droolsjbpm-build-distribution
