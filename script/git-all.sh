@@ -60,7 +60,8 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         returnCode=$?
         cd ..
         if [ $returnCode != 0 ] ; then
-            exit $returnCode
+            echo -n "Error executing command for repository ${repository}. Should I continue? (Hit control-c to stop or enter to continue): "
+            read ok
         fi
     fi
 done
