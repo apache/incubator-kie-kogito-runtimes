@@ -1142,6 +1142,14 @@ A release branch name should always end with `.x` so it looks different from a t
 
         * WARNING: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
 
+        * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${jbpm.version} and {jbpm.osgi.version}. Check this is not the case.
+
+                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
+
+        * WARNING: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
+
+                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
+
         * Commit those changes (so you can tag them properly):
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh add .
@@ -1261,6 +1269,10 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         * WARNING: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
 
+        * WARNING: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
+
+                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
+
         * Commit those changes (so you can tag them properly):
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh add .
@@ -1350,6 +1362,12 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
         * Push all changes, both the first and the last version change commit, to the repository *together*:
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh push
+
+        * Warning: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
+
+        * Warning: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
+
+                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
 
         * Warning: If releasing from master (i.e. a Beta release) and the push fails as there have been other commits to the remote master branch it might be necessary to pull.
 
