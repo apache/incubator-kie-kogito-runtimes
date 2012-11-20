@@ -65,7 +65,7 @@
     <errai.version>2.1.0.Final</errai.version>
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
-    <resteasy.version>2.2.3.GA</resteasy.version>
+    <resteasy.version>2.3.3.Final</resteasy.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
