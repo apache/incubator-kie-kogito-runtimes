@@ -1437,12 +1437,6 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>guvnor-webapp-soa</artifactId>
-        <type>war</type>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
         <artifactId>guvnor-webapp-drools</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
@@ -1474,6 +1468,17 @@
         <type>war</type>
         <version>${guvnor.version}</version>
         <classifier>tomcat-6.0</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-jcr2vfs-migration</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>guvnor-jcr2vfs-migration</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
