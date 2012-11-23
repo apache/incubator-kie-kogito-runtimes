@@ -68,6 +68,8 @@
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
     <resteasy.version>2.3.3.Final</resteasy.version>
+    <aether.version>1.13.1</aether.version>
+    <maven.version>3.0.3</maven.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -839,6 +841,17 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
+        <version>${drools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>kie-ci</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>kie-ci</artifactId>
         <version>${drools.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -1809,6 +1822,49 @@
         <artifactId>milyn-smooks-javabean</artifactId>
         <version>1.2</version>
       </dependency>
+
+      <!-- kie-ci -->
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-api</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-util</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-impl</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-connector-wagon</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-connector-file</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.maven</groupId>
+        <artifactId>wagon-ahc</artifactId>
+        <version>1.2.1</version>
+      </dependency>
+
       <!-- drools-scorecards -->
       <dependency>
         <groupId>org.apache.poi</groupId>
