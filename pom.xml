@@ -239,6 +239,8 @@
             <fork>true</fork>
             <meminitial>128m</meminitial>
             <maxmem>512m</maxmem>
+            <showDeprecation>false</showDeprecation>
+            <showWarnings>false</showWarnings>
           </configuration>
         </plugin>
 
