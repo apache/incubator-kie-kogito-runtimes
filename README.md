@@ -1151,13 +1151,14 @@ A release branch name should always end with `.x` so it looks different from a t
                 $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
 
         * Commit those changes (so you can tag them properly):
+        
                 * Add changes from untracked files if there are any. WARNING: DO NOT USE "git add ." . You may accidentally add files that are not meant to be added into git. 
 
-                $ git add {filename}
+                        $ git add {filename}
                 
                 * Commit all changes
                 
-                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
+                        $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
 
     * Switch back to the *release branch name* with `script/git-checkout-all.sh` with drools and jbpm *release branch name*:
 
@@ -1277,13 +1278,14 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
                 $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
 
         * Commit those changes (so you can tag them properly):
+        
                 * Add changes from untracked files if there are any. WARNING: DO NOT USE "git add ." . You may accidentally add files that are not meant to be added into git. 
 
-                $ git add {filename}
+                        $ git add {filename}
                 
                 * Commit all changes
 
-                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
+                        $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
 
     * Update the *Compatibility matrix* in `droolsjbpm-knowledge/droolsjbpm-introduction-docs/src/main/docbook/en-US/Chapter-Compatibility/Chapter-Compatibility_matrix.xml`.
 
