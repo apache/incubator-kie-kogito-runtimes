@@ -50,6 +50,7 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
 
+        ech -- ${gitUrlPrefix}${repository}.git -- ${repository} --
         git clone ${gitUrlPrefix}${repository}.git ${repository}
         
         returnCode=$?
