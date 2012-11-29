@@ -28,7 +28,6 @@ startDateTime=`date +%s`
 # The gitUrlPrefix differs between committers and anonymous users. Also it differs on forks.
 # Committers on blessed gitUrlPrefix="git@github.com:droolsjbpm/"
 # Anonymous users on blessed gitUrlPrefix="git://github.com/droolsjbpm/"
-# TODO dynamic gitUrlPrefix detection does not work on mac
 cd ${scriptDir}
 gitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
 gitUrlPrefix=`echo ${gitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git.*//g'`
