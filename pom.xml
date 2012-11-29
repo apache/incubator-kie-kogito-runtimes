@@ -1495,156 +1495,160 @@
         <type>jdocbook</type>
         <version>${guvnor.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>kie-project-editor</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
 
-<!--guvnor-ng-->
-
+      <!--guvnor-ng-->
       <!--Commons-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-services-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-data</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-ui</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-security</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <!--Core API-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-client</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-backend</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-datamodel-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-datamodel-backend</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-workingset-client</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <!--Widgets-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-error-messages-widget</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-decorated-grid-widget</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-view-source-widget</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <!--Guided Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-editor-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-editor-client</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-editor-backend</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <!--Fact Model Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-factmodel-editor-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-factmodel-editor-client</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-factmodel-editor-backend</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <!--Enum Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-enum-editor-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-enum-editor-client</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-enum-editor-backend</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <!--DRL Text Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-drl-text-editor-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-drl-text-editor-client</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-drl-text-editor-backend</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <!--Project Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-editor-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-editor-client</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-editor-backend</artifactId>
-        <version>${drools.version}</version>
+        <version>${guvnor.version}</version>
       </dependency>
       <!-- KIE Commons -->
       <dependency>
@@ -2184,6 +2188,11 @@
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-workbench</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-widget-markdown</artifactId>
         <version>${uberfire.version}</version>
       </dependency>
 
