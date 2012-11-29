@@ -71,6 +71,11 @@
     <aether.version>1.13.1</aether.version>
     <maven.version>3.0.3</maven.version>
 
+    <jetty.version>6.1.25</jetty.version>
+    <uberfire.version>0.2.0-SNAPSHOT</uberfire.version>
+    <kie-commons.version>0.1.0-SNAPSHOT</kie-commons.version>
+    <xstream.version>1.4.3</xstream.version>
+
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -1491,6 +1496,168 @@
         <version>${guvnor.version}</version>
       </dependency>
 
+<!--guvnor-ng-->
+
+      <!--Commons-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-services-api</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-data</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-ui</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-security</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <!--Core API-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-api</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-client</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-backend</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-datamodel-api</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-datamodel-backend</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-workingset-client</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <!--Widgets-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-error-messages-widget</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-decorated-grid-widget</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-view-source-widget</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <!--Guided Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-editor-api</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-editor-client</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-editor-backend</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <!--Fact Model Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-factmodel-editor-api</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-factmodel-editor-client</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-factmodel-editor-backend</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <!--Enum Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-enum-editor-api</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-enum-editor-client</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-enum-editor-backend</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <!--DRL Text Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-drl-text-editor-api</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-drl-text-editor-client</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-drl-text-editor-backend</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <!--Project Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-editor-api</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-editor-client</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-editor-backend</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <!-- KIE Commons -->
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-validation</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-data</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+
       <!-- droolsjbpm-tools -->
       <dependency>
         <groupId>org.drools</groupId>
@@ -1953,18 +2120,174 @@
         <version>1.8.0.10</version>
       </dependency>
 
-      <!-- bpm-console -->
-
+      <!--Uberfire-->
       <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-bus</artifactId>
-        <version>${errai.version}</version>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-server</artifactId>
+        <version>${uberfire.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-security-api</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-security-client</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-security-server</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-backend-api</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-backend-server</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-api</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-widgets-core-client</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-widgets-core-backend</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-nio2-jgit</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-nio2-fs</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-widgets-commons</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-workbench</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+
+      <!-- Errai -->
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-common</artifactId>
         <version>${errai.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-cdi-jetty</artifactId>
+        <version>${errai.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-ioc</artifactId>
+        <version>${errai.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-cdi-client</artifactId>
+        <version>${errai.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-javax-enterprise</artifactId>
+        <version>${errai.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-weld-integration</artifactId>
+        <version>${errai.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- CDI Development Utils -->
+      <!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty that is present there -->
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-plus</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-naming</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlet</artifactId>
+        <version>7.2.1.v20101111</version>
+      </dependency>
+      <!-- Weld Modules -->
+      <dependency>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-spi</artifactId>
+        <version>1.1.Final</version>
+      </dependency>
+      <!-- Errai Core -->
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-marshalling</artifactId>
+        <version>${errai.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-bus</artifactId>
+        <version>${errai.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- bpm-console -->
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
@@ -2569,7 +2892,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>r06</version>
+        <version>12.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.mina</groupId>
