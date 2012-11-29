@@ -31,7 +31,7 @@ startDateTime=`date +%s`
 # TODO dynamic gitUrlPrefix detection does not work on mac
 cd ${scriptDir}
 gitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
-gitUrlPrefix=`echo ${gitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git\s*(fetch)$//g'`
+gitUrlPrefix=`echo ${gitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git.*//g'`
 
 cd $droolsjbpmOrganizationDir
 
@@ -50,7 +50,9 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
 
-        ech -- ${gitUrlPrefix}${repository}.git -- ${repository} --
+        echo -- prefix ${gitUrlPrefix} --
+        echo -- repository ${repository} --
+        echo -- ${gitUrlPrefix}${repository}.git -- ${repository} --
         git clone ${gitUrlPrefix}${repository}.git ${repository}
         
         returnCode=$?
