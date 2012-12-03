@@ -1697,17 +1697,39 @@
       <!--Explorer-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-explorer-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-explorer-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <!--Guided Decision Table Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-explorer-backend</artifactId>
+        <artifactId>guvnor-guided-dtable-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-dtable-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-dtable-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <!--Guided Score Card Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-scorecard-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-scorecard-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-scorecard-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <!-- KIE Commons -->
