@@ -1614,20 +1614,20 @@
         <artifactId>guvnor-view-source-widget</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
-      <!--Guided Editor-->
+      <!--Guided Rule Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-editor-api</artifactId>
+        <artifactId>guvnor-guided-rule-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-editor-client</artifactId>
+        <artifactId>guvnor-guided-rule-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-editor-backend</artifactId>
+        <artifactId>guvnor-guided-rule-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <!--Fact Model Editor-->
