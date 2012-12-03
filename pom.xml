@@ -1694,6 +1694,22 @@
         <artifactId>guvnor-project-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <!--Explorer-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-explorer-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-explorer-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-explorer-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
       <!-- KIE Commons -->
       <dependency>
         <groupId>org.kie.commons</groupId>
