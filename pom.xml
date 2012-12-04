@@ -42,12 +42,15 @@
 
   <properties>
     <!-- Internal dependencies -->
+    <kie-commons.version>6.0.0-SNAPSHOT</kie-commons.version>
+    <kie-commons.osgi.version>6.0.0.SNAPSHOT</kie-commons.osgi.version>
     <drools.version>6.0.0-SNAPSHOT</drools.version>
     <drools.osgi.version>6.0.0.SNAPSHOT</drools.osgi.version>
     <drools-planner.version>${drools.version}</drools-planner.version>
     <jbpm.version>6.0.0-SNAPSHOT</jbpm.version>
     <jbpm.osgi.version>6.0.0.SNAPSHOT</jbpm.osgi.version>
     <droolsjbpm-integration.version>${drools.version}</droolsjbpm-integration.version>
+    <uberfire.version>0.2.0-SNAPSHOT</uberfire.version>
     <guvnor.version>${drools.version}</guvnor.version>
     <droolsjbpm-tools.version>${drools.version}</droolsjbpm-tools.version>
     <droolsjbpm-build-distribution.version>${drools.version}</droolsjbpm-build-distribution.version>
@@ -72,8 +75,6 @@
     <maven.version>3.0.3</maven.version>
 
     <jetty.version>6.1.25</jetty.version>
-    <uberfire.version>0.2.0-SNAPSHOT</uberfire.version>
-    <kie-commons.version>0.1.0-SNAPSHOT</kie-commons.version>
     <xstream.version>1.4.3</xstream.version>
 
     <!-- Make build platform independent -->
@@ -432,7 +433,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>1.2</version>
+          <version>1.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -488,7 +489,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.0-beta-3</version>
+          <version>3.1</version>
         </plugin>
         <plugin>
           <groupId>com.mycila.maven-license-plugin</groupId>
@@ -513,7 +514,7 @@
           <version>2.8</version>
           <configuration>
             <links>
-              <link>http://download.oracle.com/javase/1.5.0/docs/api</link>
+              <link>http://docs.oracle.com/javase/6/docs/api</link>
             </links>
             <minmemory>128m</minmemory>
             <maxmemory>512m</maxmemory>
@@ -1753,6 +1754,21 @@
         <artifactId>kie-nio2-model</artifactId>
         <version>${kie-commons.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-io</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-nio2-fs</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-nio2-jgit</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
 
       <!-- droolsjbpm-tools -->
       <dependency>
@@ -1861,6 +1877,11 @@
         <artifactId>mockito-all</artifactId>
         <version>1.9.0</version>
       </dependency>
+      <dependency>
+        <groupId>org.easytesting</groupId>
+        <artifactId>fest-assert-core</artifactId>
+        <version>2.0M6</version>
+      </dependency>
       <!-- External dependencies -->
       <dependency>
         <groupId>com.google.protobuf</groupId>
@@ -1938,6 +1959,13 @@
         <artifactId>quartz</artifactId>
         <version>1.6.1</version>
         <scope>provided</scope>
+      </dependency>
+
+      <!-- kie-commons -->
+      <dependency>
+        <groupId>org.eclipse.jgit</groupId>
+        <artifactId>org.eclipse.jgit</artifactId>
+        <version>2.1.0.201209190230-r</version>
       </dependency>
 
       <!-- drools-core -->
@@ -2261,16 +2289,6 @@
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-widgets-core-backend</artifactId>
         <version>${uberfire.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.commons</groupId>
-        <artifactId>kie-nio2-jgit</artifactId>
-        <version>${kie-commons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.commons</groupId>
-        <artifactId>kie-nio2-fs</artifactId>
-        <version>${kie-commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
