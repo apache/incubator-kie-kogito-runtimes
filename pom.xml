@@ -1733,6 +1733,22 @@
         <artifactId>guvnor-guided-scorecard-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <!--Guvnor M2_REPO Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>      
       <!-- KIE Commons -->
       <dependency>
         <groupId>org.kie.commons</groupId>
