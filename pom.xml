@@ -1504,12 +1504,12 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>guvnor-jcr2vfs-migration</artifactId>
+        <artifactId>guvnor-jcr2vfs-migration-core</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>guvnor-jcr2vfs-migration</artifactId>
+        <artifactId>guvnor-jcr2vfs-migration-core</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -1773,11 +1773,6 @@
       <dependency>
         <groupId>org.kie.commons</groupId>
         <artifactId>kie-nio2-model</artifactId>
-        <version>${kie-commons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.commons</groupId>
-        <artifactId>kie-commons-io</artifactId>
         <version>${kie-commons.version}</version>
       </dependency>
       <dependency>
