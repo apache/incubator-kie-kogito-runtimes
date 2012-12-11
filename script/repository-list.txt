@@ -7,7 +7,6 @@ jbpm
 droolsjbpm-integration
 uberfire
 guvnor
-guvnorng
 droolsjbpm-tools
 droolsjbpm-build-distribution
 jbpm-form-builder
