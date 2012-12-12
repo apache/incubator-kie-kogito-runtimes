@@ -1785,6 +1785,78 @@
         <artifactId>kie-nio2-jgit</artifactId>
         <version>${kie-commons.version}</version>
       </dependency>
+      <!--Distribution-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-webapp</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-webapp</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-distribution-wars</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+        <classifier>jboss-eap-5.1</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-distribution-wars</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+        <classifier>jboss-as-6.0</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-distribution-wars</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+        <classifier>jboss-as-7.0</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-distribution-wars</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+        <classifier>tomcat-6.0</classifier>
+      </dependency>
+      <!--Data migration-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-jcr2vfs-migration-core</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-jcr2vfs-migration-core</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Examples-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-examples</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-examples</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Docs-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-docs</artifactId>
+        <type>jdocbook</type>
+        <version>${guvnor.version}</version>
+      </dependency>
 
       <!-- droolsjbpm-tools -->
       <dependency>
