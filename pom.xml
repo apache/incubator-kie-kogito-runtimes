@@ -1504,12 +1504,12 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>guvnor-jcr2vfs-migration-core</artifactId>
+        <artifactId>guvnor-jcr2vfs-migration</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>guvnor-jcr2vfs-migration-core</artifactId>
+        <artifactId>guvnor-jcr2vfs-migration</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
