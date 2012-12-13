@@ -1144,11 +1144,11 @@ A release branch name should always end with `.x` so it looks different from a t
 
         * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${jbpm.version} and {jbpm.osgi.version}. Check this is not the case.
 
-                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
+                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
 
         * WARNING: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
+                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
 
         * Commit those changes (so you can tag them properly):
         
@@ -1275,7 +1275,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         * WARNING: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
+                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
 
         * Commit those changes (so you can tag them properly):
         
@@ -1375,7 +1375,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         * Warning: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml
+                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
 
         * Warning: If releasing from master (i.e. a Beta release) and the push fails as there have been other commits to the remote master branch it might be necessary to pull.
 
