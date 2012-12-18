@@ -76,6 +76,7 @@
 
     <jetty.version>6.1.25</jetty.version>
     <xstream.version>1.4.3</xstream.version>
+    <lucene.version>4.0.0</lucene.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -1762,6 +1763,13 @@
       </dependency>
       <dependency>
         <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-io</artifactId>
+        <version>${kie-commons.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
         <artifactId>kie-commons-data</artifactId>
         <version>${kie-commons.version}</version>
       </dependency>
@@ -1784,6 +1792,38 @@
         <groupId>org.kie.commons</groupId>
         <artifactId>kie-nio2-jgit</artifactId>
         <version>${kie-commons.version}</version>
+      </dependency>
+      <!-- KIEORA, KIE Commons Metadata -->
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kieora-api</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kieora-backend-lucene</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <!-- Lucene, needed by kieora -->
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-codecs</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${lucene.version}</version>
       </dependency>
       <!--Distribution-->
       <dependency>
