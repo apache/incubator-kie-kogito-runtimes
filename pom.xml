@@ -1534,6 +1534,11 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-builder</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-workingset-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
