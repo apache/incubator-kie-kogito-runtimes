@@ -1578,6 +1578,22 @@
         <artifactId>guvnor-view-source-widget</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-metadata-widget</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-config-resource-widget</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <!--Categories Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-categories-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
       <!--Guided Rule Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1716,6 +1732,11 @@
       <dependency>
         <groupId>org.kie.commons</groupId>
         <artifactId>kie-commons-validation</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-regex</artifactId>
         <version>${kie-commons.version}</version>
       </dependency>
       <dependency>
