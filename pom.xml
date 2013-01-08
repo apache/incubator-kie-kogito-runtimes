@@ -1728,6 +1728,22 @@
         <artifactId>guvnor-m2repo-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>      
+      <!--DSL Text Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-dsl-text-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-dsl-text-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-dsl-text-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
       <!-- KIE Commons -->
       <dependency>
         <groupId>org.kie.commons</groupId>
