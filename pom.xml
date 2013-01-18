@@ -877,6 +877,11 @@
         <type>jdocbook</type>
         <version>${drools.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-scorecards</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
 
       <!-- drools-planner -->
       <dependency>
