@@ -1615,6 +1615,22 @@
         <artifactId>guvnor-guided-rule-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <!--Guided Template Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-template-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-template-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-template-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
       <!--Fact Model Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
