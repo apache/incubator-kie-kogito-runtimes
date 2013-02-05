@@ -11,3 +11,4 @@ droolsjbpm-tools
 droolsjbpm-build-distribution
 jbpm-form-builder
 jbpm-designer
+jbpm-console-ng
