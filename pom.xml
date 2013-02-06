@@ -1426,44 +1426,30 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>guvnor-webapp-drools</artifactId>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-webapp</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-webapp-drools</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-distribution-wars</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
-        <classifier>jboss-eap-5.1</classifier>
+        <classifier>jboss-as7.0</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-distribution-wars</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
-        <classifier>jboss-as-6.0</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>guvnor-distribution-wars</artifactId>
-        <type>war</type>
-        <version>${guvnor.version}</version>
-        <classifier>jboss-as-7.0</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>guvnor-distribution-wars</artifactId>
-        <type>war</type>
-        <version>${guvnor.version}</version>
-        <classifier>tomcat-6.0</classifier>
+        <classifier>tomcat7.0</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
