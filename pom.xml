@@ -1699,11 +1699,6 @@
       <!-- droolsjbpm-tools -->
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>droolsjbpm-ide-common</artifactId>
-        <version>5.5.0.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
         <artifactId>org.drools.eclipse</artifactId>
         <version>${droolsjbpm-tools.version}</version>
         <classifier>sources</classifier>
