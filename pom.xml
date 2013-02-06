@@ -1646,6 +1646,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-webapp</artifactId>
+        <classifier>sources</classifier>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-distribution-wars</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
