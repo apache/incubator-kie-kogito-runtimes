@@ -47,9 +47,9 @@ if [ "$withoutJbpm" != 'true' ]; then
 fi
 if [ "$withoutUberfire" != 'true' ]; then
     uberfireOldVersion=$9
-    uberfireOldOsgiVersion=$10
-    uberfireNewVersion=$11
-    uberfireNewOsgiVersion=$12
+    uberfireOldOsgiVersion=${10}
+    uberfireNewVersion=${11}
+    uberfireNewOsgiVersion=${12}
     echo "The Uberfire version: old is $uberfireOldVersion (osgi: $uberfireOldOsgiVersion) - new is $uberfireNewVersion (osgi: $uberfireNewOsgiVersion)"
 fi
 echo -n "Is this ok? (Hit control-c if is not): "
@@ -67,6 +67,10 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "Missing Repository: $repository. SKIPPING!"
         echo "==============================================================================="
     elif [ "${repository}" != "${repository#jbpm}" ] && [ "$withoutJbpm" = 'true' ]; then
+        echo "==============================================================================="
+        echo "Without repository: $repository. SKIPPING!"
+        echo "==============================================================================="
+    elif [ "${repository}" != "${repository#jbpm-console-ng}" ] && [ "$withoutJbpm" = 'true' ]; then
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
@@ -88,6 +92,10 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
                 # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
                 mvn clean install -DskipTests
             elif [ $repository == 'jbpm' ]; then
+                mvn -Dfull versions:set -DoldVersion=$jbpmOldVersion -DnewVersion=$jbpmNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
+                mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
+                mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
+            elif [ $repository == 'jbpm-console-ng' ]; then
                 mvn -Dfull versions:set -DoldVersion=$jbpmOldVersion -DnewVersion=$jbpmNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false

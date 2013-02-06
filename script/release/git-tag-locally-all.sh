@@ -58,6 +58,10 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
+    elif [ "${repository}" != "${repository#jbpm-console-ng}" ] && [ "$withoutJbpm" = 'true' ]; then
+        echo "==============================================================================="
+        echo "Without repository: $repository. SKIPPING!"
+        echo "==============================================================================="
     elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
@@ -70,6 +74,8 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 
         releaseTagName=$1
         if [ "${repository}" != "${repository#jbpm}" ]; then
+            releaseTagName=$2
+        elif [ "${repository}" != "${repository#jbpm-console-ng}" ]; then
             releaseTagName=$2
         elif [ "${repository}" != "${repository#uberfire}" ]; then
             releaseTagName=$3
