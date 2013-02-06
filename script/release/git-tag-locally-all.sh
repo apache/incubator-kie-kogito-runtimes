@@ -22,13 +22,14 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 withoutJbpm="$withoutJbpm"
+withoutUberfire="$withoutUberfire"
 
 if [ $# != 1 ] && [ $# != 2 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 droolsReleaseTagName [jbpmReleaseTagName]"
+    echo "  $0 droolsReleaseTagName [jbpmReleaseTagName] [uberfireReleaseTagName]"
     echo "For example:"
-    echo "  $0 5.2.0.Final 5.1.0.Final"
+    echo "  $0 5.2.0.Final 5.1.0.Final 0.2.0.Final"
     echo
     exit 1
 fi
@@ -36,6 +37,9 @@ fi
 echo "The drools, guvnor, ... release tag name is $1"
 if [ "$withoutJbpm" != 'true' ]; then
     echo "The jbpm release tag name is $2"
+fi
+if [ "$withoutUberfire" != 'true' ]; then
+    echo "The Uberfire release tag name is $3"
 fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
@@ -54,6 +58,10 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
+    elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
+        echo "==============================================================================="
+        echo "Without repository: $repository. SKIPPING!"
+        echo "==============================================================================="
     else
         echo "==============================================================================="
         echo "Repository: $repository"
@@ -63,6 +71,8 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         releaseTagName=$1
         if [ "${repository}" != "${repository#jbpm}" ]; then
             releaseTagName=$2
+        elif [ "${repository}" != "${repository#uberfire}" ]; then
+            releaseTagName=$3
         fi
         # note when retagging you 'll need add -f in here:
         git tag -a $releaseTagName -m "Tagging $releaseTagName"

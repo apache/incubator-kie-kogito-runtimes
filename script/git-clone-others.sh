@@ -22,6 +22,7 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../.."
 withoutJbpm="$withoutJbpm"
+withoutUberfire="$withoutUberfire"
 
 startDateTime=`date +%s`
 
@@ -41,6 +42,10 @@ for repository in `cat ${scriptDir}/repository-list.txt` ; do
         echo "This directory already exists: $repository"
         echo "==============================================================================="
     elif [ "${repository}" != "${repository#jbpm}" ] && [ "$withoutJbpm" = 'true' ]; then
+        echo "==============================================================================="
+        echo "Without repository: $repository. SKIPPING!"
+        echo "==============================================================================="
+    elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="

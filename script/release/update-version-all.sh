@@ -22,13 +22,14 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 withoutJbpm="$withoutJbpm"
+withoutUberfire="$withoutUberfire"
 
-if [ $# != 4 ] && [ $# != 8 ] ; then
+if [ $# != 4 ] && [ $# != 8 ] && [ $# != 12 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 droolsOldVersion droolsOldOsgiVersion droolsNewVersion droolsNewOsgiVersion [jbpmOldVersion jbpmOldOsgiVersion jbpmNewVersion jbpmNewOsgiVersion]"
+    echo "  $0 droolsOldVersion droolsOldOsgiVersion droolsNewVersion droolsNewOsgiVersion [jbpmOldVersion jbpmOldOsgiVersion jbpmNewVersion jbpmNewOsgiVersion] [uberfireOldVersion uberfireOldOsgiVersion uberfireNewVersion uberfireNewOsgiVersion]"
     echo "For example:"
-    echo "  $0 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.2.0.Final 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.1.0.Final 5.1.0.Final"
+    echo "  $0 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.2.0.Final 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.1.0.Final 5.1.0.Final 0.2.0-SNAPSHOT 0.2.0.SNAPSHOT 0.2.0.Final 0.2.0.Final"
     echo
     exit 1
 fi
@@ -43,6 +44,13 @@ if [ "$withoutJbpm" != 'true' ]; then
     jbpmNewVersion=$7
     jbpmNewOsgiVersion=$8
     echo "The jbpm version: old is $jbpmOldVersion (osgi: $jbpmOldOsgiVersion) - new is $jbpmNewVersion (osgi: $jbpmNewOsgiVersion)"
+fi
+if [ "$withoutUberfire" != 'true' ]; then
+    uberfireOldVersion=$9
+    uberfireOldOsgiVersion=$10
+    uberfireNewVersion=$11
+    uberfireNewOsgiVersion=$12
+    echo "The Uberfire version: old is $uberfireOldVersion (osgi: $uberfireOldOsgiVersion) - new is $uberfireNewVersion (osgi: $uberfireNewOsgiVersion)"
 fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
@@ -59,6 +67,10 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "Missing Repository: $repository. SKIPPING!"
         echo "==============================================================================="
     elif [ "${repository}" != "${repository#jbpm}" ] && [ "$withoutJbpm" = 'true' ]; then
+        echo "==============================================================================="
+        echo "Without repository: $repository. SKIPPING!"
+        echo "==============================================================================="
+    elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
@@ -79,6 +91,10 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
                 mvn -Dfull versions:set -DoldVersion=$jbpmOldVersion -DnewVersion=$jbpmNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
+            elif [ $repository == 'uberfire' ]; then
+                mvn -Dfull versions:set -DoldVersion=$uberfireOldVersion -DnewVersion=$uberfireNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
+                # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
+                mvn clean install -DskipTests
             else
                 mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
@@ -110,7 +126,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 done
 
 cd droolsjbpm-build-distribution
-mvn antrun:run -N -DdroolsOldVersion=$droolsOldVersion -DdroolsOldOsgiVersion=$droolsOldOsgiVersion -DdroolsNewVersion=$droolsNewVersion -DdroolsNewOsgiVersion=$droolsNewOsgiVersion -DjbpmOldVersion=$jbpmOldVersion -DjbpmOldOsgiVersion=$jbpmOldOsgiVersion -DjbpmNewVersion=$jbpmNewVersion -DjbpmNewOsgiVersion=$jbpmNewOsgiVersion
+mvn antrun:run -N -DdroolsOldVersion=$droolsOldVersion -DdroolsOldOsgiVersion=$droolsOldOsgiVersion -DdroolsNewVersion=$droolsNewVersion -DdroolsNewOsgiVersion=$droolsNewOsgiVersion -DjbpmOldVersion=$jbpmOldVersion -DjbpmOldOsgiVersion=$jbpmOldOsgiVersion -DjbpmNewVersion=$jbpmNewVersion -DjbpmNewOsgiVersion=$jbpmNewOsgiVersion -DuberfireOldVersion=$uberfireOldVersion -DuberfireOldOsgiVersion=$uberfireOldOsgiVersion -DuberfireNewVersion=$uberfireNewVersion -DuberfireNewOsgiVersion=$uberfireNewOsgiVersion
 returnCode=$?
 cd ..
 if [ $returnCode != 0 ] ; then
