@@ -1760,7 +1760,7 @@
         <type>zip</type>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-distribution</artifactId>
         <version>${guvnor.version}</version>
         <type>zip</type>
