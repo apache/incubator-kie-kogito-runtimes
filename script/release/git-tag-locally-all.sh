@@ -24,7 +24,7 @@ droolsjbpmOrganizationDir="$scriptDir/../../.."
 withoutJbpm="$withoutJbpm"
 withoutUberfire="$withoutUberfire"
 
-if [ $# != 1 ] && [ $# != 2 ] ; then
+if [ $# != 1 ] && [ $# != 2 ] && [ $# != 3 ] ; then
     echo
     echo "Usage:"
     echo "  $0 droolsReleaseTagName [jbpmReleaseTagName] [uberfireReleaseTagName]"
