@@ -1541,6 +1541,22 @@
         <artifactId>guvnor-m2repo-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>      
+      <!--Guvnor Inbox-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-inbox-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-inbox-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-inbox-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>           
       <!--DSL Text Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
