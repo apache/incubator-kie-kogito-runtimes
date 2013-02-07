@@ -739,7 +739,7 @@
         <classifier>javadoc</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
+        <groupId>org.kie</groupId>
         <artifactId>droolsjbpm-introduction-docs</artifactId>
         <type>jdocbook</type>
         <version>${drools.version}</version>
