@@ -1274,8 +1274,20 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-services-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-data</artifactId>
         <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-data</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1284,8 +1296,20 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-ui</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>        
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-security</artifactId>
         <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-security</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--Core API-->
       <dependency>
@@ -1295,9 +1319,21 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>        
+      </dependency>      
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-backend</artifactId>
@@ -1305,9 +1341,21 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>    
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-datamodel-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-datamodel-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-datamodel-backend</artifactId>
@@ -1315,9 +1363,21 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-datamodel-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>        
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-builder</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-commons-builder</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>        
+      </dependency>      
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-workingset-client</artifactId>
@@ -1325,14 +1385,32 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-workingset-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-core-services-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-core-services-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>        
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-core-services-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-core-services-backend</artifactId>
         <version>${guvnor.version}</version>
-      </dependency>
+        <classifier>sources</classifier>        
+      </dependency>      
       <!--Widgets-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1341,13 +1419,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-error-messages-widget</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-decorated-grid-widget</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-decorated-grid-widget</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-view-source-widget</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-view-source-widget</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1356,15 +1452,33 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-metadata-widget</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>        
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-config-resource-widget</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-config-resource-widget</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
       <!--Categories Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-categories-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-categories-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
       <!--Guided Rule Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1373,13 +1487,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-rule-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-rule-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-rule-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-rule-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-rule-editor-backend</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--Guided Template Editor-->
       <dependency>
@@ -1389,14 +1521,38 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-template-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-template-editor-client</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-template-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-template-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-template-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+       <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-template-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>     
       <!--Fact Model Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1405,13 +1561,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-factmodel-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-factmodel-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-factmodel-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-factmodel-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-factmodel-editor-backend</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--Enum Editor-->
       <dependency>
@@ -1421,13 +1595,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-enum-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-enum-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-enum-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-enum-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-enum-editor-backend</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--DRL Text Editor-->
       <dependency>
@@ -1437,13 +1629,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-drl-text-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-drl-text-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-drl-text-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-drl-text-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-drl-text-editor-backend</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--Project Editor-->
       <dependency>
@@ -1453,13 +1663,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-editor-backend</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--Explorer-->
       <dependency>
@@ -1469,14 +1697,32 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-explorer-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-explorer-backend</artifactId>
         <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-explorer-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-explorer-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-explorer-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>      
       <!--Globals Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1485,13 +1731,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-globals-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-globals-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-globals-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-globals-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-globals-editor-client</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--Guided Decision Table Editor-->
       <dependency>
@@ -1501,13 +1765,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-dtable-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-dtable-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-dtable-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-dtable-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-dtable-editor-backend</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--Guided Score Card Editor-->
       <dependency>
@@ -1517,13 +1799,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-scorecard-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-scorecard-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-scorecard-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-guided-scorecard-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-scorecard-editor-backend</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--Guvnor M2_REPO Editor-->
       <dependency>
@@ -1533,14 +1833,32 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-client</artifactId>
         <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>  
       <!--Guvnor Inbox-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1549,14 +1867,32 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-inbox-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-inbox-client</artifactId>
         <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-inbox-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-inbox-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>           
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-inbox-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>  
       <!--DSL Text Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1565,13 +1901,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-dsl-text-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-dsl-text-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-dsl-text-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-dsl-text-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-dsl-text-editor-backend</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!-- KIE Commons -->
       <dependency>
@@ -1581,13 +1935,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-validation</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
         <artifactId>kie-commons-regex</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-regex</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-io</artifactId>
         <version>${kie-commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.commons</groupId>
         <artifactId>kie-commons-io</artifactId>
         <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.commons</groupId>
@@ -1603,8 +1975,20 @@
       </dependency>
       <dependency>
         <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-data</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
         <artifactId>kie-nio2-api</artifactId>
         <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-nio2-api</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.commons</groupId>
@@ -1613,13 +1997,31 @@
       </dependency>
       <dependency>
         <groupId>org.kie.commons</groupId>
+        <artifactId>kie-nio2-model</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
         <artifactId>kie-nio2-fs</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-nio2-fs</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-nio2-jgit</artifactId>
         <version>${kie-commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.commons</groupId>
         <artifactId>kie-nio2-jgit</artifactId>
         <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!-- KIEORA, KIE Commons Metadata -->
       <dependency>
@@ -1629,8 +2031,20 @@
       </dependency>
       <dependency>
         <groupId>org.kie.commons</groupId>
+        <artifactId>kieora-api</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
         <artifactId>kieora-backend-lucene</artifactId>
         <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kieora-backend-lucene</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!-- Lucene, needed by kieora -->
       <dependency>
@@ -1640,8 +2054,20 @@
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${lucene.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-analyzers-common</artifactId>
         <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${lucene.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
@@ -1650,8 +2076,20 @@
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-codecs</artifactId>
+        <version>${lucene.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queryparser</artifactId>
         <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${lucene.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <!--Distribution-->
       <dependency>
