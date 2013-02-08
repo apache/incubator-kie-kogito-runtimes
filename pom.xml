@@ -1118,17 +1118,6 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task-services</artifactId>
-        <version>${jbpm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task-services</artifactId>
-        <version>${jbpm.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task-mina</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
@@ -1522,12 +1511,6 @@
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-template-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-template-editor-client</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
