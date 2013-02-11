@@ -1672,21 +1672,39 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Package Editor-->
+      <!--Project Config Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-package-editor-api</artifactId>
+        <artifactId>guvnor-project-config-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-package-editor-client</artifactId>
+        <artifactId>guvnor-project-config-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-config-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-package-editor-backend</artifactId>
+        <artifactId>guvnor-project-config-editor-client</artifactId>
         <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-config-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-project-config-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
       </dependency>
  
       <!--Explorer-->
