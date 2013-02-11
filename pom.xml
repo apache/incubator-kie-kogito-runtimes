@@ -1672,6 +1672,23 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <!--Package Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-package-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-package-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-package-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+ 
       <!--Explorer-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
