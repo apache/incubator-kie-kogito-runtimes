@@ -1389,11 +1389,13 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
     * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
 
-    * Folder `download_jboss_org` should be uploaded to `filemgmt.jboss.org/downloads_htdocs/drools/release` [download.jboss.org](http://download.jboss.org/drools/release/)
+    * Folder `download_jboss_org` should be uploaded to `filemgmt.jboss.org/downloads_htdocs/drools/release`
+    which ends up at [download.jboss.org](http://download.jboss.org/drools/release/)
 
-        * Update [the download webpage](http://www.jboss.org/drools/downloads) accordingly
+        * Update [the download webpage](http://www.jboss.org/drools/downloads) accordingly.
 
-    * Folder `docs_jboss_org` should be uploaded to `filemgmt.jboss.org/docs_htdocs/drools/release` [docs.jboss.org](http://download.docs.org/drools/release/)
+    * Folder `docs_jboss_org` should be uploaded to `filemgmt.jboss.org/docs_htdocs/drools/release`
+    which ends up at [docs.jboss.org](http://download.docs.org/drools/release/)
 
         * Use `documentation_table.txt` to update [the documentation webpage](http://www.jboss.org/drools/documentation).
 
