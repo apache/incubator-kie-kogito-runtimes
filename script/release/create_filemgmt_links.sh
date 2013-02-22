@@ -95,9 +95,9 @@ fi
 ###############################################################################
 # JBoss Tools links
 ###############################################################################
-mkdir jbosstools
-cd jbosstools
-rm ${droolsVersion}
-ln ../../../../../../drools/release/${droolsVersion}/org.drools.updatesite ${droolsVersion}
-rsync -a --protocol=28 ${droolsVersion} $urlBase/downloads_htdocs/tools/updates/stable/indigo/soa-tooling/droolsjbpm/
-cd ..
+# mkdir jbosstools
+# cd jbosstools
+# rm ${droolsVersion}
+# ln ../../../../../../drools/release/${droolsVersion}/org.drools.updatesite ${droolsVersion}
+# rsync -a --protocol=28 ${droolsVersion} $urlBase/downloads_htdocs/tools/updates/stable/juno/soa-tooling/droolsjbpm/
+# cd ..
