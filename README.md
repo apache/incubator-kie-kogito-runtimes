@@ -1319,16 +1319,6 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
             * Install the mortgages examples, build it and run the test scenario's
 
-        * WARNING: the `reference_manual` dir in some zips have been known to have zip problems: they look fine zipped, but when unzipped, they are empty on linux, fail on windows and OK on Mac.
-
-            * This randomly occurs on Linux or Mac builds for `droolsjbpm-integration` or `drools-planner` on the directory `reference_manual`, usually 1 one of them.
-
-            * Solution: One linux, unzip them, grab the good content from the relevant *-distribution module and rezip it. (Ignore that the nexus zip's are wrong).
-
-            * TODO For 5.5.0.Beta1 we have specified a directoryMode which might fix it. Check if it still happens now, if not remove this warning.
-
-            * TODO The directoryMode appeared to fix for 5.5.0.Beta1 but keeping the warning until we are sure this is the case when built on different PCs.
-
 * This is **the point of no return**.
 
     * Warning: The slightest change after this requires the use of the next version number!
