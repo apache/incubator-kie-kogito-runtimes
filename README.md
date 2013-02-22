@@ -1395,7 +1395,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
     * Create a new version if needed. There should be at least 2 unreleased non-FUTURE versions.
 
-* Upload the zips, documentation and javadocs and update the website.
+* Upload the zips, documentation and javadocs to filemgmt and update the website.
 
     * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
 
@@ -1406,6 +1406,20 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
     * Folder `docs_jboss_org` should be uploaded to `filemgmt.jboss.org/docs_htdocs/drools/release` [docs.jboss.org](http://download.docs.org/drools/release/)
 
         * Use `documentation_table.txt` to update [the documentation webpage](http://www.jboss.org/drools/documentation).
+
+* Update the symbolic links `latest` and `latestFinal` links on filemgmt, if and only if there is no higher release already released.
+
+        $ droolsjbpm-build-bootstrap/script/release/create_filemgmt_links.sh 5.2.0.Final
+
+    * Wait 5 minutes and then check these URL's. Hit ctrl-F5 in your browser to do a hard refresh:
+
+        * [http://download.jboss.org/drools/release/latest/](http://download.jboss.org/drools/release/latest/)
+
+        * [http://download.jboss.org/drools/release/latestFinal/](http://download.jboss.org/drools/release/latestFinal/)
+
+        * [http://docs.jboss.org/drools/release/latest/](http://docs.jboss.org/drools/release/latest/)
+
+        * [http://docs.jboss.org/drools/release/latestFinal/](http://docs.jboss.org/drools/release/latestFinal/)
 
 * Getting access to `filemgmt.jboss.org`
 
@@ -1434,7 +1448,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
             * Attach the *.pub that you created above
 
 Announcing the release
---------------------------
+----------------------
 
 * Create a blog entry on [the droolsjbpm blog](http://blog.athico.com/)
 
@@ -1446,7 +1460,7 @@ Announcing the release
 
     * Mail the links to the user list.
 
-* If it's a final release:
+* If it's a Final, non-hotfix release:
 
     * Notify TheServerSide and Dzone's Daily Dose.
 
