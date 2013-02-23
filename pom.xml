@@ -2105,37 +2105,37 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>      
-      <!--Query Screen-->
+      <!--Search Screen-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-query-screen-api</artifactId>
+        <artifactId>guvnor-search-screen-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-query-screen-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-query-screen-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-query-screen-client</artifactId>
+        <artifactId>guvnor-search-screen-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-query-screen-backend</artifactId>
+        <artifactId>guvnor-search-screen-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-query-screen-backend</artifactId>
+        <artifactId>guvnor-search-screen-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-search-screen-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-search-screen-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
