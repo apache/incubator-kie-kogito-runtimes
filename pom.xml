@@ -215,6 +215,10 @@
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <version>2.3.7</version>
+          <configuration>
+            <!-- Split packages in combination with <Export-Package> causes bloated jars otherwise -->
+            <excludeDependencies>true</excludeDependencies>
+          </configuration>
         </plugin>
 
         <plugin>
