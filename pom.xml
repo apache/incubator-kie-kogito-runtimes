@@ -2096,7 +2096,41 @@
         <artifactId>guvnor-dtable-xls-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
+      </dependency>   
+      <!--XLS Scorecard Editor-->
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-scorecard-xls-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-scorecard-xls-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-scorecard-xls-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-scorecard-xls-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-scorecard-xls-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
       </dependency>      
+      <dependency>
+        <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-scorecard-xls-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>            
       <!--Search Screen-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
