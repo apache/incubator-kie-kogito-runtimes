@@ -81,7 +81,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             releaseTagName=$3
         fi
         # note when retagging you 'll need add -f in here:
-        git tag -a $releaseTagName -m "Tagging $releaseTagName"
+        git tag -af $releaseTagName -m "Tagging $releaseTagName"
 
         returnCode=$?
         cd ..
