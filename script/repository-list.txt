@@ -1,13 +1,9 @@
 droolsjbpm-build-bootstrap
 droolsjbpm-knowledge
-kie-commons
-kie-ide
 drools
 drools-planner
-jbpm
 droolsjbpm-integration
-uberfire
 guvnor
 droolsjbpm-tools
 droolsjbpm-build-distribution
-jbpm-console-ng
+
