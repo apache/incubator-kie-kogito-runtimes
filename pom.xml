@@ -2284,6 +2284,17 @@
         <version>${kie-commons.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kieora-commons-io</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kieora-commons-io</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <!-- Lucene, needed by kieora -->
       <dependency>
         <groupId>org.apache.lucene</groupId>
