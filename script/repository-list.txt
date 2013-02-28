@@ -9,5 +9,3 @@ uberfire
 guvnor
 droolsjbpm-tools
 droolsjbpm-build-distribution
-jbpm-console-ng
-
