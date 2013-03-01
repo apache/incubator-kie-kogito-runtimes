@@ -64,7 +64,6 @@
     <mvel.dep.version>2.1.4.Final</mvel.dep.version>
     <bpm.console.version>2.3.8.Final</bpm.console.version>
     <activemq.version>5.7.0</activemq.version>
-    <aries.jpa.version>1.0.1</aries.jpa.version>
     <camel.version>2.10.3</camel.version>
     <karaf.version>2.3.0</karaf.version>
     <cxf.version>2.6.3</cxf.version>
@@ -80,21 +79,6 @@
     <maven.version>3.0.3</maven.version>
     <jetty.version>6.1.25</jetty.version>
     <lucene.version>4.0.0</lucene.version>
-    <junit.version>4.10</junit.version>
-    <antlr-bundle.version>3.5_1</antlr-bundle.version>
-    <jexcelapi.version>2.6.12</jexcelapi.version>
-    <quartz-bundle.version>2.1.6_1</quartz-bundle.version>
-    <javax-inject.version>1.0</javax-inject.version>
-    <protobuf-google-bundle.version>2.4.1_1</protobuf-google-bundle.version>
-    <eclipse-jdt.version>4.2.1</eclipse-jdt.version>
-    <janino.version>2.6.1</janino.version>
-    <xstream-bundle.version>1.4.3_1</xstream-bundle.version>
-    <woodstock-bundle.version>3.2.9_3</woodstock-bundle.version>
-
-    <build-helper-maven-plugin.version>1.7</build-helper-maven-plugin.version>
-    <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
-    <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-    <maven-surefire-plugin.version>2.12.2</maven-surefire-plugin.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -253,7 +237,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>2.4.3</version>
+          <version>2.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -273,7 +257,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.12</version>
+          <version>2.12.2</version>
           <configuration>
             <includes>
               <include>**/*Test.java</include>
