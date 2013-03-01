@@ -528,8 +528,8 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>findbugs-maven-plugin</artifactId>
-          <version>2.5.2</version>
           <!-- Keep in sync with <reporting><plugins> -->
+          <version>2.5.2</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -611,8 +611,8 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
         <!-- Keep in sync with <build><plugins> -->
+        <version>2.5.2</version>
       </plugin>
     </plugins>
   </reporting>
@@ -3615,7 +3615,6 @@
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-pool</artifactId>
         <version>${activemq.version}</version>
-
       </dependency>
 
       <dependency>
