@@ -63,8 +63,12 @@
     <cdi.version>1.0-SP4</cdi.version>
     <mvel.dep.version>2.1.4.Final</mvel.dep.version>
     <bpm.console.version>2.3.8.Final</bpm.console.version>
-    <camel.version>2.9.0</camel.version>
-    <cxf.version>2.4.6</cxf.version>
+    <activemq.version>5.7.0</activemq.version>
+    <aries.jpa.version>1.0.1</aries.jpa.version>
+    <camel.version>2.10.3</camel.version>
+    <karaf.version>2.3.0</karaf.version>
+    <cxf.version>2.6.3</cxf.version>
+    <pax-exam.version>2.6.0</pax-exam.version>
     <springframework.version>3.0.6.RELEASE</springframework.version>
     <gwt.version>2.5.0</gwt.version>
     <gwt.maven.version>2.5.0</gwt.maven.version>
@@ -76,11 +80,26 @@
     <maven.version>3.0.3</maven.version>
     <jetty.version>6.1.25</jetty.version>
     <lucene.version>4.0.0</lucene.version>
+    <junit.version>4.10</junit.version>
+    <antlr-bundle.version>3.5_1</antlr-bundle.version>
+    <jexcelapi.version>2.6.12</jexcelapi.version>
+    <quartz-bundle.version>2.1.6_1</quartz-bundle.version>
+    <javax-inject.version>1.0</javax-inject.version>
+    <protobuf-google-bundle.version>2.4.1_1</protobuf-google-bundle.version>
+    <eclipse-jdt.version>4.2.1</eclipse-jdt.version>
+    <janino.version>2.6.1</janino.version>
+    <xstream-bundle.version>1.4.3_1</xstream-bundle.version>
+    <woodstock-bundle.version>3.2.9_3</woodstock-bundle.version>
+
+    <build-helper-maven-plugin.version>1.7</build-helper-maven-plugin.version>
+    <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
+    <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+    <maven-surefire-plugin.version>2.12.2</maven-surefire-plugin.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-   </properties>
+  </properties>
 
   <repositories>
     <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
@@ -214,7 +233,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>2.3.7</version>
+          <version>${maven-bundle-plugin.version}</version>
         </plugin>
 
         <plugin>
@@ -377,9 +396,9 @@
                 <finalName>${project.artifactId}.pdf</finalName>
               </format>
               <!--<format>-->
-                <!--<formatName>eclipse</formatName>-->
-                <!--<stylesheetResource>classpath:/xslt/org/jboss/eclipse.xsl</stylesheetResource>-->
-                <!--<finalName>${project.artifactId}.html</finalName>-->
+              <!--<formatName>eclipse</formatName>-->
+              <!--<stylesheetResource>classpath:/xslt/org/jboss/eclipse.xsl</stylesheetResource>-->
+              <!--<finalName>${project.artifactId}.html</finalName>-->
               <!--</format>-->
             </formats>
             <injections>
@@ -521,7 +540,8 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>findbugs-maven-plugin</artifactId>
-          <version>2.5.2</version><!-- Keep in sync with <reporting><plugins> -->
+          <version>2.5.2</version>
+          <!-- Keep in sync with <reporting><plugins> -->
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -532,6 +552,11 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>hibernate3-maven-plugin</artifactId>
           <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.camel</groupId>
+          <artifactId>camel-maven-plugin</artifactId>
+          <version>${camel.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -598,7 +623,8 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version><!-- Keep in sync with <build><plugins> -->
+        <version>2.5.2</version>
+        <!-- Keep in sync with <build><plugins> -->
       </plugin>
     </plugins>
   </reporting>
@@ -1266,7 +1292,7 @@
         <artifactId>guvnor-commons-services-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-data</artifactId>
@@ -1287,8 +1313,8 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-ui</artifactId>
         <version>${guvnor.version}</version>
-        <classifier>sources</classifier>        
-      </dependency>      
+        <classifier>sources</classifier>
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-security</artifactId>
@@ -1311,7 +1337,7 @@
         <artifactId>guvnor-project-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-client</artifactId>
@@ -1321,8 +1347,8 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-client</artifactId>
         <version>${guvnor.version}</version>
-        <classifier>sources</classifier>        
-      </dependency>      
+        <classifier>sources</classifier>
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-project-backend</artifactId>
@@ -1333,7 +1359,7 @@
         <artifactId>guvnor-project-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>    
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-datamodel-api</artifactId>
@@ -1344,7 +1370,7 @@
         <artifactId>guvnor-datamodel-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-datamodel-backend</artifactId>
@@ -1354,8 +1380,8 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-datamodel-backend</artifactId>
         <version>${guvnor.version}</version>
-        <classifier>sources</classifier>        
-      </dependency>      
+        <classifier>sources</classifier>
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-builder</artifactId>
@@ -1365,8 +1391,8 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-commons-builder</artifactId>
         <version>${guvnor.version}</version>
-        <classifier>sources</classifier>        
-      </dependency>      
+        <classifier>sources</classifier>
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-workingset-client</artifactId>
@@ -1377,7 +1403,7 @@
         <artifactId>guvnor-workingset-client</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-core-services-api</artifactId>
@@ -1387,8 +1413,8 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-core-services-api</artifactId>
         <version>${guvnor.version}</version>
-        <classifier>sources</classifier>        
-      </dependency>      
+        <classifier>sources</classifier>
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-core-services-backend</artifactId>
@@ -1398,8 +1424,8 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-core-services-backend</artifactId>
         <version>${guvnor.version}</version>
-        <classifier>sources</classifier>        
-      </dependency>      
+        <classifier>sources</classifier>
+      </dependency>
       <!--Widgets-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1411,7 +1437,7 @@
         <artifactId>guvnor-error-messages-widget</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-decorated-grid-widget</artifactId>
@@ -1422,7 +1448,7 @@
         <artifactId>guvnor-decorated-grid-widget</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-view-source-widget</artifactId>
@@ -1443,7 +1469,7 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-metadata-widget</artifactId>
         <version>${guvnor.version}</version>
-        <classifier>sources</classifier>        
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1455,7 +1481,7 @@
         <artifactId>guvnor-config-resource-widget</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <!--Categories Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1467,7 +1493,7 @@
         <artifactId>guvnor-categories-editor-client</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <!--Test Scenario Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1502,7 +1528,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
- 
+
       <!--Default Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1537,7 +1563,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-    
+
       <!--Guided Rule Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1600,12 +1626,12 @@
         <artifactId>guvnor-guided-template-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
-       <dependency>
+      <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-guided-template-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>     
+      </dependency>
       <!--Fact Model Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1810,7 +1836,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
- 
+
       <!--Explorer-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1822,7 +1848,7 @@
         <artifactId>guvnor-explorer-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-explorer-backend</artifactId>
@@ -1844,7 +1870,7 @@
         <artifactId>guvnor-explorer-client</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <!--Globals Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1974,13 +2000,13 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-backend</artifactId>
         <version>${guvnor.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>  
+      </dependency>
       <!--Guvnor Inbox-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -2008,13 +2034,13 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-inbox-backend</artifactId>
         <version>${guvnor.version}</version>
-      </dependency>           
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-inbox-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>  
+      </dependency>
       <!--DSL Text Editor-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -2076,13 +2102,13 @@
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-dtable-xls-editor-backend</artifactId>
         <version>${guvnor.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-dtable-xls-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <!--Query Screen-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -3252,6 +3278,39 @@
         <version>${camel.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-test-spring</artifactId>
+        <version>${camel.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel.karaf</groupId>
+        <artifactId>apache-camel</artifactId>
+        <classifier>features</classifier>
+        <type>xml</type>
+        <version>${camel.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.karaf</groupId>
+        <artifactId>apache-karaf</artifactId>
+        <type>tar.gz</type>
+        <version>${karaf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.karaf.features</groupId>
+        <artifactId>org.apache.karaf.features.core</artifactId>
+        <version>${karaf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.karaf.tooling.exam</groupId>
+        <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
+        <version>${karaf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-junit4</artifactId>
+        <version>${pax-exam.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
         <version>${springframework.version}</version>
@@ -3326,25 +3385,25 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>4.1.6.Final</version>
-        <optional>true</optional> 
+        <optional>true</optional>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>4.1.6.Final</version>
-        <optional>true</optional> 
+        <optional>true</optional>
       </dependency>
       <dependency>
         <groupId>org.hibernate.common</groupId>
         <artifactId>hibernate-commons-annotations</artifactId>
         <version>4.0.1.Final</version>
-        <optional>true</optional> 
+        <optional>true</optional>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>4.2.0.Final</version>
-        <optional>true</optional> 
+        <optional>true</optional>
       </dependency>
 
       <dependency>
@@ -3496,8 +3555,15 @@
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-core</artifactId>
-        <version>5.3.1</version>
+        <version>${activemq.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-pool</artifactId>
+        <version>${activemq.version}</version>
+
+      </dependency>
+
       <dependency>
         <groupId>simple-jndi</groupId>
         <artifactId>simple-jndi</artifactId>
@@ -3589,7 +3655,7 @@
         <version>1.5.5</version>
       </dependency>
 
-    <!--  jbpm-gwt -->
+      <!--  jbpm-gwt -->
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
