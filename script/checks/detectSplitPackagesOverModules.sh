@@ -3,7 +3,7 @@
 # Using the same package in multiple modules (jars/wars) is bad for OSGi and Jigsaw.
 # This script detects such split packages.
 # TODO it outputs false positives (but no false negatives, so it's reliable):
-# grouping packages that have no direct classes, such as org and org.drools and org.drools.planner
+# grouping packages that have no direct classes, such as org and org.drools and org.optaplanner
 
 
 scriptDir=$(dirname $0)

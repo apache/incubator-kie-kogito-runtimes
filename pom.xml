@@ -46,7 +46,7 @@
     <kie-commons.osgi.version>6.0.0.SNAPSHOT</kie-commons.osgi.version>
     <drools.version>6.0.0-SNAPSHOT</drools.version>
     <drools.osgi.version>6.0.0.SNAPSHOT</drools.osgi.version>
-    <drools-planner.version>${drools.version}</drools-planner.version>
+    <optaplanner.version>${drools.version}</optaplanner.version>
     <jbpm.version>6.0.0-SNAPSHOT</jbpm.version>
     <jbpm.osgi.version>6.0.0.SNAPSHOT</jbpm.osgi.version>
     <droolsjbpm-integration.version>${drools.version}</droolsjbpm-integration.version>
@@ -941,69 +941,69 @@
         <version>${drools.version}</version>
       </dependency>
 
-      <!-- drools-planner -->
+      <!-- optaplanner -->
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-core</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-core</artifactId>
+        <version>${optaplanner.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-core</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-core</artifactId>
+        <version>${optaplanner.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-core</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-core</artifactId>
+        <version>${optaplanner.version}</version>
         <classifier>javadoc</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-benchmark</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-benchmark</artifactId>
+        <version>${optaplanner.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-benchmark</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-benchmark</artifactId>
+        <version>${optaplanner.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-benchmark</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-benchmark</artifactId>
+        <version>${optaplanner.version}</version>
         <classifier>javadoc</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-examples</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-examples</artifactId>
+        <version>${optaplanner.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-examples</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-examples</artifactId>
+        <version>${optaplanner.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-webexamples</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-webexamples</artifactId>
+        <version>${optaplanner.version}</version>
         <type>war</type>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-webexamples</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-webexamples</artifactId>
+        <version>${optaplanner.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-docs</artifactId>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-docs</artifactId>
         <type>jdocbook</type>
-        <version>${drools-planner.version}</version>
+        <version>${optaplanner.version}</version>
       </dependency>
 
       <!-- jbpm -->
@@ -2456,9 +2456,9 @@
         <type>zip</type>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-distribution</artifactId>
-        <version>${drools-planner.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-distribution</artifactId>
+        <version>${optaplanner.version}</version>
         <type>zip</type>
       </dependency>
       <dependency>
@@ -2773,7 +2773,7 @@
         <artifactId>poi</artifactId>
         <version>3.8</version>
       </dependency>
-      <!-- Logging for guvnor-repository and drools-planner -->
+      <!-- Logging for guvnor-repository and optaplanner -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
@@ -3191,7 +3191,7 @@
         <version>2.0.3.SP1</version>
       </dependency>
 
-      <!-- drools-planner -->
+      <!-- optaplanner -->
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>

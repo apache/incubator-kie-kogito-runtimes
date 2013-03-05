@@ -313,7 +313,7 @@ Running the build
 
         $ cd ~/projects/droolsjbpm
         $ ls
-        drools  droolsjbpm-build-bootstrap  droolsjbpm-build-distribution  droolsjbpm-integration  droolsjbpm-knowledge  droolsjbpm-tools  drools-planner  guvnor
+        drools  droolsjbpm-build-bootstrap  droolsjbpm-build-distribution  droolsjbpm-integration  droolsjbpm-knowledge  droolsjbpm-tools  optaplanner  guvnor
         $ cd guvnor
         $ ls
         ...  guvnor-repository  guvnor-webapp-drools  pom.xml
@@ -1019,7 +1019,7 @@ Knowing what's going on
 
         * [drools](https://github.com/droolsjbpm/drools/commits/master.atom)
 
-        * [drools-planner](https://github.com/droolsjbpm/drools-planner/commits/master.atom)
+        * [optaplanner](https://github.com/droolsjbpm/optaplanner/commits/master.atom)
 
         * [jbpm](https://github.com/droolsjbpm/jbpm/commits/master.atom)
 
@@ -1313,7 +1313,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
     * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target` and check the zips
 
-        * Start the `examples.sh` script for drools, droolsjbpm-integration and drools-planner
+        * Start the `examples.sh` script for drools, droolsjbpm-integration and optaplanner
 
         * Deploy the guvnor jboss-as-7.0 war to guvnor and surf to it:
 

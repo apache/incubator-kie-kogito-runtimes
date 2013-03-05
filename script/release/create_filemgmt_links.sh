@@ -66,7 +66,7 @@ rsync -a --protocol=28 latest $urlBase/downloads_htdocs/drools/release/
 rsync -a --protocol=28 latest $urlBase/docs_htdocs/drools/release/
 
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/drools-distribution-${droolsVersion}.zip\">" > drools-latest.html
-echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/drools-planner-distribution-${droolsVersion}.zip\">" > drools-planner-latest.html
+echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/optaplanner-distribution-${droolsVersion}.zip\">" > optaplanner-latest.html
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/droolsjbpm-integration-distribution-${droolsVersion}.zip\">" > droolsjbpm-integration-latest.html
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/guvnor-distribution-${droolsVersion}.zip\">" > guvnor-distribution-latest.html
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/droolsjbpm-tools-distribution-${droolsVersion}.zip\">" > droolsjbpm-tools-latest.html
@@ -84,7 +84,7 @@ if [[ "${droolsVersion}" == *Final* ]]; then
     rsync -a --protocol=28  latestFinal $urlBase/docs_htdocs/drools/release/
 
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/drools-distribution-${droolsVersion}.zip\">" > drools-latestFinal.html
-    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/drools-planner-distribution-${droolsVersion}.zip\">" > drools-planner-latestFinal.html
+    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/optaplanner-distribution-${droolsVersion}.zip\">" > optaplanner-latestFinal.html
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/droolsjbpm-integration-distribution-${droolsVersion}.zip\">" > droolsjbpm-integration-latestFinal.html
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/guvnor-distribution-${droolsVersion}.zip\">" > guvnor-distribution-latestFinal.html
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/droolsjbpm-tools-distribution-${droolsVersion}.zip\">" > droolsjbpm-tools-latestFinal.html
