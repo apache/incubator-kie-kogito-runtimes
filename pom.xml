@@ -2702,11 +2702,12 @@
         <artifactId>jsr94-sigtest</artifactId>
         <version>1.1</version>
       </dependency>
+
       <!-- drools-decisiontables -->
       <dependency>
-        <groupId>net.sourceforge.jexcelapi</groupId>
-        <artifactId>jxl</artifactId>
-        <version>2.6.10</version>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>3.9</version>
       </dependency>
 
       <dependency>
@@ -2767,12 +2768,6 @@
         <version>1.2.1</version>
       </dependency>
 
-      <!-- drools-scorecards -->
-      <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi</artifactId>
-        <version>3.8</version>
-      </dependency>
       <!-- Logging for guvnor-repository and optaplanner -->
       <dependency>
         <groupId>org.slf4j</groupId>
