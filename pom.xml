@@ -902,6 +902,17 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-guvnor-models-test-scenarios</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-guvnor-models-test-scenarios</artifactId>
+        <version>${drools.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-ci</artifactId>
         <version>${drools.version}</version>
