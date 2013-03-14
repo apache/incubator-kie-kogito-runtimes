@@ -138,7 +138,7 @@
   </ciManagement>
   <issueManagement>
     <system>jira</system>
-    <url>https://issues.jboss.org/browse/JBRULES</url>
+    <url>https://issues.jboss.org/browse/DROOLS</url>
   </issueManagement>
   <developers>
     <developer>
