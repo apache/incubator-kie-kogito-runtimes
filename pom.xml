@@ -2456,7 +2456,6 @@
         <artifactId>org.drools.updatesite</artifactId>
         <type>zip</type>
         <version>${droolsjbpm-tools.version}</version>
-        <classifier>assembly</classifier>
       </dependency>
 
       <!-- droolsjbpm-build-distribution -->
