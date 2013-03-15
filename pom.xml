@@ -2489,18 +2489,6 @@
         <version>${droolsjbpm-tools.version}</version>
         <type>zip</type>
       </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-osgi-bundles-distribution</artifactId>
-        <type>pom</type>
-        <version>${droolsjbpm-build-distribution.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-osgi-bundles-distribution</artifactId>
-        <version>${droolsjbpm-build-distribution.version}</version>
-        <type>zip</type>
-      </dependency>
 
       <!-- ################################################################################ -->
       <!-- General dependencies -->

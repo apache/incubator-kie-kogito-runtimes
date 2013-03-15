@@ -70,7 +70,6 @@ echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/optaplanner-distributi
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/droolsjbpm-integration-distribution-${droolsVersion}.zip\">" > droolsjbpm-integration-latest.html
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/guvnor-distribution-${droolsVersion}.zip\">" > guvnor-distribution-latest.html
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/droolsjbpm-tools-distribution-${droolsVersion}.zip\">" > droolsjbpm-tools-latest.html
-echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/drools-osgi-bundles-distribution-${droolsVersion}.zip\">" > drools-osgi-bundles-latest.html
 rsync -a --protocol=28  *-latest.html $urlBase/downloads_htdocs/drools/release/
 
 ###############################################################################
@@ -88,7 +87,6 @@ if [[ "${droolsVersion}" == *Final* ]]; then
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/droolsjbpm-integration-distribution-${droolsVersion}.zip\">" > droolsjbpm-integration-latestFinal.html
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/guvnor-distribution-${droolsVersion}.zip\">" > guvnor-distribution-latestFinal.html
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/droolsjbpm-tools-distribution-${droolsVersion}.zip\">" > droolsjbpm-tools-latestFinal.html
-    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/drools-osgi-bundles-distribution-${droolsVersion}.zip\">" > drools-osgi-bundles-latestFinal.html
     rsync -a --protocol=28  *-latestFinal.html $urlBase/downloads_htdocs/drools/release/
 fi
 
