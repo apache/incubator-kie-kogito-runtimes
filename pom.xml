@@ -2515,39 +2515,14 @@
         <version>2.4.1</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.felix</groupId>
+        <groupId>org.osgi</groupId>
         <artifactId>org.osgi.core</artifactId>
-        <version>1.4.0</version>
+        <version>4.3.1</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>org.osgi.foundation</artifactId>
-        <version>1.2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.foundation</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>javax.servlet</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.felix</groupId>
+        <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
-        <version>1.4.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.foundation</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>javax.servlet</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>4.3.1</version>
       </dependency>
 
       <!-- api -->
