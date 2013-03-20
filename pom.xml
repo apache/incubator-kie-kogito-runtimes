@@ -79,6 +79,8 @@
     <maven.version>3.0.3</maven.version>
     <jetty.version>6.1.25</jetty.version>
     <lucene.version>4.0.0</lucene.version>
+    <eclipse.bpmn2.version>0.7.0.010</eclipse.bpmn2.version>
+    <json.version>20090211</json.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -3115,6 +3117,11 @@
         <version>1.0.1</version>
       </dependency>
       <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-math</artifactId>
+          <version>2.2</version>
+      </dependency>
+      <dependency>
         <groupId>jivesoftware</groupId>
         <artifactId>smack</artifactId>
         <version>3.0.4</version>
@@ -3796,6 +3803,18 @@
         <artifactId>gwt-console-screens</artifactId>
         <version>${bpm.console.version}</version>
       </dependency>
+
+      <!-- designer and jbpm-simulation -->
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
+            <version>${jbpm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>org.eclipse.bpmn2</artifactId>
+            <version>${eclipse.bpmn2.version}</version>
+        </dependency>
     </dependencies>
   </dependencyManagement>
 
