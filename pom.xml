@@ -85,6 +85,8 @@
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- Make OSGi happy -->
+    <osgi.version.qualifier>${maven.build.timestamp}</osgi.version.qualifier>
   </properties>
 
   <repositories>
@@ -675,6 +677,18 @@
           <version>2.2.4.EAP5</version>
         </dependency>
       </dependencies>
+    </profile>
+    <profile>
+      <id>m2EclipseIsBeingUsed</id>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <properties>
+        <!-- Stop m2eclipse from continuously regenerating the OSGi manifest timestamp every second -->
+        <osgi.version.qualifier>qualifier</osgi.version.qualifier>
+      </properties>
     </profile>
   </profiles>
 
