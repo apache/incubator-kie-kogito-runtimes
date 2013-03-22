@@ -332,6 +332,13 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>1.7</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>parse-version</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -553,6 +560,11 @@
     <plugins>
       <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- Entry needed to provide parsed version properties -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <!-- Entry needed to create test-jars even for packaging types war, bundle, ... -->
