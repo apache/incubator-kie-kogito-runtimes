@@ -318,8 +318,26 @@
           <version>2.1.2</version>
           <executions>
             <execution>
+              <id>jar</id>
               <goals>
                 <goal>jar</goal>
+              </goals>
+              <configuration>
+                <archive>
+                  <manifestEntries>
+                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                    <Bundle-Name>${project.name}</Bundle-Name>
+                    <Bundle-SymbolicName>${project.artifactId}.source</Bundle-SymbolicName>
+                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                    <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}</Bundle-Version>
+                    <Eclipse-SourceBundle>${project.artifactId};version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}";roots:="."</Eclipse-SourceBundle>
+                  </manifestEntries>
+                </archive>
+              </configuration>
+            </execution>
+            <execution>
+              <id>test-jar</id>
+              <goals>
                 <goal>test-jar</goal>
               </goals>
             </execution>
