@@ -43,12 +43,9 @@
   <properties>
     <!-- Internal dependencies -->
     <kie-commons.version>6.0.0-SNAPSHOT</kie-commons.version>
-    <kie-commons.osgi.version>6.0.0.SNAPSHOT</kie-commons.osgi.version>
     <drools.version>6.0.0-SNAPSHOT</drools.version>
-    <drools.osgi.version>6.0.0.SNAPSHOT</drools.osgi.version>
     <optaplanner.version>${drools.version}</optaplanner.version>
     <jbpm.version>6.0.0-SNAPSHOT</jbpm.version>
-    <jbpm.osgi.version>6.0.0.SNAPSHOT</jbpm.osgi.version>
     <droolsjbpm-integration.version>${drools.version}</droolsjbpm-integration.version>
     <uberfire.version>0.2.0-SNAPSHOT</uberfire.version>
     <guvnor.version>${drools.version}</guvnor.version>
@@ -310,6 +307,11 @@
                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               </manifest>
+              <manifestEntries>
+                <Bundle-SymbolicName>${project.artifactId}.tests</Bundle-SymbolicName>
+                <Bundle-Name>${project.name}</Bundle-Name>
+                <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}</Bundle-Version>
+              </manifestEntries>
             </archive>
           </configuration>
         </plugin>
@@ -341,6 +343,18 @@
               <goals>
                 <goal>test-jar</goal>
               </goals>
+              <configuration>
+                <archive>
+                  <manifestEntries>
+                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                    <Bundle-Name>${project.name}</Bundle-Name>
+                    <Bundle-SymbolicName>${project.artifactId}.tests.source</Bundle-SymbolicName>
+                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                    <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}</Bundle-Version>
+                    <Eclipse-SourceBundle>${project.artifactId}.tests;version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}";roots:="."</Eclipse-SourceBundle>
+                  </manifestEntries>
+                </archive>
+              </configuration>
             </execution>
           </executions>
         </plugin>
@@ -486,31 +500,6 @@
           <version>2.8</version>
           <configuration>
             <!--<downloadSources>true</downloadSources>-->
-          </configuration>
-        </plugin>
-        <plugin>
-          <!-- Only affects m2eclipse, it does not affect the build itself -->
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <versionRange>[2.1.0,)</versionRange>
-                    <goals>
-                      <goal>manifest</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
           </configuration>
         </plugin>
         <plugin>
