@@ -67,6 +67,7 @@
     <camel.version>2.10.3</camel.version>
     <karaf.version>2.3.0</karaf.version>
     <cxf.version>2.6.6</cxf.version>
+    <protobuf.version>2.5.0</protobuf.version>
     <pax-exam.version>2.6.0</pax-exam.version>
     <springframework.version>3.0.6.RELEASE</springframework.version>
     <gwt.version>2.5.0</gwt.version>
@@ -2558,7 +2559,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>2.4.1</version>
+        <version>${protobuf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
