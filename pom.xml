@@ -309,8 +309,9 @@
               </manifest>
               <manifestEntries>
                 <Bundle-SymbolicName>${project.artifactId}.tests</Bundle-SymbolicName>
-                <Bundle-Name>${project.name}</Bundle-Name>
                 <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}</Bundle-Version>
+                <Bundle-Name>${project.name}</Bundle-Name>
+                <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
               </manifestEntries>
             </archive>
           </configuration>
@@ -329,10 +330,10 @@
                 <archive>
                   <manifestEntries>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                    <Bundle-Name>${project.name}</Bundle-Name>
                     <Bundle-SymbolicName>${project.artifactId}.source</Bundle-SymbolicName>
-                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
                     <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}</Bundle-Version>
+                    <Bundle-Name>${project.name}</Bundle-Name>
+                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
                     <Eclipse-SourceBundle>${project.artifactId};version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}";roots:="."</Eclipse-SourceBundle>
                   </manifestEntries>
                 </archive>
@@ -347,10 +348,10 @@
                 <archive>
                   <manifestEntries>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                    <Bundle-Name>${project.name}</Bundle-Name>
                     <Bundle-SymbolicName>${project.artifactId}.tests.source</Bundle-SymbolicName>
-                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
                     <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}</Bundle-Version>
+                    <Bundle-Name>${project.name}</Bundle-Name>
+                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
                     <Eclipse-SourceBundle>${project.artifactId}.tests;version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}";roots:="."</Eclipse-SourceBundle>
                   </manifestEntries>
                 </archive>
