@@ -295,26 +295,41 @@
           <version>2.3.1</version>
           <executions>
             <execution>
-              <phase>package</phase>
+              <id>jar</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+              <configuration>
+                <archive>
+                  <manifest>
+                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                  </manifest>
+                  <!-- No OSGi manifestEntries here: if it supports OSGi, then felix has already added them -->
+                </archive>
+              </configuration>
+            </execution>
+            <execution>
+              <id>test-jar</id>
               <goals>
                 <goal>test-jar</goal>
               </goals>
+              <configuration>
+                <archive>
+                  <manifest>
+                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                  </manifest>
+                  <manifestEntries>
+                    <Bundle-SymbolicName>${project.artifactId}.tests</Bundle-SymbolicName>
+                    <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}</Bundle-Version>
+                    <Bundle-Name>${project.name}</Bundle-Name>
+                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                  </manifestEntries>
+                </archive>
+              </configuration>
             </execution>
           </executions>
-          <configuration>
-            <archive>
-              <manifest>
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              </manifest>
-              <manifestEntries>
-                <Bundle-SymbolicName>${project.artifactId}.tests</Bundle-SymbolicName>
-                <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}</Bundle-Version>
-                <Bundle-Name>${project.name}</Bundle-Name>
-                <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
-              </manifestEntries>
-            </archive>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
