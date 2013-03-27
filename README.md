@@ -1134,15 +1134,15 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * Update master to the next SNAPSHOT version to avoid clashing the artifacts on nexus of master and the release branch:
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.3.0-SNAPSHOT 5.3.0.SNAPSHOT 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.3.0-SNAPSHOT 5.1.0-SNAPSHOT 5.2.0-SNAPSHOT
 
-        * Note: the arguments are `droolsOldVersion droolsOldOsgiVersion droolsNewVersion droolsNewOsgiVersion jbpmOldVersion jbpmOldOsgiVersion jbpmNewVersion jbpmNewOsgiVersion`.
+        * Note: the arguments are `droolsOldVersion droolsNewVersion jbpmOldVersion jbpmNewVersion`.
 
         * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
 
         * WARNING: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
 
-        * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${jbpm.version} and {jbpm.osgi.version}. Check this is not the case.
+        * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${jbpm.version}. Check this is not the case.
 
                 $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
 
@@ -1253,8 +1253,6 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
             
             * `major.minor.micro.Final`, for example `1.2.3.Final`
 
-        * The OSGi version is exactly the same as the pom version.
-
         * See the [JBoss version conventions](http://community.jboss.org/wiki/JBossProjectVersioning)
 
             * Not following those, for example `1.2.3` or `1.2.3.M1` results in OSGi eclipse updatesite corruption.
@@ -1265,9 +1263,9 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
     * Adjust the version in the poms, manifests and other eclipse stuff.
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.2.0.Final 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.1.0.Final 5.1.0.Final
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.Final
 
-        * Note: the arguments are `droolsOldVersion droolsOldOsgiVersion droolsNewVersion droolsNewOsgiVersion jbpmOldVersion jbpmOldOsgiVersion jbpmNewVersion jbpmNewOsgiVersion`.
+        * Note: the arguments are `droolsOldVersion droolsNewVersion jbpmOldVersion jbpmNewVersion`.
 
         * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
 
@@ -1345,11 +1343,9 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
             * If you're releasing a Final, increment the micro number, not the minor number.
 
-        * The OSGi version ends in `.SNAPSHOT` instead of `-SNAPSHOT`.
-
     * Adjust the version in the poms, manifests and other eclipse stuff:
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0.Final 5.2.0.Final  5.3.0-SNAPSHOT 5.3.0.SNAPSHOT 5.1.0.Final 5.1.0.Final 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0.Final 5.3.0-SNAPSHOT 5.1.0.Final 5.2.0-SNAPSHOT
 
         * Commit those changes:
 

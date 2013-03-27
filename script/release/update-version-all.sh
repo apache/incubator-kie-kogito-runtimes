@@ -24,33 +24,27 @@ droolsjbpmOrganizationDir="$scriptDir/../../.."
 withoutJbpm="$withoutJbpm"
 withoutUberfire="$withoutUberfire"
 
-if [ $# != 4 ] && [ $# != 8 ] && [ $# != 12 ] ; then
+if [ $# != 2 ] && [ $# != 4 ] && [ $# != 6 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 droolsOldVersion droolsOldOsgiVersion droolsNewVersion droolsNewOsgiVersion [jbpmOldVersion jbpmOldOsgiVersion jbpmNewVersion jbpmNewOsgiVersion] [uberfireOldVersion uberfireOldOsgiVersion uberfireNewVersion uberfireNewOsgiVersion]"
+    echo "  $0 droolsOldVersion droolsNewVersion [jbpmOldVersion jbpmNewVersion] [uberfireOldVersion uberfireNewVersion]"
     echo "For example:"
-    echo "  $0 5.2.0-SNAPSHOT 5.2.0.SNAPSHOT 5.2.0.Final 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.SNAPSHOT 5.1.0.Final 5.1.0.Final 0.2.0-SNAPSHOT 0.2.0.SNAPSHOT 0.2.0.Final 0.2.0.Final"
+    echo "  $0 5.2.0-SNAPSHOT 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.Final 0.2.0-SNAPSHOT 0.2.0.Final"
     echo
     exit 1
 fi
 droolsOldVersion=$1
-droolsOldOsgiVersion=$2
-droolsNewVersion=$3
-droolsNewOsgiVersion=$4
-echo "The drools, guvnor, ... version: old is $droolsOldVersion (osgi: $droolsOldOsgiVersion) - new is $droolsNewVersion (osgi: $droolsNewOsgiVersion)"
+droolsNewVersion=$2
+echo "The drools, guvnor, ... version: old is $droolsOldVersion - new is $droolsNewVersion"
 if [ "$withoutJbpm" != 'true' ]; then
-    jbpmOldVersion=$5
-    jbpmOldOsgiVersion=$6
-    jbpmNewVersion=$7
-    jbpmNewOsgiVersion=$8
-    echo "The jbpm version: old is $jbpmOldVersion (osgi: $jbpmOldOsgiVersion) - new is $jbpmNewVersion (osgi: $jbpmNewOsgiVersion)"
+    jbpmOldVersion=$3
+    jbpmNewVersion=$4
+    echo "The jbpm version: old is $jbpmOldVersion - new is $jbpmNewVersion"
 fi
 if [ "$withoutUberfire" != 'true' ]; then
-    uberfireOldVersion=$9
-    uberfireOldOsgiVersion=${10}
-    uberfireNewVersion=${11}
-    uberfireNewOsgiVersion=${12}
-    echo "The Uberfire version: old is $uberfireOldVersion (osgi: $uberfireOldOsgiVersion) - new is $uberfireNewVersion (osgi: $uberfireNewOsgiVersion)"
+    uberfireOldVersion=$5
+    uberfireNewVersion=$6
+    echo "The Uberfire version: old is $uberfireOldVersion - new is $uberfireNewVersion"
 fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
@@ -140,7 +134,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 done
 
 cd droolsjbpm-build-distribution
-mvn antrun:run -N -DdroolsOldVersion=$droolsOldVersion -DdroolsOldOsgiVersion=$droolsOldOsgiVersion -DdroolsNewVersion=$droolsNewVersion -DdroolsNewOsgiVersion=$droolsNewOsgiVersion -DjbpmOldVersion=$jbpmOldVersion -DjbpmOldOsgiVersion=$jbpmOldOsgiVersion -DjbpmNewVersion=$jbpmNewVersion -DjbpmNewOsgiVersion=$jbpmNewOsgiVersion -DuberfireOldVersion=$uberfireOldVersion -DuberfireOldOsgiVersion=$uberfireOldOsgiVersion -DuberfireNewVersion=$uberfireNewVersion -DuberfireNewOsgiVersion=$uberfireNewOsgiVersion
+mvn antrun:run -N -DdroolsOldVersion=$droolsOldVersion -DdroolsNewVersion=$droolsNewVersion -DjbpmOldVersion=$jbpmOldVersion -DjbpmNewVersion=$jbpmNewVersion -DuberfireOldVersion=$uberfireOldVersion -DuberfireNewVersion=$uberfireNewVersion
 returnCode=$?
 cd ..
 if [ $returnCode != 0 ] ; then
