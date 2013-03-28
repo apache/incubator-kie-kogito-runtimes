@@ -301,21 +301,7 @@
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.3.1</version>
           <executions>
-            <execution>
-              <id>jar</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-              <configuration>
-                <archive>
-                  <manifest>
-                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                  </manifest>
-                  <!-- No OSGi manifestEntries here: if it supports OSGi, then felix has already added them -->
-                </archive>
-              </configuration>
-            </execution>
+            <!-- No OSGi manifestEntries for <goal>jar</goal>: if it supported, then felix has already added them -->
             <execution>
               <id>test-jar</id>
               <goals>
@@ -323,10 +309,6 @@
               </goals>
               <configuration>
                 <archive>
-                  <manifest>
-                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                  </manifest>
                   <manifestEntries>
                     <Bundle-SymbolicName>${project.artifactId}.tests</Bundle-SymbolicName>
                     <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.version.qualifier}</Bundle-Version>
@@ -337,6 +319,14 @@
               </configuration>
             </execution>
           </executions>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+            </archive>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
