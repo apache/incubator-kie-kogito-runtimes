@@ -7,7 +7,11 @@ if( ! $ARGV[0] ) {
   die "Please provide the directory that this should run in (as the first argument)!\n";
 }
 
-my @searchDirs = ($ARGV[0]);
+my (@searchDirs, %searchDirsMap);
+foreach my $argDir (@ARGV) { 
+  $searchDirsMap{$argDir} = 1;
+}
+@searchDirs = (keys %searchDirsMap);
 
 my (%mainClassesMap, %mainSplitModules);
 my (%testClassesMap, %testSplitModules); 
@@ -57,7 +61,10 @@ sub wanted {
         if( ! exists $splitPackagesRef->{$pkg} ) { 
           $splitPackagesRef->{$pkg} = [ $packagesRef->{$pkg} ];
         }
-        push( @{$splitPackagesRef->{$pkg}}, $module );
+        my %splitPkgs = map { $_ => 1 } @{$splitPackagesRef->{$pkg}};
+        if( ! exists $splitPkgs{$module} ) {
+          push( @{$splitPackagesRef->{$pkg}}, $module );
+        }
       }
       ++$inMainOrTest;
     } 
@@ -117,23 +124,22 @@ find( {
   preprocess => \&preprocess
   }, @searchDirs);
 
-print "\nPackages found in src/main/java: \n\n";
 
 my ($pkg, $module);
+my %lists = (
+  "main" => \%mainSplitModules, 
+  "test" => \%testSplitModules 
+);
 
-foreach $pkg (sort keys %mainSplitModules) { 
-  print "$pkg: \n";
-  foreach $module (@{$mainSplitModules{$pkg}}) { 
-    print "  $module\n";
-  }
-}
+foreach my $type (sort keys %lists) { 
 
-print "\n\nPackages found in src/test/java: \n\n";
+  print "\nPackages found in src/$type/java: \n\n";
 
-foreach $pkg (sort keys %testSplitModules) { 
-  print "$pkg: \n";
-  foreach $module (@{$testSplitModules{$pkg}}) { 
-    print "  $module\n";
+  foreach $pkg (sort keys %{$lists{$type}}) { 
+    print "$pkg: \n";
+    foreach $module (@{$lists{$type}->{$pkg}}) { 
+      print "  $module\n";
+    }
   }
 }
 
