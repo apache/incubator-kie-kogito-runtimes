@@ -77,8 +77,22 @@
     <maven.version>3.0.3</maven.version>
     <jetty.version>6.1.25</jetty.version>
     <lucene.version>4.0.0</lucene.version>
-    <eclipse.bpmn2.version>0.7.0.010</eclipse.bpmn2.version>
+    <eclipse.bpmn2.version>0.7.2</eclipse.bpmn2.version>
     <json.version>20090211</json.version>
+    <batik.version>1.6-1</batik.version>
+    <jbpm.migration.version>0.11</jbpm.migration.version>
+    <closure.compiler.version>r1741</closure.compiler.version>
+    <jbpt.version>0.1.0</jbpt.version>
+    <velocity.version>1.6.4</velocity.version>
+    <supercsv.version>1.52</supercsv.version>
+    <xmlgraphics.commons.version>1.4</xmlgraphics.commons.version>
+    <xmappr.versionm>0.9.3</xmappr.versionm>
+    <rhino.js.version>1.7R2</rhino.js.version>
+    <eclipse.osgi.version>3.5.0.v20090520</eclipse.osgi.version>
+    <avalon.version>4.1.4</avalon.version>
+    <abdera.version>1.1.2</abdera.version>
+    <commons.configuration.version>1.6</commons.configuration.version>
+    <fop.version>0.95</fop.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -3872,6 +3886,11 @@
             <groupId>org.eclipse</groupId>
             <artifactId>org.eclipse.bpmn2</artifactId>
             <version>${eclipse.bpmn2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>jbpm-simulation</artifactId>
+            <version>${drools.version}</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
