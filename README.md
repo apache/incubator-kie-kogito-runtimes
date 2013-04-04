@@ -1108,13 +1108,13 @@ One week in advance:
 
     * Include a list of projects on Jenkins that are yellow or red.
 
-        * Daily remind the lead of any projects that is red.
+        * Daily remind the lead of any project that is red.
 
     * For a CR/Final, also mention the FindBugs reports on jenkins.
 
-* All external dependencies on a non-SNAPSHOT version, to avoid failing to close the repo on nexus near the end of the release.
+* All external dependencies must be on a non-SNAPSHOT version, to avoid failing to *close* the staging repo on nexus near the end of the release.
 
-    * Get those dependencies (for example `mvel` and `bpm-console`) released if needed, preferably 1 week before the kie release. This way, the final artifact gets tested.
+    * Get those dependencies (for example `mvel` and `bpm-console`) released if needed, preferably 1 week before the kie release. This way, those released artifacts gets tested by our tests.
 
 * Ask the Guvnor lead to update the Guvnor translations with Zanata:
 
@@ -1217,6 +1217,16 @@ Creating a release branch
 -------------------------
 
 A release branch name should always end with `.x` so it looks different from a tag name and a topic branch name.
+
+* When do we create a release branch?
+
+    * We only create a release branch just before releasing CR1.
+
+        * For example, just before releasing 5.2.0.CR1, we created the release branch 5.2.x
+
+            * The release branch 5.2.x contained the releases 5.2.0.CR1, 5.2.0.Final, 5.2.1.Final, 5.2.2.Final, ...
+
+    * Alpha/Beta releases are released directly from master, because we don't backport commits to Alpha/Beta's.
 
 * Alert the IRC dev channels that you're going to branch master.
 
