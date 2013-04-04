@@ -957,8 +957,9 @@ Team workflows
 
 * Fixing a community issue in JIRA:
 
-    * Find/create the issue in JIRA ([Drools](https://issues.jboss.org/browse/JBRULES),
-    [jBPM](https://issues.jboss.org/browse/JBPM], [Guvnor](https://issues.jboss.org/browse/GUVNOR)
+    * Find/create the issue in JIRA ([Drools](https://issues.jboss.org/browse/DROOLS),
+    [OptaPlanner](https://issues.jboss.org/browse/PLANNER), [jBPM](https://issues.jboss.org/browse/JBPM],
+    [Guvnor](https://issues.jboss.org/browse/GUVNOR)
 
     * Fix the issue and push those changes to the appropriate branch(es) on github.
 
@@ -1005,7 +1006,9 @@ Knowing what's going on
 
     * Subscribe to jira issue changes:
 
-        * [JBRULES](https://issues.jboss.org/plugins/servlet/streams?key=JBRULES&os_authType=basic)
+        * [DROOLS](https://issues.jboss.org/plugins/servlet/streams?key=DROOLS&os_authType=basic)
+
+        * [PLANNER](https://issues.jboss.org/plugins/servlet/streams?key=PLANNER&os_authType=basic)
 
         * [JBPM](https://issues.jboss.org/plugins/servlet/streams?key=JBPM&os_authType=basic)
 
@@ -1099,24 +1102,127 @@ Releasing
 Expecting a release
 -------------------
 
-* Use a non-SNAPSHOT version for all dependencies. Get those dependencies (for example mvel and bpm-console) released if needed.
+One week in advance:
 
-    * Try to get those dependencies (mvel, bpm-console) released one week before the droolsjbpm release. This way, the final artifact gets tested.
+* Announce on the upcoming release on all the developer mailing lists and in the IRC channel topics.
 
-* Releasing Drools with or without jBPM?
+    * Include a list of projects on Jenkins that are yellow or red.
 
-    * If jBPM must not be released, then do this in any shell before running the first release command:
+        * Daily remind the lead of any projects that is red.
 
-            $ export withoutJbpm=true
+    * For a CR/Final, also mention the FindBugs reports on jenkins.
 
-    * Furthermore, verify that the `droolsjbpm-parent` pom's properties are not using a SNAPSHOT version of jBPM.
+* All external dependencies on a non-SNAPSHOT version, to avoid failing to close the repo on nexus near the end of the release.
+
+    * Get those dependencies (for example `mvel` and `bpm-console`) released if needed, preferably 1 week before the kie release. This way, the final artifact gets tested.
+
+* Ask the Guvnor lead to update the Guvnor translations with Zanata:
+
+    * Translations into different locales are handled within Zanata (https://translate.jboss.org/)
+
+    * Email Zanata mailing list that a release is about to be made.
+
+    * The most recent translations need to be pulled into the release branch. Assuming you have set-up your Zanata configuration correctly, this can be achieved with:
+
+            $ mvn zanata:pull -Dfull -Dngsoa -Dngsoafull -Dbpm
+
+    * NOTE: The above Maven switches specify Guvnor Profiles to examine for translation files. Drools Guvnor (`-Dfull`) is essential. SOA (`-Dngsoa` and `-Dngsoafull`) and BPM Console (`-Dbpm`) are optional.
+
+    * NOTE: If releasing a new version number (major, minor or micro) a new version of the translations should be setup in Zanata.
+
+    * The fr_FR translation files need to have the single quote correctly escaped.
+
+        * Open guvnor-webapp-core\src\main\java\org.drools.guvnor.client.messages\ConstantsCore_fr_FR.properties search for '' and replace with '. Then seach and replace ' with ''.
+
+        * Open guvnor-webapp-drools\src\main\java\org.drools.guvnor.client.messages\Constants_fr_FR.properties search for '' and replace with '. Then seach and replace ' with ''.
+
+    * Test compile guvnor to check there are no other translation issues.
+
+            $ mvn clean install -Dfull -DskipTests
+
+        * Sometime the variable place-holders {0}, {1}... are missing.
+
+        * Append missing variable place-holders {0}, {1}... to the end of the translated text and email the Zanata mailing list.
+
+* Get access to `filemgmt.jboss.org`
+
+    * Note: This is for internal Red Hat developer information only and requires access to Red Hat's VPN.
+
+    * See [https://docspace.corp.redhat.com/docs/DOC-35393](https://docspace.corp.redhat.com/docs/DOC-35393)
+
+    * Create ssh Key (if not already done)
+
+        * Key must:
+
+            * be RSA-2 ( default for many keygen apps )
+            * have 1024+ bit ( 2048 is preferred )
+            * have comment with user email address
+
+        * Using many keygen tools the following command will work
+
+                $ ssh-keygen -C your@email.com -b 2048
+
+            * enter key name
+            * enter passcode you want
+
+        * Send ticket to IT
+
+            * Have it forwarded to https://engineering.redhat.com/rt/Ticket/Create.html?Queue=58 (RT3 eng-ops-mw) queue
+            * Specify that you would like access to drools@filemgmt.jboss.org
+            * Attach the *.pub that you created above
+
+48 hours in advance:
+
+* Push deadline: Announce on the upcoming push deadline on all the developer mailing lists and in the IRC channel topics.
+
+    * Commits pushed before the deadline will make the release, the rest won't.
+
+* Pull the latest changes.
+
+        $ git-all.sh pull --rebase
+
+* Do a sanity check.
+
+    * Produce the distribution zips, build with `-Dfull`:
+
+            $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -Dfull -DskipTests
+
+        * Warning: It is not uncommon to run out of either PermGen space or Heap Space. The following settings are known (@Sept-2012) to work:-
+
+                $ export MAVEN_OPTS='-Xms512m -Xmx2200m -XX:MaxPermSize=512m'
+
+        * Warning: Verify that workspace contains no uncommitted changes or rogue module directories of older branches:
+
+                $ droolsjbpm-build-bootstrap/script/git-all.sh status
+
+            * Specifically watch out for an uncommitted `*/target` directory: that's the result of a build of an older branch that didn't get cleaned.
+
+                * If the root of that directory gets zipped, binaries of that older branch leak into today's distribution zip.
+
+    * Do a sanity check of the artifacts by running each runExamples.sh from the zips.
+
+        * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target/*/download_jboss_org`:
+
+            * Unzip the zips to a temporary directory.
+
+            * Start the `runExamples.sh` script for drools, droolsjbpm-integration and optaplanner
+
+            * Deploy the guvnor jboss-as-7.0 war to guvnor and surf to it:
+
+                * Install the mortgages examples, build it and run the test scenario's
+
+            * Verify that the reference manuals open in a browser (HTML) and Adobe Reader (PDF).
 
 Creating a release branch
 -------------------------
 
 A release branch name should always end with `.x` so it looks different from a tag name and a topic branch name.
 
-* Alert the IRC channel that you're going to branch master.
+* Alert the IRC dev channels that you're going to branch master.
+
+* Pull the latest changes.
+
+        $ git-all.sh pull --rebase
 
 * Simply use the script `script/release/create-release-branches.sh` with the drools and jbpm *release branch name*:
 
@@ -1189,53 +1295,13 @@ A release branch name should always end with `.x` so it looks different from a t
 Releasing from a release branch
 -------------------------------
 
-* Guvnor translations
+* Alert the IRC dev channels that you're starting the release.
 
-    * Translations into different locales are handled within Zanata (https://translate.jboss.org/)
+* Pull the latest changes.
 
-    * Email Zanata mailing list that a release is about to be made.
+        $ git-all.sh pull --rebase
 
-    * The most recent translations need to be pulled into the release branch. Assuming you have set-up your Zanata configuration correctly, this can be achieved with:
-
-            $ mvn zanata:pull -Dfull -Dngsoa -Dngsoafull -Dbpm
-
-    * NOTE: The above Maven switches specify Guvnor Profiles to examine for translation files. Drools Guvnor (`-Dfull`) is essential. SOA (`-Dngsoa` and `-Dngsoafull`) and BPM Console (`-Dbpm`) are optional.
-
-    * NOTE: If releasing a new version number (major, minor or micro) a new version of the translations should be setup in Zanata.
-
-    * The fr_FR translation files need to have the single quote correctly escaped. 
-
-        * Open guvnor-webapp-core\src\main\java\org.drools.guvnor.client.messages\ConstantsCore_fr_FR.properties search for '' and replace with '. Then seach and replace ' with ''. 
-
-        * Open guvnor-webapp-drools\src\main\java\org.drools.guvnor.client.messages\Constants_fr_FR.properties search for '' and replace with '. Then seach and replace ' with ''. 
-
-    * Test compile guvnor to check there are no other translation issues. 
-
-            $ mvn clean install -Dfull -DskipTests
-
-        * Sometime the variable place-holders {0}, {1}... are missing. 
-
-        * Append missing variable place-holders {0}, {1}... to the end of the translated text and email the Zanata mailing list.
-
-* To produce the distribution zips, build with `-Dfull`:
-
-        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull clean install
-
-    * Warning: Use JDK 1.6, because in JDK 1.5 the module `guvnor-repository-connector-modeshape` is not build.
-
-    * Warning: It is not uncommon to run out of either PermGen space or Heap Space. The following settings are known (@Sept-2012) to work:-
-
-            $ export MAVEN_OPTS='-Xms512m -Xmx2200m -XX:MaxPermSize=512m'
-
-    * Warning: Verify that workspace contains no uncommitted changes or rogue module directories of older branches:
-
-            $ droolsjbpm-build-bootstrap/script/git-all.sh status
-
-        * Otherwise the sources in a distribution zip might contain archived module directories with old binaries.
-
-* Do a sanity check of the artifacts by running each runExamples.sh from the zips.
-
-    * The distribution zips are in the directory `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
+* Optional: do another sanity check.
 
 If everything is perfect (compiles, jenkins is all blue and sanity checks succeed):
 
@@ -1293,29 +1359,29 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 5.2.0.Final 5.1.0.Final
 
+* Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, drop all your old staging repositories.
+
 * Deploy the artifacts:
 
         $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull -DskipTests clean deploy
 
+    * This will take a long while (3+ hours)
+
     * The release skips the tests because jbpm and guvnor have random failing tests
+
+    * If it fails for any reason, go to nexus and drop your stating repositories again and start over.
 
 * Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, find your staging repository.
 
-    * Look at the files in the repository
+    * Look at the files in the repository.
+
+        * Sometimes they are split into 2 staging repositories (with no intersecting files): just threat those 2 as 1 staging repository.
 
     * Button *close*
 
-        * This will validate the nexus rules. If any fail: fix the issues, and force retag locally.
+        * This will validate the nexus rules. If any fail: fix the issues, and force a git retag locally.
 
-* Do another sanity check of the artifacts by running the examples from the zips.
-
-    * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target` and check the zips
-
-        * Start the `examples.sh` script for drools, droolsjbpm-integration and optaplanner
-
-        * Deploy the guvnor jboss-as-7.0 war to guvnor and surf to it:
-
-            * Install the mortgages examples, build it and run the test scenario's
+* Do another sanity check of the artifacts by running the examples and opening the manuals from the zips. See above.
 
 * This is **the point of no return**.
 
@@ -1371,11 +1437,23 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         $ droolsjbpm-build-bootstrap/script/release/git-push-tag-all.sh 5.2.0.Final 5.1.0.Final
 
+    * Push your changes to the release branch:
+
+        * Especially if the release branch is master: First pull any latest changes **without `--rebase`**, .
+
+                $ git-all.sh pull
+
+            * Without the `--rebase` it's a merge, and their commits will not be rebased before your version-changing commits.
+
+        * Push your version-changing commits to the release branch:
+
+                $ git-all.sh push origin 5.2.x
+
 * Release your staging repository on [nexus](https://repository.jboss.org/nexus)
 
     * Button *release*
 
-* Go to [jira](https://issues.jboss.org) and for each of our JIRA projects (JBRULES, GUVNOR, JBPM):
+* Go to [jira](https://issues.jboss.org) and for each of our JIRA projects (DROOLS, PLANNER, JBPM, GUVNOR):
 
     * Open menu item *Administration*, link *Manage versions*, release the version.
 
@@ -1384,6 +1462,8 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 * Upload the zips, documentation and javadocs to filemgmt and update the website.
 
     * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
+
+    * To get access to `filemgmt.jboss.org`, see preparation above.
 
     * Folder `download_jboss_org` should be uploaded to `filemgmt.jboss.org/downloads_htdocs/drools/release`
     which ends up at [download.jboss.org](http://download.jboss.org/drools/release/)
@@ -1395,7 +1475,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         * Use `documentation_table.txt` to update [the documentation webpage](http://www.jboss.org/drools/documentation).
 
-* Update the symbolic links `latest` and `latestFinal` links on filemgmt, if and only if there is no higher release already released.
+* Update the symbolic links `latest` and `latestFinal` links on filemgmt, if and only if there is no higher major or minor release was already released.
 
         $ droolsjbpm-build-bootstrap/script/release/create_filemgmt_links.sh 5.2.0.Final
 
@@ -1408,32 +1488,6 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
         * [http://docs.jboss.org/drools/release/latest/](http://docs.jboss.org/drools/release/latest/)
 
         * [http://docs.jboss.org/drools/release/latestFinal/](http://docs.jboss.org/drools/release/latestFinal/)
-
-* Getting access to `filemgmt.jboss.org`
-
-    * Note: This is for internal Red Hat developer information only and requires access to Red Hat's VPN.
-
-    * See https://docspace.corp.redhat.com/docs/DOC-35393
-
-    * Create ssh Key (if not already done)
-
-        * Key must:
-
-            * be RSA-2 ( default for many keygen apps )
-            * have 1024+ bit ( 2048 is preferred )
-            * have comment with user email address
-
-        * Using many keygen tools the following command will work
-
-            * ssh-keygen -C your@email.com -b 2048
-            * enter key name
-            * enter passcode you want
-
-        * Send ticket to IT
-
-            * Have it forwarded to https://engineering.redhat.com/rt/Ticket/Create.html?Queue=58 (RT3 eng-ops-mw) queue
-            * Specify that you would like access to drools@filemgmt.jboss.org
-            * Attach the *.pub that you created above
 
 Announcing the release
 ----------------------
