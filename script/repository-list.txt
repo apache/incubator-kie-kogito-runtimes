@@ -9,6 +9,7 @@ uberfire
 guvnor
 droolsjbpm-tools
 droolsjbpm-build-distribution
-jbpm-designer-ng
+jbpm-designer
 jbpm-console-ng
 kie-ide
+dashboard-builder
