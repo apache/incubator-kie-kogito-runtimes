@@ -1256,8 +1256,6 @@ A release branch name should always end with `.x` so it looks different from a t
 
         * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
 
-        * WARNING: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
-
         * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${jbpm.version}. Check this is not the case.
 
                 $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
