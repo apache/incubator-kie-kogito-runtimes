@@ -51,6 +51,7 @@
     <guvnor.version>${drools.version}</guvnor.version>
     <droolsjbpm-tools.version>${drools.version}</droolsjbpm-tools.version>
     <droolsjbpm-build-distribution.version>${drools.version}</droolsjbpm-build-distribution.version>
+    <jbpm.designer.version>${jbpm.version}</jbpm.designer.version>
 
     <!-- External dependencies -->
     <slf4j.version>1.7.2</slf4j.version>
@@ -1321,6 +1322,28 @@
         <artifactId>jbpm-docs</artifactId>
         <type>jdocbook</type>
         <version>${jbpm.version}</version>
+      </dependency>
+
+      <!-- jbpm-designer -->
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-designer-api</artifactId>
+          <version>${jbpm.designer.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-designer-backend</artifactId>
+          <version>${jbpm.designer.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-designer-client</artifactId>
+          <version>${jbpm.designer.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-designer-standalone</artifactId>
+          <version>${jbpm.designer.version}</version>
       </dependency>
 
       <!-- droolsjbpm-integration -->
