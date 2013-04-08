@@ -20,7 +20,7 @@
   <!-- major.minor.micro.Final -->
   <!-- For example: 1.2.3 without the suffix ".Final" corrupts the OSGi eclipse updatesite -->
   <!-- For example: 1.2.3.M2 corrupts the OSGi eclipse updatesite update order -->
-  <version>6.0.0-SNAPSHOT</version>
+  <version>6.0.0.Beta1</version>
 
   <name>Drools and jBPM build bootstrap (parent pom)</name>
   <description>
@@ -42,12 +42,12 @@
 
   <properties>
     <!-- Internal dependencies -->
-    <kie-commons.version>6.0.0-SNAPSHOT</kie-commons.version>
-    <drools.version>6.0.0-SNAPSHOT</drools.version>
+    <kie-commons.version>6.0.0.Beta1</kie-commons.version>
+    <drools.version>6.0.0.Beta1</drools.version>
     <optaplanner.version>${drools.version}</optaplanner.version>
-    <jbpm.version>6.0.0-SNAPSHOT</jbpm.version>
+    <jbpm.version>6.0.0.Beta1</jbpm.version>
     <droolsjbpm-integration.version>${drools.version}</droolsjbpm-integration.version>
-    <uberfire.version>0.2.0-SNAPSHOT</uberfire.version>
+    <uberfire.version>0.1.2.Final</uberfire.version>
     <guvnor.version>${drools.version}</guvnor.version>
     <droolsjbpm-tools.version>${drools.version}</droolsjbpm-tools.version>
     <droolsjbpm-build-distribution.version>${drools.version}</droolsjbpm-build-distribution.version>
