@@ -71,7 +71,7 @@
     <gwt.version>2.5.0</gwt.version>
     <gwt.maven.version>2.5.0</gwt.maven.version>
     <bootstrap.version>2.2.1.0</bootstrap.version>
-    <errai.version>2.2.0.Final</errai.version>
+    <errai.version>2.3.0-SNAPSHOT</errai.version>
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
     <resteasy.version>2.3.3.Final</resteasy.version>
