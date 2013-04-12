@@ -2377,6 +2377,17 @@
         <version>${kie-commons.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-cdi</artifactId>
+        <version>${kie-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.commons</groupId>
+        <artifactId>kie-commons-cdi</artifactId>
+        <version>${kie-commons.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <!-- KIEORA, KIE Commons Metadata -->
       <dependency>
         <groupId>org.kie.commons</groupId>
