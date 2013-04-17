@@ -79,7 +79,7 @@
     <maven.version>3.0.3</maven.version>
     <jetty.version>6.1.25</jetty.version>
     <lucene.version>4.0.0</lucene.version>
-    <eclipse.bpmn2.version>0.7.2</eclipse.bpmn2.version>
+    <eclipse.bpmn2.version>0.7.3</eclipse.bpmn2.version>
     <json.version>20090211</json.version>
     <batik.version>1.6-1</batik.version>
     <jbpm.migration.version>0.11</jbpm.migration.version>
