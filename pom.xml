@@ -1124,12 +1124,12 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bam</artifactId>
+        <artifactId>jbpm-audit</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bam</artifactId>
+        <artifactId>jbpm-audit</artifactId>
         <version>${jbpm.version}</version>
         <classifier>sources</classifier>
       </dependency>
