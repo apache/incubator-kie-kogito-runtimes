@@ -11,5 +11,5 @@ droolsjbpm-tools
 droolsjbpm-build-distribution
 jbpm-designer
 jbpm-console-ng
-kie-ide
+kie-wb-distributions
 dashboard-builder
