@@ -59,7 +59,7 @@
     <xstream.version>1.4.3</xstream.version>
     <weld.version>1.1.8.Final</weld.version>
     <cdi.version>1.0-SP4</cdi.version>
-    <mvel.dep.version>2.1.4.Final</mvel.dep.version>
+    <mvel.dep.version>2.1.5.Final</mvel.dep.version>
     <bpm.console.version>2.3.8.Final</bpm.console.version>
     <activemq.version>5.7.0</activemq.version>
     <camel.version>2.10.3</camel.version>
