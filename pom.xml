@@ -2069,7 +2069,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Guvnor Inbox-->
+      <!--Guvnor Inbox - TODO Legacy - To be deleted-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-inbox-api</artifactId>
@@ -2099,6 +2099,40 @@
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
+        <artifactId>guvnor-inbox-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guvnor Inbox -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
         <artifactId>guvnor-inbox-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
