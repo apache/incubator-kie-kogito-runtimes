@@ -2461,59 +2461,59 @@
       </dependency>
       <!--Distribution-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-webapp</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-webapp</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-webapp</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-webapp</artifactId>
         <classifier>sources</classifier>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-distribution-wars</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-distribution-wars</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
         <classifier>jboss-as7.0</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-distribution-wars</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-distribution-wars</artifactId>
         <type>war</type>
         <version>${guvnor.version}</version>
         <classifier>tomcat7.0</classifier>
       </dependency>
       <!--Data migration-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-jcr2vfs-migration-core</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-jcr2vfs-migration-core</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-jcr2vfs-migration-core</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-jcr2vfs-migration-core</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Examples-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-examples</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-examples</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-examples</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-examples</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Docs-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-docs</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-docs</artifactId>
         <type>jdocbook</type>
         <version>${guvnor.version}</version>
       </dependency>
