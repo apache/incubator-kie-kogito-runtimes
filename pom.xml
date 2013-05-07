@@ -2035,7 +2035,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Guvnor M2_REPO Editor-->
+      <!--Guvnor M2_REPO Editor - TODO Legacy - To be deleted once refactor is complete -->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-api</artifactId>
@@ -2069,7 +2069,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Guvnor Inbox - TODO Legacy - To be deleted-->
+      <!--Guvnor Inbox - TODO Legacy - To be deleted once refactor is complete -->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-inbox-api</artifactId>
@@ -2100,6 +2100,40 @@
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-inbox-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guvnor M2_REPO Editor -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
