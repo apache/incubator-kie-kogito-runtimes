@@ -1525,7 +1525,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Widgets-->
+      <!--Widgets - TODO Legacy - To be deleted once refactor is complete -->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-error-messages-widget</artifactId>
@@ -1578,6 +1578,62 @@
       <dependency>
         <groupId>org.kie.guvnor</groupId>
         <artifactId>guvnor-config-resource-widget</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Widgets -->
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-error-messages-widget</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-error-messages-widget</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-decorated-grid-widget</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-decorated-grid-widget</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-view-source-widget</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-view-source-widget</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-metadata-widget</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-metadata-widget</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-config-resource-widget</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.widgets</groupId>
+        <artifactId>kie-wb-config-resource-widget</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
