@@ -1379,7 +1379,7 @@
         <version>${droolsjbpm-integration.version}</version>
       </dependency>
 
-      <!--guvnor-ng-->
+      <!--Drools Workbench -->
       <!--Commons-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
@@ -1525,63 +1525,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Widgets - TODO Legacy - To be deleted once refactor is complete -->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-error-messages-widget</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-error-messages-widget</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-decorated-grid-widget</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-decorated-grid-widget</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-view-source-widget</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-view-source-widget</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-metadata-widget</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-metadata-widget</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-config-resource-widget</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-config-resource-widget</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Widgets -->
+      <!--Kie Workbench - Common Widgets -->
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-error-messages-widget</artifactId>
@@ -1634,256 +1578,6 @@
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-config-resource-widget</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Categories Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-categories-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-categories-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Test Scenario Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-test-scenario-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-test-scenario-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-test-scenario-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-test-scenario-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-test-scenario-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-test-scenario-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Default Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-default-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-default-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-default-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-default-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-default-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-default-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Guided Rule Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-rule-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-rule-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-rule-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-rule-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-rule-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-rule-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Guided Template Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-template-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-template-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-template-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-template-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-template-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-template-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Fact Model Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-factmodel-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-factmodel-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-factmodel-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-factmodel-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-factmodel-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-factmodel-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Enum Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-enum-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-enum-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-enum-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-enum-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-enum-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-enum-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--DRL Text Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-drl-text-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-drl-text-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-drl-text-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-drl-text-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-drl-text-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-drl-text-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -1989,173 +1683,37 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Globals Editor-->
+      <!--Search Screen-->
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-globals-editor-api</artifactId>
+        <artifactId>guvnor-search-screen-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-globals-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-globals-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-globals-editor-backend</artifactId>
+        <artifactId>guvnor-search-screen-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-globals-editor-client</artifactId>
+        <artifactId>guvnor-search-screen-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-globals-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Guided Decision Table Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-dtable-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-dtable-editor-api</artifactId>
+        <artifactId>guvnor-search-screen-client</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-dtable-editor-client</artifactId>
+        <artifactId>guvnor-search-screen-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-dtable-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-dtable-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-dtable-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Guided Score Card Editor-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-scorecard-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-scorecard-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-scorecard-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-scorecard-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-scorecard-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-guided-scorecard-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Guvnor M2_REPO Editor - TODO Legacy - To be deleted once refactor is complete -->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Guvnor Inbox - TODO Legacy - To be deleted once refactor is complete -->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-inbox-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-inbox-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-inbox-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-inbox-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-inbox-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-inbox-backend</artifactId>
+        <artifactId>guvnor-search-screen-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -2227,173 +1785,491 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <!--Categories Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-categories-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-categories-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Test Scenario Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-test-scenario-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-test-scenario-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-test-scenario-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-test-scenario-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-test-scenario-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-test-scenario-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Default Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-default-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-default-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-default-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-default-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-default-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-default-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guided Rule Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-rule-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-rule-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-rule-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-rule-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-rule-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-rule-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guided Template Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-template-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-template-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-template-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-template-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-template-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-template-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Fact Model Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-factmodel-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-factmodel-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-factmodel-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-factmodel-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-factmodel-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-factmodel-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Enum Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-enum-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-enum-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-enum-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-enum-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-enum-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-enum-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--DRL Text Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-drl-text-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-drl-text-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-drl-text-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-drl-text-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-drl-text-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-drl-text-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Globals Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-globals-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-globals-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-globals-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-globals-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-globals-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-globals-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guided Decision Table Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtable-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtable-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtable-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtable-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtable-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtable-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guided Score Card Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-scorecard-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-scorecard-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-scorecard-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-scorecard-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-scorecard-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-scorecard-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <!--DSL Text Editor-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dsl-text-editor-api</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dsl-text-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dsl-text-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dsl-text-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dsl-text-editor-client</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dsl-text-editor-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dsl-text-editor-backend</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dsl-text-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dsl-text-editor-backend</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dsl-text-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dsl-text-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dsl-text-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--XLS Decision Table Editor-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dtable-xls-editor-api</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dtable-xls-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dtable-xls-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dtable-xls-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dtable-xls-editor-client</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dtable-xls-editor-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-dtable-xls-editor-backend</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dtable-xls-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dtable-xls-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-dtable-xls-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>guvnor-dtable-xls-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>      
       <!--XLS Scorecard Editor-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-scorecard-xls-editor-api</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-scorecard-xls-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-scorecard-xls-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-scorecard-xls-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-scorecard-xls-editor-client</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-scorecard-xls-editor-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-scorecard-xls-editor-backend</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-scorecard-xls-editor-backend</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-scorecard-xls-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-scorecard-xls-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>      
       <!--Work Items Editor-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-workitems-editor-api</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-workitems-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-workitems-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-workitems-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-workitems-editor-client</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-workitems-editor-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-workitems-editor-backend</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-workitems-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-workitems-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Search Screen-->
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-search-screen-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-search-screen-api</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-workitems-editor-client</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-search-screen-client</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-workitems-editor-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-search-screen-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-search-screen-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-search-screen-backend</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-workitems-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -2700,8 +2576,8 @@
         <type>zip</type>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-distribution</artifactId>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-distribution</artifactId>
         <version>${guvnor.version}</version>
         <type>zip</type>
       </dependency>
@@ -3289,7 +3165,6 @@
 
 
       <!-- guvnor-webapp -->
-
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
