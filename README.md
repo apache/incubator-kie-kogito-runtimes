@@ -1,3 +1,5 @@
+This is a in-sync version of https://github.com/droolsjbpm/droolsjbpm-build-bootstrap
+
 Developing Drools and jBPM
 ==========================
 
