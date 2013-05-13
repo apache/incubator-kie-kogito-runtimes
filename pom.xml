@@ -2496,6 +2496,12 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-jcr2vfs-migration-core</artifactId>
         <version>${guvnor.version}</version>
+        <type>zip</type>
+      </dependency>      
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-jcr2vfs-migration-core</artifactId>
+        <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Examples-->
