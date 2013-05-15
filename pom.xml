@@ -1514,6 +1514,16 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
+
+
+      <!-- Kie Workbench - Common Services -->
+
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-data-modeller-core</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+
       <!--Kie Workbench - Common Widgets -->
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
@@ -1706,6 +1716,42 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
+
+        <!-- Data Modeller Screen -->
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-data-modeller-api</artifactId>
+            <version>${guvnor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-data-modeller-api</artifactId>
+            <version>${guvnor.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-data-modeller-client</artifactId>
+            <version>${guvnor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-data-modeller-client</artifactId>
+            <version>${guvnor.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-data-modeller-backend</artifactId>
+            <version>${guvnor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-data-modeller-backend</artifactId>
+            <version>${guvnor.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
       <!--Guvnor M2_REPO Editor -->
       <dependency>
         <groupId>org.guvnor</groupId>
@@ -3925,6 +3971,15 @@
             <artifactId>jbpm-simulation</artifactId>
             <version>${drools.version}</version>
         </dependency>
+
+
+        <!-- data modeller code generation  -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>${velocity.version}</version>
+        </dependency>
+
     </dependencies>
   </dependencyManagement>
 
