@@ -1594,69 +1594,58 @@
       </dependency>
       <!--Project Editor-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-editor-api</artifactId>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-editor-client</artifactId>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-editor-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-editor-backend</artifactId>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-editor-backend</artifactId>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Project Config Editor-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-config-editor-api</artifactId>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-imports-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-config-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-config-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-config-editor-client</artifactId>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-imports-editor-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-config-editor-backend</artifactId>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-imports-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-config-editor-backend</artifactId>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-project-imports-editor-client</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
