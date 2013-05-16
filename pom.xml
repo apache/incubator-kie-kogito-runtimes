@@ -3755,12 +3755,6 @@
         <version>7.1.1.Final</version>
         <scope>test</scope>
       </dependency>
-      <dependency>
-        <groupId>org.jboss.weld</groupId>
-        <artifactId>weld-core</artifactId>
-        <version>1.1.5.Final</version>
-        <scope>test</scope>
-      </dependency>
 
       <dependency>
         <groupId>org.jboss.arquillian</groupId>
