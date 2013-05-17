@@ -1472,24 +1472,24 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-datamodel-api</artifactId>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-datamodel-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-datamodel-api</artifactId>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-datamodel-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-datamodel-backend</artifactId>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-datamodel-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-datamodel-backend</artifactId>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-datamodel-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
