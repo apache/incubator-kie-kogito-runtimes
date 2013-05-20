@@ -1450,35 +1450,24 @@
       </dependency>
       <!--Core API-->
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-api</artifactId>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-project-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-client</artifactId>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-project-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-backend</artifactId>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-project-backend</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.guvnor</groupId>
-        <artifactId>guvnor-project-backend</artifactId>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-project-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
