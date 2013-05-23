@@ -74,7 +74,8 @@
     <errai.version>2.3.0.Final</errai.version>
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
-    <resteasy.version>2.3.3.Final</resteasy.version>
+    <resteasy.version>2.3.6.Final</resteasy.version>
+    <hornetq.version>2.2.21.Final</hornetq.version>
     <aether.version>1.13.1</aether.version>
     <maven.version>3.0.3</maven.version>
     <jetty.version>6.1.25</jetty.version>
@@ -95,7 +96,11 @@
     <abdera.version>1.1.2</abdera.version>
     <commons.configuration.version>1.6</commons.configuration.version>
     <fop.version>0.95</fop.version>
+
+    <!-- arquillian related -->
+    <arquillian.version>1.0.3.Final</arquillian.version>
     <shrinkwrap.resolver.version>2.0.0-beta-3</shrinkwrap.resolver.version>
+    <jboss.managed.server.version>7.1.1.Final</jboss.managed.server.version>
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -1401,6 +1406,29 @@
         <type>jdocbook</type>
         <version>${droolsjbpm-integration.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-services-client</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-services-client</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-services-remote</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-services-remote</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
 
       <!--Drools Workbench -->
       <!--Commons-->
@@ -3174,6 +3202,56 @@
         </exclusions>
       </dependency>
 
+      <!-- kie-remote -->
+      <dependency>
+        <groupId>org.jboss.spec.javax.ejb</groupId>
+        <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+        <version>1.0.2.Final</version>
+      </dependency>
+      <!-- kie-remote: rest -->
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>jaxrs-api</artifactId>
+        <version>${resteasy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${resteasy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxb-provider</artifactId>
+        <version>${resteasy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-cdi</artifactId>
+        <version>${resteasy.version}</version>
+      </dependency>
+
+      <!-- kie-remote: hornetq/jms -->
+      <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-core</artifactId>
+        <version>${hornetq.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-core-client</artifactId>
+        <version>${hornetq.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-core-client</artifactId>
+        <version>${hornetq.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-jms-client</artifactId>
+        <version>${hornetq.version}</version>
+      </dependency>
+      
       <!-- bpm-console -->
       <dependency>
         <groupId>com.google.code.gson</groupId>
@@ -3189,16 +3267,6 @@
         <groupId>com.google.code.gwt-log</groupId>
         <artifactId>gwt-log</artifactId>
         <version>3.1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs</artifactId>
-        <version>${resteasy.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>jaxrs-api</artifactId>
-        <version>2.2.3.GA</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
@@ -3758,6 +3826,7 @@
         </exclusions>
       </dependency>
 
+      <!-- arquillian / integration testing -->
       <dependency>
         <groupId>org.jboss.spec</groupId>
         <artifactId>jboss-javaee-6.0</artifactId>
@@ -3774,14 +3843,14 @@
       <dependency>
         <groupId>org.jboss.as</groupId>
         <artifactId>jboss-as-arquillian-container-managed</artifactId>
-        <version>7.1.1.Final</version>
+        <version>${jboss.managed.server.version}</version>
         <scope>test</scope>
       </dependency>
 
       <dependency>
         <groupId>org.jboss.arquillian</groupId>
         <artifactId>arquillian-bom</artifactId>
-        <version>1.0.3.Final</version>
+        <version>${arquillian.version}</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -3908,13 +3977,8 @@
 
       <dependency>
         <groupId>org.hornetq</groupId>
-        <artifactId>hornetq-core</artifactId>
-        <version>2.2.10.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hornetq</groupId>
         <artifactId>hornetq-transports</artifactId>
-        <version>2.2.10.Final</version>
+        <version>${hornetq.version}</version>
       </dependency>
 
       <dependency>
