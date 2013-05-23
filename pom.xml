@@ -1617,57 +1617,57 @@
       <!--Project Editor-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-editor-api</artifactId>
+        <artifactId>kie-wb-common-project-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-editor-client</artifactId>
+        <artifactId>kie-wb-common-project-editor-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-editor-backend</artifactId>
+        <artifactId>kie-wb-common-project-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-editor-backend</artifactId>
+        <artifactId>kie-wb-common-project-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-project-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-project-editor-backend</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Project Config Editor-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-imports-editor-api</artifactId>
+        <artifactId>kie-wb-common-project-imports-editor-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-imports-editor-api</artifactId>
+        <artifactId>kie-wb-common-project-imports-editor-api</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-imports-editor-client</artifactId>
+        <artifactId>kie-wb-common-project-imports-editor-client</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-project-imports-editor-client</artifactId>
+        <artifactId>kie-wb-common-project-imports-editor-client</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
