@@ -723,6 +723,9 @@ IntelliJ has very good build-in support for Maven.
 
     * Checkbox *Create module*: `off`
 
+Note: If you want to configure a main project that includes all projects you must create an empty project and add the
+projects as modules.
+
 * Click menu *File*, menu item *New module*
 
     * Radiobutton *Import from external model*, button *Next*, button *Next*
