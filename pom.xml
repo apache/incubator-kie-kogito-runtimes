@@ -71,7 +71,7 @@
     <gwt.version>2.5.0</gwt.version>
     <gwt.maven.version>2.5.0</gwt.maven.version>
     <bootstrap.version>2.2.1.0</bootstrap.version>
-    <errai.version>2.3.0.Final</errai.version>
+    <errai.version>2.3.1.Final</errai.version>
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
     <resteasy.version>2.3.6.Final</resteasy.version>
@@ -96,6 +96,7 @@
     <abdera.version>1.1.2</abdera.version>
     <commons.configuration.version>1.6</commons.configuration.version>
     <fop.version>0.95</fop.version>
+    <helix.version>0.6.1-incubating</helix.version>
 
     <!-- arquillian related -->
     <arquillian.version>1.0.3.Final</arquillian.version>
@@ -2787,6 +2788,11 @@
         <artifactId>org.eclipse.jgit</artifactId>
         <version>2.1.0.201209190230-r</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.helix</groupId>
+        <artifactId>helix-core</artifactId>
+        <version>${helix.version}</version>
+      </dependency>
 
       <!-- drools-core -->
       <dependency>
@@ -3093,6 +3099,11 @@
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-api</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-client-api</artifactId>
         <version>${uberfire.version}</version>
       </dependency>
       <dependency>
