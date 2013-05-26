@@ -3113,11 +3113,6 @@
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-widgets-core-backend</artifactId>
-        <version>${uberfire.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.uberfire</groupId>
         <artifactId>uberfire-widgets-commons</artifactId>
         <version>${uberfire.version}</version>
       </dependency>
