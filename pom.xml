@@ -1489,6 +1489,17 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-defaultapprover</artifactId>
+        <version>0.9</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-defaultapprover</artifactId>
+        <version>0.9</version>
+        <classifier>sources</classifier>
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-rest</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
