@@ -1028,6 +1028,13 @@
         <version>${drools.version}</version>
       </dependency>
 
+      <!-- added this dependency since it overwrites transitive dependencies of maven-plugin-api:3.0.3 with lower versions-->
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.0.7</version>
+      </dependency>
+
       <!-- optaplanner -->
       <dependency>
         <groupId>org.optaplanner</groupId>
