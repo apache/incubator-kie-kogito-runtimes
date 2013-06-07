@@ -1709,17 +1709,6 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-common-home-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-common-home-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
       <!--Project Editor-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
