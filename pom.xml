@@ -75,7 +75,7 @@
     <gson.version>1.7.2</gson.version>
     <mvc4g.version>1.0.0-jboss</mvc4g.version>
     <resteasy.version>2.3.6.Final</resteasy.version>
-    <hornetq.version>2.2.21.Final</hornetq.version>
+    <hornetq.version>2.3.1.Final</hornetq.version>
     <aether.version>1.13.1</aether.version>
     <maven.version>3.0.3</maven.version>
     <jetty.version>6.1.25</jetty.version>
@@ -3324,7 +3324,7 @@
       <!-- kie-remote: hornetq/jms -->
       <dependency>
         <groupId>org.hornetq</groupId>
-        <artifactId>hornetq-core</artifactId>
+        <artifactId>hornetq-server</artifactId>
         <version>${hornetq.version}</version>
       </dependency>
       <dependency>
