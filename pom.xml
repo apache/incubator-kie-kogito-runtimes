@@ -3602,7 +3602,7 @@
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
         <artifactId>woodstox-core-asl</artifactId>
-        <version>4.1.1</version>
+        <version>4.2.0</version>
       </dependency>
 
       <dependency>
