@@ -86,7 +86,7 @@
     <jbpm.migration.version>0.11</jbpm.migration.version>
     <closure.compiler.version>r1741</closure.compiler.version>
     <jbpt.version>0.1.0</jbpt.version>
-    <velocity.version>1.6.4</velocity.version>
+    <velocity.version>1.7</velocity.version>
     <supercsv.version>1.52</supercsv.version>
     <xmlgraphics.commons.version>1.4</xmlgraphics.commons.version>
     <xmappr.versionm>0.9.3</xmappr.versionm>
