@@ -97,6 +97,7 @@
     <commons.configuration.version>1.6</commons.configuration.version>
     <fop.version>0.95</fop.version>
     <helix.version>0.6.1-incubating</helix.version>
+    <joda-time.version>1.6.2</joda-time.version>
 
     <!-- arquillian related -->
     <arquillian.version>1.0.3.Final</arquillian.version>
@@ -2865,7 +2866,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>1.6</version>
+        <version>${joda-time.version}</version>
       </dependency>
       <!-- drools-compiler -->
       <dependency>
