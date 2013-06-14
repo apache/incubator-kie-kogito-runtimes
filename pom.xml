@@ -3819,7 +3819,7 @@
       <dependency>
         <groupId>javax.faces</groupId>
         <artifactId>jsf-api</artifactId>
-        <version>1.2</version>
+        <version>1.2_15</version>
       </dependency>
       <dependency>
         <groupId>org.subethamail</groupId>
