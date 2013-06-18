@@ -3349,6 +3349,11 @@
         <artifactId>hornetq-jms-client</artifactId>
         <version>${hornetq.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-core</artifactId>
+        <version>${hornetq.version}</version>
+      </dependency>
       
       <!-- bpm-console -->
       <dependency>
