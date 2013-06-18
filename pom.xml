@@ -3352,7 +3352,7 @@
       <dependency>
         <groupId>org.hornetq</groupId>
         <artifactId>hornetq-core</artifactId>
-        <version>${hornetq.version}</version>
+        <version>2.2.11.Final</version>
       </dependency>
       
       <!-- bpm-console -->
