@@ -3349,12 +3349,7 @@
         <artifactId>hornetq-jms-client</artifactId>
         <version>${hornetq.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.hornetq</groupId>
-        <artifactId>hornetq-core</artifactId>
-        <version>2.2.11.Final</version>
-      </dependency>
-      
+
       <!-- bpm-console -->
       <dependency>
         <groupId>com.google.code.gson</groupId>
