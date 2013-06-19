@@ -3836,9 +3836,9 @@
       </dependency>
 
       <dependency>
-        <groupId>io.netty</groupId>
+        <groupId>org.jboss.netty</groupId>
         <artifactId>netty</artifactId>
-        <version>3.6.2.Final</version>
+        <version>3.2.0.Final</version>
       </dependency>
 
       <!-- Weld (Context and Dependency Injection) -->
