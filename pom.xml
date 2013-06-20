@@ -98,6 +98,7 @@
     <fop.version>0.95</fop.version>
     <helix.version>0.6.1-incubating</helix.version>
     <joda-time.version>1.6.2</joda-time.version>
+    <aries-blueprint.version>1.0.0</aries-blueprint.version>
 
     <!-- arquillian related -->
     <arquillian.version>1.0.3.Final</arquillian.version>
@@ -3605,9 +3606,27 @@
         <version>4.2.0</version>
       </dependency>
 
+      <!-- Aries -->
+      <dependency>
+        <groupId>org.apache.aries.blueprint</groupId>
+        <artifactId>org.apache.aries.blueprint.api</artifactId>
+        <version>${aries-blueprint.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.aries.blueprint</groupId>
+        <artifactId>blueprint-parser</artifactId>
+        <version>${aries-blueprint.version}</version>
+      </dependency>
+
+      <!-- Camel -->
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-core</artifactId>
+        <version>${camel.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-blueprint</artifactId>
         <version>${camel.version}</version>
       </dependency>
       <dependency>
