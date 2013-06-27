@@ -8,6 +8,7 @@ droolsjbpm-integration
 uberfire
 guvnor
 kie-wb-common
+jbpm-form-modeler
 drools-wb
 droolsjbpm-tools
 droolsjbpm-build-distribution
