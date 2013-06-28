@@ -1494,30 +1494,182 @@
       </dependency>
 
 
-      <!--Drools Workbench -->
+      <!--Guvnor-->
+      <!--Guvnor Project Services -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-project-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-project-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-project-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-project-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-project-builder</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-project-builder</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guvnor Working Set Services -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-workingset-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-workingset-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-workingset-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-workingset-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guvnor Core Services -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-services-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-services-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-services-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-services-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guvnor M2_REPO Editor -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-m2repo-editor-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guvnor Inbox -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-inbox-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <!--KIE Common -->
+      <!--KIE Common - Core Services -->
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-services-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-services-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-services-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-services-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <!--Commons-->
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-services-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-services-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-services-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-services-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-defaultapprover</artifactId>
@@ -1566,28 +1718,6 @@
       <!--Core API-->
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-project-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-project-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-project-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-project-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-datamodel-api</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
@@ -1608,43 +1738,8 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-builder</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-builder</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-workingset-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-workingset-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-workingset-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-workingset-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
 
       <!-- Kie Workbench - Common Services -->
-
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-data-modeller-core</artifactId>
@@ -1855,7 +1950,6 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-
         <!-- Data Modeller Screen -->
         <dependency>
             <groupId>org.kie.workbench.screens</groupId>
@@ -1890,75 +1984,6 @@
             <version>${guvnor.version}</version>
             <classifier>sources</classifier>
         </dependency>
-
-      <!--Guvnor M2_REPO Editor -->
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-m2repo-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <!--Guvnor Inbox -->
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-inbox-api</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-inbox-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-inbox-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-inbox-client</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-inbox-backend</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-inbox-backend</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
       <!--Categories Editor-->
       <dependency>
         <groupId>org.drools</groupId>
