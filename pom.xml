@@ -1669,30 +1669,7 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!--Commons-->
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-defaultapprover</artifactId>
-        <version>0.9</version>
-        <type>kjar</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-defaultapprover</artifactId>
-        <version>0.9</version>
-        <classifier>sources</classifier>
-      </dependency>      
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-rest</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-rest</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
+      <!--Commons-->     
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-common-ui</artifactId>
@@ -2685,6 +2662,30 @@
         <version>${guvnor.version}</version>
         <classifier>tomcat7.0</classifier>
       </dependency>
+      <!--REST-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-rest-defaultapprover</artifactId>
+        <version>0.9</version>
+        <type>kjar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-rest-defaultapprover</artifactId>
+        <version>0.9</version>
+        <classifier>sources</classifier>
+      </dependency>      
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-rest</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>   
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-rest</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>     
       <!--Data migration-->
       <dependency>
         <groupId>org.drools</groupId>
