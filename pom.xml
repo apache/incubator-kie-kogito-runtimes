@@ -52,6 +52,7 @@
     <droolsjbpm-tools.version>${drools.version}</droolsjbpm-tools.version>
     <droolsjbpm-build-distribution.version>${drools.version}</droolsjbpm-build-distribution.version>
     <jbpm.designer.version>${jbpm.version}</jbpm.designer.version>
+    <jbpm.form.modeler.version>${jbpm.version}</jbpm.form.modeler.version>
 
     <!-- External dependencies -->
     <slf4j.version>1.7.2</slf4j.version>
