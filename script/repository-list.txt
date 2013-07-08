@@ -16,3 +16,4 @@ jbpm-designer
 jbpm-console-ng
 kie-wb-distributions
 dashboard-builder
+jbpm-dashboard
