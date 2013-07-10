@@ -1353,6 +1353,74 @@
           <version>${jbpm.designer.version}</version>
       </dependency>
 
+      <!-- jbpm-form-modeler -->
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-app</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-renderer</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-renderer-api</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-renderer-client</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-editor-api</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-data-modeler</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-editor-client</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-editor-backend</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-form-provider</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-form-modeler-api</artifactId>
+            <version>${jbpm.form.modeler.version}</version>
+        </dependency>
+
       <!-- droolsjbpm-integration -->
       <dependency>
         <groupId>org.drools</groupId>
