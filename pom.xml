@@ -3222,6 +3222,11 @@
       <!--Uberfire-->
       <dependency>
         <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-js</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
         <artifactId>uberfire-server</artifactId>
         <version>${uberfire.version}</version>
       </dependency>
@@ -3478,7 +3483,6 @@
         <version>1.3.0</version>
         <classifier>sources</classifier>
       </dependency>
-
 
       <!-- guvnor-webapp -->
       <dependency>
