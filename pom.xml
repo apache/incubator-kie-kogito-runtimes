@@ -47,7 +47,7 @@
     <optaplanner.version>${drools.version}</optaplanner.version>
     <jbpm.version>6.0.0-SNAPSHOT</jbpm.version>
     <droolsjbpm-integration.version>${drools.version}</droolsjbpm-integration.version>
-    <uberfire.version>0.2.0-SNAPSHOT</uberfire.version>
+    <uberfire.version>0.3.0-SNAPSHOT</uberfire.version>
     <guvnor.version>${drools.version}</guvnor.version>
     <droolsjbpm-tools.version>${drools.version}</droolsjbpm-tools.version>
     <droolsjbpm-build-distribution.version>${drools.version}</droolsjbpm-build-distribution.version>
