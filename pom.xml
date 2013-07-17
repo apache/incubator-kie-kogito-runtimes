@@ -53,6 +53,7 @@
     <droolsjbpm-build-distribution.version>${drools.version}</droolsjbpm-build-distribution.version>
     <jbpm.designer.version>${jbpm.version}</jbpm.designer.version>
     <jbpm.form.modeler.version>${jbpm.version}</jbpm.form.modeler.version>
+    <jbpm.console.ng.version>${jbpm.version}</jbpm.console.ng.version>
 
     <!-- External dependencies -->
     <slf4j.version>1.7.2</slf4j.version>
@@ -4317,6 +4318,93 @@
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console-screens</artifactId>
         <version>${bpm.console.version}</version>
+      </dependency>
+
+      <!-- jBPM console NG -->
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-business-domain-api</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-business-domain-client</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-business-domain-backend</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-process-runtime-backend</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-executor-service-api</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-executor-service-backend</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-executor-service-client</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-dashboard-api</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-dashboard-client</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
+          <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-console-ng-module-archetype</artifactId>
+          <version>${jbpm.console.ng.version}</version>
       </dependency>
 
       <!-- designer and jbpm-simulation -->
