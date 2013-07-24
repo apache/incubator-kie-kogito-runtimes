@@ -1820,17 +1820,6 @@
       <!--Kie Workbench - Common Widgets -->
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
-        <artifactId>kie-wb-error-messages-widget</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.widgets</groupId>
-        <artifactId>kie-wb-error-messages-widget</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-decorated-grid-widget</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
