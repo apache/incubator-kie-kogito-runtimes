@@ -4,10 +4,10 @@ kie-commons
 drools
 optaplanner
 jbpm
-droolsjbpm-integration
 uberfire
 guvnor
 kie-wb-common
+droolsjbpm-integration
 jbpm-form-modeler
 drools-wb
 droolsjbpm-tools
