@@ -2192,7 +2192,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Fact Model Editor-->
+      <!--Legacy Fact Model API (Editor replaced by Data Modeller) -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-factmodel-editor-api</artifactId>
@@ -2201,17 +2201,6 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-factmodel-editor-api</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-factmodel-editor-client</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-factmodel-editor-client</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
