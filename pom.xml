@@ -1050,23 +1050,6 @@
         <version>${drools.version}</version>
       </dependency>
 
-      <!-- added this dependencies since they overwrite transitive dependencies of maven-plugin-api:3.0.3 with lower versions-->
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-utils</artifactId>
-        <version>3.0.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.sonatype.sisu</groupId>
-        <artifactId>sisu-inject-plexus</artifactId>
-        <version>2.2.3</version>
-     </dependency>
-     <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-provider-api</artifactId>
-        <version>1.0</version>
-     </dependency>
-
       <!-- optaplanner -->
       <dependency>
         <groupId>org.optaplanner</groupId>
@@ -1373,78 +1356,166 @@
       </dependency>
 
       <!-- jbpm-form-modeler -->
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-app</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-            <type>war</type>
-        </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-app</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-renderer</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-renderer-api</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-renderer-client</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-editor-api</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-data-modeler</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-editor-client</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-editor-backend</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-form-provider</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-api</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-bpmn-form-builder</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-renderer</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
+      <!-- jBPM console NG -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-business-domain-api</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-business-domain-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-business-domain-backend</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-process-runtime-backend</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-executor-service-api</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-executor-service-backend</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-executor-service-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-dashboard-api</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-dashboard-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-module-archetype</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-renderer-api</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-renderer-client</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-editor-api</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-data-modeler</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-editor-client</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-editor-backend</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-form-provider</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-api</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-bpmn-form-builder</artifactId>
-            <version>${jbpm.form.modeler.version}</version>
-        </dependency>
+      <!-- designer and jbpm-simulation -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>jbpm-simulation</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
 
       <!-- droolsjbpm-integration -->
       <dependency>
@@ -2010,40 +2081,40 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-        <!-- Data Modeller Screen -->
-        <dependency>
-            <groupId>org.kie.workbench.screens</groupId>
-            <artifactId>kie-wb-common-data-modeller-api</artifactId>
-            <version>${guvnor.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.workbench.screens</groupId>
-            <artifactId>kie-wb-common-data-modeller-api</artifactId>
-            <version>${guvnor.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.workbench.screens</groupId>
-            <artifactId>kie-wb-common-data-modeller-client</artifactId>
-            <version>${guvnor.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.workbench.screens</groupId>
-            <artifactId>kie-wb-common-data-modeller-client</artifactId>
-            <version>${guvnor.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.workbench.screens</groupId>
-            <artifactId>kie-wb-common-data-modeller-backend</artifactId>
-            <version>${guvnor.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.workbench.screens</groupId>
-            <artifactId>kie-wb-common-data-modeller-backend</artifactId>
-            <version>${guvnor.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
+      <!-- Data Modeller Screen -->
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-data-modeller-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-data-modeller-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-data-modeller-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-data-modeller-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-data-modeller-backend</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-data-modeller-backend</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <!--Categories Editor-->
       <dependency>
         <groupId>org.drools</groupId>
@@ -2487,7 +2558,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>      
-      <!--Work Items Editor-->
+      <!-- Work Items Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-workitems-editor-api</artifactId>
@@ -3057,6 +3128,24 @@
         <version>1.1</version>
       </dependency>
 
+      <!-- drools-maven-plugin -->
+      <!-- added this dependencies since they overwrite transitive dependencies of maven-plugin-api:3.0.3 with lower versions-->
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.0.7</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.sisu</groupId>
+        <artifactId>sisu-inject-plexus</artifactId>
+        <version>2.2.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-provider-api</artifactId>
+        <version>1.0</version>
+      </dependency>
+
       <!-- drools-decisiontables -->
       <dependency>
         <groupId>org.apache.poi</groupId>
@@ -3604,7 +3693,6 @@
         <artifactId>commons-lang</artifactId>
         <version>2.6</version>
       </dependency>
-
       <dependency>
         <groupId>org.jfree</groupId>
         <artifactId>jfreechart</artifactId>
@@ -4326,117 +4414,19 @@
         <version>${bpm.console.version}</version>
       </dependency>
 
-      <!-- jBPM console NG -->
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-business-domain-client</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-business-domain-backend</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-process-runtime-backend</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-executor-service-api</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-executor-service-backend</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-executor-service-client</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-dashboard-api</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-dashboard-client</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-console-ng-module-archetype</artifactId>
-          <version>${jbpm.console.ng.version}</version>
-      </dependency>
-
       <!-- designer and jbpm-simulation -->
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
-            <version>${jbpm.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>org.eclipse.bpmn2</artifactId>
-            <version>${eclipse.bpmn2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>jbpm-simulation</artifactId>
-            <version>${drools.version}</version>
-        </dependency>
+      <dependency>
+        <groupId>org.eclipse</groupId>
+        <artifactId>org.eclipse.bpmn2</artifactId>
+        <version>${eclipse.bpmn2.version}</version>
+      </dependency>
 
-
-        <!-- data modeller code generation  -->
-        <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
-            <version>${velocity.version}</version>
-        </dependency>
+      <!-- data modeller code generation  -->
+      <dependency>
+        <groupId>org.apache.velocity</groupId>
+        <artifactId>velocity</artifactId>
+        <version>${velocity.version}</version>
+      </dependency>
 
     </dependencies>
   </dependencyManagement>
