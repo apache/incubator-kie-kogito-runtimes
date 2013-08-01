@@ -2047,22 +2047,6 @@
         <artifactId>resteasy-multipart-provider</artifactId>
         <version>${resteasy.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>report-core</artifactId>
-        <version>1.3.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>report-shared</artifactId>
-        <version>1.3.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>report-shared</artifactId>
-        <version>1.3.0</version>
-        <classifier>sources</classifier>
-      </dependency>
 
       <!-- guvnor-webapp -->
       <dependency>
@@ -2169,11 +2153,6 @@
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
         <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.security</groupId>
-        <artifactId>jboss-security-spi</artifactId>
-        <version>2.0.3.SP1</version>
       </dependency>
 
       <!-- optaplanner -->
@@ -2759,11 +2738,6 @@
       </dependency>
 
       <dependency>
-        <groupId>com.google.collections</groupId>
-        <artifactId>google-collections</artifactId>
-        <version>1.0</version>
-      </dependency>
-      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>13.0.1</version>
@@ -2807,103 +2781,13 @@
         <artifactId>jackson-xc</artifactId>
         <version>1.9.9</version>
       </dependency> 
-    
-    
-      <!--  jbpm-gwt -->
+
+      <!-- designer and jbpm-simulation -->
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>1.4</version>
       </dependency>
-      <dependency>
-        <groupId>com.sun.xml.stream</groupId>
-        <artifactId>sjsxp</artifactId>
-        <version>1.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml</groupId>
-        <artifactId>jsr173</artifactId>
-        <version>1.0</version>
-      </dependency>
-
-      <!-- org.jboss.bpm (bpm-console) -->
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console-server</artifactId>
-        <version>${bpm.console.version}</version>
-        <classifier>jbpm</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console-jbpm</artifactId>
-        <version>${bpm.console.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console-server-jbpm</artifactId>
-        <version>${bpm.console.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console-server-integration</artifactId>
-        <version>${bpm.console.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console</artifactId>
-        <version>${bpm.console.version}</version>
-        <classifier>jbpm</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>activity-monitor-model</artifactId>
-        <version>1.0.0.Final</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-annotations</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-common-annotations</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-tools</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <!-- console NG? -->
-      <dependency>
-        <groupId>org.jboss.bpm</groupId>
-        <artifactId>gwt-console-screens</artifactId>
-        <version>${bpm.console.version}</version>
-      </dependency>
-
-      <!-- designer and jbpm-simulation -->
       <dependency>
         <groupId>org.eclipse</groupId>
         <artifactId>org.eclipse.bpmn2</artifactId>
