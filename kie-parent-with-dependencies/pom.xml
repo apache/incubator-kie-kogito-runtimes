@@ -143,17 +143,6 @@
       <!-- droolsjbpm-integration -->
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-grid-impl</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-grid-impl</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
         <artifactId>drools-spring-legacy5</artifactId>
         <version>${droolsjbpm-integration.version}</version>
       </dependency>
@@ -457,7 +446,7 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!--Commons-->     
+      <!--Commons-->
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-common-ui</artifactId>
@@ -1356,51 +1345,6 @@
         <version>${kie-commons.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!-- Lucene, needed by kieora -->
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-        <version>${lucene.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
-        <version>${lucene.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-codecs</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-codecs</artifactId>
-        <version>${lucene.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-queryparser</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-queryparser</artifactId>
-        <version>${lucene.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
       <!--Distribution-->
       <dependency>
         <groupId>org.drools</groupId>
@@ -1764,17 +1708,6 @@
         <version>3.9</version>
       </dependency>
 
-      <dependency>
-        <groupId>net.sf.jxls</groupId>
-        <artifactId>jxls-reader</artifactId>
-        <version>0.9.6</version>
-      </dependency>
-      <dependency>
-        <groupId>org.milyn</groupId>
-        <artifactId>milyn-smooks-javabean</artifactId>
-        <version>1.5.1</version>
-      </dependency>
-
       <!-- kie-ci -->
       <dependency>
         <groupId>org.apache.maven</groupId>
@@ -1865,56 +1798,6 @@
       </dependency>
 
       <!-- guvnor-repository -->
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-core</artifactId>
-        <version>2.2.8</version>
-        <!-- and getting rid of some annoying transitive junk not really needed for us -->
-        <exclusions>
-          <!-- conflict with the bcmail version included by drools-verifier-->
-          <exclusion>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcmail-jdk15</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-          </exclusion>
-          <!--exclusion>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-scratchpad</artifactId>
-          </exclusion-->
-          <exclusion>
-            <groupId>org.textmining</groupId>
-            <artifactId>tm-extractors</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>nekohtml</groupId>
-            <artifactId>nekohtml</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>javax.jcr</groupId>
-        <artifactId>jcr</artifactId>
-        <version>2.0</version>
-      </dependency>
       <dependency>
         <groupId>org.hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
@@ -2168,11 +2051,6 @@
         <groupId>org.jboss.bpm</groupId>
         <artifactId>report-core</artifactId>
         <version>1.3.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.javaee</groupId>
-        <artifactId>jboss-javaee</artifactId>
-        <version>5.0.0.GA</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.bpm</groupId>
@@ -3037,6 +2915,52 @@
         <groupId>org.apache.velocity</groupId>
         <artifactId>velocity</artifactId>
         <version>${velocity.version}</version>
+      </dependency>
+
+      <!-- Lucene, needed by kieora -->
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${lucene.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${lucene.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-codecs</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-codecs</artifactId>
+        <version>${lucene.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${lucene.version}</version>
+        <classifier>sources</classifier>
       </dependency>
 
     </dependencies>
