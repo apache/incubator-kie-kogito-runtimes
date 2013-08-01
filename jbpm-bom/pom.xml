@@ -24,6 +24,13 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-bom</artifactId>
+        <type>pom</type>
+        <version>${project.version}</version>
+        <scope>import</scope>
+      </dependency>
       <!--
         IMPORTANT: Only declare modules of groupId org.jbpm.
         Do not declare external dependencies.

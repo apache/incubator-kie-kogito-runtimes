@@ -417,7 +417,7 @@
         <version>1.2.1</version>
       </dependency>
 
-      <!-- Logging for guvnor-repository and optaplanner -->
+      <!-- Logging -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
