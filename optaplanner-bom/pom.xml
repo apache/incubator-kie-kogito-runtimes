@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.kie</groupId>
+    <artifactId>kie-parent-metadata</artifactId>
+    <version>6.1.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.optaplanner</groupId>
+  <artifactId>optaplanner-bom</artifactId>
+  <packaging>pom</packaging>
+
+  <name>OptaPlanner BOM (Bill Of Materials)</name>
+  <description>
+    Import this BOM in your dependencyManagement if you want to depend on multiple OptaPlanner artifacts.
+  </description>
+
+
+  <!-- IMPORTANT: Do not declare any build things here! Declare them in kie-parent-metadata. -->
+  <build/>
+
+  <dependencyManagement>
+    <dependencies>
+      <!--
+          Declare all dependency versions and default scopes here, but not optional.
+          Each module should declare it's direct dependencies and possibly overwrite scope/optional.
+      -->
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-core</artifactId>
+        <version>${optaplanner.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-core</artifactId>
+        <version>${optaplanner.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-core</artifactId>
+        <type>test-jar</type>
+        <version>${optaplanner.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-core</artifactId>
+        <version>${optaplanner.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-benchmark</artifactId>
+        <version>${optaplanner.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-benchmark</artifactId>
+        <version>${optaplanner.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-benchmark</artifactId>
+        <type>test-jar</type>
+        <version>${optaplanner.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-benchmark</artifactId>
+        <version>${optaplanner.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-examples</artifactId>
+        <version>${optaplanner.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-examples</artifactId>
+        <version>${optaplanner.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-examples</artifactId>
+        <type>test-jar</type>
+        <version>${optaplanner.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-webexamples</artifactId>
+        <version>${optaplanner.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-webexamples</artifactId>
+        <version>${optaplanner.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-docs</artifactId>
+        <type>jdocbook</type>
+        <version>${optaplanner.version}</version>
+      </dependency>
+
+      <!-- droolsjbpm-build-distribution -->
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-distribution</artifactId>
+        <version>${optaplanner.version}</version>
+        <type>zip</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>

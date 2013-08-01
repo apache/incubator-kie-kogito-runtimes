@@ -675,6 +675,9 @@
   </profiles>
 
   <modules>
+    <module>drools-bom</module>
+    <module>optaplanner-bom</module>
+    <module>jbpm-bom</module>
     <module>kie-parent-with-dependencies</module>
   </modules>
 
