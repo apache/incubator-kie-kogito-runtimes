@@ -25,8 +25,14 @@
   <dependencyManagement>
     <dependencies>
       <!--
-          Declare all dependency versions and default scopes here, but not optional.
+        IMPORTANT: Only declare modules of groupId org.jbpm.
+        Do not declare external dependencies.
+        Do not duplicate modules from another bom.
+      -->
+      <!--
+          Declare all dependency versions. Do not declare <scope> or <optional>.
           Each module should declare it's direct dependencies and possibly overwrite scope/optional.
+          Always declare the sources jar too and optionally the test-jar.
       -->
       <!-- jbpm -->
       <dependency>
@@ -410,6 +416,14 @@
         <groupId>org.drools</groupId><!-- TODO this groupId doesn't seem right -->
         <artifactId>jbpm-simulation</artifactId>
         <version>${drools.version}</version>
+      </dependency>
+
+      <!-- droolsjbpm-tools -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>org.jbpm.eclipse</artifactId>
+        <version>${droolsjbpm-tools.version}</version>
+        <classifier>sources</classifier>
       </dependency>
     </dependencies>
   </dependencyManagement>
