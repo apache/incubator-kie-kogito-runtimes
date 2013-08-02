@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>org.kie</groupId>
-  <artifactId>kie-build-parent</artifactId>
+  <artifactId>kie-parent-with-dependencies</artifactId>
   <packaging>pom</packaging>
 
   <name>KIE (Drools, jBPM, OptaPlanner) parent with dependencies</name>
