@@ -66,6 +66,8 @@
     <helix.version>0.6.1-incubating</helix.version>
     <joda-time.version>1.6.2</joda-time.version>
     <aries-blueprint.version>1.0.0</aries-blueprint.version>
+    <jacc.version>1.4</jacc.version>
+    <tomcat.version>6.0.32</tomcat.version>
 
     <!-- arquillian related -->
     <arquillian.version>1.0.3.Final</arquillian.version>
@@ -1484,6 +1486,20 @@
         <artifactId>lucene-queryparser</artifactId>
         <version>${lucene.version}</version>
       </dependency>
+      
+      <!-- tomcat integration -->
+      <dependency>
+        <groupId>javax.security.jacc</groupId>
+        <artifactId>javax.security.jacc-api</artifactId>
+        <version>${jacc.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+  		<groupId>org.apache.tomcat</groupId>
+  		<artifactId>catalina</artifactId>
+  		<version>${tomcat.version}</version>
+  		<scope>provided</scope>
+  	</dependency>
 
     </dependencies>
   </dependencyManagement>
