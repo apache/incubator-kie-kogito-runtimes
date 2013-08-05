@@ -1,0 +1,2 @@
+org.jboss.solder.servlet.resource.DirectoryNameResourceProvider
+org.jboss.solder.servlet.resource.URLClassLoaderResourceProvider

@@ -1,0 +1,10 @@
+javax.enterprise.api
+javax.api
+org.jboss.log4j.logmanager
+javax.servlet.api
+javax.servlet.jsp.api
+org.javassist
+org.jboss.weld.api
+org.jboss.weld.core
+org.jboss.weld.spi
+

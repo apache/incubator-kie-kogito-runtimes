@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  JBoss, Home of Professional Open Source
+  Copyright 2010, Red Hat Middleware LLC, and individual contributors
+  by the @authors tag. See the copyright.txt in the distribution for a
+  full listing of individual contributors.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<web-fragment version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd">
+    <name>Solder</name>
+
+    <distributable/>
+
+    <listener>
+        <listener-class>org.jboss.solder.resourceLoader.servlet.ResourceListener</listener-class>
+    </listener>
+    
+    <ordering>
+        <!--
+            It would be nice to guarantee that we come after the web-fragment.xml for any known CDI implementation, but this causes
+            deployment errors on GlassFish 3.1 and Tomcat 7 if one of the web fragments referenced here does not exist.
+            @see GLASSFISH-16201 (resolved)
+            Re-enable once issues are resolved and Weld Servlet actually uses a web fragment (WELD-718)
+        <after>
+            <name>WeldServlet</name>
+        </after>
+        -->
+        <before>
+            <others/>
+        </before>
+    </ordering>
+
+    <listener>
+        <display-name>Servlet Event Bridge Listener</display-name>
+        <listener-class>org.jboss.solder.servlet.event.ServletEventBridgeListener</listener-class>
+    </listener>
+
+    <servlet>
+        <display-name>Servlet Event Bridge Servlet</display-name>
+        <servlet-name>Servlet Event Bridge Servlet</servlet-name>
+        <servlet-class>org.jboss.solder.servlet.event.ServletEventBridgeServlet</servlet-class>
+        <!-- Make load-on-startup a large enough value to be last initialized, first destroyed -->
+        <load-on-startup>99999</load-on-startup>
+    </servlet>
+
+    <filter>
+        <display-name>Servlet Event Bridge Filter</display-name>
+        <filter-name>Servlet Event Bridge Filter</filter-name>
+        <filter-class>org.jboss.solder.servlet.event.ServletEventBridgeFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Servlet Event Bridge Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>Catch Exception Filter</filter-name>
+        <filter-class>org.jboss.solder.servlet.exception.CatchExceptionFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Catch Exception Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>    
+
+</web-fragment>

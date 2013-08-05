@@ -1,0 +1,11 @@
+org.jboss.solder.servlet.ServletExtension
+org.jboss.solder.servlet.logging.TypedMessageBundleAndLoggerExtension
+org.jboss.solder.config.xml.bootstrap.XmlConfigExtension
+org.jboss.solder.exception.control.extension.CatchExtension
+org.jboss.solder.bean.generic.GenericBeanExtension
+org.jboss.solder.bean.defaultbean.DefaultBeanExtension
+org.jboss.solder.core.CoreExtension
+org.jboss.solder.unwraps.UnwrapsExtension
+org.jboss.solder.messages.TypedMessageBundleExtension
+org.jboss.solder.logging.TypedMessageLoggerExtension
+org.jboss.solder.serviceHandler.ServiceHandlerExtension

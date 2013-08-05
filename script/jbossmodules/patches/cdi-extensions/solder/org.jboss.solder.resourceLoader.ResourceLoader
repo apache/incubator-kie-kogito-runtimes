@@ -1,0 +1,2 @@
+org.jboss.solder.resourceLoader.ClasspathResourceLoader
+org.jboss.solder.resourceLoader.DelegatingResourceLoader

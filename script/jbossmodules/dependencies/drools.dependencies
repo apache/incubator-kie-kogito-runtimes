@@ -1,0 +1,16 @@
+com.google.protobuf
+org.apache.ant
+org.apache.maven
+org.apache.maven.wagon
+org.apache.poi
+org.codehouse.plexus
+org.hibernate
+org.javassist
+org.kie.lib
+org.kie
+org.sonatype.aether  
+org.mvel
+org.sonatype.maven
+org.sonatype.plexus
+org.sonatype.sisu
+

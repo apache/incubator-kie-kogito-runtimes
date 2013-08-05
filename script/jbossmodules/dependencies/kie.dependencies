@@ -1,0 +1,11 @@
+org.apache.camel
+org.apache.commons.logging
+org.apache.commons.math
+org.apache.helix
+org.apache.lucene
+org.apache.zookeeper
+org.drools
+org.eclipse.jgit
+org.jbpm    
+org.kie.lib
+

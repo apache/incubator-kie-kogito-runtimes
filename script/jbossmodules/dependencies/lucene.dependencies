@@ -1,0 +1,16 @@
+javax.activation.api
+javax.api    
+javax.ejb.api 
+javax.faces.api
+javax.enterprise.api
+javax.jms.api 
+javax.persistence.api    
+javax.security.jacc.api
+javax.servlet.api
+javax.servlet.jsp.api
+javax.transaction.api
+javax.validation.api    
+javax.ws.rs.api
+javax.wsdl4j.api
+javax.xml.bind.api
+javax.xml.stream.api
