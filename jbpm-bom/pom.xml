@@ -218,6 +218,13 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-shared-services</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>btm</classifier>
+        <optional>true</optional>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task-core</artifactId>
         <version>${jbpm.version}</version>
         <type>test-jar</type>
