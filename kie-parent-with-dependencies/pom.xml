@@ -72,8 +72,9 @@
     <version.org.apache.tomcat>6.0.32</version.org.apache.tomcat>
 
     <!-- arquillian related -->
-    <version.org.jboss.arquillian>1.0.3.Final</version.org.jboss.arquillian>
     <version.org.jboss.shrinkwrap.resolver>2.0.0-beta-3</version.org.jboss.shrinkwrap.resolver>
+    <version.org.jboss.arquillian>1.0.3.Final</version.org.jboss.arquillian>
+    <version.org.jboss.arquillian.container>1.0.0.CR3</version.org.jboss.arquillian.container>
     <version.org.jboss.as>7.1.1.Final</version.org.jboss.as>
   </properties>
 
@@ -1288,44 +1289,45 @@
         <scope>test</scope>
       </dependency>
 
+
+      <dependency>
+        <groupId>org.jboss.arquillian.container</groupId>
+        <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
+        <version>${version.org.jboss.arquillian.container}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian.container</groupId>
+        <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
+        <version>${version.org.jboss.arquillian.container}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian.container</groupId>
+        <artifactId>arquillian-glassfish-embedded-3.1</artifactId>
+        <version>${version.org.jboss.arquillian.container}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian.container</groupId>
+        <artifactId>arquillian-glassfish-managed-3.1</artifactId>
+        <version>${version.org.jboss.arquillian.container}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <!-- Warning: This shrinkwrap-resolver-bom must be defined BEFORE arquillian-bom -->
+        <groupId>org.jboss.shrinkwrap.resolver</groupId>
+        <artifactId>shrinkwrap-resolver-bom</artifactId>
+        <version>${version.org.jboss.shrinkwrap.resolver}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
       <dependency>
         <groupId>org.jboss.arquillian</groupId>
         <artifactId>arquillian-bom</artifactId>
         <version>${version.org.jboss.arquillian}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.arquillian.container</groupId>
-        <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
-        <version>1.0.0.CR3</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.arquillian.container</groupId>
-        <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
-        <version>1.0.0.CR3</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.arquillian.container</groupId>
-        <artifactId>arquillian-glassfish-embedded-3.1</artifactId>
-        <version>1.0.0.CR3</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.arquillian.container</groupId>
-        <artifactId>arquillian-glassfish-managed-3.1</artifactId>
-        <version>1.0.0.CR3</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.shrinkwrap.resolver</groupId>
-        <artifactId>shrinkwrap-resolver-bom</artifactId>
-        <version>${version.org.jboss.shrinkwrap.resolver}</version>
-        <scope>import</scope>
-        <type>pom</type>
       </dependency>
 
       <dependency>
