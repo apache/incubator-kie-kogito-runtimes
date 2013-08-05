@@ -20,59 +20,61 @@
   </description>
 
   <properties>
+    <!--
+      CONVENTIONS:
+      - A version property must be specified in the format "version.{groupId}", optionally with a suffix to make it unique.
+      - Version properties must be sorted alphabetically (other form of sorting were found to be unclear and ambiguous).
+    -->
+
     <!-- External dependency versions -->
-    <slf4j.version>1.7.2</slf4j.version>
-    <logback.version>1.0.9</logback.version>
-    <xstream.version>1.4.3</xstream.version>
-    <weld.version>1.1.13.Final</weld.version>
-    <cdi.version>1.0-SP4</cdi.version>
-    <mvel.dep.version>2.1.6.Final</mvel.dep.version>
-    <bpm.console.version>2.3.8.Final</bpm.console.version>
-    <activemq.version>5.7.0</activemq.version>
-    <camel.version>2.10.3</camel.version>
-    <karaf.version>2.3.0</karaf.version>
-    <cxf.version>2.6.6</cxf.version>
-    <protobuf.version>2.5.0</protobuf.version>
-    <pax-exam.version>2.6.0</pax-exam.version>
-    <springframework.version>3.0.6.RELEASE</springframework.version>
-    <gwt.version>2.5.0</gwt.version>
-    <gwt.maven.version>2.5.0</gwt.maven.version>
-    <bootstrap.version>2.2.1.0</bootstrap.version>
-    <errai.version>2.3.2.Final</errai.version>
-    <gson.version>1.7.2</gson.version>
-    <mvc4g.version>1.0.0-jboss</mvc4g.version>
-    <resteasy.version>2.3.6.Final</resteasy.version>
-    <hornetq.version>2.3.1.Final</hornetq.version>
-    <aether.version>1.13.1</aether.version>
-    <maven.version>3.0.3</maven.version>
-    <jetty.version>6.1.25</jetty.version>
-    <lucene.version>4.0.0</lucene.version>
-    <eclipse.bpmn2.version>0.7.3</eclipse.bpmn2.version>
-    <json.version>20090211</json.version>
-    <batik.version>1.6-1</batik.version>
-    <jbpm.migration.version>0.11</jbpm.migration.version>
-    <closure.compiler.version>r1741</closure.compiler.version>
-    <jbpt.version>0.1.0</jbpt.version>
-    <velocity.version>1.7</velocity.version>
-    <supercsv.version>1.52</supercsv.version>
-    <xmlgraphics.commons.version>1.4</xmlgraphics.commons.version>
-    <xmappr.versionm>0.9.3</xmappr.versionm>
-    <rhino.js.version>1.7R2</rhino.js.version>
-    <eclipse.osgi.version>3.5.0.v20090520</eclipse.osgi.version>
-    <avalon.version>4.1.4</avalon.version>
-    <abdera.version>1.1.2</abdera.version>
-    <commons.configuration.version>1.6</commons.configuration.version>
-    <fop.version>0.95</fop.version>
-    <helix.version>0.6.1-incubating</helix.version>
-    <joda-time.version>1.6.2</joda-time.version>
-    <aries-blueprint.version>1.0.0</aries-blueprint.version>
-    <jacc.version>1.4</jacc.version>
-    <tomcat.version>6.0.32</tomcat.version>
+    <version.org.slf4j>1.7.2</version.org.slf4j>
+    <version.ch.qos.logback>1.0.9</version.ch.qos.logback>
+    <version.com.thoughtworks.xstream>1.4.3</version.com.thoughtworks.xstream>
+    <version.org.jboss.weld>1.1.13.Final</version.org.jboss.weld>
+    <version.javax.enterprise.cdi>1.0-SP4</version.javax.enterprise.cdi>
+    <version.org.mvel>2.1.6.Final</version.org.mvel>
+    <version.org.apache.activemq>5.7.0</version.org.apache.activemq>
+    <version.org.apache.camel>2.10.3</version.org.apache.camel>
+    <version.org.apache.karaf>2.3.0</version.org.apache.karaf>
+    <version.org.apache.cxf>2.6.6</version.org.apache.cxf>
+    <version.com.google.protobuf>2.5.0</version.com.google.protobuf>
+    <version.org.osgi>4.2.0</version.org.osgi>
+    <version.org.ops4j.pax.exam>2.6.0</version.org.ops4j.pax.exam>
+    <version.org.springframework>3.0.6.RELEASE</version.org.springframework>
+    <version.com.google.gwt>2.5.0</version.com.google.gwt>
+    <version.com.github.gwtbootstrap>2.2.1.0</version.com.github.gwtbootstrap>
+    <version.org.jboss.errai>2.3.2.Final</version.org.jboss.errai>
+    <version.com.google.code.gson>1.7.2</version.com.google.code.gson>
+    <version.org.jboss.resteasy>2.3.6.Final</version.org.jboss.resteasy>
+    <version.org.hornetq>2.3.1.Final</version.org.hornetq>
+    <version.org.sonatype.aether>1.13.1</version.org.sonatype.aether>
+    <version.org.apache.maven>3.0.3</version.org.apache.maven>
+    <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
+    <version.org.apache.lucene>4.0.0</version.org.apache.lucene>
+    <version.org.json>20090211</version.org.json>
+    <version.batik>1.6-1</version.batik>
+    <version.org.jbpm.jbpm5.jbpmmigration>0.11</version.org.jbpm.jbpm5.jbpmmigration>
+    <version.com.google.javascript.closure-compiler>r1741</version.com.google.javascript.closure-compiler>
+    <version.jbpt>0.1.0</version.jbpt>
+    <version.org.apache.velocity>1.7</version.org.apache.velocity>
+    <version.org.supercsv>1.52</version.org.supercsv>
+    <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
+    <version.org.xmappr>0.9.3</version.org.xmappr>
+    <version.rhino.js>1.7R2</version.rhino.js>
+    <version.org.eclipse.osgi>3.5.0.v20090520</version.org.eclipse.osgi>
+    <version.avalon-framework>4.1.4</version.avalon-framework>
+    <version.org.apache.abdera>1.1.2</version.org.apache.abdera>
+    <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
+    <version.org.apache.helix>0.6.1-incubating</version.org.apache.helix>
+    <version.joda-time>1.6.2</version.joda-time>
+    <version.org.apache.aries.blueprint>1.0.0</version.org.apache.aries.blueprint>
+    <version.javax.security.jacc>1.4</version.javax.security.jacc>
+    <version.org.apache.tomcat>6.0.32</version.org.apache.tomcat>
 
     <!-- arquillian related -->
-    <arquillian.version>1.0.3.Final</arquillian.version>
-    <shrinkwrap.resolver.version>2.0.0-beta-3</shrinkwrap.resolver.version>
-    <jboss.managed.server.version>7.1.1.Final</jboss.managed.server.version>
+    <version.org.jboss.arquillian>1.0.3.Final</version.org.jboss.arquillian>
+    <version.org.jboss.shrinkwrap.resolver>2.0.0-beta-3</version.org.jboss.shrinkwrap.resolver>
+    <version.org.jboss.as>7.1.1.Final</version.org.jboss.as>
   </properties>
 
   <!-- IMPORTANT: Do not declare any build configuration here! Declare them in kie-parent-metadata. -->
@@ -117,8 +119,10 @@
   <dependencyManagement>
     <dependencies>
       <!--
-          Declare all dependency versions. Do not declare <scope> or <optional>.
-          Each module should declare it's direct dependencies and possibly overwrite scope/optional.
+        CONVENTIONS:
+        - Dependencies must be sorted alphabetically on groupId (other form of sorting were found to be unclear and ambiguous).
+        - Do not declare <scope> (exception: import) or <optional>: a child module will declare scope/optional itself.
+        - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> (following Aether proper)
       -->
       <dependency>
         <groupId>org.kie</groupId>
@@ -178,17 +182,17 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>${protobuf.version}</version>
+        <version>${version.com.google.protobuf}</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.core</artifactId>
-        <version>4.2.0</version>
+        <version>${version.org.osgi}</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
-        <version>4.2.0</version>
+        <version>${version.org.osgi}</version>
       </dependency>
 
       <!-- api -->
@@ -237,25 +241,25 @@
       <dependency>
         <groupId>org.apache.helix</groupId>
         <artifactId>helix-core</artifactId>
-        <version>${helix.version}</version>
+        <version>${version.org.apache.helix}</version>
       </dependency>
 
       <!-- drools-core -->
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>${xstream.version}</version>
+        <version>${version.com.thoughtworks.xstream}</version>
       </dependency>
 
       <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
-        <version>${mvel.dep.version}</version>
+        <version>${version.org.mvel}</version>
       </dependency>
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>${joda-time.version}</version>
+        <version>${version.joda-time}</version>
       </dependency>
       <!-- drools-compiler -->
       <dependency>
@@ -376,42 +380,42 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
-        <version>${maven.version}</version>
+        <version>${version.org.apache.maven}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
-        <version>${maven.version}</version>
+        <version>${version.org.apache.maven}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-compat</artifactId>
-        <version>${maven.version}</version>
+        <version>${version.org.apache.maven}</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-api</artifactId>
-        <version>${aether.version}</version>
+        <version>${version.org.sonatype.aether}</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-util</artifactId>
-        <version>${aether.version}</version>
+        <version>${version.org.sonatype.aether}</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-impl</artifactId>
-        <version>${aether.version}</version>
+        <version>${version.org.sonatype.aether}</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-connector-wagon</artifactId>
-        <version>${aether.version}</version>
+        <version>${version.org.sonatype.aether}</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-connector-file</artifactId>
-        <version>${aether.version}</version>
+        <version>${version.org.sonatype.aether}</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.maven</groupId>
@@ -423,42 +427,42 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>${slf4j.version}</version>
+        <version>${version.org.slf4j}</version>
       </dependency>
       <dependency><!-- Not depended on directly. Overwrite the lower version used by weld-core -->
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-ext</artifactId>
-        <version>${slf4j.version}</version>
+        <version>${version.org.slf4j}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-jdk14</artifactId>
-        <version>${slf4j.version}</version>
+        <version>${version.org.slf4j}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>${slf4j.version}</version>
+        <version>${version.org.slf4j}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
+        <version>${version.org.slf4j}</version>
       </dependency>
       <dependency><!-- TODO don't use this -->
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
-        <version>${slf4j.version}</version>
+        <version>${version.org.slf4j}</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>${logback.version}</version>
+        <version>${version.ch.qos.logback}</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
+        <version>${version.ch.qos.logback}</version>
       </dependency>
 
       <!-- guvnor-repository -->
@@ -472,79 +476,79 @@
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-js</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-server</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-security-api</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-security-client</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-security-server</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-backend-api</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-backend-server</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-api</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-client-api</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-widgets-core-client</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-widgets-commons</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-workbench</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-widget-markdown</artifactId>
-        <version>${uberfire.version}</version>
+        <version>${version.org.uberfire}</version>
       </dependency>
 
       <!-- Errai -->
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-common</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-cdi-jetty</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
       </dependency>
       <dependency>
         <groupId>javax.inject</groupId>
@@ -554,22 +558,22 @@
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-ioc</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-cdi-client</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-javax-enterprise</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-weld-integration</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
         <exclusions>
           <exclusion>
             <groupId>org.slf4j</groupId>
@@ -584,29 +588,29 @@
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-ui</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
       </dependency>
        <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-data-binding</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
       </dependency>
       <!-- CDI Development Utils -->
       <!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty that is present there -->
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
-        <version>${jetty.version}</version>
+        <version>${version.org.mortbay.jetty}</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-plus</artifactId>
-        <version>${jetty.version}</version>
+        <version>${version.org.mortbay.jetty}</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-naming</artifactId>
-        <version>${jetty.version}</version>
+        <version>${version.org.mortbay.jetty}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
@@ -623,12 +627,12 @@
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-marshalling</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-bus</artifactId>
-        <version>${errai.version}</version>
+        <version>${version.org.jboss.errai}</version>
         <exclusions>
           <exclusion>
             <groupId>javax.inject</groupId>
@@ -655,61 +659,56 @@
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>jaxrs-api</artifactId>
-        <version>${resteasy.version}</version>
+        <version>${version.org.jboss.resteasy}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs</artifactId>
-        <version>${resteasy.version}</version>
+        <version>${version.org.jboss.resteasy}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxb-provider</artifactId>
-        <version>${resteasy.version}</version>
+        <version>${version.org.jboss.resteasy}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-cdi</artifactId>
-        <version>${resteasy.version}</version>
+        <version>${version.org.jboss.resteasy}</version>
       </dependency>
 
       <!-- kie-remote: hornetq/jms -->
       <dependency>
         <groupId>org.hornetq</groupId>
         <artifactId>hornetq-server</artifactId>
-        <version>${hornetq.version}</version>
+        <version>${version.org.hornetq}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-jms-server</artifactId>
+        <version>${version.org.hornetq}</version>
       </dependency>
       <dependency>
         <groupId>org.hornetq</groupId>
         <artifactId>hornetq-core-client</artifactId>
-        <version>${hornetq.version}</version>
+        <version>${version.org.hornetq}</version>
       </dependency>
       <dependency>
         <groupId>org.hornetq</groupId>
         <artifactId>hornetq-jms-client</artifactId>
-        <version>${hornetq.version}</version>
+        <version>${version.org.hornetq}</version>
       </dependency>
 
       <!-- bpm-console -->
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>${gson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.googlecode.mvc4g</groupId>
-        <artifactId>mvc4g</artifactId>
-        <version>${mvc4g.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.gwt-log</groupId>
-        <artifactId>gwt-log</artifactId>
-        <version>3.1.0</version>
+        <version>${version.com.google.code.gson}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-multipart-provider</artifactId>
-        <version>${resteasy.version}</version>
+        <version>${version.org.jboss.resteasy}</version>
       </dependency>
 
       <!-- guvnor-webapp -->
@@ -721,17 +720,17 @@
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
-        <version>${gwt.version}</version>
+        <version>${version.com.google.gwt}</version>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
-        <version>${gwt.version}</version>
+        <version>${version.com.google.gwt}</version>
       </dependency>
       <dependency>
         <groupId>com.github.gwtbootstrap</groupId>
         <artifactId>gwt-bootstrap</artifactId>
-        <version>${bootstrap.version}</version>
+        <version>${version.com.github.gwtbootstrap}</version>
       </dependency>
       <dependency>
         <groupId>com.allen-sauer.gwt.dnd</groupId>
@@ -840,18 +839,18 @@
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        <version>${cxf.version}</version>
+        <version>${version.org.apache.cxf}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-databinding-jaxb</artifactId>
-        <version>${cxf.version}</version>
+        <version>${version.org.apache.cxf}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxrs</artifactId>
         <!-- Note JBOSS AS 6.0 Final uses version 2.3.1 -->
-        <version>${cxf.version}</version>
+        <version>${version.org.apache.cxf}</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.cxf</groupId>
@@ -879,7 +878,7 @@
         <groupId>org.apache.cxf</groupId>
         <!-- TODO JBRULES-3026 use cxf-rt-frontend-jaxrs and cxf-rt-transports-http-jetty instead -->
         <artifactId>cxf-bundle-jaxrs</artifactId>
-        <version>${cxf.version}</version>
+        <version>${version.org.apache.cxf}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -921,135 +920,135 @@
       <dependency>
         <groupId>org.apache.aries.blueprint</groupId>
         <artifactId>org.apache.aries.blueprint.api</artifactId>
-        <version>${aries-blueprint.version}</version>
+        <version>${version.org.apache.aries.blueprint}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.aries.blueprint</groupId>
         <artifactId>blueprint-parser</artifactId>
-        <version>${aries-blueprint.version}</version>
+        <version>${version.org.apache.aries.blueprint}</version>
       </dependency>
 
       <!-- Camel -->
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-core</artifactId>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-blueprint</artifactId>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-spring</artifactId>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-cxf</artifactId>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-xstream</artifactId>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-jaxb</artifactId>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-test</artifactId>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-test-spring</artifactId>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel.karaf</groupId>
         <artifactId>apache-camel</artifactId>
         <classifier>features</classifier>
         <type>xml</type>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.karaf</groupId>
         <artifactId>apache-karaf</artifactId>
         <classifier>features</classifier>
         <type>xml</type>
-        <version>${karaf.version}</version>
+        <version>${version.org.apache.karaf}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.karaf</groupId>
         <artifactId>apache-karaf</artifactId>
         <type>tar.gz</type>
-        <version>${karaf.version}</version>
+        <version>${version.org.apache.karaf}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.karaf.features</groupId>
         <artifactId>org.apache.karaf.features.core</artifactId>
-        <version>${karaf.version}</version>
+        <version>${version.org.apache.karaf}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.karaf.tooling.exam</groupId>
         <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
-        <version>${karaf.version}</version>
+        <version>${version.org.apache.karaf}</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-junit4</artifactId>
-        <version>${pax-exam.version}</version>
+        <version>${version.org.ops4j.pax.exam}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
-        <version>${springframework.version}</version>
+        <version>${version.org.springframework}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>
-        <version>${springframework.version}</version>
+        <version>${version.org.springframework}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
-        <version>${springframework.version}</version>
+        <version>${version.org.springframework}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-orm</artifactId>
-        <version>${springframework.version}</version>
+        <version>${version.org.springframework}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jdbc</artifactId>
-        <version>${springframework.version}</version>
+        <version>${version.org.springframework}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
-        <version>${springframework.version}</version>
+        <version>${version.org.springframework}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>${springframework.version}</version>
+        <version>${version.org.springframework}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-tx</artifactId>
-        <version>${springframework.version}</version>
+        <version>${version.org.springframework}</version>
       </dependency>
 
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
-        <version>${springframework.version}</version>
+        <version>${version.org.springframework}</version>
       </dependency>
 
       <dependency>
@@ -1066,7 +1065,7 @@
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-core</artifactId>
-        <version>${camel.version}</version>
+        <version>${version.org.apache.camel}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
@@ -1182,22 +1181,22 @@
       <dependency>
         <groupId>org.jboss.weld</groupId>
         <artifactId>weld-core</artifactId>
-        <version>${weld.version}</version>
+        <version>${version.org.jboss.weld}</version>
       </dependency>
       <dependency>
         <groupId>javax.enterprise</groupId>
         <artifactId>cdi-api</artifactId>
-        <version>${cdi.version}</version>
+        <version>${version.javax.enterprise.cdi}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.weld.servlet</groupId>
         <artifactId>weld-servlet-core</artifactId>
-        <version>${weld.version}</version>
+        <version>${version.org.jboss.weld}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.weld.se</groupId>
         <artifactId>weld-se-core</artifactId>
-        <version>${weld.version}</version>
+        <version>${version.org.jboss.weld}</version>
       </dependency>
       <!-- Seam 3 (goodies for weld) -->
       <dependency>
@@ -1285,16 +1284,16 @@
       <dependency>
         <groupId>org.jboss.as</groupId>
         <artifactId>jboss-as-arquillian-container-managed</artifactId>
-        <version>${jboss.managed.server.version}</version>
+        <version>${version.org.jboss.as}</version>
         <scope>test</scope>
       </dependency>
 
       <dependency>
         <groupId>org.jboss.arquillian</groupId>
         <artifactId>arquillian-bom</artifactId>
-        <version>${arquillian.version}</version>
-        <scope>import</scope>
+        <version>${version.org.jboss.arquillian}</version>
         <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <dependency>
@@ -1324,7 +1323,7 @@
       <dependency>
         <groupId>org.jboss.shrinkwrap.resolver</groupId>
         <artifactId>shrinkwrap-resolver-bom</artifactId>
-        <version>${shrinkwrap.resolver.version}</version>
+        <version>${version.org.jboss.shrinkwrap.resolver}</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -1351,12 +1350,12 @@
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-core</artifactId>
-        <version>${activemq.version}</version>
+        <version>${version.org.apache.activemq}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-pool</artifactId>
-        <version>${activemq.version}</version>
+        <version>${version.org.apache.activemq}</version>
       </dependency>
 
       <dependency>
@@ -1455,51 +1454,61 @@
       <dependency>
         <groupId>org.eclipse</groupId>
         <artifactId>org.eclipse.bpmn2</artifactId>
-        <version>${eclipse.bpmn2.version}</version>
+        <version>0.7.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>${version.org.json}</version>
+      </dependency>
+      <dependency>
+        <groupId>jbpt</groupId>
+        <artifactId>jbpt</artifactId>
+        <version>${version.jbpt}</version>
       </dependency>
 
       <!-- data modeller code generation  -->
       <dependency>
         <groupId>org.apache.velocity</groupId>
         <artifactId>velocity</artifactId>
-        <version>${velocity.version}</version>
+        <version>${version.org.apache.velocity}</version>
       </dependency>
 
       <!-- Lucene, needed by kieora -->
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
-        <version>${lucene.version}</version>
+        <version>${version.org.apache.lucene}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-analyzers-common</artifactId>
-        <version>${lucene.version}</version>
+        <version>${version.org.apache.lucene}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-codecs</artifactId>
-        <version>${lucene.version}</version>
+        <version>${version.org.apache.lucene}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queryparser</artifactId>
-        <version>${lucene.version}</version>
+        <version>${version.org.apache.lucene}</version>
       </dependency>
       
       <!-- tomcat integration -->
       <dependency>
         <groupId>javax.security.jacc</groupId>
         <artifactId>javax.security.jacc-api</artifactId>
-        <version>${jacc.version}</version>
+        <version>${version.javax.security.jacc}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
-  		<groupId>org.apache.tomcat</groupId>
-  		<artifactId>catalina</artifactId>
-  		<version>${tomcat.version}</version>
-  		<scope>provided</scope>
-  	</dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>catalina</artifactId>
+        <version>${version.org.apache.tomcat}</version>
+        <scope>provided</scope>
+      </dependency>
 
     </dependencies>
   </dependencyManagement>
