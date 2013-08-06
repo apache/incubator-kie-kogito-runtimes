@@ -70,6 +70,7 @@
     <version.org.apache.aries.blueprint>1.0.0</version.org.apache.aries.blueprint>
     <version.javax.security.jacc>1.4</version.javax.security.jacc>
     <version.org.apache.tomcat>6.0.32</version.org.apache.tomcat>
+    <version.commons.configuration>1.6</version.commons.configuration>
 
     <!-- arquillian related -->
     <version.org.jboss.shrinkwrap.resolver>2.0.0-beta-3</version.org.jboss.shrinkwrap.resolver>
