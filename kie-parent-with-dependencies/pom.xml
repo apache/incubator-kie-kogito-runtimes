@@ -882,6 +882,16 @@
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http</artifactId>
+        <version>${version.org.apache.cxf}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http-jetty</artifactId>
+        <version>${version.org.apache.cxf}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
         <!-- TODO JBRULES-3026 use cxf-rt-frontend-jaxrs and cxf-rt-transports-http-jetty instead -->
         <artifactId>cxf-bundle-jaxrs</artifactId>
         <version>${version.org.apache.cxf}</version>
