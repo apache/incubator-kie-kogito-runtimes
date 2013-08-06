@@ -252,7 +252,7 @@
             <excludes>
               <exclude>**/*IntegrationTest.java</exclude>
             </excludes>
-            <argLine>-Xmx1024m -XX:MaxPermSize=128m</argLine>
+            <argLine>-Xmx1024m -XX:MaxPermSize=128m -Dfile.encoding=UTF-8</argLine>
           </configuration>
         </plugin>
         <plugin>
@@ -270,7 +270,7 @@
             <includes>
               <include>**/*IntegrationTest.java</include>
             </includes>
-            <argLine>-Xmx1024m -XX:MaxPermSize=128m</argLine>
+            <argLine>-Xmx1024m -XX:MaxPermSize=128m -Dfile.encoding=UTF-8</argLine>
           </configuration>
         </plugin>
         <!-- Packaging -->
