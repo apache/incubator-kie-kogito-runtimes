@@ -105,6 +105,12 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bpmn2</artifactId>
+        <type>test-jar</type>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-runtime-manager</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
