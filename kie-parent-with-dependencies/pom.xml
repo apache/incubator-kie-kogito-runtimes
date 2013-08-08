@@ -27,49 +27,51 @@
     -->
 
     <!-- External dependency versions -->
-    <version.org.slf4j>1.7.2</version.org.slf4j>
+    <version.avalon-framework>4.1.4</version.avalon-framework>
+    <version.batik>1.6-1</version.batik>
     <version.ch.qos.logback>1.0.9</version.ch.qos.logback>
-    <version.com.thoughtworks.xstream>1.4.3</version.com.thoughtworks.xstream>
-    <version.org.jboss.weld>1.1.13.Final</version.org.jboss.weld>
-    <version.javax.enterprise.cdi>1.0-SP4</version.javax.enterprise.cdi>
-    <version.org.mvel>2.1.6.Final</version.org.mvel>
-    <version.org.apache.activemq>5.7.0</version.org.apache.activemq>
-    <version.org.apache.camel>2.10.3</version.org.apache.camel>
-    <version.org.apache.karaf>2.3.0</version.org.apache.karaf>
-    <version.org.apache.cxf>2.6.6</version.org.apache.cxf>
+    <version.com.github.gwtbootstrap>2.2.1.0</version.com.github.gwtbootstrap>
+    <version.com.google.code.gson>1.7.2</version.com.google.code.gson>
+    <version.com.google.gwt>2.5.0</version.com.google.gwt>
+    <version.com.google.javascript.closure-compiler>r1741</version.com.google.javascript.closure-compiler>
     <version.com.google.protobuf>2.5.0</version.com.google.protobuf>
+    <version.com.sun.xml.bind.jaxb>2.2.5</version.com.sun.xml.bind.jaxb>
+    <version.com.thoughtworks.xstream>1.4.3</version.com.thoughtworks.xstream>
+    <version.javax.enterprise.cdi>1.0-SP4</version.javax.enterprise.cdi>
+    <version.javax.security.jacc>1.4</version.javax.security.jacc>
+    <version.jbpt>0.1.0</version.jbpt>
+    <version.joda-time>1.6.2</version.joda-time>
+    <version.org.apache.abdera>1.1.2</version.org.apache.abdera>
+    <version.org.apache.activemq>5.7.0</version.org.apache.activemq>
+    <version.org.apache.aries.blueprint>1.0.0</version.org.apache.aries.blueprint>
+    <version.org.apache.camel>2.10.3</version.org.apache.camel>
+    <version.org.apache.cxf>2.6.6</version.org.apache.cxf>
+    <version.org.apache.helix>0.6.1-incubating</version.org.apache.helix>
+    <version.org.apache.karaf>2.3.0</version.org.apache.karaf>
+    <version.org.apache.lucene>4.0.0</version.org.apache.lucene>
+    <version.org.apache.maven>3.0.5</version.org.apache.maven>
+    <version.org.apache.tomcat>6.0.32</version.org.apache.tomcat>
+    <version.org.apache.velocity>1.7</version.org.apache.velocity>
+    <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
+    <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
+    <version.org.antlr>3.3</version.org.antlr>
+    <version.org.eclipse.osgi>3.5.0.v20090520</version.org.eclipse.osgi>
+    <version.org.hornetq>2.3.1.Final</version.org.hornetq>
+    <version.org.jbpm.jbpm5.jbpmmigration>0.11</version.org.jbpm.jbpm5.jbpmmigration>
+    <version.org.jboss.errai>2.3.2.Final</version.org.jboss.errai>
+    <version.org.jboss.resteasy>2.3.6.Final</version.org.jboss.resteasy>
+    <version.org.jboss.weld>1.1.13.Final</version.org.jboss.weld>
+    <version.org.json>20090211</version.org.json>
+    <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
+    <version.org.mvel>2.1.6.Final</version.org.mvel>
     <version.org.osgi>4.2.0</version.org.osgi>
     <version.org.ops4j.pax.exam>2.6.0</version.org.ops4j.pax.exam>
-    <version.org.springframework>3.0.6.RELEASE</version.org.springframework>
-    <version.com.google.gwt>2.5.0</version.com.google.gwt>
-    <version.com.github.gwtbootstrap>2.2.1.0</version.com.github.gwtbootstrap>
-    <version.org.jboss.errai>2.3.2.Final</version.org.jboss.errai>
-    <version.com.google.code.gson>1.7.2</version.com.google.code.gson>
-    <version.org.jboss.resteasy>2.3.6.Final</version.org.jboss.resteasy>
-    <version.org.hornetq>2.3.1.Final</version.org.hornetq>
+    <version.org.slf4j>1.7.2</version.org.slf4j>
     <version.org.sonatype.aether>1.13.1</version.org.sonatype.aether>
-    <version.org.apache.maven>3.0.5</version.org.apache.maven>
-    <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
-    <version.org.apache.lucene>4.0.0</version.org.apache.lucene>
-    <version.org.json>20090211</version.org.json>
-    <version.batik>1.6-1</version.batik>
-    <version.org.jbpm.jbpm5.jbpmmigration>0.11</version.org.jbpm.jbpm5.jbpmmigration>
-    <version.com.google.javascript.closure-compiler>r1741</version.com.google.javascript.closure-compiler>
-    <version.jbpt>0.1.0</version.jbpt>
-    <version.org.apache.velocity>1.7</version.org.apache.velocity>
+    <version.org.springframework>3.0.6.RELEASE</version.org.springframework>
     <version.org.supercsv>1.52</version.org.supercsv>
-    <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.xmappr>0.9.3</version.org.xmappr>
     <version.rhino.js>1.7R2</version.rhino.js>
-    <version.org.eclipse.osgi>3.5.0.v20090520</version.org.eclipse.osgi>
-    <version.avalon-framework>4.1.4</version.avalon-framework>
-    <version.org.apache.abdera>1.1.2</version.org.apache.abdera>
-    <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
-    <version.org.apache.helix>0.6.1-incubating</version.org.apache.helix>
-    <version.joda-time>1.6.2</version.joda-time>
-    <version.org.apache.aries.blueprint>1.0.0</version.org.apache.aries.blueprint>
-    <version.javax.security.jacc>1.4</version.javax.security.jacc>
-    <version.org.apache.tomcat>6.0.32</version.org.apache.tomcat>
 
     <!-- arquillian related -->
     <version.org.jboss.shrinkwrap.resolver>2.0.0-beta-3</version.org.jboss.shrinkwrap.resolver>
@@ -78,7 +80,7 @@
     <version.org.jboss.as>7.1.1.Final</version.org.jboss.as>
   </properties>
 
-  <!-- IMPORTANT: Do not declare any build configuration here! Declare them in kie-parent-metadata. -->
+  <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent-metadata. -->
   <build/>
 
   <profiles>
@@ -210,17 +212,17 @@
       <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
-        <version>2.2.5</version>
+        <version>${version.com.sun.xml.bind.jaxb}</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
-        <version>2.2.5</version>
+        <version>${version.com.sun.xml.bind.jaxb}</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-xjc</artifactId>
-        <version>2.2.5</version>
+        <version>${version.com.sun.xml.bind.jaxb}</version>
       </dependency>
 
       <dependency>
@@ -276,7 +278,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
-        <version>3.3</version>
+        <version>${version.org.antlr}</version>
         <exclusions>
           <exclusion>
             <groupId>org.antlr</groupId>
@@ -287,7 +289,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>gunit</artifactId>
-        <version>3.3</version>
+        <version>${version.org.antlr}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -296,7 +298,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
+      <dependency><!-- TODO delete me, we use antlr 3+ -->
         <groupId>antlr</groupId>
         <artifactId>antlr</artifactId>
         <version>2.7.7</version>
@@ -304,7 +306,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr</artifactId>
-        <version>3.3</version>
+        <version>${version.org.antlr}</version>
         <scope>compile</scope>
         <exclusions>
           <exclusion>
