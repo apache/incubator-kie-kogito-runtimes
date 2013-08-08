@@ -58,8 +58,12 @@
     <version.org.eclipse.osgi>3.5.0.v20090520</version.org.eclipse.osgi>
     <version.org.hornetq>2.3.1.Final</version.org.hornetq>
     <version.org.jbpm.jbpm5.jbpmmigration>0.11</version.org.jbpm.jbpm5.jbpmmigration>
+    <version.org.jboss.arquillian>1.0.3.Final</version.org.jboss.arquillian>
+    <version.org.jboss.arquillian.container>1.0.0.CR3</version.org.jboss.arquillian.container>
+    <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <version.org.jboss.errai>2.3.2.Final</version.org.jboss.errai>
     <version.org.jboss.resteasy>2.3.6.Final</version.org.jboss.resteasy>
+    <version.org.jboss.shrinkwrap.resolver>2.0.0-beta-3</version.org.jboss.shrinkwrap.resolver>
     <version.org.jboss.weld>1.1.13.Final</version.org.jboss.weld>
     <version.org.json>20090211</version.org.json>
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
@@ -72,12 +76,6 @@
     <version.org.supercsv>1.52</version.org.supercsv>
     <version.org.xmappr>0.9.3</version.org.xmappr>
     <version.rhino.js>1.7R2</version.rhino.js>
-
-    <!-- arquillian related -->
-    <version.org.jboss.shrinkwrap.resolver>2.0.0-beta-3</version.org.jboss.shrinkwrap.resolver>
-    <version.org.jboss.arquillian>1.0.3.Final</version.org.jboss.arquillian>
-    <version.org.jboss.arquillian.container>1.0.0.CR3</version.org.jboss.arquillian.container>
-    <version.org.jboss.as>7.1.1.Final</version.org.jboss.as>
   </properties>
 
   <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent-metadata. -->
