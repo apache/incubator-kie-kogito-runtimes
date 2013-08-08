@@ -505,6 +505,18 @@
           <version>3.1</version>
         </plugin>
         <plugin>
+          <groupId>org.zanata</groupId>
+          <artifactId>zanata-maven-plugin</artifactId>
+          <version>2.3.0</version>
+          <configuration>
+            <excludes>**/ErraiApp.properties</excludes>
+            <projectConfig>${session.executionRootDirectory}/src/main/config/zanata.xml</projectConfig>
+            <srcDir>src/main/resources/</srcDir>
+            <transDir>src/main/resources/</transDir>
+            <includes>**/*Constants.properties</includes>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>com.mycila.maven-license-plugin</groupId>
           <artifactId>maven-license-plugin</artifactId>
           <version>1.8.0</version>
