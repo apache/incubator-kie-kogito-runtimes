@@ -721,6 +721,11 @@
         <artifactId>resteasy-multipart-provider</artifactId>
         <version>${version.org.jboss.resteasy}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jackson-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
 
       <!-- guvnor-webapp -->
       <dependency>

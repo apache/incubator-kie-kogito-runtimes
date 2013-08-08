@@ -425,6 +425,12 @@
         <artifactId>jbpm-console-ng-module-archetype</artifactId>
         <version>${jbpm.console.ng.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-showcase</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+        <type>war</type>
+      </dependency>
 
       <!-- designer and jbpm-simulation -->
       <dependency>
