@@ -339,6 +339,61 @@
         <artifactId>jbpm-form-modeler-bpmn-form-builder</artifactId>
         <version>${jbpm.form.modeler.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-common</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-request-dispatcher</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-request-dispatcher</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+        <type>jar</type>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-service-core</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-ui</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-ui</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+        <type>jar</type>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-form-editor</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-static-resources</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-static-resources</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+        <type>jar</type>
+        <classifier>classes</classifier>
+      </dependency>
 
       <!-- jBPM console NG -->
       <dependency>
