@@ -274,6 +274,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-designer-standalone</artifactId>
         <version>${jbpm.designer.version}</version>
+        <type>war</type>
       </dependency>
 
       <!-- jbpm-form-modeler -->
