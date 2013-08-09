@@ -235,7 +235,7 @@
       <!-- ################################################################################ -->
       <!--
         CONVENTIONS:
-        - Dependencies must be SORTED ALPHABETICALLY on groupId (other form of sorting were found to be unclear and ambiguous).
+        - Dependencies must be SORTED ALPHABETICALLY on groupId (other forms of sorting were found to be unclear and ambiguous).
         - Do not declare <scope> (exception: import) or <optional>: a child module will declare scope/optional itself.
         - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> (following Aether proper)
       -->
