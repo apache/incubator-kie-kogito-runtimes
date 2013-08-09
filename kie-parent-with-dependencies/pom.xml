@@ -1209,25 +1209,21 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>4.2.0.Final</version>
-        <optional>true</optional>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>4.2.0.Final</version>
-        <optional>true</optional>
       </dependency>
       <dependency>
         <groupId>org.hibernate.common</groupId>
         <artifactId>hibernate-commons-annotations</artifactId>
         <version>4.0.1.Final</version>
-        <optional>true</optional>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>4.3.1.Final</version>
-        <optional>true</optional>
       </dependency>
       <dependency><!-- JPA 2 implementation agnostic jar -->
         <groupId>org.hibernate.javax.persistence</groupId>
