@@ -53,7 +53,7 @@
     <version.org.apache.velocity>1.7</version.org.apache.velocity>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
-    <version.org.antlr>3.3</version.org.antlr>
+    <version.org.antlr>3.5</version.org.antlr>
     <version.org.codehaus.jackson>1.9.9</version.org.codehaus.jackson>
     <version.org.eclipse.jetty>7.2.1.v20101111</version.org.eclipse.jetty>
     <version.org.hornetq>2.3.1.Final</version.org.hornetq>
