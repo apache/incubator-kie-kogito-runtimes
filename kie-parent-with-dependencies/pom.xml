@@ -639,18 +639,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <!-- TODO delete me, when we use antlr 3.4 or higher -->
-        <groupId>antlr</groupId>
-        <artifactId>antlr</artifactId>
-        <version>2.7.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.antlr</groupId>
-        <artifactId>stringtemplate</artifactId>
-        <version>3.2.1</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>gunit</artifactId>
         <version>${version.org.antlr}</version>
