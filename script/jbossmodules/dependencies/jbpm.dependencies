@@ -1,5 +1,6 @@
 com.google.protobuf
 javax.activation.api
+javax.annotation.api
 javax.api    
 javax.ejb.api 
 javax.faces.api

@@ -28,6 +28,7 @@
     <module name="javax.servlet.api" export="true"/>
     <module name="com.google.guava" export="true"/>
     <module name="javax.api" export="true"/>
+    <module name="javax.annotation.api" export="true"/>
     <module name="javax.ejb.api" export="true"/>
     <module name="javax.enterprise.api" export="true"/>
     <module name="javax.jms.api" export="true"/>
@@ -49,6 +50,8 @@
     <module name="org.apache.commons.lang" export="true"/>
     <module name="org.apache.commons.logging" export="true"/>
     <module name="org.apache.lucene" export="true" meta-inf="import"/>
+    <module name="org.apache.maven" export="true" meta-inf="import"/>
+    <module name="org.apache.maven.wagon" export="true" meta-inf="import"/>
     <module name="org.apache.ws.xmlschema" export="true"/>
     <module name="org.apache.xerces" export="true" />
     <module name="org.apache.xml-resolver" export="true"/>

@@ -3,12 +3,17 @@ org.apache.commons.logging
 org.apache.commons.math
 org.apache.helix
 org.apache.lucene
+org.apache.maven
+org.apache.maven.wagon
 org.apache.zookeeper
+org.codehouse.plexus
 org.drools
 org.eclipse.jgit
+org.hornetq
 org.jbpm    
 org.kie.lib
 javax.activation.api
+javax.annotation.api
 javax.api    
 javax.ejb.api 
 javax.faces.api
@@ -25,5 +30,5 @@ javax.wsdl4j.api
 javax.xml.bind.api
 javax.xml.stream.api
 javax.resource.api
-org.hornetq
+
 

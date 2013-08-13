@@ -1,1 +1,4 @@
 org.codehouse.plexus
+org.apache.maven
+org.apache.maven.wagon
+javax.annotation.api
