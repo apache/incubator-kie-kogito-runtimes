@@ -2,3 +2,9 @@ org.codehouse.plexus
 org.apache.maven
 org.apache.maven.wagon
 javax.annotation.api
+org.jboss.osgi.resolver
+org.sonatype.aether
+org.sonatype.sisu
+org.sonatype.maven
+org.sonatype.plexus
+

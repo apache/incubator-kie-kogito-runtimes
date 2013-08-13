@@ -10,8 +10,12 @@ org.codehouse.plexus
 org.drools
 org.eclipse.jgit
 org.hornetq
+org.jboss.osgi.resolver
 org.jbpm    
 org.kie.lib
+org.sonatype.sisu
+org.sonatype.aether
+org.sonatype.plexus
 javax.activation.api
 javax.annotation.api
 javax.api    
@@ -30,5 +34,4 @@ javax.wsdl4j.api
 javax.xml.bind.api
 javax.xml.stream.api
 javax.resource.api
-
 

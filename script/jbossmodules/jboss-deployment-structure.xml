@@ -25,53 +25,61 @@
     <module name="org.jbpm" export="true" meta-inf="import"/>
     <module name="org.drools" export="true" meta-inf="import"/>
 
-    <module name="javax.servlet.api" export="true"/>
-    <module name="com.google.guava" export="true"/>
-    <module name="javax.api" export="true"/>
-    <module name="javax.annotation.api" export="true"/>
-    <module name="javax.ejb.api" export="true"/>
-    <module name="javax.enterprise.api" export="true"/>
-    <module name="javax.jms.api" export="true"/>
-    <module name="javax.persistence.api" export="true"/>
-    <module name="javax.servlet.api" export="true"/>
-    <module name="javax.servlet.jsp.api" export="true"/>
-    <module name="javax.validation.api" export="true"/>
-    <module name="javax.transaction.api" export="true"/>
-    <module name="javax.ws.rs.api" export="true"/>
-    <module name="javax.xml.bind.api" export="true"/>
-    <module name="javax.xml.stream.api" export="true"/>
-    <module name="javax.resource.api" export="true"/>
-    <module name="org.apache.commons.beanutils" export="true"/>
-    <module name="org.apache.commons.cli" export="true"/>
-    <module name="org.apache.commons.codec" export="true"/>
-    <module name="org.apache.commons.collections" export="true"/>
-    <module name="org.apache.commons.configuration" export="true"/>
-    <module name="org.apache.commons.io" export="true"/>
-    <module name="org.apache.commons.lang" export="true"/>
-    <module name="org.apache.commons.logging" export="true"/>
+    <module name="com.google.guava" export="true" meta-inf="import" />
+    <module name="com.google.protobuf" export="true" meta-inf="import" />
+    <module name="javax.api" export="true" meta-inf="import" />
+    <module name="javax.annotation.api" export="true" meta-inf="import" />
+    <module name="javax.ejb.api" export="true" meta-inf="import" />
+    <module name="javax.enterprise.api" export="true" meta-inf="import" />
+    <module name="javax.jms.api" export="true" meta-inf="import" />
+    <module name="javax.persistence.api" export="true" meta-inf="import" />
+    <module name="javax.servlet.api" export="true" meta-inf="import" />
+    <module name="javax.servlet.jsp.api" export="true" meta-inf="import" />
+    <module name="javax.validation.api" export="true" meta-inf="import" />
+    <module name="javax.transaction.api" export="true" meta-inf="import" />
+    <module name="javax.ws.rs.api" export="true" meta-inf="import" />
+    <module name="javax.xml.bind.api" export="true" meta-inf="import" />
+    <module name="javax.xml.stream.api" export="true" meta-inf="import" />
+    <module name="javax.resource.api" export="true" meta-inf="import" />
+    <module name="org.apache.commons.beanutils" export="true" meta-inf="import" />
+    <module name="org.apache.commons.cli" export="true" meta-inf="import" />
+    <module name="org.apache.commons.codec" export="true" meta-inf="import" />
+    <module name="org.apache.commons.collections" export="true" meta-inf="import" />
+    <module name="org.apache.commons.configuration" export="true" meta-inf="import" />
+    <module name="org.apache.commons.io" export="true" meta-inf="import" />
+    <module name="org.apache.commons.lang" export="true" meta-inf="import" />
+    <module name="org.apache.commons.logging" export="true" meta-inf="import" />
     <module name="org.apache.lucene" export="true" meta-inf="import"/>
     <module name="org.apache.maven" export="true" meta-inf="import"/>
     <module name="org.apache.maven.wagon" export="true" meta-inf="import"/>
-    <module name="org.apache.ws.xmlschema" export="true"/>
-    <module name="org.apache.xerces" export="true" />
-    <module name="org.apache.xml-resolver" export="true"/>
-    <module name="org.codehaus.jackson.jackson-core-asl" export="true"/>
-    <module name="org.codehaus.jackson.jackson-jaxrs" export="true"/>
-    <module name="org.codehaus.jackson.jackson-mapper-asl" export="true"/>
-    <module name="org.codehaus.jackson.jackson-xc" export="true"/>
-    <module name="org.codehouse.plexus" export="true"/>
-    <module name="org.hibernate" export="true"/>
-    <module name="org.hornetq" export="true"/>
-    <module name="org.jboss.log4j.logmanager" export="true"/>
-    <module name="org.jboss.logging" export="true"/>
-    <module name="org.jboss.solder" export="true"   meta-inf="import"/>
+    <module name="org.apache.ws.xmlschema" export="true" meta-inf="import" />
+    <module name="org.apache.xerces" export="true" meta-inf="import" />
+    <module name="org.apache.xml-resolver" export="true" meta-inf="import" />
+    <module name="org.codehaus.jackson.jackson-core-asl" export="true" meta-inf="import" />
+    <module name="org.codehaus.jackson.jackson-jaxrs" export="true" meta-inf="import" />
+    <module name="org.codehaus.jackson.jackson-mapper-asl" export="true" meta-inf="import" />
+    <module name="org.codehaus.jackson.jackson-xc" export="true" meta-inf="import" />
+    <module name="org.codehouse.plexus" export="true" meta-inf="import" />
+    <module name="org.hibernate" export="true" meta-inf="import" />
+    <module name="org.hornetq" export="true" meta-inf="import" />
+    <module name="org.hornetq.ra" export="true" meta-inf="import" />
+    <module name="org.jboss.as.transactions" export="true" meta-inf="import" />
+    <module name="org.jboss.jboss-transaction-spi" export="true" meta-inf="import" />
+    <module name="org.jboss.log4j.logmanager" export="true" meta-inf="import" />
+    <module name="org.jboss.logging" export="true" meta-inf="import" />
+    <module name="org.jboss.osgi.resolver" export="true" meta-inf="import" />
+    <module name="org.jboss.solder" export="true" meta-inf="import"/>
     <module name="org.jboss.weld.api" export="true" meta-inf="import"/>
     <module name="org.jboss.weld.core" export="true" meta-inf="import"/>
     <module name="org.jboss.weld.spi" export="true" meta-inf="import"/>
-    <module name="org.jdom" export="true"/>
-    <module name="org.jgroups" export="true"/>
-    <module name="org.joda.time" export="true"/>
-    <module name="org.slf4j" export="true"/>
+    <module name="org.jdom" export="true" meta-inf="import" />
+    <module name="org.jgroups" export="true" meta-inf="import" />
+    <module name="org.joda.time" export="true" meta-inf="import" />
+    <module name="org.slf4j" export="true" meta-inf="import" />
+    <module name="org.sonatype.sisu" export="true" meta-inf="import" />
+    <module name="org.sonatype.aether" export="true" meta-inf="import" />
+    <module name="org.sonatype.plexus" export="true" meta-inf="import" />
+    <module name="org.sonatype.aether" export="true" meta-inf="import" />
   </dependencies>
 </deployment>
 </jboss-deployment-structure>

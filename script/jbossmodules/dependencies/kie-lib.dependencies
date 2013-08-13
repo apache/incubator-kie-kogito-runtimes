@@ -47,6 +47,7 @@ org.jboss.resteasy.resteasy-jaxrs
 org.jboss.resteasy.resteasy-jaxb-provider
 org.jboss.resteasy.resteasy-jsapi
 org.jboss.resteasy.resteasy-multipart-provider
+org.jboss.osgi.resolver
 org.jboss.solder
 org.jboss.sasl
 org.jboss.weld.spi 
@@ -62,6 +63,9 @@ org.hornetq
 org.osgi.core
 org.slf4j
 org.slf4j.jcl-over-slf4j    
+org.sonatype.sisu
+org.sonatype.aether
+org.sonatype.plexus
 org.yaml.snakeyaml
 javax.activation.api
 javax.annotation.api
