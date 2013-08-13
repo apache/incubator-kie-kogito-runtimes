@@ -630,13 +630,6 @@
         <groupId>org.antlr</groupId>
         <artifactId>antlr</artifactId>
         <version>${version.org.antlr}</version>
-        <scope>compile</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.antlr</groupId>
@@ -649,6 +642,11 @@
             <artifactId>stringtemplate</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>ST4</artifactId>
+        <version>4.0.7</version>
       </dependency>
 
       <dependency>
