@@ -77,7 +77,8 @@ MODULE_LUCENE=$DIST_DIR/modules/system/layers/bpms/org/apache/lucene
 MODULE_JGIT=$DIST_DIR/modules/system/layers/bpms/org/eclipse/jgit
 MODULE_ZOOKEEPER=$DIST_DIR/modules/system/layers/bpms/org/apache/zookeeper
 # create modules 3rd party * drools
-MODULE_AETHER=$DIST_DIR/modules/system/layers/bpms/org/sonatype/aether 
+MODULE_AETHER=$DIST_DIR/modules/system/layers/bpms/org/sonatype/aether
+MODULE_BATIK=$DIST_DIR/modules/system/layers/bpms/org/apache/batik 
 MODULE_ANT=$DIST_DIR/modules/system/layers/bpms/org/apache/ant 
 MODULE_MAVEN=$DIST_DIR/modules/system/layers/bpms/org/apache/maven
 MODULE_WAGON=$DIST_DIR/modules/system/layers/bpms/org/apache/maven/wagon
@@ -114,6 +115,7 @@ mkdir  -p $MODULE_LUCENE/main
 mkdir  -p $MODULE_JGIT/main
 mkdir  -p $MODULE_ZOOKEEPER/main
 mkdir  -p $MODULE_AETHER/main
+mkdir  -p $MODULE_BATIK/main
 mkdir  -p $MODULE_ANT/main
 mkdir  -p $MODULE_MAVEN/main
 mkdir  -p $MODULE_MVEL/main
@@ -222,6 +224,7 @@ mv $MODULE_LIB/main/aether-connector-wagon-*.jar       $MODULE_AETHER/main
 mv $MODULE_LIB/main/aether-impl-*.jar                  $MODULE_AETHER/main
 mv $MODULE_LIB/main/aether-spi-*.jar                   $MODULE_AETHER/main
 mv $MODULE_LIB/main/aether-util-*.jar                  $MODULE_AETHER/main
+mv $MODULE_LIB/main/batik-*.jar                        $MODULE_BATIK/main
 mv $MODULE_LIB/main/ant-*.jar                          $MODULE_ANT/main
 mv $MODULE_LIB/main/ant-launcher-*.jar                 $MODULE_ANT/main
 mv $MODULE_LIB/main/maven-aether-provider-*.jar        $MODULE_MAVEN/main
@@ -303,6 +306,12 @@ createModuleXML "org.kie.lib" $MODULE_LIB $MODULE_LIB_DEPS
 #
 MODULE_AETHER_DEPS=./dependencies/aether.dependencies
 createModuleXML "org.sonatype.aether" $MODULE_AETHER $MODULE_AETHER_DEPS
+
+#
+# Generate library module for aether
+#
+MODULE_AETHER_DEPS=./dependencies/batik.dependencies
+createModuleXML "org.apache.batik" $MODULE_BATIK $MODULE_BATIK_DEPS
 
 #
 # Generate library module for ant

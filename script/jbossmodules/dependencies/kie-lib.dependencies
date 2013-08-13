@@ -2,6 +2,7 @@ com.h2database.h2
 com.google.guava
 com.sun.xml.bind    
 org.antlr
+org.apache.batik
 org.apache.commons.codec 
 org.apache.commons.collections
 org.apache.commons.configuration    

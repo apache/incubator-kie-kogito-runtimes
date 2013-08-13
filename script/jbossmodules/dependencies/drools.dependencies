@@ -1,3 +1,5 @@
+javax.transaction.api
+javax.persistence.api
 com.google.protobuf
 org.apache.ant
 org.apache.maven
@@ -13,4 +15,5 @@ org.mvel
 org.sonatype.maven
 org.sonatype.plexus
 org.sonatype.sisu
+
 

@@ -1,5 +1,6 @@
 com.google.protobuf
 javax.persistence.api
+javax.transaction.api
 org.apache.ant
 org.apache.camel
 org.apache.commons.compress
