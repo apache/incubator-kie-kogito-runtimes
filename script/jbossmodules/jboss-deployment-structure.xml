@@ -39,6 +39,7 @@
     <module name="javax.ws.rs.api" export="true"/>
     <module name="javax.xml.bind.api" export="true"/>
     <module name="javax.xml.stream.api" export="true"/>
+    <module name="javax.resource.api" export="true"/>
     <module name="org.apache.commons.beanutils" export="true"/>
     <module name="org.apache.commons.cli" export="true"/>
     <module name="org.apache.commons.codec" export="true"/>
@@ -56,6 +57,7 @@
     <module name="org.codehaus.jackson.jackson-mapper-asl" export="true"/>
     <module name="org.codehaus.jackson.jackson-xc" export="true"/>
     <module name="org.hibernate" export="true"/>
+    <module name="org.hornetq" export="true"/>
     <module name="org.jboss.log4j.logmanager" export="true"/>
     <module name="org.jboss.logging" export="true"/>
     <module name="org.jboss.solder" export="true"   meta-inf="import"/>
