@@ -62,6 +62,7 @@
     <version.org.jboss.arquillian.container>1.0.0.CR3</version.org.jboss.arquillian.container>
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <version.org.jboss.errai>2.3.2.Final</version.org.jboss.errai>
+    <version.org.jboss.netty>3.2.6.Final</version.org.jboss.netty>
     <version.org.jboss.resteasy>2.3.6.Final</version.org.jboss.resteasy>
     <version.org.jboss.shrinkwrap.resolver>2.0.0-beta-3</version.org.jboss.shrinkwrap.resolver>
     <version.org.jboss.weld>1.1.13.Final</version.org.jboss.weld>
@@ -72,7 +73,7 @@
     <version.org.ops4j.pax.exam>2.6.0</version.org.ops4j.pax.exam>
     <version.org.slf4j>1.7.2</version.org.slf4j>
     <version.org.sonatype.aether>1.13.1</version.org.sonatype.aether>
-    <version.org.springframework>3.0.6.RELEASE</version.org.springframework>
+    <version.org.springframework>3.0.7.RELEASE</version.org.springframework>
     <version.org.supercsv>1.52</version.org.supercsv>
     <version.org.xmappr>0.9.3</version.org.xmappr>
     <version.rhino.js>1.7R2</version.rhino.js>
@@ -376,7 +377,7 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>2.0</version>
+        <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -832,7 +833,7 @@
       <dependency>
         <groupId>org.apache.ftpserver</groupId>
         <artifactId>ftpserver-core</artifactId>
-        <version>1.0.4</version>
+        <version>1.0.6</version>
         <scope>test</scope>
       </dependency>
 
@@ -1312,7 +1313,7 @@
       <dependency>
         <groupId>org.jboss.netty</groupId>
         <artifactId>netty</artifactId>
-        <version>3.2.0.Final</version>
+        <version>${version.org.jboss.netty}</version>
       </dependency>
 
       <dependency>
@@ -1506,9 +1507,9 @@
       </dependency>
 
       <dependency>
-        <groupId>org.opensymphony.quartz</groupId>
+        <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
-        <version>1.6.1</version>
+        <version>1.8.5</version>
         <scope>provided</scope>
       </dependency>
 
