@@ -27,6 +27,7 @@ org.codehaus.jackson.jackson-core-asl
 org.codehaus.jackson.jackson-jaxrs
 org.codehaus.jackson.jackson-mapper-asl
 org.codehaus.jackson.jackson-xc
+org.codehouse.plexus
 org.dom4j
 org.javassist
 org.jboss.as.web
