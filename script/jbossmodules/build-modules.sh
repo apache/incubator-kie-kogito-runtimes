@@ -216,49 +216,49 @@ mv $MODULE_LIB/main/zookeeper-*.jar                $MODULE_ZOOKEEPER/main
 
 # new modules DROOLS dependencies
 
-mv $MODULE_LIB/main/aether-api-1.13.1.jar             $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-connector-file-1.13.1.jar  $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-connector-wagon-1.13.1.jar $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-impl-1.13.1.jar            $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-spi-1.13.1.jar             $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-util-1.13.1.jar            $MODULE_AETHER/main
-mv $MODULE_LIB/main/ant-1.8.2.jar                     $MODULE_ANT/main
-mv $MODULE_LIB/main/ant-launcher-1.8.2.jar            $MODULE_ANT/main
-mv $MODULE_LIB/main/maven-aether-provider-3.0.3.jar   $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-artifact-3.0.3.jar          $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-compat-3.0.3.jar            $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-core-3.0.3.jar              $MODULE_MAVEN/main  
-mv $MODULE_LIB/main/maven-model-3.0.3.jar             $MODULE_MAVEN/main   
-mv $MODULE_LIB/main/maven-model-builder-3.0.3.jar     $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-plugin-api-3.0.3.jar        $MODULE_MAVEN/main 
-mv $MODULE_LIB/main/maven-repository-metadata-3.0.3.jar $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-settings-3.0.3.jar          $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-settings-builder-3.0.3.jar  $MODULE_MAVEN/main
-mv $MODULE_LIB/main/mvel2-2.1.6.Final.jar             $MODULE_MVEL/main
-mv $MODULE_LIB/main/plexus-cipher-1.4.jar             $MODULE_sonPLEXUS/main
-mv $MODULE_LIB/main/plexus-classworlds-2.4.jar        $MODULE_codePLEXUS/main
-mv $MODULE_LIB/main/plexus-component-annotations-1.5.5.jar $MODULE_codePLEXUS/main
-mv $MODULE_LIB/main/plexus-interpolation-1.14.jar     $MODULE_codePLEXUS/main
-mv $MODULE_LIB/main/plexus-utils-3.0.7.jar            $MODULE_codePLEXUS/main
-mv $MODULE_LIB/main/poi-3.9.jar                       $MODULE_POI/main 
-mv $MODULE_LIB/main/poi-ooxml-3.9.jar                 $MODULE_POI/main
-mv $MODULE_LIB/main/poi-ooxml-schemas-3.9.jar         $MODULE_POI/main 
-mv $MODULE_LIB/main/protobuf-java-2.5.0.jar           $MODULE_PROTOBUF/main
-mv $MODULE_LIB/main/sisu-guice-3.0.3-no_aop.jar       $MODULE_SISU/main
-mv $MODULE_LIB/main/sisu-inject-bean-2.2.3.jar        $MODULE_SISU/main
-mv $MODULE_LIB/main/wagon-provider-api-1.0.jar        $MODULE_WAGON/main
-mv $MODULE_LIB/main/wagon-ahc-1.2.1.jar               $MODULE_sonaMAVEN/main
+mv $MODULE_LIB/main/aether-api-*.jar                   $MODULE_AETHER/main
+mv $MODULE_LIB/main/aether-connector-file-*.jar        $MODULE_AETHER/main
+mv $MODULE_LIB/main/aether-connector-wagon-*.jar       $MODULE_AETHER/main
+mv $MODULE_LIB/main/aether-impl-*.jar                  $MODULE_AETHER/main
+mv $MODULE_LIB/main/aether-spi-*.jar                   $MODULE_AETHER/main
+mv $MODULE_LIB/main/aether-util-*.jar                  $MODULE_AETHER/main
+mv $MODULE_LIB/main/ant-*.jar                          $MODULE_ANT/main
+mv $MODULE_LIB/main/ant-launcher-*.jar                 $MODULE_ANT/main
+mv $MODULE_LIB/main/maven-aether-provider-*.jar        $MODULE_MAVEN/main
+mv $MODULE_LIB/main/maven-artifact-*.jar               $MODULE_MAVEN/main
+mv $MODULE_LIB/main/maven-compat-*.jar                 $MODULE_MAVEN/main
+mv $MODULE_LIB/main/maven-core-*.jar                   $MODULE_MAVEN/main  
+mv $MODULE_LIB/main/maven-model-*.jar                  $MODULE_MAVEN/main   
+mv $MODULE_LIB/main/maven-model-builder-*.jar          $MODULE_MAVEN/main
+mv $MODULE_LIB/main/maven-plugin-api-*.jar             $MODULE_MAVEN/main 
+mv $MODULE_LIB/main/maven-repository-metadata-*.jar    $MODULE_MAVEN/main
+mv $MODULE_LIB/main/maven-settings-*.jar               $MODULE_MAVEN/main
+mv $MODULE_LIB/main/maven-settings-builder-*.jar       $MODULE_MAVEN/main
+mv $MODULE_LIB/main/mvel2-*.Final.jar                  $MODULE_MVEL/main
+mv $MODULE_LIB/main/plexus-cipher-*.jar                $MODULE_sonPLEXUS/main
+mv $MODULE_LIB/main/plexus-classworlds-*.jar           $MODULE_codePLEXUS/main
+mv $MODULE_LIB/main/plexus-component-annotations-*.jar $MODULE_codePLEXUS/main
+mv $MODULE_LIB/main/plexus-interpolation-*.jar         $MODULE_codePLEXUS/main
+mv $MODULE_LIB/main/plexus-utils-*.jar                 $MODULE_codePLEXUS/main
+mv $MODULE_LIB/main/poi-*.jar                          $MODULE_POI/main 
+mv $MODULE_LIB/main/poi-ooxml-*.jar                    $MODULE_POI/main
+mv $MODULE_LIB/main/poi-ooxml-schemas-*.jar            $MODULE_POI/main 
+mv $MODULE_LIB/main/protobuf-java-*.jar                $MODULE_PROTOBUF/main
+mv $MODULE_LIB/main/sisu-guice-*-no_aop.jar            $MODULE_SISU/main
+mv $MODULE_LIB/main/sisu-inject-bean-*.jar             $MODULE_SISU/main
+mv $MODULE_LIB/main/wagon-provider-api-*.jar           $MODULE_WAGON/main
+mv $MODULE_LIB/main/wagon-ahc-*.jar                    $MODULE_sonaMAVEN/main
 
 # new modules JBPM dependencies
 
-mv $MODULE_LIB/main/commons-compress-1.0.jar          $MODULE_COMPRESS/main
-mv $MODULE_LIB/main/commons-exec-1.0.1.jar            $MODULE_EXEC/main
-mv $MODULE_LIB/main/commons-net-2.0.jar               $MODULE_NET/main
-mv $MODULE_LIB/main/commons-vfs-1.0.jar               $MODULE_VFS/main
-mv $MODULE_LIB/main/sisu-inject-plexus-2.2.3.jar      $MODULE_SISU/main
-mv $MODULE_LIB/main/solder-api-3.2.0.Final.jar        $MODULE_SOLDER/main
-mv $MODULE_LIB/main/solder-impl-3.2.0.Final.jar       $MODULE_SOLDER/main 
-mv $MODULE_LIB/main/solder-logging-3.2.0.Final.jar    $MODULE_SOLDER/main
+mv $MODULE_LIB/main/commons-compress-*.jar            $MODULE_COMPRESS/main
+mv $MODULE_LIB/main/commons-exec-*.jar                $MODULE_EXEC/main
+mv $MODULE_LIB/main/commons-net-*.jar                 $MODULE_NET/main
+mv $MODULE_LIB/main/commons-vfs-*.jar                 $MODULE_VFS/main
+mv $MODULE_LIB/main/sisu-inject-plexus-*.jar          $MODULE_SISU/main
+mv $MODULE_LIB/main/solder-api-*.Final.jar            $MODULE_SOLDER/main
+mv $MODULE_LIB/main/solder-impl-*.Final.jar           $MODULE_SOLDER/main 
+mv $MODULE_LIB/main/solder-logging-*.Final.jar        $MODULE_SOLDER/main
 #mkdir $MODULE_SOLDER/main/META-INF
 #cp $BASE_DIR/patches/modules/solder/META-INF/* $MODULE_SOLDER/main/META-INF
 
