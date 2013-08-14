@@ -1,0 +1,5 @@
+org.apache.fop.render.pdf.PDFImageHandlerRawJPEG
+org.apache.fop.render.pdf.PDFImageHandlerRawCCITTFax
+org.apache.fop.render.pdf.PDFImageHandlerGraphics2D
+org.apache.fop.render.pdf.PDFImageHandlerRenderedImage
+org.apache.fop.render.pdf.PDFImageHandlerXML

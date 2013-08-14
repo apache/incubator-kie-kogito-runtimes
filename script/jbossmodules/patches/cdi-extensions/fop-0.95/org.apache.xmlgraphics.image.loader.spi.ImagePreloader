@@ -1,0 +1,2 @@
+org.apache.fop.image.loader.batik.PreloaderWMF
+org.apache.fop.image.loader.batik.PreloaderSVG

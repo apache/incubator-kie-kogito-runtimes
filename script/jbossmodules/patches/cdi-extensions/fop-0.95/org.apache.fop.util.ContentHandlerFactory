@@ -1,0 +1,3 @@
+org.apache.fop.render.afp.extensions.AFPExtensionHandlerFactory
+org.apache.fop.render.ps.extensions.PSExtensionHandlerFactory
+org.apache.fop.fo.extensions.xmp.XMPContentHandlerFactory

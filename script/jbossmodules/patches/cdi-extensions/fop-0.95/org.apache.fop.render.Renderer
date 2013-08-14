@@ -1,0 +1,10 @@
+org.apache.fop.render.pdf.PDFRendererMaker
+org.apache.fop.render.ps.PSRendererMaker
+org.apache.fop.render.txt.TXTRendererMaker
+org.apache.fop.render.bitmap.PNGRendererMaker
+org.apache.fop.render.bitmap.TIFFRendererMaker
+org.apache.fop.render.xml.XMLRendererMaker
+org.apache.fop.render.awt.AWTRendererMaker
+org.apache.fop.render.print.PrintRendererMaker
+org.apache.fop.render.afp.AFPRendererMaker
+org.apache.fop.render.pcl.PCLRendererMaker

@@ -1,0 +1,2 @@
+org.apache.fop.image.loader.batik.ImageConverterSVG2G2D
+org.apache.fop.image.loader.batik.ImageConverterWMF2G2D

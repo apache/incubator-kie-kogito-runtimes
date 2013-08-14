@@ -28,6 +28,34 @@ fi
 	echo "</module>">> $MODULE_PATH/main/module.xml
 }
 
+fixCDIExtensions() {
+	SPI_EXTENSION_FILENAME="javax.enterprise.inject.spi.Extension"
+	CDI_EXTENSION_PATH=$1
+	TARGET_SERVICES_PATH=$2
+
+	pushd .
+
+	#Create the spi extension file to append contents.
+	cat /dev/null > $TARGET_SERVICES_PATH/$SPI_EXTENSION_FILENAME
+
+	for dir in $CDI_EXTENSION_PATH/*/
+	do
+		dir=${dir%*/}
+		cd $CDI_EXTENSION_PATH/${dir##*/}
+			for file in *
+			do
+				if [ "$file" == "$SPI_EXTENSION_FILENAME" ]; then
+					cat $CDI_EXTENSION_PATH/${dir##*/}/$file >> $TARGET_SERVICES_PATH/$SPI_EXTENSION_FILENAME
+				else
+					cp -r $CDI_EXTENSION_PATH/${dir##*/}/$file $TARGET_SERVICES_PATH
+				fi
+			done
+		cd ..
+	done
+	popd
+}
+
+
 
 # Program arguments
 if [ $# -ne 2 ];
@@ -459,16 +487,10 @@ echo '   Applying temporary fixes....'
 # Workaround until solder problem is solved
 #
 mkdir $TMP_DIR/kie-wb/META-INF/services
-
-cp $BASE_DIR/patches/cdi-extensions/solder/* $TMP_DIR/kie-wb/META-INF/services
-# Workaround Lucene
-cp $BASE_DIR/patches/cdi-extensions/lucene/* $TMP_DIR/kie-wb/META-INF/services
+fixCDIExtensions  $BASE_DIR/patches/cdi-extensions $TMP_DIR/kie-wb/META-INF/services
 
 # Workaround Solder filter
-#cp $BASE_DIR/patches/web.xml $TMP_DIR/kie-wb/WEB-INF
-
-# Other META-INF fixes
-#cp -rf $BASE_DIR/patches/META-INF/* $TMP_DIR/kie-wb/META-INF
+cp $BASE_DIR/patches/web.xml $TMP_DIR/kie-wb/WEB-INF
 
 # Generate the resulting WAR file.
 jar cf $DIST_DIR/standalone/deployments/kie-wb.war *
