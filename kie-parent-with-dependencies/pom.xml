@@ -598,11 +598,10 @@
         <version>${version.dom4j}</version>
       </dependency>
 
-      <dependency>
+      <dependency><!-- TODO remove me -->
         <groupId>javax</groupId>
         <artifactId>javaee-api</artifactId>
         <version>${version.javax.javaee-api}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
@@ -638,7 +637,6 @@
         <groupId>javax.jms</groupId>
         <artifactId>jms</artifactId>
         <version>${version.javax.jms}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
@@ -659,7 +657,6 @@
         <groupId>javax.security.jacc</groupId>
         <artifactId>javax.security.jacc-api</artifactId>
         <version>${version.javax.security.jacc}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.transaction</groupId>
@@ -766,7 +763,6 @@
         <groupId>org.antlr</groupId>
         <artifactId>gunit</artifactId>
         <version>${version.org.antlr}</version>
-        <scope>test</scope>
         <exclusions>
           <exclusion>
             <groupId>org.antlr</groupId>
@@ -813,7 +809,6 @@
         <artifactId>camel-core</artifactId>
         <type>test-jar</type>
         <version>${version.org.apache.camel}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
@@ -964,7 +959,6 @@
         <groupId>org.apache.ftpserver</groupId>
         <artifactId>ftpserver-core</artifactId>
         <version>${version.org.apache.ftpserver}</version>
-        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -1070,7 +1064,6 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>catalina</artifactId>
         <version>${version.org.apache.tomcat}</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -1262,7 +1255,6 @@
         <groupId>org.glassfish.main.extras</groupId>
         <artifactId>glassfish-embedded-all</artifactId>
         <version>${version.org.glassfish}</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -1323,25 +1315,21 @@
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
         <version>${version.org.jboss.arquillian.container}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
         <version>${version.org.jboss.arquillian.container}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-glassfish-embedded-3.1</artifactId>
         <version>${version.org.jboss.arquillian.container}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-glassfish-managed-3.1</artifactId>
         <version>${version.org.jboss.arquillian.container}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <!-- WARNING: org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-bom must be defined BEFORE org.jboss.arquillian:arquillian-bom -->
@@ -1363,7 +1351,6 @@
         <groupId>org.jboss.as</groupId>
         <artifactId>jboss-as-arquillian-container-managed</artifactId>
         <version>${version.org.jboss.as}</version>
-        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -1664,7 +1651,6 @@
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
         <version>${version.org.quartz-scheduler}</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -1812,7 +1798,6 @@
         <groupId>org.subethamail</groupId>
         <artifactId>subethasmtp-wiser</artifactId>
         <version>${version.org.subethamail}</version>
-        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -1843,7 +1828,6 @@
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${version.postgresql}</version>
-        <scope>test</scope>
       </dependency>
 
       <dependency>
