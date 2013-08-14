@@ -40,6 +40,7 @@
     <version.commons-lang>2.6</version.commons-lang>
     <version.commons-net>2.2</version.commons-net>
     <version.commons-io>2.1</version.commons-io>
+    <version.commons-validator>1.4.0</version.commons-validator>
     <version.commons-vfs>1.0</version.commons-vfs>
     <version.com.allen-sauer.gwt.dnd>3.1.2</version.com.allen-sauer.gwt.dnd>
     <version.com.github.gwtbootstrap>2.2.1.0</version.com.github.gwtbootstrap>
@@ -485,6 +486,11 @@
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${version.commons-io}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-validator</groupId>
+        <artifactId>commons-validator</artifactId>
+        <version>${version.commons-validator}</version>
       </dependency>
       <dependency>
         <groupId>commons-vfs</groupId>
