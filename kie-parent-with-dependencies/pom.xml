@@ -56,6 +56,7 @@
     <version.com.thoughtworks.xstream>1.4.3</version.com.thoughtworks.xstream>
     <version.dom4j>1.6.1</version.dom4j>
     <version.javax.activation>1.1.1</version.javax.activation>
+    <version.javax.annotation>1.0</version.javax.annotation>
     <version.javax.ejb>3.0</version.javax.ejb>
     <version.javax.el>1.2</version.javax.el>
     <version.javax.enterprise.cdi>1.0-SP4</version.javax.enterprise.cdi>
@@ -603,6 +604,11 @@
         <version>${version.javax.activation}</version>
       </dependency>
       <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>jsr250-api</artifactId>
+        <version>${version.javax.annotation}</version>
+      </dependency>
+      <dependency>
         <groupId>javax.ejb</groupId>
         <artifactId>ejb-api</artifactId>
         <version>${version.javax.ejb}</version>
@@ -964,6 +970,13 @@
       <dependency>
         <groupId>org.apache.karaf</groupId>
         <artifactId>apache-karaf</artifactId>
+        <type>xml</type>
+        <classifier>features</classifier>
+        <version>${version.org.apache.karaf}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.karaf.assemblies.features</groupId>
+        <artifactId>standard</artifactId>
         <type>xml</type>
         <classifier>features</classifier>
         <version>${version.org.apache.karaf}</version>
@@ -1523,6 +1536,11 @@
             <artifactId>solder-logging</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam.spring</groupId>
+        <artifactId>seam-spring-core</artifactId>
+        <version>${version.org.jboss.seam}</version>
       </dependency>
 
       <!-- WARNING: org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-bom must be defined BEFORE org.jboss.arquillian:arquillian-bom -->
