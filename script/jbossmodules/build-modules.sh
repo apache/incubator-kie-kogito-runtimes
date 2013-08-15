@@ -70,7 +70,6 @@ createWebappModule() {
 	if [ -n "$MODULE_RESOURCES" ]; then
 		export IFS=","
 		for res in $MODULE_RESOURCES; do
-		  # echo "mv $JARS_DIR/$res $TMP_DIR/kie-wb/WEB-INF/lib"
 		  mv $JARS_DIR/$res $WAR_DIR/kie-wb/WEB-INF/lib
 		done
 	fi
@@ -80,15 +79,10 @@ createWebappModule() {
 createJbossDeploymentStructureFile() {
 	MODULE_DEPS=`sed '/^\#/d' $WEBAPP_MODULE_FILE | grep "module.dependencies"  | tail -n 1 | sed 's/^.*=//'`
 
-	echo "---------- MODULE DEPS: $MODULE_DEPS"
-
 	MODULES_DEF_STRING=""
 	while read resource; do
-		echo "---------- resource: $resource"		
 		RESOURCE_DEF=`sed -e "s;%MODULE_NAME%;$resource;" $TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE_MODULE`
-		echo "---------- RESOURCE_DEF: $RESOURCE_DEF"
 		MODULES_DEF_STRING="$MODULES_DEF_STRING\n$RESOURCE_DEF"
-		echo "---------- MODULES_DEF_STRING: $MODULES_DEF_STRING"
 	done < $BASE_DIR/modules/$MODULE_DEPS
 
 	# Generate the jboss-deployment-structure.xml from template.
@@ -102,14 +96,6 @@ createModule() {
 	MODULE_DEPS_FILE=$3
 	MODULE_RESOURCES=$4
 	MODULE_PATCHES=$5
-
-	echo "---Create Module---"
-	echo "Name: $MODULE_NAME"
-	echo "Location: $MODULE_LOCATION"
-	echo "Deps file: $MODULE_DEPS_FILE"
-	echo "Resources: $MODULE_RESOURCES"
-	echo "Patches: $MODULE_PATCHES"
-	echo "--- END Create Module---"
 
 	# Setup modules location
 	MODULE_DIST_PATH=$DIST_DIR/modules/system/layers/$MODULE_LOCATION
