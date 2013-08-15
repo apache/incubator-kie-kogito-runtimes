@@ -6,26 +6,35 @@ createModuleXML() {
 	MODULE_PATH=$2
 	MODULE_DEPS_FILE=$3
 	MODULE_RESOURCE=$4
+	
+	# Create the resource-root tags for resource definition.
+	MODULE_RESOURCES_STRING=""
+	pushd .
+	cd $MODULE_PATH/main
+	for i in *.jar
+	do 
+		MODULE_RESOURCES_STRING_2=`sed -e "s;%RESOURCE%;$i;" $TEMPLATE_MODULE_RESOURCE_ROOT`
+		MODULE_RESOURCES_STRING="$MODULE_RESOURCES_STRING\n$MODULE_RESOURCES_STRING_2"
+	done
+	popd
 
-	echo '<?xml version="1.0" encoding="UTF-8"?>' > $MODULE_PATH/main/module.xml
-	echo "<module xmlns=\"urn:jboss:module:1.0\" name=\"$MODULE_NAME\">" >> $MODULE_PATH/main/module.xml
-	echo "  <resources>" >> $MODULE_PATH/main/module.xml
-# Add jar resources	
-find $MODULE_PATH/main/*.jar -type f -printf '    <resource-root path="%f"/>\n' >> $MODULE_PATH/main/module.xml
+	# Add adittional resource.
+	if [[ -n $MODULE_RESOURCE ]] ;then 
+		    MODULE_RESOURCES_STRING_2=`sed -e "s;%RESOURCE%;$MODULE_RESOURCE;" $TEMPLATE_MODULE_RESOURCE_ROOT`
+		MODULE_RESOURCES_STRING="$MODULE_RESOURCES_STRING\n$MODULE_RESOURCES_STRING_2"
+	fi
 
-# Add adittional resource.
-if [[ -n $MODULE_RESOURCE ]] ;then 
-	    echo "    <resource-root path=\"$MODULE_RESOURCE\"/>" >> $MODULE_PATH/main/module.xml
-fi
-	echo "  </resources>">> $MODULE_PATH/main/module.xml
-	echo "  <dependencies>">> $MODULE_PATH/main/module.xml
+	# Create the dependency tags for resource definition.
+	MODULE_DEPS_STRING=""
 	while read module; do
 		if [ -n "$module" ]; then
-		    echo "    <module name=\"$module\" export=\"true\"/>" >> $MODULE_PATH/main/module.xml   
+	       		MODULE_DEPS_STRING_2=`sed -e "s;%DEP%;$module;" $TEMPLATE_MODULE_DEPEDENCY`
+			MODULE_DEPS_STRING="$MODULE_DEPS_STRING\n$MODULE_DEPS_STRING_2"
 		fi
 	done < $MODULE_DEPS_FILE
-	echo "  </dependencies>">> $MODULE_PATH/main/module.xml
-	echo "</module>">> $MODULE_PATH/main/module.xml
+
+	# Generate the final module.xml from template.
+	sed -e "s;%NAME%;$MODULE_NAME;" -e "s;%RESOURCES%;$MODULE_RESOURCES_STRING;" -e "s;%DEPS%;$MODULE_DEPS_STRING;" $TEMPLATE_MODULE > $MODULE_PATH/main/module.xml
 }
 
 fixCDIExtensions() {
@@ -55,9 +64,78 @@ fixCDIExtensions() {
 	popd
 }
 
+createWebappModule() {
+	MODULE_RESOURCES=`sed '/^\#/d' $WEBAPP_MODULE_FILE | grep "module.resources"  | tail -n 1 | sed 's/^.*=//'`
 
+	if [ -n "$MODULE_RESOURCES" ]; then
+		export IFS=","
+		for res in $MODULE_RESOURCES; do
+		  # echo "mv $JARS_DIR/$res $TMP_DIR/kie-wb/WEB-INF/lib"
+		  mv $JARS_DIR/$res $WAR_DIR/kie-wb/WEB-INF/lib
+		done
+	fi
+	
+}
 
-# Program arguments
+createJbossDeploymentStructureFile() {
+	MODULE_DEPS=`sed '/^\#/d' $WEBAPP_MODULE_FILE | grep "module.dependencies"  | tail -n 1 | sed 's/^.*=//'`
+
+	echo "---------- MODULE DEPS: $MODULE_DEPS"
+
+	MODULES_DEF_STRING=""
+	while read resource; do
+		echo "---------- resource: $resource"		
+		RESOURCE_DEF=`sed -e "s;%MODULE_NAME%;$resource;" $TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE_MODULE`
+		echo "---------- RESOURCE_DEF: $RESOURCE_DEF"
+		MODULES_DEF_STRING="$MODULES_DEF_STRING\n$RESOURCE_DEF"
+		echo "---------- MODULES_DEF_STRING: $MODULES_DEF_STRING"
+	done < $BASE_DIR/modules/$MODULE_DEPS
+
+	# Generate the jboss-deployment-structure.xml from template.
+	sed -e "s;%DEPS%;$MODULES_DEF_STRING;" $TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE > $WAR_DIR/kie-wb/WEB-INF/jboss-deployment-structure.xml
+}
+
+	
+createModule() {
+	MODULE_NAME=$1
+	MODULE_LOCATION=$2
+	MODULE_DEPS_FILE=$3
+	MODULE_RESOURCES=$4
+	MODULE_PATCHES=$5
+
+	echo "---Create Module---"
+	echo "Name: $MODULE_NAME"
+	echo "Location: $MODULE_LOCATION"
+	echo "Deps file: $MODULE_DEPS_FILE"
+	echo "Resources: $MODULE_RESOURCES"
+	echo "Patches: $MODULE_PATCHES"
+	echo "--- END Create Module---"
+
+	# Setup modules location
+	MODULE_DIST_PATH=$DIST_DIR/modules/system/layers/$MODULE_LOCATION
+
+	# Create structure
+	mkdir  -p $MODULE_DIST_PATH/main
+
+	# Add jars
+	export IFS=","
+	for res in $MODULE_RESOURCES; do
+	  mv $JARS_DIR/$res $MODULE_DIST_PATH/main
+	done
+
+	# Module META-INF patches.
+	METAINF=""
+	if [ -n "$MODULE_PATCHES" ]; then
+		mkdir $MODULE_DIST_PATH/main/META-INF
+		cp -r $BASE_DIR/patches/$MODULE_PATCHES $MODULE_DIST_PATH/main/META-INF
+		METAINF="META-INF"
+	fi
+
+	# Create the module descriptor.
+	createModuleXML "$MODULE_NAME" $MODULE_DIST_PATH $BASE_DIR/modules/$MODULE_DEPS_FILE $METAINF	
+}
+
+# Program arguments.
 if [ $# -ne 2 ];
 then
   echo "Missing arguments"
@@ -65,16 +143,23 @@ then
   exit 65
 fi
 
-
+# Initialize program variables.
 BASE_DIR=`pwd`
 DIST_DIR=$BASE_DIR/dist
 TMP_DIR=$BASE_DIR/tmp
+WAR_DIR=$TMP_DIR/war
+JARS_DIR=$TMP_DIR/jars
+TEMPLATES_DIR=$BASE_DIR/templates
+WEBAPP_MODULE_FILE=$BASE_DIR/modules/webapp.module
+MODULE_LIST_FILE=$BASE_DIR/modules/modules.list
+TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE=$TEMPLATES_DIR/jboss-deployment-structure.template
+TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE_MODULE=$TEMPLATES_DIR/jboss-deployment-structure-module.template
+TEMPLATE_MODULE=$TEMPLATES_DIR/module.template
+TEMPLATE_MODULE_RESOURCE_ROOT=$TEMPLATES_DIR/module-resource-root.template
+TEMPLATE_MODULE_DEPEDENCY=$TEMPLATES_DIR/module-dependency.template
 
-echo 'BASE_DIR' $BASE_DIR
-
-#DASHBUILDER_WAR=$BASE_DIR/jbpm-dashbuilder-jboss-as7.war
+# Initialize program arguments.
 DASHBUILDER_WAR=$2
-#KIE_WB_WAR=$BASE_DIR/kie-wb.war
 KIE_WB_WAR=$1
 
 if [ ! -f $DASHBUILDER_WAR ];
@@ -92,405 +177,103 @@ fi
 echo "Base directory is: $BASE_DIR"
 echo "Creating distribution in: $DIST_DIR"
 
-# Setup modules locations
-MODULE_LIB=$DIST_DIR/modules/system/layers/bpms/org/kie/lib
-MODULE_KIE=$DIST_DIR/modules/system/layers/bpms/org/kie
-MODULE_JBPM=$DIST_DIR/modules/system/layers/bpms/org/jbpm
-MODULE_DROOLS=$DIST_DIR/modules/system/layers/bpms/org/drools
-# create modules 3rd party * kie-commons
-MODULE_CAMEL=$DIST_DIR/modules/system/layers/bpms/org/apache/camel
-MODULE_COMMONS_MATH=$DIST_DIR/modules/system/layers/bpms/org/apache/commons/math
-MODULE_HELIX=$DIST_DIR/modules/system/layers/bpms/org/apache/helix
-MODULE_LUCENE=$DIST_DIR/modules/system/layers/bpms/org/apache/lucene
-MODULE_JGIT=$DIST_DIR/modules/system/layers/bpms/org/eclipse/jgit
-MODULE_ZOOKEEPER=$DIST_DIR/modules/system/layers/bpms/org/apache/zookeeper
-# create modules 3rd party * drools
-MODULE_AETHER=$DIST_DIR/modules/system/layers/bpms/org/sonatype/aether
-MODULE_BATIK=$DIST_DIR/modules/system/layers/bpms/org/apache/batik 
-MODULE_ANT=$DIST_DIR/modules/system/layers/bpms/org/apache/ant 
-MODULE_MAVEN=$DIST_DIR/modules/system/layers/bpms/org/apache/maven
-MODULE_WAGON=$DIST_DIR/modules/system/layers/bpms/org/apache/maven/wagon
-MODULE_MVEL=$DIST_DIR/modules/system/layers/bpms/org/mvel 
-MODULE_sonPLEXUS=$DIST_DIR/modules/system/layers/bpms/org/sonatype/plexus 
-MODULE_codePLEXUS=$DIST_DIR/modules/system/layers/bpms/org/codehouse/plexus 
-MODULE_POI=$DIST_DIR/modules/system/layers/bpms/org/apache/poi 
-MODULE_PROTOBUF=$DIST_DIR/modules/system/layers/bpms/com/google/protobuf 
-MODULE_SISU=$DIST_DIR/modules/system/layers/bpms/org/sonatype/sisu
-MODULE_sonaMAVEN=$DIST_DIR/modules/system/layers/bpms/org/sonatype/maven
-# create modules 3rd party * jbpm
-MODULE_COMPRESS=$DIST_DIR/modules/system/layers/bpms/org/apache/commons/compress
-MODULE_EXEC=$DIST_DIR/modules/system/layers/bpms/org/apache/commons/exec
-MODULE_NET=$DIST_DIR/modules/system/layers/bpms/org/apache/commons/net
-MODULE_VFS=$DIST_DIR/modules/system/layers/bpms/org/apache/commons/vfs
-MODULE_SOLDER=$DIST_DIR/modules/system/layers/bpms/org/jboss/solder
-
 echo '**** Cleaning output dirs ****'
 rm -rf $DIST_DIR
 rm -rf $TMP_DIR
 
 mkdir -p $DIST_DIR
 mkdir -p $TMP_DIR
+mkdir -p $JARS_DIR
+mkdir -p $WAR_DIR
 
-# Create structure
-mkdir  -p $MODULE_LIB/main
-mkdir  -p $MODULE_KIE/main
-mkdir  -p $MODULE_JBPM/main
-mkdir  -p $MODULE_DROOLS/main
-mkdir  -p $MODULE_CAMEL/main
-mkdir  -p $MODULE_COMMONS_MATH/main
-mkdir  -p $MODULE_HELIX/main
-mkdir  -p $MODULE_LUCENE/main
-mkdir  -p $MODULE_JGIT/main
-mkdir  -p $MODULE_ZOOKEEPER/main
-mkdir  -p $MODULE_AETHER/main
-mkdir  -p $MODULE_BATIK/main
-mkdir  -p $MODULE_ANT/main
-mkdir  -p $MODULE_MAVEN/main
-mkdir  -p $MODULE_MVEL/main
-mkdir  -p $MODULE_sonPLEXUS/main
-mkdir  -p $MODULE_codePLEXUS/main
-mkdir  -p $MODULE_POI/main
-mkdir  -p $MODULE_PROTOBUF/main 
-mkdir  -p $MODULE_SISU/main
-mkdir  -p $MODULE_sonaMAVEN/main
-mkdir  -p $MODULE_WAGON/main
-mkdir  -p $MODULE_COMPRESS/main
-mkdir  -p $MODULE_EXEC/main
-mkdir  -p $MODULE_NET/main
-mkdir  -p $MODULE_VFS/main
-mkdir  -p $MODULE_SOLDER/main
-
+# Create dist deployments strcuture.
 mkdir -p $DIST_DIR/standalone/deployments
+
+mkdir -p $DIST_DIR/modules
+cp $BASE_DIR/layers.conf $DIST_DIR/modules
 
 # Unzip original kie-wb
 #
-rm -rf $TMP_DIR
-mkdir -p $TMP_DIR/kie-wb
-cd $TMP_DIR/kie-wb
+rm -rf $WAR_DIR
+mkdir -p $WAR_DIR/kie-wb
+cd $WAR_DIR/kie-wb
 jar xf $KIE_WB_WAR
 cd $BASE_DIR
-
 
 #
 # Clean unrequired libs
 #
-
-rm $TMP_DIR/kie-wb/WEB-INF/lib/jsp-api*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/jsp-api*.jar deleted"
-rm $TMP_DIR/kie-wb/WEB-INF/lib/commons-bean*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/commons-bean*.jar deleted"
-rm $TMP_DIR/kie-wb/WEB-INF/lib/commons-logging*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/commons-logging*.jar deleted"
-rm $TMP_DIR/kie-wb/WEB-INF/lib/jaxb*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/jaxb*.jar deleted"
-rm $TMP_DIR/kie-wb/WEB-INF/lib/jaxrs-api-*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/jaxrs-api-*.jar deleted"
-rm $TMP_DIR/kie-wb/WEB-INF/lib/jboss-intercepto*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/jboss-intercepto*.jar deleted"
-rm $TMP_DIR/kie-wb/WEB-INF/lib/jta*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/jta*.jar deleted"
-rm $TMP_DIR/kie-wb/WEB-INF/lib/log4j*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/log4j*.jar deleted"
-rm $TMP_DIR/kie-wb/WEB-INF/lib/xmlschema-core*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/xmlschema-core*.jar deleted"
-rm $TMP_DIR/kie-wb/WEB-INF/lib/stax-api*.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/stax-api*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/jsp-api*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/jsp-api*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/commons-bean*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/commons-bean*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/commons-logging*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/commons-logging*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/jaxb*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/jaxb*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/jaxrs-api-*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/jaxrs-api-*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/jboss-intercepto*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/jboss-intercepto*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/jta*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/jta*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/log4j*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/log4j*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/xmlschema-core*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/xmlschema-core*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/stax-api*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/stax-api*.jar deleted"
 ## Duplicated!!!
-rm $TMP_DIR/kie-wb/WEB-INF/lib/freemarker-2.3.8.jar
-echo $TMP_DIR"/kie-wb/WEB-INF/lib/freemarker-2.3.8.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/freemarker-2.3.8.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/freemarker-2.3.8.jar deleted"
+
+# Extract the jars to a temp directory.
+mv $WAR_DIR/kie-wb/WEB-INF/lib/*.jar $JARS_DIR
+
+# Create webapp dynamic module.
+echo "Creating webapp dynamic module"
+createWebappModule
+
+# Create static modules.
+echo "Creating static modules..."
+while read module; do
+	if [ -n "$module" ]; then
+
+		MODULE_FILE="$BASE_DIR/modules/$module.module"
+		MODULE_NAME=`sed '/^\#/d' $MODULE_FILE | grep "module.name"  | tail -n 1 | sed 's/^.*=//'`
+		MODULE_RESOURCES=`sed '/^\#/d' $MODULE_FILE | grep "module.resources"  | tail -n 1 | sed 's/^.*=//'`
+		MODULE_LOCATION=`sed '/^\#/d' $MODULE_FILE | grep "module.location"  | tail -n 1 | sed 's/^.*=//'`
+		MODULE_DEPS=`sed '/^\#/d' $MODULE_FILE | grep "module.dependencies"  | tail -n 1 | sed 's/^.*=//'`
+		MODULE_PATCHES_METAINF=`sed '/^\#/d' $MODULE_FILE | grep "module.patches.metainf"  | tail -n 1 | sed 's/^.*=//'`
 
 
-# ------------------------------------------------------------------------------------------
-# Move jars around
-# ------------------------------------------------------------------------------------------
-echo '***** Creating layer *****'
+		echo "Creating static module: $MODULE_NAME"
+		createModule "$MODULE_NAME" "$MODULE_LOCATION" $MODULE_DEPS "$MODULE_RESOURCES" "$MODULE_PATCHES_METAINF"
 
-mv $TMP_DIR/kie-wb/WEB-INF/lib/*.jar $MODULE_LIB/main
+	fi
+done < $MODULE_LIST_FILE
 
-# KIE WORKBENCH (WEB-INF/lib)
-mv $MODULE_LIB/main/kie-wb*.jar            $TMP_DIR/kie-wb/WEB-INF/lib
-mv $MODULE_LIB/main/drools-wb*.jar         $TMP_DIR/kie-wb/WEB-INF/lib
-mv $MODULE_LIB/main/drools-workbench*.jar  $TMP_DIR/kie-wb/WEB-INF/lib
-mv $MODULE_LIB/main/jbpm-console*.jar      $TMP_DIR/kie-wb/WEB-INF/lib
-mv $MODULE_LIB/main/jbpm-designer*.jar     $TMP_DIR/kie-wb/WEB-INF/lib
-mv $MODULE_LIB/main/jbpm-form-modeler*.jar $TMP_DIR/kie-wb/WEB-INF/lib
-mv $MODULE_LIB/main/uberfire-*.jar         $TMP_DIR/kie-wb/WEB-INF/lib
-mv $MODULE_LIB/main/guvnor-*.jar           $TMP_DIR/kie-wb/WEB-INF/lib
-mv $MODULE_LIB/main/errai-*.jar            $TMP_DIR/kie-wb/WEB-INF/lib
-mv $MODULE_LIB/main/taglib*.jar            $TMP_DIR/kie-wb/WEB-INF/lib
-
-
-# KIE / JBPM / DROOLS
-mv $MODULE_LIB/main/kie-*.jar              $MODULE_KIE/main
-mv $MODULE_LIB/main/kieora*.jar            $MODULE_KIE/main
-mv $MODULE_LIB/main/jbpm-*.jar             $MODULE_JBPM/main
-mv $MODULE_LIB/main/drools-*.jar           $MODULE_DROOLS/main
-# JBPM PATCH
-mkdir $MODULE_JBPM/main/META-INF
-cp $BASE_DIR/patches/modules/jbpm/META-INF/* $MODULE_JBPM/main/META-INF
-
-# new modules KIE dependencies
-
-mv $MODULE_LIB/main/camel-core-*.jar               $MODULE_CAMEL/main
-mv $MODULE_LIB/main/camel-josql-*.jar              $MODULE_CAMEL/main
-mv $MODULE_LIB/main/commons-math-*.jar             $MODULE_COMMONS_MATH/main
-mv $MODULE_LIB/main/helix-core-*-incubating.jar    $MODULE_HELIX/main
-mv $MODULE_LIB/main/lucene-analyzers-common-*.jar  $MODULE_LUCENE/main
-mv $MODULE_LIB/main/lucene-codecs-*.jar            $MODULE_LUCENE/main
-mv $MODULE_LIB/main/lucene-core-*.jar              $MODULE_LUCENE/main
-mv $MODULE_LIB/main/lucene-queries-*.jar           $MODULE_LUCENE/main
-mv $MODULE_LIB/main/lucene-queryparser-*.jar       $MODULE_LUCENE/main
-mv $MODULE_LIB/main/lucene-sandbox-*.jar           $MODULE_LUCENE/main
-mv $MODULE_LIB/main/org.eclipse.jgit-*.jar         $MODULE_JGIT/main
-mv $MODULE_LIB/main/zookeeper-*.jar                $MODULE_ZOOKEEPER/main
-
-# new modules DROOLS dependencies
-
-mv $MODULE_LIB/main/aether-api-*.jar                   $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-connector-file-*.jar        $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-connector-wagon-*.jar       $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-impl-*.jar                  $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-spi-*.jar                   $MODULE_AETHER/main
-mv $MODULE_LIB/main/aether-util-*.jar                  $MODULE_AETHER/main
-mv $MODULE_LIB/main/batik-*.jar                        $MODULE_BATIK/main
-mv $MODULE_LIB/main/ant-*.jar                          $MODULE_ANT/main
-mv $MODULE_LIB/main/ant-launcher-*.jar                 $MODULE_ANT/main
-mv $MODULE_LIB/main/maven-aether-provider-*.jar        $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-artifact-*.jar               $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-compat-*.jar                 $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-core-*.jar                   $MODULE_MAVEN/main  
-mv $MODULE_LIB/main/maven-model-*.jar                  $MODULE_MAVEN/main   
-mv $MODULE_LIB/main/maven-model-builder-*.jar          $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-plugin-api-*.jar             $MODULE_MAVEN/main 
-mv $MODULE_LIB/main/maven-repository-metadata-*.jar    $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-settings-*.jar               $MODULE_MAVEN/main
-mv $MODULE_LIB/main/maven-settings-builder-*.jar       $MODULE_MAVEN/main
-mv $MODULE_LIB/main/mvel2-*.Final.jar                  $MODULE_MVEL/main
-mv $MODULE_LIB/main/plexus-cipher-*.jar                $MODULE_sonPLEXUS/main
-mv $MODULE_LIB/main/plexus-classworlds-*.jar           $MODULE_codePLEXUS/main
-mv $MODULE_LIB/main/plexus-component-annotations-*.jar $MODULE_codePLEXUS/main
-mv $MODULE_LIB/main/plexus-interpolation-*.jar         $MODULE_codePLEXUS/main
-mv $MODULE_LIB/main/plexus-utils-*.jar                 $MODULE_codePLEXUS/main
-mv $MODULE_LIB/main/poi-*.jar                          $MODULE_POI/main 
-mv $MODULE_LIB/main/poi-ooxml-*.jar                    $MODULE_POI/main
-mv $MODULE_LIB/main/poi-ooxml-schemas-*.jar            $MODULE_POI/main 
-mv $MODULE_LIB/main/protobuf-java-*.jar                $MODULE_PROTOBUF/main
-mv $MODULE_LIB/main/sisu-guice-*-no_aop.jar            $MODULE_SISU/main
-mv $MODULE_LIB/main/sisu-inject-bean-*.jar             $MODULE_SISU/main
-mv $MODULE_LIB/main/wagon-provider-api-*.jar           $MODULE_WAGON/main
-mv $MODULE_LIB/main/wagon-ahc-*.jar                    $MODULE_sonaMAVEN/main
-
-# new modules JBPM dependencies
-
-mv $MODULE_LIB/main/commons-compress-*.jar            $MODULE_COMPRESS/main
-mv $MODULE_LIB/main/commons-exec-*.jar                $MODULE_EXEC/main
-mv $MODULE_LIB/main/commons-net-*.jar                 $MODULE_NET/main
-mv $MODULE_LIB/main/commons-vfs-*.jar                 $MODULE_VFS/main
-mv $MODULE_LIB/main/sisu-inject-plexus-*.jar          $MODULE_SISU/main
-mv $MODULE_LIB/main/solder-api-*.Final.jar            $MODULE_SOLDER/main
-mv $MODULE_LIB/main/solder-impl-*.Final.jar           $MODULE_SOLDER/main 
-mv $MODULE_LIB/main/solder-logging-*.Final.jar        $MODULE_SOLDER/main
-#mkdir $MODULE_SOLDER/main/META-INF
-#cp $BASE_DIR/patches/modules/solder/META-INF/* $MODULE_SOLDER/main/META-INF
-
-
-# ------------------------------------------------------------------------------------------
-# Generate modules.xml
-# ------------------------------------------------------------------------------------------
-
-
-#
-# Generate library module for drools
-#
-MODULE_DROOLS_DEPS=./dependencies/drools.dependencies
-createModuleXML "org.drools" $MODULE_DROOLS $MODULE_DROOLS_DEPS
-
-#
-# Generate library module for jbpm
-#
-MODULE_JBPM_DEPS=./dependencies/jbpm.dependencies
-createModuleXML "org.jbpm" $MODULE_JBPM $MODULE_JBPM_DEPS "META-INF"
-
-#
-# Generate library module for kie
-#
-MODULE_KIE_DEPS=./dependencies/kie.dependencies
-createModuleXML "org.kie" $MODULE_KIE $MODULE_KIE_DEPS
-
-# 
-# Generate library module for lib
-#
-MODULE_LIB_DEPS=./dependencies/kie-lib.dependencies
-createModuleXML "org.kie.lib" $MODULE_LIB $MODULE_LIB_DEPS
-
-
-#
-# Generate library modules for other dependiencies
-#
-
-
-#
-# Generate library module for aether
-#
-MODULE_AETHER_DEPS=./dependencies/aether.dependencies
-createModuleXML "org.sonatype.aether" $MODULE_AETHER $MODULE_AETHER_DEPS
-
-#
-# Generate library module for aether
-#
-MODULE_AETHER_DEPS=./dependencies/batik.dependencies
-createModuleXML "org.apache.batik" $MODULE_BATIK $MODULE_BATIK_DEPS
-
-#
-# Generate library module for ant
-#
-MODULE_ANT_DEPS=./dependencies/ant.dependencies
-createModuleXML "org.apache.ant" $MODULE_ANT $MODULE_ANT_DEPS
-
-
-#
-# Generate library module for camel
-#
-MODULE_CAMEL_DEPS=./dependencies/camel.dependencies
-createModuleXML "org.apache.camel" $MODULE_CAMEL $MODULE_CAMEL_DEPS
-
-#
-# Generate library module for commons.compress
-#
-MODULE_COMPRESS_DEPS=./dependencies/compress.dependencies
-createModuleXML "org.apache.commons.compress" $MODULE_COMPRESS $MODULE_COMPRESS_DEPS
-
-
-#
-# Generate library module for commons.exec
-#
-MODULE_exec_DEPS=./dependencies/exec.dependencies
-createModuleXML "org.apache.commons.exec" $MODULE_EXEC $MODULE_exec_DEPS
-
-#
-# Generate library module for commons.math
-#
-MODULE_CMATH_DEPS=./dependencies/commons_math.dependencies
-createModuleXML "org.apache.commons.math" $MODULE_COMMONS_MATH $MODULE_CMATH_DEPS
-
-
-#
-# Generate library module for commons.net
-#
-MODULE_net_DEPS=./dependencies/net.dependencies
-createModuleXML "org.apache.commons.net" $MODULE_NET $MODULE_net_DEPS
-
-#
-# Generate library module for commons.vfs
-#
-MODULE_vfs_DEPS=./dependencies/vfs.dependencies
-createModuleXML "org.apache.commons.vfs" $MODULE_VFS $MODULE_vfs_DEPS
-
-
-#
-# Generate library module for helix
-#
-MODULE_HELIX_DEPS=./dependencies/helix.dependencies
-createModuleXML "org.apache.helix" $MODULE_HELIX $MODULE_HELIX_DEPS
-
-#
-# Generate library module for jgit
-#
-MODULE_JGIT_DEPS=./dependencies/jgit.dependencies
-createModuleXML "org.eclipse.jgit" $MODULE_JGIT $MODULE_JGIT_DEPS
-
-#
-# Generate library module for lucene
-#
-MODULE_LUCENE_DEPS=./dependencies/lucene.dependencies
-createModuleXML "org.apache.lucene" $MODULE_LUCENE $MODULE_LUCENE_DEPS
-
-#
-# Generate library module for maven
-#
-MODULE_MAVEN_DEPS=./dependencies/maven.dependencies
-createModuleXML "org.apache.maven" $MODULE_MAVEN $MODULE_MAVEN_DEPS
-
-#
-# Generate library module for sonatype.maven
-#
-MODULE_SMAVEN_DEPS=./dependencies/sonatype_maven.dependencies
-createModuleXML "org.sonatype.maven" $MODULE_sonaMAVEN $MODULE_SMAVEN_DEPS
-
-#
-# Generate library module for mvel
-#
-MODULE_MVEL_DEPS=./dependencies/mvel.dependencies
-createModuleXML "org.mvel" $MODULE_MVEL $MODULE_MVEL_DEPS
-
-#
-# Generate library module for sonatype.plexus
-#
-MODULE_SPLEXUS_DEPS=./dependencies/sonatype_plexus.dependencies
-createModuleXML "org.sonatype.plexus" $MODULE_sonPLEXUS $MODULE_SPLEXUS_DEPS
-
-#
-# Generate library module for codehouse.plexus
-#
-MODULE_CPLEXUS_DEPS=./dependencies/codehouse_plexus.dependencies
-createModuleXML "org.codehouse.plexus" $MODULE_codePLEXUS $MODULE_CPLEXUS_DEPS
-
-#
-# Generate library module for poi
-#
-MODULE_POI_DEPS=./dependencies/poi.dependencies
-createModuleXML "org.apache.poi" $MODULE_POI $MODULE_POI_DEPS
-
-#
-# Generate library module for protobuf
-#
-MODULE_PBUF_DEPS=./dependencies/protobuf.dependencies
-createModuleXML "com.google.protobuf" $MODULE_PROTOBUF $MODULE_PBUF_DEPS
-
-#
-# Generate library module for sisu
-#
-MODULE_SISU_DEPS=./dependencies/sisu.dependencies
-createModuleXML "org.sonatype.sisu" $MODULE_SISU $MODULE_SISU_DEPS
-
-#
-# Generate library module for solder
-#
-MODULE_solder_DEPS=./dependencies/solder.dependencies
-#createModuleXML "org.jboss.solder" $MODULE_SOLDER $MODULE_solder_DEPS "META-INF"
-createModuleXML "org.jboss.solder" $MODULE_SOLDER $MODULE_solder_DEPS
-
-#
-# Generate library module for wagon
-#
-MODULE_WAGON_DEPS=./dependencies/wagon.dependencies
-createModuleXML "org.apache.maven.wagon" $MODULE_WAGON $MODULE_WAGON_DEPS
-
-#
-# Generate library module for zookeeper
-#
-MODULE_ZOOKEEPER_DEPS=./dependencies/zookeeper.dependencies
-createModuleXML "org.apache.zookeeper" $MODULE_ZOOKEEPER $MODULE_ZOOKEEPER_DEPS
-
-cp $BASE_DIR/layers.conf $DIST_DIR/modules
 
 #
 # Create new WAR with dependencies to created modules
 echo '**** Generating new KIE-WB WAR ****'
-cd $TMP_DIR/kie-wb
+cd $WAR_DIR/kie-wb
 
-cp $BASE_DIR/jboss-deployment-structure.xml $TMP_DIR/kie-wb/WEB-INF
+# Create and add the jboss-deployment-structure.xml to the generated WAR artifact.
+createJbossDeploymentStructureFile
 
-echo '   Applying temporary fixes....'
+# TODO: Check jars existing on tmp/jars -> They must be in a module or in the war.
 
+
+echo 'Applying temporary fixes....'
 #
 # Workaround until solder problem is solved
 #
-mkdir $TMP_DIR/kie-wb/META-INF/services
-fixCDIExtensions  $BASE_DIR/patches/cdi-extensions $TMP_DIR/kie-wb/META-INF/services
+mkdir $WAR_DIR/kie-wb/META-INF/services
+fixCDIExtensions  $BASE_DIR/patches/cdi-extensions $WAR_DIR/kie-wb/META-INF/services
 
 # Workaround Solder filter
-cp $BASE_DIR/patches/web.xml $TMP_DIR/kie-wb/WEB-INF
+cp $BASE_DIR/patches/web.xml $WAR_DIR/kie-wb/WEB-INF
 
 # Generate the resulting WAR file.
 jar cf $DIST_DIR/standalone/deployments/kie-wb.war *

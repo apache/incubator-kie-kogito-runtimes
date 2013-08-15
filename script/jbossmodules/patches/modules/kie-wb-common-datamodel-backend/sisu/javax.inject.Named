@@ -1,0 +1,2 @@
+org.kie.workbench.common.services.datamodel.backend.server.cache.LRUProjectDataModelOracleCache
+org.kie.workbench.common.services.datamodel.backend.server.cache.LRUDataModelOracleCache

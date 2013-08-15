@@ -1,0 +1,4 @@
+module.name=org.kie
+module.dependencies=kie.dependencies
+module.resources=kie-*.jar,kieora*.jar
+module.location=bpms/org/kie

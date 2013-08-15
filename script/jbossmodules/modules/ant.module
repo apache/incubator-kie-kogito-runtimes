@@ -1,0 +1,4 @@
+module.name=org.apache.ant
+module.dependencies=ant.dependencies
+module.resources=ant-*.jar,ant-launcher-*.jar
+module.location=bpms/org/apache/ant

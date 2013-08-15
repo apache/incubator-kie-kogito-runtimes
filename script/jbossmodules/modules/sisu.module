@@ -1,0 +1,4 @@
+module.name=org.sonatype.sisu
+module.dependencies=sisu.dependencies
+module.resources=sisu-guice-*-no_aop.jar,sisu-inject-bean-*.jar,sisu-inject-plexus-*.jar
+module.location=bpms/org/sonatype/sisu

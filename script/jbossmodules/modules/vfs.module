@@ -1,0 +1,4 @@
+module.name=org.apache.commons.vfs
+module.dependencies=vfs.dependencies
+module.resources=commons-vfs-*.jar
+module.location=bpms/org/apache/commons/vfs

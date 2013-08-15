@@ -1,0 +1,4 @@
+module.name=org.drools
+module.dependencies=drools.dependencies
+module.resources=drools-*.jar
+module.location=bpms/org/drools

@@ -1,0 +1,4 @@
+module.name=org.apache.batik
+module.dependencies=batik.dependencies
+module.resources=batik-*.jar
+module.location=bpms/org/apache/batik

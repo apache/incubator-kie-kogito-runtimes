@@ -1,0 +1,4 @@
+module.name=org.mvel
+module.dependencies=mvel.dependencies
+module.resources=mvel2-*.Final.jar
+module.location=bpms/org/mvel

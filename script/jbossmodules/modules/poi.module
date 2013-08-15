@@ -1,0 +1,4 @@
+module.name=org.apache.poi
+module.dependencies=poi.dependencies
+module.resources=poi-*.jar,poi-ooxml-*.jar,poi-ooxml-schemas-*.jar
+module.location=bpms/org/apache/poi

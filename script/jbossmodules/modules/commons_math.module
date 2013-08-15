@@ -1,0 +1,4 @@
+module.name=org.apache.commons.math
+module.dependencies=commons_math.dependencies
+module.resources=commons-math-*.jar
+module.location=bpms/org/apache/commons/math
