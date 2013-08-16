@@ -132,7 +132,7 @@
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <version.org.jboss.errai>2.3.2.Final</version.org.jboss.errai>
     <version.org.jboss.ironjacamar>1.0.17.Final</version.org.jboss.ironjacamar>
-    <version.org.jboss.logging>3.1.0.GA</version.org.jboss.logging>
+    <version.org.jboss.logging>3.1.2.GA</version.org.jboss.logging>
     <version.org.jboss.netty>3.2.6.Final</version.org.jboss.netty>
     <version.org.jboss.resteasy>2.3.6.Final</version.org.jboss.resteasy>
     <version.org.jboss.seam.security>3.2.0.Final</version.org.jboss.seam.security>
