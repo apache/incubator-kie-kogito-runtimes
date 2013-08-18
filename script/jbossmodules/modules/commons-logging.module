@@ -1,0 +1,4 @@
+module.name=org.apache.commons.logging
+module.dependencies=commons-logging.dependencies
+module.resources=commons-logging-*.jar
+module.location=bpms/org/apache/commons/logging

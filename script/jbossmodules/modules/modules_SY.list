@@ -25,3 +25,12 @@ commons-vfs
 wagon
 zookeeper
 batik
+commons-httpclient
+commons-digester
+commons-fileupload
+commons-jxpath
+commons-logging
+commons-validator
+quartz
+junit
+apache-xmlbeans

@@ -81,8 +81,10 @@ createJbossDeploymentStructureFile() {
 
 	MODULES_DEF_STRING=""
 	while read resource; do
-		RESOURCE_DEF=`sed -e "s;%MODULE_NAME%;$resource;" $TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE_MODULE`
-		MODULES_DEF_STRING="$MODULES_DEF_STRING\n$RESOURCE_DEF"
+		if [ -n "$resource" ]; then
+			RESOURCE_DEF=`sed -e "s;%MODULE_NAME%;$resource;" $TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE_MODULE`
+			MODULES_DEF_STRING="$MODULES_DEF_STRING\n$RESOURCE_DEF"
+		fi
 	done < $BASE_DIR/modules/$MODULE_DEPS
 
 	# Generate the jboss-deployment-structure.xml from template.
@@ -193,8 +195,8 @@ rm $WAR_DIR/kie-wb/WEB-INF/lib/jsp-api*.jar
 echo $WAR_DIR"/kie-wb/WEB-INF/lib/jsp-api*.jar deleted"
 rm $WAR_DIR/kie-wb/WEB-INF/lib/commons-bean*.jar
 echo $WAR_DIR"/kie-wb/WEB-INF/lib/commons-bean*.jar deleted"
-rm $WAR_DIR/kie-wb/WEB-INF/lib/commons-logging*.jar
-echo $WAR_DIR"/kie-wb/WEB-INF/lib/commons-logging*.jar deleted"
+#rm $WAR_DIR/kie-wb/WEB-INF/lib/commons-logging*.jar
+#echo $WAR_DIR"/kie-wb/WEB-INF/lib/commons-logging*.jar deleted"
 rm $WAR_DIR/kie-wb/WEB-INF/lib/jaxb*.jar
 echo $WAR_DIR"/kie-wb/WEB-INF/lib/jaxb*.jar deleted"
 rm $WAR_DIR/kie-wb/WEB-INF/lib/jaxrs-api-*.jar

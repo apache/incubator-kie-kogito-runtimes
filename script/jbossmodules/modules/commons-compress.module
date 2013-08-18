@@ -1,4 +1,4 @@
 module.name=org.apache.commons.compress
-module.dependencies=compress.dependencies
+module.dependencies=commons-compress.dependencies
 module.resources=commons-compress-*.jar
 module.location=bpms/org/apache/commons/compress

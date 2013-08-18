@@ -1,0 +1,4 @@
+module.name=org.apache.commons.httpclient
+module.dependencies=commons-httpclient.dependencies
+module.resources=commons-httpclient-*.jar
+module.location=bpms/org/apache/commons/httpclient

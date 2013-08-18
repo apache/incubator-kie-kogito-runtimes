@@ -1,0 +1,4 @@
+module.name=org.junit
+module.dependencies=junit.dependencies
+module.resources=junit-*.jar
+module.location=bpms/org/junit

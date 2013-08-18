@@ -1,4 +1,4 @@
 module.name=org.apache.maven
 module.dependencies=maven.dependencies
-module.resources=maven-aether-provider-*.jar,maven-artifact-*.jar,maven-compat-*.jar,maven-core-*.jar,maven-model-*.jar,maven-model-builder-*.jar,maven-plugin-api-*.jar,maven-repository-metadata-*.jar,maven-settings-*.jar,maven-settings-builder-*.jar
+module.resources=maven-aether-provider-*.jar,maven-artifact-*.jar,maven-compat-*.jar,maven-core-*.jar,maven-model-*.jar,maven-plugin-api-*.jar,maven-repository-metadata-*.jar,maven-settings-*.jar
 module.location=bpms/org/apache/maven
