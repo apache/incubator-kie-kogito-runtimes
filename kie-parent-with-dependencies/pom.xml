@@ -67,7 +67,7 @@
     <version.javax.mail>1.4.5</version.javax.mail>
     <version.javax.security.jacc>1.4</version.javax.security.jacc>
     <version.javax.servlet>2.5</version.javax.servlet>
-    <version.javax.servlet.jsp>2.0</version.javax.servlet.jsp>
+    <version.javax.servlet.jsp>2.2</version.javax.servlet.jsp>
     <version.javax.transaction>1.1</version.javax.transaction>
     <version.javax.ws.rs>1.1.1</version.javax.ws.rs>
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
@@ -647,7 +647,7 @@
         <version>${version.javax.servlet}</version>
       </dependency>
       <dependency>
-        <groupId>javax.servlet</groupId>
+        <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
         <version>${version.javax.servlet.jsp}</version>
       </dependency>
@@ -1058,7 +1058,6 @@
         <artifactId>poi</artifactId>
         <version>${version.org.apache.poi}</version>
       </dependency>
-
       <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml</artifactId>
