@@ -71,7 +71,6 @@
     <version.javax.transaction>1.1</version.javax.transaction>
     <version.javax.ws.rs>1.1.1</version.javax.ws.rs>
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
-    <version.jbpt>0.1.0</version.jbpt>
     <version.jivesoftware.smack>3.1.0</version.jivesoftware.smack>
     <version.joda-time>1.6.2</version.joda-time>
     <version.jsr94>1.1</version.jsr94>
@@ -157,7 +156,6 @@
     <version.org.springframework>3.0.7.RELEASE</version.org.springframework>
     <version.org.springframework.osgi>1.2.1</version.org.springframework.osgi>
     <version.org.subethamail>1.2</version.org.subethamail>
-    <version.org.supercsv>1.52</version.org.supercsv>
     <version.org.xmappr>0.9.3</version.org.xmappr>
     <version.org.yaml.snakeyaml>1.8</version.org.yaml.snakeyaml>
     <version.postgresql>8.4-702.jdbc4</version.postgresql>
@@ -677,12 +675,6 @@
         <groupId>javax.xml.stream</groupId>
         <artifactId>stax-api</artifactId>
         <version>${version.javax.xml.stream.stax}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>jbpt</groupId>
-        <artifactId>jbpt</artifactId>
-        <version>${version.jbpt}</version>
       </dependency>
 
       <dependency>
@@ -1800,12 +1792,6 @@
         <groupId>org.subethamail</groupId>
         <artifactId>subethasmtp-wiser</artifactId>
         <version>${version.org.subethamail}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.supercsv</groupId>
-        <artifactId>SuperCSV</artifactId>
-        <version>${version.org.supercsv}</version>
       </dependency>
 
       <dependency>
