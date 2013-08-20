@@ -61,7 +61,6 @@
     <version.javax.el>1.2</version.javax.el>
     <version.javax.enterprise.cdi>1.0-SP4</version.javax.enterprise.cdi>
     <version.javax.inject>1</version.javax.inject>
-    <version.javax.javaee-api>6.0</version.javax.javaee-api>
     <version.javax.jms>1.1</version.javax.jms>
     <version.javax.mail>1.4.5</version.javax.mail>
     <version.javax.security.jacc>1.4</version.javax.security.jacc>
@@ -591,11 +590,6 @@
         <version>${version.dom4j}</version>
       </dependency>
 
-      <dependency><!-- TODO remove me -->
-        <groupId>javax</groupId>
-        <artifactId>javaee-api</artifactId>
-        <version>${version.javax.javaee-api}</version>
-      </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
