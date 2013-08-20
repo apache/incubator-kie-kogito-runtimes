@@ -60,7 +60,6 @@
     <version.javax.ejb>3.0</version.javax.ejb>
     <version.javax.el>1.2</version.javax.el>
     <version.javax.enterprise.cdi>1.0-SP4</version.javax.enterprise.cdi>
-    <version.javax.faces>1.2_15</version.javax.faces>
     <version.javax.inject>1</version.javax.inject>
     <version.javax.javaee-api>6.0</version.javax.javaee-api>
     <version.javax.jms>1.1</version.javax.jms>
@@ -622,11 +621,6 @@
         <version>${version.javax.enterprise.cdi}</version>
       </dependency>
       <dependency>
-        <groupId>javax.faces</groupId>
-        <artifactId>jsf-api</artifactId>
-        <version>${version.javax.faces}</version>
-      </dependency>
-      <dependency>
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>${version.javax.inject}</version>
@@ -875,7 +869,6 @@
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-        <!-- Note JBOSS AS 6.0 Final uses version 2.3.1 -->
         <version>${version.org.apache.cxf}</version>
         <exclusions>
           <exclusion>
