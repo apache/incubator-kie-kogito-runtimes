@@ -126,7 +126,8 @@
     <version.org.javassist>3.15.0-GA</version.org.javassist>
     <version.org.jbpm.jbpm5.jbpmmigration>0.11</version.org.jbpm.jbpm5.jbpmmigration>
     <version.org.jboss.arquillian>1.0.3.Final</version.org.jboss.arquillian>
-    <version.org.jboss.arquillian.container>1.0.0.CR5</version.org.jboss.arquillian.container>
+    <version.org.jboss.arquillian.container.glassfish>1.0.0.CR3</version.org.jboss.arquillian.container.glassfish>
+    <version.org.jboss.arquillian.container.weld>1.0.0.CR5</version.org.jboss.arquillian.container.weld>
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <version.org.jboss.errai>2.3.2.Final</version.org.jboss.errai>
     <version.org.jboss.ironjacamar>1.0.17.Final</version.org.jboss.ironjacamar>
@@ -1311,22 +1312,22 @@
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
-        <version>${version.org.jboss.arquillian.container}</version>
+        <version>${version.org.jboss.arquillian.container.weld}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
-        <version>${version.org.jboss.arquillian.container}</version>
+        <version>${version.org.jboss.arquillian.container.weld}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-glassfish-embedded-3.1</artifactId>
-        <version>${version.org.jboss.arquillian.container}</version>
+        <version>${version.org.jboss.arquillian.container.glassfish}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-glassfish-managed-3.1</artifactId>
-        <version>${version.org.jboss.arquillian.container}</version>
+        <version>${version.org.jboss.arquillian.container.glassfish}</version>
       </dependency>
       <dependency>
         <!-- WARNING: org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-bom must be defined BEFORE org.jboss.arquillian:arquillian-bom -->
