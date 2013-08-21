@@ -1,0 +1,3 @@
+module.name=org.apache.commons.digester
+module.resources=commons-digester-*.jar
+module.location=bpms/org/apache/commons/digester

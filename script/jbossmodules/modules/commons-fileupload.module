@@ -1,4 +1,0 @@
-module.name=org.apache.commons.fileupload
-module.dependencies=commons-fileupload.dependencies
-module.resources=commons-fileupload-*.jar
-module.location=bpms/org/apache/commons/fileupload

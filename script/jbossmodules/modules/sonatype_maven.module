@@ -1,4 +1,0 @@
-module.name=org.sonatype.maven
-module.dependencies=sonatype_maven.dependencies
-module.resources=wagon-ahc-*.jar
-module.location=bpms/org/sonatype/maven

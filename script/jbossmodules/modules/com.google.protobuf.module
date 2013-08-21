@@ -1,0 +1,3 @@
+module.name=com.google.protobuf
+module.resources=protobuf-java-*.jar
+module.location=bpms/com/google/protobuf

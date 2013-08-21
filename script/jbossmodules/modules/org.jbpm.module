@@ -1,0 +1,4 @@
+module.name=org.jbpm
+module.resources=jbpm-*.jar
+module.location=bpms/org/jbpm
+module.patches.metainf=modules/jbpm/META-INF/*

@@ -1,0 +1,3 @@
+module.name=org.apache.zookeeper
+module.resources=zookeeper-*.jar
+module.location=bpms/org/apache/zookeeper

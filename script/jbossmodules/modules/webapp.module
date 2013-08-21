@@ -1,3 +1,2 @@
 module.name=webapp
-module.dependencies=webapp.dependencies
 module.resources=kie-wb*.jar,drools-wb*.jar,drools-workbench*.jar,jbpm-console*.jar,jbpm-designer*.jar,jbpm-form-modeler*.jar,uberfire-*.jar,guvnor-*.jar,errai-*.jar,taglib*.jar

@@ -1,4 +1,0 @@
-module.name=org.apache.commons.net
-module.dependencies=commons-net.dependencies
-module.resources=commons-net-*.jar
-module.location=bpms/org/apache/commons/net

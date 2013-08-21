@@ -1,4 +1,0 @@
-module.name=org.apache.xmlbeans
-module.dependencies=apache-xmlbeans.dependencies
-module.resources=xmlbeans-*.jar
-module.location=bpms/org/apache/xmlbeans

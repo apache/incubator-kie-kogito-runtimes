@@ -1,0 +1,3 @@
+module.name=org.apache.maven.wagon
+module.resources=wagon-provider-api-*.jar
+module.location=bpms/org/apache/maven/wagon

@@ -77,7 +77,8 @@ createWebappModule() {
 }
 
 createJbossDeploymentStructureFile() {
-	MODULE_DEPS=`sed '/^\#/d' $WEBAPP_MODULE_FILE | grep "module.dependencies"  | tail -n 1 | sed 's/^.*=//'`
+
+	MODULE_DEPS="webapp.dependencies"
 
 	MODULES_DEF_STRING=""
 	while read resource; do
@@ -231,7 +232,7 @@ while read module; do
 		MODULE_NAME=`sed '/^\#/d' $MODULE_FILE | grep "module.name"  | tail -n 1 | sed 's/^.*=//'`
 		MODULE_RESOURCES=`sed '/^\#/d' $MODULE_FILE | grep "module.resources"  | tail -n 1 | sed 's/^.*=//'`
 		MODULE_LOCATION=`sed '/^\#/d' $MODULE_FILE | grep "module.location"  | tail -n 1 | sed 's/^.*=//'`
-		MODULE_DEPS=`sed '/^\#/d' $MODULE_FILE | grep "module.dependencies"  | tail -n 1 | sed 's/^.*=//'`
+		MODULE_DEPS="$MODULE_NAME.dependencies"
 		MODULE_PATCHES_METAINF=`sed '/^\#/d' $MODULE_FILE | grep "module.patches.metainf"  | tail -n 1 | sed 's/^.*=//'`
 
 

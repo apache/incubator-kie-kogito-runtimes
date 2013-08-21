@@ -1,4 +1,0 @@
-module.name=org.apache.commons.exec
-module.dependencies=commons-exec.dependencies
-module.resources=commons-exec-*.jar
-module.location=bpms/org/apache/commons/exec

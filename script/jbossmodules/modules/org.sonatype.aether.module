@@ -1,0 +1,3 @@
+module.name=org.sonatype.aether
+module.resources=aether-api-*.jar,aether-connector-file-*.jar,aether-connector-wagon-*.jar,aether-impl-*.jar,aether-spi-*.jar,aether-util-*.jar
+module.location=bpms/org/sonatype/aether

@@ -1,0 +1,3 @@
+module.name=org.apache.camel
+module.resources=camel-core-*.jar,camel-josql-*.jar
+module.location=bpms/org/apache/camel

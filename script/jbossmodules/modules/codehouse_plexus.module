@@ -1,4 +1,0 @@
-module.name=org.codehouse.plexus
-module.dependencies=codehouse_plexus.dependencies
-module.resources=plexus-classworlds-*.jar,plexus-component-annotations-*.jar,plexus-interpolation-*.jar,plexus-utils-*.jar
-module.location=bpms/org/codehouse/plexus

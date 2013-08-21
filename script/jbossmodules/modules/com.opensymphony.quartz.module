@@ -1,0 +1,3 @@
+module.name=com.opensymphony.quartz
+module.resources=quartz-*.jar
+module.location=bpms/com/opensymphony/quartz

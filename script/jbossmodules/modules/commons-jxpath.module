@@ -1,4 +1,0 @@
-module.name=org.apache.commons.jxpath
-module.dependencies=commons-jxpath.dependencies
-module.resources=commons-jxpath-*.jar
-module.location=bpms/org/apache/commons/jxpath
