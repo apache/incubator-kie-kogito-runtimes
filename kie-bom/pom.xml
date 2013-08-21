@@ -237,8 +237,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-
-
       <!--KIE Common -->
       <!--KIE Common - Core Services -->
       <dependency>
@@ -545,6 +543,19 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <!-- Group Manager -->
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-group-manager</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-group-manager</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-webapp</artifactId>
