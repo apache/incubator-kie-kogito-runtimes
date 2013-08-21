@@ -1,3 +1,11 @@
-javax.enterprise.api
-javax.api
+org.osgi.core
 
+org.kie.lib
+javax.xml.bind.api
+org.apache.xmlbeans
+javax.enterprise.api
+org.jaxen
+org.slf4j.ext
+javax.activation.api
+org.slf4j
+javax.api

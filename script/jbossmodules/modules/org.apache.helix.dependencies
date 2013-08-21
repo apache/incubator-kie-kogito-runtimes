@@ -1,0 +1,10 @@
+org.apache.zookeeper
+org.kie.lib
+javax.xml.bind.api
+org.jboss.log4j.logmanager
+org.codehaus.jackson.jackson-core-asl
+org.apache.commons.cli
+org.codehaus.jackson.jackson-mapper-asl
+org.apache.commons.io
+org.apache.commons.math
+org.kie

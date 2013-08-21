@@ -1,3 +1,15 @@
-javax.enterprise.api
-javax.api
+org.apache.commons.beanutils
 
+org.apache.commons.logging
+org.apache.commons.collections
+javax.transaction.api
+org.apache.commons.digester
+org.kie.lib
+org.slf4j.jcl-over-slf4j
+javax.enterprise.api
+javax.rmi.api
+javax.ejb.api
+javax.jms.api
+javax.mail.api
+javax.servlet.api
+javax.api
