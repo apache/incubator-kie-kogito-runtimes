@@ -1,5 +1,4 @@
 org.apache.commons.beanutils
-
 org.kie.lib
 org.apache.xmlbeans
 javax.enterprise.api

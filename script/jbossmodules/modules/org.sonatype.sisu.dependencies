@@ -1,5 +1,4 @@
 org.osgi.core
-
 org.sonatype.maven
 org.sonatype.aether
 org.slf4j.ext

@@ -1,5 +1,4 @@
 org.osgi.core
-
 org.kie.lib
 javax.xml.bind.api
 org.apache.xmlbeans

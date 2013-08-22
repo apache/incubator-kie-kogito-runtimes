@@ -1,5 +1,4 @@
 org.apache.commons.beanutils
-
 org.apache.commons.digester
 org.kie.lib
 org.slf4j.jcl-over-slf4j
