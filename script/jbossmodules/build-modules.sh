@@ -65,20 +65,24 @@ fixCDIExtensions() {
 }
 
 createWebappModule() {
-	MODULE_RESOURCES=`sed '/^\#/d' $WEBAPP_MODULE_FILE | grep "module.resources"  | tail -n 1 | sed 's/^.*=//'`
+	MODULE_FILE=$1
+	SRC_DIR=$2
+	DST_DIR=$3
+	
+	MODULE_RESOURCES=`sed '/^\#/d' $MODULE_FILE | grep "module.resources"  | tail -n 1 | sed 's/^.*=//'`
 
 	if [ -n "$MODULE_RESOURCES" ]; then
 		export IFS=","
 		for res in $MODULE_RESOURCES; do
-		  mv $JARS_DIR/$res $WAR_DIR/kie-wb/WEB-INF/lib
+		  mv $SRC_DIR/$res $DST_DIR
 		done
 	fi
 	
 }
 
 createJbossDeploymentStructureFile() {
-
-	MODULE_DEPS="webapp.dependencies"
+	MODULE_DEPS=$1
+	RESULT_FILE=$2
 
 	MODULES_DEF_STRING=""
 	while read resource; do
@@ -86,10 +90,10 @@ createJbossDeploymentStructureFile() {
 			RESOURCE_DEF=`sed -e "s;%MODULE_NAME%;$resource;" $TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE_MODULE`
 			MODULES_DEF_STRING="$MODULES_DEF_STRING\n$RESOURCE_DEF"
 		fi
-	done < $BASE_DIR/modules/$MODULE_DEPS
+	done < $MODULE_DEPS
 
 	# Generate the jboss-deployment-structure.xml from template.
-	sed -e "s;%DEPS%;$MODULES_DEF_STRING;" $TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE > $WAR_DIR/kie-wb/WEB-INF/jboss-deployment-structure.xml
+	sed -e "s;%DEPS%;$MODULES_DEF_STRING;" $TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE > $RESULT_FILE
 }
 
 	
@@ -109,7 +113,7 @@ createModule() {
 	# Add jars
 	export IFS=","
 	for res in $MODULE_RESOURCES; do
-	  mv $JARS_DIR/$res $MODULE_DIST_PATH/main
+	  mv $JARS_DIR/kie-wb/$res $MODULE_DIST_PATH/main
 	done
 
 	# Module META-INF patches.
@@ -139,7 +143,10 @@ TMP_DIR=$BASE_DIR/tmp
 WAR_DIR=$TMP_DIR/war
 JARS_DIR=$TMP_DIR/jars
 TEMPLATES_DIR=$BASE_DIR/templates
-WEBAPP_MODULE_FILE=$BASE_DIR/modules/webapp.module
+KIE_WEBAPP_MODULE_FILE=$BASE_DIR/modules/kie-wb-webapp.module
+KIE_WEBAPP_MODULE_DEPS_FILE=$BASE_DIR/modules/kie-wb-webapp.dependencies
+JBPM_DASH_WEBAPP_MODULE_FILE=$BASE_DIR/modules/jbpm-dashbuilder.module
+JBPM_DASH_WEBAPP_MODULE_DEPS_FILE=$BASE_DIR/modules/jbpm-dashbuilder.dependencies
 MODULE_LIST_FILE=$BASE_DIR/modules/modules.list
 TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE=$TEMPLATES_DIR/jboss-deployment-structure.template
 TEMPLATE_JBOSS_DEPLOYMENT_STRUCTURE_MODULE=$TEMPLATES_DIR/jboss-deployment-structure-module.template
@@ -172,7 +179,8 @@ rm -rf $TMP_DIR
 
 mkdir -p $DIST_DIR
 mkdir -p $TMP_DIR
-mkdir -p $JARS_DIR
+mkdir -p $JARS_DIR/kie-wb
+mkdir -p $JARS_DIR/jbpm-dashbuilder
 mkdir -p $WAR_DIR
 
 # Create dist deployments strcuture.
@@ -181,12 +189,15 @@ mkdir -p $DIST_DIR/standalone/deployments
 mkdir -p $DIST_DIR/modules
 cp $BASE_DIR/layers.conf $DIST_DIR/modules
 
-# Unzip original kie-wb
+# Unzip original kie-wb and jbpm-dashbuilder
 #
 rm -rf $WAR_DIR
 mkdir -p $WAR_DIR/kie-wb
+mkdir -p $WAR_DIR/jdpm-dashbuilder
 cd $WAR_DIR/kie-wb
 jar xf $KIE_WB_WAR
+cd $WAR_DIR/jdpm-dashbuilder
+jar xf $DASHBUILDER_WAR
 cd $BASE_DIR
 
 #
@@ -217,11 +228,15 @@ rm $WAR_DIR/kie-wb/WEB-INF/lib/freemarker-2.3.8.jar
 echo $WAR_DIR"/kie-wb/WEB-INF/lib/freemarker-2.3.8.jar deleted"
 
 # Extract the jars to a temp directory.
-mv $WAR_DIR/kie-wb/WEB-INF/lib/*.jar $JARS_DIR
+mv $WAR_DIR/kie-wb/WEB-INF/lib/*.jar $JARS_DIR/kie-wb
+mv $WAR_DIR/jdpm-dashbuilder/WEB-INF/lib/*.jar $JARS_DIR/jbpm-dashbuilder
 
 # Create webapp dynamic module.
-echo "Creating webapp dynamic module"
-createWebappModule
+echo "Creating webapp dynamic module for kie-wb"
+createWebappModule $KIE_WEBAPP_MODULE_FILE $JARS_DIR/kie-wb $WAR_DIR/kie-wb/WEB-INF/lib
+
+echo "Creating webapp dynamic module for jbpm-dashbuilder"
+createWebappModule $JBPM_DASH_WEBAPP_MODULE_FILE $JARS_DIR/jbpm-dashbuilder $WAR_DIR/jdpm-dashbuilder/WEB-INF/lib
 
 # Create static modules.
 echo "Creating static modules..."
@@ -249,10 +264,8 @@ echo '**** Generating new KIE-WB WAR ****'
 cd $WAR_DIR/kie-wb
 
 # Create and add the jboss-deployment-structure.xml to the generated WAR artifact.
-createJbossDeploymentStructureFile
-
-# TODO: Check jars existing on tmp/jars -> They must be in a module or in the war.
-
+createJbossDeploymentStructureFile $KIE_WEBAPP_MODULE_DEPS_FILE $TMP_DIR/kie-wb-jboss-deployment-structure.xml
+mv $TMP_DIR/kie-wb-jboss-deployment-structure.xml $WAR_DIR/kie-wb/WEB-INF/jboss-deployment-structure.xml
 
 echo 'Applying temporary fixes....'
 #
@@ -267,9 +280,13 @@ cp $BASE_DIR/patches/web.xml $WAR_DIR/kie-wb/WEB-INF
 # Generate the resulting WAR file.
 jar cf $DIST_DIR/standalone/deployments/kie-wb.war *
 
-echo '**** Copying dashbuilder WAR ****'
-cp $DASHBUILDER_WAR $DIST_DIR/standalone/deployments/jbpm-dashbuilder.war
+echo '**** Generating new JBPM-DASHBUILDER WAR ****'
+cd $WAR_DIR/jdpm-dashbuilder
 
+createJbossDeploymentStructureFile $JBPM_DASH_WEBAPP_MODULE_DEPS_FILE $TMP_DIR/jbpm-dashbuilder-jboss-deployment-structure.xml
+mv $TMP_DIR/jbpm-dashbuilder-jboss-deployment-structure.xml $WAR_DIR/jdpm-dashbuilder/WEB-INF/jboss-deployment-structure.xml
+
+jar cf $DIST_DIR/standalone/deployments/jbpm-dashbuilder.war *
 
 echo '**** ZIPPING DISTRIBUTION ****'
 cd $DIST_DIR

@@ -1,0 +1,2 @@
+module.name=jbpm-dashbuilder
+module.resources=bcmail*.jar,bcprov*.jar,dashboard*.jar,jbpm-dashboard*.jar,jcommon*.jar,jfreechart*.jar,taglibs-i18n*.jar,weld-se*.jar
