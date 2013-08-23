@@ -20,14 +20,15 @@
   </description>
 
   <properties>
+    <!-- ################################################################################ -->
+    <!-- External dependency versions -->
+    <!-- ################################################################################ -->
     <!--
       CONVENTIONS:
       - A version property must be specified in the format "version.{groupId}", optionally with a suffix to make it unique.
       - Version properties must be sorted alphabetically (other form of sorting were found to be unclear and ambiguous).
     -->
 
-    <!-- External dependency versions -->
-    <version.avalon-framework>4.1.4</version.avalon-framework>
     <version.ch.qos.logback>1.0.9</version.ch.qos.logback>
     <version.commons-cli>1.2</version.commons-cli>
     <version.commons-codec>1.4</version.commons-codec>
@@ -94,9 +95,6 @@
     <version.org.apache.poi>3.9</version.org.apache.poi>
     <version.org.apache.tomcat>6.0.32</version.org.apache.tomcat>
     <version.org.apache.velocity>1.7</version.org.apache.velocity>
-    <version.org.apache.xmlgraphics.batik>1.6-1</version.org.apache.xmlgraphics.batik>
-    <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
-    <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
     <version.org.beanshell>1.3.0</version.org.beanshell>
     <version.org.cobogw.gwt>1.0</version.org.cobogw.gwt>
     <version.org.codehaus.btm>3.0.0-20130426.133011-3</version.org.codehaus.btm>
@@ -109,7 +107,6 @@
     <version.org.easymock>3.0</version.org.easymock>
     <version.org.eclipse.bpmn2>0.7.3</version.org.eclipse.bpmn2>
     <version.org.eclipse.jdt.core.compiler>3.7.2</version.org.eclipse.jdt.core.compiler>
-    <version.org.eclipse.jetty>7.2.1.v20101111</version.org.eclipse.jetty>
     <version.org.eclipse.jgit>2.1.0.201209190230-r</version.org.eclipse.jgit>
     <version.org.freemarker>2.3.19</version.org.freemarker>
     <version.org.glassfish>3.1.2</version.org.glassfish>
@@ -143,7 +140,6 @@
     <version.org.jfree.jfreechart>1.0.14</version.org.jfree.jfreechart>
     <version.org.json>20090211</version.org.json>
     <version.org.mockito>1.9.0</version.org.mockito>
-    <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mvel>2.1.6.Final</version.org.mvel>
     <version.org.osgi>4.2.0</version.org.osgi>
     <version.org.ops4j.pax.exam>2.6.0</version.org.ops4j.pax.exam>
@@ -166,6 +162,22 @@
     <version.xerces>2.9.1</version.xerces>
     <version.xml-apis>1.3.04</version.xml-apis>
     <version.xmlunit>1.3</version.xmlunit>
+
+
+    <!-- ################################################################################ -->
+    <!-- New and overwritten dependencies -->
+    <!-- ################################################################################ -->
+    <!--
+      CONVENTIONS:
+      - A version property must be specified in the format "version.{groupId}", optionally with a suffix to make it unique.
+      - Version properties must be sorted alphabetically (other form of sorting were found to be unclear and ambiguous).
+    -->
+    <version.avalon-framework>4.1.4</version.avalon-framework>
+    <version.org.apache.xmlgraphics.batik>1.6-1</version.org.apache.xmlgraphics.batik>
+    <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
+    <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
+    <version.org.eclipse.jetty>7.2.1.v20101111</version.org.eclipse.jetty>
+    <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
   </properties>
 
   <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent-metadata. -->
@@ -186,12 +198,9 @@
 
   <dependencyManagement>
     <dependencies>
-      <!--
-        CONVENTIONS:
-        - Dependencies must be SORTED ALPHABETICALLY on groupId (other form of sorting were found to be unclear and ambiguous).
-        - Do not declare <scope> (exception: import) or <optional>: a child module will declare scope/optional itself.
-        - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> (following Aether proper)
-      -->
+      <!-- ################################################################################ -->
+      <!-- Internal dependencies -->
+      <!-- ################################################################################ -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-bom</artifactId>
@@ -305,102 +314,6 @@
         - Always extract the version as a property.
         - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> (following Aether proper)
       -->
-
-      <dependency>
-        <groupId>avalon-framework</groupId>
-        <artifactId>avalon-framework</artifactId>
-        <version>${version.avalon-framework}</version>
-      </dependency>
-
-      <!-- TODO use org.apache.xmlgraphics:batik* instead -->
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-parser</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-transcoder</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>fop</groupId>
-            <artifactId>fop</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-extension</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xmlParserAPIs</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-dom</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-xml</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-bridge</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-css</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-svg-dom</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-svggen</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-util</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-ext</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xmlParserAPIs</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-script</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-gvt</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-      <dependency>
-        <groupId>batik</groupId>
-        <artifactId>batik-awt-util</artifactId>
-        <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
 
       <!-- Keep in sync with groupId org.slf4j -->
       <dependency>
@@ -1049,75 +962,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.xmlgraphics</groupId>
-        <artifactId>fop</artifactId>
-        <version>${version.org.apache.xmlgraphics.fop}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-svg-dom</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-anim</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-css</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-dom</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-parser</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-bridge</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-script</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-xml</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-awt-util</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-gvt</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-transcoder</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-svggen</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-extension</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-ext</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.xmlgraphics</groupId>
-        <artifactId>xmlgraphics-commons</artifactId>
-        <version>${version.org.apache.xmlgraphics.commons}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.beanshell</groupId>
         <artifactId>bsh</artifactId>
         <version>${version.org.beanshell}</version>
@@ -1207,12 +1051,6 @@
         <groupId>org.eclipse.jdt.core.compiler</groupId>
         <artifactId>ecj</artifactId>
         <version>${version.org.eclipse.jdt.core.compiler}</version>
-      </dependency>
-
-      <dependency><!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty that is present there -->
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-servlet</artifactId>
-        <version>${version.org.eclipse.jetty}</version>
       </dependency>
 
       <dependency>
@@ -1575,32 +1413,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-plus</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-naming</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-embedded</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-runner</artifactId>
-        <version>8.1.7.v20120910</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
         <version>${version.org.mvel}</version>
@@ -1817,7 +1629,213 @@
       </dependency>
 
 
+      <!-- ################################################################################ -->
+      <!-- New and overwritten dependencies -->
+      <!-- ################################################################################ -->
+      <!--
+        CONVENTIONS:
+        - Dependencies must be SORTED ALPHABETICALLY on groupId (other forms of sorting were found to be unclear and ambiguous).
+        - Do not declare <scope> (exception: import) or <optional>: a child module will declare scope/optional itself.
+        - Always extract the version as a property.
+        - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> (following Aether proper)
+      -->
 
+      <dependency>
+        <groupId>avalon-framework</groupId>
+        <artifactId>avalon-framework</artifactId>
+        <version>${version.avalon-framework}</version>
+      </dependency>
+
+      <!-- TODO BZ-996210 use org.apache.xmlgraphics:batik* instead -->
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-parser</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-transcoder</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>fop</groupId>
+            <artifactId>fop</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-extension</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-dom</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-xml</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-bridge</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-css</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-svg-dom</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-svggen</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-util</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-ext</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-script</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-gvt</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-awt-util</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>fop</artifactId>
+        <version>${version.org.apache.xmlgraphics.fop}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-svg-dom</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-anim</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-css</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-dom</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-parser</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-bridge</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-script</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-xml</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-awt-util</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-gvt</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-transcoder</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-svggen</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-extension</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-ext</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>xmlgraphics-commons</artifactId>
+        <version>${version.org.apache.xmlgraphics.commons}</version>
+      </dependency>
+
+      <dependency><!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty that is present there -->
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlet</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>${version.org.mortbay.jetty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-plus</artifactId>
+        <version>${version.org.mortbay.jetty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-naming</artifactId>
+        <version>${version.org.mortbay.jetty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-embedded</artifactId>
+        <version>${version.org.mortbay.jetty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-runner</artifactId>
+        <version>8.1.7.v20120910</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
