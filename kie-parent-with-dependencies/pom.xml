@@ -1488,39 +1488,11 @@
         <groupId>org.jboss.seam.persistence</groupId>
         <artifactId>seam-persistence</artifactId>
         <version>${version.org.jboss.seam}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.jboss.solder</groupId>
-            <artifactId>solder-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss.solder</groupId>
-            <artifactId>solder-impl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss.solder</groupId>
-            <artifactId>solder-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam.transaction</groupId>
         <artifactId>seam-transaction</artifactId>
         <version>${version.org.jboss.seam}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.jboss.solder</groupId>
-            <artifactId>solder-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss.solder</groupId>
-            <artifactId>solder-impl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss.solder</groupId>
-            <artifactId>solder-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam.spring</groupId>
