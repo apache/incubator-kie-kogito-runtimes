@@ -136,6 +136,10 @@
     <version.org.jboss.seam.security>3.2.0.Final</version.org.jboss.seam.security>
     <version.org.jboss.seam>3.1.0.Final</version.org.jboss.seam>
     <version.org.jboss.shrinkwrap.resolver>2.0.0-beta-3</version.org.jboss.shrinkwrap.resolver>
+    <version.org.jboss.spec.javax.ejb.3.1>1.0.2.Final</version.org.jboss.spec.javax.ejb.3.1>
+    <version.org.jboss.spec.javax.el.2.2>1.0.2.Final</version.org.jboss.spec.javax.el.2.2>
+    <version.org.jboss.spec.javax.servlet.3.0>1.0.2.Final</version.org.jboss.spec.javax.servlet.3.0>
+    <version.org.jboss.spec.javax.servlet.jsp.2.2>1.0.1.Final</version.org.jboss.spec.javax.servlet.jsp.2.2>
     <version.org.jboss.solder>3.2.1.Final</version.org.jboss.solder>
     <version.org.jboss.weld>1.1.13.Final</version.org.jboss.weld>
     <version.org.jboss.weld.spi>1.1.Final</version.org.jboss.weld.spi>
@@ -600,11 +604,13 @@
         <artifactId>jsr250-api</artifactId>
         <version>${version.javax.annotation}</version>
       </dependency>
+      <!-- javax.ejb is specified by org.jboss.spec.javax.ejb-->
       <dependency>
         <groupId>javax.ejb</groupId>
         <artifactId>ejb-api</artifactId>
         <version>${version.javax.ejb}</version>
       </dependency>
+      <!-- javax.el is specified by org.jboss.spec.javax.el-->
       <dependency>
         <groupId>javax.el</groupId>
         <artifactId>el-api</artifactId>
@@ -630,11 +636,13 @@
         <artifactId>mail</artifactId>
         <version>${version.javax.mail}</version>
       </dependency>
+      <!-- javax.servlet is specified by org.jboss.spec.javax.servlet-->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>${version.javax.servlet}</version>
       </dependency>
+      <!-- javax.servlet.jsp is specified by org.jboss.spec.javax.servlet.jsp-->
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
@@ -1519,15 +1527,24 @@
       </dependency>
 
       <dependency>
-        <groupId>org.jboss.spec.javax.servlet</groupId>
-        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-        <version>1.0.2.Final</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.jboss.spec.javax.ejb</groupId>
         <artifactId>jboss-ejb-api_3.1_spec</artifactId>
-        <version>1.0.2.Final</version>
+        <version>${version.org.jboss.spec.javax.ejb.3.1}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.spec.javax.el</groupId>
+        <artifactId>jboss-el-api_2.2_spec</artifactId>
+        <version>${version.org.jboss.spec.javax.el.2.2}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.spec.javax.servlet</groupId>
+        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+        <version>${version.org.jboss.spec.javax.servlet.3.0}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.spec.javax.servlet.jsp</groupId>
+        <artifactId>jboss-jsp-api_2.2_spec</artifactId>
+        <version>${version.org.jboss.spec.javax.servlet.jsp.2.2}</version>
       </dependency>
 
       <dependency>
@@ -1822,6 +1839,8 @@
         <artifactId>xmlunit</artifactId>
         <version>${version.xmlunit}</version>
       </dependency>
+
+
 
     </dependencies>
   </dependencyManagement>
