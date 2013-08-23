@@ -57,15 +57,11 @@
     <version.dom4j>1.6.1</version.dom4j>
     <version.javax.activation>1.1.1</version.javax.activation>
     <version.javax.annotation>1.0</version.javax.annotation>
-    <version.javax.ejb>3.0</version.javax.ejb>
-    <version.javax.el>1.2</version.javax.el>
     <version.javax.enterprise.cdi>1.0-SP4</version.javax.enterprise.cdi>
     <version.javax.inject>1</version.javax.inject>
     <version.javax.jms>1.1</version.javax.jms>
     <version.javax.mail>1.4.5</version.javax.mail>
     <version.javax.security.jacc>1.4</version.javax.security.jacc>
-    <version.javax.servlet>2.5</version.javax.servlet>
-    <version.javax.servlet.jsp>2.2</version.javax.servlet.jsp>
     <version.javax.transaction>1.1</version.javax.transaction>
     <version.javax.ws.rs>1.1.1</version.javax.ws.rs>
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
@@ -605,17 +601,7 @@
         <version>${version.javax.annotation}</version>
       </dependency>
       <!-- javax.ejb is specified by org.jboss.spec.javax.ejb-->
-      <dependency>
-        <groupId>javax.ejb</groupId>
-        <artifactId>ejb-api</artifactId>
-        <version>${version.javax.ejb}</version>
-      </dependency>
       <!-- javax.el is specified by org.jboss.spec.javax.el-->
-      <dependency>
-        <groupId>javax.el</groupId>
-        <artifactId>el-api</artifactId>
-        <version>${version.javax.el}</version>
-      </dependency>
       <dependency>
         <groupId>javax.enterprise</groupId>
         <artifactId>cdi-api</artifactId>
@@ -637,17 +623,7 @@
         <version>${version.javax.mail}</version>
       </dependency>
       <!-- javax.servlet is specified by org.jboss.spec.javax.servlet-->
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>${version.javax.servlet}</version>
-      </dependency>
       <!-- javax.servlet.jsp is specified by org.jboss.spec.javax.servlet.jsp-->
-      <dependency>
-        <groupId>javax.servlet.jsp</groupId>
-        <artifactId>jsp-api</artifactId>
-        <version>${version.javax.servlet.jsp}</version>
-      </dependency>
       <dependency>
         <groupId>javax.security.jacc</groupId>
         <artifactId>javax.security.jacc-api</artifactId>
