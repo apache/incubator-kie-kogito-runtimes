@@ -1540,6 +1540,11 @@
         <artifactId>solder-impl</artifactId>
         <version>${version.org.jboss.solder}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.solder</groupId>
+        <artifactId>solder-logging</artifactId>
+        <version>${version.org.jboss.solder}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.jboss.spec.javax.servlet</groupId>
