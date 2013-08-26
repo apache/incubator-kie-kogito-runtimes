@@ -34,6 +34,7 @@
       - Version properties must be sorted alphabetically (other form of sorting were found to be unclear and ambiguous).
     -->
     <version.avalon-framework>4.1.4</version.avalon-framework>
+    <version.javax.servlet.jstl>1.2</version.javax.servlet.jstl>
     <version.org.apache.xmlgraphics.batik>1.6-1</version.org.apache.xmlgraphics.batik>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
@@ -290,6 +291,13 @@
         <groupId>batik</groupId>
         <artifactId>batik-awt-util</artifactId>
         <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+
+      <!-- Mandatory in order to execute Jetty embedded (GWT hosted mode) -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>${version.javax.servlet.jstl}</version>
       </dependency>
 
       <dependency>
