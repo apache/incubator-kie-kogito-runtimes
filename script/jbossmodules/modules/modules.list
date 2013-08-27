@@ -26,11 +26,9 @@ org.apache.maven.wagon
 org.apache.zookeeper
 org.apache.batik
 org.apache.commons.httpclient
-org.apache.commons.digester
 org.apache.commons.fileupload
 org.apache.commons.jxpath
 org.apache.commons.logging
-org.apache.commons.validator
 com.opensymphony.quartz
 org.junit
 org.apache.xmlbeans

@@ -35,7 +35,6 @@ nu.xom
 javax.transaction.api
 org.apache.commons.lang
 javax.validation.api
-org.apache.commons.digester
 javax.interceptor.api
 javax.ws.rs.api
 org.jboss.resteasy.resteasy-atom-provider
@@ -74,7 +73,6 @@ org.apache.velocity
 org.sonatype.plexus
 org.apache.xml-resolver
 javax.resource.api
-org.apache.commons.validator
 org.apache.commons.configuration
 org.apache.commons.beanutils
 org.jgroups

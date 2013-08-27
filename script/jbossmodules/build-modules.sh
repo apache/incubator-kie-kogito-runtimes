@@ -203,12 +203,6 @@ cd $BASE_DIR
 #
 # Clean unrequired libs
 #
-rm $WAR_DIR/kie-wb/WEB-INF/lib/jsp-api*.jar
-echo $WAR_DIR"/kie-wb/WEB-INF/lib/jsp-api*.jar deleted"
-rm $WAR_DIR/kie-wb/WEB-INF/lib/commons-bean*.jar
-echo $WAR_DIR"/kie-wb/WEB-INF/lib/commons-bean*.jar deleted"
-#rm $WAR_DIR/kie-wb/WEB-INF/lib/commons-logging*.jar
-#echo $WAR_DIR"/kie-wb/WEB-INF/lib/commons-logging*.jar deleted"
 rm $WAR_DIR/kie-wb/WEB-INF/lib/jaxb*.jar
 echo $WAR_DIR"/kie-wb/WEB-INF/lib/jaxb*.jar deleted"
 rm $WAR_DIR/kie-wb/WEB-INF/lib/jaxrs-api-*.jar
@@ -223,9 +217,6 @@ rm $WAR_DIR/kie-wb/WEB-INF/lib/xmlschema-core*.jar
 echo $WAR_DIR"/kie-wb/WEB-INF/lib/xmlschema-core*.jar deleted"
 rm $WAR_DIR/kie-wb/WEB-INF/lib/stax-api*.jar
 echo $WAR_DIR"/kie-wb/WEB-INF/lib/stax-api*.jar deleted"
-## Duplicated!!!
-rm $WAR_DIR/kie-wb/WEB-INF/lib/freemarker-2.3.8.jar
-echo $WAR_DIR"/kie-wb/WEB-INF/lib/freemarker-2.3.8.jar deleted"
 
 # Extract the jars to a temp directory.
 mv $WAR_DIR/kie-wb/WEB-INF/lib/*.jar $JARS_DIR/kie-wb
@@ -290,7 +281,7 @@ jar cf $DIST_DIR/standalone/deployments/jbpm-dashbuilder.war *
 
 echo '**** ZIPPING DISTRIBUTION ****'
 cd $DIST_DIR
-zip -r $DIST_DIR/bpms-modules.zip *
+zip -qr $DIST_DIR/bpms-modules.zip *
 cd $BASE_DIR
 
 echo '**** DISTRIBUTION GENERATED AT dist/bpms-modules.zip ****'
