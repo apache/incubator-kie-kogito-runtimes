@@ -543,15 +543,15 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!-- Group Manager -->
+      <!-- Organizational Unit Manager -->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-common-group-manager</artifactId>
+        <artifactId>kie-wb-common-organizationalunit-manager</artifactId>
         <version>${guvnor.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
-        <artifactId>kie-wb-common-group-manager</artifactId>
+        <artifactId>kie-wb-common-organizationalunit-manager</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
