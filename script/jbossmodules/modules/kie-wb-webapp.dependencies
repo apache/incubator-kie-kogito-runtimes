@@ -19,6 +19,7 @@ org.apache.xerces
 javax.jms.api
 org.osgi.core
 org.jboss.vfs
+org.apache.commons.lang3
 org.apache.commons.logging
 org.apache.commons.codec
 org.codehaus.jackson.jackson-core-asl

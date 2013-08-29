@@ -114,6 +114,7 @@ createModule() {
 	export IFS=","
 	for res in $MODULE_RESOURCES; do
 	  mv $JARS_DIR/kie-wb/$res $MODULE_DIST_PATH/main
+	  echo "$res *** $MODULE_NAME" >> $TMP_DIR/module-resources-mapping.out
 	done
 
 	# Module META-INF patches.
@@ -217,6 +218,10 @@ rm $WAR_DIR/kie-wb/WEB-INF/lib/xmlschema-core*.jar
 echo $WAR_DIR"/kie-wb/WEB-INF/lib/xmlschema-core*.jar deleted"
 rm $WAR_DIR/kie-wb/WEB-INF/lib/stax-api*.jar
 echo $WAR_DIR"/kie-wb/WEB-INF/lib/stax-api*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/jboss-jsp-api*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/jboss-jsp-api*.jar deleted"
+rm $WAR_DIR/kie-wb/WEB-INF/lib/jms*.jar
+echo $WAR_DIR"/kie-wb/WEB-INF/lib/jms*.jar deleted"
 
 # Extract the jars to a temp directory.
 mv $WAR_DIR/kie-wb/WEB-INF/lib/*.jar $JARS_DIR/kie-wb

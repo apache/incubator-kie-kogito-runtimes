@@ -1,0 +1,3 @@
+module.name=org.apache.commons.lang3
+module.resources=commons-lang3*.jar
+module.location=bpms/org/apache/commons/lang3
