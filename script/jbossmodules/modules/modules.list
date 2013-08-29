@@ -28,7 +28,6 @@ org.apache.batik
 org.apache.commons.httpclient
 org.apache.commons.fileupload
 org.apache.commons.jxpath
-org.apache.commons.lang3
 org.apache.commons.logging
 com.opensymphony.quartz
 org.junit
