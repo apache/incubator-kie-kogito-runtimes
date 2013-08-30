@@ -1,2 +1,2 @@
 module.name=kie-wb-webapp
-module.resources=kie-wb*.jar,drools-wb*.jar,drools-workbench*.jar,jbpm-console*.jar,jbpm-designer*.jar,jbpm-form-modeler*.jar,uberfire-*.jar,guvnor-*.jar,errai-*.jar,taglib*.jar,seam-transaction-3*.jar
+module.resources=kie-wb*.jar,drools-wb*.jar,drools-workbench*.jar,jbpm-console*.jar,jbpm-designer*.jar,jbpm-form-modeler*.jar,uberfire-*.jar,guvnor-*.jar,errai-*.jar,taglib*.jar,seam-transaction-3*.jar,kie-services-remote-*.jar
