@@ -555,6 +555,29 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <!-- Java editor -->
+       <dependency>
+           <groupId>org.kie.workbench.screens</groupId>
+           <artifactId>kie-wb-common-java-editor-api</artifactId>
+           <version>${guvnor.version}</version>
+       </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-java-editor-api</artifactId>
+            <version>${guvnor.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-java-editor-client</artifactId>
+            <version>${guvnor.version}</version>
+        </dependency>
+       <dependency>
+           <groupId>org.kie.workbench.screens</groupId>
+           <artifactId>kie-wb-common-java-editor-client</artifactId>
+           <version>${guvnor.version}</version>
+           <classifier>sources</classifier>
+       </dependency>
 
       <dependency>
         <groupId>org.kie</groupId>
