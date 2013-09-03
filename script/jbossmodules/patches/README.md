@@ -31,3 +31,25 @@ Currently the patch does not override xml content, the <code>WEB-INF/web.xml</co
 Note Deployment descriptors to copy inside webapp differs from BPMS and BRMS
 * For BPMS -> The web.xml to copy if the one from property <code>module.patches.web-xml</code> of file [modules/kie-wb-webapp.module](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/kie-wb-webapp.module)
 * For BRMS -> The web.xml to copy if the one from property <code>module.patches.web-xml</code> of file [modules/kie-drools-wb-webapp.module](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/kie-drools-wb-webapp.module)
+
+Seam transactions
+-----------------
+Seam consists of two artifacts:
+* seam-transaction-api-3.X.jar
+* seam-transapction-3.X.jar
+
+The jBPM core static module for EAP depends on seam transaction api. So, this jars should be placed in another static module, not in the webapp.
+But for a unknown reason yet, when putting seam-transaction-3.X.jar outside the webapp, the transactions are not running.
+The reason seems to be that the transaction interceptor defined in <code>beans.xml</code> located inside webapp, is not registered if seam-transaction-3.X.jar (impl classes) is outside webapp lib.
+This interceptor is:
+ <code>
+ <interceptors>
+      <class>org.jboss.seam.transaction.TransactionInterceptor</class>
+  </interceptors>
+ </code>
+This behaviour should be analyzed with EAP team.
+
+REST services
+-------------
+As seam transactions, if the jar containing kie remote REST services <code>kie-common-services-6-X</code> is located outside webapp lib, for example inside a EAP static module, the services are not running.
+This behaviour should be analyzed with EAP team.

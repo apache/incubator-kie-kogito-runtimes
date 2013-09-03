@@ -45,7 +45,7 @@ The BPMS static modules layer distribution adds the follosing modules:
 * org.jboss.solder
 * org.sonatype.maven
 * org.sonatype.plexus
-* org.apache.commons.vfs
+* org.apache.commons.vfs (Not in BRMS ditribution)
 * org.apache.maven.wagon
 * org.apache.zookeeper
 * org.apache.batik
@@ -53,7 +53,7 @@ The BPMS static modules layer distribution adds the follosing modules:
 * org.apache.commons.fileupload
 * org.apache.commons.jxpath
 * org.apache.commons.logging
-* com.opensymphony.quartz
+* com.opensymphony.quartz (Not in BRMS ditribution)
 * org.junit
 * org.apache.xmlbeans
 
