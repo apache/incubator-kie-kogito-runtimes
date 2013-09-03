@@ -196,7 +196,7 @@ existModule() {
 }
 
 # Program arguments.
-if [ $# -ne 4 ];
+if [ $# -lt 4 ];
 then
   echo "Missing arguments"
   echo "Usage: ./deploy.sh <modules.list file> <eap modules.list file> <webapp module name> <path to EAP6.1 war file> <path to EAP 6.1 dashbuilder WAR file (optional)> "
