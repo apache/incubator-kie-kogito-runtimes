@@ -337,7 +337,8 @@ mkdir $WAR_DIR/wb-war/META-INF/services
 fixCDIExtensions  $BASE_DIR/patches/cdi-extensions $WAR_DIR/wb-war/META-INF/services
 
 # Workaround Solder filter
-cp $BASE_DIR/patches/web.xml $WAR_DIR/wb-war/WEB-INF
+KIE_WB_WEB_XML=`sed '/^\#/d' $KIE_WEBAPP_MODULE_FILE | grep "module.patches.web-xml"  | tail -n 1 | sed 's/^.*=//'`
+cp $BASE_DIR/patches/$KIE_WB_WEB_XML $WAR_DIR/wb-war/WEB-INF
 
 # Generate the resulting WAR file.
 jar cf $DIST_DIR/standalone/deployments/wb-war.war *
