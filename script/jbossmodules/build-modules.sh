@@ -347,7 +347,7 @@ fixCDIExtensions  $BASE_DIR/patches/cdi-extensions $WAR_DIR/$WORKBENCH_WEBAPP_NA
 
 # Workaround Solder filter
 KIE_WB_WEB_XML=`sed '/^\#/d' $KIE_WEBAPP_MODULE_FILE | grep "module.patches.web-xml"  | tail -n 1 | sed 's/^.*=//'`
-cp $BASE_DIR/patches/$KIE_WB_WEB_XML $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF
+cp $BASE_DIR/patches/$KIE_WB_WEB_XML $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/web.xml
 
 # Generate the resulting WAR file.
 jar cf $DIST_DIR/standalone/deployments/$WORKBENCH_WEBAPP_NAME.war *
