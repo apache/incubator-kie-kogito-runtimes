@@ -7,8 +7,7 @@ This script allows to create a BPMS/BRMS distribution based on base EAP modules 
 * A new static module layer for JBoss EAP called <code>bpms</code>
 * Skinny WARS for BPMS/BRMS that depend on base and <code>bpms</code> layer
 
-Supported EAP versions
-----------------------
+Currenly the supported EAP versions are:
 * JBoss EAP 6.1.0.GA
 
 Goals
@@ -59,6 +58,9 @@ The BPMS static modules layer distribution adds the follosing modules:
 * org.apache.xmlbeans
 
 
+How to execute the script
+=========================
+
 Prerequisites
 -------------
 
@@ -66,9 +68,6 @@ In order to execute this script some artifacts are required:
 
 * The skinny BPMS/BRMS WAR distribution for Jboss EAP 6.1
 * (Optional) The skinny jBPM Dashboard WAR distribution for Jboss EAP 6.1
-
-How to execute the script
-=========================
 
 Script arguemnts
 ----------------
@@ -78,42 +77,43 @@ The script is located in this directory and called <code>build-modules.sh</code>
 It takes some arguments:
 
 1. Path to modules list file.
-    This file contains the static modules to create. There are two possible files:
-      * For BPMS --> [modules/bpms_modules.list](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/bpms_modules.list)
-      * For BRMS --> [modules/brms_modules.list](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/brms_modules.list)
+  This file contains the static modules to create. There are two possible files:
+  - For BPMS --> [modules/bpms_modules.list](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/bpms_modules.list)
+  - For BRMS --> [modules/brms_modules.list](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/brms_modules.list)
 2. Path to JBoss EAP base modules list file.
-    This file allows to support more EAP versions in the future.
-    The version currently supported is 6.1.0.GA, so the file is: [modules/eap-6.1.0-modules.list](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/eap-6.1.0-modules.list)
+  This file allows to support more EAP versions in the future.
+  The version currently supported is 6.1.0.GA, so the file is: [modules/eap-6.1.0-modules.list](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/eap-6.1.0-modules.list)
 3. Webapp module name.
-    Both BPMS/BRMS are considered as EAP dynamic modules and have the module definition and dependencies file for generating the final skinny WAR.
-    The value for this arguments is:
-        * For BPMS --> <code>kie-wb-webapp</code>
-        * For BRMS --> <code>kie-drools-wb-webapp</code>
+  Both BPMS/BRMS are considered as EAP dynamic modules and have the module definition and dependencies file for generating the final skinny WAR.
+  The value for this arguments is:
+   - For BPMS --> <code>kie-wb-webapp</code>
+   - For BRMS --> <code>kie-drools-wb-webapp</code>
 4. Path to BPMS/BRMS distribution WAR for EAP 6.1
-    The skinny WAR for JBoss EAP 6.1 is generated in:
-        * For BPMS --> [KIE WB Distribution WARS](https://github.com/droolsjbpm/kie-wb-distributions/tree/master/kie-drools-wb/kie-drools-wb-distribution-wars)
-        * For BRMS --> [KIE Drools WB Distribution WARS](https://github.com/droolsjbpm/kie-wb-distributions/tree/master/kie-wb/kie-wb-distribution-wars)
+  The skinny WAR for JBoss EAP 6.1 is generated in:
+   - For BPMS --> [KIE WB Distribution WARS](https://github.com/droolsjbpm/kie-wb-distributions/tree/master/kie-drools-wb/kie-drools-wb-distribution-wars)
+   - For BRMS --> [KIE Drools WB Distribution WARS](https://github.com/droolsjbpm/kie-wb-distributions/tree/master/kie-wb/kie-wb-distribution-wars)
 5 Path to jBPM Dashboard WAR file - Optional
-    If using BPMS skinny WAR as argument, you can add the jBPM Dashbuilder WAR to generate the skinny for new BPMS layer modules.
-    It does not apply for BRMS, the BRMS distribution and jBPM Dashbuilder are not compatible.
+  If using BPMS skinny WAR as argument, you can add the jBPM Dashbuilder WAR to generate the skinny for new BPMS layer modules.
+  It does not apply for BRMS, the BRMS distribution and jBPM Dashbuilder are not compatible.
 
 Running the script
 ------------------
 1. Open a terminal window, go to the <code>script/jbossmodules</code> directory and type the following command (for linux systems):
-    * For BPMS:
-        $ sh build-modules.sh modules/bpms_modules.list modules/eap-6.1.0-modules.list "kie-wb-webapp" <PATH_TO_BPMS_WAR> <PATH_TO_JBPM_DASHBOARD_WAR>
-    * For BRMS:
-        $ sh build-modules.sh modules/brms_modules.list modules/eap-6.1.0-modules.list "kie-drools-wb-webapp" <PATH_TO_BRMS_WAR>
+- For BPMS:
+    $ sh build-modules.sh modules/bpms_modules.list modules/eap-6.1.0-modules.list "kie-wb-webapp" <PATH_TO_BPMS_WAR> <PATH_TO_JBPM_DASHBOARD_WAR>
+- For BRMS:
+    $ sh build-modules.sh modules/brms_modules.list modules/eap-6.1.0-modules.list "kie-drools-wb-webapp" <PATH_TO_BRMS_WAR>
 
   This command uncompress the WARs, extract the jars from the webapp and put them into a modules structure for JBoss EAP.
 
   This procedure generates a ZIP file in <code>dist</code> directory.
 
-2. Once the zip file is generated into <code>dist</code> directory, go to your JBoss EAP home directory and uncompress it.
-    $ cd $BJOSS_HOME
-    $unzip -o <path_to_zip>.zip
+2. Once the zip file is generated into <code>dist</code> directory, go to your JBoss EAP home directory and uncompress it:
 
-    NOTE: Please use a clean EAP installation.
+  $ cd $BJOSS_HOME
+  $unzip -o <path_to_zip>.zip
+
+  NOTE: Please use a clean EAP installation.
 3. Once the application is started, open a browser and type the following URL:
     <code>http://localhost:8080/kie-wb</code>
 
