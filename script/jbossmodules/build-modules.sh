@@ -145,8 +145,8 @@ createModule() {
 	export IFS=","
 	for res in $MODULE_RESOURCES; do
 		# First find the resource in the kie-wb/kie-drools-wb jars
-		RESOURCE_FILE=$JARS_DIR/wb-war/$res
-		RESOURCES_ARRAY=(`find $JARS_DIR/wb-war/ -name "$res"`)
+		RESOURCE_FILE=$JARS_DIR/$WORKBENCH_WEBAPP_NAME/$res
+		RESOURCES_ARRAY=(`find $JARS_DIR/$WORKBENCH_WEBAPP_NAME/ -name "$res"`)
 		if [ "$RESOURCES_ARRAY" == "" ]; then
 			# If not found, find the resource in jbpm-dashbuilder jars
 			RESOURCE_FILE=$JARS_DIR/jbpm-dashbuilder/$res
@@ -196,10 +196,10 @@ existModule() {
 }
 
 # Program arguments.
-if [ $# -ne 5 ];
+if [ $# -ne 4 ];
 then
   echo "Missing arguments"
-  echo "Usage: ./deploy.sh <modules.list file> <eap modules.list file> <webapp module name> <path to EAP6.1 war file> <path to EAP 6.1 dashbuilder WAR file> "
+  echo "Usage: ./deploy.sh <modules.list file> <eap modules.list file> <webapp module name> <path to EAP6.1 war file> <path to EAP 6.1 dashbuilder WAR file (optional)> "
   exit 65
 fi
 
@@ -218,6 +218,7 @@ TEMPLATE_MODULE=$TEMPLATES_DIR/module.template
 TEMPLATE_MODULE_RESOURCE_ROOT=$TEMPLATES_DIR/module-resource-root.template
 TEMPLATE_MODULE_DEPEDENCY=$TEMPLATES_DIR/module-dependency.template
 ORIGINAL_IFS=$IFS
+WORKBENCH_WEBAPP_NAME="kie-wb"
 
 # Initialize program arguments.
 DASHBUILDER_WAR=$5
@@ -227,10 +228,10 @@ EAP_MODULE_LIST_FILE=$2
 KIE_WEBAPP_MODULE_FILE=$BASE_DIR/modules/$3.module
 KIE_WEBAPP_MODULE_DEPS_FILE=$BASE_DIR/modules/$3.dependencies
 
+EXIST_DASHBUILDER_WAR="1"
 if [ ! -f $DASHBUILDER_WAR ];
 then
-   echo "File $DASHBUILDER_WAR does not exist."
-   exit 1
+	EXIST_DASHBUILDER_WAR="0"
 fi
 
 if [ ! -f $KIE_WB_WAR ];
@@ -248,7 +249,7 @@ rm -rf $TMP_DIR
 
 mkdir -p $DIST_DIR
 mkdir -p $TMP_DIR
-mkdir -p $JARS_DIR/wb-war
+mkdir -p $JARS_DIR/$WORKBENCH_WEBAPP_NAME
 mkdir -p $JARS_DIR/jbpm-dashbuilder
 mkdir -p $WAR_DIR
 
@@ -261,46 +262,54 @@ cp $BASE_DIR/layers.conf $DIST_DIR/modules
 # Unzip original kie-wb/kie-drools-wb and jbpm-dashbuilder
 #
 rm -rf $WAR_DIR
-mkdir -p $WAR_DIR/wb-war
+mkdir -p $WAR_DIR/$WORKBENCH_WEBAPP_NAME
 mkdir -p $WAR_DIR/jdpm-dashbuilder
-cd $WAR_DIR/wb-war
+cd $WAR_DIR/$WORKBENCH_WEBAPP_NAME
 jar xf $KIE_WB_WAR
-cd $WAR_DIR/jdpm-dashbuilder
-jar xf $DASHBUILDER_WAR
+
+if [ "$EXIST_DASHBUILDER_WAR" == "1" ]; then
+	cd $WAR_DIR/jdpm-dashbuilder
+	jar xf $DASHBUILDER_WAR
+fi
+
 cd $BASE_DIR
 
 #
 # Clean unrequired libs
 #
-rm $WAR_DIR/wb-war/WEB-INF/lib/jaxb*.jar
-echo $WAR_DIR"/wb-war/WEB-INF/lib/jaxb*.jar deleted"
-rm $WAR_DIR/wb-war/WEB-INF/lib/jaxrs-api-*.jar
-echo $WAR_DIR"/wb-war/WEB-INF/lib/jaxrs-api-*.jar deleted"
-rm $WAR_DIR/wb-war/WEB-INF/lib/jboss-intercepto*.jar
-echo $WAR_DIR"/wb-war/WEB-INF/lib/jboss-intercepto*.jar deleted"
-rm $WAR_DIR/wb-war/WEB-INF/lib/jta*.jar
-echo $WAR_DIR"/wb-war/WEB-INF/lib/jta*.jar deleted"
-rm $WAR_DIR/wb-war/WEB-INF/lib/log4j*.jar
-echo $WAR_DIR"/wb-war/WEB-INF/lib/log4j*.jar deleted"
-rm $WAR_DIR/wb-war/WEB-INF/lib/xmlschema-core*.jar
-echo $WAR_DIR"/wb-war/WEB-INF/lib/xmlschema-core*.jar deleted"
-rm $WAR_DIR/wb-war/WEB-INF/lib/stax-api*.jar
-echo $WAR_DIR"/wb-war/WEB-INF/lib/stax-api*.jar deleted"
-rm $WAR_DIR/wb-war/WEB-INF/lib/jboss-jsp-api*.jar
-echo $WAR_DIR"/wb-war/WEB-INF/lib/jboss-jsp-api*.jar deleted"
-rm $WAR_DIR/wb-war/WEB-INF/lib/jms*.jar
-echo $WAR_DIR"/wb-war/WEB-INF/lib/jms*.jar deleted"
+rm $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jaxb*.jar
+echo $WAR_DIR"/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jaxb*.jar deleted"
+rm $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jaxrs-api-*.jar
+echo $WAR_DIR"/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jaxrs-api-*.jar deleted"
+rm $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jboss-intercepto*.jar
+echo $WAR_DIR"/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jboss-intercepto*.jar deleted"
+rm $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jta*.jar
+echo $WAR_DIR"/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jta*.jar deleted"
+rm $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/log4j*.jar
+echo $WAR_DIR"/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/log4j*.jar deleted"
+rm $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/xmlschema-core*.jar
+echo $WAR_DIR"/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/xmlschema-core*.jar deleted"
+rm $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/stax-api*.jar
+echo $WAR_DIR"/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/stax-api*.jar deleted"
+rm $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jboss-jsp-api*.jar
+echo $WAR_DIR"/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jboss-jsp-api*.jar deleted"
+rm $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jms*.jar
+echo $WAR_DIR"/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/jms*.jar deleted"
 
 # Extract the jars to a temp directory.
-mv $WAR_DIR/wb-war/WEB-INF/lib/*.jar $JARS_DIR/wb-war
-mv $WAR_DIR/jdpm-dashbuilder/WEB-INF/lib/*.jar $JARS_DIR/jbpm-dashbuilder
+mv $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib/*.jar $JARS_DIR/$WORKBENCH_WEBAPP_NAME
+if [ "$EXIST_DASHBUILDER_WAR" == "1" ]; then
+	mv $WAR_DIR/jdpm-dashbuilder/WEB-INF/lib/*.jar $JARS_DIR/jbpm-dashbuilder
+fi
 
 # Create webapp dynamic module.
 echo "Creating webapp dynamic module for kie-wb"
-createWebappModule $KIE_WEBAPP_MODULE_FILE $JARS_DIR/wb-war $WAR_DIR/wb-war/WEB-INF/lib
+createWebappModule $KIE_WEBAPP_MODULE_FILE $JARS_DIR/$WORKBENCH_WEBAPP_NAME $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/lib
 
-echo "Creating webapp dynamic module for jbpm-dashbuilder"
-createWebappModule $JBPM_DASH_WEBAPP_MODULE_FILE $JARS_DIR/jbpm-dashbuilder $WAR_DIR/jdpm-dashbuilder/WEB-INF/lib
+if [ "$EXIST_DASHBUILDER_WAR" == "1" ]; then
+	echo "Creating webapp dynamic module for jbpm-dashbuilder"
+	createWebappModule $JBPM_DASH_WEBAPP_MODULE_FILE $JARS_DIR/jbpm-dashbuilder $WAR_DIR/jdpm-dashbuilder/WEB-INF/lib
+fi
 
 # Create static modules.
 echo "Creating static modules..."
@@ -323,33 +332,35 @@ done < $MODULE_LIST_FILE
 #
 # Create new WAR with dependencies to created modules
 echo '**** Generating new KIE-WB/KIE-DROOLS-WB WAR ****'
-cd $WAR_DIR/wb-war
+cd $WAR_DIR/$WORKBENCH_WEBAPP_NAME
 
 # Create and add the jboss-deployment-structure.xml to the generated WAR artifact.
-createJbossDeploymentStructureFile $KIE_WEBAPP_MODULE_DEPS_FILE $TMP_DIR/wb-war-jboss-deployment-structure.xml
-mv $TMP_DIR/wb-war-jboss-deployment-structure.xml $WAR_DIR/wb-war/WEB-INF/jboss-deployment-structure.xml
+createJbossDeploymentStructureFile $KIE_WEBAPP_MODULE_DEPS_FILE $TMP_DIR/$WORKBENCH_WEBAPP_NAME-jboss-deployment-structure.xml
+mv $TMP_DIR/$WORKBENCH_WEBAPP_NAME-jboss-deployment-structure.xml $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF/jboss-deployment-structure.xml
 
 echo 'Applying temporary fixes....'
 #
 # Workaround until solder problem is solved
 #
-mkdir $WAR_DIR/wb-war/META-INF/services
-fixCDIExtensions  $BASE_DIR/patches/cdi-extensions $WAR_DIR/wb-war/META-INF/services
+mkdir $WAR_DIR/$WORKBENCH_WEBAPP_NAME/META-INF/services
+fixCDIExtensions  $BASE_DIR/patches/cdi-extensions $WAR_DIR/$WORKBENCH_WEBAPP_NAME/META-INF/services
 
 # Workaround Solder filter
 KIE_WB_WEB_XML=`sed '/^\#/d' $KIE_WEBAPP_MODULE_FILE | grep "module.patches.web-xml"  | tail -n 1 | sed 's/^.*=//'`
-cp $BASE_DIR/patches/$KIE_WB_WEB_XML $WAR_DIR/wb-war/WEB-INF
+cp $BASE_DIR/patches/$KIE_WB_WEB_XML $WAR_DIR/$WORKBENCH_WEBAPP_NAME/WEB-INF
 
 # Generate the resulting WAR file.
-jar cf $DIST_DIR/standalone/deployments/wb-war.war *
+jar cf $DIST_DIR/standalone/deployments/$WORKBENCH_WEBAPP_NAME.war *
 
-echo '**** Generating new JBPM-DASHBUILDER WAR ****'
-cd $WAR_DIR/jdpm-dashbuilder
+if [ "$EXIST_DASHBUILDER_WAR" == "1" ]; then
+	echo '**** Generating new JBPM-DASHBUILDER WAR ****'
+	cd $WAR_DIR/jdpm-dashbuilder
 
-createJbossDeploymentStructureFile $JBPM_DASH_WEBAPP_MODULE_DEPS_FILE $TMP_DIR/jbpm-dashbuilder-jboss-deployment-structure.xml
-mv $TMP_DIR/jbpm-dashbuilder-jboss-deployment-structure.xml $WAR_DIR/jdpm-dashbuilder/WEB-INF/jboss-deployment-structure.xml
+	createJbossDeploymentStructureFile $JBPM_DASH_WEBAPP_MODULE_DEPS_FILE $TMP_DIR/jbpm-dashbuilder-jboss-deployment-structure.xml
+	mv $TMP_DIR/jbpm-dashbuilder-jboss-deployment-structure.xml $WAR_DIR/jdpm-dashbuilder/WEB-INF/jboss-deployment-structure.xml
 
-jar cf $DIST_DIR/standalone/deployments/jbpm-dashbuilder.war *
+	jar cf $DIST_DIR/standalone/deployments/jbpm-dashbuilder.war *
+fi
 
 echo '**** ZIPPING DISTRIBUTION ****'
 cd $DIST_DIR

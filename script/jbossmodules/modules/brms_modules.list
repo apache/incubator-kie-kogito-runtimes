@@ -21,7 +21,6 @@ org.sonatype.sisu
 org.jboss.solder
 org.sonatype.maven
 org.sonatype.plexus
-org.apache.commons.vfs
 org.apache.maven.wagon
 org.apache.zookeeper
 org.apache.batik
