@@ -10,10 +10,12 @@ EAP patches
 
 CDI Extensions
 --------------
-In EAP 6.1.0.GA the CDI Extensions declared in JARs from the BPMS layer are not loaded.
-This bug is already reported and fixed for EAP 6.1.1.
-The patch consist of copying the resources from jars inside <code>META-INF/servicesc/code> directory of the webapp.
-The directory [patches/cdi-extensions](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/tree/master/script/jbossmodules/patches/cdi-extensions) contains all extension files.
+* In EAP 6.1.0.GA the CDI Extensions declared in JARs from the BPMS layer are not loaded.
+* This bug is already reported and fixed for EAP 6.1.1.
+   See https://bugzilla.redhat.com/show_bug.cgi?id=988093
+* The patch consist of copying the resources from jars inside <code>META-INF/servicesc/code> directory of the webapp.
+* The directory [patches/cdi-extensions](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/tree/master/script/jbossmodules/patches/cdi-extensions) contains all extension files.
+
 Note that cdi extensions to patch differ from BPMS and BRMS.
 * For BPMS -> The extensions to copy are the ones from property <code>module.patches.cdi-extensions</code> of file [modules/kie-wb-webapp.module](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/kie-wb-webapp.module)
 * For BRMS -> The extensions to copy are the ones from property <code>module.patches.cdi-extensions</code> of file [modules/kie-drools-wb-webapp.module](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/script/jbossmodules/modules/kie-drools-wb-webapp.module)
