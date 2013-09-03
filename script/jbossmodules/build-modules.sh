@@ -240,6 +240,14 @@ then
    exit 1
 fi
 
+FIX_CDI_EXTENSIONS_FLAG="0"
+
+echo "Do you wish to fix CDI extensions (y/n)? (If using EAP 6.1.0, it should be..)"
+read yn
+if [ "$yn" == "y" ]; then
+	FIX_CDI_EXTENSIONS_FLAG="1"
+fi
+
 echo "Base directory is: $BASE_DIR"
 echo "Creating distribution in: $DIST_DIR"
 
@@ -342,8 +350,10 @@ echo 'Applying temporary fixes....'
 #
 # Workaround until solder problem is solved
 #
-mkdir $WAR_DIR/$WORKBENCH_WEBAPP_NAME/META-INF/services
-fixCDIExtensions  $BASE_DIR/patches/cdi-extensions $WAR_DIR/$WORKBENCH_WEBAPP_NAME/META-INF/services
+#mkdir $WAR_DIR/$WORKBENCH_WEBAPP_NAME/META-INF/services
+if [ "$FIX_CDI_EXTENSIONS_FLAG" == "1" ]; then
+	fixCDIExtensions  $BASE_DIR/patches/cdi-extensions $WAR_DIR/$WORKBENCH_WEBAPP_NAME/META-INF/services
+fi
 
 # Workaround Solder filter
 KIE_WB_WEB_XML=`sed '/^\#/d' $KIE_WEBAPP_MODULE_FILE | grep "module.patches.web-xml"  | tail -n 1 | sed 's/^.*=//'`
