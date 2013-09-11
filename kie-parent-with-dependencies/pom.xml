@@ -39,6 +39,7 @@
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
     <version.org.eclipse.jetty>7.2.1.v20101111</version.org.eclipse.jetty>
+    <version.org.jboss.errai>2.4.0-SNAPSHOT</version.org.jboss.errai>
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
   </properties>
@@ -301,18 +302,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.neethi</groupId>
-        <artifactId>neethi</artifactId>
-        <version>3.0.2</version>
-      </dependency>
-
-      <dependency>
-          <groupId>org.apache.ws.xmlschema</groupId>
-          <artifactId>xmlschema-core</artifactId>
-          <version>2.0.3</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>fop</artifactId>
         <version>${version.org.apache.xmlgraphics.fop}</version>
@@ -388,6 +377,86 @@
       </dependency>
 
       <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-common</artifactId>
+        <version>${version.org.jboss.errai}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-cdi-jetty</artifactId>
+        <version>${version.org.jboss.errai}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-ioc</artifactId>
+        <version>${version.org.jboss.errai}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-cdi-client</artifactId>
+        <version>${version.org.jboss.errai}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-javax-enterprise</artifactId>
+        <version>${version.org.jboss.errai}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-weld-integration</artifactId>
+        <version>${version.org.jboss.errai}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-ui</artifactId>
+        <version>${version.org.jboss.errai}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-data-binding</artifactId>
+        <version>${version.org.jboss.errai}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-marshalling</artifactId>
+        <version>${version.org.jboss.errai}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-bus</artifactId>
+        <version>${version.org.jboss.errai}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-jboss-as-support</artifactId>
+        <version>${version.org.jboss.errai}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
         <version>${version.org.mortbay.jetty}</version>
@@ -412,13 +481,6 @@
         <artifactId>jetty-runner</artifactId>
         <version>${version.org.mortbay.jetty.runner}</version>
       </dependency>
-
-      <dependency>
-        <groupId>org.subethamail</groupId>
-        <artifactId>subethasmtp</artifactId>
-        <version>3.1.6</version>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
 
