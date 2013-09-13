@@ -23,7 +23,7 @@
     <!-- ################################################################################ -->
     <!-- External dependency versions -->
     <!-- ################################################################################ -->
-    <version.org.jboss.intregrationplatform>6.0.0-SNAPSHOT</version.org.jboss.intregrationplatform>
+    <version.org.jboss.integration-platform>6.0.0-SNAPSHOT</version.org.jboss.integration-platform>
 
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
@@ -173,10 +173,10 @@
       <!-- External dependencies -->
       <!-- ################################################################################ -->
       <dependency>
-        <groupId>org.jboss.intregrationplatform</groupId>
+        <groupId>org.jboss.integration-platform</groupId>
         <artifactId>jboss-integration-platform-bom</artifactId>
         <type>pom</type>
-        <version>${version.org.jboss.intregrationplatform}</version>
+        <version>${version.org.jboss.integration-platform}</version>
         <scope>import</scope>
       </dependency>
 
