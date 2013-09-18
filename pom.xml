@@ -295,6 +295,9 @@
                 <goal>test-jar</goal>
               </goals>
               <configuration>
+                <excludes>
+                  <exclude>**/logback-test.xml</exclude>
+                </excludes>
                 <archive>
                   <manifestEntries>
                     <Bundle-SymbolicName>${project.artifactId}.tests</Bundle-SymbolicName>
