@@ -1,3 +1,0 @@
-module.name=org.eclipse.jgit
-module.resources=org.eclipse.jgit-*.jar
-module.location=bpms/org/eclipse/jgit

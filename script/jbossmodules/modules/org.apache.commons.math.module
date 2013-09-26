@@ -1,3 +1,0 @@
-module.name=org.apache.commons.math
-module.resources=commons-math-*.jar
-module.location=bpms/org/apache/commons/math

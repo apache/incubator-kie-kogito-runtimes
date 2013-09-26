@@ -1,3 +1,0 @@
-module.name=org.apache.maven
-module.resources=maven-aether-provider-*.jar,maven-artifact-*.jar,maven-compat-*.jar,maven-core-*.jar,maven-model-*.jar,maven-plugin-api-*.jar,maven-repository-metadata-*.jar,maven-settings-*.jar
-module.location=bpms/org/apache/maven

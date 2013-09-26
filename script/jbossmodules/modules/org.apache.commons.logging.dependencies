@@ -1,6 +1,0 @@
-org.kie.lib
-org.slf4j.jcl-over-slf4j
-org.jboss.log4j.logmanager
-javax.enterprise.api
-javax.servlet.api
-javax.api

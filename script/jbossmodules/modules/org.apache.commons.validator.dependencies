@@ -1,8 +1,0 @@
-org.apache.commons.beanutils
-org.apache.commons.digester
-org.kie.lib
-org.slf4j.jcl-over-slf4j
-org.apache.commons.logging
-org.apache.commons.collections
-javax.enterprise.api
-javax.api

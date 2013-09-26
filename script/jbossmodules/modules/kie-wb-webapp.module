@@ -1,4 +1,0 @@
-module.name=kie-wb-webapp
-module.resources=kie-wb*.jar,drools-wb*.jar,drools-workbench*.jar,jbpm-console*.jar,jbpm-designer*.jar,jbpm-form-modeler*.jar,uberfire-*.jar,guvnor-*.jar,errai-*.jar,taglib*.jar,seam-transaction-3*.jar,kie-services-remote-*.jar
-module.patches.cdi-extensions=batik-extension-1.6-1,batik-script-1.6-1,camel-core-2.10.3,camel-josql-2.5.0,com.noelios.restlet-1.1.10,drools-compiler-6.0.0.CR2,fop-0.95,lucene-analyzers-common-4.0.0,,lucene-codecs-4.0.0,lucene-core-4.0.0,osgi-3.5.0.v20090520,prettytime-3.0.2.Final,seam-transaction-3.1.0.Final,sisu-inject-bean-2.2.3,smack-3.0.4,solder-impl-3.2.0.Final,xmlgraphics-commons-1.4,xpp3_min-1.1.4c
-module.patches.web-xml=kie-wb-web.xml

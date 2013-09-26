@@ -1,3 +1,0 @@
-module.name=org.apache.commons.validator
-module.resources=commons-validator-*.jar
-module.location=bpms/org/apache/commons/validator

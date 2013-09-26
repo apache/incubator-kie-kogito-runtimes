@@ -1,3 +1,0 @@
-org.jboss.solder.beanManager.DefaultJndiBeanManagerProvider
-org.jboss.solder.beanManager.ServletContainerJndiBeanManagerProvider
-org.jboss.solder.servlet.beanManager.ServletContextAttributeProvider

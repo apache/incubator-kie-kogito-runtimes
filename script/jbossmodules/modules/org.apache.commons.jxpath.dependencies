@@ -1,9 +1,0 @@
-org.apache.commons.beanutils
-org.kie.lib
-org.apache.xmlbeans
-javax.enterprise.api
-org.jaxen
-org.jdom
-javax.servlet.jsp.api
-javax.servlet.api
-javax.api

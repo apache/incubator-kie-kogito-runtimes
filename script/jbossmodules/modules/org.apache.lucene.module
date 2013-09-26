@@ -1,3 +1,0 @@
-module.name=org.apache.lucene
-module.resources=lucene-analyzers-common-*.jar,lucene-codecs-*.jar,lucene-core-*.jar,lucene-queries-*.jar,lucene-queryparser-*.jar,lucene-sandbox-*.jar
-module.location=bpms/org/apache/lucene

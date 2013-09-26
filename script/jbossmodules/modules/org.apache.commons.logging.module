@@ -1,3 +1,0 @@
-module.name=org.apache.commons.logging
-module.resources=commons-logging-*.jar
-module.location=bpms/org/apache/commons/logging

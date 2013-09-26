@@ -1,3 +1,0 @@
-module.name=org.apache.helix
-module.resources=helix-core-*-incubating.jar
-module.location=bpms/org/apache/helix

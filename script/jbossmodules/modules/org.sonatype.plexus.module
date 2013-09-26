@@ -1,3 +1,0 @@
-module.name=org.sonatype.plexus
-module.resources=plexus-cipher-*.jar
-module.location=bpms/org/sonatype/plexus

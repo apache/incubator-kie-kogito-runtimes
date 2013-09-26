@@ -1,3 +1,0 @@
-module.name=org.apache.poi
-module.resources=poi-*.jar
-module.location=bpms/org/apache/poi

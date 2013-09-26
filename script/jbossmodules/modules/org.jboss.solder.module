@@ -1,3 +1,0 @@
-module.name=org.jboss.solder
-module.resources=solder-api-*.Final.jar,solder-impl-*.Final.jar,solder-logging-*.Final.jar
-module.location=bpms/org/jboss/solder

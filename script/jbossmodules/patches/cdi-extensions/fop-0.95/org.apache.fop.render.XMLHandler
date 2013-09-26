@@ -1,5 +1,0 @@
-org.apache.fop.render.pdf.PDFSVGHandler
-org.apache.fop.render.ps.PSSVGHandler
-org.apache.fop.render.java2d.Java2DSVGHandler
-org.apache.fop.render.pcl.PCLSVGHandler
-org.apache.fop.render.afp.AFPSVGHandler

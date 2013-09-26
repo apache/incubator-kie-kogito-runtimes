@@ -1,3 +1,0 @@
-module.name=org.apache.commons.compress
-module.resources=commons-compress-*.jar
-module.location=bpms/org/apache/commons/compress

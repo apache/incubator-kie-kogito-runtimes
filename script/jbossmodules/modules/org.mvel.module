@@ -1,3 +1,0 @@
-module.name=org.mvel
-module.resources=mvel2-*.Final.jar
-module.location=bpms/org/mvel

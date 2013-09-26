@@ -1,3 +1,0 @@
-module.name=org.drools
-module.resources=drools-*.jar,drools-workbench-*.jar
-module.location=bpms/org/drools

@@ -1,3 +1,0 @@
-module.name=org.apache.ant
-module.resources=ant-*.jar
-module.location=bpms/org/apache/ant
