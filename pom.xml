@@ -47,6 +47,7 @@
     <drools.version>6.1.0-SNAPSHOT</drools.version>
     <optaplanner.version>${drools.version}</optaplanner.version>
     <jbpm.version>6.1.0-SNAPSHOT</jbpm.version>
+    <dashboard-builder.version>6.1.0-SNAPSHOT</dashboard-builder.version>
     <droolsjbpm-integration.version>${drools.version}</droolsjbpm-integration.version>
     <version.org.uberfire>0.4.0-SNAPSHOT</version.org.uberfire>
     <guvnor.version>${drools.version}</guvnor.version>
@@ -704,6 +705,7 @@
     <module>optaplanner-bom</module>
     <module>jbpm-bom</module>
     <module>guvnor-bom</module>
+    <module>dashboard-builder-bom</module>
     <module>kie-parent-with-dependencies</module>
   </modules>
 

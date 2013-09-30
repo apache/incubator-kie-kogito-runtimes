@@ -100,6 +100,13 @@
         <version>${guvnor.version}</version>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.dashboard-builder</groupId>
+        <artifactId>dashboard-builder-bom</artifactId>
+        <type>pom</type>
+        <version>${dashboard-builder.version}</version>
+        <scope>import</scope>
+      </dependency>
 
       <!-- TODO replace me with uberfire-bom -->
       <!-- TODO Once uberfire is no longer in our release lifecycle, move into external dependencies -->
@@ -385,6 +392,18 @@
       <dependency><!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty that is present there -->
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-servlet</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
+
+      <!-- Required by JBoss Dashboard builder to run standaone demo. -->
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-util</artifactId>
         <version>${version.org.eclipse.jetty}</version>
       </dependency>
 
