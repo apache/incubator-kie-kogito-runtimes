@@ -395,18 +395,6 @@
         <version>${version.org.eclipse.jetty}</version>
       </dependency>
 
-      <!-- Required by JBoss Dashboard builder to run standaone demo. -->
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>${version.org.eclipse.jetty}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-util</artifactId>
-        <version>${version.org.eclipse.jetty}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-common</artifactId>
