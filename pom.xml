@@ -43,7 +43,6 @@
 
   <properties>
     <!-- Internal dependencies -->
-    <kie-commons.version>6.1.0-SNAPSHOT</kie-commons.version>
     <drools.version>6.1.0-SNAPSHOT</drools.version>
     <optaplanner.version>${drools.version}</optaplanner.version>
     <jbpm.version>6.1.0-SNAPSHOT</jbpm.version>

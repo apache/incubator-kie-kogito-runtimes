@@ -93,12 +93,6 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
                 mvn -Dfull versions:set -DoldVersion=$jbpmOldVersion -DnewVersion=$jbpmNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
-            elif [ $repository == 'kie-commons' ]; then
-                mvn -Dfull versions:set -DoldVersion=$droolsOldVersion -DnewVersion=$droolsNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
-                mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
-                mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
-                # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
-                mvn clean install -DskipTests
             elif [ $repository == 'uberfire' ]; then
                 mvn -Dfull versions:set -DoldVersion=$uberfireOldVersion -DnewVersion=$uberfireNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
                 # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161

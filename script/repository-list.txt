@@ -1,10 +1,9 @@
+uberfire
 droolsjbpm-build-bootstrap
 droolsjbpm-knowledge
-kie-commons
 drools
 optaplanner
 jbpm
-uberfire
 guvnor
 kie-wb-common
 droolsjbpm-integration
