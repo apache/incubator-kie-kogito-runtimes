@@ -110,6 +110,116 @@
 
       <!-- TODO replace me with uberfire-bom -->
       <!-- TODO Once uberfire is no longer in our release lifecycle, move into external dependencies -->
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-io</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-io</artifactId>
+        <version>${version.org.uberfire}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-io</artifactId>
+        <version>${version.org.uberfire}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-nio2-api</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-nio2-api</artifactId>
+        <version>${version.org.uberfire}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-nio2-model</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-nio2-model</artifactId>
+        <version>${version.org.uberfire}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-nio2-fs</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-nio2-fs</artifactId>
+        <version>${version.org.uberfire}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-nio2-jgit</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-nio2-jgit</artifactId>
+        <version>${version.org.uberfire}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!-- KIEORA, KIE Commons Metadata -->
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-metadata-api</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-metadata-api</artifactId>
+        <version>${version.org.uberfire}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-metadata-backend-lucene</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-metadata-backend-lucene</artifactId>
+        <version>${version.org.uberfire}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-metadata-commons-io</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-metadata-commons-io</artifactId>
+        <version>${version.org.uberfire}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-commons</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-commons</artifactId>
+        <version>${version.org.uberfire}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-js</artifactId>
