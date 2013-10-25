@@ -47,11 +47,11 @@ read ok
 
 startDateTime=`date +%s`
 
-cd $droolsjbpmOrganizationDir
+cd "$droolsjbpmOrganizationDir"
 
-for repository in `cat ${scriptDir}/repository-list.txt` ; do
+for repository in `cat "${scriptDir}/repository-list.txt"` ; do
     echo
-    if [ ! -d $droolsjbpmOrganizationDir/$repository ]; then
+    if [ ! -d "$droolsjbpmOrganizationDir/$repository" ]; then
         echo "==============================================================================="
         echo "Missing Repository: $repository. SKIPPING!"
         echo "==============================================================================="

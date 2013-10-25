@@ -29,13 +29,13 @@ startDateTime=`date +%s`
 # The gitUrlPrefix differs between committers and anonymous users. Also it differs on forks.
 # Committers on blessed gitUrlPrefix="git@github.com:droolsjbpm/"
 # Anonymous users on blessed gitUrlPrefix="git://github.com/droolsjbpm/"
-cd ${scriptDir}
+cd "${scriptDir}"
 gitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
 gitUrlPrefix=`echo ${gitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git.*//g'`
 
-cd $droolsjbpmOrganizationDir
+cd "$droolsjbpmOrganizationDir"
 
-for repository in `cat ${scriptDir}/repository-list.txt` ; do
+for repository in `cat "${scriptDir}/repository-list.txt"` ; do
     echo
     if [ -d $repository ] ; then
         echo "==============================================================================="
@@ -73,7 +73,7 @@ done
 echo
 echo Disk size:
 
-for repository in `cat ${scriptDir}/repository-list.txt` ; do
+for repository in `cat "${scriptDir}/repository-list.txt"` ; do
     du -sh $repository
 done
 
