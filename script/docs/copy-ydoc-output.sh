@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copies the ydoc output into the drools-expert-docs.
+# Copies the ydoc output into the drools-docs.
 # For more information, see droolsjbpm/droolsjbpm-knowledge/knowledge-api/pom.xml#maven-javadoc-plugin
 
 initializeWorkingDirAndScriptDir() {

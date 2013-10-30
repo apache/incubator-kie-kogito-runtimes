@@ -1087,7 +1087,7 @@ Writing documentation
 * To generate the html and pdf output run maven with `-Dfull`:
 
         $ cd droolsjbpm
-        $ cd guvnor/guvnor-docs
+        $ cd optaplanner/optaplanner-docs
         $ mvn clean install -Dfull
         ...
         $ firefox target/docbook/publish/en-US/html_single/index.html
@@ -1362,7 +1362,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
                     $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
 
-    * Update the *Compatibility matrix* in `droolsjbpm-knowledge/droolsjbpm-introduction-docs/src/main/docbook/en-US/Chapter-Compatibility/Chapter-Compatibility_matrix.xml`.
+    * Update the *Compatibility matrix* in `droolsjbpm-knowledge/kie-docs/shared/.../Chapter-Compatibility_matrix.xml`.
 
         * Cherry pick that change to master too.
 

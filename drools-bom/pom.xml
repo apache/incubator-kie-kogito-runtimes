@@ -75,12 +75,6 @@
         <version>${drools.version}</version>
         <classifier>javadoc</classifier>
       </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>droolsjbpm-introduction-docs</artifactId>
-        <type>jdocbook</type>
-        <version>${drools.version}</version>
-      </dependency>
 
       <!-- drools -->
       <dependency>
@@ -293,13 +287,7 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-expert-docs</artifactId>
-        <type>jdocbook</type>
-        <version>${drools.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-fusion-docs</artifactId>
+        <artifactId>drools-docs</artifactId>
         <type>jdocbook</type>
         <version>${drools.version}</version>
       </dependency>
@@ -367,12 +355,6 @@
         <artifactId>droolsjbpm-integration-examples</artifactId>
         <version>${droolsjbpm-integration.version}</version>
         <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>droolsjbpm-integration-docs</artifactId>
-        <type>jdocbook</type>
-        <version>${droolsjbpm-integration.version}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
@@ -909,13 +891,6 @@
         <artifactId>drools-wb-examples</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
-      </dependency>
-      <!--Docs-->
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-docs</artifactId>
-        <type>jdocbook</type>
-        <version>${guvnor.version}</version>
       </dependency>
 
       <!-- droolsjbpm-tools -->
