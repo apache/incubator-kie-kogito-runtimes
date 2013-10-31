@@ -10,9 +10,9 @@ droolsjbpm-integration
 jbpm-form-modeler
 drools-wb
 droolsjbpm-tools
-droolsjbpm-build-distribution
 jbpm-designer
 jbpm-console-ng
 kie-wb-distributions
+droolsjbpm-build-distribution
 dashboard-builder
 jbpm-dashboard
