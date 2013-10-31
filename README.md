@@ -1066,7 +1066,25 @@ Writing documentation
 
 * Optionally install a DocBook editor to write documentation more comfortably, such as:
 
-    * [XMLmind Personal Edition](http://www.xmlmind.com/xmleditor/download.shtml)
+    * [oXygen](http://www.oxygenxml.com/)
+
+        * Open menu *Options*, menu item *Preferences...*.
+
+        * Click tree item *Global*
+
+            * Combobox *Line separator*: `Unix-like`
+
+        * Click tree item *Format*
+
+            * Checkbox *Detect indent on open*: `off`
+
+            * Checkbox *Indent with tabs*: `off`
+
+            * Combobox *Indent size*: `2`
+
+            * Textfield *Line width - Format and Indent*: `120`
+
+    * [XMLmind](http://www.xmlmind.com/xmleditor/)
 
         * Open menu *Options*, menu item *Preferences...*.
 
