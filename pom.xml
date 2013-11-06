@@ -516,6 +516,35 @@
           <artifactId>maven-site-plugin</artifactId>
           <version>3.1</version>
         </plugin>
+        <!--Fix translations from Zanata -->
+        <plugin>
+          <groupId>com.google.code.maven-replacer-plugin</groupId>
+          <artifactId>replacer</artifactId>
+          <version>1.5.2</version>
+          <configuration>
+            <includes>
+              <include>**/*Constants_de.properties</include>
+              <include>**/*Constants_es_ES.properties</include>
+              <include>**/*Constants_fr_FR.properties</include>
+              <include>**/*Constants_ja_JP.properties</include>
+              <include>**/*Constants_pt_BR.properties</include>
+            </includes>
+            <excludes>
+              <exclude>**/ErraiApp.properties</exclude>
+            </excludes>
+            <replacements>
+              <replacement>
+                <token>''</token>
+                <value>'</value>
+              </replacement>
+              <replacement>
+                <token>'</token>
+                <value>''</value>
+              </replacement>
+            </replacements>
+          </configuration>
+        </plugin>
+        <!-- Zanata -->
         <plugin>
           <groupId>org.zanata</groupId>
           <artifactId>zanata-maven-plugin</artifactId>

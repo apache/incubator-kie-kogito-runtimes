@@ -1137,7 +1137,7 @@ One week in advance:
 
     * Get those dependencies (for example `mvel` and `bpm-console`) released if needed, preferably 1 week before the kie release. This way, those released artifacts gets tested by our tests.
 
-* Ask the Guvnor lead to update the Guvnor translations with Zanata:
+* Ask kie-wb module (uberfire, guvor, kie-wb-common, drools-wb, jbpm-console, jbpm-form-modeler and kie-wb-distributions) leads to update the translations with Zanata:
 
     * Translations into different locales are handled within Zanata (https://translate.jboss.org/)
 
@@ -1145,17 +1145,13 @@ One week in advance:
 
     * The most recent translations need to be pulled into the release branch. Assuming you have set-up your Zanata configuration correctly, this can be achieved with:
 
-            $ mvn zanata:pull -Dfull -Dngsoa -Dngsoafull -Dbpm
-
-    * NOTE: The above Maven switches specify Guvnor Profiles to examine for translation files. Drools Guvnor (`-Dfull`) is essential. SOA (`-Dngsoa` and `-Dngsoafull`) and BPM Console (`-Dbpm`) are optional.
+            $ mvn zanata:pull-module
 
     * NOTE: If releasing a new version number (major, minor or micro) a new version of the translations should be setup in Zanata.
 
-    * The fr_FR translation files need to have the single quote correctly escaped.
+    * Automatically fix simple errors in the translations using the following:
 
-        * Open guvnor-webapp-core\src\main\java\org.drools.guvnor.client.messages\ConstantsCore_fr_FR.properties search for '' and replace with '. Then seach and replace ' with ''.
-
-        * Open guvnor-webapp-drools\src\main\java\org.drools.guvnor.client.messages\Constants_fr_FR.properties search for '' and replace with '. Then seach and replace ' with ''.
+            $ mvn replacer:replace -N
 
     * Test compile guvnor to check there are no other translation issues.
 
