@@ -71,6 +71,12 @@
         <classifier>javadoc</classifier>
       </dependency>
 
+	  <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-maven-plugin</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+
       <!-- KIE Remote -->
       <dependency>
         <groupId>org.kie.remote</groupId>
