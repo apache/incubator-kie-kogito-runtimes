@@ -528,6 +528,7 @@
               <include>**/*Constants_fr_FR.properties</include>
               <include>**/*Constants_ja_JP.properties</include>
               <include>**/*Constants_pt_BR.properties</include>
+              <include>**/*Constants_zh_CN.properties</include>
             </includes>
             <excludes>
               <exclude>**/ErraiApp.properties</exclude>
