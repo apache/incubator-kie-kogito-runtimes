@@ -856,13 +856,13 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-rest-defaultapprover</artifactId>
-        <version>0.9</version>
-        <type>kjar</type>
+        <version>${guvnor.version}</version>
+        <type>jar</type>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-rest-defaultapprover</artifactId>
-        <version>0.9</version>
+        <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
