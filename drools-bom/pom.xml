@@ -825,33 +825,6 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Distribution-->
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-webapp</artifactId>
-        <type>war</type>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-webapp</artifactId>
-        <classifier>sources</classifier>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-distribution-wars</artifactId>
-        <type>war</type>
-        <version>${guvnor.version}</version>
-        <classifier>jboss-as7.0</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-distribution-wars</artifactId>
-        <type>war</type>
-        <version>${guvnor.version}</version>
-        <classifier>tomcat7.0</classifier>
-      </dependency>
       <!--REST-->
       <dependency>
         <groupId>org.drools</groupId>
@@ -894,18 +867,6 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Examples-->
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-examples</artifactId>
-        <version>${guvnor.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-examples</artifactId>
-        <version>${guvnor.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
 
       <!-- droolsjbpm-tools -->
       <dependency>
@@ -932,12 +893,6 @@
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-integration-distribution</artifactId>
         <version>${droolsjbpm-integration.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-distribution</artifactId>
-        <version>${guvnor.version}</version>
         <type>zip</type>
       </dependency>
       <dependency>

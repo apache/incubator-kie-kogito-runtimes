@@ -71,7 +71,7 @@
         <classifier>javadoc</classifier>
       </dependency>
 
-	  <dependency>
+      <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-maven-plugin</artifactId>
         <version>${drools.version}</version>
@@ -453,29 +453,30 @@
         <classifier>sources</classifier>
       </dependency>
       <!-- Java editor -->
-       <dependency>
-           <groupId>org.kie.workbench.screens</groupId>
-           <artifactId>kie-wb-common-java-editor-api</artifactId>
-           <version>${guvnor.version}</version>
-       </dependency>
-        <dependency>
-            <groupId>org.kie.workbench.screens</groupId>
-            <artifactId>kie-wb-common-java-editor-api</artifactId>
-            <version>${guvnor.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.workbench.screens</groupId>
-            <artifactId>kie-wb-common-java-editor-client</artifactId>
-            <version>${guvnor.version}</version>
-        </dependency>
-       <dependency>
-           <groupId>org.kie.workbench.screens</groupId>
-           <artifactId>kie-wb-common-java-editor-client</artifactId>
-           <version>${guvnor.version}</version>
-           <classifier>sources</classifier>
-       </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-java-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-java-editor-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-java-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-java-editor-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
 
+      <!--Distribution -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-webapp</artifactId>
@@ -487,6 +488,33 @@
         <artifactId>kie-wb-webapp</artifactId>
         <version>${guvnor.version}</version>
         <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-config-cli</artifactId>
+        <version>${drools.version}</version>
+        <classifier>dist</classifier>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-distribution-wars</artifactId>
+        <version>${drools.version}</version>
+        <classifier>jboss-as7.0</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-distribution-wars</artifactId>
+        <version>${drools.version}</version>
+        <classifier>tomcat7.0</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-example-repositories</artifactId>
+        <version>${drools.version}</version>
+        <type>zip</type>
       </dependency>
 
       <!-- droolsjbpm-integration -->
