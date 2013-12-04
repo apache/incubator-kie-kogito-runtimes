@@ -849,6 +849,7 @@
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
       </dependency>
+
       <!--Data migration-->
       <dependency>
         <groupId>org.drools</groupId>
@@ -866,6 +867,20 @@
         <artifactId>drools-wb-jcr2vfs-migration-core</artifactId>
         <version>${guvnor.version}</version>
         <classifier>sources</classifier>
+      </dependency>
+
+      <!--drools-wb distribution-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-webapp</artifactId>
+        <type>war</type>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-webapp</artifactId>
+        <classifier>sources</classifier>
+        <version>${guvnor.version}</version>
       </dependency>
 
       <!-- droolsjbpm-tools -->
