@@ -20,10 +20,6 @@
   </description>
 
   <properties>
-    <!-- ################################################################################ -->
-    <!-- External dependency versions -->
-    <!-- ################################################################################ -->
-    <version.org.jboss.integration-platform>6.0.0-SNAPSHOT</version.org.jboss.integration-platform>
 
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->

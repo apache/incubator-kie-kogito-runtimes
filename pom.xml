@@ -4,9 +4,11 @@
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.jboss</groupId>
-    <artifactId>jboss-parent</artifactId>
-    <version>10</version>
+    <!-- That parent extends the org.jboss:jboss-parent -->
+    <groupId>org.jboss.integration-platform</groupId>
+    <artifactId>jboss-integration-platform-parent</artifactId>
+    <!-- Keep in sync with property <version.org.jboss.integration-platform> -->
+    <version>6.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -55,7 +57,11 @@
     <jbpm.designer.version>${jbpm.version}</jbpm.designer.version>
     <jbpm.form.modeler.version>${jbpm.version}</jbpm.form.modeler.version>
     <jbpm.console.ng.version>${jbpm.version}</jbpm.console.ng.version>
-    <!-- IMPORTANT: Do not declare any external dependencies versions here! Declare them in kie-parent-with-dependencies. -->
+
+    <!-- External dependency versions bom -->
+    <!-- Keep in sync with <parent>'s <version> -->
+    <version.org.jboss.integration-platform>6.0.0-SNAPSHOT</version.org.jboss.integration-platform>
+    <!-- IMPORTANT: Do not declare any other external dependencies versions here! Declare them in kie-parent-with-dependencies. -->
 
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
