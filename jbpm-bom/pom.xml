@@ -199,6 +199,11 @@
         <version>${jbpm.version}</version>
        </dependency>
        <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-jpa</artifactId>
+        <version>${jbpm.version}</version>
+       </dependency>
+       <dependency>
          <groupId>org.jbpm</groupId>
          <artifactId>jbpm-human-task-audit</artifactId>
          <version>${jbpm.version}</version>
@@ -221,14 +226,7 @@
         <version>${jbpm.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-shared-services</artifactId>
-        <version>${jbpm.version}</version>
-        <classifier>btm</classifier>
-        <optional>true</optional>
-      </dependency>
+      </dependency>  
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task-core</artifactId>
