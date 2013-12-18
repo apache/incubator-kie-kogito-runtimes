@@ -88,6 +88,13 @@
         <version>${dashboard-builder.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.dashboard-builder</groupId>
+        <artifactId>dashboard-provider-api</artifactId>
+        <version>${dashboard-builder.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
 
       <!-- dashboard-provider-core -->
       <dependency>
@@ -155,6 +162,14 @@
         <version>${dashboard-builder.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.dashboard-builder</groupId>
+        <artifactId>dashboard-displayer-api</artifactId>
+        <version>${dashboard-builder.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      
 
 
       <!-- dashboard-ui-core -->
