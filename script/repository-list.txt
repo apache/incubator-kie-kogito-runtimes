@@ -12,7 +12,7 @@ drools-wb
 droolsjbpm-tools
 jbpm-designer
 jbpm-console-ng
-kie-wb-distributions
-droolsjbpm-build-distribution
 dashboard-builder
 jbpm-dashboard
+kie-wb-distributions
+droolsjbpm-build-distribution
