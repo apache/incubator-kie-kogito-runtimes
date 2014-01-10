@@ -474,11 +474,18 @@
         <version>3.1.6</version>
       </dependency>
 
+      <!-- TODO remove these when the ip-bom version is upgraded -->
       <!-- Overwrite the jsr94 dependency of ip-bom 6.0.0.CR5 from 1.0.3 to 1.0.3.1 to avoid the bad pom -->
       <dependency>
         <groupId>jsr94</groupId>
         <artifactId>jsr94-tck</artifactId>
         <version>1.0.3.1</version>
+      </dependency>
+      <!-- Overwrite the jbpmmigration dependency of ip-bom 6.0.0.CR5 from 0.11 to 0.12 -->
+      <dependency>
+        <groupId>org.jbpm.jbpm5</groupId>
+        <artifactId>jbpmmigration</artifactId>
+        <version>0.12</version>
       </dependency>
 
     </dependencies>
