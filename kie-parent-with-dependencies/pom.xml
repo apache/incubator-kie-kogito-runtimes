@@ -40,6 +40,8 @@
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
+    <version.org.apache.maven.wagon.http>2.0</version.org.apache.maven.wagon.http>
+    <version.org.apache.httpcomponents.httpcore>4.3.1</version.org.apache.httpcomponents.httpcore>
   </properties>
 
   <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent-metadata. -->
@@ -253,6 +255,11 @@
         <version>${version.javax.servlet.jstl}</version>
       </dependency>
 
+      <dependency> <!-- used by kie-ci -->
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>${version.org.apache.httpcomponents.httpcore}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.apache.lucene</groupId>
@@ -273,6 +280,12 @@
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queryparser</artifactId>
         <version>${version.org.apache.lucene}</version>
+      </dependency>
+
+      <dependency> <!-- used by kie-ci -->
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-http</artifactId>
+        <version>${version.org.apache.maven.wagon.http}</version>
       </dependency>
 
       <dependency>
