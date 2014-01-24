@@ -1,4 +1,3 @@
-uberfire
 droolsjbpm-build-bootstrap
 droolsjbpm-knowledge
 drools
