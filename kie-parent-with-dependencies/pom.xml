@@ -42,8 +42,6 @@
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
-    <version.org.apache.maven.wagon.http>2.0</version.org.apache.maven.wagon.http>
-    <version.org.apache.httpcomponents.httpcore>4.2.1</version.org.apache.httpcomponents.httpcore>
   </properties>
 
   <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent-metadata. -->
@@ -262,12 +260,6 @@
         <version>${version.javax.servlet.servlet-api}</version>
       </dependency>
 
-      <dependency> <!-- used by kie-ci -->
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpcore</artifactId>
-        <version>${version.org.apache.httpcomponents.httpcore}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
@@ -287,12 +279,6 @@
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queryparser</artifactId>
         <version>${version.org.apache.lucene}</version>
-      </dependency>
-
-      <dependency> <!-- used by kie-ci -->
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http</artifactId>
-        <version>${version.org.apache.maven.wagon.http}</version>
       </dependency>
 
       <dependency>
@@ -494,31 +480,9 @@
         <version>3.1.6</version>
       </dependency>
 
-      <!-- TODO remove these when the ip-bom version is upgraded -->
-      <!-- Overwrite the jsr94 dependency of ip-bom 6.0.0.CR5 from 1.0.3 to 1.0.3.1 to avoid the bad pom -->
-      <dependency>
-        <groupId>jsr94</groupId>
-        <artifactId>jsr94-tck</artifactId>
-        <version>1.0.3.1</version>
-      </dependency>
-      <!-- Overwrite the jbpmmigration dependency of ip-bom 6.0.0.CR5 from 0.11 to 0.12 -->
-      <dependency>
-        <groupId>org.jbpm.jbpm5</groupId>
-        <artifactId>jbpmmigration</artifactId>
-        <version>0.12</version>
-      </dependency>
-      <!-- Overwrite the mvel dependency of ip-bom 6.0.0.CR5 from 2.1.8.Final to 2.1.9.Final -->
-      <dependency>
-        <groupId>org.mvel</groupId>
-        <artifactId>mvel2</artifactId>
-        <version>2.1.9.Final</version>
-      </dependency>
-      <!-- Overload the commons-math dependency of ip-bom 6.0.0.CR5 from 2.2 to 3.2 -->
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-math3</artifactId>
-        <version>3.2</version>
-      </dependency>
+      <!-- Changes already send in a pull request on ip-bom, but yet in the ip-bom version that this build now uses. -->
+      <!-- TODO Remove these when the ip-bom version is upgraded from 6.0.0.CR6 to next -->
+      <!-- None yet -->
     </dependencies>
   </dependencyManagement>
 

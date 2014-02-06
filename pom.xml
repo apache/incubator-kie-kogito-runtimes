@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-parent</artifactId>
     <!-- Keep in sync with property <version.org.jboss.integration-platform> -->
-    <version>6.0.0.CR5</version>
+    <version>6.0.0.CR6</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -60,7 +60,7 @@
 
     <!-- External dependency versions bom -->
     <!-- Keep in sync with <parent>'s <version> -->
-    <version.org.jboss.integration-platform>6.0.0.CR5</version.org.jboss.integration-platform>
+    <version.org.jboss.integration-platform>6.0.0.CR6</version.org.jboss.integration-platform>
     <!-- IMPORTANT: Do not declare any other external dependencies versions here! Declare them in kie-parent-with-dependencies. -->
 
     <!-- Make build platform independent -->
