@@ -31,6 +31,8 @@ Table of content
 
 * **[Releasing](#releasing)**
 
+* **[Synching the Product Repository](#synching-the-product-repository)**
+
 * **[FAQ](#faq)**
 
 Quick start
@@ -1530,9 +1532,11 @@ Announcing the release
 * If it's a Final, non-hotfix release:
 
     * Notify TheServerSide and Dzone's Daily Dose.
+    
 
-Synching with the Product Repository and Tagging
-------------------------------------------------
+Synching the Product Repository
+===============================
+
 The community code repositories under the @droolsjbpm account contains all the code released as part of the community projects for Drools and jBPM. Every time a new minor or major version is released, a new community branch is created for that version. For instance, at the time of this writing, we have, for instance, branches *6.0.x*, *5.6.x*, *5.5.x*, etc for each minor/major version released and the *master* branch for future releases.
 
 Red Hat also has a mirror private repository that is used as a base for the product releases. This mirror repository contains all the code from the community repositories, plus a few product specific commits, comprising branding commits (changing names, for instance from Drools to BRMS), different icons/images, etc.
