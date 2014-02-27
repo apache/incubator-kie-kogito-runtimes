@@ -368,6 +368,13 @@
         <version>${version.org.eclipse.jetty}</version>
       </dependency>
 
+      <!-- remove when https://github.com/jboss-integration/jboss-integration-platform-bom/pull/43 is processed -->
+      <dependency>
+        <groupId>org.hibernate.common</groupId>
+        <artifactId>hibernate-commons-annotations</artifactId>
+        <version>4.0.1.Final</version>
+      </dependency>
+
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-common</artifactId>
