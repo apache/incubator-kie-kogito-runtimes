@@ -68,7 +68,7 @@ rsync -a --protocol=28 latest $urlBase/docs_htdocs/drools/release/
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/drools-distribution-${droolsVersion}.zip\">" > drools-latest.html
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/optaplanner-distribution-${droolsVersion}.zip\">" > optaplanner-latest.html
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/droolsjbpm-integration-distribution-${droolsVersion}.zip\">" > droolsjbpm-integration-latest.html
-echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/drools-wb-distribution-${droolsVersion}.zip\">" > drools-wb-distribution-latest.html
+echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/kie-drools-wb-distribution-${droolsVersion}.zip\">" > kie-drools-wb-distribution-latest.html
 echo "<meta http-equiv=\"refresh\" content=\"0;url=latest/droolsjbpm-tools-distribution-${droolsVersion}.zip\">" > droolsjbpm-tools-latest.html
 rsync -a --protocol=28  *-latest.html $urlBase/downloads_htdocs/drools/release/
 
@@ -85,7 +85,7 @@ if [[ "${droolsVersion}" == *Final* ]]; then
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/drools-distribution-${droolsVersion}.zip\">" > drools-latestFinal.html
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/optaplanner-distribution-${droolsVersion}.zip\">" > optaplanner-latestFinal.html
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/droolsjbpm-integration-distribution-${droolsVersion}.zip\">" > droolsjbpm-integration-latestFinal.html
-    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/drools-wb-distribution-${droolsVersion}.zip\">" > drools-wb-distribution-latestFinal.html
+    echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/kie-drools-wb-distribution-${droolsVersion}.zip\">" > kie-drools-wb-distribution-latest.html
     echo "<meta http-equiv=\"refresh\" content=\"0;url=latestFinal/droolsjbpm-tools-distribution-${droolsVersion}.zip\">" > droolsjbpm-tools-latestFinal.html
     rsync -a --protocol=28  *-latestFinal.html $urlBase/downloads_htdocs/drools/release/
 fi
