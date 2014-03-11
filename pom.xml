@@ -303,6 +303,7 @@
               <configuration>
                 <excludes>
                   <exclude>**/logback-test.xml</exclude>
+                  <exclude>**/jndi.properties</exclude>
                 </excludes>
                 <archive>
                   <manifestEntries>
