@@ -22,14 +22,14 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 withoutJbpm="$withoutJbpm"
-withoutUberfire="$withoutUberfire"
+# withoutUberfire="$withoutUberfire"
 
-if [ $# != 1 ] && [ $# != 2 ] && [ $# != 3 ] ; then
+if [ $# != 1 ] && [ $# != 2 ] ; then  # && [ $# != 3 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 droolsReleaseBranchName [jbpmReleaseBranchName] [uberfireReleaseBranchName]"
+    echo "  $0 droolsReleaseBranchName [jbpmReleaseBranchName]" # [uberfireReleaseBranchName]"
     echo "For example:"
-    echo "  $0 5.2.x 5.1.x 0.2.x"
+    echo "  $0 6.0.x 6.0.x" # 0.2.x"
     echo
     exit 1
 fi
@@ -38,9 +38,9 @@ echo "The drools, guvnor, ... release branch name is $1"
 if [ "$withoutJbpm" != 'true' ]; then
     echo "The jbpm release branch name is $2"
 fi
-if [ "$withoutUberfire" != 'true' ]; then
-    echo "The Uberfire release branch name is $3"
-fi
+#if [ "$withoutUberfire" != 'true' ]; then
+#    echo "The Uberfire release branch name is $3"
+#fi
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
 
@@ -62,10 +62,13 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
-    elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
-        echo "==============================================================================="
-        echo "Without repository: $repository. SKIPPING!"
-        echo "==============================================================================="
+    
+    # since uberfire is not anymore built in droolsjbpm/ this is dispensable
+    #elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
+    #    echo "==============================================================================="
+    #    echo "Without repository: $repository. SKIPPING!"
+    #    echo "==============================================================================="
+    
     else
         echo "==============================================================================="
         echo "Repository: $repository"
@@ -77,8 +80,8 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             releaseBranchName=$2
         elif [ "${repository}" != "${repository#jbpm-console-ng}" ]; then
             releaseBranchName=$2
-        elif [ "${repository}" != "${repository#uberfire}" ]; then
-            releaseBranchName=$3
+        #elif [ "${repository}" != "${repository#uberfire}" ]; then
+        #    releaseBranchName=$3
         fi
         git checkout -b $releaseBranchName
         git push origin $releaseBranchName

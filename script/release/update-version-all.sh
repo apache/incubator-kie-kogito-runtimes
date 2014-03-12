@@ -22,14 +22,14 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 withoutJbpm="$withoutJbpm"
-withoutUberfire="$withoutUberfire"
+#withoutUberfire="$withoutUberfire"
 
-if [ $# != 2 ] && [ $# != 4 ] && [ $# != 6 ] ; then
+if [ $# != 2 ] && [ $# != 4 ]  ; then  # && [ $# != 6 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 droolsOldVersion droolsNewVersion [jbpmOldVersion jbpmNewVersion] [uberfireOldVersion uberfireNewVersion]"
+    echo "  $0 droolsOldVersion droolsNewVersion [jbpmOldVersion jbpmNewVersion]" # [uberfireOldVersion uberfireNewVersion]"
     echo "For example:"
-    echo "  $0 5.2.0-SNAPSHOT 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.Final 0.2.0-SNAPSHOT 0.2.0.Final"
+    echo "  $0 6.1.0-SNAPSHOT 6.1.0.Final 6.1.0-SNAPSHOT 6.1.0.Final" # 0.2.0-SNAPSHOT 0.2.0.Final"
     echo
     exit 1
 fi
@@ -41,11 +41,13 @@ if [ "$withoutJbpm" != 'true' ]; then
     jbpmNewVersion=$4
     echo "The jbpm version: old is $jbpmOldVersion - new is $jbpmNewVersion"
 fi
-if [ "$withoutUberfire" != 'true' ]; then
-    uberfireOldVersion=$5
-    uberfireNewVersion=$6
-    echo "The Uberfire version: old is $uberfireOldVersion - new is $uberfireNewVersion"
-fi
+
+#if [ "$withoutUberfire" != 'true' ]; then
+#    uberfireOldVersion=$5
+#    uberfireNewVersion=$6
+#    echo "The Uberfire version: old is $uberfireOldVersion - new is $uberfireNewVersion"
+#fi
+
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
 
@@ -68,10 +70,13 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
-    elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
-        echo "==============================================================================="
-        echo "Without repository: $repository. SKIPPING!"
-        echo "==============================================================================="
+
+    # since uberfire is not build anymore  
+    #elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
+    #    echo "==============================================================================="
+    #    echo "Without repository: $repository. SKIPPING!"
+    #    echo "==============================================================================="
+    
     else
         echo "==============================================================================="
         echo "Repository: $repository"
@@ -93,10 +98,13 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
                 mvn -Dfull versions:set -DoldVersion=$jbpmOldVersion -DnewVersion=$jbpmNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
-            elif [ $repository == 'uberfire' ]; then
-                mvn -Dfull versions:set -DoldVersion=$uberfireOldVersion -DnewVersion=$uberfireNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
+            
+            # since uberfire was excluded from building all projects these is dispensable
+            # elif [ $repository == 'uberfire' ]; then
+            #    mvn -Dfull versions:set -DoldVersion=$uberfireOldVersion -DnewVersion=$uberfireNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
                 # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
-                mvn clean install -DskipTests
+            #    mvn clean install -DskipTests
+            
             else
                 mvn -Dfull versions:update-parent -DparentVersion=[$droolsNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
                 mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
@@ -128,7 +136,8 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 done
 
 cd droolsjbpm-build-distribution
-mvn antrun:run -N -DdroolsOldVersion=$droolsOldVersion -DdroolsNewVersion=$droolsNewVersion -DjbpmOldVersion=$jbpmOldVersion -DjbpmNewVersion=$jbpmNewVersion -DuberfireOldVersion=$uberfireOldVersion -DuberfireNewVersion=$uberfireNewVersion
+mvn antrun:run -N -DdroolsOldVersion=$droolsOldVersion -DdroolsNewVersion=$droolsNewVersion -DjbpmOldVersion=$jbpmOldVersion -DjbpmNewVersion=$jbpmNewVersion 
+# -DuberfireOldVersion=$uberfireOldVersion -DuberfireNewVersion=$uberfireNewVersion
 returnCode=$?
 cd ..
 if [ $returnCode != 0 ] ; then

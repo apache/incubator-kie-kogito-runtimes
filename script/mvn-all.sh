@@ -22,7 +22,7 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../.."
 withoutJbpm="$withoutJbpm"
-withoutUberfire="$withoutUberfire"
+# withoutUberfire="$withoutUberfire"
 
 if [ $# = 0 ] ; then
     echo
@@ -54,11 +54,14 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
-    elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
-        echo "==============================================================================="
-        echo "Without repository: $repository. SKIPPING!"
-        echo "==============================================================================="
-    else
+
+    # uberfire is not build anymor on master-branch
+    #elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
+    #    echo "==============================================================================="
+    #    echo "Without repository: $repository. SKIPPING!"
+    #    echo "==============================================================================="
+    
+else
         echo "==============================================================================="
         echo "Repository: $repository"
         echo "==============================================================================="
