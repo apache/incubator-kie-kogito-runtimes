@@ -486,6 +486,12 @@
         <version>3.1.6</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.eclipse.jdt.core.compiler</groupId>
+        <artifactId>ecj</artifactId>
+        <version>4.3.1</version>
+      </dependency>
+
       <!-- Changes already send in a pull request on ip-bom, but yet in the ip-bom version that this build now uses. -->
       <!-- TODO Remove these when the ip-bom version is upgraded from 6.0.0.CR6 to next -->
       <dependency>
