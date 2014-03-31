@@ -417,6 +417,26 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-admin-api</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-admin-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-admin-backend</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-generic-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-business-domain-api</artifactId>
         <version>${jbpm.console.ng.version}</version>
       </dependency>
