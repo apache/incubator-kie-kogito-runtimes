@@ -432,6 +432,22 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-generic-client</artifactId>
         <version>${jbpm.console.ng.version}</version>
       </dependency>
