@@ -491,45 +491,6 @@
         <artifactId>ecj</artifactId>
         <version>4.3.1</version>
       </dependency>
-
-      <!-- Changes already send in a pull request on ip-bom, but yet in the ip-bom version that this build now uses. -->
-      <!-- TODO Remove these when the ip-bom version is upgraded from 6.0.0.CR6 to next -->
-      <dependency>
-        <groupId>org.codehaus.btm</groupId>
-        <artifactId>btm-tomcat55-lifecycle</artifactId>
-        <version>${version.org.codehaus.btm}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.thoughtworks.xstream</groupId>
-        <artifactId>xstream</artifactId>
-        <version>1.4.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate.common</groupId>
-        <artifactId>hibernate-commons-annotations</artifactId>
-        <version>4.0.2.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>com.lowagie</groupId>
-        <artifactId>itext</artifactId>
-        <version>${version.com.lowagie.itext}</version>
-        <exclusions>
-          <!-- The bouncycastle dependencies should be optional=true in itext's pom -->
-          <exclusion>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcmail-jdk14</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcprov-jdk14</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>commons-fileupload</groupId>
-        <artifactId>commons-fileupload</artifactId>
-        <version>1.3.1</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
