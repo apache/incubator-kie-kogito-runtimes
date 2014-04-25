@@ -506,6 +506,20 @@
         <version>${version.org.apache.sshd}</version>
       </dependency>
       
+      <!-- Changes already send in a pull request on ip-bom, but yet in the ip-bom version that this build now uses. -->
+      <!-- TODO Remove these when the ip-bom version is upgraded from 6.0.0.CR8 to next -->
+
+      <dependency>
+        <groupId>org.codehaus.btm</groupId>
+        <artifactId>btm-tomcat55-lifecycle</artifactId>
+        <version>${version.org.codehaus.btm}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.3.1</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
