@@ -58,23 +58,6 @@
         <version>${drools.version}</version>
         <classifier>javadoc</classifier>
       </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>knowledge-internal-api</artifactId>
-        <version>${drools.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>knowledge-internal-api</artifactId>
-        <version>${drools.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>knowledge-internal-api</artifactId>
-        <version>${drools.version}</version>
-        <classifier>javadoc</classifier>
-      </dependency>
 
       <!-- drools -->
       <dependency>
