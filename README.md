@@ -1241,9 +1241,9 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * We only create a release branch just before releasing CR1.
 
-        * For example, just before releasing 5.2.0.CR1, we created the release branch 5.2.x
+        * For example, just before releasing 6.1.0.CR1, we created the release branch 6.1.x
 
-            * The release branch 5.2.x contained the releases 5.2.0.CR1, 5.2.0.Final, 5.2.1.Final, 5.2.2.Final, ...
+            * The release branch 6.1.x contained the releases 6.1.0.CR1, 6.1.0.Final, 6.1.1.Final, 6.1.2.Final, ...
 
     * Alpha/Beta releases are released directly from master, because we don't backport commits to Alpha/Beta's.
 
@@ -1255,7 +1255,11 @@ A release branch name should always end with `.x` so it looks different from a t
 
 * Simply use the script `script/release/create-release-branches.sh` with the drools and jbpm *release branch name*:
 
-        $ droolsjbpm-build-bootstrap/script/release/create-release-branches.sh 5.2.x 5.1.x
+        $ droolsjbpm-build-bootstrap/script/release/create-release-branches.sh 6.1.x 6.1.x 
+        where 6.1.x is the drools and 6.1.x is the jbpm release branch name
+        
+        * Note: this srcript creates a release branch, pushes it to origin and sets the upstream from local release branch to remote release branch
+                   
 
 * Switch back and forth from master to the release branches for all git repositories
 
@@ -1269,7 +1273,7 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * Update master to the next SNAPSHOT version to avoid clashing the artifacts on nexus of master and the release branch:
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.3.0-SNAPSHOT 5.1.0-SNAPSHOT 5.2.0-SNAPSHOT
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.1.0-SNAPSHOT 6.2.0-SNAPSHOT 6.1.0-SNAPSHOT 6.2.0-SNAPSHOT
 
         * Note: the arguments are `droolsOldVersion droolsNewVersion jbpmOldVersion jbpmNewVersion`.
 
@@ -1277,11 +1281,13 @@ A release branch name should always end with `.x` so it looks different from a t
 
         * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${jbpm.version}. Check this is not the case.
 
-                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
+                $ grep -r '6.1.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.1.0-SNAPSHOT' $i; done 
 
-        * WARNING: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
+        * WARNING: script update-version-all.sh did not update all versions in all modules for 6.2.0.Final. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
+                $ grep -r '6.1.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.1.0-SNAPSHOT' $i; done 
+        
+        * Note: in either case it is important to search for -SNAPSHOT, as there are various hidden -SNAPSHOT dependencies in some pom.xml files and they should be prevented for releases        
 
         * Commit those changes (so you can tag them properly):
         
@@ -1291,13 +1297,25 @@ A release branch name should always end with `.x` so it looks different from a t
                 
             * Commit all changes
                 
-                    $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
+                    $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m "Set release version: 6.2.0-SNAPSHOT"
+                    
+            * Check if all repositories build after version upgrade
+    
+                    $ sh droolsjbpm-build-bootstrap/mvnall.sh mvn clean install -Dfull -DskipTests
+        
+    * Push the new -SNAPSHOT version to master of the blessed directory
+ 
+             $ sh droolsjbpbm-build-bootstrap/script/git-all.sh pull --rebase (pulls all changes fro master that could be commited in the meantime and prevents merge problems when pushing commits)
+             $ sh droolsjbpm-build-bootstrap/script/git-all.sh push origin master (pushes all commits to master)
+
 
     * Switch back to the *release branch name* with `script/git-checkout-all.sh` with drools and jbpm *release branch name*:
 
-            $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh 5.2.x 5.1.x
+            $ sh droolsjbpm-build-bootstrap/script/git-checkout-all.sh 6.1.x 6.1.x
 
-    * Do a sanity check with `grep -lir "5.2.x" * | grep -v "target"`. This lists all the files that are still using the old version, if there are any.
+* Push the created release branches to the blessed directory
+            
+            $ sh droolsjbm-build-bootstrap/script/git-all.sh push origin 6.1.x
 
 * Set up jenkins build jobs for the branch.
 
@@ -1305,9 +1323,9 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * Clone each of the master build jobs for every git repo that was branched.
 
-        * Suffix the build job name with the branch name, for example `drools-5.2.x` and `droolsjbpm-integration-5.2.x`.
+        * Suffix the build job name with the branch name, for example `drools-6.1.x` and `droolsjbpm-integration-6.1.x`.
 
-        * Change the build job configuration to use the git repo branch, for example `5.2.x`.
+        * Change the build job configuration to use the git repo branch, for example `6.1.x`.
 
 * Set up a new Jenkins view for the related release builds
 
@@ -1318,6 +1336,14 @@ A release branch name should always end with `.x` so it looks different from a t
 * Alert the dev mailing list and the IRC channel that the branch has been made.
 
     * Remind everyone clearly that every new commit to `master` will not make the upcoming CR and Final release, unless they cherry-pick it to this new branch.
+
+
+#### NOTE: 
+* at this point we have created a release branch
+* we have updated the master branch to the new development version (* -SNAPSHOT)
+* we have pushed the created release branches to origin
+* we have set up a new Jenkins view for the created "release branch" 
+
 
 Releasing from a release branch
 -------------------------------
