@@ -544,6 +544,13 @@
         <version>2.4.0.Final</version>
       </dependency>
 
+      <!-- See https://github.com/jboss-integration/jboss-integration-platform-bom/pull/64 -->
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty</artifactId>
+        <version>3.6.9.Final</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
