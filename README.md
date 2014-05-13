@@ -469,35 +469,35 @@ Any dependency used in any KIE project must fulfill these hard requirements:
 
 Any dependency used in any KIE project should fulfill these soft requirements:
 
-* Use dependencies that are acceptable for the [jboss-integration-platform-bom](https://github.com/jboss-integration/jboss-integration-platform-bom)
+* Use dependencies that are **acceptable for the [jboss-integration-platform-bom](https://github.com/jboss-integration/jboss-integration-platform-bom)**.
 
     * Do not override versions in `kie-parent-with-dependencies`'s `pom.xml` unless an exception is granted
 
         * If a newer version of the ip-bom already uses the new version, it's of course fine to do a temporarly overwrite in `kie-parent-with-dependencies`'s `pom.xml`.
 
-* Prefer dependencies with the groupId `org.jboss.spec` over those with the groupId `javax.*`.
+* **Prefer dependencies with the groupId `org.jboss.spec`** over those with the groupId `javax.*`.
 
-    * The dependencies with the groupId `javax.*` are unreliable and are missing metadata. No one owns/maintains them consistently.
+    * Dependencies with the groupId `javax.*` are unreliable and are missing metadata. No one owns/maintains them consistently.
 
-    * The dependencies with the groupId `org.jboss.spec` are checked and fixed by JBoss.
+    * Dependencies with the groupId `org.jboss.spec` are checked and fixed by JBoss.
 
-* Only use dependencies with an active community.
+* Only use dependencies with **an active community**.
 
-    * Check for activity in the last year through [Ohloh](http://www.ohloh.net].
+    * Check for activity in the last year through [Ohloh](http://www.ohloh.net).
 
-* Less is more: less dependencies is better. Bloat is bad.
+* Less is more: **less dependencies is better**. Bloat is bad.
 
     * Try to use existing dependencies if the functionality is available in those dependencies
 
-        * For example: use poi instead of jexcelapi if poi is already a KIE dependency
+        * For example: use `poi` instead of `jexcelapi` if `poi` is already a KIE dependency
 
-* Do not use fat jars. This includes shading jars.
+* **Do not use fat jars, nor shading jars.**
 
-    * A fat jar is a jar that includes another jar's content. For example `weld-se.jar` that includes `org/slf4j/Logger.class`
+    * A fat jar is a jar that includes another jar's content. For example: `weld-se.jar` which includes `org/slf4j/Logger.class`
 
-    * A shaded jar is a fat jar that shades that other jar's content. For example `weld-se.jar` that includes `org/weld/org/slf4j/Logger.class`
+    * A shaded jar is a fat jar that shades that other jar's content. For example: `weld-se.jar` which includes `org/weld/org/slf4j/Logger.class`
 
-    * Both are bad because they cause dependency tree trouble.
+    * Both are bad because they cause dependency tree trouble. Use the non-fat jar instead, for example: `weld-se-core.jar`
 
 There are currently a few dependencies which violate some of these rules.
 If you want to add a dependency that violates any of the rules above, get approval from the project leads.
