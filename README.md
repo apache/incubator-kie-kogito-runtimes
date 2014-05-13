@@ -372,7 +372,6 @@ Those SNAPSHOTS were build and deployed last night by jenkins jobs.
 
         Note that using `-nsu` will also make the build faster.
 
-
 Running tests
 -------------
 
@@ -387,7 +386,6 @@ Guvnor uses Arquillian to run tests in a J2EE container and hence tests need to 
 
         $ cd ~/projects/droolsjbpm/drools
         $ mvn test [-Dtest=ATestClassName]
-
 
 Configuring Maven
 -----------------
@@ -414,6 +412,95 @@ To deploy snapshots and releases to nexus, you need to add this to the file `~/.
 Furthermore, you'll need nexus rights to be able to do this.
 
 More info in [the JBoss.org guide to get started with Maven](http://community.jboss.org/wiki/MavenGettingStarted-Developers).
+
+Requirements for dependencies
+-----------------------------
+
+Any dependency used in any KIE project must fulfill these hard requirements:
+
+* The dependency must have **an ASL compatible license**.
+
+    * Good: BSD, MIT, ASL
+
+    * Avoid: EPL, LGPL
+
+        * Especially LGPL is a last resort and should be abstracted away or contained behind an SPI.
+
+    * Forbidden: no license, GPL, AGPL, proprietary license, field of use restrictions ("this software shall be used for good, not evil"), ...
+
+* The dependency shall be **available in [Maven Central](http://search.maven.org/) or [JBoss Nexus](https://repository.jboss.org/nexus)**.
+
+    * Any version used must be in the repository Maven Central and/or JBoss (Nexus) Public repository group
+
+        * Never add a `<repository>` element in a `pom.xml`.
+
+        * Note: JBoss Public repository group mirrors java.net, codehaus.org, ... Most jars are available there.
+
+    * Why?
+
+        * Build reproducibility. Any repository server we use, must still run 7 years from now.
+
+        * Build speed. More repositories slow down the build.
+
+        * Build reliability. A repository server that is temporary down can break builds.
+
+    * Workaround to still use a great looking jar as a dependency:
+
+        * Get that dependency into JBoss Nexus as a 3rd party library.
+
+* The dependency must be able to run on any **JVM 1.6 and higher**.
+
+    * It must be compiled for Java target 1.6 or lower (even if it's compiled with JDK 7 or JDK 8).
+
+    * It must not use any JDK API's that were not yet available in Java 1.6.
+
+* **Do not release the dependency yourself** (by building it from source).
+
+    * Why? Because it's not an official release, by the official release guys.
+
+        * A release must be 100% reproducible.
+
+        * A release must be reliable (sometimes the release person does specific things you might not reproduce).
+
+* **No security issues** (CVE's) reported on that version of the dependency
+
+    * We don't expect you to check this manually:
+    The victims enforcer plugin will automatically fail the build if a known bad dependency is used.
+
+Any dependency used in any KIE project should fulfill these soft requirements:
+
+* Use dependencies that are acceptable for the [jboss-integration-platform-bom](https://github.com/jboss-integration/jboss-integration-platform-bom)
+
+    * Do not override versions in `kie-parent-with-dependencies`'s `pom.xml` unless an exception is granted
+
+        * If a newer version of the ip-bom already uses the new version, it's of course fine to do a temporarly overwrite in `kie-parent-with-dependencies`'s `pom.xml`.
+
+* Prefer dependencies with the groupId `org.jboss.spec` over those with the groupId `javax.*`.
+
+    * The dependencies with the groupId `javax.*` are unreliable and are missing metadata. No one owns/maintains them consistently.
+
+    * The dependencies with the groupId `org.jboss.spec` are checked and fixed by JBoss.
+
+* Only use dependencies with an active community.
+
+    * Check for activity in the last year through [Ohloh](http://www.ohloh.net].
+
+* Less is more: less dependencies is better. Bloat is bad.
+
+    * Try to use existing dependencies if the functionality is available in those dependencies
+
+        * For example: use poi instead of jexcelapi if poi is already a KIE dependency
+
+* Do not use fat jars. This includes shading jars.
+
+    * A fat jar is a jar that includes another jar's content. For example `weld-se.jar` that includes `org/slf4j/Logger.class`
+
+    * A shaded jar is a fat jar that shades that other jar's content. For example `weld-se.jar` that includes `org/weld/org/slf4j/Logger.class`
+
+    * Both are bad because they cause dependency tree trouble.
+
+There are currently a few dependencies which violate some of these rules.
+If you want to add a dependency that violates any of the rules above, get approval from the project leads.
 
 Developing with Eclipse
 =======================
