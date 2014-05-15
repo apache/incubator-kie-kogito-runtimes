@@ -425,8 +425,12 @@ Any dependency used in any KIE project must fulfill these hard requirements:
     * Avoid: EPL, LGPL
 
         * Especially LGPL is a last resort and should be abstracted away or contained behind an SPI.
+        
+        * Test scope dependencies pose no problem if they are EPL or LPGL.
 
     * Forbidden: no license, GPL, AGPL, proprietary license, field of use restrictions ("this software shall be used for good, not evil"), ...
+    
+        * Even test scope dependencies cannot use these licenses.
 
 * The dependency shall be **available in [Maven Central](http://search.maven.org/) or [JBoss Nexus](https://repository.jboss.org/nexus)**.
 
