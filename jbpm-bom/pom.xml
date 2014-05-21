@@ -257,6 +257,17 @@
         <type>jdocbook</type>
         <version>${jbpm.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-document</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-document</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
 
       <!-- jbpm-designer -->
       <dependency>
@@ -398,6 +409,12 @@
         <type>jar</type>
         <classifier>classes</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-form-modeler-document</artifactId>
+        <version>${jbpm.form.modeler.version}</version>
+      </dependency>
+
 
       <!-- jBPM console NG -->
       <dependency>
