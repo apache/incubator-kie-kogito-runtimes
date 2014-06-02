@@ -300,6 +300,14 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- dashboard-ui-google -->
+      <dependency>
+        <groupId>org.jboss.dashboard-builder</groupId>
+        <artifactId>dashboard-ui-google</artifactId>
+        <version>${dashboard-builder.version}</version>
+        <type>war</type>
+      </dependency>
+
       <!-- dashboard-samples -->
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>

@@ -180,6 +180,12 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task-core</artifactId>
         <version>${jbpm.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-human-task-core</artifactId>
+        <version>${jbpm.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
@@ -417,6 +423,21 @@
 
 
       <!-- jBPM console NG -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-asset-mgmt-api</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-asset-mgmt-client</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-asset-mgmt-backend</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
