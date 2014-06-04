@@ -37,8 +37,7 @@
     <version.org.apache.xmlgraphics.batik>1.6-1</version.org.apache.xmlgraphics.batik>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
-    <version.org.eclipse.jetty>7.2.1.v20101111</version.org.eclipse.jetty>
-    <!-- <version.org.eclipse.jetty>7.5.0.v20110901</version.org.eclipse.jetty> -->
+    <version.org.eclipse.jetty>8.1.14.v20131031</version.org.eclipse.jetty>
     <version.org.jboss.errai>2.4.4.Final</version.org.jboss.errai>
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
@@ -384,10 +383,14 @@
         <artifactId>xmlgraphics-commons</artifactId>
         <version>${version.org.apache.xmlgraphics.commons}</version>
       </dependency>
-
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-util</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
         <version>${version.org.eclipse.jetty}</version>
       </dependency>
       <dependency><!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty that is present there -->
@@ -511,7 +514,7 @@
         <artifactId>reflections</artifactId>
         <version>0.9.9-RC1</version>
       </dependency>
-  
+
       <dependency>
         <groupId>org.subethamail</groupId>
         <artifactId>subethasmtp</artifactId>
@@ -535,7 +538,7 @@
         <artifactId>sshd-core</artifactId>
         <version>${version.org.apache.sshd}</version>
       </dependency>
-      
+
       <!-- Changes already send in a pull request on ip-bom, but yet in the ip-bom version that this build now uses. -->
       <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove this next dependencies (5) as they are in the jboss ip bom -->
       <dependency>
