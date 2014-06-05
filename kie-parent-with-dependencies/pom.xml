@@ -45,6 +45,7 @@
     <version.org.eclipse.jgit>3.3.1.201403241930-r</version.org.eclipse.jgit>
     <version.org.apache.sshd>0.10.0</version.org.apache.sshd>
     <version.org.apache.velocity.tools>2.0</version.org.apache.velocity.tools>
+    <version.com.fasterxml.jackson>2.4.0</version.com.fasterxml.jackson>
 
     <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove the next versions (3)  as they are in the jboss ip bom -->
     <version.org.apache.deltaspike.core>0.7</version.org.apache.deltaspike.core>
@@ -566,6 +567,20 @@
         <artifactId>plexus-component-annotations</artifactId>
         <version>${version.org.codehaus.plexus.eap.integration}</version>
       </dependency>
+
+      <!-- Changs not subitted to ip-bom -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>test</scope>
+      <version>${version.com.fasterxml.jackson}</version>
+    </dependency>
+    <dependency>
+       <groupId>com.fasterxml.jackson.core</groupId>
+       <artifactId>jackson-databind</artifactId>
+       <scope>test</scope>
+       <version>${version.com.fasterxml.jackson}</version>
+    </dependency>
 
       <!-- **************************************************-->
 
