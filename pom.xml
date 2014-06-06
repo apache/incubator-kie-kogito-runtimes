@@ -85,18 +85,6 @@
         <updatePolicy>daily</updatePolicy>
       </snapshots>
     </repository>
-    <repository>
-      <id>jboss-deprecated</id>
-      <name>JBoss Deprecated</name>
-      <url>https://repository.jboss.org/nexus/content/repositories/deprecated/</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
