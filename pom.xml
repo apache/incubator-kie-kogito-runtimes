@@ -597,6 +597,25 @@
           <configuration>
             <strict>true</strict>
           </configuration>
+          <dependencies>
+            <!-- CDI Development Utils -->
+            <!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty that is present there -->
+             <dependency>
+               <groupId>org.mortbay.jetty</groupId>
+               <artifactId>jetty</artifactId>
+               <version>${version.org.mortbay.jetty}</version>
+             </dependency>
+             <dependency>
+               <groupId>org.mortbay.jetty</groupId>
+               <artifactId>jetty-plus</artifactId>
+               <version>${version.org.mortbay.jetty}</version>
+             </dependency>
+             <dependency>
+               <groupId>org.mortbay.jetty</groupId>
+               <artifactId>jetty-naming</artifactId>
+               <version>${version.org.mortbay.jetty}</version>
+             </dependency>
+           </dependencies>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

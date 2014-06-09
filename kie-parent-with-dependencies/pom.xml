@@ -486,21 +486,6 @@
 
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-plus</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-naming</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-embedded</artifactId>
         <version>${version.org.mortbay.jetty}</version>
       </dependency>
