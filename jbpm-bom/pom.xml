@@ -430,6 +430,11 @@
       </dependency>
       <dependency>
          <groupId>org.jbpm</groupId>
+         <artifactId>jbpm-console-ng-generic-api</artifactId>
+         <version>${jbpm.console.ng.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jbpm</groupId>
          <artifactId>jbpm-console-ng-asset-mgmt-api</artifactId>
          <version>${jbpm.console.ng.version}</version>
       </dependency>
