@@ -47,10 +47,11 @@
     <version.org.apache.velocity.tools>2.0</version.org.apache.velocity.tools>
     <version.com.fasterxml.jackson>2.4.0</version.com.fasterxml.jackson>
 
-    <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove the next versions (3)  as they are in the jboss ip bom -->
+    <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove the next versions (4)  as they are in the jboss ip bom -->
     <version.org.apache.deltaspike.core>0.7</version.org.apache.deltaspike.core>
     <version.org.codehaus.plexus.eap.integration>1.5.5</version.org.codehaus.plexus.eap.integration>
     <version.org.google.gwt.visualization>1.0.2</version.org.google.gwt.visualization>
+    <version.org.google.gwt-charts>0.9.9</version.org.google.gwt-charts>
     <!-- ************************************************-->
 
   </properties>
@@ -526,7 +527,7 @@
       </dependency>
 
       <!-- Changes already send in a pull request on ip-bom, but yet in the ip-bom version that this build now uses. -->
-      <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove this next dependencies (5) as they are in the jboss ip bom -->
+      <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove this next dependencies (6) as they are in the jboss ip bom -->
       <dependency>
         <groupId>org.apache.deltaspike.core</groupId>
         <artifactId>deltaspike-core-api</artifactId>
@@ -536,6 +537,11 @@
         <groupId>com.google.gwt.google-apis</groupId>
         <artifactId>gwt-visualization</artifactId>
         <version>${version.org.google.gwt.visualization}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.gwt-charts</groupId>
+        <artifactId>gwt-charts</artifactId>
+        <version>${version.org.google.gwt-charts}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.weld</groupId>
