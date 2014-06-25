@@ -3,6 +3,7 @@ droolsjbpm-knowledge
 drools
 optaplanner
 jbpm
+kie-uberfire-extensions
 guvnor
 kie-wb-common
 droolsjbpm-integration
