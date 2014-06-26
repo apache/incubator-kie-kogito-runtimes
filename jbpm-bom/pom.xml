@@ -162,6 +162,13 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-kie-services</artifactId>
+        <version>${jbpm.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-executor</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
@@ -267,6 +274,97 @@
         <artifactId>jbpm-document</artifactId>
         <version>${jbpm.version}</version>
         <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-api</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-api</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-api</artifactId>
+        <version>${jbpm.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency> 
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-cdi</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-cdi</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-cdi</artifactId>
+        <version>${jbpm.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <!-- jbpm ejb services -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-api</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-api</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-api</artifactId>
+        <version>${jbpm.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-impl</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-impl</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-impl</artifactId>
+        <version>${jbpm.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-client</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-client</artifactId>
+        <version>${jbpm.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-client</artifactId>
+        <version>${jbpm.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
 
       <!-- jbpm-designer -->
