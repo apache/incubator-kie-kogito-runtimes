@@ -38,7 +38,6 @@
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
     <version.org.eclipse.jetty>8.1.14.v20131031</version.org.eclipse.jetty>
-    <version.org.jboss.errai>2.4.4.Final</version.org.jboss.errai>
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
@@ -47,11 +46,14 @@
     <version.org.apache.velocity.tools>2.0</version.org.apache.velocity.tools>
     <version.com.fasterxml.jackson>2.4.0</version.com.fasterxml.jackson>
 
-    <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove the next versions (4)  as they are in the jboss ip bom -->
+    <!-- when upgraded deltaspike to 1.0.0 and moved to the jboss-ip-bom remove it from kie-p-w-d -->
     <version.org.apache.deltaspike.core>0.7</version.org.apache.deltaspike.core>
+
+    <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove the next versions (4)  as they are in the jboss ip bom -->
     <version.org.codehaus.plexus.eap.integration>1.5.5</version.org.codehaus.plexus.eap.integration>
     <version.org.google.gwt.visualization>1.0.2</version.org.google.gwt.visualization>
     <version.org.google.gwt-charts>0.9.9</version.org.google.gwt-charts>
+    <version.org.jboss.errai>2.4.4.Final</version.org.jboss.errai>
     <!-- ************************************************-->
 
   </properties>
