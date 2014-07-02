@@ -50,7 +50,7 @@
     <jbpm.version>6.2.0-SNAPSHOT</jbpm.version>
     <dashboard-builder.version>6.2.0-SNAPSHOT</dashboard-builder.version>
     <droolsjbpm-integration.version>${drools.version}</droolsjbpm-integration.version>
-    <version.org.uberfire>0.4.0-SNAPSHOT</version.org.uberfire>
+    <version.org.uberfire>0.4.2-SNAPSHOT</version.org.uberfire>
     <guvnor.version>${drools.version}</guvnor.version>
     <uberfire.extensions.version>${drools.version}</uberfire.extensions.version>
     <droolsjbpm-tools.version>${drools.version}</droolsjbpm-tools.version>
