@@ -49,15 +49,8 @@
     <version.com.google.gwt.gwtmockito>1.1.3</version.com.google.gwt.gwtmockito>
     <version.com.googlecode.gwt-crypto>2.3.0</version.com.googlecode.gwt-crypto>
 
-    <!-- when upgraded deltaspike to 1.0.0 and moved to the jboss-ip-bom remove it from kie-p-w-d -->
+    <!-- when moved to the jboss-ip-bom remove it from kie-p-w-d -->
     <version.org.apache.deltaspike.core>1.0.0</version.org.apache.deltaspike.core>
-
-    <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove the next versions (4)  as they are in the jboss ip bom -->
-    <version.org.codehaus.plexus.eap.integration>1.5.5</version.org.codehaus.plexus.eap.integration>
-    <version.org.google.gwt.visualization>1.0.2</version.org.google.gwt.visualization>
-    <version.org.google.gwt-charts>0.9.9</version.org.google.gwt-charts>
-    <version.org.jboss.errai>2.4.4.Final</version.org.jboss.errai>
-    <!-- ************************************************-->
 
   </properties>
 
@@ -522,6 +515,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.subethamail</groupId>
         <artifactId>subethasmtp</artifactId>
         <version>3.1.6</version>
@@ -557,37 +556,12 @@
         <version>${version.com.googlecode.gwt-crypto}</version>
       </dependency>
 
-      <!-- Changes already send in a pull request on ip-bom, but yet in the ip-bom version that this build now uses. -->
-      <!-- when upgraded to jboss ip-bom 6.0.0.CR10 please remove this next dependencies (6) as they are in the jboss ip bom -->
+      <!-- Changes already send in a pull request on ip-bom, but not yet in the ip-bom version that this build now uses. -->
+      <!-- when upgraded to jboss ip-bom 6.0.0.CR11 please remove this next dependencies (1) as they are in the jboss ip bom -->
       <dependency>
         <groupId>org.apache.deltaspike.core</groupId>
         <artifactId>deltaspike-core-api</artifactId>
         <version>${version.org.apache.deltaspike.core}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt.google-apis</groupId>
-        <artifactId>gwt-visualization</artifactId>
-        <version>${version.org.google.gwt.visualization}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.googlecode.gwt-charts</groupId>
-        <artifactId>gwt-charts</artifactId>
-        <version>${version.org.google.gwt-charts}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.weld</groupId>
-        <artifactId>weld-api</artifactId>
-        <version>${version.org.jboss.weld.weld-api}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.sonatype.sisu</groupId>
-        <artifactId>sisu-inject-bean</artifactId>
-        <version>${version.org.sonatype.sisu}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-component-annotations</artifactId>
-        <version>${version.org.codehaus.plexus.eap.integration}</version>
       </dependency>
 
       <!-- Changs not subitted to ip-bom -->
@@ -602,21 +576,6 @@
         <artifactId>jackson-databind</artifactId>
         <scope>test</scope>
         <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
-
-      <!-- **************************************************-->
-
-      <!-- See https://github.com/jboss-integration/jboss-integration-platform-bom/pull/64 -->
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty</artifactId>
-        <version>3.6.9.Final</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-jdk14</artifactId>
-        <version>${version.org.slf4j}</version>
       </dependency>
 
     </dependencies>
