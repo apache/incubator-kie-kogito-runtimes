@@ -30,7 +30,6 @@
       - Version properties must be sorted alphabetically (other form of sorting were found to be unclear and ambiguous).
     -->
     <version.avalon-framework>4.1.4</version.avalon-framework>
-    <version.org.jboss.spec.javax.servlet.jstl>1.1.0.Final</version.org.jboss.spec.javax.servlet.jstl>
     <version.javax.servlet.servlet-api>3.0.1</version.javax.servlet.servlet-api>
 
     <version.org.apache.abdera>1.1.3</version.org.apache.abdera>
