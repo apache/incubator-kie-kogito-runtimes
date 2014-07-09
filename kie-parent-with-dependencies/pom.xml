@@ -50,6 +50,9 @@
 
     <!-- when moved to the jboss-ip-bom remove it from kie-p-w-d -->
     <version.org.apache.deltaspike.core>1.0.0</version.org.apache.deltaspike.core>
+    <version.org.apache.maven>3.2.2</version.org.apache.maven>
+    <version.org.eclipse.aether>1.0.0.v20140518</version.org.eclipse.aether>
+    <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus>
 
   </properties>
 
@@ -584,6 +587,77 @@
         <version>${version.com.fasterxml.jackson}</version>
       </dependency>
 
+      <!-- kie-ci -->
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${version.org.apache.maven}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${version.org.apache.maven}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>${version.org.apache.maven}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-compat</artifactId>
+        <version>${version.org.apache.maven}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-aether-provider</artifactId>
+        <version>${version.org.apache.maven}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>${version.org.codehaus.plexus}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-api</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-spi</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-util</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-impl</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-transport-file</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-transport-http</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-transport-wagon</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-connector-basic</artifactId>
+        <version>${version.org.eclipse.aether}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
