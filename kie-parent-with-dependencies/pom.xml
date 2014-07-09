@@ -270,6 +270,7 @@
         <version>${version.org.apache.xmlgraphics.batik}</version>
       </dependency>
 
+
       <!-- Mandatory in order to execute Jetty embedded (GWT hosted mode) -->
       <dependency>
         <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
@@ -394,6 +395,12 @@
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>xmlgraphics-commons</artifactId>
         <version>${version.org.apache.xmlgraphics.commons}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse</groupId>
+        <artifactId>org.eclipse.bpmn2</artifactId>
+        <version>0.7.4-jboss-1</version><!-- When upgraded too jboss-ip bom 6.0.0.CR11 remove the version as it is in the ip-bm -->
       </dependency>
 
       <dependency>
