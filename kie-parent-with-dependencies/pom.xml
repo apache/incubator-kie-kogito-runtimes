@@ -436,6 +436,13 @@
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-ioc</artifactId>
         <version>${version.org.jboss.errai}</version>
+        <exclusions>
+          <exclusion>
+            <!-- See https://github.com/sonatype/sisu-guice/issues/9 -->
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jboss.errai</groupId>
@@ -497,6 +504,11 @@
           <exclusion>
             <groupId>org.jboss.errai.io.netty</groupId>
             <artifactId>netty</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- See https://github.com/sonatype/sisu-guice/issues/9 -->
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
