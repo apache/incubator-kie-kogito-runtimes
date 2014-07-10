@@ -80,34 +80,45 @@
       <!-- KIE Remote -->
       <dependency>
         <groupId>org.kie.remote</groupId>
-        <artifactId>kie-services-jaxb</artifactId>
+        <artifactId>kie-remote-jaxb</artifactId>
         <version>${droolsjbpm-integration.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
-        <artifactId>kie-services-jaxb</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-services-client</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-services-client</artifactId>
+        <artifactId>kie-remote-jaxb</artifactId>
         <version>${droolsjbpm-integration.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
-        <artifactId>kie-services-remote</artifactId>
+        <artifactId>kie-remote-client</artifactId>
         <version>${droolsjbpm-integration.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
-        <artifactId>kie-services-remote</artifactId>
+        <artifactId>kie-remote-client</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-remote-services</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-remote-services</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-remote-common</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-remote-common</artifactId>
         <version>${droolsjbpm-integration.version}</version>
         <classifier>sources</classifier>
       </dependency>
