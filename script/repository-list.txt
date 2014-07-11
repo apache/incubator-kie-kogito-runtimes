@@ -4,15 +4,15 @@ drools
 optaplanner
 jbpm
 droolsjbpm-integration
+droolsjbpm-tools
+droolsjbpm-build-distribution
 kie-uberfire-extensions
 guvnor
 kie-wb-common
 jbpm-form-modeler
 drools-wb
-droolsjbpm-tools
 jbpm-designer
 jbpm-console-ng
 dashboard-builder
 jbpm-dashboard
 kie-wb-distributions
-droolsjbpm-build-distribution
