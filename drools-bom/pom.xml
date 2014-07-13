@@ -898,6 +898,29 @@
         <version>${guvnor.version}</version>
       </dependency>
 
+      <!-- drools-wb wars -->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>jboss-as7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>tomcat7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>wildfly8</classifier>
+        <type>war</type>
+      </dependency>
+
       <!-- droolsjbpm-tools -->
       <dependency>
         <groupId>org.drools</groupId>

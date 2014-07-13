@@ -298,6 +298,29 @@
         <type>war</type>
       </dependency>
 
+      <!-- jbpm-designer wars -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-designer-distribution-wars</artifactId>
+        <version>${jbpm.designer.version}</version>
+        <classifier>jboss-as7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-designer-distribution-wars</artifactId>
+        <version>${jbpm.designer.version}</version>
+        <classifier>tomcat7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-designer-distribution-wars</artifactId>
+        <version>${jbpm.designer.version}</version>
+        <classifier>wildfly8</classifier>
+        <type>war</type>
+      </dependency>
+
       <!-- jbpm-form-modeler -->
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -593,6 +616,29 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-showcase</artifactId>
         <version>${jbpm.console.ng.version}</version>
+        <type>war</type>
+      </dependency>
+
+      <!-- jbpm-console-ng wars -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-distribution-wars</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+        <classifier>jboss-as7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-distribution-wars</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+        <classifier>tomcat7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-distribution-wars</artifactId>
+        <version>${jbpm.console.ng.version}</version>
+        <classifier>wildfly8</classifier>
         <type>war</type>
       </dependency>
 

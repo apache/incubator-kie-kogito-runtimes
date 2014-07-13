@@ -543,23 +543,83 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb-distribution-wars</artifactId>
-        <version>${drools.version}</version>
-        <classifier>jboss-as7.0</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb-distribution-wars</artifactId>
-        <version>${drools.version}</version>
-        <classifier>tomcat7.0</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
         <artifactId>kie-wb-example-repositories</artifactId>
         <version>${drools.version}</version>
         <type>zip</type>
+      </dependency>
+
+      <!-- kie-drools-wb distribution wars -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>eap-6_1</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>jboss-as7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>tomcat7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>was8</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>wildfly8</classifier>
+        <type>war</type>
+      </dependency>
+
+      <!-- kie-wb distribution wars -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>eap-6_1</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>jboss-as7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>tomcat7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>was8</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-wars</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>wildfly8</classifier>
+        <type>war</type>
       </dependency>
 
       <!-- droolsjbpm-integration -->

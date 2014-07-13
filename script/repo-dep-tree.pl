@@ -29,29 +29,13 @@ if( $opt_v ) {
 
 # variables
 
-my ($repo, $dep, $branch_version);
 my $repo_file = "./repository-list.txt";
-
-open(LIST, "<$repo_file" ) 
-  || die "Unable to open $repo_file: $!\n";
-
-my @repo_list;
-
-while(<LIST>) { 
-  chomp($_);
-  push( @repo_list, $_ );
-}
-push( @repo_list, "uberfire" );
-
-my $script_home_dir = dirname(abs_path($0));
-
-chdir "$script_home_dir/../../";
-
-my $root_dir = Cwd::getcwd();
-
-my (%repo_mods, %repo_deps, %mod_repos, %repo_tree);
-
+my (%repo_mods, %repo_deps, %mod_repos, %repo_tree, %repo_sorted);
+my (@repo_list, @repo_sorted);
+my ($repo, $dep, $branch_version);
 my ($module, $xml, $data);
+
+# subs
 
 sub collectModules {
   unless( /^pom.xml$/ ) {
@@ -137,6 +121,18 @@ sub onlyLookAtPoms {
 }
 
 # main
+
+open(LIST, "<$repo_file" ) 
+  || die "Unable to open $repo_file: $!\n";
+while(<LIST>) { 
+  chomp($_);
+  push( @repo_list, $_ );
+}
+push( @repo_list, "uberfire" );
+
+my $script_home_dir = dirname(abs_path($0));
+chdir "$script_home_dir/../../";
+my $root_dir = Cwd::getcwd();
 
 my $repo;
 for my $i (0 .. $#repo_list ) { 
