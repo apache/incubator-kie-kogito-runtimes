@@ -128,6 +128,41 @@
         <version>${droolsjbpm-integration.version}</version>
       </dependency>
 
+      <!-- Other droolsjbpm-integration -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-spring</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-spring</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-camel</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-camel</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-aries-blueprint</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-aries-blueprint</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <!--KIE Common - Core Services -->
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
@@ -521,7 +556,7 @@
         <classifier>tests</classifier>
       </dependency>
 
-      <!--Distribution -->
+      <!-- Distribution -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-webapp</artifactId>
@@ -547,6 +582,18 @@
         <version>${drools.version}</version>
         <type>zip</type>
       </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-tomcat-integration</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-tomcat-integration</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
 
       <!-- kie-drools-wb distribution wars -->
       <dependency>
@@ -620,41 +667,6 @@
         <version>${guvnor.version}</version>
         <classifier>wildfly8</classifier>
         <type>war</type>
-      </dependency>
-
-      <!-- droolsjbpm-integration -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-spring</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-spring</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-camel</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-camel</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-aries-blueprint</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-aries-blueprint</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
-        <classifier>sources</classifier>
       </dependency>
 
       <!-- kie-tests -->
