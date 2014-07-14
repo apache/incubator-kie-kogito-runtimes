@@ -181,6 +181,7 @@
         <artifactId>jbpm-human-task-core</artifactId>
         <version>${jbpm.version}</version>
         <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -239,13 +240,6 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>  
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-human-task-core</artifactId>
-        <version>${jbpm.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-examples</artifactId>
@@ -463,26 +457,6 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-admin-api</artifactId>
-        <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-admin-client</artifactId>
-        <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-admin-backend</artifactId>
-        <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-admin-client</artifactId>
-        <version>${jbpm.console.ng.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-asset-mgmt-client</artifactId>
         <version>${jbpm.console.ng.version}</version>
       </dependency>
@@ -537,11 +511,6 @@
         <version>${jbpm.console.ng.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-generic-client</artifactId>
-        <version>${jbpm.console.ng.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-business-domain-api</artifactId>
