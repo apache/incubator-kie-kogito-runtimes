@@ -670,6 +670,12 @@
         <artifactId>aether-connector-basic</artifactId>
         <version>${version.org.eclipse.aether}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.mvel</groupId>
+        <artifactId>mvel2</artifactId>
+        <version>2.2.1.Final</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
