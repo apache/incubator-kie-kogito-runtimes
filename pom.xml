@@ -45,10 +45,11 @@
 
   <properties>
     <!-- Internal dependencies -->
-    <drools.version>6.2.0-SNAPSHOT</drools.version>
-    <optaplanner.version>${drools.version}</optaplanner.version>
-    <jbpm.version>6.2.0-SNAPSHOT</jbpm.version>
-    <dashboard-builder.version>6.2.0-SNAPSHOT</dashboard-builder.version>
+    <kie.version>6.2.0-SNAPSHOT</kie.version>
+    <drools.version>${kie.version}</drools.version>
+    <optaplanner.version>${kie.version}</optaplanner.version>
+    <jbpm.version>${kie.version}</jbpm.version>
+    <dashboard-builder.version>${kie.version}</dashboard-builder.version>
     <droolsjbpm-integration.version>${drools.version}</droolsjbpm-integration.version>
     <version.org.uberfire>0.4.2-SNAPSHOT</version.org.uberfire>
     <guvnor.version>${drools.version}</guvnor.version>
