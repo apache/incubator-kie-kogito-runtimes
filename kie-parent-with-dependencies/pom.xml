@@ -81,7 +81,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-bom</artifactId>
         <type>pom</type>
-        <version>${project.version}</version>
+        <version>${kie.version}</version>
         <scope>import</scope>
       </dependency>
       <dependency>
