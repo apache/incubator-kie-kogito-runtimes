@@ -49,7 +49,6 @@
     <version.com.googlecode.gwt-crypto>2.3.0</version.com.googlecode.gwt-crypto>
 
     <!-- when moved to the jboss-ip-bom remove it from kie-p-w-d -->
-    <version.org.apache.deltaspike.core>1.0.0</version.org.apache.deltaspike.core>
     <version.org.apache.maven>3.2.2</version.org.apache.maven>
     <version.org.eclipse.aether>1.0.0.v20140518</version.org.eclipse.aether>
     <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus>
@@ -577,13 +576,6 @@
         <version>${version.com.googlecode.gwt-crypto}</version>
       </dependency>
 
-      <!-- Changes already send in a pull request on ip-bom, but not yet in the ip-bom version that this build now uses. -->
-      <!-- when upgraded to jboss ip-bom 6.0.0.CR11 please remove this next dependencies (1) as they are in the jboss ip bom -->
-      <dependency>
-        <groupId>org.apache.deltaspike.core</groupId>
-        <artifactId>deltaspike-core-api</artifactId>
-        <version>${version.org.apache.deltaspike.core}</version>
-      </dependency>
 
       <!-- Changs not subitted to ip-bom -->
       <dependency>
