@@ -53,6 +53,7 @@
     <version.org.eclipse.aether>1.0.0.v20140518</version.org.eclipse.aether>
     <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus>
 
+    <override.version.org.jboss.as>7.2.0.Final</override.version.org.jboss.as>
   </properties>
 
   <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent-metadata. -->
@@ -673,19 +674,19 @@
       <dependency>
         <groupId>org.jboss.as</groupId>
         <artifactId>jboss-as-arquillian-container-managed</artifactId>
-        <version>${version.org.jboss.as}</version>
+        <version>${override.version.org.jboss.as}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.as</groupId>
         <artifactId>jboss-as-server</artifactId>
-        <version>${version.org.jboss.as}</version>
+        <version>${override.version.org.jboss.as}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.as</groupId>
         <artifactId>jboss-as-naming</artifactId>
-        <version>${version.org.jboss.as}</version>
+        <version>${override.version.org.jboss.as}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
