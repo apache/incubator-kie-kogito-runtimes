@@ -669,6 +669,7 @@
         <artifactId>mvel2</artifactId>
         <version>2.2.1.Final</version>
       </dependency>
+
       
       <!-- jboss as and arquillian deps (JBPM-4403) -->
       <dependency>
@@ -689,7 +690,26 @@
         <version>${override.version.org.jboss.as}</version>
         <scope>test</scope>
       </dependency>
+
+
+
+      <!-- TMP change to roaster  2.7.0.Final support https://issues.jboss.org/browse/JBPM-4404 -->
+      <dependency>
+        <groupId>org.jboss.forge.roaster</groupId>
+        <artifactId>roaster-api</artifactId>
+        <version>2.7.0.Final</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.forge.roaster</groupId>
+        <artifactId>roaster-jdt</artifactId>
+        <version>2.7.0.Final</version>
+      </dependency>
+
+
     </dependencies>
+    
+
   </dependencyManagement>
 
 </project>
