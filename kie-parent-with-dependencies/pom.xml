@@ -668,6 +668,26 @@
         <artifactId>mvel2</artifactId>
         <version>2.2.1.Final</version>
       </dependency>
+      
+      <!-- jboss as and arquillian deps (JBPM-4403) -->
+      <dependency>
+        <groupId>org.jboss.as</groupId>
+        <artifactId>jboss-as-arquillian-container-managed</artifactId>
+        <version>${version.org.jboss.as}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.as</groupId>
+        <artifactId>jboss-as-server</artifactId>
+        <version>${version.org.jboss.as}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.as</groupId>
+        <artifactId>jboss-as-naming</artifactId>
+        <version>${version.org.jboss.as}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
