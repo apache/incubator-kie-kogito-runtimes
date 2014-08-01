@@ -55,8 +55,9 @@
     <version.org.apache.neethi>3.0.2</version.org.apache.neethi>
     <version.org.apache.xmlschema-core>2.0.3</version.org.apache.xmlschema-core>
     <version.org.subethamail.subethasmtp>3.1.6</version.org.subethamail.subethasmtp>
-    <version.org.eclipse.jdt.core.compiler.ejc>4.3.1</version.org.eclipse.jdt.core.compiler.ejc>
-    <version.org.mvel.mvel2>2.2.1.Final</version.org.mvel.mvel2>
+
+    <!-- overrides <version.org.mvel>2.1.9.Final</version.org.mvel> in IP-BOM-->
+    <version.org.mvel>2.2.1.Final</version.org.mvel>
 
     <override.version.org.jboss.as>7.2.0.Final</override.version.org.jboss.as>
   </properties>
@@ -555,13 +556,6 @@
         <version>${version.org.subethamail.subethasmtp}</version>
       </dependency>
 
-      <!-- when moved to IP bom this dependency can be removed -->
-      <dependency>
-        <groupId>org.eclipse.jdt.core.compiler</groupId>
-        <artifactId>ecj</artifactId>
-        <version>${version.org.eclipse.jdt.core.compiler.ejc}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.eclipse.jgit</groupId>
         <artifactId>org.eclipse.jgit</artifactId>
@@ -673,11 +667,11 @@
         <version>${version.org.eclipse.aether}</version>
       </dependency>
 
-      <!-- when moved to IP bom this dependency can be removed -->
+      <!-- overrides <version.org.mvel>2.1.9.Final</version.org.mvel> in IP-BOM-->
       <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
-        <version>${version.org.mvel.mvel2}</version>
+        <version>${version.org.mvel}</version>
       </dependency>
 
       
