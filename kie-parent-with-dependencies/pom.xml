@@ -52,6 +52,11 @@
     <version.org.apache.maven>3.2.2</version.org.apache.maven>
     <version.org.eclipse.aether>1.0.0.v20140518</version.org.eclipse.aether>
     <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus>
+    <version.org.apache.neethi>3.0.2</version.org.apache.neethi>
+    <version.org.apache.xmlschema-core>2.0.3</version.org.apache.xmlschema-core>
+    <version.org.subethamail.subethasmtp>3.1.6</version.org.subethamail.subethasmtp>
+    <version.org.eclipse.jdt.core.compiler.ejc>4.3.1</version.org.eclipse.jdt.core.compiler.ejc>
+    <version.org.mvel.mvel2>2.2.1.Final</version.org.mvel.mvel2>
 
     <override.version.org.jboss.as>7.2.0.Final</override.version.org.jboss.as>
   </properties>
@@ -313,10 +318,11 @@
         <version>${version.org.apache.lucene}</version>
       </dependency>
 
+      <!-- when moved to IP bom this dependency can be removed -->
       <dependency>
         <groupId>org.apache.neethi</groupId>
         <artifactId>neethi</artifactId>
-        <version>3.0.2</version>
+        <version>${version.org.apache.neethi}</version>
       </dependency>
 
       <dependency>
@@ -325,10 +331,11 @@
         <version>${version.org.apache.velocity.tools}</version>
       </dependency>
 
+      <!-- when moved to IP bom this dependency can be removed -->
       <dependency>
         <groupId>org.apache.ws.xmlschema</groupId>
         <artifactId>xmlschema-core</artifactId>
-        <version>2.0.3</version>
+        <version>${version.org.apache.xmlschema-core}</version>
       </dependency>
 
       <dependency>
@@ -541,16 +548,18 @@
         <version>${version.org.slf4j}</version>
       </dependency>
 
+      <!-- when moved to IP bom this dependency can be removed -->
       <dependency>
         <groupId>org.subethamail</groupId>
         <artifactId>subethasmtp</artifactId>
-        <version>3.1.6</version>
+        <version>${version.org.subethamail.subethasmtp}</version>
       </dependency>
 
+      <!-- when moved to IP bom this dependency can be removed -->
       <dependency>
         <groupId>org.eclipse.jdt.core.compiler</groupId>
         <artifactId>ecj</artifactId>
-        <version>4.3.1</version>
+        <version>${version.org.eclipse.jdt.core.compiler.ejc}</version>
       </dependency>
 
       <dependency>
@@ -664,10 +673,11 @@
         <version>${version.org.eclipse.aether}</version>
       </dependency>
 
+      <!-- when moved to IP bom this dependency can be removed -->
       <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
-        <version>2.2.1.Final</version>
+        <version>${version.org.mvel.mvel2}</version>
       </dependency>
 
       
