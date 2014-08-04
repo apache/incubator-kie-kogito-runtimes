@@ -714,34 +714,68 @@
       <dependency>
         <groupId>org.kie.tests.remote</groupId>
         <artifactId>kie-wb-tests-base</artifactId>
-        <version>${droolsjbpm-build-distribution.version}</version>
+        <version>${kie.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.tests.remote</groupId>
         <artifactId>kie-wb-tests-base</artifactId>
-        <version>${droolsjbpm-build-distribution.version}</version>
-        <classifier>sources</classifier>
+        <version>${kie.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.tests.remote</groupId>
         <artifactId>drools-wb-tests-base</artifactId>
-        <version>${droolsjbpm-build-distribution.version}</version>
+        <version>${kie.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.tests.remote</groupId>
         <artifactId>drools-wb-tests-base</artifactId>
-        <version>${droolsjbpm-build-distribution.version}</version>
+        <version>${kie.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.tests.remote</groupId>
         <artifactId>jbpm-console-tests-base</artifactId>
-        <version>${droolsjbpm-build-distribution.version}</version>
+        <version>${kie.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.tests.remote</groupId>
         <artifactId>jbpm-console-tests-base</artifactId>
-        <version>${droolsjbpm-build-distribution.version}</version>
+        <version>${kie.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <!-- kie-smoke-tests -->
+      <dependency>
+        <groupId>org.kie.smoke</groupId>
+        <artifactId>kie-smoke-tests-util</artifactId>
+        <version>${kie.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.smoke</groupId>
+        <artifactId>kie-smoke-tests-util</artifactId>
+        <version>${kie.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.smoke</groupId>
+        <artifactId>kie-drools-wb-smoke-tests-base</artifactId>
+        <version>${kie.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.smoke</groupId>
+        <artifactId>kie-drools-wb-smoke-tests-base</artifactId>
+        <version>${kie.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.smoke</groupId>
+        <artifactId>kie-wb-smoke-tests-base</artifactId>
+        <version>${kie.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.smoke</groupId>
+        <artifactId>kie-wb-smoke-tests-base</artifactId>
+        <version>${kie.version}</version>
         <classifier>sources</classifier>
       </dependency>
     </dependencies>
