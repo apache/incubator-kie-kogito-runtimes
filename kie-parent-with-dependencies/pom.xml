@@ -710,6 +710,12 @@
         <version>2.7.0.Final</version>
       </dependency>
 
+      <!-- TMP change until https://github.com/jboss-integration/jboss-integration-platform-bom/pull/81 is used -->
+      <dependency>
+        <groupId>org.jfree</groupId>
+        <artifactId>jfreechart</artifactId>
+        <version>1.0.19</version>
+      </dependency>
 
     </dependencies>
     
