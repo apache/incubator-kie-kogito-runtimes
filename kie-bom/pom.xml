@@ -386,6 +386,29 @@
         <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
+      <!--Home Page - Product-->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-home-api</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-home-api</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-home-client</artifactId>
+        <version>${guvnor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-home-client</artifactId>
+        <version>${guvnor.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <!--Default Editor-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
