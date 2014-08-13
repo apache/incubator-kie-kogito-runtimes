@@ -278,6 +278,13 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-ci</artifactId>
+        <version>${drools.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-scorecards</artifactId>
         <version>${drools.version}</version>
