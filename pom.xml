@@ -170,7 +170,7 @@
                     <version>[1.6.0,)</version>
                   </requireJavaVersion>
                   <requireMavenVersion>
-                    <version>[3.0.4,)</version>
+                    <version>[3.0.5,)</version>
                   </requireMavenVersion>
                    <!-- <requireUpperBoundDeps/> -->
                 </rules>
