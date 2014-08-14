@@ -98,6 +98,17 @@
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
+        <artifactId>kie-remote-jaxb-gen</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-remote-jaxb-gen</artifactId>
+        <version>${droolsjbpm-integration.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-client</artifactId>
         <version>${droolsjbpm-integration.version}</version>
       </dependency>

@@ -429,6 +429,11 @@
         <artifactId>jetty-servlet</artifactId>
         <version>${version.org.eclipse.jetty}</version>
       </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlets</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.jboss.errai</groupId>
