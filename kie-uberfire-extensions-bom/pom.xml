@@ -34,6 +34,19 @@
           Each module should declare it's direct dependencies and possibly overwrite scope/optional.
           Always declare the sources jar too and optionally the test-jar.
       -->
+      <!-- Security -->
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-servlet-security</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-servlet-security</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
        <!-- Perspective Editor -->
       <dependency>
         <groupId>org.kie.uberfire</groupId>
