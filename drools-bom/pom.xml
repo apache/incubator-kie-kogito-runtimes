@@ -44,18 +44,18 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>knowledge-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>knowledge-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>knowledge-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>javadoc</classifier>
       </dependency>
 
@@ -63,253 +63,253 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-reteoo</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-reteoo</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-reteoo</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-jsr94</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-pmml</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-verifier</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-verifier</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-persistence-jpa</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-persistence-jpa</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-persistence-jpa</artifactId>
         <type>test-jar</type>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-templates</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-templates</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-commons</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-commons</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-datamodel-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-datamodel-api</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-guided-dtable</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-guided-dtable</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-guided-template</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-guided-template</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-guided-scorecard</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-guided-scorecard</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-test-scenarios</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-test-scenarios</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>named-kiesession</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>default-kiesession</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>cdi-example</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId><!-- Does this belong in the kie-bom or in the drools-bom ? -->
         <artifactId>kie-ci</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId><!-- Does this belong in the kie-bom or in the drools-bom ? -->
         <artifactId>kie-ci-osgi</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-ci</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-ci</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-scorecards</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-examples</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-examples</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-docs</artifactId>
         <type>jdocbook</type>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-distribution</artifactId>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <type>zip</type>
       </dependency>
 
@@ -318,557 +318,557 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-spring-legacy5</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-spring-legacy5</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-camel-legacy5</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-camel-legacy5</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-camel-server-example</artifactId>
         <type>war</type>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-camel-server-example</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-simulator</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-simulator</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-integration-examples</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-integration-examples</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-osgi-integration</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-osgi-integration</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-karaf-features</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
 	  <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-karaf-features</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>features</classifier>
         <type>xml</type>
       </dependency>
 	  <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-karaf-itest</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
 	  <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-rhq-plugin</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
       <!--Categories Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-categories-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-categories-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Test Scenario Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-test-scenario-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-test-scenario-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-test-scenario-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-test-scenario-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-test-scenario-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-test-scenario-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Guided Rule Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-rule-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-rule-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-rule-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-rule-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-rule-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-rule-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Guided Template Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-template-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-template-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-template-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-template-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-template-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-template-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Legacy Fact Model API (Editor replaced by Data Modeller) -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-factmodel-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-factmodel-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-factmodel-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-factmodel-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Enum Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-enum-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-enum-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-enum-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-enum-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-enum-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-enum-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--DRL Text Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-drl-text-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-drl-text-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-drl-text-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-drl-text-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-drl-text-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-drl-text-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Globals Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-globals-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-globals-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-globals-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-globals-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-globals-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-globals-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Guided Decision Table Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-dtable-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-dtable-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-dtable-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-dtable-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-dtable-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-dtable-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Guided Score Card Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-scorecard-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-scorecard-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-scorecard-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-scorecard-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-scorecard-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-scorecard-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--DSL Text Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dsl-text-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dsl-text-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dsl-text-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dsl-text-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dsl-text-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dsl-text-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--XLS Decision Table Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dtable-xls-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dtable-xls-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dtable-xls-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dtable-xls-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dtable-xls-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-dtable-xls-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--XLS Scorecard Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-scorecard-xls-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-scorecard-xls-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-scorecard-xls-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-scorecard-xls-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- Work Items Editor-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-workitems-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-workitems-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-workitems-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-workitems-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-workitems-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-workitems-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--REST-->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-rest-defaultapprover</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <type>jar</type>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-rest-defaultapprover</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-rest</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-rest</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -876,18 +876,18 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-jcr2vfs-migration-core</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-jcr2vfs-migration-core</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-jcr2vfs-migration-core</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -896,46 +896,46 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-webapp</artifactId>
         <type>war</type>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-webapp</artifactId>
         <classifier>sources</classifier>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
 
       <!-- droolsjbpm-tools -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>org.drools.eclipse</artifactId>
-        <version>${droolsjbpm-tools.version}</version>
+        <version>${version.org.drools.droolsjbpm-tools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>org.guvnor.tools</artifactId>
-        <version>${droolsjbpm-tools.version}</version>
+        <version>${version.org.drools.droolsjbpm-tools}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>org.drools.updatesite</artifactId>
         <type>zip</type>
-        <version>${droolsjbpm-tools.version}</version>
+        <version>${version.org.drools.droolsjbpm-tools}</version>
       </dependency>
 
       <!-- droolsjbpm-build-distribution -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-integration-distribution</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
         <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>droolsjbpm-tools-distribution</artifactId>
-        <version>${droolsjbpm-tools.version}</version>
+        <version>${version.org.drools.droolsjbpm-tools}</version>
         <type>zip</type>
       </dependency>
     </dependencies>

@@ -87,55 +87,55 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-bom</artifactId>
         <type>pom</type>
-        <version>${kie.version}</version>
+        <version>${version.org.kie}</version>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-bom</artifactId>
         <type>pom</type>
-        <version>${drools.version}</version>
+        <version>${version.org.drools}</version>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-bom</artifactId>
         <type>pom</type>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-bom</artifactId>
         <type>pom</type>
-        <version>${jbpm.version}</version>
+        <version>${version.org.jbpm}</version>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.jbpm.dashboard</groupId>
         <artifactId>jbpm-dashboard-webapp</artifactId>
-        <version>${dashboard-builder.version}</version>
+        <version>${version.org.jbpm.dashboard-builder}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-extensions-bom</artifactId>
         <type>pom</type>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-bom</artifactId>
         <type>pom</type>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-builder-bom</artifactId>
         <type>pom</type>
-        <version>${dashboard-builder.version}</version>
+        <version>${version.org.jbpm.dashboard-builder}</version>
         <scope>import</scope>
       </dependency>
 

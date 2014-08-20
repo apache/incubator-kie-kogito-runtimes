@@ -1370,7 +1370,7 @@ A release branch name should always end with `.x` so it looks different from a t
 
         * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
 
-        * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${jbpm.version}. Check this is not the case.
+        * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${version.org.jbpm}. Check this is not the case.
 
                 $ grep -r '6.1.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.1.0-SNAPSHOT' $i; done 
 

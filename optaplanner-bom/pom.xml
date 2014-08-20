@@ -37,88 +37,88 @@
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-core</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-core</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-core</artifactId>
         <type>test-jar</type>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-core</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
         <classifier>javadoc</classifier>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-benchmark</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-benchmark</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-benchmark</artifactId>
         <type>test-jar</type>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-benchmark</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
         <classifier>javadoc</classifier>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-examples</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-examples</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-examples</artifactId>
         <type>test-jar</type>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-webexamples</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-webexamples</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-docs</artifactId>
         <type>jdocbook</type>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-distribution</artifactId>
-        <version>${optaplanner.version}</version>
+        <version>${version.org.optaplanner}</version>
         <type>zip</type>
       </dependency>
     </dependencies>

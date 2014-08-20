@@ -38,34 +38,34 @@
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-api</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-api</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-client</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-client</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-backend</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-backend</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -73,52 +73,52 @@
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widgets-commons</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widgets-commons</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widgets-core-client</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
        <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widgets-core-client</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widgets-service-api</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widgets-service-api</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widgets-service-backend</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widgets-service-backend</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
       
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>-uberfire-widgets-core-client</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
      
 
@@ -126,12 +126,12 @@
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widget-markdown</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-widget-markdown</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -174,34 +174,34 @@
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-metadata-api</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-metadata-api</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-metadata-backend-lucene</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-metadata-backend-lucene</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-metadata-commons-io</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-metadata-commons-io</artifactId>
-        <version>${uberfire.extensions.version}</version>
+        <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
 

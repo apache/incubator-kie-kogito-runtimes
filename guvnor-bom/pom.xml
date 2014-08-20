@@ -37,118 +37,118 @@
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-structure-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-structure-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-structure-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-structure-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-structure-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-structure-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-project-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-project-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-project-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-project-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-project-builder</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-project-builder</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Guvnor Working Set Services -->
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-workingset-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-workingset-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-workingset-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-workingset-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Guvnor Core Services -->
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-rest</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-rest-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-rest-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-rest-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-rest-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       
@@ -156,137 +156,137 @@
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-services-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-services-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-services-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-services-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Guvnor M2_REPO Editor -->
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-m2repo-editor-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Guvnor Inbox -->
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-inbox-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-inbox-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-inbox-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-inbox-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-inbox-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-inbox-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- Message Console -->
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-message-console-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-message-console-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-message-console-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-message-console-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-message-console-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-message-console-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- Organizational Unit Manager -->
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-organizationalunit-manager</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-organizationalunit-manager</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
     </dependencies>
