@@ -700,19 +700,18 @@
         <scope>test</scope>
       </dependency>
 
-
-
-      <!-- TMP change to roaster  2.7.0.Final support https://issues.jboss.org/browse/JBPM-4404 -->
+      <!-- TMP change to Roaster  2.7.1.Final in order to support https://issues.jboss.org/browse/JBPM-4404 -->
+      <!-- this override should be removed when https://github.com/jboss-integration/jboss-integration-platform-bom/pull/87 is processed -->
       <dependency>
         <groupId>org.jboss.forge.roaster</groupId>
         <artifactId>roaster-api</artifactId>
-        <version>2.7.0.Final</version>
+        <version>2.7.1.Final</version>
       </dependency>
 
       <dependency>
         <groupId>org.jboss.forge.roaster</groupId>
         <artifactId>roaster-jdt</artifactId>
-        <version>2.7.0.Final</version>
+        <version>2.7.1.Final</version>
       </dependency>
 
       <!-- TMP change until https://github.com/jboss-integration/jboss-integration-platform-bom/pull/81 is used -->
