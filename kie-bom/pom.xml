@@ -588,34 +588,34 @@
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-api</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-client</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-backend</artifactId>
-        <version>${guvnor.version}</version>
+        <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- Refactoring support -->
