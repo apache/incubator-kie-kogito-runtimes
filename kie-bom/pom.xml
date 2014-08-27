@@ -86,7 +86,7 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-server-social-home-page</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration.version}</version>
       </dependency>
 
 
@@ -151,23 +151,23 @@
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-common</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-common</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-wsdl</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-wsdl</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
@@ -178,18 +178,18 @@
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-wsdl-cmd</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-impl</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-impl</artifactId>
-        <version>${droolsjbpm-integration.version}</version>
+        <version>${version.org.drools.droolsjbpm-integration.version}</version>
         <classifier>sources</classifier>
       </dependency>
 
