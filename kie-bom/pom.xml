@@ -126,6 +126,17 @@
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
+        <artifactId>kie-remote-rest-api</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
+        <artifactId>kie-remote-rest-api</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-services</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
