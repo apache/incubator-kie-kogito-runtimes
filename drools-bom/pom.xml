@@ -215,6 +215,17 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-workbench-models-guided-dtree</artifactId>
+        <version>${version.org.drools}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-workbench-models-guided-dtree</artifactId>
+        <version>${version.org.drools}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-guided-template</artifactId>
         <version>${version.org.drools}</version>
       </dependency>
@@ -674,6 +685,40 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-wb-guided-dtable-editor-backend</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guided Decision Tree Editor-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtree-editor-api</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtree-editor-api</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtree-editor-client</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtree-editor-client</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtree-editor-backend</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-guided-dtree-editor-backend</artifactId>
         <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
