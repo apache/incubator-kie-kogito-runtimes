@@ -56,6 +56,7 @@
     <version.org.apache.neethi>3.0.2</version.org.apache.neethi>
     <version.org.apache.xmlschema-core>2.0.3</version.org.apache.xmlschema-core>
     <version.org.subethamail.subethasmtp>3.1.6</version.org.subethamail.subethasmtp>
+    <version.org.scannotation>1.0.3</version.org.scannotation>
 
     <!-- overrides <version.org.mvel>2.1.9.Final</version.org.mvel> in IP-BOM-->
     <version.org.mvel>2.2.1.Final</version.org.mvel>
@@ -687,7 +688,7 @@
         <version>${version.org.mvel}</version>
       </dependency>
 
-      
+
       <!-- jboss as and arquillian deps (JBPM-4403) -->
       <dependency>
         <groupId>org.jboss.as</groupId>
@@ -749,8 +750,14 @@
         <artifactId>chemistry-opencmis-client-bindings</artifactId>
         <version>${version.org.apache.chemistry.opencmis}</version>
       </dependency>
+      <!-- remove when scannotation is added to ip bom - https://github.com/jboss-integration/jboss-integration-platform-bom/pull/93 -->
+      <dependency>
+        <groupId>org.scannotation</groupId>
+        <artifactId>scannotation</artifactId>
+        <version>${version.org.scannotation}</version>
+      </dependency>
     </dependencies>
-    
+
 
   </dependencyManagement>
 
