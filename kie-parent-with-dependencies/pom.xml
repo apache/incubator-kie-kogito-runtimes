@@ -30,9 +30,7 @@
       - Version properties must be sorted alphabetically (other form of sorting were found to be unclear and ambiguous).
     -->
     <version.avalon-framework>4.1.4</version.avalon-framework>
-    <version.javax.servlet.servlet-api>3.0.1</version.javax.servlet.servlet-api>
-
-    <version.org.apache.abdera>1.1.3</version.org.apache.abdera>
+    <version.org.apache.abdera>1.1.3</version.org.apache.abdera> <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
     <version.org.apache.lucene>4.0.0</version.org.apache.lucene>
     <version.org.apache.xmlgraphics.batik>1.6-1</version.org.apache.xmlgraphics.batik>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
@@ -41,22 +39,20 @@
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
-    <version.org.eclipse.jgit>3.3.1.201403241930-r</version.org.eclipse.jgit>
-    <version.org.apache.sshd>0.10.0</version.org.apache.sshd>
-    <version.org.apache.velocity.tools>2.0</version.org.apache.velocity.tools>
-    <version.com.fasterxml.jackson>2.4.0</version.com.fasterxml.jackson>
-    <version.com.google.gwt.gwtmockito>1.1.3</version.com.google.gwt.gwtmockito>
-    <version.com.googlecode.gwt-crypto>2.3.0</version.com.googlecode.gwt-crypto>
-    <version.org.apache.chemistry.opencmis>0.11.0</version.org.apache.chemistry.opencmis>
-
-    <!-- when moved to the jboss-ip-bom remove it from kie-p-w-d -->
+    <version.org.eclipse.jgit>3.3.1.201403241930-r</version.org.eclipse.jgit> <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
+    <version.org.apache.sshd>0.10.0</version.org.apache.sshd> <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
+    <version.org.apache.velocity.tools>2.0</version.org.apache.velocity.tools> <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
+    <version.com.fasterxml.jackson>2.4.0</version.com.fasterxml.jackson> <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
+    <version.com.google.gwt.gwtmockito>1.1.3</version.com.google.gwt.gwtmockito> <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
+    <version.com.googlecode.gwt-crypto>2.3.0</version.com.googlecode.gwt-crypto> <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
+    <version.org.apache.chemistry.opencmis>0.11.0</version.org.apache.chemistry.opencmis> <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
     <version.org.apache.maven>3.2.2</version.org.apache.maven>
     <version.org.eclipse.aether>1.0.0.v20140518</version.org.eclipse.aether>
-    <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus>
-    <version.org.apache.neethi>3.0.2</version.org.apache.neethi>
-    <version.org.apache.xmlschema-core>2.0.3</version.org.apache.xmlschema-core>
-    <version.org.subethamail.subethasmtp>3.1.6</version.org.subethamail.subethasmtp>
-    <version.org.scannotation>1.0.3</version.org.scannotation>
+    <version.org.scannotation>1.0.3</version.org.scannotation> <!-- when processed PR #93 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
+    <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus> <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
+    <version.org.apache.neethi>3.0.2</version.org.apache.neethi> <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
+    <version.org.apache.xmlschema-core>2.0.3</version.org.apache.xmlschema-core> <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
+    <version.org.subethamail.subethasmtp>3.1.6</version.org.subethamail.subethasmtp> <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
 
     <!-- overrides <version.org.mvel>2.1.9.Final</version.org.mvel> in IP-BOM-->
     <version.org.mvel>2.2.1.Final</version.org.mvel>
@@ -301,6 +297,7 @@
         <version>${version.org.jboss.spec.javax.servlet.3.0}</version>
       </dependency>
 
+      <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>org.apache.abdera</groupId>
         <artifactId>abdera-server</artifactId>
@@ -338,20 +335,21 @@
         <version>${version.org.apache.lucene}</version>
       </dependency>
 
-      <!-- when moved to IP bom this dependency can be removed -->
+      <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
       <dependency>
         <groupId>org.apache.neethi</groupId>
         <artifactId>neethi</artifactId>
         <version>${version.org.apache.neethi}</version>
       </dependency>
 
+      <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>org.apache.velocity</groupId>
         <artifactId>velocity-tools</artifactId>
         <version>${version.org.apache.velocity.tools}</version>
       </dependency>
 
-      <!-- when moved to IP bom this dependency can be removed -->
+      <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
       <dependency>
         <groupId>org.apache.ws.xmlschema</groupId>
         <artifactId>xmlschema-core</artifactId>
@@ -425,12 +423,6 @@
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>xmlgraphics-commons</artifactId>
         <version>${version.org.apache.xmlgraphics.commons}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse</groupId>
-        <artifactId>org.eclipse.bpmn2</artifactId>
-        <version>0.7.4-jboss-1</version><!-- When upgraded too jboss-ip bom 6.0.0.CR11 remove the version as it is in the ip-bm -->
       </dependency>
 
       <dependency>
@@ -573,31 +565,35 @@
         <version>${version.org.slf4j}</version>
       </dependency>
 
-      <!-- when moved to IP bom this dependency can be removed -->
+      <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
       <dependency>
         <groupId>org.subethamail</groupId>
         <artifactId>subethasmtp</artifactId>
         <version>${version.org.subethamail.subethasmtp}</version>
       </dependency>
 
+      <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>org.eclipse.jgit</groupId>
         <artifactId>org.eclipse.jgit</artifactId>
         <version>${version.org.eclipse.jgit}</version>
       </dependency>
 
+      <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>org.apache.sshd</groupId>
         <artifactId>sshd-core</artifactId>
         <version>${version.org.apache.sshd}</version>
       </dependency>
 
+      <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>com.google.gwt.gwtmockito</groupId>
         <artifactId>gwtmockito</artifactId>
         <version>${version.com.google.gwt.gwtmockito}</version>
       </dependency>
 
+      <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>com.googlecode.gwt-crypto</groupId>
         <artifactId>gwt-crypto</artifactId>
@@ -605,7 +601,7 @@
       </dependency>
 
 
-      <!-- Changs not subitted to ip-bom -->
+      <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
@@ -645,11 +641,14 @@
         <artifactId>maven-aether-provider</artifactId>
         <version>${version.org.apache.maven}</version>
       </dependency>
+
+      <!-- when upgraded to ip-bom-6.0.0.CR12 remove it frpm kie-p-w-d- -->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
         <version>${version.org.codehaus.plexus}</version>
       </dependency>
+
       <dependency>
         <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-api</artifactId>
@@ -700,6 +699,8 @@
 
 
       <!-- jboss as and arquillian deps (JBPM-4403) -->
+     <!-- temporary fix. When processed PR #92 (https://github.com/jboss-integration/jboss-integration-platform-bom/pull/92) and
+     and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>org.jboss.as</groupId>
         <artifactId>jboss-as-arquillian-container-managed</artifactId>
@@ -740,6 +741,7 @@
         <version>1.0.19</version>
       </dependency>
 
+      <!-- when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>org.apache.chemistry.opencmis</groupId>
         <artifactId>chemistry-opencmis-client-impl</artifactId>
@@ -760,12 +762,14 @@
         <artifactId>chemistry-opencmis-client-bindings</artifactId>
         <version>${version.org.apache.chemistry.opencmis}</version>
       </dependency>
+
       <!-- remove when scannotation is added to ip bom - https://github.com/jboss-integration/jboss-integration-platform-bom/pull/93 -->
       <dependency>
         <groupId>org.scannotation</groupId>
         <artifactId>scannotation</artifactId>
         <version>${version.org.scannotation}</version>
       </dependency>
+
     </dependencies>
 
 
