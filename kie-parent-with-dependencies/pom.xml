@@ -327,6 +327,16 @@
         <artifactId>lucene-queryparser</artifactId>
         <version>${version.org.apache.lucene}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queries</artifactId>
+        <version>${version.org.apache.lucene}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-sandbox</artifactId>
+        <version>${version.org.apache.lucene}</version>
+      </dependency>
 
       <!-- when moved to IP bom this dependency can be removed -->
       <dependency>
