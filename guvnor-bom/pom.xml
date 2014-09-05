@@ -80,6 +80,17 @@
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-project-client</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-project-client</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
         <artifactId>guvnor-project-backend</artifactId>
         <version>${version.org.guvnor}</version>
       </dependency>
@@ -97,6 +108,51 @@
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-project-builder</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Guvnor Management -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-asset-mgmt-api</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-asset-mgmt-api</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-asset-mgmt-backend</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-asset-mgmt-backend</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-asset-mgmt-client</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-asset-mgmt-client</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-asset-mgmt-project</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-asset-mgmt-project</artifactId>
         <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
