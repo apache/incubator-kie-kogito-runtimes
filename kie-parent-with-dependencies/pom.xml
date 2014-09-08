@@ -946,6 +946,11 @@
         <version>${version.xpp3}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-container-karaf</artifactId>
+        <version>3.4.0</version>
+      </dependency>
     </dependencies>
 
 
