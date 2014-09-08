@@ -57,6 +57,7 @@
     <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus> <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
     <version.org.codehaus.plexus.plexus-classworlds>2.5.1</version.org.codehaus.plexus.plexus-classworlds> <!-- Dependency of maven 3.2.2  -->
     <version.org.codehaus.plexus.plexus-interpolation>1.19</version.org.codehaus.plexus.plexus-interpolation> <!-- Dependency of maven 3.2.2  -->
+    <version.org.jsoup>1.7.1</version.org.jsoup>  <!-- when processed PR #99 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
     <version.org.apache.neethi>3.0.2</version.org.apache.neethi> <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
     <version.org.apache.xmlschema-core>2.0.3</version.org.apache.xmlschema-core> <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
     <version.org.sonatype.plexus.plexus-cipher>1.4</version.org.sonatype.plexus.plexus-cipher> <!-- Dependency of maven 3.2.2  -->
@@ -380,6 +381,13 @@
         <groupId>jakarta-regexp</groupId>
         <artifactId>jakarta-regexp</artifactId>
         <version>${version.jakarta-regexp}</version>
+      </dependency>
+
+      <!-- when processed PR #99 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-http-shared4</artifactId>
+        <version>${version.org.apache.maven.wagon.http}</version>
       </dependency>
 
       <!-- when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- -->
@@ -867,6 +875,13 @@
         <groupId>org.apache.chemistry.opencmis</groupId>
         <artifactId>chemistry-opencmis-client-bindings</artifactId>
         <version>${version.org.apache.chemistry.opencmis}</version>
+      </dependency>
+
+      <!-- when processed PR #99 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
+      <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>${version.org.jsoup}</version>
       </dependency>
 
       <!-- remove when scannotation is added to ip bom - https://github.com/jboss-integration/jboss-integration-platform-bom/pull/93 -->
