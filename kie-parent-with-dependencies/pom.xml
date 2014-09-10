@@ -68,6 +68,10 @@
     <version.xmlpull>1.1.3.1</version.xmlpull> <!-- when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
     <version.xpp3>1.1.4c</version.xpp3> <!-- when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
 
+    <!-- the following should be submitted in PR's to the ip-bom -->
+    <version.org.jboss.remote-naming>1.0.8.Final</version.org.jboss.remote-naming>  <!-- used by EAP 6.3 / AS 7.4.0.Final-redhat-19 -->
+    <version.org.jboss.xnio>3.0.9.GA</version.org.jboss.xnio> <!-- used by EAP 6.3 / AS 7.4.0.Final-redhat-19 (3.0.10.GA-redhat.. ) -->
+
     <!-- overrides <version.org.mvel>2.1.9.Final</version.org.mvel> in IP-BOM-->
     <version.org.mvel>2.2.1.Final</version.org.mvel>
 
@@ -951,8 +955,20 @@
         <artifactId>pax-exam-container-karaf</artifactId>
         <version>3.4.0</version>
       </dependency>
-    </dependencies>
 
+      <!-- migrate to ip-bom -->
+      <dependency>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-remote-naming</artifactId>
+        <version>${version.org.jboss.remote-naming}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.xnio</groupId>
+        <artifactId>xnio-nio</artifactId>
+        <version>${version.org.jboss.xnio}</version>
+      </dependency>
+
+    </dependencies>
 
   </dependencyManagement>
 
