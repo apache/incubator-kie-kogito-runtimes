@@ -506,6 +506,15 @@ Any dependency used in any KIE project should fulfill these soft requirements:
 There are currently a few dependencies which violate some of these rules.
 If you want to add a dependency that violates any of the rules above, get approval from the project leads.
 
+Regenerating Protobuf Files
+---------------------------
+
+Some modules include Protobuf files (like drools-core and jbpm-flow). Every time a .proto file is changed, the java files have to be regenerated. In order to do that, on the module that contains the files to be regenerated, execute the following command:
+
+        $ mvn exec:exec -Dproto
+        
+After testing the regenerated files, don't forget to commit them.
+
 Developing with Eclipse
 =======================
 
