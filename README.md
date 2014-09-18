@@ -515,6 +515,10 @@ Some modules include Protobuf files (like drools-core and jbpm-flow). Every time
         
 After testing the regenerated files, don't forget to commit them.
 
+**IMPORTANT:** before trying to regenerate the protobuf java files, you must install the protobuf compiler (protoc) in your machine. Please follow the instructions. You can download it from here: https://developers.google.com/protocol-buffers/docs/downloads
+
+For Linux/Mac, you have to compile it yourself as there are no binaries available. Follow the instructions in the README file for that.
+
 Developing with Eclipse
 =======================
 
