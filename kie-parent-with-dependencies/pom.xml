@@ -29,13 +29,8 @@
       - A version property must be specified in the format "version.{groupId}", optionally with a suffix to make it unique.
       - Version properties must be sorted alphabetically (other form of sorting were found to be unclear and ambiguous).
     -->
-    <!-- WEG <version.aopalliance>1.0</version.aopalliance> when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
-
     <version.avalon-framework>4.1.4</version.avalon-framework>
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
-
-    <!-- WEG <version.org.apache.abdera>1.1.3</version.org.apache.abdera> &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;-->
-
     <version.org.apache.lucene>4.0.0</version.org.apache.lucene>
     <version.org.apache.xmlgraphics.batik>1.6-1</version.org.apache.xmlgraphics.batik>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
@@ -44,37 +39,14 @@
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
-
-    <!-- WEG <version.org.eclipse.jgit>3.3.2.201404171909-r</version.org.eclipse.jgit> &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;-->
-<!--  WEG  <version.org.apache.commons.lang3>3.1</version.org.apache.commons.lang3> &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-    <version.org.apache.commons.math>2.1</version.org.apache.commons.math> &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-    <version.org.apache.sshd>0.12.0</version.org.apache.sshd> &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-    <version.org.apache.velocity.tools>2.0</version.org.apache.velocity.tools> &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-    <version.com.fasterxml.jackson>2.4.0</version.com.fasterxml.jackson> &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-    <version.com.google.gwt.gwtmockito>1.1.3</version.com.google.gwt.gwtmockito> &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-    <version.com.googlecode.gwt-crypto>2.3.0</version.com.googlecode.gwt-crypto> &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-    <version.org.apache.chemistry.opencmis>0.11.0</version.org.apache.chemistry.opencmis> &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;-->
-
     <version.org.apache.maven>3.2.2</version.org.apache.maven>
     <version.org.eclipse.aether>1.0.0.v20140518</version.org.eclipse.aether>
     <version.org.eclipse.sisu>0.0.0.M5</version.org.eclipse.sisu> <!-- Dependency of maven 3.2.2  -->
-
-    <!--WEG <version.org.scannotation>1.0.3</version.org.scannotation> &lt;!&ndash; when processed PR #93 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;-->
-
     <version.org.codehaus.plexus.plexus-classworlds>2.5.1</version.org.codehaus.plexus.plexus-classworlds> <!-- Dependency of maven 3.2.2  -->
     <version.org.codehaus.plexus.plexus-interpolation>1.19</version.org.codehaus.plexus.plexus-interpolation> <!-- Dependency of maven 3.2.2  -->
-
-    <!--WEG <version.org.jsoup>1.7.1</version.org.jsoup>  &lt;!&ndash; when processed PR #99 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;-->
-    <!--WEG <version.org.apache.neethi>3.0.2</version.org.apache.neethi> &lt;!&ndash; when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- &ndash;&gt;-->
-
     <version.org.sonatype.plexus.plexus-cipher>1.4</version.org.sonatype.plexus.plexus-cipher> <!-- Dependency of maven 3.2.2  -->
     <version.org.sonatype.plexus.plexus-sec-dispatcher>1.3</version.org.sonatype.plexus.plexus-sec-dispatcher> <!-- Dependency of maven 3.2.2  -->
     <version.org.sonatype.sisu.sisu-guice>3.1.0</version.org.sonatype.sisu.sisu-guice> <!-- Dependency of maven 3.2.2  -->
-
-    <!-- WEG <version.org.subethamail.subethasmtp>3.1.6</version.org.subethamail.subethasmtp> &lt;!&ndash; when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- &ndash;&gt;-->
-<!--  WEG  <version.org.tukaani>1.0</version.org.tukaani> &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-    <version.xmlpull>1.1.3.1</version.xmlpull> &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-    <version.xpp3>1.1.4c</version.xpp3> &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;-->
 
     <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
@@ -84,8 +56,6 @@
 
     <!-- overrides <version.org.mvel>2.1.9.Final</version.org.mvel> in IP-BOM-->
     <version.org.mvel>2.2.1.Final</version.org.mvel>
-
-    <!-- WEG <override.version.org.jboss.as>7.2.0.Final</override.version.org.jboss.as>  -->
 
     <!-- overrides <version.org.jboss.as> 7.4.0.Final used in jboss-ip-bom 6.0.0.CR13 -->
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
@@ -222,13 +192,6 @@
         - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> (following Aether proper)
       -->
 
-<!--  WEG    &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>aopalliance</groupId>
-        <artifactId>aopalliance</artifactId>
-        <version>${version.aopalliance}</version>
-      </dependency>-->
-
       <dependency>
         <groupId>avalon-framework</groupId>
         <artifactId>avalon-framework</artifactId>
@@ -351,34 +314,6 @@
         <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.0_spec}</version>
       </dependency>
 
-<!--  WEG    &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.apache.abdera</groupId>
-        <artifactId>abdera-server</artifactId>
-        <version>${version.org.apache.abdera}</version>
-      </dependency>-->
-
-<!--   WEG   &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.apache.ant</groupId>
-        <artifactId>ant-launcher</artifactId>
-        <version>${version.org.apache.ant}</version>
-      </dependency>
-
-      &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>${version.org.apache.commons.lang3}</version>
-      </dependency>
-
-      &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-math</artifactId>
-        <version>${version.org.apache.commons.math}</version>
-      </dependency>-->
-
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
@@ -415,27 +350,6 @@
         <artifactId>jakarta-regexp</artifactId>
         <version>${version.jakarta-regexp}</version>
       </dependency>
-
-      <!-- when processed PR #99 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http-shared4</artifactId>
-        <version>${version.org.apache.maven.wagon.http}</version>
-      </dependency>
-
-<!--   WEG   &lt;!&ndash; when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- &ndash;&gt;
-      <dependency>
-        <groupId>org.apache.neethi</groupId>
-        <artifactId>neethi</artifactId>
-        <version>${version.org.apache.neethi}</version>
-      </dependency>-->
-
-<!--   WEG   &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.apache.velocity</groupId>
-        <artifactId>velocity-tools</artifactId>
-        <version>${version.org.apache.velocity.tools}</version>
-      </dependency>-->
 
       <dependency>
         <groupId>org.apache.ws.xmlschema</groupId>
@@ -672,56 +586,6 @@
         <version>${version.org.slf4j}</version>
       </dependency>
 
-<!--    WEG  &lt;!&ndash; when upgraded to ip-bom-6.0.0.CR12 remove it from kie-p-w-d- &ndash;&gt;
-      <dependency>
-        <groupId>org.subethamail</groupId>
-        <artifactId>subethasmtp</artifactId>
-        <version>${version.org.subethamail.subethasmtp}</version>
-      </dependency>-->
-
-<!--  WEG    &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.eclipse.jgit</groupId>
-        <artifactId>org.eclipse.jgit</artifactId>
-        <version>${version.org.eclipse.jgit}</version>
-      </dependency>-->
-
-<!--   WEG   &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.apache.sshd</groupId>
-        <artifactId>sshd-core</artifactId>
-        <version>${version.org.apache.sshd}</version>
-      </dependency>
-
-      &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>com.google.gwt.gwtmockito</groupId>
-        <artifactId>gwtmockito</artifactId>
-        <version>${version.com.google.gwt.gwtmockito}</version>
-      </dependency>
-
-      &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>com.googlecode.gwt-crypto</groupId>
-        <artifactId>gwt-crypto</artifactId>
-        <version>${version.com.googlecode.gwt-crypto}</version>
-      </dependency>-->
-
-
-<!--   WEG   &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <scope>test</scope>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <scope>test</scope>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>-->
-
       <!-- kie-ci -->
       <dependency>
         <groupId>org.apache.maven</groupId>
@@ -846,12 +710,6 @@
       <!-- jboss as and arquillian deps (JBPM-4403) -->
      <!-- temporary fix. When processed PR #92 (https://github.com/jboss-integration/jboss-integration-platform-bom/pull/92) and
      and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
-<!--  WEG    <dependency>
-        <groupId>org.jboss.as</groupId>
-        <artifactId>jboss-as-arquillian-container-managed</artifactId>
-        <version>${version.org.jboss.as}</version>
-        <scope>test</scope>
-      </dependency>-->
       <dependency>
         <groupId>org.jboss.as</groupId>
         <artifactId>jboss-as-controller</artifactId>
@@ -869,63 +727,6 @@
         <version>${version.org.jboss.as}</version>
         <scope>test</scope>
       </dependency>
-
-<!--  WEG   &lt;!&ndash; TMP change to Roaster  2.7.1.Final in order to support https://issues.jboss.org/browse/JBPM-4404 &ndash;&gt;
-      &lt;!&ndash; this override should be removed when https://github.com/jboss-integration/jboss-integration-platform-bom/pull/87 is processed &ndash;&gt;
-      <dependency>
-        <groupId>org.jboss.forge.roaster</groupId>
-        <artifactId>roaster-api</artifactId>
-        <version>2.7.1.Final</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.forge.roaster</groupId>
-        <artifactId>roaster-jdt</artifactId>
-        <version>2.7.1.Final</version>
-      </dependency>-->
-
-<!--   WEG   &lt;!&ndash; TMP change until https://github.com/jboss-integration/jboss-integration-platform-bom/pull/81 is used &ndash;&gt;
-      <dependency>
-        <groupId>org.jfree</groupId>
-        <artifactId>jfreechart</artifactId>
-        <version>1.0.19</version>
-      </dependency>-->
-
-<!--   WEG   &lt;!&ndash; when processed PR #90 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.apache.chemistry.opencmis</groupId>
-        <artifactId>chemistry-opencmis-client-impl</artifactId>
-        <version>${version.org.apache.chemistry.opencmis}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry.opencmis</groupId>
-        <artifactId>chemistry-opencmis-commons-impl</artifactId>
-        <version>${version.org.apache.chemistry.opencmis}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry.opencmis</groupId>
-        <artifactId>chemistry-opencmis-commons-api</artifactId>
-        <version>${version.org.apache.chemistry.opencmis}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry.opencmis</groupId>
-        <artifactId>chemistry-opencmis-client-bindings</artifactId>
-        <version>${version.org.apache.chemistry.opencmis}</version>
-      </dependency>-->
-
- <!--   WEG  &lt;!&ndash; when processed PR #99 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.jsoup</groupId>
-        <artifactId>jsoup</artifactId>
-        <version>${version.org.jsoup}</version>
-      </dependency>-->
-
-<!--   WEG   &lt;!&ndash; remove when scannotation is added to ip bom - https://github.com/jboss-integration/jboss-integration-platform-bom/pull/93 &ndash;&gt;
-      <dependency>
-        <groupId>org.scannotation</groupId>
-        <artifactId>scannotation</artifactId>
-        <version>${version.org.scannotation}</version>
-      </dependency>-->
 
       <!-- Dependency of maven 3.2.2  -->
       <dependency>
@@ -960,27 +761,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
-<!--  WEG    &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>org.tukaani</groupId>
-        <artifactId>xz</artifactId>
-        <version>${version.org.tukaani}</version>
-      </dependency>
-
-      &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>xmlpull</groupId>
-        <artifactId>xmlpull</artifactId>
-        <version>${version.xmlpull}</version>
-      </dependency>
-
-      &lt;!&ndash; when processed PR #95 and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d &ndash;&gt;
-      <dependency>
-        <groupId>xpp3</groupId>
-        <artifactId>xpp3_min</artifactId>
-        <version>${version.xpp3}</version>
-      </dependency>-->
 
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
