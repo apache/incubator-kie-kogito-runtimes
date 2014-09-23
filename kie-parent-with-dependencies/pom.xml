@@ -53,7 +53,6 @@
     <!-- the following should be submitted in PR's to the ip-bom -->
     <version.org.jboss.remote-naming>1.0.8.Final</version.org.jboss.remote-naming>  <!-- used by EAP 6.3 / AS 7.4.0.Final-redhat-19 -->
     <version.org.jboss.xnio>3.0.9.GA</version.org.jboss.xnio> <!-- used by EAP 6.3 / AS 7.4.0.Final-redhat-19 (3.0.10.GA-redhat.. ) -->
-    <version.com.google.inject.guice>3.0</version.com.google.inject.guice> <!-- versions for new enforcer rule -->
     <version.org.jfree.jcommon>1.0.23</version.org.jfree.jcommon> <!-- versions for new enforcer rule -->
 
     <!-- overrides <version.org.mvel>2.1.9.Final</version.org.mvel> in IP-BOM-->
@@ -294,12 +293,6 @@
         <groupId>batik</groupId>
         <artifactId>batik-awt-util</artifactId>
         <version>${version.org.apache.xmlgraphics.batik}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>${version.com.google.inject.guice}</version>
       </dependency>
 
       <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
