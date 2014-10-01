@@ -50,10 +50,12 @@
 
     <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
+
     <!-- the following should be submitted in PR's to the ip-bom -->
     <version.org.jboss.remote-naming>1.0.8.Final</version.org.jboss.remote-naming>  <!-- used by EAP 6.3 / AS 7.4.0.Final-redhat-19 -->
     <version.org.jboss.xnio>3.0.9.GA</version.org.jboss.xnio> <!-- used by EAP 6.3 / AS 7.4.0.Final-redhat-19 (3.0.10.GA-redhat.. ) -->
     <version.org.jfree.jcommon>1.0.23</version.org.jfree.jcommon> <!-- versions for new enforcer rule -->
+
     <!-- overrides <version.org.jboss.as> 7.4.0.Final used in jboss-ip-bom 6.0.0.CR13 -->
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <!-- overrides <version.org.ops4j.pax.exam>3.5.0 used in jboss-ip-bom 6.0.0.CR13 -->
@@ -561,12 +563,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.jfree</groupId>
-        <artifactId>jcommon</artifactId>
-        <version>${version.org.jfree.jcommon}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-embedded</artifactId>
         <version>${version.org.mortbay.jetty}</version>
@@ -781,6 +777,11 @@
         <groupId>org.jboss.xnio</groupId>
         <artifactId>xnio-nio</artifactId>
         <version>${version.org.jboss.xnio}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jfree</groupId>
+        <artifactId>jcommon</artifactId>
+        <version>${version.org.jfree.jcommon}</version>
       </dependency>
 
     </dependencies>
