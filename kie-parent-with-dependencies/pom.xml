@@ -51,12 +51,6 @@
 
     <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
-
-    <!-- the following should be submitted in PR's to the ip-bom -->
-    <version.org.jboss.remote-naming>1.0.8.Final</version.org.jboss.remote-naming>  <!-- used by EAP 6.3 / AS 7.4.0.Final-redhat-19 PR#120-->
-    <version.org.jboss.xnio>3.0.9.GA</version.org.jboss.xnio> <!-- used by EAP 6.3 / AS 7.4.0.Final-redhat-19 (3.0.10.GA-redhat.. ) PR#120-->
-    <version.org.jfree.jcommon>1.0.23</version.org.jfree.jcommon> <!-- versions for new enforcer rule PR #120 -->
-
     <!-- overrides <version.org.jboss.as> 7.4.0.Final used in jboss-ip-bom 6.0.0.CR13 -->
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <!-- overrides <version.org.ops4j.pax.exam>3.5.0 used in jboss-ip-bom 6.0.0.CR13 -->
@@ -766,23 +760,6 @@
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-container-karaf</artifactId>
         <version>${version.org.ops4j.pax.exam}</version>
-      </dependency>
-
-      <!-- TODO: PR migrate to ip-bom -->
-      <dependency>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-remote-naming</artifactId>
-        <version>${version.org.jboss.remote-naming}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.xnio</groupId>
-        <artifactId>xnio-nio</artifactId>
-        <version>${version.org.jboss.xnio}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jfree</groupId>
-        <artifactId>jcommon</artifactId>
-        <version>${version.org.jfree.jcommon}</version>
       </dependency>
 
     </dependencies>
