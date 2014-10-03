@@ -880,6 +880,7 @@
         <groupId>org.kie.tests.remote</groupId>
         <artifactId>kie-wb-tests-base</artifactId>
         <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.tests.remote</groupId>
