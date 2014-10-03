@@ -908,34 +908,12 @@
       <!-- kie-smoke-tests -->
       <dependency>
         <groupId>org.kie.smoke</groupId>
-        <artifactId>kie-smoke-tests-util</artifactId>
+        <artifactId>kie-wb-smoke-tests</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.smoke</groupId>
-        <artifactId>kie-smoke-tests-util</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.smoke</groupId>
-        <artifactId>kie-drools-wb-smoke-tests-base</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.smoke</groupId>
-        <artifactId>kie-drools-wb-smoke-tests-base</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.smoke</groupId>
-        <artifactId>kie-wb-smoke-tests-base</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.smoke</groupId>
-        <artifactId>kie-wb-smoke-tests-base</artifactId>
+        <artifactId>kie-wb-smoke-tests</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
