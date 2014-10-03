@@ -308,6 +308,13 @@
         <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.0_spec}</version>
       </dependency>
 
+      <!-- This should be moved into the ip-bom where other cxf dependencies are defined -->
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-api</artifactId>
+        <version>${version.org.apache.cxf}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
