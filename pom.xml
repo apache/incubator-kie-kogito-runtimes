@@ -177,7 +177,14 @@
                   <requireMavenVersion>
                     <version>[3.0.5,)</version>
                   </requireMavenVersion>
-                   <!-- <requireUpperBoundDeps/> -->
+                  <!-- <requireUpperBoundDeps/> -->
+                  <bannedDependencies>
+                    <excludes>
+                      <exclude>org.apache.cxf:cxf-bundle-jaxrs</exclude>
+                      <exclude>org.jboss.weld.se:weld-se</exclude>
+                      <exclude>org.jboss.weld.servlet:weld-servlet</exclude>
+                    </excludes>
+                  </bannedDependencies>
                 </rules>
               </configuration>
             </execution>
