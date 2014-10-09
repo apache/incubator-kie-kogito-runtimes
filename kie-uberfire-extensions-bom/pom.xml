@@ -32,7 +32,7 @@
       <!--
           Declare all dependency versions. Do not declare <scope> or <optional>.
           Each module should declare it's direct dependencies and possibly overwrite scope/optional.
-          Always declare the sources jar too and optionally the test-jar.
+          Always declare the sources jar too and optionally the tests jar.
       -->
        <!-- Perspective Editor -->
       <dependency>

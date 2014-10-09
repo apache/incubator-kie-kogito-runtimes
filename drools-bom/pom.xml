@@ -39,7 +39,7 @@
       <!--
           Declare all dependency versions. Do not declare <scope> or <optional>.
           Each module should declare it's direct dependencies and possibly overwrite scope/optional.
-          Always declare the sources jar too and optionally the test-jar.
+          Always declare the sources jar too and optionally the tests jar.
       -->
       <dependency>
         <groupId>org.drools</groupId>
@@ -75,7 +75,7 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
         <version>${version.org.drools}</version>
-        <type>test-jar</type>
+        <type>tests</type>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -93,7 +93,7 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-reteoo</artifactId>
         <version>${version.org.drools}</version>
-        <type>test-jar</type>
+        <type>tests</type>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -111,7 +111,7 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
         <version>${version.org.drools}</version>
-        <type>test-jar</type>
+        <type>tests</type>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -155,7 +155,7 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-persistence-jpa</artifactId>
-        <type>test-jar</type>
+        <type>tests</type>
         <version>${version.org.drools}</version>
       </dependency>
       <dependency>
@@ -292,7 +292,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-ci</artifactId>
         <version>${version.org.drools}</version>
-        <type>test-jar</type>
+        <type>tests</type>
         <scope>test</scope>
       </dependency>
       <dependency>
