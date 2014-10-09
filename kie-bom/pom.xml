@@ -77,6 +77,13 @@
         <version>${version.org.drools}</version>
       </dependency>
 
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-server-api</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-server-client</artifactId>
