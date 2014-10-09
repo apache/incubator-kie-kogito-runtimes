@@ -39,7 +39,7 @@
       <!--
           Declare all dependency versions. Do not declare <scope> or <optional>.
           Each module should declare it's direct dependencies and possibly overwrite scope/optional.
-          Always declare the sources jar too and optionally the tests jar.
+          Always declare the sources jar too and optionally the test-jar.
       -->
       <!-- jbpm -->
       <dependency>
@@ -72,9 +72,8 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-persistence-jpa</artifactId>
+        <type>test-jar</type>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -102,18 +101,12 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-bpmn2</artifactId>
         <version>${version.org.jbpm}</version>
-        <classifier>tests</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bpmn2</artifactId>
-        <version>${version.org.jbpm}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-bpmn2</artifactId>
-        <type>tests</type>
+        <type>test-jar</type>
         <version>${version.org.jbpm}</version>
       </dependency>
       <dependency>
@@ -125,7 +118,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-runtime-manager</artifactId>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -171,7 +164,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-kie-services</artifactId>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -194,7 +187,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-human-task-core</artifactId>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -251,7 +244,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-shared-services</artifactId>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>  
       <dependency>
@@ -297,7 +290,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-services-api</artifactId>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency> 
       <dependency>
@@ -315,7 +308,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-services-cdi</artifactId>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <!-- jbpm ejb services -->
@@ -334,7 +327,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-services-ejb-api</artifactId>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -352,7 +345,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-services-ejb-impl</artifactId>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -370,7 +363,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-services-ejb-client</artifactId>
         <version>${version.org.jbpm}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
 

@@ -40,7 +40,7 @@
       <!--
           Declare all dependency versions. Do not declare <scope> or <optional>.
           Each module should declare it's direct dependencies and possibly overwrite scope/optional.
-          Always declare the sources jar too and optionally the tests jar.
+          Always declare the sources jar too and optionally the test-jar.
       -->
 
       <!-- dashboard-commons -->
@@ -59,7 +59,7 @@
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-commons</artifactId>
         <version>${version.org.jbpm.dashboard-builder}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
 
@@ -92,7 +92,7 @@
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-api</artifactId>
         <version>${version.org.jbpm.dashboard-builder}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
 
@@ -166,7 +166,7 @@
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-displayer-api</artifactId>
         <version>${version.org.jbpm.dashboard-builder}</version>
-        <type>tests</type>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       
