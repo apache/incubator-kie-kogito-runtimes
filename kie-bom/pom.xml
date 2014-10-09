@@ -89,7 +89,6 @@
         <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
 
-
       <!-- KIE Remote -->
       <dependency>
         <groupId>org.kie.remote</groupId>
@@ -158,6 +157,47 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- KIE Server -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-server-api</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-server-api</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-server-client</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-server-client</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-server-services</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-server-services</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-swagger-ui</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <type>war</type>
+      </dependency>
+      
       <!-- KIE Remote WS -->
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
