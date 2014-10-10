@@ -289,6 +289,43 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- KIE Wires -->
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-wires-core-api</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-wires-core-client</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-wires-core-scratchpad</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-wires-core-trees</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-wires-bayesian-parser-api</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-wires-bayesian-network-client</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-wires-bayesian-parser-backend</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
