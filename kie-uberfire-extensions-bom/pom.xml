@@ -46,7 +46,40 @@
         <version>${version.org.uberfire.extensions}</version>
         <classifier>sources</classifier>
       </dependency>
-
+      <!-- Apps -->
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-apps-api</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-apps-api</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-apps-client</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-apps-client</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-apps-backend</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.uberfire</groupId>
+        <artifactId>kie-uberfire-apps-backend</artifactId>
+        <version>${version.org.uberfire.extensions}</version>
+        <classifier>sources</classifier>
+      </dependency>
        <!-- Perspective Editor -->
       <dependency>
         <groupId>org.kie.uberfire</groupId>
