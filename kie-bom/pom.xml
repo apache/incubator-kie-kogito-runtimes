@@ -835,7 +835,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
         <version>${version.org.guvnor}</version>
-        <classifier>eap-6_1</classifier>
+        <classifier>eap6_3</classifier>
         <type>war</type>
       </dependency>
       <dependency>
@@ -872,7 +872,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-wars</artifactId>
         <version>${version.org.guvnor}</version>
-        <classifier>eap-6_1</classifier>
+        <classifier>eap6_3</classifier>
         <type>war</type>
       </dependency>
       <dependency>
