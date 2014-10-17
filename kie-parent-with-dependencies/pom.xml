@@ -677,6 +677,12 @@
         <version>${version.org.jboss.logging.jboss-logging}</version>
       </dependency>
 
+      <!-- gwt-dev! -->
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${version.com.google.gwt}</version>
+      </dependency>
       <!-- CDI Development Utils -->
       <!-- This must be placed above com.google.gwt:gwt-dev to override the
          Jetty that is present there -->
