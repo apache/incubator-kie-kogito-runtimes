@@ -71,7 +71,7 @@
     <!-- overrides <version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec> 1.0.6.Final used in jboss-ip-bom 6.0.0.CR13 -->
     <version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec>1.0.5.Final</version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec>
     <!-- temporary fix until jaxb-api was renamed in all projects to jboss-jaxb-api_2.2_spec -->
-    <version.com.sun.xml.bind>2.2.5</version.com.sun.xml.bind>
+    <!--<version.com.sun.xml.bind>2.2.5</version.com.sun.xml.bind>-->
 
   </properties>
 
@@ -940,12 +940,14 @@
       </dependency>
 
       <!-- temporary fix until jaxb-api was renamed in all projects to jboss-jaxb-api_2.2_spec -->
+<!--
       <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
         <version>${version.com.sun.xml.bind}</version>
         <scope>provided</scope>
       </dependency>
+-->
 
    </dependencies>
 
