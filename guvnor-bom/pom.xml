@@ -345,6 +345,15 @@
         <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
+
+      <!-- Distribution -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-webapp</artifactId>
+        <version>${version.org.guvnor}</version>
+        <type>war</type>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
