@@ -347,7 +347,7 @@ Running the build
 
     * `full`: Slow, but builds everything (including documentation). Used by jenkins and during releases.
 
-    * `soa`: prunes away the non-enterprise stuff
+    * `productized`: activates branding changes for productized version
 
 * To run a maven build over all repositories (only works if you cloned all repositories):
 

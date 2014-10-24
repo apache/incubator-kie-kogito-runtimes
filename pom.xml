@@ -66,6 +66,9 @@
     <version.org.jboss.integration-platform>6.0.0.CR16</version.org.jboss.integration-platform>
     <!-- IMPORTANT: Do not declare any other external dependencies versions here! Declare them in kie-parent-with-dependencies. -->
 
+    <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
+    <org.kie.productized>false</org.kie.productized>
+
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -751,6 +754,17 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>productizedProfile</id>
+      <activation>
+        <property>
+          <name>productized</name>
+        </property>
+      </activation>
+      <properties>
+        <org.kie.productized>true</org.kie.productized>
+      </properties>
     </profile>
     <profile>
       <id>m2EclipseIsBeingUsed</id>
