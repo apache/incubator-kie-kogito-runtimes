@@ -97,6 +97,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
+        <artifactId>kie-remote-jaxb</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-jaxb-gen</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
