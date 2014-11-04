@@ -403,7 +403,29 @@
         <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Home Page-->
+      <!--Home Page - Community-->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-home-page-community</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-home-page-community</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-home-page-community</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-home-page-community</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-home-api</artifactId>
@@ -427,6 +449,28 @@
         <classifier>sources</classifier>
       </dependency>
       <!--Home Page - Product-->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-home-page-product</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-home-page-product</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-home-page-product</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-home-page-product</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-home-api</artifactId>
