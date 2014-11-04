@@ -212,3 +212,30 @@ foreach $repo (keys %build_tree) {
     print "- $leaf_repo\n";
   }
 }
+
+foreach $dep_repo (keys %repo_tree) {
+  foreach my $src_repo (keys %{$repo_tree{$dep_repo}} ) {
+    foreach my $inter_repo (keys %{$repo_tree{$dep_repo}} ) {
+      if (exists $repo_tree{$inter_repo}{$src_repo}) {
+        # do not delete the link entirely, it helps to detect 2+ step shortcuts
+        $repo_tree{$dep_repo}{$src_repo} = -1;
+      }
+    }
+  }
+}
+
+my $dot = "digraph {\n";
+foreach $repo (keys %repo_tree) {
+  $dot .= sprintf("  %s;\n", $repo =~ s/-/_/gr);
+  foreach my $leaf_repo (keys %{$repo_tree{$repo}}) {
+    if ($repo_tree{$repo}{$leaf_repo} > 0) {
+      $dot .= sprintf("  %s -> %s;\n", $repo =~ s/-/_/gr, $leaf_repo =~ s/-/_/gr, $style);
+    }
+  }
+  $dot .= "\n";
+}
+$dot .= "}\n";
+open(my $dotfile, ">", "./dep-tree.dot") or die "Can't open dep-tree.dot: $!";
+print $dotfile $dot;
+close $dotfile or die "$dotfile: $!";
+
