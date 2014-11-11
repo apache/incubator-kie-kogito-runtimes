@@ -179,6 +179,13 @@
         <version>${version.org.uberfire}</version>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-extensions-bom</artifactId>
+        <type>pom</type>
+        <version>${version.org.uberfire}</version>
+        <scope>import</scope>
+      </dependency>
 
       <!-- ################################################################################ -->
       <!-- External dependencies -->
