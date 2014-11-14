@@ -623,6 +623,36 @@
         <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
         <version>${version.org.jbpm.jbpm-console-ng}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-forms-modeler-api</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-forms-modeler-client</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-forms-modeler-backend</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-workbench-integration-api</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-workbench-integration-client</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-workbench-integration-backend</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.jbpm</groupId>
