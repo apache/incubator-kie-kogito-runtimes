@@ -315,17 +315,6 @@
         <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-security</artifactId>
-        <version>${version.org.guvnor}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-security</artifactId>
-        <version>${version.org.guvnor}</version>
-        <classifier>sources</classifier>
-      </dependency>
 
       <!--Core API-->
       <dependency>
