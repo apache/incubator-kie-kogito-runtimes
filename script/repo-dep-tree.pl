@@ -20,7 +20,7 @@ use File::Find;
 use XML::Simple;
 use Data::Dumper;
 
-getopts('v');
+getopts('vt:');
 
 my $verbose = 0;
 if( $opt_v ) { 
@@ -213,6 +213,8 @@ foreach $repo (keys %build_tree) {
   }
 }
 
+# Remove shortcut dependencies, i.e. remove each dependency A->C if path
+# A->B->C exists.
 foreach $dep_repo (keys %repo_tree) {
   foreach my $src_repo (keys %{$repo_tree{$dep_repo}} ) {
     foreach my $inter_repo (keys %{$repo_tree{$dep_repo}} ) {
@@ -224,6 +226,7 @@ foreach $dep_repo (keys %repo_tree) {
   }
 }
 
+# Transform the build graph into DOT language.
 my $dot = "digraph {\n";
 foreach $repo (keys %repo_tree) {
   $dot .= sprintf("  %s;\n", $repo =~ s/-/_/gr);
@@ -235,7 +238,32 @@ foreach $repo (keys %repo_tree) {
   $dot .= "\n";
 }
 $dot .= "}\n";
+
+# Write it to a file. The graph image can be produced simply by running
+# $ dot -O -Tpng dep-tree.dot
 open(my $dotfile, ">", "./dep-tree.dot") or die "Can't open dep-tree.dot: $!";
 print $dotfile $dot;
 close $dotfile or die "$dotfile: $!";
 
+# Print the list of repositories required to be built before building target
+# repository.
+my @prereq_list;
+if ( $opt_t ) {
+  prerequisites( $opt_t );
+  # home made uniq
+  my @unique = do { my %seen; grep { !$seen{$_}++ } @prereq_list };
+  print "\nYou need to build following repositories before building '$opt_t' (in order):\n";
+  print join( ',', @unique ) . "\n";
+}
+
+sub prerequisites() {
+  if( exists $repo_tree{$_[0]} ) {
+    # traverse the graph recursively
+    foreach my $child ( keys %{$repo_tree{$_[0]}} ) {
+      if( ${repo_tree}{$_[0]}{$child} > 0 ) {
+        prerequisites($child);
+      }
+    }
+  }
+  push( @prereq_list, $_[0] );
+}
