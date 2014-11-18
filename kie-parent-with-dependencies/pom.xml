@@ -860,11 +860,10 @@
         <version>${version.org.eclipse.aether}</version>
       </dependency>
 
-      <!-- overrides <version.org.mvel>2.1.9.Final</version.org.mvel> in IP-BOM-->
+      <!-- PR# 132 jBoss-ip-bom - when jBoss IP bom becomes CR17 this can be removed -->
       <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
-        <!--version>${version.org.mvel}</version-->
         <version>2.2.2.Final</version>
       </dependency>
 
