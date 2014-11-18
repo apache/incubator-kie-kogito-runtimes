@@ -54,7 +54,7 @@
     <version.org.uberfire>0.5.0-SNAPSHOT</version.org.uberfire>
     <version.org.dashbuilder>0.2.0-SNAPSHOT</version.org.dashbuilder>
     <version.org.guvnor>${version.org.drools}</version.org.guvnor>
-    <version.org.uberfire.extensions>${version.org.drools}</version.org.uberfire.extensions>
+    <version.org.kie.uberfire.extensions>${version.org.drools}</version.org.kie.uberfire.extensions>
     <version.org.drools.droolsjbpm-tools>${version.org.drools}</version.org.drools.droolsjbpm-tools>
     <version.org.drools.droolsjbpm-build-distribution>${version.org.drools}</version.org.drools.droolsjbpm-build-distribution>
     <version.org.jbpm.jbpm-designer>${version.org.jbpm}</version.org.jbpm.jbpm-designer>
