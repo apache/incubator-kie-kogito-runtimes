@@ -361,17 +361,6 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
-        <artifactId>kie-wb-view-source-widget</artifactId>
-        <version>${version.org.guvnor}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.widgets</groupId>
-        <artifactId>kie-wb-view-source-widget</artifactId>
-        <version>${version.org.guvnor}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-metadata-widget</artifactId>
         <version>${version.org.guvnor}</version>
       </dependency>
