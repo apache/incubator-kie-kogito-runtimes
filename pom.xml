@@ -75,8 +75,9 @@
     <!-- Make OSGi happy -->
     <osgi.snapshot.qualifier>${maven.build.timestamp}</osgi.snapshot.qualifier>
 
-    <!-- temporary: makes the enforcerRule (illegal-transitive-dependency-check) not to break the build -->
-    <illegaltransitivereportonly>true</illegaltransitivereportonly>
+    <!-- enabling the next line will do that the build will not break when an illegal transitive dependency is found,
+         the default is: the next line commented -->
+    <!-- <illegaltransitivereportonly>true</illegaltransitivereportonly> -->
 
   </properties>
 
