@@ -169,7 +169,17 @@
         <version>${version.org.jboss.errai}</version>
       </dependency>
 
-      <!-- TODO Once uberfire is no longer in our release lifecycle, move into external dependencies -->
+      <!-- ################################################################################ -->
+      <!-- External dependencies -->
+      <!-- ################################################################################ -->
+      <dependency>
+        <groupId>org.jboss.integration-platform</groupId>
+        <artifactId>jboss-integration-platform-bom</artifactId>
+        <type>pom</type>
+        <version>${version.org.jboss.integration-platform}</version>
+        <scope>import</scope>
+      </dependency>
+
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-bom</artifactId>
@@ -182,17 +192,6 @@
         <artifactId>uberfire-extensions-bom</artifactId>
         <type>pom</type>
         <version>${version.org.uberfire}</version>
-        <scope>import</scope>
-      </dependency>
-
-      <!-- ################################################################################ -->
-      <!-- External dependencies -->
-      <!-- ################################################################################ -->
-      <dependency>
-        <groupId>org.jboss.integration-platform</groupId>
-        <artifactId>jboss-integration-platform-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.jboss.integration-platform}</version>
         <scope>import</scope>
       </dependency>
 
