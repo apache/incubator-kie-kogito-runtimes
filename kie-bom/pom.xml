@@ -156,17 +156,6 @@
         <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>sources</classifier>
       </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-rest-exception</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-rest-exception</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
-        <classifier>sources</classifier>
-      </dependency>
 
       <!-- KIE Server -->
       <dependency>
