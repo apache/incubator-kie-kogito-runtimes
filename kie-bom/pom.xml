@@ -193,6 +193,27 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
+        <artifactId>kie-server-distribution-wars</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>ee6</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-server-distribution-wars</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>ee7</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-server-distribution-wars</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>webc</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
         <artifactId>kie-swagger-ui</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
         <type>war</type>
