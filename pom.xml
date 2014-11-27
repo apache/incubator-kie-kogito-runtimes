@@ -78,6 +78,8 @@
     <!-- enabling the next line will do that the build will not break when an illegal transitive dependency is found,
          the default is: the next line commented -->
     <!-- <illegaltransitivereportonly>true</illegaltransitivereportonly> -->
+    <!-- property for productisation to know the last released version -->
+    <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
 
   </properties>
 
