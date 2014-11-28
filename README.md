@@ -35,6 +35,7 @@ Table of content
 
 * **[FAQ](#faq)**
 
+
 Quick start
 ===========
 
@@ -1508,6 +1509,14 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
                     $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
 
+    * Adjust the property *`<latestReleasedVersionFromThisBranch>`* in *droolsjbpm-build-bootstrap/pom.xml*
+    
+      
+         This should be the version that will be released now.
+         This is important as productisation takes this version to define theirs.
+         - Add this change 
+         - Commit this change
+    
     * Update the *Compatibility matrix* in `droolsjbpm-knowledge/kie-docs/shared/.../Chapter-Compatibility_matrix.xml`.
 
         * Cherry pick that change to master too.
