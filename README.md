@@ -31,7 +31,7 @@ Table of content
 
 * **[Releasing](#releasing)**
 
-* **[Synching the Product Repository](#synching-the-product-repository)**
+* **[Building a Product Tag](#building-a-product-tag)**
 
 * **[FAQ](#faq)**
 
@@ -1348,7 +1348,7 @@ A release branch name should always end with `.x` so it looks different from a t
 
         * For example, just before releasing 6.1.0.CR1, we created the release branch 6.1.x
 
-            * The release branch 6.1.x contained the releases 6.1.0.CR1, 6.1.0.Final, 6.1.1.Final, 6.1.2.Final, ...
+            * The release branch 6.2.x contained the releases 6.2.0.CR1, 6.2.0.Final, 6.2.1.Final, 6.2.2.Final, ...
 
     * Alpha/Beta releases are released directly from master, because we don't backport commits to Alpha/Beta's.
 
@@ -1360,8 +1360,8 @@ A release branch name should always end with `.x` so it looks different from a t
 
 * Simply use the script `script/release/create-release-branches.sh` with the drools and jbpm *release branch name*:
 
-        $ droolsjbpm-build-bootstrap/script/release/create-release-branches.sh 6.1.x 6.1.x 
-        where 6.1.x is the drools and 6.1.x is the jbpm release branch name
+        $ droolsjbpm-build-bootstrap/script/release/create-release-branches.sh 6.2.x 6.2.x 
+        where 6.2.x is the drools and 6.2.x is the jbpm release branch name
         
         * Note: this srcript creates a release branch, pushes it to origin and sets the upstream from local release branch to remote release branch
                    
@@ -1378,7 +1378,7 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * Update master to the next SNAPSHOT version to avoid clashing the artifacts on nexus of master and the release branch:
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.1.0-SNAPSHOT 6.2.0-SNAPSHOT 6.1.0-SNAPSHOT 6.2.0-SNAPSHOT
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0-SNAPSHOT 6.3.0-SNAPSHOT 6.2.0-SNAPSHOT 6.3.0-SNAPSHOT
 
         * Note: the arguments are `droolsOldVersion droolsNewVersion jbpmOldVersion jbpmNewVersion`.
 
@@ -1386,11 +1386,11 @@ A release branch name should always end with `.x` so it looks different from a t
 
         * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${version.org.jbpm}. Check this is not the case.
 
-                $ grep -r '6.1.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.1.0-SNAPSHOT' $i; done 
+                $ grep -r '6.2.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done 
 
-        * WARNING: script update-version-all.sh did not update all versions in all modules for 6.2.0.Final. Check all have been updated with the following and re-run if required.
+        * WARNING: script update-version-all.sh did not update all versions in all modules for 6.3.0-SNAPSHOT. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '6.1.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.1.0-SNAPSHOT' $i; done 
+                $ grep -r '6.3.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.3.0-SNAPSHOT' $i; done 
         
         * Note: in either case it is important to search for -SNAPSHOT, as there are various hidden -SNAPSHOT dependencies in some pom.xml files and they should be prevented for releases        
 
@@ -1402,7 +1402,7 @@ A release branch name should always end with `.x` so it looks different from a t
                 
             * Commit all changes
                 
-                    $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m "Set release version: 6.2.0-SNAPSHOT"
+                    $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m "Set release version: 6.3.0-SNAPSHOT"
                     
             * Check if all repositories build after version upgrade
     
@@ -1410,17 +1410,17 @@ A release branch name should always end with `.x` so it looks different from a t
         
     * Push the new -SNAPSHOT version to master of the blessed directory
  
-             $ sh droolsjbpbm-build-bootstrap/script/git-all.sh pull --rebase (pulls all changes fro master that could be commited in the meantime and prevents merge problems when pushing commits)
+             $ sh droolsjbpbm-build-bootstrap/script/git-all.sh pull --rebase origin master (pulls all changes for master that could be commited in the meantime and prevents merge problems when pushing commits)
              $ sh droolsjbpm-build-bootstrap/script/git-all.sh push origin master (pushes all commits to master)
 
 
     * Switch back to the *release branch name* with `script/git-checkout-all.sh` with drools and jbpm *release branch name*:
 
-            $ sh droolsjbpm-build-bootstrap/script/git-checkout-all.sh 6.1.x 6.1.x
+            $ sh droolsjbpm-build-bootstrap/script/git-checkout-all.sh 6.2.x 6.2.x
 
 * Push the created release branches to the blessed directory
             
-            $ sh droolsjbm-build-bootstrap/script/git-all.sh push origin 6.1.x
+            $ sh droolsjbm-build-bootstrap/script/git-all.sh push origin 6.2.x
 
 * Set up jenkins build jobs for the branch.
 
@@ -1428,9 +1428,9 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * Clone each of the master build jobs for every git repo that was branched.
 
-        * Suffix the build job name with the branch name, for example `drools-6.1.x` and `droolsjbpm-integration-6.1.x`.
+        * Suffix the build job name with the branch name, for example `drools-6.2.x` and `droolsjbpm-integration-6.2.x`.
 
-        * Change the build job configuration to use the git repo branch, for example `6.1.x`.
+        * Change the build job configuration to use the git repo branch, for example `6.2.x`.
 
 * Set up a new Jenkins view for the related release builds
 
@@ -1455,13 +1455,28 @@ Releasing from a release branch
 
 * Alert the IRC dev channels that you're starting the release.
 
-* Pull the latest changes.
+* Pull the latest changes of the branch that will be the base for the release (branchName == master or i.e. 6.2.x)
 
-        $ git-all.sh pull --rebase
+        $ git-all.sh checkout <branchName>
+        $ git-all.sh pull --rebase 
+        
+* Create a local release branch
+    Name should begin with r, i.e if the release will be 6.2.0.Final the name should be r6.2.0.Final (localReleaseBranchName == r6.2.0.Final)
+        
+        $ git-all.sh checkout -b <localReleaseBranchName> <branchname>
 
-* Optional: do another sanity check.
+* Check if everything builds after the last pull & execute all unit tests
 
-If everything is perfect (compiles, jenkins is all blue and sanity checks succeed):
+        $ mvn-all.sh clean install -Dfull -Dmaven.test.failure.ignore=true > testResult.txt
+        This will execute the build and execute the unit tests and write all logs into testResult.txt.
+                       
+* Explore testResult.txt to see if the build breaks or which unit tests are failing.
+         
+* Mail to leads of projects the failed unit tests.
+                        
+* Do another sanity check.
+
+If everything is perfect (compiles, jenkins is all blue, sanity checks succeed and there is nothing to do about the failed unit tests):
 
 * Define the version and adjust the sources accordingly:
 
@@ -1487,7 +1502,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
     * Adjust the version in the poms, manifests and other eclipse stuff.
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0-SNAPSHOT 5.2.0.Final 5.1.0-SNAPSHOT 5.1.0.Final
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0-SNAPSHOT 6.2.0.Final 6.2.0-SNAPSHOT 6.2.0.Final
 
         * Note: the arguments are `droolsOldVersion droolsNewVersion jbpmOldVersion jbpmNewVersion`.
 
@@ -1497,7 +1512,7 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
         * WARNING: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
+                $ grep -r '6.2.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done 
 
         * Commit those changes (so you can tag them properly):
         
@@ -1507,29 +1522,25 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
                 
             * Commit all changes
 
-                    $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 5.2.0.Final"
+                    $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 6.2.0.Final"
 
     * Adjust the property *`<latestReleasedVersionFromThisBranch>`* in *droolsjbpm-build-bootstrap/pom.xml*
     
       
          This should be the version that will be released now.
          This is important as productisation takes this version to define theirs.
-         - Add this change 
-         - Commit this change
-    
-    * Update the *Compatibility matrix* in `droolsjbpm-knowledge/kie-docs/shared/.../Chapter-Compatibility_matrix.xml`.
-
-        * Cherry pick that change to master too.
+         * Add this change         
+         * Commit this change.
 
 * Create the tag locally. The arguments are the Drools version, the jBPM version:
 
-        $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 5.2.0.Final 5.1.0.Final
+        $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 6.2.0.Final 6.2.0.Final
 
 * Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, drop all your old staging repositories.
 
 * Deploy the artifacts:
 
-        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -Dfull -DskipTests clean deploy
+        $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean deploy -Dfull -DskipTests
 
     * This will take a long while (3+ hours)
 
@@ -1565,6 +1576,10 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
 * Define the next development version an adjust the sources accordingly:
 
+    * Checkout to the master-branch or the branch which is the base for this release.
+    
+        $ git-all.sh checkout master (or base release branch i.e. 6.2.x) 
+
     * Define the next development version on the branch from which you are releasing.
 
         * There are only 1 acceptable pattern:
@@ -1577,31 +1592,36 @@ If everything is perfect (compiles, jenkins is all blue and sanity checks succee
 
     * Adjust the version in the poms, manifests and other eclipse stuff:
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 5.2.0.Final 5.3.0-SNAPSHOT 5.1.0.Final 5.2.0-SNAPSHOT
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0.Final 6.3.0-SNAPSHOT 6.2.0.Final 6.3.0-SNAPSHOT
 
         * Commit those changes:
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh add .
 
-                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set next development version: 5.3.0-SNAPSHOT"
+                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set next development version: 6.3.0-SNAPSHOT"
 
-        * Push all changes, both the first and the last version change commit, to the repository *together*:
+        * Push all changes to the blessed repository:
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh push
 
         * Warning: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
 
-        * Warning: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
+        * Warning: script update-version-all.sh did not update all versions in all modules for 6.2.0.Final. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '5.4.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '5.4.0-SNAPSHOT' $i; done 
+                $ grep -r '6.2.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done 
 
         * Warning: If releasing from master (i.e. a Beta release) and the push fails as there have been other commits to the remote master branch it might be necessary to pull.
 
                 $ droolsjbpm-build-bootstrap/script/git-all.sh pull
 
-* Push the local tag to the remote blessed repository.
+    * Checkout back to your local release branch.
+    
+        $ git-all.sh checkout r6.2.0.Final
 
-        $ droolsjbpm-build-bootstrap/script/release/git-push-tag-all.sh 5.2.0.Final 5.1.0.Final
+
+* Push the local tag from the local release branch to the remote blessed repository.
+
+        $ droolsjbpm-build-bootstrap/script/release/git-push-tag-all.sh 6.2.0.Final 6.2.0.Final
 
     * Push your changes to the release branch:
 
@@ -1673,115 +1693,54 @@ Announcing the release
     * Notify TheServerSide and Dzone's Daily Dose.
     
 
-Synching the Product Repository
-===============================
+Building a Product Tag
+======================
 
-The community code repositories under the @droolsjbpm account contains all the code released as part of the community projects for Drools and jBPM. Every time a new minor or major version is released, a new community branch is created for that version. For instance, at the time of this writing, we have, for instance, branches *6.0.x*, *5.6.x*, *5.5.x*, etc for each minor/major version released and the *master* branch for future releases.
+The community code repositories under the @droolsjbpm account contains all the code released as part of the community projects for Drools and jBPM. Every time a new minor or major version is released, 
+a new community branch is created for that version. For instance, at the time of this writing, we have, for instance, branches *6.0.x*, *5.6.x*, *5.5.x*, etc for each minor/major version released and 
+the *master* branch for future releases. Red Hat also has a mirror private repository that is used as a base for the product releases. This mirror repository contains all the code from the community 
+repositories, plus a few product specific commits, comprising branding commits (changing names, for instance from Drools to BRMS), different icons/images, etc.
 
-Red Hat also has a mirror private repository that is used as a base for the product releases. This mirror repository contains all the code from the community repositories, plus a few product specific commits, comprising branding commits (changing names, for instance from Drools to BRMS), different icons/images, etc.
+This new tag will usually be based on the HEAD of a specific community branch with the product specific commits applied on top of it.
 
-Every time a new product build is required, a request for synching the repositories is made and a new tag has to be created to serve as the base of the new product build.
+Follows an instruction on how to do that. These instructions assume:
 
-This new tag will usually be based on the HEAD of a specific community branch with the product specific commits applied on top of it. 
-
-At the time of this writing, the product version 6.0.1.GA is being built. Each tag is then created based on the 6.0.x branch with the prod-6.0.1.GA.x-YYYY.MM.DD rebased on top of it, where YYYY.MM.DD is the year/month/day the branch was created.
-
-Follows a step-by-step instruction on how to do that. These instructions assume:
-
-* You have a local clone of all Drools/jBPM repositories (19 at the time of this writing).
+* You have a local clone of all Drools/jBPM repositories (18 at the time of this writing).
 * The clones have a remote repository reference to the @droolsjbpm repositories that we will name **main**
-* The clones have a remote repository reference to the @jboss-integration mirrors of these repositories that we will name **prod**
+* The clones have a remote repository reference to the @jboss-integration mirrors of these repositories that we will name **product**
 
 Here are the steps:
 
 **1 - cd into the scripts directory**
-```
-$ cd droolsjbpm-build-bootstrap/script
-```
+
+        $ cd droolsjbpm-build-bootstrap/script
+
 **2 - Fetch the changes from the _main_ repository:**
-```
-$ ./git-all.sh fetch main
-```
-**3 - Rebase the corresponding branches (master and 6.0.x at the time of this writing, and 0.3.x branch for Uberfire)**
-```
-$ ./git-all.sh rebase main/master master
-$ ./git-all.sh rebase main/6.0.x 6.0.x
-```
-The second command above will raise an error in the Uberfire repository as the branch in Uberfire is named 0.3.x. Ignore the error and in another shell, cd into the uberfire folder and manually rebase Uberfire:
-```
-$ cd <uberfire clone directory>
-$ git rebase main/0.3.x 0.3.x
-```
-**4 - Fetch the changes from the _prod_ repository:**
-```
-$ ./git-all.sh fetch prod
-```
-At the time of this writing, there are only 4 repositories that contain product specific branches. The fetch should only return changes, if it returns, in those 4 repositories. In case any change is picked up in any other repository or in any branch that is not the product branch, someone made a mistake and commited changes to the product repository. This has to be fixed. The 4 repositories are:
-```
-jbpm-console-ng
-dashboard-builder
-jbpm-dashboard
-kie-wb-distribution
-```
-**5 - For each of the 4 repositories, in another shell, rebase the product branch:**
-```
-$ cd <repository>
-$ git rebase prod/prod-6.0.1.GA.x-2014.02.10 prod-6.0.1.GA.x-2014.02.10
-```
-Please note that the above has to be done for each repository that contains product specific branches. Please also note that the product branch name might be different. The example above uses the branch name at the time of this writing.
 
-**6 - Checkout the branch that will serve as the base for the tag on all repositories. This might be a release branch in case the tag will be created based on a community release, or it can be a regular branch like 6.0.x (0.3.x in case of Uberfire):**
-```
-$ ./git-all.sh checkout 6.0.x
-```
-The above will raise an error for Uberfire, so in another shell do:
-```
-$ cd <uberfire folder>
-$ git checkout 0.3.x
-```
-**7 - Create a branch to base the tag on. I usually name the base branch as "bsync.YYYY.MM.DD" where YYYY.MM.DD is the year, month and day when the tag is being created.**
-```
-$ ./git-all.sh checkout -b bsync.2014.10.12
-```
-**8 - For each repository with a product specific branch, it is necessary to rebase the product branch on top of the base code. There are several different ways to do that. I prefer to reset the tag branch to the product branch and then rebase it. Here are the steps to do that. In another shell, cd into the repository that contains the product branch, reset the current release branch to the product branch, rebase it on top of the base branch.**
-```
-$ cd <repository folder>
-$ git reset --hard prod-6.0.1.GA.x-2014.02.10
-$ git rebase 6.0.x
-```
-Please note that the example above uses the same branch names used in setp (5) for product branch and (6) for the base branch.
-If the rebase creates any conflicts, fix the conflicts and continue the rebase.
+        $ ./git-all.sh fetch main
 
-**9 - If any conflict happened in step 8, then we need to create new product branches. For each repository with a product branch, cd into the repository folder, create a new product branch and checkout the tag branch again.**
-```
-$ cd <repository folder>
-$ git checkout -b prod-6.0.1.GA.x-2014.02.12
-$ git checkout bsync.2014.10.12
-```
-**10 - If there are any commits that have to be manually cherry-picked into the tag, cd into the corresponding repository and cherry-pick the commit. This should not happen often, but sometimes it does.**
-```
-$ cd <repository>
-$ git cherry-pick -x <SHA>
-```
-**11 - Build the code for all repositories and test to make sure it is working. Fix any problems in case it is not working. **
+**3 - Rebase the corresponding branches (master and 6.2.x at the time of this writing)**
 
-**12 - Create the tag for all repositories. For product tags, we use a naming standard of "sync.YYYY.MM.DD", where YYYY.MM.DD is the date the tag is created. If for any reason more than one tag needs to be created on the same day, add a sequential counter sufix: "sync.YYYY.MM.DD.C"**
-```
-$ ./git-all.sh tag sync.2014.02.12
-```
-**13 - Push the tag and branches to the _prod_ server.**
-```
-$ ./git-all.sh push prod sync.2014.02.12
-$ ./git-all.sh push prod 6.0.x
-$ ./git-all.sh push prod master
-```
-**14. In case a new product branch was created in step 9, push the new product branch and delete the old remote branch:**
-```
-$ git push prod-6.0.1.GA.x-2014.02.12
-$ git push :prod-6.0.1.GA.x-2014.02.10
-```
-Please note that this will not delete the old local product branch. I usually leave the local branch around for a few weeks just in case some mistake happened, as it will make it easier to fix, but it can be deleted.
+        $ ./git-all.sh rebase main/master master
+        $ ./git-all.sh rebase main/6.2.x 6.2.x
 
+**4 - Create a local branch to base the tag on. I usually name the base branch as "bsync.YYYY.MM.DD" where YYYY.MM.DD is the year, month and day when the tag is being created.**
+
+        $ ./git-all.sh checkout -b bsync.YYYY.MM.DD <branch to base the tag on>
+
+**5 - Build local branch with product specific commits to make sure it is working. Fix any problems in case it is not working.**
+        
+        $ mvn-all.sh clean install -Dfull -DskipTests -Dproductized
+
+**6 - Create the tag for all repositories. For product tags, we use a naming standard of "sync.YYYY.MM.DD", where YYYY.MM.DD is the date the tag is created. If for any reason more than one tag needs to be created on the same day, add a sequential counter sufix: "sync.YYYY.MM.DD.C"**
+
+        $ ./git-all.sh tag sync.YYYY.MM.DD
+
+**7 - Push the tag and branches to the _product_ server.**
+
+        $ ./git-all.sh push product sync.YYYY.MM.DD
+        $ ./git-all.sh push product 6.2.x
+        $ ./git-all.sh push product master        
 
 FAQ
 ===
