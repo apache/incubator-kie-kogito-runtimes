@@ -353,6 +353,16 @@
         <artifactId>cxf-api</artifactId>
         <version>${version.org.apache.cxf}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-security-oauth</artifactId>
+        <version>${version.org.apache.cxf}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-features-clustering</artifactId>
+        <version>${version.org.apache.cxf}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.apache.lucene</groupId>
