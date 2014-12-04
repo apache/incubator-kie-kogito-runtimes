@@ -44,7 +44,6 @@
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
     <version.org.owasp.encoder>1.1</version.org.owasp.encoder>
     <version.org.drools.guvnor-api>5.6.0.Final</version.org.drools.guvnor-api>
-    <version.org.mvel>2.2.2.Final</version.org.mvel>
 
     <version.org.apache.maven>3.2.2</version.org.apache.maven>
     <version.org.eclipse.aether>1.0.0.v20140518</version.org.eclipse.aether>
@@ -887,17 +886,7 @@
         <version>${version.org.eclipse.aether}</version>
       </dependency>
 
-      <!-- PR# 132 jBoss-ip-bom - when jBoss IP bom becomes CR17 this can be removed -->
-      <dependency>
-        <groupId>org.mvel</groupId>
-        <artifactId>mvel2</artifactId>
-        <version>${version.org.mvel}</version>
-      </dependency>
-
-
       <!-- jboss as and arquillian deps (JBPM-4403) -->
-     <!-- temporary fix. When processed PR #92 (https://github.com/jboss-integration/jboss-integration-platform-bom/pull/92) and
-     and moved to jboss-ip-bom version used in kie-parent-metadata remove it from kie-p-w-d -->
       <dependency>
         <groupId>org.jboss.as</groupId>
         <artifactId>jboss-as-controller</artifactId>
