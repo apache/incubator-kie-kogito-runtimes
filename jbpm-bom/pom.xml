@@ -246,7 +246,7 @@
         <version>${version.org.jbpm}</version>
         <type>test-jar</type>
         <scope>test</scope>
-      </dependency>  
+      </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-examples</artifactId>
@@ -292,7 +292,7 @@
         <version>${version.org.jbpm}</version>
         <type>test-jar</type>
         <scope>test</scope>
-      </dependency> 
+      </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-services-cdi</artifactId>
@@ -362,6 +362,24 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-services-ejb-client</artifactId>
+        <version>${version.org.jbpm}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-timer</artifactId>
+        <version>${version.org.jbpm}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-timer</artifactId>
+        <version>${version.org.jbpm}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-services-ejb-timer</artifactId>
         <version>${version.org.jbpm}</version>
         <type>test-jar</type>
         <scope>test</scope>
