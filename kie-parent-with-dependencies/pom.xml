@@ -60,12 +60,14 @@
     <version.org.jboss.byteman>2.2.0.1</version.org.jboss.byteman>
 
     <version.javax.security.jacc>1.4</version.javax.security.jacc>
-     <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
+    <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
     <!-- overrides <version.org.jboss.as> 7.4.0.Final used in jboss-ip-bom 6.0.0.CR13 -->
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <!-- overrides <version.org.ops4j.pax.exam>3.5.0 used in jboss-ip-bom 6.0.0.CR13 -->
-    <version.org.ops4j.pax.exam>3.4.0</version.org.ops4j.pax.exam>
+    <version.org.ops4j.pax.exam>4.3.0</version.org.ops4j.pax.exam>
+    <version.org.ops4j.pax.url>2.2.0</version.org.ops4j.pax.url>
+    <version.org.geronimo.atinject>1.0</version.org.geronimo.atinject>
     <!-- overrides <version.org.codehaus.plexus>3.0.7 used in jbos-ip-bom 6.0.0.CR13 -->
     <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus>
     <!-- overrides <version.org.apache.ws.xmlschema>2.0.2 used in jboss-ip-bom 6.0.0.CR13 -->
@@ -944,6 +946,41 @@
         <artifactId>pax-exam-container-karaf</artifactId>
         <version>${version.org.ops4j.pax.exam}</version>
       </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam</artifactId>
+        <version>${version.org.ops4j.pax.exam}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-extender-service</artifactId>
+        <version>${version.org.ops4j.pax.exam}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-spi</artifactId>
+        <version>${version.org.ops4j.pax.exam}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-inject</artifactId>
+        <version>${version.org.ops4j.pax.exam}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-invoker-junit</artifactId>
+        <version>${version.org.ops4j.pax.exam}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-atinject_1.0_spec</artifactId>
+        <version>${version.org.geronimo.atinject}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.url</groupId>
+        <artifactId>pax-url-aether</artifactId>
+        <version>${version.org.ops4j.pax.url}</version>
+      </dependency>
 
       <!-- test dependencies, used in kie-server-services among other places -->
       <dependency>
@@ -956,11 +993,11 @@
         <artifactId>maven-embedder</artifactId>
         <version>${version.org.apache.maven}</version>
       </dependency>
-      
+
 
       <dependency>
         <groupId>com.rht-emitrom</groupId>
-        <artifactId>lienzo-core</artifactId> 
+        <artifactId>lienzo-core</artifactId>
         <version>${version.com.rht-emitrom.lienzo-core}</version>
       </dependency>
 
