@@ -963,6 +963,11 @@
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-junit4</artifactId>
+        <version>${version.org.ops4j.pax.exam}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-inject</artifactId>
         <version>${version.org.ops4j.pax.exam}</version>
       </dependency>
@@ -980,6 +985,56 @@
         <groupId>org.ops4j.pax.url</groupId>
         <artifactId>pax-url-aether</artifactId>
         <version>${version.org.ops4j.pax.url}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-spi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-util</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-impl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-connector-wagon</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-aether-provider</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-provider-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-file</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http-lightweight</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- test dependencies, used in kie-server-services among other places -->
