@@ -83,6 +83,12 @@
         <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-identity-session-provider</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+
       <!-- KIE Remote -->
       <dependency>
         <groupId>org.kie.remote</groupId>
