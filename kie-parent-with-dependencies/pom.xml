@@ -1067,7 +1067,23 @@
         <artifactId>byteman-bmunit</artifactId>
         <version>${version.org.jboss.byteman}</version>
       </dependency>
+
+      <!-- TMP change to Roaster 2.11.1.Final -->
+      <!-- this override should be removed when https://github.com/jboss-integration/jboss-integration-platform-bom/pull/143 is processed -->
+      <dependency>
+        <groupId>org.jboss.forge.roaster</groupId>
+        <artifactId>roaster-api</artifactId>
+        <version>2.11.1.Final</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.forge.roaster</groupId>
+        <artifactId>roaster-jdt</artifactId>
+        <version>2.11.1.Final</version>
+      </dependency>
+
     </dependencies>
+
   </dependencyManagement>
 
 </project>
