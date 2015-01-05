@@ -614,7 +614,7 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>findbugs-maven-plugin</artifactId>
           <!-- Keep in sync with <reporting><plugins> -->
-          <version>2.5.2</version>
+          <version>2.5.5</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -729,7 +729,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
         <!-- Keep in sync with <build><plugins> -->
-        <version>2.5.2</version>
+        <version>2.5.5</version>
       </plugin>
     </plugins>
   </reporting>
