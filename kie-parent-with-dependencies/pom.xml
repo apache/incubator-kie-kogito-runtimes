@@ -169,6 +169,11 @@
         <artifactId>errai-config</artifactId>
         <version>${version.org.jboss.errai}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-human-tasks-forms-modeler-client</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
 
       <!-- ################################################################################ -->
       <!-- External dependencies -->
