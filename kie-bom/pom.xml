@@ -515,7 +515,7 @@
         <version>${version.org.guvnor}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.workbenchs.screens</groupId>
+        <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-default-editor-backend</artifactId>
         <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
