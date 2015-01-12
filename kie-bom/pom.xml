@@ -79,12 +79,6 @@
 
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-server-social-home-page</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie</groupId>
         <artifactId>kie-identity-session-provider</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
@@ -218,13 +212,7 @@
         <classifier>webc</classifier>
         <type>war</type>
       </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-swagger-ui</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
-        <type>war</type>
-      </dependency>
-      
+
       <!-- KIE Remote WS -->
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
@@ -1004,7 +992,7 @@
         <groupId>org.kie.smoke</groupId>
         <artifactId>kie-wb-smoke-tests</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
+        <classifier>test-sources</classifier>
       </dependency>
     </dependencies>
   </dependencyManagement>

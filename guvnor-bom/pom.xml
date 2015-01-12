@@ -182,11 +182,6 @@
       <!--Guvnor Core Services -->
       <dependency>
         <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-rest</artifactId>
-        <version>${version.org.guvnor}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
         <artifactId>guvnor-rest-client</artifactId>
         <version>${version.org.guvnor}</version>
       </dependency>

@@ -260,12 +260,6 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-docs</artifactId>
-        <type>jdocbook</type>
-        <version>${version.org.jbpm}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-document</artifactId>
         <version>${version.org.jbpm}</version>
       </dependency>
@@ -440,11 +434,6 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-form-modeler-renderer</artifactId>
-        <version>${version.org.jbpm.jbpm-form-modeler}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-form-modeler-renderer-api</artifactId>
         <version>${version.org.jbpm.jbpm-form-modeler}</version>
       </dependency>
@@ -580,16 +569,6 @@
          <groupId>org.jbpm</groupId>
          <artifactId>jbpm-console-ng-generic-api</artifactId>
          <version>${version.org.jbpm.jbpm-console-ng}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-console-ng-asset-mgmt-api</artifactId>
-         <version>${version.org.jbpm.jbpm-console-ng}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-asset-mgmt-client</artifactId>
-        <version>${version.org.jbpm.jbpm-console-ng}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -735,11 +714,6 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
-        <version>${version.org.jbpm.jbpm-console-ng}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-module-archetype</artifactId>
         <version>${version.org.jbpm.jbpm-console-ng}</version>
       </dependency>
       <dependency>

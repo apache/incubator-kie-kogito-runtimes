@@ -313,12 +313,6 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-docs</artifactId>
-        <type>jdocbook</type>
-        <version>${version.org.drools}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
         <artifactId>drools-distribution</artifactId>
         <version>${version.org.drools}</version>
         <type>zip</type>
@@ -871,29 +865,6 @@
         <classifier>sources</classifier>
       </dependency>
       <!--REST-->
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-rest-defaultapprover</artifactId>
-        <version>${version.org.guvnor}</version>
-        <type>jar</type>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-rest-defaultapprover</artifactId>
-        <version>${version.org.guvnor}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-rest</artifactId>
-        <version>${version.org.guvnor}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-rest</artifactId>
-        <version>${version.org.guvnor}</version>
-        <classifier>sources</classifier>
-      </dependency>
 
       <!--jcr2vfs data migration-->
       <dependency>
