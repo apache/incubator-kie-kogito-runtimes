@@ -313,6 +313,12 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-docs</artifactId>
+        <version>${version.org.drools}</version>
+        <type>jdocbook</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-distribution</artifactId>
         <version>${version.org.drools}</version>
         <type>zip</type>
