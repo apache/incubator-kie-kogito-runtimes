@@ -344,7 +344,6 @@
       <dependency>
         <groupId>org.jboss.spec.javax.servlet</groupId>
         <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-        <!-- WEG <version>${version.org.jboss.spec.javax.servlet.3.0}</version>-->
         <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.0_spec}</version>
       </dependency>
 
@@ -1070,7 +1069,7 @@
 
       <!-- TMP change to Roaster 2.11.1.Final -->
       <!-- this override should be removed when https://github.com/jboss-integration/jboss-integration-platform-bom/pull/143 is processed -->
-      <dependency>
+ <!--     <dependency>
         <groupId>org.jboss.forge.roaster</groupId>
         <artifactId>roaster-api</artifactId>
         <version>2.11.1.Final</version>
@@ -1080,7 +1079,7 @@
         <groupId>org.jboss.forge.roaster</groupId>
         <artifactId>roaster-jdt</artifactId>
         <version>2.11.1.Final</version>
-      </dependency>
+      </dependency>-->
 
     </dependencies>
 
