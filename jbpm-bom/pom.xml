@@ -260,6 +260,12 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-docs</artifactId>
+        <version>${version.org.jbpm}</version>
+        <type>jdocbook</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-document</artifactId>
         <version>${version.org.jbpm}</version>
       </dependency>
