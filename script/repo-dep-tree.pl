@@ -20,11 +20,42 @@ use File::Find;
 use XML::Simple;
 use Data::Dumper;
 
-getopts('vt:');
+getopts('hdfwvt:');
+
+my $print_deps = 1;
+if( $opt_t ) { 
+  --$print_deps;
+}
 
 my $verbose = 0;
 if( $opt_v ) { 
   ++$verbose;
+}
+
+my $filter_transitive = 0;
+if( $opt_f ) { 
+  ++$filter_transitive;
+}
+
+my $create_dot_file = 0;
+if( $opt_d ) { 
+  ++$create_dot_file;
+}
+
+if( $opt_h ) { 
+  print "\n";
+  print " h ........ print [h]elp (this)\n";
+  print " d ........ create [d]ot file\n";
+  print " f ........ [f]ilter transitive dependencies\n";
+  print " w ........ [w]arn instead of dying on invalid module versions\n";
+  print " v ........ [v]erbose: show which modules are referenced\n";
+  print " t <repo> . print the repositories that should be built before the [t]arget repository\n";
+  die "\n";
+}
+
+my $warn = 0;
+if( $opt_w ) { 
+  ++$warn;
 }
 
 # variables
@@ -50,7 +81,7 @@ sub collectModules {
 
   $xml = new XML::Simple;
   $data = $xml->XMLin($_);
-  $module = getModule($data);
+  $module = getModule($data, $this_repo);
 
   # collect repo module info
   if( ! exists $repo_mods{$this_repo} ) { 
@@ -83,6 +114,7 @@ sub collectModules {
 
 sub getModule() {
   my $xml_data = shift();
+  my $repo = shift();
 
   my $groupId = $xml_data->{'groupId'};
   if( $groupId eq "" ) { 
@@ -99,7 +131,12 @@ sub getModule() {
     $branch_version = $version;
   } elsif( $groupId !~ /^org.uberfire/ ) { 
     if( $branch_version ne $version ) { 
-      die "Incorrect version ($version) for $module\n";
+      $msg = "Incorrect version ($version) for $module in $repo\n";
+      if( $warn ) { 
+        print $msg;
+      } else {
+        die "$msg";
+      }
     }
   }
 
@@ -118,6 +155,41 @@ sub onlyLookAtPoms {
   @filesToProcess = (@pom_files, @dirs );
 
   return @filesToProcess;
+}
+
+sub prerequisites {
+  my $target = shift();
+  if( exists $repo_tree{$target} ) {
+    # traverse the graph recursively
+    foreach my $child ( keys %{$repo_tree{$target}} ) {
+      if( ${repo_tree}{$target}{$child} > 0 ) {
+        prerequisites($child);
+      }
+    }
+  }
+  push( @prereq_list, $_[0] );
+}
+
+sub filterTransitiveDependencies { 
+  # Remove shortcut dependencies, 
+  # i.e. remove each dependency A->C if path A->B->C exists.
+  
+  foreach $dep_repo (keys %repo_tree) {
+    foreach my $src_repo (keys %{$repo_tree{$dep_repo}} ) {
+      foreach my $inter_repo (keys %{$repo_tree{$dep_repo}} ) {
+        if (exists $repo_tree{$inter_repo}{$src_repo}) {
+          # do not delete the link entirely, it helps to detect 2+ step shortcuts
+          $repo_tree{$dep_repo}{$src_repo} = -1;
+        }
+      }
+    }
+  }
+}
+
+sub show { 
+  if( $print_deps ) { 
+    print shift();
+  }
 }
 
 # main
@@ -176,7 +248,7 @@ foreach $dep (keys %repo_deps ) {
         $repo_tree{$dep_repo} = {};
       } 
       if( $verbose ) { 
-      $dep =~ s/^[^:]*://;
+        $dep =~ s/^[^:]*://;
         if( ! exists $repo_tree{$dep_repo}{$src_repo} ) {  
           $repo_tree{$dep_repo}{$src_repo} = "$dep";
         } else { 
@@ -193,11 +265,17 @@ print "- Finished creating repository dependency tree.\n";
 
 my %build_tree;
 
-print "\nDependent-on tree: \n";
+if( $filter_transitive ) { 
+  filterTransitiveDependencies();
+}
+
+show( "\nDependent-on tree: \n" );
 foreach $repo (@repo_list) { 
-  print "\n$repo (is dependent on): \n";
+  show( "\n$repo (is dependent on): \n" );
   foreach my $leaf_repo (keys %{$repo_tree{$repo}} ) { 
-    print "- $leaf_repo ($repo_tree{$repo}{$leaf_repo})\n";
+    if( $repo_tree{$repo}{$leaf_repo} > 0 ) { 
+      show( "- $leaf_repo ($repo_tree{$repo}{$leaf_repo})\n" );
+    }
     if( ! exists $build_tree{$leaf_repo} ) { 
       $build_tree{$leaf_repo} = {};
     }
@@ -205,48 +283,41 @@ foreach $repo (@repo_list) {
   }
 }
 
-print "\nDependencies tree: \n";
+show( "\nDependencies tree: \n" );
 foreach $repo (keys %build_tree) { 
-  print "\n$repo (is used by): \n";
+  show( "\n$repo (is used by): \n" );
   foreach my $leaf_repo (keys %{$build_tree{$repo}} ) { 
-    print "- $leaf_repo\n";
+    show( "- $leaf_repo\n" );
   }
 }
 
-# Remove shortcut dependencies, i.e. remove each dependency A->C if path
-# A->B->C exists.
-foreach $dep_repo (keys %repo_tree) {
-  foreach my $src_repo (keys %{$repo_tree{$dep_repo}} ) {
-    foreach my $inter_repo (keys %{$repo_tree{$dep_repo}} ) {
-      if (exists $repo_tree{$inter_repo}{$src_repo}) {
-        # do not delete the link entirely, it helps to detect 2+ step shortcuts
-        $repo_tree{$dep_repo}{$src_repo} = -1;
+
+if( $create_dot_file ) { 
+  if( ! $filter_transitive ) { 
+    filterTransitiveDependencies();
+  }
+  # Transform the build graph into DOT language.
+  my $dot = "digraph {\n";
+  foreach $repo (keys %repo_tree) {
+    $dot .= sprintf("  %s;\n", $repo =~ s/-/_/gr);
+    foreach my $leaf_repo (keys %{$repo_tree{$repo}}) {
+      if ($repo_tree{$repo}{$leaf_repo} > 0) {
+        $dot .= sprintf("  %s -> %s;\n", $repo =~ s/-/_/gr, $leaf_repo =~ s/-/_/gr, $style);
       }
     }
+    $dot .= "\n";
   }
+  $dot .= "}\n";
+  
+  # Write it to a file. The graph image can be produced simply by running
+  # $ dot -O -Tpng dep-tree.dot
+  open(my $dotfile, ">", "./dep-tree.dot") or die "Can't open dep-tree.dot: $!";
+  print $dotfile $dot;
+  close $dotfile or die "$dotfile: $!";
 }
 
-# Transform the build graph into DOT language.
-my $dot = "digraph {\n";
-foreach $repo (keys %repo_tree) {
-  $dot .= sprintf("  %s;\n", $repo =~ s/-/_/gr);
-  foreach my $leaf_repo (keys %{$repo_tree{$repo}}) {
-    if ($repo_tree{$repo}{$leaf_repo} > 0) {
-      $dot .= sprintf("  %s -> %s;\n", $repo =~ s/-/_/gr, $leaf_repo =~ s/-/_/gr, $style);
-    }
-  }
-  $dot .= "\n";
-}
-$dot .= "}\n";
+# Print the list of repositories required to be built before building target repository.
 
-# Write it to a file. The graph image can be produced simply by running
-# $ dot -O -Tpng dep-tree.dot
-open(my $dotfile, ">", "./dep-tree.dot") or die "Can't open dep-tree.dot: $!";
-print $dotfile $dot;
-close $dotfile or die "$dotfile: $!";
-
-# Print the list of repositories required to be built before building target
-# repository.
 my @prereq_list;
 if ( $opt_t ) {
   prerequisites( $opt_t );
@@ -256,14 +327,3 @@ if ( $opt_t ) {
   print join( ',', @unique ) . "\n";
 }
 
-sub prerequisites() {
-  if( exists $repo_tree{$_[0]} ) {
-    # traverse the graph recursively
-    foreach my $child ( keys %{$repo_tree{$_[0]}} ) {
-      if( ${repo_tree}{$_[0]}{$child} > 0 ) {
-        prerequisites($child);
-      }
-    }
-  }
-  push( @prereq_list, $_[0] );
-}
