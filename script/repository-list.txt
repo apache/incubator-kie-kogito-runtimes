@@ -16,3 +16,4 @@ jbpm-console-ng
 dashboard-builder
 jbpm-dashboard
 kie-wb-distributions
+fuse-bxms-integ
