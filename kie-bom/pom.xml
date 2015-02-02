@@ -909,6 +909,13 @@
         <classifier>wildfly8</classifier>
         <type>war</type>
       </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-distribution-wars</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>weblogic12</classifier>
+        <type>war</type>
+      </dependency>
 
       <!-- kie-wb distribution wars -->
       <dependency>
@@ -944,6 +951,13 @@
         <artifactId>kie-wb-distribution-wars</artifactId>
         <version>${version.org.guvnor}</version>
         <classifier>wildfly8</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-distribution-wars</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>weblogic12</classifier>
         <type>war</type>
       </dependency>
 
