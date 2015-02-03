@@ -1244,7 +1244,7 @@ One week in advance:
 
     * Get those dependencies (for example `mvel` and `bpm-console`) released if needed, preferably 1 week before the kie release. This way, those released artifacts gets tested by our tests.
 
-* Ask kie-wb module (uberfire, guvor, kie-wb-common, drools-wb, jbpm-console, jbpm-form-modeler and kie-wb-distributions) leads to update the translations with Zanata:
+* Ask kie-wb module (uberfire, guvnor, kie-wb-common, drools-wb, jbpm-console-ng, jbpm-form-modeler and kie-wb-distributions) leads to update the translations with Zanata:
 
     * Translations into different locales are handled within Zanata (https://translate.jboss.org/)
 
