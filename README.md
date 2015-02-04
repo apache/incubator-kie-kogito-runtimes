@@ -1331,7 +1331,7 @@ One week in advance:
 
             * Start the `runExamples.sh` script for drools, droolsjbpm-integration and optaplanner
 
-            * Deploy the guvnor jboss-as-7.0 war to guvnor and surf to it:
+            * Deploy the guvnor WildFly 8 war and surf to it:
 
                 * Install the mortgages examples, build it and run the test scenario's
 

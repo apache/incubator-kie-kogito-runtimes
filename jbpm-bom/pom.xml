@@ -413,13 +413,6 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-designer-distribution-wars</artifactId>
         <version>${version.org.jbpm.jbpm-designer}</version>
-        <classifier>jboss-as7</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-designer-distribution-wars</artifactId>
-        <version>${version.org.jbpm.jbpm-designer}</version>
         <classifier>tomcat7</classifier>
         <type>war</type>
       </dependency>
@@ -745,13 +738,6 @@
       </dependency>
 
       <!-- jbpm-console-ng wars -->
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-distribution-wars</artifactId>
-        <version>${version.org.jbpm.jbpm-console-ng}</version>
-        <classifier>jboss-as7</classifier>
-        <type>war</type>
-      </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-distribution-wars</artifactId>
