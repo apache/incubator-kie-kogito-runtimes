@@ -53,6 +53,16 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
         echo "==============================================================================="
         echo "Without repository: $repository. SKIPPING!"
         echo "==============================================================================="
+# hack for fuse-bxms-integ repository on github.com:jboss-integration
+    elif [ "${repository}" == "fuse-bxms-integ" ]; then
+        echo "==============================================================================="
+        echo "Repository: $repository"
+        echo "==============================================================================="
+        echo -- prefix git@github.com:jboss-integration/ --
+        gitUrlPrefix=git@github.com:jboss-integration/
+        echo -- repository ${repository} --
+        echo -- ${gitUrlPrefix}${repository}.git -- ${repository} --
+        git clone ${gitUrlPrefix}${repository}.git ${repository}       
     else
         echo "==============================================================================="
         echo "Repository: $repository"
