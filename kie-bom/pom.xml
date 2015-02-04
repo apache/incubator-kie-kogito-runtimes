@@ -885,13 +885,6 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
         <version>${version.org.guvnor}</version>
-        <classifier>jboss-as7</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
         <classifier>tomcat7</classifier>
         <type>war</type>
       </dependency>
@@ -923,13 +916,6 @@
         <artifactId>kie-wb-distribution-wars</artifactId>
         <version>${version.org.guvnor}</version>
         <classifier>eap6_4</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
-        <classifier>jboss-as7</classifier>
         <type>war</type>
       </dependency>
       <dependency>
