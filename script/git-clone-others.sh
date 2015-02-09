@@ -41,18 +41,6 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
         echo "==============================================================================="
         echo "This directory already exists: $repository"
         echo "==============================================================================="
-    elif [ "${repository}" != "${repository#jbpm}" ] && [ "$withoutJbpm" = 'true' ]; then
-        echo "==============================================================================="
-        echo "Without repository: $repository. SKIPPING!"
-        echo "==============================================================================="
-    elif [ "${repository}" != "${repository#jbpm-console-ng}" ] && [ "$withoutJbpm" = 'true' ]; then
-        echo "==============================================================================="
-        echo "Without repository: $repository. SKIPPING!"
-        echo "==============================================================================="
-    elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
-        echo "==============================================================================="
-        echo "Without repository: $repository. SKIPPING!"
-        echo "==============================================================================="
 # hack for fuse-bxms-integ repository on github.com:jboss-integration
     elif [ "${repository}" == "fuse-bxms-integ" ]; then
         echo "==============================================================================="

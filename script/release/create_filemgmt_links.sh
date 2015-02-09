@@ -33,14 +33,14 @@ fi
 if [ $# != 1 ] && [ $# != 2 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 droolsVersion [jbpmVersion]"
+    echo "  $0 drools and jbpm version"
     echo "For example:"
-    echo "  $0 5.2.0.Final 5.1.0.Final"
+    echo "  $0 6.1.0.Final"
     echo
     exit 1
 fi
 droolsVersion=$1
-echo "The drools, guvnor, ... version: ${droolsVersion}"
+echo "The drools, guvnor, ... jbpm version: ${droolsVersion}"
 if [ "$withoutJbpm" != 'true' ]; then
     jbpmVersion=$2
     echo "The jbpm version: $jbpmVersion"

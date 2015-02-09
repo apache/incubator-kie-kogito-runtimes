@@ -45,22 +45,7 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
     if [ ! -d "$droolsjbpmOrganizationDir/$repository" ]; then
         echo "==============================================================================="
         echo "Missing Repository: $repository. SKIPPING!"
-        echo "==============================================================================="
-    elif [ "${repository}" != "${repository#jbpm}" ] && [ "$withoutJbpm" = 'true' ]; then
-        echo "==============================================================================="
-        echo "Without repository: $repository. SKIPPING!"
-        echo "==============================================================================="
-    elif [ "${repository}" != "${repository#jbpm-console-ng}" ] && [ "$withoutJbpm" = 'true' ]; then
-        echo "==============================================================================="
-        echo "Without repository: $repository. SKIPPING!"
-        echo "==============================================================================="
-
-    # uberfire is not build anymor on master-branch
-    #elif [ "${repository}" != "${repository#uberfire}" ] && [ "$withoutUberfire" = 'true' ]; then
-    #    echo "==============================================================================="
-    #    echo "Without repository: $repository. SKIPPING!"
-    #    echo "==============================================================================="
-    
+        echo "==============================================================================="   
 else
         echo "==============================================================================="
         echo "Repository: $repository"
