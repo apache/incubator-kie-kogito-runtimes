@@ -32,6 +32,7 @@
 
     <version.avalon-framework>4.1.4</version.avalon-framework>
     <version.com.rht-emitrom.lienzo-core>1.2.1-RELEASE</version.com.rht-emitrom.lienzo-core>
+    <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
     <version.org.apache.lucene>4.0.0</version.org.apache.lucene>
     <version.org.apache.xmlgraphics.batik>1.6-1</version.org.apache.xmlgraphics.batik>
@@ -318,6 +319,13 @@
         <version>${version.org.apache.xmlgraphics.batik}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.github.tomakehurst</groupId>
+        <artifactId>wiremock</artifactId>
+        <classifier>standalone</classifier>
+        <version>${version.com.github.tomakehurst.wiremock}</version>
+      </dependency>
+      
       <dependency>
         <groupId>com.unboundid</groupId>
         <artifactId>unboundid-ldapsdk</artifactId>
