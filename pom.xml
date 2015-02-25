@@ -446,13 +446,13 @@
             <dependency>
               <groupId>org.jboss.pressgang</groupId>
               <artifactId>pressgang-xslt-ns</artifactId>
-              <version>3.1.0</version>
+              <version>3.1.2</version>
             </dependency>
             <dependency>
               <groupId>org.jboss.pressgang</groupId>
               <artifactId>pressgang-jdocbook-style</artifactId>
               <type>jdocbook-style</type>
-              <version>3.1.0</version>
+              <version>3.1.2</version>
             </dependency>
           </dependencies>
 
