@@ -1242,9 +1242,9 @@ One week in advance:
 
 * All external dependencies must be on a non-SNAPSHOT version, to avoid failing to *close* the staging repo on nexus near the end of the release.
 
-    * Get those dependencies (for example `mvel` and `bpm-console`) released if needed, preferably 1 week before the kie release. This way, those released artifacts gets tested by our tests.
+    * Get those dependencies (ubefire, uberfire-extensions, dashbuilder) released if needed, preferably 1 week before the kie release. This way, those released artifacts gets tested by our tests.
 
-* Ask kie-wb module (uberfire, guvnor, kie-wb-common, drools-wb, jbpm-console-ng, jbpm-form-modeler and kie-wb-distributions) leads to update the translations with Zanata:
+* Ask kie-wb module (kie-uberfire-extensions, uberfire, guvnor, kie-wb-common, drools-wb, jbpm-console-ng, jbpm-designer, jbpm-form-modeler, jbpm-dashboard, dashboard-builder, and kie-wb-distributions) leads to update the translations with Zanata:
 
     * Translations into different locales are handled within Zanata (https://translate.jboss.org/)
 
@@ -1260,13 +1260,37 @@ One week in advance:
 
             $ mvn replacer:replace -N
 
-    * Test compile guvnor to check there are no other translation issues.
+    * NOTE: For the repositories jbpm-form-modeler and kie-wb-distributions it has to be added to the workflow
+    
+            $ mvn native2ascii:native2ascii
+    
+    * NOTE. jbpm-designer has it's own workflow
+             
+            $ cd ../jbpm-designer
+            $ mvn zanata:pull-module
+            $ mvn replacer:replace-N
+            $ mvn native2ascii:native2ascii
+            $ cd jbpm-designer-api
+            $ mvn replacer:replace-N
+            
+    * Zanata workflow is:
+            
+            $ mvn zanata:pull-module
+            $ mvn relacer:replace-N
+            $ mvn native2ascii:native2ascii (in repositories where this has to be executed, please pay attention to jbom-designer)
+            $ mvn clean install -Dfull -DskipTests (to see if everything compiles after Zanata changes were pulled)
+              (in kie-w-distribution has to be added -Dcustom-container for preventing not building the rep cause possibly hanging at kie-smoke-tests)
+            $ add & commit the changes
+            $ push changes to blessed repository
+            
+    * when compiling guvnor, check if there are no other translation issues.
 
             $ mvn clean install -Dfull -DskipTests
 
         * Sometime the variable place-holders {0}, {1}... are missing.
 
         * Append missing variable place-holders {0}, {1}... to the end of the translated text and email the Zanata mailing list.
+        
 
 * Get access to `filemgmt.jboss.org`
 
@@ -1309,7 +1333,7 @@ One week in advance:
 
     * Produce the distribution zips, build with `-Dfull`:
 
-            $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -Dfull -DskipTests
+            $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -Dfull -Dcustom-container -DskipTests
 
         * Warning: It is not uncommon to run out of either PermGen space or Heap Space. The following settings are known (@Sept-2012) to work:-
 
@@ -1378,9 +1402,9 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * Update master to the next SNAPSHOT version to avoid clashing the artifacts on nexus of master and the release branch:
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0-SNAPSHOT 6.3.0-SNAPSHOT 6.2.0-SNAPSHOT 6.3.0-SNAPSHOT
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0-SNAPSHOT 6.3.0-SNAPSHOT
 
-        * Note: the arguments are `droolsOldVersion droolsNewVersion jbpmOldVersion jbpmNewVersion`.
+        * Note: the arguments are `releaseOldVersion releaseNewVersion
 
         * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
 
@@ -1390,7 +1414,9 @@ A release branch name should always end with `.x` so it looks different from a t
 
         * WARNING: script update-version-all.sh did not update all versions in all modules for 6.3.0-SNAPSHOT. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '6.3.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.3.0-SNAPSHOT' $i; done 
+                $ grep -r '6.3.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.3.0-SNAPSHOT' $i; done
+        or
+                $ grep -ER --exclude-dir=*git* --exclude-dir=*target* --exclude-dir=*idea* --exclude=*ipr --exclude=*iws --exclude=*iml --exclude=workspace* --exclude-dir=*.errai 6.3.0-SNAPSHOT . | grep -v ./kie-wb-distributions/kie-eap-integration/kie-eap-modules/kie-jboss-eap-base-modules
         
         * Note: in either case it is important to search for -SNAPSHOT, as there are various hidden -SNAPSHOT dependencies in some pom.xml files and they should be prevented for releases        
 
@@ -1502,41 +1528,69 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
 
     * Adjust the version in the poms, manifests and other eclipse stuff.
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0-SNAPSHOT 6.2.0.Final 6.2.0-SNAPSHOT 6.2.0.Final
+            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0-SNAPSHOT 6.2.0.Final
 
-        * Note: the arguments are `droolsOldVersion droolsNewVersion jbpmOldVersion jbpmNewVersion`.
+        * Note: the arguments are `releaseOldVersion releaseNewVersion`
 
         * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
 
         * WARNING: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
 
-        * WARNING: script update-version-all.sh did not update all versions in all modules for 5.5.0.Final. Check all have been updated with the following and re-run if required.
+        * WARNING: script update-version-all.sh did not update automatically all versions in all modules. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '6.2.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done 
-
-        * Commit those changes (so you can tag them properly):
-        
-            * Add changes from untracked files if there are any. WARNING: DO NOT USE "git add ." . You may accidentally add files that are not meant to be added into git. 
-
-                    $ git add {filename}
+                $ grep -r '6.2.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done
+        OR         
+                $ $ grep -ER --exclude-dir=*git* --exclude-dir=*target* --exclude-dir=*idea* --exclude=*ipr --exclude=*iws --exclude=*iml --exclude=workspace* --exclude-dir=*.errai 6.3.0-SNAPSHOT . | grep -v ./kie-wb-distributions/kie-eap-integration/kie-eap-modules/kie-jboss-eap-base-modules.
                 
-            * Commit all changes
+    * versions that have to be changed manually
+                
+        *NOTE:in droolsjbpm-build-bootstrap pom.xml there are some properties where you should pay attention to:
+        
+        1. jboss-ip bom version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L11)
+           the version of jboss-integration-platform-bom. should be the most recent version released  in jboss-ip-bom
+        
+        2. org.kie version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L48)
+           org.kie version sometimes has to be changed manually, if needed, should be updated to release version
+           
+        3. uberfire version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L54)
+           has to be updated manually to the last released version
+          
+        4. dashbuilder version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L55)
+           has to be updated manually to the last released version
+           
+        5. jboss-ip-bom version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L66)
+           should be the same version as in point 1
+           
+        6. last released version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L85)
+           this is a property productizsation needs to get the last released version on the branch where released from.
+           When updated this shoud be pushed to the branch of the blessed repository
 
-                    $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 6.2.0.Final"
+    * Commit those changes (so you can tag them properly):
+        
+        * Add changes from untracked files if there are any. WARNING: DO NOT USE "git add ." . You may accidentally add files that are not meant to be added into git.
 
-    * Adjust the property *`<latestReleasedVersionFromThisBranch>`* in *droolsjbpm-build-bootstrap/pom.xml*
+                $ git add {filename}
+                
+        * Commit all changes
+
+                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 6.2.0.Final"
+
+        * Adjust the property *`<latestReleasedVersionFromThisBranch>`* in *droolsjbpm-build-bootstrap/pom.xml*
     
       
          This should be the version that will be released now.
          This is important as productisation takes this version to define theirs.
          * Add this change         
          * Commit this change.
+         
 
 * Create the tag locally. The arguments are the Drools version, the jBPM version:
 
         $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 6.2.0.Final 6.2.0.Final
+        
 
 * Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, drop all your old staging repositories.
+
 
 * Deploy the artifacts:
 
@@ -1558,7 +1612,9 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
 
         * This will validate the nexus rules. If any fail: fix the issues, and force a git retag locally.
 
+
 * Do another sanity check of the artifacts by running the examples and opening the manuals from the zips. See above.
+
 
 * This is **the point of no return**.
 
@@ -1573,6 +1629,7 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
             * Maven non-snapshot versions are cached on developer machines and proxies forever and are never refreshed.
 
         * So even if the release is broken, do not reuse the same version number! Create a hotfix version.
+
 
 * Define the next development version an adjust the sources accordingly:
 
