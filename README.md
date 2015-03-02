@@ -1789,7 +1789,7 @@ Here are the steps:
 
 **5 - Build local branch with product specific commits to make sure it is working. Fix any problems in case it is not working.**
         
-    $ mvn-all.sh clean install -Dfull -DskipTests -Dproductized
+    $ ./mvn-all.sh clean install -Dfull -Dcustom-container -DskipTests -Dproductized
 
 **6 - Create the tag for all repositories. For product tags, we use a naming standard of "sync.YYYY.MM.DD", where YYYY.MM.DD is the date the tag is created. If for any reason more than one tag needs to be created on the same day, add a sequential counter sufix: "sync.YYYY.MM.DD.C"**
 
