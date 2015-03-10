@@ -75,7 +75,7 @@
     <!-- overrides <version.org.apache.ws.xmlschema>2.0.2 used in jboss-ip-bom 6.0.0.CR13 -->
     <version.org.apache.ws.xmlschema>2.0.3</version.org.apache.ws.xmlschema>
     <!-- overrides <version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec> 1.0.6.Final used in jboss-ip-bom 6.0.0.CR13 -->
-    <version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec>1.0.5.Final</version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec>
+    <!-- <version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec>1.0.5.Final</version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec> -->
   </properties>
 
   <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent-metadata. -->
@@ -343,18 +343,6 @@
         <groupId>javax.xml.stream</groupId>
         <artifactId>stax-api</artifactId>
         <version>${version.javax.xml.stream.stax}</version>
-      </dependency>
-
-      <!-- Mandatory in order to execute Jetty embedded (GWT hosted mode) -->
-      <dependency>
-        <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
-        <artifactId>jboss-jstl-api_1.2_spec</artifactId>
-        <version>${version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.spec.javax.servlet</groupId>
-        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-        <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.0_spec}</version>
       </dependency>
 
       <!-- This should be moved into the ip-bom where other cxf dependencies are defined -->
