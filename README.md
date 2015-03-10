@@ -1418,8 +1418,19 @@ A release branch name should always end with `.x` so it looks different from a t
         or
                 $ grep -ER --exclude-dir=*git* --exclude-dir=*target* --exclude-dir=*idea* --exclude=*ipr --exclude=*iws --exclude=*iml --exclude=workspace* --exclude-dir=*.errai 6.3.0-SNAPSHOT . | grep -v ./kie-wb-distributions/kie-eap-integration/kie-eap-modules/kie-jboss-eap-base-modules
         
-        * Note: in either case it is important to search for -SNAPSHOT, as there are various hidden -SNAPSHOT dependencies in some pom.xml files and they should be prevented for releases        
+        * Note: in either case it is important to search for -SNAPSHOT, as there are various hidden -SNAPSHOT dependencies in some pom.xml files and they should be prevented for releases 
+               
+        * IMPORTANT: Right now the script is not updating automatically all poms of droolsjbpm-tools. This could be the case when the number of release i.e. 6.1.0 changes to 6.1.1. 
+          When the change is in the appendix only (i.e. Beta, CR, Final) the scripts should work correctly. There is the file droolsjbpm-tools/drools-eclipse/org.drools.updatesite/category.xml that has to be updated 
+          manually if the script doesn't run correctly.
+          Steps to do it working:
+                1. run script droolsjbpm-build-bootstrap/script/release/update-version-all
+                2. since this script will fail in droolsjbpm-tools edit droolsjbpm-tools/drools-eclipse/org.drools.updatesite/category.xml and modify manually all *.feature.source_***.qualifier
+                   Don't do this before you did the first run that fails - you have to run the script first!
+                3. re-run droolsjbpm-build-bootstrap/script/release/update-version-all
 
+        * NOTE: the repository fuse-bxms-integ has to be upgradede manually
+        
         * Commit those changes (so you can tag them properly):
         
             * Add changes from untracked files if there are any. WARNING: DO NOT USE "git add ." . You may accidentally add files that are not meant to be added into git. 
