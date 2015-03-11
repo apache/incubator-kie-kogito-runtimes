@@ -438,6 +438,11 @@
           <version>1.5</version>
         </plugin>
         <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>xml-maven-plugin</artifactId>
+          <version>1.0</version>
+        </plugin>
+        <plugin>
           <groupId>org.jboss.maven.plugins</groupId>
           <artifactId>maven-jdocbook-plugin</artifactId>
           <version>2.3.9</version>
@@ -501,6 +506,11 @@
               <useRelativeImageUris>true</useRelativeImageUris>
             </options>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.asciidoctor</groupId>
+          <artifactId>asciidoctor-maven-plugin</artifactId>
+          <version>1.5.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -729,7 +739,7 @@
           <artifactId>tycho-p2-plugin</artifactId>
           <version>${version.org.eclipse.tycho}</version>
         </plugin>
-
+        
       </plugins>
     </pluginManagement>
 
