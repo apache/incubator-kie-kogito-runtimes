@@ -78,7 +78,7 @@
     <!-- overrides <version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec> 1.0.6.Final used in jboss-ip-bom 6.0.0.CR13 -->
     <version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec>1.0.5.Final</version.org.jboss.spec.javax.servlet.jstl.jboss-jstl-api_1.2_spec>
     <!-- since ironjacamar was removed from the ip-ip-bom but is still needed from dashboard-builder all dependencies are placed here -->
-    <version.org.jboss.ironjacamar>1.0.30.Final</version.org.jboss.ironjacamar>
+    <version.org.jboss.ironjacamar>1.0.31.Final</version.org.jboss.ironjacamar>
     <!-- jboss ip-bom has org.eclipse.jdt.core.compiler:ecj:4.4.2.redhat-1 but jbpm-form-modeler needs 4.3.1 -->
     <version.org.eclipse.jdt.core.compiler>4.3.1</version.org.eclipse.jdt.core.compiler>
     <!-- version overwrites resteasy in ip-bom - this upgrade has to be done in the jboss-ip-bom> -->
