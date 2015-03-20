@@ -81,6 +81,9 @@
     <version.org.jboss.ironjacamar>1.0.30.Final</version.org.jboss.ironjacamar>
     <!-- jboss ip-bom has org.eclipse.jdt.core.compiler:ecj:4.4.2.redhat-1 but jbpm-form-modeler needs 4.3.1 -->
     <version.org.eclipse.jdt.core.compiler>4.3.1</version.org.eclipse.jdt.core.compiler>
+    <!-- version overwrites resteasy in ip-bom - this upgrade has to be done in the jboss-ip-bom> -->
+    <version.org.jboss.resteasy>2.3.10.Final</version.org.jboss.resteasy>
+
   </properties>
 
   <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent-metadata. -->
@@ -1097,6 +1100,11 @@
         <version>${version.org.jboss.resteasy}</version>
       </dependency>
       <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-test-tjws</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-embedder</artifactId>
         <version>${version.org.apache.maven}</version>
@@ -1120,35 +1128,95 @@
         <version>${version.org.jboss.byteman}</version>
       </dependency>
 
-      <!-- TMP change to Roaster 2.11.1.Final -->
-      <!-- this override should be removed when https://github.com/jboss-integration/jboss-integration-platform-bom/pull/143 is processed -->
- <!--     <dependency>
-        <groupId>org.jboss.forge.roaster</groupId>
-        <artifactId>roaster-api</artifactId>
-        <version>2.11.1.Final</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.forge.roaster</groupId>
-        <artifactId>roaster-jdt</artifactId>
-        <version>2.11.1.Final</version>
-      </dependency>-->
-
       <dependency>
         <groupId>org.simpleframework</groupId>
         <artifactId>simple-http</artifactId>
         <version>${version.org.simpleframework}</version>
       </dependency>
 
-      <!-- remove when 
-          https://github.com/jboss-integration/jboss-integration-platform-bom/pull/175
-          has been processed and is in use -->
+      <!-- when upgraded resteasy version in jboss-ip-bom to 2.3.10.Final this can be removed -->
       <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>fluent-hc</artifactId>
-        <version>${version.org.apache.httpcomponents.httpclient}</version>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>abdera-atom-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
       </dependency>
-    </dependencies>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>async-http-jbossweb</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>async-http-servlet-3.0</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>async-http-tomcat6</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>jaxrs-api</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-atom-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-cache-core</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-guice</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxb-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jettison-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jackson-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-fastinfoset-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-multipart-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-spring</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-yaml-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+
+</dependencies>
 
   </dependencyManagement>
 
