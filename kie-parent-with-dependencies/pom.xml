@@ -40,13 +40,13 @@
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
     <version.org.eclipse.jetty>8.1.14.v20131031</version.org.eclipse.jetty>
     <version.org.jolokia>1.2.2</version.org.jolokia>
-    <version.org.mvel>2.2.4.Final</version.org.mvel>
+
+    <!-- <version.org.mvel>2.2.4.Final</version.org.mvel -->
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
     <version.org.owasp.encoder>1.1</version.org.owasp.encoder>
     <version.org.drools.guvnor-api>5.6.0.Final</version.org.drools.guvnor-api>
-
     <version.org.apache.maven>3.2.2</version.org.apache.maven>
     <version.org.eclipse.aether>1.0.0.v20140518</version.org.eclipse.aether>
     <version.org.eclipse.sisu>0.0.0.M5</version.org.eclipse.sisu> <!-- Dependency of maven 3.2.2  -->
@@ -349,23 +349,6 @@
         <groupId>javax.xml.stream</groupId>
         <artifactId>stax-api</artifactId>
         <version>${version.javax.xml.stream.stax}</version>
-      </dependency>
-
-      <!-- This should be moved into the ip-bom where other cxf dependencies are defined -->
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-api</artifactId>
-        <version>${version.org.apache.cxf}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-rs-security-oauth</artifactId>
-        <version>${version.org.apache.cxf}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-features-clustering</artifactId>
-        <version>${version.org.apache.cxf}</version>
       </dependency>
 
       <dependency>
@@ -729,12 +712,6 @@
         <version>${version.org.picketlink}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging</artifactId>
-        <version>${version.org.jboss.logging.jboss-logging}</version>
-      </dependency>
-
       <!-- dashboard-builder -->
       <dependency>
           <groupId>org.jboss.ironjacamar</groupId>
@@ -955,11 +932,6 @@
         <scope>test</scope>
       </dependency>
 
-      <dependency>
-        <groupId>org.mvel</groupId>
-        <artifactId>mvel2</artifactId>
-        <version>${version.org.mvel}</version>
-      </dependency>
 
       <!-- Dependency of maven 3.2.2  -->
       <dependency>
