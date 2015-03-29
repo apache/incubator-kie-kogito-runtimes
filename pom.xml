@@ -83,7 +83,8 @@
     <!-- <illegaltransitivereportonly>true</illegaltransitivereportonly> -->
     <!-- property for productisation to know the last released version -->
     <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
-
+    <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overriden by productisation. -->
+    <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
   </properties>
 
   <repositories>
