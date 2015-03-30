@@ -1068,12 +1068,15 @@ Team workflows
 * Fixing a community issue in JIRA:
 
     * Find/create the issue in JIRA ([Drools](https://issues.jboss.org/browse/DROOLS),
-    [OptaPlanner](https://issues.jboss.org/browse/PLANNER), [jBPM](https://issues.jboss.org/browse/JBPM],
-    [Guvnor](https://issues.jboss.org/browse/GUVNOR)
+    [OptaPlanner](https://issues.jboss.org/browse/PLANNER), [jBPM](https://issues.jboss.org/browse/JBPM),
+    [Guvnor](https://issues.jboss.org/browse/GUVNOR))
 
     * Fix the issue and push those changes to the appropriate branch(es) on github.
+    
+        * If you don't have push permissions, create a pull request (PR). See [Using pull requests](https://help.github.com/articles/using-pull-requests/) for more info.
 
     * Change the *Status* to `Resolved`.
+        * When you file a PR, do not mark the issue as `Resolved` until the PR gets merged. Link the PR to the JIRA issue and wait till someone reviews the changes.
 
         * Once the reporter verifies the fix, he changes *Status* to `Closed`. Or we bulk change it to `Closed` after a year.
 
