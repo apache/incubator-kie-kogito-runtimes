@@ -883,7 +883,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-
       <!-- kie-drools-wb distribution wars -->
       <dependency>
         <groupId>org.kie</groupId>
@@ -958,40 +957,8 @@
         <type>war</type>
       </dependency>
 
-      <!-- kie-tests -->
-      <dependency>
-        <groupId>org.kie.tests.remote</groupId>
-        <artifactId>kie-wb-tests-base</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.tests.remote</groupId>
-        <artifactId>kie-wb-tests-base</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.tests.remote</groupId>
-        <artifactId>drools-wb-tests-base</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.tests.remote</groupId>
-        <artifactId>drools-wb-tests-base</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.tests.remote</groupId>
-        <artifactId>jbpm-console-tests-base</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.tests.remote</groupId>
-        <artifactId>jbpm-console-tests-base</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
+      <!-- kie-tests-* artifacts were moved directly into the kie-tests repo. They should not be here as they
+           are not part of the release and just pollute the BOM with inaccessible dependencies -->
 
       <!-- kie-smoke-tests -->
       <dependency>
