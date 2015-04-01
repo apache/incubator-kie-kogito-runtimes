@@ -99,6 +99,9 @@ print "\n";
 sub gbrh() { 
   my $source = $_[0];
   my $branch = $_[1];
+  # update
+  call("$git remote update $source -p");
+  # get branches
   my $cmd = "$git branch -a";
   open( BRANCHES, "$cmd |" )
     || die "Unable to execute [$cmd]: $!\n";
