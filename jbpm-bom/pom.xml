@@ -83,6 +83,17 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-query</artifactId>
+        <version>${version.org.jbpm}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-query</artifactId>
+        <version>${version.org.jbpm}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-audit</artifactId>
         <version>${version.org.jbpm}</version>
       </dependency>
