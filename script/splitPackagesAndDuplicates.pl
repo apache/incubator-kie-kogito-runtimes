@@ -52,7 +52,7 @@ sub wanted {
   }
 
   my $inMainOrTest = 0;
-  foreach my $dir ("main", "test") {\ 
+  foreach my $dir ("main", "test") {
     my ($packagesRef, $splitPackagesRef);
     $packagesRef = $patternMapsMap{$dir}[0];
     $splitPackagesRef = $patternMapsMap{$dir}[1];
