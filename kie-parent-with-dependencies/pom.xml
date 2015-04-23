@@ -55,12 +55,19 @@
     <version.org.sonatype.plexus.plexus-cipher>1.4</version.org.sonatype.plexus.plexus-cipher> <!-- Dependency of maven 3.2.2  -->
     <version.org.sonatype.plexus.plexus-sec-dispatcher>1.3</version.org.sonatype.plexus.plexus-sec-dispatcher> <!-- Dependency of maven 3.2.2  -->
     <version.org.sonatype.sisu.sisu-guice>3.1.0</version.org.sonatype.sisu.sisu-guice> <!-- Dependency of maven 3.2.2  -->
-    <version.org.jboss.errai>3.0.4.Final</version.org.jboss.errai>
+    <version.org.jboss.errai>3.2.0-SNAPSHOT</version.org.jboss.errai>
     <version.org.picketlink>2.6.0.Final</version.org.picketlink>
     <version.com.unboundid>2.3.6</version.com.unboundid>
     <version.com.wordnik.swagger>1.3.10</version.com.wordnik.swagger>
     <version.org.jboss.byteman>2.2.0.1</version.org.jboss.byteman>
     <version.org.simpleframework>6.0.1</version.org.simpleframework>
+
+    <!-- version overwrites gwt in ip-bom -->
+    <version.com.google.gwt>2.7.0</version.com.google.gwt>
+    <!-- version overwrites jboss.xnio in ip-bom, needed by WildFly Embedded (used by webapps) -->
+    <version.org.jboss.xnio>3.2.0.Final</version.org.jboss.xnio>
+    <!-- version overwrites allen-sauer.gwt.dnd in ip-bom -->
+    <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
 
     <version.javax.security.jacc>1.4</version.javax.security.jacc>
     <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
@@ -165,11 +172,6 @@
         <version>${version.org.jbpm.dashboard-builder}</version>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-config</artifactId>
-        <version>${version.org.jboss.errai}</version>
-      </dependency>
 
       <!-- ################################################################################ -->
       <!-- External dependencies -->
@@ -202,6 +204,13 @@
         <artifactId>uberfire-extensions-bom</artifactId>
         <type>pom</type>
         <version>${version.org.uberfire}</version>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai.bom</groupId>
+        <artifactId>errai-internal-bom</artifactId>
+        <type>pom</type>
+        <version>${version.org.jboss.errai}</version>
         <scope>import</scope>
       </dependency>
 
@@ -331,7 +340,7 @@
         <classifier>standalone</classifier>
         <version>${version.com.github.tomakehurst.wiremock}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>com.unboundid</groupId>
         <artifactId>unboundid-ldapsdk</artifactId>
@@ -545,49 +554,13 @@
       </dependency>
 
 
-      <!-- Errai AS -->
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-jboss-as-support</artifactId>
-        <version>${version.org.jboss.errai}</version>
-      </dependency>
-
-      <!-- Errai Core -->
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-marshalling</artifactId>
-        <version>${version.org.jboss.errai}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
+      <!-- Errai (needed for Guice exclusion) -->
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-bus</artifactId>
         <version>${version.org.jboss.errai}</version>
         <exclusions>
           <exclusion>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss.errai.io.netty</groupId>
-            <artifactId>netty</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- See https://github.com/sonatype/sisu-guice/issues/9 -->
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
           </exclusion>
@@ -599,19 +572,6 @@
         <version>${version.org.jboss.errai}</version>
         <exclusions>
           <exclusion>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- See https://github.com/sonatype/sisu-guice/issues/9 -->
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
           </exclusion>
@@ -619,88 +579,38 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-common</artifactId>
-        <version>${version.org.jboss.errai}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-ui</artifactId>
-        <version>${version.org.jboss.errai}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-data-binding</artifactId>
-        <version>${version.org.jboss.errai}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-navigation</artifactId>
-        <version>${version.org.jboss.errai}</version>
-      </dependency>
-
-      <!-- CDI Integration Modules -->
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-cdi-client</artifactId>
+        <artifactId>errai-tools</artifactId>
         <version>${version.org.jboss.errai}</version>
         <exclusions>
           <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
-
       <dependency>
         <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-javax-enterprise</artifactId>
+        <artifactId>errai-js</artifactId>
         <version>${version.org.jboss.errai}</version>
         <exclusions>
           <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
-
       <dependency>
         <groupId>org.jboss.errai</groupId>
         <artifactId>errai-weld-integration</artifactId>
         <version>${version.org.jboss.errai}</version>
         <exclusions>
           <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
 
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-security-server</artifactId>
-        <version>${version.org.jboss.errai}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-security-client</artifactId>
-        <version>${version.org.jboss.errai}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-security-picketlink</artifactId>
-        <version>${version.org.jboss.errai}</version>
-      </dependency>
       <dependency>
         <groupId>org.picketlink</groupId>
         <artifactId>picketlink-api</artifactId>
@@ -714,40 +624,40 @@
 
       <!-- dashboard-builder -->
       <dependency>
-          <groupId>org.jboss.ironjacamar</groupId>
-          <artifactId>ironjacamar-core-api</artifactId>
-           <version>${version.org.jboss.ironjacamar}</version>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-core-api</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
       </dependency>
       <dependency>
-          <groupId>org.jboss.ironjacamar</groupId>
-          <artifactId>ironjacamar-embedded</artifactId>
-          <version>${version.org.jboss.ironjacamar}</version>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-embedded</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
       </dependency>
       <dependency>
-          <groupId>org.jboss.ironjacamar</groupId>
-          <artifactId>ironjacamar-deployers-fungal</artifactId>
-          <version>${version.org.jboss.ironjacamar}</version>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-deployers-fungal</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
       </dependency>
       <dependency>
-          <groupId>org.jboss.ironjacamar</groupId>
-          <artifactId>ironjacamar-deployers-common</artifactId>
-          <version>${version.org.jboss.ironjacamar}</version>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-deployers-common</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
       </dependency>
       <dependency>
-          <groupId>org.jboss.ironjacamar</groupId>
-          <artifactId>ironjacamar-common-impl-papaki</artifactId>
-          <version>${version.org.jboss.ironjacamar}</version>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-common-impl-papaki</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
       </dependency>
       <dependency>
-          <groupId>org.jboss.ironjacamar</groupId>
-          <artifactId>ironjacamar-jdbc</artifactId>
-          <version>${version.org.jboss.ironjacamar}</version>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-jdbc</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
       </dependency>
 
-      <!-- gwt-dev! -->
+      <!-- GWT -->
       <dependency>
         <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
+        <artifactId>gwt-servlet</artifactId>
         <version>${version.com.google.gwt}</version>
       </dependency>
       <!-- CDI Development Utils -->
@@ -760,15 +670,15 @@
       </dependency>
 
       <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-plus</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${version.com.google.gwt}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-naming</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <version>${version.com.google.gwt}</version>
       </dependency>
 
       <dependency>
@@ -1186,7 +1096,26 @@
         <version>${version.org.jboss.resteasy}</version>
       </dependency>
 
-</dependencies>
+      <!-- if upgraded jboss.xnio version in jboss-ip-bom to 3.2.0.Final this can be removed -->
+      <dependency>
+        <groupId>org.jboss.xnio</groupId>
+        <artifactId>xnio-api</artifactId>
+        <version>${version.org.jboss.xnio}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.xnio</groupId>
+        <artifactId>xnio-nio</artifactId>
+        <version>${version.org.jboss.xnio}</version>
+      </dependency>
+
+      <!-- if upgraded allen-sauer.gwt.dnd version in jboss-ip-bom to 3.3.3 this can be removed -->
+      <dependency>
+        <groupId>com.allen-sauer.gwt.dnd</groupId>
+        <artifactId>gwt-dnd</artifactId>
+        <version>${version.com.allen-sauer.gwt.dnd}</version>
+      </dependency>
+
+    </dependencies>
 
   </dependencyManagement>
 

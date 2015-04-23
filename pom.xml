@@ -663,25 +663,6 @@
           <configuration>
             <strict>true</strict>
           </configuration>
-          <dependencies>
-            <!-- CDI Development Utils -->
-            <!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty that is present there -->
-             <dependency>
-               <groupId>org.mortbay.jetty</groupId>
-               <artifactId>jetty</artifactId>
-               <version>${version.org.mortbay.jetty}</version>
-             </dependency>
-             <dependency>
-               <groupId>org.mortbay.jetty</groupId>
-               <artifactId>jetty-plus</artifactId>
-               <version>${version.org.mortbay.jetty}</version>
-             </dependency>
-             <dependency>
-               <groupId>org.mortbay.jetty</groupId>
-               <artifactId>jetty-naming</artifactId>
-               <version>${version.org.mortbay.jetty}</version>
-             </dependency>
-           </dependencies>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -740,7 +721,7 @@
           <artifactId>tycho-p2-plugin</artifactId>
           <version>${version.org.eclipse.tycho}</version>
         </plugin>
-        
+
       </plugins>
     </pluginManagement>
 
@@ -753,8 +734,22 @@
       </plugin>
       <plugin>
         <!-- Entry needed to provide parsed version properties -->
+        <!-- also adds generated sources to -source artifact -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/generated-sources/annotations/</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <!-- Entry needed to create test-jars even for packaging types war, bundle, ... -->
@@ -883,8 +878,10 @@
   </modules>
 
   <!-- IMPORTANT: Do not declare any dependencies here! Declare them in kie-parent-with-dependencies. -->
-  <dependencyManagement/><!-- Intentionally empty -->
-  <dependencies/><!-- Intentionally empty -->
+  <dependencyManagement/>
+  <!-- Intentionally empty -->
+  <dependencies/>
+  <!-- Intentionally empty -->
 
   <distributionManagement>
     <repository>
