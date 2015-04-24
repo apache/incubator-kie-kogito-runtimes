@@ -31,7 +31,7 @@
     -->
 
     <version.avalon-framework>4.1.4</version.avalon-framework>
-    <version.com.rht-emitrom.lienzo-core>1.2.1-RELEASE</version.com.rht-emitrom.lienzo-core>
+    <version.com.ahome-it.lienzo-core>2.0.118-RC0</version.com.ahome-it.lienzo-core>
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
     <version.de.benediktmeurer.gwt-slf4j>0.0.2</version.de.benediktmeurer.gwt-slf4j>
@@ -1053,10 +1053,11 @@
         <version>${version.org.apache.maven}</version>
       </dependency>
 
+      <!-- Lienzo -->
       <dependency>
-        <groupId>com.rht-emitrom</groupId>
+        <groupId>com.ahome-it</groupId>
         <artifactId>lienzo-core</artifactId>
-        <version>${version.com.rht-emitrom.lienzo-core}</version>
+        <version>${version.com.ahome-it.lienzo-core}</version>
       </dependency>
 
       <dependency>
