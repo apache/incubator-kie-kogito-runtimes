@@ -38,6 +38,7 @@
     <version.org.apache.xmlgraphics.batik>1.6-1</version.org.apache.xmlgraphics.batik>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
+    <version.org.assertj>1.7.1</version.org.assertj>
     <version.org.eclipse.jetty>8.1.14.v20131031</version.org.eclipse.jetty>
     <version.org.jolokia>1.2.2</version.org.jolokia>
 
@@ -470,6 +471,12 @@
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>xmlgraphics-commons</artifactId>
         <version>${version.org.apache.xmlgraphics.commons}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${version.org.assertj}</version>
       </dependency>
 
       <!-- needed by jbpm-form-modeler -->
