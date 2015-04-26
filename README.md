@@ -163,7 +163,7 @@ Working with git
 
 * Make changes, run, test and document them, then commit them:
 
-        $ git commit -m"Fix typo in documentation"
+        $ git commit -m "Fix typo in documentation"
 
 * Push those commits on your topic branch to your fork
 
@@ -180,7 +180,7 @@ Working with git
 
     * Start a new topic branch and set the code the same as the blessed master:
 
-        $ git fetch upstream && git checkout -b mySecondTopic && git reset --hard upstream/master
+            $ git fetch upstream && git checkout -b mySecondTopic && git reset --hard upstream/master
 
     * If you have a long-running topic branch, merge master into it:
 
@@ -580,11 +580,11 @@ Important note: `mvn eclipse:eclipse` does not work for our eclipse plugins beca
 Configuring Eclipse
 -------------------
 
-* Force language level 5 (not 6), to fail-fast on implemented interface methods that are annotated with `@Override`.
+* Force language level 6, to fail-fast when (accidentally) using features available only in newer Java versions.
 
     * Open menu *Window*, menu item *Preferences*
 
-    * Click tree item *Java*, tree item *Compiler*, section *JDK Compliance*, combobox *Compiler compliance level* should be `1.5`.
+    * Click tree item *Java*, tree item *Compiler*, section *JDK Compliance*, combobox *Compiler compliance level* should be `1.6`.
 
 * Remove the test resources Java Build Path exclusion filter to ensure JUnit tests ran inside Eclipse can find the necessary resources.
 
@@ -852,11 +852,11 @@ Note: Don't use the `maven-idea-plugin` on the command line with `mvn`: it's dea
 Configuring IntelliJ
 --------------------
 
-* Force language level 5 (not 6), to fail-fast on implemented interface methods that are annotated with `@Override`.
+* Force language level 6, to fail-fast when (accidentally) using features available only in newer Java versions.
 
     * Open menu *File*, menu item *Project Structure*
 
-    * Click list item *Modules*, for each module, tab *Sources*, combobox *Language level* should be automatically set to `5.0 ...`
+    * Click list item *Modules*, for each module, tab *Sources*, combobox *Language level* should be automatically set to `6.0 ...`
 
 * Avoid that changes in some resources are ignored in the next run/debug (and you are forced to use mvn)
 
@@ -870,7 +870,7 @@ Configuring IntelliJ
 
     * Click tree item *Compiler*, tree item *Java Compiler*, textfield *Additional command line parameters*
 
-    * Add ` -J-Xss1024k` so it becomes something like `-target 1.5 -J-Xss1024k`
+    * Add ` -J-Xss1024k` so it becomes something like `-target 1.6 -J-Xss1024k`
 
 * Include files with non-default extensions in your searches and refactors
 
