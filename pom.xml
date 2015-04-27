@@ -204,6 +204,37 @@
           </executions>
         </plugin>
         <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>animal-sniffer-maven-plugin</artifactId>
+          <version>1.13</version>
+          <dependencies>
+            <!-- Upgrade ASM and support Java 8 bytecode -->
+            <!-- This is a workaround as it is already fixed in version 1.14.
+                 However, that one fails with NPE for even simple cases, so it can't be used -->
+            <dependency>
+              <groupId>org.ow2.asm</groupId>
+              <artifactId>asm-all</artifactId>
+              <version>5.0.3</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>check-java-1.6-compatibility</id>
+              <phase>test-compile</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <signature>
+                  <groupId>org.codehaus.mojo.signature</groupId>
+                  <artifactId>java16</artifactId>
+                  <version>1.1</version>
+                </signature>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>1.7</version>
           <dependencies>
@@ -827,6 +858,10 @@
       </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-maven-plugin</artifactId>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
