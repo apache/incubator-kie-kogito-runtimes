@@ -121,6 +121,40 @@
         <version>${version.org.optaplanner}</version>
         <type>zip</type>
       </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-solver-editor-api</artifactId>
+        <version>${version.org.optaplanner}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-solver-editor-api</artifactId>
+        <version>${version.org.optaplanner}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-solver-editor-backend</artifactId>
+        <version>${version.org.optaplanner}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-solver-editor-backend</artifactId>
+        <version>${version.org.optaplanner}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-solver-editor-client</artifactId>
+        <version>${version.org.optaplanner}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-solver-editor-client</artifactId>
+        <version>${version.org.optaplanner}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
