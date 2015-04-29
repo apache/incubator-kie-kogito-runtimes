@@ -329,6 +329,7 @@
         <version>${version.org.jbpm}</version>
         <classifier>sources</classifier>
       </dependency>
+
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-services-api</artifactId>
@@ -593,6 +594,16 @@
          <version>${version.org.jbpm.jbpm-console-ng}</version>
       </dependency>
       <dependency>
+         <groupId>org.jbpm</groupId>
+         <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
+         <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jbpm</groupId>
+         <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+         <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-asset-mgmt-backend</artifactId>
         <version>${version.org.jbpm.jbpm-console-ng}</version>
@@ -612,6 +623,7 @@
         <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
         <version>${version.org.jbpm.jbpm-console-ng}</version>
       </dependency>
+
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-human-tasks-admin-api</artifactId>
@@ -655,6 +667,21 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-process-runtime-forms-api</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-process-runtime-forms-backend</artifactId>
         <version>${version.org.jbpm.jbpm-console-ng}</version>
       </dependency>
       <dependency>
