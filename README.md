@@ -1186,11 +1186,11 @@ Team workflows
 Knowing what's going on
 -----------------------
 
-* **[Subscribe to the dev list](http://www.jboss.org/drools/lists) and check it daily.**
+* **Subscribe to the [Drools Development](https://groups.google.com/forum/#!forum/drools-development) Google Group and check it daily.**
 
-    * Send a summary of every important organizational or structural decision to the dev list.
+    * Start a new topic for every important organizational or structural decision.
 
-    * If you (accidentally) push a change that can severely hinder or disrupt other developers (such as a compilation failure), notify the dev list.
+    * If you (accidentally) push a change that can severely hinder or disrupt other developers (such as a compilation failure), notify the Development group.
 
 * Subscribe to the RSS feeds.
 
