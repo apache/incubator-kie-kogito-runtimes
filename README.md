@@ -56,7 +56,7 @@ If you don't want to contribute to this project and you know git and maven, thes
     $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -DskipTests
     ```
 
-**If you want to contribute to this project, read the rest this file!**
+**If you want to contribute to this project, read the rest of this file!**
 
 Source control with Git
 =======================
@@ -82,7 +82,7 @@ Installing and configuring git
 
         Tip for Mac OSX: Also install [*gitx*](http://gitx.frim.nl/) to visualize your git log.
 
-    * More info [in github's git installation instructions](http://help.github.com/git-installation-redirect).
+    * More info in [GitHub's git installation instructions](http://help.github.com/git-installation-redirect).
 
 * Check if git is installed correctly.
 
@@ -105,20 +105,20 @@ Installing and configuring git
 
     * Note: the field `user.email` should match an email address of your github account.
 
-    * More info on [github](http://help.github.com/git-email-settings/).
+    * More info on [GitHub](http://help.github.com/git-email-settings/).
 
 * Get a github account
 
     * And add your public key on github: [Follow these instructions](http://github.com/guides/providing-your-ssh-key).
 
-* To learn more about git, read the free book [Git Pro](http://progit.org/book/).
+* To learn more about git, read the free book [Pro Git](http://progit.org/book/).
 
 Getting the sources locally
 ---------------------------
 
 Because you 'll probably want to change our code, it's recommended to fork our code before cloning it,
 so it's easier to share your changes with us later.
-For more info on forking, read [Github's help on forking](http://help.github.com/fork-a-repo/).
+For more info on forking, read [GitHub's help on forking](http://help.github.com/fork-a-repo/).
 
 * First fork the repository you want to work on, for example `guvnor`:
 
@@ -127,7 +127,7 @@ For more info on forking, read [Github's help on forking](http://help.github.com
         * Note: **Every git repository can be build alone.**
         You only need to fork/clone the repositories you're interested in (`guvnor` in this case).
 
-    * Surf to [the specific repository (`guvnor`)](https://github.com/droolsjbpm/guvnor)
+    * Surf to [the specific repository (guvnor)](https://github.com/droolsjbpm/guvnor)
 
     * Click the top right button *Fork*
 
@@ -405,7 +405,7 @@ Running the build
 
     * *none*: Fast, for during development
 
-    * `full`: Slow, but builds everything (including documentation). Used by jenkins and during releases.
+    * `full`: Slow, but builds everything (including documentation). Used by Jenkins and during releases.
 
     * `productized`: activates branding changes for productized version
 
@@ -420,9 +420,9 @@ Running the build
 
 * Warning: The first `mvn` build of a day will download the latest SNAPSHOT dependencies of other droolsjbpm projects,
 unless you build all those droolsjbpm projects from source.
-Those SNAPSHOTS were build and deployed last night by jenkins jobs.
+Those SNAPSHOTS were build and deployed last night by Jenkins jobs.
 
-    * If you 've pulled all changes (or cloned a repository) today, this is a good thing:
+    * If you've pulled all changes (or cloned a repository) today, this is a good thing:
     it saves you from having to download and build all those other latest droolsjbpm projects from source.
 
     * If you haven't pulled all changes today, this is probably a bad thing:
@@ -587,7 +587,7 @@ $ mvn exec:exec -Dproto
         
 After testing the regenerated files, don't forget to commit them.
 
-**IMPORTANT:** before trying to regenerate the protobuf java files, you must install the protobuf compiler (protoc) in your machine. Please follow the instructions. You can download it from here: https://developers.google.com/protocol-buffers/docs/downloads
+**IMPORTANT:** before trying to regenerate the protobuf java files, you must install the protobuf compiler (protoc) in your machine. Please follow the instructions. You can download it from here: [https://developers.google.com/protocol-buffers/docs/downloads](https://developers.google.com/protocol-buffers/docs/downloads).
 
 For Linux/Mac, you have to compile it yourself as there are no binaries available. Follow the instructions in the README file for that.
 
@@ -835,13 +835,13 @@ Extra Eclipse plugins
 
         * Open project context menu *Properties*, Google->Web application->
 
-               * This project has a WAR directory, tick
+            * This project has a WAR directory, tick
 
-               * WAR directory, `target/guvnor-webapp-drools-5.4.0-SNAPSHOT` (this will differ for different releases)
+            * WAR directory, `target/guvnor-webapp-drools-5.4.0-SNAPSHOT` (this will differ for different releases)
 
-               * You will need to have completed a maven install, as explained above to generate the `target/guvnor-webapp-drools-5.4.0-SNAPSHOT` directory
+            * You will need to have completed a maven install, as explained above to generate the `target/guvnor-webapp-drools-5.4.0-SNAPSHOT` directory
 
-               * Launch and deploy from this directory, tick
+            * Launch and deploy from this directory, tick
 
         * Open menu *Run*, menu item *Run configurations...*
 
@@ -957,7 +957,7 @@ Configuring IntelliJ
 
     * Click tree item *Compiler*, tree item *Java Compiler*, textfield *Additional command line parameters*
 
-    * Add ` -J-Xss1024k` so it becomes something like `-target 1.6 -J-Xss1024k`
+    * Add `-J-Xss1024k` so it becomes something like `-target 1.6 -J-Xss1024k`
 
 * Include files with non-default extensions in your searches and refactors
 
@@ -1181,7 +1181,7 @@ Team workflows
 
         * Once the new product version is build, they change *Status* to `ON_QA`.
 
-        * Once QA verifies the fix, they change *Status* to `Verified`.
+        * Once QA verifies the fix, they change *Status* to `VERIFIED`.
 
 Knowing what's going on
 -----------------------
@@ -1236,25 +1236,25 @@ Knowing what's going on
 
         * [droolsjbpm-build-bootstrap](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom)
 
-    * Subscribe to [jenkins](https://hudson.jboss.org/hudson/view/Drools%20jBPM/)
+    * Subscribe to [Jenkins](https://hudson.jboss.org/hudson/view/Drools%20jBPM/)
 
         * with [the Firefox plugin](https://addons.mozilla.org/en-us/firefox/addon/jenkins-build-monitor/) to easily see in your status bar which builds are failing (recommended):
 
-            * After installation, right click on the jenkins icon in the lower right corner.
+            * After installation, right click on the Jenkins icon in the lower right corner.
 
             * Click menu item *Preferences*, tab *Feed*, textfield *poll interval* `30` *minutes*.
 
             * Click menu item *Preferences*, tab *Display*, combox *Display* `latest build` *on status bar*.
 
-            * Go to the jenkins job of the projects you're working on:
+            * Go to the Jenkins job of the projects you're working on:
 
                 * [guvnor](https://hudson.jboss.org/hudson/view/Drools%20jBPM/job/guvnor/)
 
-            * Right click in the lower left corner on the *All* feed link, menu item *Add link to jenkins build monitor*.
+            * Right click in the lower left corner on the *All* feed link, menu item *Add link to Jenkins build monitor*.
 
-        * Otherwise, check [the jenkins website](https://hudson.jboss.org/hudson/view/Drools%20jBPM/) often.
+        * Otherwise, check [the Jenkins website](https://hudson.jboss.org/hudson/view/Drools%20jBPM/) often.
 
-            * Note: the public jenkins is a mirror of the VPN internal Red Hat jenkins and is sometimes stale.
+            * Note: the public Jenkins is a mirror of the VPN internal Red Hat Jenkins and is sometimes stale.
 
                 * If you think this can be the case, check the build times.
 
@@ -1332,7 +1332,7 @@ One week in advance:
 
         * Daily remind the lead of any project that is red.
 
-    * For a CR/Final, also mention the FindBugs reports on jenkins.
+    * For a CR/Final, also mention the FindBugs reports on Jenkins.
 
 * All external dependencies must be on a non-SNAPSHOT version, to avoid failing to *close* the staging repo on nexus near the end of the release.
 
@@ -1507,7 +1507,7 @@ A release branch name should always end with `.x` so it looks different from a t
     # where 6.2.x is the drools and 6.2.x is the jbpm release branch name
     ```
         
-        * Note: this srcript creates a release branch, pushes it to origin and sets the upstream from local release branch to remote release branch
+    * Note: this srcript creates a release branch, pushes it to origin and sets the upstream from local release branch to remote release branch
                    
 
 * Switch back and forth from master to the release branches for all git repositories
@@ -1554,7 +1554,7 @@ A release branch name should always end with `.x` so it looks different from a t
             $ grep -ER --exclude-dir=*git* --exclude-dir=*target* --exclude-dir=*idea* --exclude=*ipr --exclude=*iws --exclude=*iml --exclude=workspace* --exclude-dir=*.errai 6.3.0-SNAPSHOT . | grep -v ./kie-wb-distributions/kie-eap-integration/kie-eap-modules/kie-jboss-eap-base-modules
             ```
         
-        * Note: in either case it is important to search for -SNAPSHOT, as there are various hidden -SNAPSHOT dependencies in some pom.xml files and they should be prevented for releases 
+        * Note: in either case it is important to search for `-SNAPSHOT`, as there are various hidden `-SNAPSHOT` dependencies in some pom.xml files and they should be prevented for releases 
                
         * IMPORTANT: Right now the script is not updating automatically all poms of droolsjbpm-tools.
           This could be the case when the number of release i.e. 6.1.0 changes to 6.1.1.
@@ -1572,7 +1572,7 @@ A release branch name should always end with `.x` so it looks different from a t
         
         * Commit those changes (so you can tag them properly):
         
-            * Add changes from untracked files if there are any. WARNING: DO NOT USE "git add ." . You may accidentally add files that are not meant to be added into git. 
+            * Add changes from untracked files if there are any. WARNING: DO NOT USE `git add .`. You may accidentally add files that are not meant to be added into git. 
 
                 ```shell
                 $ git add {filename}
@@ -1590,7 +1590,7 @@ A release branch name should always end with `.x` so it looks different from a t
                 $ sh droolsjbpm-build-bootstrap/mvnall.sh mvn clean install -Dfull -DskipTests
                 ```
         
-    * Push the new -SNAPSHOT version to master of the blessed directory
+    * Push the new `-SNAPSHOT` version to `master` of the blessed directory
 
         ```shell
         $ sh droolsjbpbm-build-bootstrap/script/git-all.sh pull --rebase origin master (pulls all changes for master that could be commited in the meantime and prevents merge problems when pushing commits)
@@ -1610,9 +1610,9 @@ A release branch name should always end with `.x` so it looks different from a t
     $ sh droolsjbm-build-bootstrap/script/git-all.sh push origin 6.2.x
     ```
 
-* Set up jenkins build jobs for the branch.
+* Set up Jenkins build jobs for the branch.
 
-    * Go to the internal jenkins website inside the VPN.
+    * Go to the internal Jenkins website inside the VPN.
 
     * Clone each of the master build jobs for every git repo that was branched.
 
@@ -1633,7 +1633,7 @@ A release branch name should always end with `.x` so it looks different from a t
 
 #### NOTE: 
 * at this point we have created a release branch
-* we have updated the master branch to the new development version (* -SNAPSHOT)
+* we have updated the master branch to the new development version (`*-SNAPSHOT`)
 * we have pushed the created release branches to origin
 * we have set up a new Jenkins view for the created "release branch" 
 
@@ -1670,7 +1670,7 @@ Releasing from a release branch
                         
 * Do another sanity check.
 
-If everything is perfect (compiles, jenkins is all blue, sanity checks succeed and there is nothing to do about the failed unit tests):
+If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed and there is nothing to do about the failed unit tests):
 
 * Define the version and adjust the sources accordingly:
 
@@ -1741,7 +1741,7 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
 
     * Commit those changes (so you can tag them properly):
         
-        * Add changes from untracked files if there are any. WARNING: DO NOT USE "git add ." . You may accidentally add files that are not meant to be added into git.
+        * Add changes from untracked files if there are any. WARNING: DO NOT USE `git add .` . You may accidentally add files that are not meant to be added into git.
 
             ```shell
             $ git add {filename}
@@ -1750,7 +1750,7 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
         * Commit all changes
 
             ```shell
-            $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 6.2.0.Final"
+            $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m "Set release version: 6.2.0.Final"
             ```
 
         * Adjust the property *`<latestReleasedVersionFromThisBranch>`* in *droolsjbpm-build-bootstrap/pom.xml*
@@ -2136,4 +2136,4 @@ FAQ
 
         * with [ohloh](https://www.ohloh.net/p/jboss-drools/contributors) which also has statistics
 
-        * in [the github web interface](https://github.com/droolsjbpm).
+        * in [the GitHub web interface](https://github.com/droolsjbpm).
