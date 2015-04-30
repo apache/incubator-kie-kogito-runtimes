@@ -43,15 +43,18 @@ If you don't want to contribute to this project and you know git and maven, thes
 
 * To build 1 repository, for example `guvnor`:
 
-        $ git clone git@github.com:droolsjbpm/guvnor.git
-        $ cd guvnor
-        $ mvn clean install -DskipTests
-
+    ```shell
+    $ git clone git@github.com:droolsjbpm/guvnor.git
+    $ cd guvnor
+    $ mvn clean install -DskipTests
+    ```
 * To build all repositories:
 
-        $ git clone git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git
-        $ droolsjbpm-build-bootstrap/script/git-clone-others.sh
-        $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -DskipTests
+    ```shell
+    $ git clone git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git
+    $ droolsjbpm-build-bootstrap/script/git-clone-others.sh
+    $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -DskipTests
+    ```
 
 **If you want to contribute to this project, read the rest this file!**
 
@@ -65,11 +68,15 @@ Installing and configuring git
 
     * Linux: Install the package git
 
-            $ sudo apt-get install git
+        ```shell
+        $ sudo apt-get install git
+        ```
 
         Tip: Also install *gitk* to visualize your git log:
 
-            $ sudo apt-get install gitk
+        ```shell
+        $ sudo apt-get install gitk
+        ```
 
     * Windows, Mac OSX: Download from [the git website](http://git-scm.com).
 
@@ -79,16 +86,20 @@ Installing and configuring git
 
 * Check if git is installed correctly.
 
-        $ git --version
-        git version 1.7.1
+    ```shell
+    $ git --version
+    git version 1.7.1
+    ```
 
 * Configure git correctly:
 
-        $ git config --global user.name "My Full Name"
-        $ git config --global user.email myAccount@gmail.com
-        $ git config --global -l
-        user.name=Geoffrey De Smet
-        user.email=gds...@gmail.com
+    ```shell
+    $ git config --global user.name "My Full Name"
+    $ git config --global user.email myAccount@gmail.com
+    $ git config --global -l
+    user.name=Geoffrey De Smet
+    user.email=gds...@gmail.com
+    ```
 
     * Warning: the field `user.name` is your full name, *not your username*.
 
@@ -125,14 +136,16 @@ For more info on forking, read [Github's help on forking](http://help.github.com
 
 * **Clone your fork locally:**
 
-        # First make a directory to hold all the droolsjbpm projects
-        $ mkdir droolsjbpm
-        $ cd droolsjbpm
+    ```shell
+    # First make a directory to hold all the droolsjbpm projects
+    $ mkdir droolsjbpm
+    $ cd droolsjbpm
 
-        # Then clone the repository you want to clone.
-        $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git
-        $ cd guvnor
-        $ ls
+    # Then clone the repository you want to clone.
+    $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git
+    $ cd guvnor
+    $ ls
+    ```
 
     * Warning: Always clone with the *SSH URL*, never clone with the *HTTPS URL* because the latter is unreliable.
 
@@ -142,20 +155,26 @@ For more info on forking, read [Github's help on forking](http://help.github.com
 
         * Use git checkout to switch to a more stable branch or tag:
 
-                $ git checkout 5.2.0.Final
+            ```shell
+            $ git checkout 5.2.0.Final
+            ```
 
 * Add the blessed repository as upstream (if you've directly cloned the blessed repository, don't do this):
 
-        $ git remote add upstream git@github.com:droolsjbpm/guvnor.git
-        $ git fetch upstream
+    ```shell
+    $ git remote add upstream git@github.com:droolsjbpm/guvnor.git
+    $ git fetch upstream
+    ```
 
 Working with git
 ----------------
 
 * First make a topic branch:
 
-        $ git checkout master
-        $ git checkout -b myFirstTopic
+    ```shell
+    $ git checkout master
+    $ git checkout -b myFirstTopic
+    ```
 
     * Don't litter your local `master` branch: keep it equal to `remotes/upstream/master`
 
@@ -163,41 +182,55 @@ Working with git
 
 * Make changes, run, test and document them, then commit them:
 
-        $ git commit -m "Fix typo in documentation"
+    ```shell
+    $ git commit -m "Fix typo in documentation"
+    ```
 
 * Push those commits on your topic branch to your fork
 
-        $ git push origin myFirstTopic
+    ```shell
+    $ git push origin myFirstTopic
+    ```
 
 * Get the latest changes from the blessed repository
 
     * Set your master equal to the blessed master:
 
-            $ git fetch upstream
-            $ git checkout master
-            # Warning: this deletes all changes/commits on your local master branch, but you shouldn't have any!
-            $ git reset --hard upstream/master
+        ```shell
+        $ git fetch upstream
+        $ git checkout master
+        # Warning: this deletes all changes/commits on your local master branch, but you shouldn't have any!
+        $ git reset --hard upstream/master
+        ```
 
     * Start a new topic branch and set the code the same as the blessed master:
 
-            $ git fetch upstream && git checkout -b mySecondTopic && git reset --hard upstream/master
+        ```shell
+        $ git fetch upstream && git checkout -b mySecondTopic && git reset --hard upstream/master
+        ```
 
     * If you have a long-running topic branch, merge master into it:
 
-            $ git fetch upstream
-            $ git merge upstream/master
+        ```shell
+        $ git fetch upstream
+        $ git merge upstream/master
+        ```
 
         * If there are merge conflicts:
 
-                $ git mergetool
-                $ git commit
+            ```shell
+            $ git mergetool
+            $ git commit
+            ```
 
             or
 
-                $ git status
-                $ gedit conflicted-file.txt
-                $ git add conflicted-file.txt
-                $ git commit
+            ```shell
+            $ git status
+            $ gedit conflicted-file.txt
+            $ git add conflicted-file.txt
+            $ git commit
+            ```
 
             Many people get confused when a merge conflict occurs, because you're *in limbo*.
             Just fix the merge conflicts and commit (even if the git seems to contain many files),
@@ -206,29 +239,39 @@ Working with git
 
 * You may delete your topic branch after your pull request is closed (first one deletes remotely, second one locally):
 
-        $ git push origin :myTopicBranch
-        $ git branch -D myTopicBranch
+    ```shell
+    $ git push origin :myTopicBranch
+    $ git branch -D myTopicBranch
+    ```
 
 * Tips and tricks
 
     * To see the details of your local, unpushed commits:
 
-            $ git diff origin...HEAD
+        ```shell
+        $ git diff origin...HEAD
+        ```
 
     * To run a git command (except clone) over all repositories (only works if you cloned all repositories):
 
-            $ cd ~/projects/droolsjbpm
-            $ droolsjbpm-build-bootstrap/script/git-all.sh push
+        ```shell
+        $ cd ~/projects/droolsjbpm
+        $ droolsjbpm-build-bootstrap/script/git-all.sh push
+        ```
 
         * Note: the `git-all.sh` script is working directory independent.
 
         * Linux tip: Create a symbolic link to the `git-all.sh` script and place it in your `PATH` by linking it in `~/bin`:
 
-                $ ln -s ~/projects/droolsjbpm/droolsjbpm-build-bootstrap/script/git-all.sh ~/bin/droolsjbpm-git
+            ```shell
+            $ ln -s ~/projects/droolsjbpm/droolsjbpm-build-bootstrap/script/git-all.sh ~/bin/droolsjbpm-git
+            ```
 
             For command line completion, add the following line in `~/.bashrc`:
 
-                $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
+            ```shell
+            $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
+            ```
 
 Share your changes with a pull request
 --------------------------------------
@@ -277,21 +320,27 @@ Installing Maven
     
         * Create a version-independent link:
 
-                $ cd ~/opt/build/
-                $ ln -s apache-maven-3.0.3 apache-maven
+            ```shell
+            $ cd ~/opt/build/
+            $ ln -s apache-maven-3.0.3 apache-maven
+            ```
 
             Next time you only have to remove the link and recreate the link to the new version.
 
         * Add this to your `~/.bashrc` file:
 
-                export M3_HOME="~/opt/build/apache-maven"
-                export PATH="$M3_HOME/bin:$PATH"
+            ```shell
+            export M3_HOME="~/opt/build/apache-maven"
+            export PATH="$M3_HOME/bin:$PATH"
+            ```
 
     * Give more memory to maven, so it can the big projects too:
 
         * Add this to your `~/.bashrc` file:
 
+            ```shell
             export MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+            ```
 
 * Windows:
 
@@ -299,13 +348,17 @@ Installing Maven
 
         * Open menu *Configuration screen*, menu item *System*, tab *Advanced*, button *environment variables*:
 
+            ```shell
             set MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+            ```
 
 * Check if maven is installed correctly.
 
-        $ mvn --version
-        Apache Maven 3.0.3 (...)
-        Java version: 1.6.0_24
+    ```shell
+    $ mvn --version
+    Apache Maven 3.0.3 (...)
+    Java version: 1.6.0_24
+    ```
 
     Note: the enforcer plugin enforces a minimum maven and java version.
 
@@ -314,18 +367,22 @@ Running the build
 
 * Go into a project's base directory, for example `guvnor`:
 
-        $ cd ~/projects/droolsjbpm
-        $ ls
-        drools  droolsjbpm-build-bootstrap  droolsjbpm-build-distribution  droolsjbpm-integration  droolsjbpm-knowledge  droolsjbpm-tools  optaplanner  guvnor
-        $ cd guvnor
-        $ ls
-        ...  guvnor-repository  guvnor-webapp-drools  pom.xml
+    ```shell
+    $ cd ~/projects/droolsjbpm
+    $ ls
+    drools  droolsjbpm-build-bootstrap  droolsjbpm-build-distribution  droolsjbpm-integration  droolsjbpm-knowledge  droolsjbpm-tools  optaplanner  guvnor
+    $ cd guvnor
+    $ ls
+    ...  guvnor-repository  guvnor-webapp-drools  pom.xml
+    ```
 
     Notice you see a `pom.xml` file there. Those `pom.xml` files are the heart of Maven.
 
 * **Run the build**:
 
-        $ mvn clean install -DskipTests
+    ```shell
+    $ mvn clean install -DskipTests
+    ```
 
     The first build will take a long time, because a lot of dependencies will be downloaded (and cached locally).
 
@@ -340,7 +397,9 @@ Running the build
 
 * Try running a different profile by using the option `-D<profileActivationProperty>`:
 
-        $ mvn clean install -DskipTests -Dfull
+    ```shell
+    $ mvn clean install -DskipTests -Dfull
+    ```
 
     There are 3 profile activation properties:
 
@@ -352,8 +411,10 @@ Running the build
 
 * To run a maven build over all repositories (only works if you cloned all repositories):
 
-        $ cd ~/projects/droolsjbpm
-        $ droolsjbpm-build-bootstrap/script/mvn-all.sh -DskipTests clean install
+    ```shell
+    $ cd ~/projects/droolsjbpm
+    $ droolsjbpm-build-bootstrap/script/mvn-all.sh -DskipTests clean install
+    ```
 
     * Note: the `mvn-all.sh` script is working directory independent.
 
@@ -369,7 +430,9 @@ Those SNAPSHOTS were build and deployed last night by jenkins jobs.
 
         In that case, add `-nsu` (= `--no-snapshot-updates`) to the `mvn` command to avoid downloading those snapshots:
 
-            $ mvn clean install -DskipTests -nsu
+        ```shell
+        $ mvn clean install -DskipTests -nsu
+        ```
 
         Note that using `-nsu` will also make the build faster.
 
@@ -380,35 +443,41 @@ Guvnor uses Arquillian to run tests in a J2EE container and hence tests need to 
 
 * Guvnor
 
-        $ cd ~/projects/droolsjbpm/guvnor/guvnor-webapp-drools
-        $ mvn integration-test [-Dtest=ATestClassName]
+    ```shell
+    $ cd ~/projects/droolsjbpm/guvnor/guvnor-webapp-drools
+    $ mvn integration-test [-Dtest=ATestClassName]
+    ```
 
 * All other modules
 
-        $ cd ~/projects/droolsjbpm/drools
-        $ mvn test [-Dtest=ATestClassName]
+    ```shell
+    $ cd ~/projects/droolsjbpm/drools
+    $ mvn test [-Dtest=ATestClassName]
+    ```
 
 Configuring Maven
 -----------------
 
 To deploy snapshots and releases to nexus, you need to add this to the file `~/.m2/settings.xml`:
 
-     <settings>
-       ...
-       <servers>
-         <server>
-           <id>jboss-snapshots-repository</id>
-           <username>jboss.org_username</username>
-           <password>jboss.org_password</password>
-         </server>
-         <server>
-           <id>jboss-releases-repository</id>
-           <username>jboss.org_username</username>
-           <password>jboss.org_password</password>
-         </server>
-       </servers>
-       ...
-     </settings>
+```xml
+<settings>
+  ...
+  <servers>
+    <server>
+      <id>jboss-snapshots-repository</id>
+      <username>jboss.org_username</username>
+      <password>jboss.org_password</password>
+    </server>
+    <server>
+      <id>jboss-releases-repository</id>
+      <username>jboss.org_username</username>
+      <password>jboss.org_password</password>
+    </server>
+    </servers>
+    ...
+</settings>
+```
 
 Furthermore, you'll need nexus rights to be able to do this.
 
@@ -512,7 +581,9 @@ Regenerating Protobuf Files
 
 Some modules include Protobuf files (like drools-core and jbpm-flow). Every time a .proto file is changed, the java files have to be regenerated. In order to do that, on the module that contains the files to be regenerated, execute the following command:
 
-        $ mvn exec:exec -Dproto
+```shell
+$ mvn exec:exec -Dproto
+```
         
 After testing the regenerated files, don't forget to commit them.
 
@@ -532,13 +603,15 @@ Before running Eclipse
 
     Open `$ECLIPSE_HOME/eclipse.ini` and add/change this: on openFile -vmargs:
 
-        openFile
-        -vmargs
-        ...
-        -XX:MaxPermSize=512m
-        -Xms512m
-        -Xmx1024m
-        -Xss1024k
+    ```shell
+    openFile
+    -vmargs
+    ...
+    -XX:MaxPermSize=512m
+    -Xms512m
+    -Xmx1024m
+    -Xss1024k
+    ```
 
 Configuring the project with the m2eclipse plugin
 -------------------------------------------------
@@ -568,7 +641,9 @@ This is the old way (of which the development has stopped).
 
 Run this command to generate `.project` and `.classpath` files:
 
-    $ mvn eclipse:eclipse
+```shell
+$ mvn eclipse:eclipse
+```
 
 * Open Eclipse
 
@@ -689,6 +764,7 @@ Configuring Eclipse
     * Replace the text area with the java multi-line comment version of
     ` droolsjbpm-build-bootstrap/ide-configuration/LICENSE-ASL-2.0-HEADER.txt`:
 
+        ```
         /*
          * Copyright 2011 JBoss Inc
          *
@@ -704,6 +780,7 @@ Configuring Eclipse
          * See the License for the specific language governing permissions and
          * limitations under the License.
          */
+         ```
 
     * Note: Do not start or end with a newline character
 
@@ -776,9 +853,17 @@ Extra Eclipse plugins
 
         * Tab *GWT*, list *Available Modules*: `Guvnor - org.drools.guvnor`
 
-        * Tab *Arguments*, Ensure `Program Arguments` are : `-war <path-to-war-folder> -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`. 
+        * Tab *Arguments*, Ensure `Program Arguments` are :
 
-               * For example: `-war /home/manstis/workspaces/git/droolsjbpm/guvnor/guvnor-webapp-drools/target/guvnor-webapp-drools-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor`
+            ```
+            -war <path-to-war-folder> -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor
+            ```
+
+            For example:
+
+            ```
+            -war /home/manstis/workspaces/git/droolsjbpm/guvnor/guvnor-webapp-drools/target/guvnor-webapp-drools-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor
+            ```
 
         * Tab *Arguments*, it is recommended to set `VM Arguments` to: `-XX:MaxPermSize=512m -Xms512m -Xmx2048m`. You might be able to try smaller values, but these are known to work.
 
@@ -809,9 +894,11 @@ Before running IntelliJ
 
     Open `$IDEA_HOME/bin/idea.vmoptions` and change the first 3 values to this:
 
-        -Xms512m
-        -Xmx1024m
-        -XX:MaxPermSize=512m
+    ```shell
+    -Xms512m
+    -Xmx1024m
+    -XX:MaxPermSize=512m
+    ```
 
 Configuring the project with the maven integration
 --------------------------------------------------
@@ -986,19 +1073,21 @@ Configuring IntelliJ
 
         * Textarea with content:
 
-                Copyright $today.year JBoss Inc
+            ```
+            Copyright $today.year JBoss Inc
 
-                Licensed under the Apache License, Version 2.0 (the "License");
-                you may not use this file except in compliance with the License.
-                You may obtain a copy of the License at
+            Licensed under the Apache License, Version 2.0 (the "License");
+            you may not use this file except in compliance with the License.
+            You may obtain a copy of the License at
 
-                      http://www.apache.org/licenses/LICENSE-2.0
+                  http://www.apache.org/licenses/LICENSE-2.0
 
-                Unless required by applicable law or agreed to in writing, software
-                distributed under the License is distributed on an "AS IS" BASIS,
-                WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                See the License for the specific language governing permissions and
-                limitations under the License.
+            Unless required by applicable law or agreed to in writing, software
+            distributed under the License is distributed on an "AS IS" BASIS,
+            WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            See the License for the specific language governing permissions and
+            limitations under the License.
+            ```
 
         * Note: Do not start or end with a newline character
 
@@ -1214,11 +1303,13 @@ Writing documentation
 
 * To generate the html and pdf output run maven with `-Dfull`:
 
-        $ cd droolsjbpm
-        $ cd optaplanner/optaplanner-docs
-        $ mvn clean install -Dfull
-        ...
-        $ firefox target/docbook/publish/en-US/html_single/index.html
+    ```shell
+    $ cd droolsjbpm
+    $ cd optaplanner/optaplanner-docs
+    $ mvn clean install -Dfull
+    ...
+    $ firefox target/docbook/publish/en-US/html_single/index.html
+    ```
 
 * **[Read and follow the documentation guidelines](documentation-guidelines.txt).**
 
@@ -1255,40 +1346,54 @@ One week in advance:
 
     * The most recent translations need to be pulled into the release branch. Assuming you have set-up your Zanata configuration correctly, this can be achieved with:
 
-            $ mvn zanata:pull-module
+        ```shell
+        $ mvn zanata:pull-module
+        ```
 
     * NOTE: If releasing a new version number (major, minor or micro) a new version of the translations should be setup in Zanata.
 
     * Automatically fix simple errors in the translations using the following:
 
-            $ mvn replacer:replace -N
+        ```shell
+        $ mvn replacer:replace -N
+        ```
 
     * NOTE: For the repositories jbpm-form-modeler and kie-wb-distributions it has to be added to the workflow
+
+        ```shell
+        $ mvn native2ascii:native2ascii
+        ```
     
-            $ mvn native2ascii:native2ascii
-    
-    * NOTE. jbpm-designer has it's own workflow
+    * NOTE: jbpm-designer has it's own workflow
              
-            $ cd ../jbpm-designer
-            $ mvn zanata:pull-module
-            $ mvn replacer:replace-N
-            $ mvn native2ascii:native2ascii
-            $ cd jbpm-designer-api
-            $ mvn replacer:replace-N
+        ```shell
+        $ cd ../jbpm-designer
+        $ mvn zanata:pull-module
+        $ mvn replacer:replace-N
+        $ mvn native2ascii:native2ascii
+        $ cd jbpm-designer-api
+        $ mvn replacer:replace-N
+        ```
             
     * Zanata workflow is:
-            
-            $ mvn zanata:pull-module
-            $ mvn relacer:replace-N
-            $ mvn native2ascii:native2ascii (in repositories where this has to be executed, please pay attention to jbom-designer)
-            $ mvn clean install -Dfull -DskipTests (to see if everything compiles after Zanata changes were pulled)
-              (in kie-w-distribution has to be added -Dcustom-container for preventing not building the rep cause possibly hanging at kie-smoke-tests)
-            $ add & commit the changes
-            $ push changes to blessed repository
+
+        ```shell
+        $ mvn zanata:pull-module
+        $ mvn relacer:replace-N
+        $ mvn native2ascii:native2ascii # In repositories where this has to be executed, please
+                                        # pay attention to jbpm-designer.
+        $ mvn clean install -Dfull -DskipTests # To see if everything compiles after Zanata changes were pulled.
+                                               # In kie-wb-distribution has to be added -Dcustom-container for preventing
+                                               # not building the repo cause possibly hanging at kie-smoke-tests
+        $ git commit -a # add & commit the changes
+        $ git push <upstream> <branch> # push changes to blessed repository
+        ```
             
     * when compiling guvnor, check if there are no other translation issues.
 
-            $ mvn clean install -Dfull -DskipTests
+        ```shell
+        $ mvn clean install -Dfull -DskipTests
+        ```
 
         * Sometime the variable place-holders {0}, {1}... are missing.
 
@@ -1330,21 +1435,29 @@ One week in advance:
 
 * Pull the latest changes.
 
-        $ git-all.sh pull --rebase
+    ```shell
+    $ git-all.sh pull --rebase
+    ```
 
 * Do a sanity check.
 
     * Produce the distribution zips, build with `-Dfull`:
 
-            $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -Dfull -Dcustom-container -DskipTests
+        ```shell
+        $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -Dfull -Dcustom-container -DskipTests
+        ```
 
         * Warning: It is not uncommon to run out of either PermGen space or Heap Space. The following settings are known (@Sept-2012) to work:-
 
-                $ export MAVEN_OPTS='-Xms512m -Xmx2200m -XX:MaxPermSize=512m'
+            ```shell
+            $ export MAVEN_OPTS='-Xms512m -Xmx2200m -XX:MaxPermSize=512m'
+            ```
 
         * Warning: Verify that workspace contains no uncommitted changes or rogue module directories of older branches:
 
-                $ droolsjbpm-build-bootstrap/script/git-all.sh status
+            ```shell
+            $ droolsjbpm-build-bootstrap/script/git-all.sh status
+            ```
 
             * Specifically watch out for an uncommitted `*/target` directory: that's the result of a build of an older branch that didn't get cleaned.
 
@@ -1383,12 +1496,16 @@ A release branch name should always end with `.x` so it looks different from a t
 
 * Pull the latest changes.
 
-        $ git-all.sh pull --rebase
+    ```shell
+    $ git-all.sh pull --rebase
+    ```
 
 * Simply use the script `script/release/create-release-branches.sh` with the drools and jbpm *release branch name*:
 
-        $ droolsjbpm-build-bootstrap/script/release/create-release-branches.sh 6.2.x 6.2.x 
-        where 6.2.x is the drools and 6.2.x is the jbpm release branch name
+    ```shell
+    $ droolsjbpm-build-bootstrap/script/release/create-release-branches.sh 6.2.x 6.2.x 
+    # where 6.2.x is the drools and 6.2.x is the jbpm release branch name
+    ```
         
         * Note: this srcript creates a release branch, pushes it to origin and sets the upstream from local release branch to remote release branch
                    
@@ -1397,40 +1514,59 @@ A release branch name should always end with `.x` so it looks different from a t
 
     * If you haven't made the branches yourself, first make sure your local repository knows about them:
 
-            $ droolsjbpm-build-bootstrap/script/git-all.sh fetch
+        ```shell
+        $ droolsjbpm-build-bootstrap/script/git-all.sh fetch
+        ```
 
     * Switch to master with `script/git-checkout-all.sh`
 
-            $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh master master
+        ```shell
+        $ droolsjbpm-build-bootstrap/script/git-checkout-all.sh master master
+        ```
 
     * Update master to the next SNAPSHOT version to avoid clashing the artifacts on nexus of master and the release branch:
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0-SNAPSHOT 6.3.0-SNAPSHOT
+        ```shell
+        $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0-SNAPSHOT 6.3.0-SNAPSHOT
+        ```
 
-        * Note: the arguments are `releaseOldVersion releaseNewVersion
+        * Note: the arguments are `releaseOldVersion` `releaseNewVersion`
 
-        * WARNING: FIXME the update-version-all script does not work correctly if you are releasing a hotfix version.
+        * WARNING: FIXME the `update-version-all.sh` script does not work correctly if you are releasing a hotfix version.
 
-        * WARNING: jbpm/pom.xml sometimes has properties defined that override the ${version.org.jbpm}. Check this is not the case.
+        * WARNING: `jbpm/pom.xml` sometimes has properties defined that override the `${version.org.jbpm}`. Check this is not the case.
 
-                $ grep -r '6.2.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done 
+            ```shell
+            $ grep -r '6.2.0-SNAPSHOT' **/pom.xml
+            # or
+            $ for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done
+            ```
 
         * WARNING: script update-version-all.sh did not update all versions in all modules for 6.3.0-SNAPSHOT. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '6.3.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.3.0-SNAPSHOT' $i; done
-        or
-                $ grep -ER --exclude-dir=*git* --exclude-dir=*target* --exclude-dir=*idea* --exclude=*ipr --exclude=*iws --exclude=*iml --exclude=workspace* --exclude-dir=*.errai 6.3.0-SNAPSHOT . | grep -v ./kie-wb-distributions/kie-eap-integration/kie-eap-modules/kie-jboss-eap-base-modules
+            ```shell
+            $ grep -r '6.3.0-SNAPSHOT' **/pom.xml
+            # or
+            $ for i in $(find . -name "pom.xml"); do grep '6.3.0-SNAPSHOT' $i; done
+            ```
+            or
+            ```shell
+            $ grep -ER --exclude-dir=*git* --exclude-dir=*target* --exclude-dir=*idea* --exclude=*ipr --exclude=*iws --exclude=*iml --exclude=workspace* --exclude-dir=*.errai 6.3.0-SNAPSHOT . | grep -v ./kie-wb-distributions/kie-eap-integration/kie-eap-modules/kie-jboss-eap-base-modules
+            ```
         
         * Note: in either case it is important to search for -SNAPSHOT, as there are various hidden -SNAPSHOT dependencies in some pom.xml files and they should be prevented for releases 
                
-        * IMPORTANT: Right now the script is not updating automatically all poms of droolsjbpm-tools. This could be the case when the number of release i.e. 6.1.0 changes to 6.1.1. 
-          When the change is in the appendix only (i.e. Beta, CR, Final) the scripts should work correctly. There is the file droolsjbpm-tools/drools-eclipse/org.drools.updatesite/category.xml that has to be updated 
-          manually if the script doesn't run correctly.
+        * IMPORTANT: Right now the script is not updating automatically all poms of droolsjbpm-tools.
+          This could be the case when the number of release i.e. 6.1.0 changes to 6.1.1.
+
+          When the change is in the appendix only (i.e. Beta, CR, Final) the scripts should work correctly. There is the file droolsjbpm-tools/drools-eclipse/org.drools.updatesite/category.xml that has to be updated manually if the script doesn't run correctly.
+          
           Steps to do it working:
-                1. run script droolsjbpm-build-bootstrap/script/release/update-version-all
-                2. since this script will fail in droolsjbpm-tools edit droolsjbpm-tools/drools-eclipse/org.drools.updatesite/category.xml and modify manually all *.feature.source_***.qualifier
-                   Don't do this before you did the first run that fails - you have to run the script first!
-                3. re-run droolsjbpm-build-bootstrap/script/release/update-version-all
+
+            1. run script droolsjbpm-build-bootstrap/script/release/update-version-all
+            2. since this script will fail in droolsjbpm-tools edit droolsjbpm-tools/drools-eclipse/org.drools.updatesite/category.xml and modify manually all *.feature.source_***.qualifier
+               Don't do this before you did the first run that fails - you have to run the script first!
+            3. re-run droolsjbpm-build-bootstrap/script/release/update-version-all
 
         * NOTE: the repository fuse-bxms-integ has to be upgradede manually
         
@@ -1438,29 +1574,41 @@ A release branch name should always end with `.x` so it looks different from a t
         
             * Add changes from untracked files if there are any. WARNING: DO NOT USE "git add ." . You may accidentally add files that are not meant to be added into git. 
 
-                    $ git add {filename}
+                ```shell
+                $ git add {filename}
+                ```
                 
             * Commit all changes
-                
-                    $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m "Set release version: 6.3.0-SNAPSHOT"
+
+                ```shell
+                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m "Set release version: 6.3.0-SNAPSHOT"
+                ```
                     
             * Check if all repositories build after version upgrade
-    
-                    $ sh droolsjbpm-build-bootstrap/mvnall.sh mvn clean install -Dfull -DskipTests
+
+                ```shell
+                $ sh droolsjbpm-build-bootstrap/mvnall.sh mvn clean install -Dfull -DskipTests
+                ```
         
     * Push the new -SNAPSHOT version to master of the blessed directory
- 
-             $ sh droolsjbpbm-build-bootstrap/script/git-all.sh pull --rebase origin master (pulls all changes for master that could be commited in the meantime and prevents merge problems when pushing commits)
-             $ sh droolsjbpm-build-bootstrap/script/git-all.sh push origin master (pushes all commits to master)
+
+        ```shell
+        $ sh droolsjbpbm-build-bootstrap/script/git-all.sh pull --rebase origin master (pulls all changes for master that could be commited in the meantime and prevents merge problems when pushing commits)
+        $ sh droolsjbpm-build-bootstrap/script/git-all.sh push origin master (pushes all commits to master)
+        ```
 
 
     * Switch back to the *release branch name* with `script/git-checkout-all.sh` with drools and jbpm *release branch name*:
 
-            $ sh droolsjbpm-build-bootstrap/script/git-checkout-all.sh 6.2.x 6.2.x
+        ```shell
+        $ sh droolsjbpm-build-bootstrap/script/git-checkout-all.sh 6.2.x 6.2.x
+        ```
 
 * Push the created release branches to the blessed directory
-            
-            $ sh droolsjbm-build-bootstrap/script/git-all.sh push origin 6.2.x
+
+    ```shell
+    $ sh droolsjbm-build-bootstrap/script/git-all.sh push origin 6.2.x
+    ```
 
 * Set up jenkins build jobs for the branch.
 
@@ -1497,18 +1645,24 @@ Releasing from a release branch
 
 * Pull the latest changes of the branch that will be the base for the release (branchName == master or i.e. 6.2.x)
 
-        $ git-all.sh checkout <branchName>
-        $ git-all.sh pull --rebase 
+    ```shell
+    $ git-all.sh checkout <branchName>
+    $ git-all.sh pull --rebase
+    ```
         
 * Create a local release branch
     Name should begin with r, i.e if the release will be 6.2.0.Final the name should be r6.2.0.Final (localReleaseBranchName == r6.2.0.Final)
-        
-        $ git-all.sh checkout -b <localReleaseBranchName> <branchname>
+
+    ```shell
+    $ git-all.sh checkout -b <localReleaseBranchName> <branchname>
+    ```
 
 * Check if everything builds after the last pull & execute all unit tests
 
-        $ mvn-all.sh clean install -Dfull -Dmaven.test.failure.ignore=true > testResult.txt
-        This will execute the build and execute the unit tests and write all logs into testResult.txt.
+    ```shell
+    $ mvn-all.sh clean install -Dfull -Dmaven.test.failure.ignore=true > testResult.txt
+    # This will execute the build and execute the unit tests and write all logs into testResult.txt.
+    ```
                        
 * Explore testResult.txt to see if the build breaks or which unit tests are failing.
          
@@ -1552,13 +1706,19 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
 
         * WARNING: script update-version-all.sh did not update automatically all versions in all modules. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '6.2.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done
-        OR         
-                $ $ grep -ER --exclude-dir=*git* --exclude-dir=*target* --exclude-dir=*idea* --exclude=*ipr --exclude=*iws --exclude=*iml --exclude=workspace* --exclude-dir=*.errai 6.3.0-SNAPSHOT . | grep -v ./kie-wb-distributions/kie-eap-integration/kie-eap-modules/kie-jboss-eap-base-modules.
+            ```shell
+            $ grep -r '6.2.0-SNAPSHOT' **/pom.xml
+            # or
+            for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done
+            ```
+            OR
+            ```shell
+            $ grep -ER --exclude-dir=*git* --exclude-dir=*target* --exclude-dir=*idea* --exclude=*ipr --exclude=*iws --exclude=*iml --exclude=workspace* --exclude-dir=*.errai 6.3.0-SNAPSHOT . | grep -v ./kie-wb-distributions/kie-eap-integration/kie-eap-modules/kie-jboss-eap-base-modules.
+            ```
                 
     * versions that have to be changed manually
                 
-        *NOTE:in droolsjbpm-build-bootstrap pom.xml there are some properties where you should pay attention to:
+        NOTE:in droolsjbpm-build-bootstrap pom.xml there are some properties where you should pay attention to:
         
         1. jboss-ip bom version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L11)
            the version of jboss-integration-platform-bom. should be the most recent version released  in jboss-ip-bom
@@ -1583,24 +1743,29 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
         
         * Add changes from untracked files if there are any. WARNING: DO NOT USE "git add ." . You may accidentally add files that are not meant to be added into git.
 
-                $ git add {filename}
+            ```shell
+            $ git add {filename}
+            ```
                 
         * Commit all changes
 
-                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 6.2.0.Final"
+            ```shell
+            $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set release version: 6.2.0.Final"
+            ```
 
         * Adjust the property *`<latestReleasedVersionFromThisBranch>`* in *droolsjbpm-build-bootstrap/pom.xml*
-    
       
          This should be the version that will be released now.
          This is important as productisation takes this version to define theirs.
+
          * Add this change         
          * Commit this change.
-         
 
 * Create the tag locally. The arguments are the Drools version, the jBPM version:
 
-        $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 6.2.0.Final 6.2.0.Final
+    ```shell
+    $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 6.2.0.Final 6.2.0.Final
+    ```
         
 
 * Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, drop all your old staging repositories.
@@ -1608,7 +1773,9 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
 
 * Deploy the artifacts:
 
-        $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean deploy -Dfull -DskipTests
+    ```shell
+    $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean deploy -Dfull -DskipTests
+    ```
 
     * This will take a long while (3+ hours)
 
@@ -1648,8 +1815,10 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
 * Define the next development version an adjust the sources accordingly:
 
     * Checkout to the master-branch or the branch which is the base for this release.
-    
-        $ git-all.sh checkout master (or base release branch i.e. 6.2.x) 
+
+        ```shell
+        $ git-all.sh checkout master (or base release branch i.e. 6.2.x)
+        ```
 
     * Define the next development version on the branch from which you are releasing.
 
@@ -1663,48 +1832,66 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
 
     * Adjust the version in the poms, manifests and other eclipse stuff:
 
-            $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0.Final 6.3.0-SNAPSHOT 6.2.0.Final 6.3.0-SNAPSHOT
+        ```shell
+        $ droolsjbpm-build-bootstrap/script/release/update-version-all.sh 6.2.0.Final 6.3.0-SNAPSHOT 6.2.0.Final 6.3.0-SNAPSHOT
+        ```
 
         * Commit those changes:
 
-                $ droolsjbpm-build-bootstrap/script/git-all.sh add .
+            ```shell
+            $ droolsjbpm-build-bootstrap/script/git-all.sh add .
 
-                $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m"Set next development version: 6.3.0-SNAPSHOT"
+            $ droolsjbpm-build-bootstrap/script/git-all.sh commit -m "Set next development version: 6.3.0-SNAPSHOT"
+            ```
 
         * Push all changes to the blessed repository:
 
-                $ droolsjbpm-build-bootstrap/script/git-all.sh push
+            ```shell
+            $ droolsjbpm-build-bootstrap/script/git-all.sh push
+            ```
 
         * Warning: Guvnor has a hard-coded version number in org.drools.guvnor.server.test.GuvnorIntegrationTest.createDeployment. This must be changed manually and committed.
 
         * Warning: script update-version-all.sh did not update all versions in all modules for 6.2.0.Final. Check all have been updated with the following and re-run if required.
 
-                $ grep -r '6.2.0-SNAPSHOT' **/pom.xml or for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done 
+            ```shell
+            $ grep -r '6.2.0-SNAPSHOT' **/pom.xml
+            # or
+            for i in $(find . -name "pom.xml"); do grep '6.2.0-SNAPSHOT' $i; done
+            ```
 
         * Warning: If releasing from master (i.e. a Beta release) and the push fails as there have been other commits to the remote master branch it might be necessary to pull.
 
-                $ droolsjbpm-build-bootstrap/script/git-all.sh pull
+            ```shell
+            $ droolsjbpm-build-bootstrap/script/git-all.sh pull
+            ```
 
     * Checkout back to your local release branch.
-    
+
+        ```shell
         $ git-all.sh checkout r6.2.0.Final
+        ```
 
 
 * Push the local tag from the local release branch to the remote blessed repository.
 
-        $ droolsjbpm-build-bootstrap/script/release/git-push-tag-all.sh 6.2.0.Final 6.2.0.Final
+      $ droolsjbpm-build-bootstrap/script/release/git-push-tag-all.sh 6.2.0.Final 6.2.0.Final
 
     * Push your changes to the release branch:
 
         * Especially if the release branch is master: First pull any latest changes **without `--rebase`**, .
 
-                $ git-all.sh pull
+            ```shell
+            $ git-all.sh pull
+            ```
 
             * Without the `--rebase` it's a merge, and their commits will not be rebased before your version-changing commits.
 
         * Push your version-changing commits to the release branch:
 
-                $ git-all.sh push origin 5.2.x
+            ```shell
+            $ git-all.sh push origin 5.2.x
+            ```
 
 * Release your staging repository on [nexus](https://repository.jboss.org/nexus)
 
@@ -1734,7 +1921,9 @@ If everything is perfect (compiles, jenkins is all blue, sanity checks succeed a
 
 * Update the symbolic links `latest` and `latestFinal` links on filemgmt, if and only if there is no higher major or minor release was already released.
 
-        $ droolsjbpm-build-bootstrap/script/release/create_filemgmt_links.sh 5.2.0.Final
+    ```shell
+    $ droolsjbpm-build-bootstrap/script/release/create_filemgmt_links.sh 5.2.0.Final
+    ```
 
     * Wait 5 minutes and then check these URL's. Hit ctrl-F5 in your browser to do a hard refresh:
 
@@ -1879,20 +2068,20 @@ The above will raise an error for Uberfire, so in another shell do:
 Please note that the example above uses the same branch names used in setp (5) for product branch and (6) for the base branch. 	
 If the rebase creates any conflicts, fix the conflicts and continue the rebase. 	
  	
-**9 - If any conflict happened in step 8, then we need to create new product branches. For each repository with a product branch, cd into the repository folder, create a new product branch and checkout the tag branch again.** 	
+**9 - If any conflict happened in step 8, then we need to create new product branches. For each repository with a product branch, cd into the repository folder, create a new product branch and checkout the tag branch again.**
  	
     $ cd <repository folder> 	
     $ git checkout -b prod-6.0.1.GA.x-2014.02.12 	
     $ git checkout bsync.2014.10.12 	
  	
-**10 - If there are any commits that have to be manually cherry-picked into the tag, cd into the corresponding repository and cherry-pick the commit. This should not happen often, but sometimes it does.** 	
+**10 - If there are any commits that have to be manually cherry-picked into the tag, cd into the corresponding repository and cherry-pick the commit. This should not happen often, but sometimes it does.**
  	
-    $ cd <repository> 	
-    $ git cherry-pick -x <SHA> 	
+    $ cd <repository>
+    $ git cherry-pick -x <SHA>
  	
-**11 - Build the code for all repositories and test to make sure it is working. Fix any problems in case it is not working. ** 	
+**11 - Build the code for all repositories and test to make sure it is working. Fix any problems in case it is not working.**
  	
-**12 - Create the tag for all repositories. For product tags, we use a naming standard of "sync.YYYY.MM.DD", where YYYY.MM.DD is the date the tag is created. If for any reason more than one tag needs to be created on the same day, add a sequential counter sufix: "sync.YYYY.MM.DD.C"** 	
+**12 - Create the tag for all repositories. For product tags, we use a naming standard of "sync.YYYY.MM.DD", where YYYY.MM.DD is the date the tag is created. If for any reason more than one tag needs to be created on the same day, add a sequential counter sufix: "sync.YYYY.MM.DD.C"**
  	
     $ ./git-all.sh tag sync.2014.02.12 	
  	
@@ -1902,7 +2091,7 @@ If the rebase creates any conflicts, fix the conflicts and continue the rebase.
     $ ./git-all.sh push prod 6.0.x 	
     $ ./git-all.sh push prod master 	
 	
-**14. In case a new product branch was created in step 9, push the new product branch and delete the old remote branch:** 	
+**14 - In case a new product branch was created in step 9, push the new product branch and delete the old remote branch:**
  	
     $ git push prod-6.0.1.GA.x-2014.02.12 	
     $ git push :prod-6.0.1.GA.x-2014.02.10 	
