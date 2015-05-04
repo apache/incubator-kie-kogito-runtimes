@@ -116,7 +116,7 @@ Installing and configuring git
 Getting the sources locally
 ---------------------------
 
-Because you 'll probably want to change our code, it's recommended to fork our code before cloning it,
+Because you'll probably want to change our code, it's recommended to fork our code before cloning it,
 so it's easier to share your changes with us later.
 For more info on forking, read [GitHub's help on forking](http://help.github.com/fork-a-repo/).
 
@@ -1718,7 +1718,7 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
 
     * versions that have to be changed manually
 
-        NOTE:in droolsjbpm-build-bootstrap pom.xml there are some properties where you should pay attention to:
+        NOTE: in droolsjbpm-build-bootstrap pom.xml there are some properties where you should pay attention to:
 
         1. jboss-ip bom version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L11)
            the version of jboss-integration-platform-bom. should be the most recent version released  in jboss-ip-bom
@@ -1892,11 +1892,11 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
             $ git-all.sh push origin 5.2.x
             ```
 
-* Release your staging repository on [nexus](https://repository.jboss.org/nexus)
+* Release your staging repository on [Nexus](https://repository.jboss.org/nexus)
 
     * Button *release*
 
-* Go to [jira](https://issues.jboss.org) and for each of our JIRA projects (DROOLS, PLANNER, JBPM, GUVNOR):
+* Go to [JIRA](https://issues.jboss.org) and for each of our JIRA projects (DROOLS, PLANNER, JBPM, GUVNOR):
 
     * Open menu item *Administration*, link *Manage versions*, release the version.
 
