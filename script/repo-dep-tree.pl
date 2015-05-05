@@ -163,11 +163,16 @@ sub prerequisites {
     # traverse the graph recursively
     foreach my $child ( keys %{$repo_tree{$target}} ) {
       if( ${repo_tree}{$target}{$child} > 0 ) {
+        printf( "%s -> %s\n", $target, $child );
+        if ( $child eq $opt_t ) {
+          print "CYCLE DETECTED!\n";
+          last;
+        }
         prerequisites($child);
       }
     }
   }
-  push( @prereq_list, $_[0] );
+  push( @prereq_list, $target);
 }
 
 sub filterTransitiveDependencies { 
@@ -318,8 +323,11 @@ if( $create_dot_file ) {
 
 # Print the list of repositories required to be built before building target repository.
 
-my @prereq_list;
+@prereq_list; # required repositories are stored here by prerequisites subroutine
+
 if ( $opt_t ) {
+  # filter transitive deps before building prerequisites list, regardles of -f flag
+  filterTransitiveDependencies();
   prerequisites( $opt_t );
   # home made uniq
   my @unique = do { my %seen; grep { !$seen{$_}++ } @prereq_list };
