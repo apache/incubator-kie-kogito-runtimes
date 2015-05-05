@@ -28,8 +28,8 @@ startDateTime=`date +%s`
 # Committers on blessed gitUrlPrefix="git@github.com:droolsjbpm/"
 # Anonymous users on blessed gitUrlPrefix="git://github.com/droolsjbpm/"
 cd "${scriptDir}"
-gitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
-gitUrlPrefix=`echo ${gitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git.*//g'`
+droolsjbpmGitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
+droolsjbpmGitUrlPrefix=`echo ${droolsjbpmGitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git.*//g'`
 
 cd "$droolsjbpmOrganizationDir"
 
@@ -39,26 +39,20 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
         echo "==============================================================================="
         echo "This directory already exists: $repository"
         echo "==============================================================================="
-# hack for fuse-bxms-integ repository on github.com:jboss-integration
-    elif [ "${repository}" == "fuse-bxms-integ" ]; then
-        echo "==============================================================================="
-        echo "Repository: $repository"
-        echo "==============================================================================="
-        echo -- prefix git@github.com:jboss-integration/ --
-        gitUrlPrefix=git@github.com:jboss-integration/
-        echo -- repository ${repository} --
-        echo -- ${gitUrlPrefix}${repository}.git -- ${repository} --
-        git clone ${gitUrlPrefix}${repository}.git ${repository}       
     else
         echo "==============================================================================="
         echo "Repository: $repository"
         echo "==============================================================================="
-
+        gitUrlPrefix=${droolsjbpmGitUrlPrefix}
+        if [ "${repository}" == "fuse-bxms-integ" ]; then
+            # prefix is different for fuse-bxms-integ repo as it is under jboss-integration org. unit
+            gitUrlPrefix=`echo ${droolsjbpmGitUrlPrefix} | sed 's/droolsjbpm/jboss\-integration/g'`
+        fi
         echo -- prefix ${gitUrlPrefix} --
         echo -- repository ${repository} --
         echo -- ${gitUrlPrefix}${repository}.git -- ${repository} --
         git clone ${gitUrlPrefix}${repository}.git ${repository}
-        
+
         returnCode=$?
         if [ $returnCode != 0 ] ; then
             exit $returnCode
