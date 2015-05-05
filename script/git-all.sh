@@ -22,12 +22,6 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../.."
 
-# these variables don't make any sense right now
-#
-#withoutJbpm="$withoutJbpm"
-#withoutUberfire="$withoutUberfire"
-
-
 if [ $# = 0 ] ; then
     echo
     echo "Usage:"

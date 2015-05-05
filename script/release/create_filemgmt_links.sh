@@ -21,7 +21,6 @@ initializeWorkingDirAndScriptDir() {
 }
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
-withoutJbpm="$withoutJbpm"
 
 # TODO move jbpm from sourceforge to filemgmt
 withoutJbpm=true

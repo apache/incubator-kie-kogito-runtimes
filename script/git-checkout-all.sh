@@ -21,8 +21,6 @@ initializeWorkingDirAndScriptDir() {
 }
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../.."
-withoutJbpm="$withoutJbpm"
-withoutUberfire="$withoutUberfire"
 
 if [ $# != 1 ]; then
     echo
