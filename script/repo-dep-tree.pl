@@ -275,9 +275,9 @@ if( $filter_transitive ) {
 }
 
 show( "\nDependent-on tree: \n" );
-foreach $repo (@repo_list) { 
+foreach $repo (sort @repo_list) {
   show( "\n$repo (is dependent on): \n" );
-  foreach my $leaf_repo (keys %{$repo_tree{$repo}} ) { 
+  foreach my $leaf_repo (sort keys %{$repo_tree{$repo}} ) {
     if( $repo_tree{$repo}{$leaf_repo} > 0 ) { 
       show( "- $leaf_repo ($repo_tree{$repo}{$leaf_repo})\n" );
     }
@@ -289,9 +289,9 @@ foreach $repo (@repo_list) {
 }
 
 show( "\nDependencies tree: \n" );
-foreach $repo (keys %build_tree) { 
+foreach $repo (sort keys %build_tree) {
   show( "\n$repo (is used by): \n" );
-  foreach my $leaf_repo (keys %{$build_tree{$repo}} ) { 
+  foreach my $leaf_repo (sort keys %{$build_tree{$repo}} ) {
     show( "- $leaf_repo\n" );
   }
 }
