@@ -14,6 +14,7 @@ drools-wb
 jbpm-designer
 jbpm-console-ng
 dashboard-builder
+optaplanner-wb
 jbpm-dashboard
 kie-wb-distributions
 fuse-bxms-integ
