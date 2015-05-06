@@ -162,10 +162,13 @@ sub prerequisites {
   if( exists $repo_tree{$target} ) {
     # traverse the graph recursively
     foreach my $child ( keys %{$repo_tree{$target}} ) {
-      if( ${repo_tree}{$target}{$child} > 0 ) {
-        printf( "%s -> %s\n", $target, $child );
+      if( defined ${repo_tree}{$target}{$child} ) {
+        if( $verbose ) {
+          printf( "%s -> %s\n", $target, $child );
+        }
         if ( $child eq $opt_t ) {
           print "CYCLE DETECTED!\n";
+          print "Re-run in verbose mode to see the chain of dependencies that create the cycle.\n";
           last;
         }
         prerequisites($child);
@@ -182,9 +185,9 @@ sub filterTransitiveDependencies {
   foreach $dep_repo (keys %repo_tree) {
     foreach my $src_repo (keys %{$repo_tree{$dep_repo}} ) {
       foreach my $inter_repo (keys %{$repo_tree{$dep_repo}} ) {
-        if (exists $repo_tree{$inter_repo}{$src_repo}) {
+        if( defined $repo_tree{$inter_repo}{$src_repo} ) {
           # do not delete the link entirely, it helps to detect 2+ step shortcuts
-          $repo_tree{$dep_repo}{$src_repo} = -1;
+          $repo_tree{$dep_repo}{$src_repo} = [];
         }
       }
     }
@@ -241,27 +244,22 @@ print "- Finished ordering module information.\n";
 
 # repo_deps : dependency -> repository in which the dependency is used (dependent)
 # mod_repos : module -> repository in which the module is located (source) 
-foreach $dep (keys %repo_deps ) { 
-  foreach my $dep_repo (keys %{$repo_deps{$dep}}) { 
-    if( exists $mod_repos{$dep} ) { 
-      my $src_repo = $mod_repos{$dep};
-      if( $src_repo eq $dep_repo ) { 
+foreach $dep ( keys %repo_deps ) {
+  my $src_repo = $mod_repos{$dep};
+  if( $src_repo ) { # otherwise it is a 3rd party artifact
+    foreach my $dep_repo ( keys %{$repo_deps{$dep}} ) {
+      if( $src_repo eq $dep_repo ) {
+        # dependencies inside a repository are OK
         next;
       }
       if( ! exists $repo_tree{$dep_repo} ) { 
-        # $repo_tree{$dep_repo} = {};
         $repo_tree{$dep_repo} = {};
       } 
-      if( $verbose ) { 
-        $dep =~ s/^[^:]*://;
-        if( ! exists $repo_tree{$dep_repo}{$src_repo} ) {  
-          $repo_tree{$dep_repo}{$src_repo} = "$dep";
-        } else { 
-          $repo_tree{$dep_repo}{$src_repo} .= ",$dep";
-        }
-      } else { 
-        ++$repo_tree{$dep_repo}{$src_repo};
-      }
+      if( ! defined $repo_tree{$dep_repo}{$src_repo} ) { 
+        $repo_tree{$dep_repo}{$src_repo} = [];
+      } 
+      $dep =~ s/^[^:]*://;
+      push( @{ $repo_tree{$dep_repo}{$src_repo} }, $dep );
     }
   }
 }
@@ -278,8 +276,10 @@ show( "\nDependent-on tree: \n" );
 foreach $repo (sort @repo_list) {
   show( "\n$repo (is dependent on): \n" );
   foreach my $leaf_repo (sort keys %{$repo_tree{$repo}} ) {
-    if( $repo_tree{$repo}{$leaf_repo} > 0 ) { 
-      show( "- $leaf_repo ($repo_tree{$repo}{$leaf_repo})\n" );
+    @deps = @{ $repo_tree{$repo}{$leaf_repo} };
+    if( scalar @deps > 0 ) {
+      $deps_str = $verbose ? join( ',', @deps ) : scalar @deps;
+      show( "- $leaf_repo ($deps_str)\n" );
     }
     if( ! exists $build_tree{$leaf_repo} ) { 
       $build_tree{$leaf_repo} = {};
@@ -306,7 +306,7 @@ if( $create_dot_file ) {
   foreach $repo (keys %repo_tree) {
     $dot .= sprintf("  %s;\n", $repo =~ s/-/_/gr);
     foreach my $leaf_repo (keys %{$repo_tree{$repo}}) {
-      if ($repo_tree{$repo}{$leaf_repo} > 0) {
+      if ( scalar @{ $repo_tree{$repo}{$leaf_repo} } > 0) {
         $dot .= sprintf("  %s -> %s;\n", $repo =~ s/-/_/gr, $leaf_repo =~ s/-/_/gr, $style);
       }
     }
