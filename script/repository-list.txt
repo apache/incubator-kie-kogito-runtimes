@@ -17,4 +17,3 @@ dashboard-builder
 optaplanner-wb
 jbpm-dashboard
 kie-wb-distributions
-fuse-bxms-integ

@@ -28,8 +28,8 @@ startDateTime=`date +%s`
 # Committers on blessed gitUrlPrefix="git@github.com:droolsjbpm/"
 # Anonymous users on blessed gitUrlPrefix="git://github.com/droolsjbpm/"
 cd "${scriptDir}"
-droolsjbpmGitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
-droolsjbpmGitUrlPrefix=`echo ${droolsjbpmGitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git.*//g'`
+gitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
+gitUrlPrefix=`echo ${gitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git.*//g'`
 
 cd "$droolsjbpmOrganizationDir"
 
@@ -47,11 +47,6 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
         echo "==============================================================================="
         echo "Repository: $repository"
         echo "==============================================================================="
-        gitUrlPrefix=${droolsjbpmGitUrlPrefix}
-        if [ "${repository}" == "fuse-bxms-integ" ]; then
-            # prefix is different for fuse-bxms-integ repo as it is under jboss-integration org. unit
-            gitUrlPrefix=`echo ${droolsjbpmGitUrlPrefix} | sed 's/droolsjbpm/jboss\-integration/g'`
-        fi
         echo -- prefix ${gitUrlPrefix} --
         echo -- repository ${repository} --
         echo -- ${gitUrlPrefix}${repository}.git -- ${repository} --
