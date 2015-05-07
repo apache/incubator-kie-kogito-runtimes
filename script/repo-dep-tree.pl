@@ -65,6 +65,8 @@ my (%repo_mods, %repo_deps, %mod_repos, %repo_tree, %repo_sorted);
 my (@repo_list, @repo_sorted);
 my ($repo, $dep, $branch_version);
 my ($module, $xml, $data);
+my @build_chain; # required repositories are stored here by build() subroutine
+my %blocked = {}; # helper for resolving build chain
 
 # subs
 
@@ -157,25 +159,39 @@ sub onlyLookAtPoms {
   return @filesToProcess;
 }
 
-sub prerequisites {
+sub build {
   my $target = shift();
+  $blocked{$target} = 0;
   if( exists $repo_tree{$target} ) {
     # traverse the graph recursively
-    foreach my $child ( keys %{$repo_tree{$target}} ) {
-      if( defined ${repo_tree}{$target}{$child} ) {
+    foreach my $child ( sort keys %{$repo_tree{$target}} ) {
+      if( scalar @{ ${repo_tree}{$target}{$child} } > 0 ) { # is direct dependency
         if( $verbose ) {
           printf( "%s -> %s\n", $target, $child );
         }
-        if ( $child eq $opt_t ) {
-          print "CYCLE DETECTED!\n";
-          print "Re-run in verbose mode to see the chain of dependencies that create the cycle.\n";
-          last;
+        if ( exists ${blocked}{$child} && ${blocked}{$child} == 0 ) {
+          # is already built
+          next;
         }
-        prerequisites($child);
+        ++$blocked{$target};
+        if( ${blocked}{$child} > 0 ) {
+          print "CYCLE DETECTED!\n";
+          next;
+        }
+        build( $child );
+        if( ${blocked}{$child} == 0 ) {
+          --$blocked{$target};
+        }
       }
     }
   }
-  push( @prereq_list, $target);
+
+  if ( $blocked{$target} == 0 ) {
+    # either no deps or all direct deps built => append this target to build chain
+    push( @build_chain, $target);
+  } else {
+    print "Blocked repo: $target\n";
+  }
 }
 
 sub filterTransitiveDependencies { 
@@ -322,16 +338,17 @@ if( $create_dot_file ) {
 }
 
 # Print the list of repositories required to be built before building target repository.
-
-@prereq_list; # required repositories are stored here by prerequisites subroutine
-
 if ( $opt_t ) {
   # filter transitive deps before building prerequisites list, regardles of -f flag
   filterTransitiveDependencies();
-  prerequisites( $opt_t );
-  # home made uniq
-  my @unique = do { my %seen; grep { !$seen{$_}++ } @prereq_list };
+
+  build( $opt_t );
+
+  if( $blocked{$opt_t} > 0 ) {
+    print "Repository '$opt_t' cannot be built in a non-snapshot version!\n";
+    if( ! $verbose ) { print "Re-run in verbose mode to see the cause.\n"; }
+  }
   print "\nYou need to build following repositories before building '$opt_t' (in order):\n";
-  print join( ',', @unique ) . "\n";
+  print join( ',', @build_chain ), "\n";
 }
 
