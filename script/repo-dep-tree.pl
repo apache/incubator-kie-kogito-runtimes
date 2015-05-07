@@ -45,8 +45,8 @@ if( $opt_d ) {
 if( $opt_h ) { 
   print "\n";
   print " h ........ print [h]elp (this)\n";
-  print " d ........ create [d]ot file\n";
-  print " f ........ [f]ilter transitive dependencies\n";
+  print " d ........ create [d]ot file (implies -f)\n";
+  print " f ........ [f]ilter transitive dependencies (not compatible with -t)\n";
   print " w ........ [w]arn instead of dying on invalid module versions\n";
   print " v ........ [v]erbose: show which modules are referenced\n";
   print " t <repo> . print the repositories that should be built before the [t]arget repository\n";
@@ -161,13 +161,14 @@ sub onlyLookAtPoms {
 
 sub build {
   my $target = shift();
+  my $depth = shift();
   $blocked{$target} = 0;
   if( exists $repo_tree{$target} ) {
     # traverse the graph recursively
     foreach my $child ( sort keys %{$repo_tree{$target}} ) {
       if( scalar @{ ${repo_tree}{$target}{$child} } > 0 ) { # is direct dependency
         if( $verbose ) {
-          printf( "%s -> %s\n", $target, $child );
+          printf( "%s%s -> %s\n", "- " x $depth, $target, $child );
         }
         if ( exists ${blocked}{$child} && ${blocked}{$child} == 0 ) {
           # is already built
@@ -175,10 +176,12 @@ sub build {
         }
         ++$blocked{$target};
         if( ${blocked}{$child} > 0 ) {
-          print "CYCLE DETECTED!\n";
+          if( $verbose ) {
+            print "CYCLE DETECTED!\n";
+          }
           next;
         }
-        build( $child );
+        build( $child, $depth + 1 );
         if( ${blocked}{$child} == 0 ) {
           --$blocked{$target};
         }
@@ -189,6 +192,7 @@ sub build {
   if ( $blocked{$target} == 0 ) {
     # either no deps or all direct deps built => append this target to build chain
     push( @build_chain, $target);
+    if( $verbose ) { print "Building: $target\n"; }
   } else {
     print "Blocked repo: $target\n";
   }
@@ -332,20 +336,20 @@ if( $create_dot_file ) {
   
   # Write it to a file. The graph image can be produced simply by running
   # $ dot -O -Tpng dep-tree.dot
-  open(my $dotfile, ">", "./dep-tree.dot") or die "Can't open dep-tree.dot: $!";
+  my $filename = "dep-tree.dot";
+  open(my $dotfile, ">", $filename) or die "Can't open dep-tree.dot: $!";
   print $dotfile $dot;
   close $dotfile or die "$dotfile: $!";
+  printf "\nGraph written to '%s'.\n", abs_path( $filename );
+  print "Run 'dot -O -Tpng $filename' to render PNG image.\n";
 }
 
 # Print the list of repositories required to be built before building target repository.
 if ( $opt_t ) {
-  # filter transitive deps before building prerequisites list, regardles of -f flag
-  filterTransitiveDependencies();
-
-  build( $opt_t );
+  build( $opt_t, 0 );
 
   if( $blocked{$opt_t} > 0 ) {
-    print "Repository '$opt_t' cannot be built in a non-snapshot version!\n";
+    print "\nRepository '$opt_t' cannot be built in a non-snapshot version due to circular dependencies!\n";
     if( ! $verbose ) { print "Re-run in verbose mode to see the cause.\n"; }
   }
   print "\nYou need to build following repositories before building '$opt_t' (in order):\n";
