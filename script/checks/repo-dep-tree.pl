@@ -13,6 +13,8 @@
       # if yes, 
         # add relationship: this-repo -> dep-repo (list: dep)
 
+use warnings;
+
 use Getopt::Std;
 use Cwd             qw(abs_path);
 use File::Basename  qw( dirname);
@@ -20,29 +22,32 @@ use File::Find;
 use XML::Simple;
 use Data::Dumper;
 
-getopts('hdfwvt:');
+my %opts;
+getopts( 'hdfwvt:', \%opts );
 
 my $print_deps = 1;
-if( $opt_t ) { 
+my $build_target;
+if( exists $opts{t} ) {
   --$print_deps;
+  $build_target = $opts{t};
 }
 
 my $verbose = 0;
-if( $opt_v ) { 
+if( exists $opts{v} ) {
   ++$verbose;
 }
 
 my $filter_transitive = 0;
-if( $opt_f ) { 
+if( exists $opts{f} ) {
   ++$filter_transitive;
 }
 
 my $create_dot_file = 0;
-if( $opt_d ) { 
+if( exists $opts{d} ) {
   ++$create_dot_file;
 }
 
-if( $opt_h ) { 
+if( exists $opts{h} ) {
   print "\n";
   print " h ........ print [h]elp (this)\n";
   print " d ........ create [d]ot file (implies -f)\n";
@@ -54,7 +59,7 @@ if( $opt_h ) {
 }
 
 my $warn = 0;
-if( $opt_w ) { 
+if( exists $opts{w} ) {
   ++$warn;
 }
 
@@ -63,10 +68,10 @@ if( $opt_w ) {
 my $repo_file = "../repository-list.txt";
 my (%repo_mods, %repo_deps, %mod_repos, %repo_tree, %repo_sorted);
 my (@repo_list, @repo_sorted);
-my ($repo, $dep, $branch_version);
+my ($dep, $branch_version);
 my ($module, $xml, $data);
 my @build_chain; # required repositories are stored here by build() subroutine
-my %blocked = {}; # helper for resolving build chain
+my %blocked = (); # helper for resolving build chain
 
 # subs
 
@@ -119,14 +124,14 @@ sub getModule() {
   my $repo = shift();
 
   my $groupId = $xml_data->{'groupId'};
-  if( $groupId eq "" ) { 
+  if( ! defined $groupId ) {
     $groupId = $xml_data->{'parent'}->{'groupId'};
   }
   my $module = "$groupId:$xml_data->{'artifactId'}";
 
   # check version 
   my $version = $xml_data->{'version'};
-  if( $version eq "" ) { 
+  if( ! defined $version ) {
     $version = $xml_data->{'parent'}->{'version'};
   }
   if( ! defined $branch_version ) { 
@@ -170,12 +175,12 @@ sub build {
         if( $verbose ) {
           printf( "%s%s -> %s\n", "- " x $depth, $target, $child );
         }
-        if ( exists ${blocked}{$child} && ${blocked}{$child} == 0 ) {
+        if( exists ${blocked}{$child} && ${blocked}{$child} == 0 ) {
           # is already built
           next;
         }
         ++$blocked{$target};
-        if( ${blocked}{$child} > 0 ) {
+        if( exists ${blocked}{$child} && ${blocked}{$child} > 0 ) {
           if( $verbose ) {
             print "CYCLE DETECTED!\n";
           }
@@ -234,9 +239,8 @@ my $script_home_dir = dirname(abs_path($0));
 chdir "$script_home_dir/../../../";
 my $root_dir = Cwd::getcwd();
 
-my $repo;
 for my $i (0 .. $#repo_list ) { 
-  $repo = $repo_list[$i]; 
+  my $repo = $repo_list[$i];
 
   if( ! -d $repo ) { 
     die "Could not find directory for repository '$repo' at $root_dir!\n";
@@ -327,7 +331,7 @@ if( $create_dot_file ) {
     $dot .= sprintf("  %s;\n", $repo =~ s/-/_/gr);
     foreach my $leaf_repo (keys %{$repo_tree{$repo}}) {
       if ( scalar @{ $repo_tree{$repo}{$leaf_repo} } > 0) {
-        $dot .= sprintf("  %s -> %s;\n", $repo =~ s/-/_/gr, $leaf_repo =~ s/-/_/gr, $style);
+        $dot .= sprintf( "  %s -> %s;\n", $repo =~ s/-/_/gr, $leaf_repo =~ s/-/_/gr );
       }
     }
     $dot .= "\n";
@@ -345,14 +349,13 @@ if( $create_dot_file ) {
 }
 
 # Print the list of repositories required to be built before building target repository.
-if ( $opt_t ) {
-  build( $opt_t, 0 );
+if ( defined $build_target ) {
+  build( $build_target, 0 );
 
-  if( $blocked{$opt_t} > 0 ) {
-    print "\nRepository '$opt_t' cannot be built in a non-snapshot version due to circular dependencies!\n";
+  if( $blocked{$build_target} > 0 ) {
+    print "\nRepository '$build_target' cannot be built in a non-snapshot version due to circular dependencies!\n";
     if( ! $verbose ) { print "Re-run in verbose mode to see the cause.\n"; }
   }
-  print "\nYou need to build following repositories before building '$opt_t' (in order):\n";
+  print "\nYou need to build following repositories before building '$build_target' (in order):\n";
   print join( ',', @build_chain ), "\n";
 }
-
