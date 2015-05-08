@@ -8,7 +8,7 @@ use strict;
 use warnings;
 
 my $home = abs_path($0);
-$home =~ s#/[\w-]+/[\w-]+/[\w+\.]+$##;
+$home =~ s#/[\w-]+/[\w-]+/[\w-]+/[\w+\.]+$##;
 
 my $git = "/usr/bin/git";
 if( ! -e $git ) { 

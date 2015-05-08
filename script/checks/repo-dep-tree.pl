@@ -60,7 +60,7 @@ if( $opt_w ) {
 
 # variables
 
-my $repo_file = "./repository-list.txt";
+my $repo_file = "../repository-list.txt";
 my (%repo_mods, %repo_deps, %mod_repos, %repo_tree, %repo_sorted);
 my (@repo_list, @repo_sorted);
 my ($repo, $dep, $branch_version);
@@ -231,7 +231,7 @@ while(<LIST>) {
 push( @repo_list, "uberfire" );
 
 my $script_home_dir = dirname(abs_path($0));
-chdir "$script_home_dir/../../";
+chdir "$script_home_dir/../../../";
 my $root_dir = Cwd::getcwd();
 
 my $repo;
