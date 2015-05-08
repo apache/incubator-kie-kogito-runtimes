@@ -13,6 +13,7 @@
       # if yes, 
         # add relationship: this-repo -> dep-repo (list: dep)
 
+use strict;
 use warnings;
 
 use Getopt::Std;
@@ -138,7 +139,7 @@ sub getModule() {
     $branch_version = $version;
   } elsif( $groupId !~ /^org.uberfire/ ) { 
     if( $branch_version ne $version ) { 
-      $msg = "Incorrect version ($version) for $module in $repo\n";
+      my $msg = "Incorrect version ($version) for $module in $repo\n";
       if( $warn ) { 
         print $msg;
       } else {
@@ -207,7 +208,7 @@ sub filterTransitiveDependencies {
   # Remove shortcut dependencies, 
   # i.e. remove each dependency A->C if path A->B->C exists.
   
-  foreach $dep_repo (keys %repo_tree) {
+  foreach my $dep_repo (keys %repo_tree) {
     foreach my $src_repo (keys %{$repo_tree{$dep_repo}} ) {
       foreach my $inter_repo (keys %{$repo_tree{$dep_repo}} ) {
         if( defined $repo_tree{$inter_repo}{$src_repo} ) {
@@ -254,8 +255,8 @@ for my $i (0 .. $#repo_list ) {
 
 print "- Finished collecting module information.\n";
 
-foreach $repo (keys %repo_mods) { 
-  foreach $dep (keys %{$repo_mods{$repo}}) { 
+foreach my $repo (keys %repo_mods) {
+  foreach $dep (keys %{$repo_mods{$repo}}) {
     if( exists $mod_repos{$dep} ) { 
       print "The $dep module exists in both the $mod_repos{$dep} AND $repo repositories!\n";
     } else { 
@@ -297,12 +298,12 @@ if( $filter_transitive ) {
 }
 
 show( "\nDependent-on tree: \n" );
-foreach $repo (sort @repo_list) {
+foreach my $repo (sort @repo_list) {
   show( "\n$repo (is dependent on): \n" );
   foreach my $leaf_repo (sort keys %{$repo_tree{$repo}} ) {
-    @deps = @{ $repo_tree{$repo}{$leaf_repo} };
+    my @deps = @{ $repo_tree{$repo}{$leaf_repo} };
     if( scalar @deps > 0 ) {
-      $deps_str = $verbose ? join( ',', @deps ) : scalar @deps;
+      my $deps_str = $verbose ? join( ',', @deps ) : scalar @deps;
       show( "- $leaf_repo ($deps_str)\n" );
     }
     if( ! exists $build_tree{$leaf_repo} ) { 
@@ -313,7 +314,7 @@ foreach $repo (sort @repo_list) {
 }
 
 show( "\nDependencies tree: \n" );
-foreach $repo (sort keys %build_tree) {
+foreach my $repo (sort keys %build_tree) {
   show( "\n$repo (is used by): \n" );
   foreach my $leaf_repo (sort keys %{$build_tree{$repo}} ) {
     show( "- $leaf_repo\n" );
@@ -327,7 +328,7 @@ if( $create_dot_file ) {
   }
   # Transform the build graph into DOT language.
   my $dot = "digraph {\n";
-  foreach $repo (keys %repo_tree) {
+  foreach my $repo (keys %repo_tree) {
     $dot .= sprintf("  %s;\n", $repo =~ s/-/_/gr);
     foreach my $leaf_repo (keys %{$repo_tree{$repo}}) {
       if ( scalar @{ $repo_tree{$repo}{$leaf_repo} } > 0) {
