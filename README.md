@@ -766,7 +766,7 @@ Configuring Eclipse
 
         ```
         /*
-         * Copyright 2011 JBoss Inc
+         * Copyright 2015 JBoss Inc
          *
          * Licensed under the Apache License, Version 2.0 (the "License");
          * you may not use this file except in compliance with the License.
@@ -786,7 +786,7 @@ Configuring Eclipse
 
     * Note: Do not start with `/**`: it is not a valid javadoc.
 
-    * Update the year (2011) every year.
+    * Update the year (2015) every year.
 
 Extra Eclipse plugins
 ---------------------
