@@ -35,6 +35,7 @@
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
     <version.de.benediktmeurer.gwt-slf4j>0.0.2</version.de.benediktmeurer.gwt-slf4j>
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
+    <version.net.jcip>1.0</version.net.jcip>
     <version.org.apache.lucene>4.0.0</version.org.apache.lucene>
     <version.org.apache.xmlgraphics.batik>1.6-1</version.org.apache.xmlgraphics.batik>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
@@ -713,6 +714,12 @@
       </dependency>
 
       <dependency>
+        <groupId>net.jcip</groupId>
+        <artifactId>jcip-annotations</artifactId>
+        <version>${version.net.jcip}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-embedded</artifactId>
         <version>${version.org.mortbay.jetty}</version>
@@ -872,7 +879,6 @@
         <version>${version.org.jboss.as}</version>
         <scope>test</scope>
       </dependency>
-
 
       <!-- Dependency of maven 3.2.2  -->
       <dependency>
