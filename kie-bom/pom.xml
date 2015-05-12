@@ -372,6 +372,12 @@
         <artifactId>kie-wb-common-data-modeller-core</artifactId>
         <version>${version.org.guvnor}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-data-modeller-core</artifactId>
+        <classifier>tests</classifier>
+        <version>${version.org.guvnor}</version>
+      </dependency>
 
       <!--Kie Workbench - Common Widgets -->
       <dependency>

@@ -1154,6 +1154,20 @@
         <version>${version.com.allen-sauer.gwt.dnd}</version>
       </dependency>
 
+
+      <!-- this override should be removed when pull request on integration platform bom is performed -->
+      <dependency>
+        <groupId>org.jboss.forge.roaster</groupId>
+        <artifactId>roaster-api</artifactId>
+        <version>2.13.0.Final</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.forge.roaster</groupId>
+        <artifactId>roaster-jdt</artifactId>
+        <version>2.13.0.Final</version>
+      </dependency>
+
     </dependencies>
 
   </dependencyManagement>
