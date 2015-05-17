@@ -79,7 +79,7 @@
     <version.org.eclipse.tycho>0.22.0</version.org.eclipse.tycho>
     <!-- Used by maven-enforcer-plugin -->
     <jdk.min.version>1.6.0</jdk.min.version>
-    <maven.min.version>3.0.5</maven.min.version>
+    <maven.min.version>3.2.3</maven.min.version>
     <!-- enabling the next line will do that the build will not break when an illegal transitive dependency is found,
          the default is: the next line commented -->
     <!-- <illegaltransitivereportonly>true</illegaltransitivereportonly> -->
