@@ -382,7 +382,7 @@
           <version>2.1.2</version>
           <executions>
             <execution>
-              <id>jar</id>
+              <id>attach-sources</id>
               <goals>
                 <goal>jar-no-fork</goal>
               </goals>
