@@ -121,6 +121,19 @@ sub gbrh() {
   return @branches;
 }
 
+
+sub call { 
+  my $cmd = $_[0];
+  my $fail_ok = $_[1];
+  if( ! $_[1] ) { 
+    $fail_ok = 0;
+  }
+  system($cmd);
+  if( $? != 0 && ! $fail_ok ) { 
+    die "Unable to call '$cmd': $?\n\n";
+  }
+}
+
 __DATA__
 drools:origin
 jbpm:origin
