@@ -812,7 +812,26 @@
       <dependency>
         <groupId>org.drools</groupId><!-- TODO this groupId doesn't seem right -->
         <artifactId>jbpm-simulation</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.jbpm}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId><!-- TODO this groupId doesn't seem right -->
+        <artifactId>jbpm-simulation</artifactId>
+        <version>${version.org.jbpm}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <!-- jbpm-process-svg -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>jbpm-process-svg</artifactId>
+        <version>${version.org.jbpm}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>jbpm-process-svg</artifactId>
+        <version>${version.org.jbpm}</version>
+        <classifier>sources</classifier>
       </dependency>
 
       <!-- droolsjbpm-tools -->
