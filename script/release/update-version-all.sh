@@ -19,24 +19,39 @@ initializeWorkingDirAndScriptDir() {
     # Set script directory and remove other symbolic links (parent directory links)
     scriptDir=`pwd -P`
 }
+
+
+updateParentVersion() {
+    mvn -B -N -s $scriptDir/update-version-all-settings.xml versions:update-parent -Dfull\
+     -DparentVersion=[$newVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
+}
+
+updateChildModulesVersion() {
+    mvn -B -s $scriptDir/update-version-all-settings.xml versions:update-child-modules -Dfull\
+     -DallowSnapshots=true -DgenerateBackupPoms=false
+}
+
+# Updates parent version and child modules versions for Maven project in current working dir
+updateParentAndChildVersions() {
+    updateParentVersion
+    updateChildModulesVersion
+}
+
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 
-if [ $# != 2 ]; then
+if [ $# != 1 ]; then
     echo
     echo "Usage:"
-    echo "  $0 releaseOldVersion releaseNewVersion"
+    echo "  $0 releaseNewVersion"
     echo "For example:"
-    echo "  $0 6.2.0-SNAPSHOT 6.2.0.Final"
+    echo "  $0 6.3.0.Final"
     echo
     exit 1
 fi
-releaseOldVersion=$1
-releaseNewVersion=$2
-echo "The drools, guvnor, jbpm, optaplanner, kie version: old is $releaseOldVersion - new is $releaseNewVersion"
 
-echo -n "Is this ok? (Hit control-c if is not): "
-read ok
+newVersion=$1
+echo "New version is $newVersion"
 
 startDateTime=`date +%s`
 
@@ -54,59 +69,49 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
+        if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
+            mvn -Dfull versions:set -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
+            sed -i "s/<version\.org\.kie>.*<\/version.org.kie>/<version.org.kie>$newVersion<\/version.org.kie>/" pom.xml
+            # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
+            mvn clean install -DskipTests
+            returnCode=$?
 
-        # WARNING: Requires a fix for http://jira.codehaus.org/browse/MRELEASE-699 to work!
-        # ge0ffrey has 2.2.2-SNAPSHOT build locally, patched with MRELEASE-699
-        if [ $repository != 'droolsjbpm-tools' ]; then
-            if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
-                mvn -Dfull versions:set -DoldVersion=$releaseOldVersion -DnewVersion=$releaseNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
-                # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
-                mvn clean install -DskipTests
-            elif [ $repository == 'jbpm' ]; then
-                mvn -Dfull versions:set -DoldVersion=$releaseOldVersion -DnewVersion=$releaseNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
-                mvn -Dfull versions:update-parent -DparentVersion=[$releaseNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
-                mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
-            elif [ $repository == 'jbpm-console-ng' ]; then
-                mvn -Dfull versions:set -DoldVersion=$releaseOldVersion -DnewVersion=$releaseNewVersion -DallowSnapshots=true -DgenerateBackupPoms=false
-                mvn -Dfull versions:update-parent -DparentVersion=[$releaseNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
-                mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
-            else
-                mvn -Dfull versions:update-parent -DparentVersion=[$releaseNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
-                mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
-            fi
+        elif [ $repository = 'jbpm' ]; then
+            updateParentAndChildVersions
             returnCode=$?
-        else
+            sed -i "s/release.version=.*$/release.version=$newVersion/" jbpm-installer/build.properties
+
+        elif [ $repository = 'droolsjbpm-tools' ]; then
             cd drools-eclipse
-            mvn -Dfull tycho-versions:set-version -DnewVersion=$releaseNewVersion
+            mvn -Dfull tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
+            # replace the leftovers not covered by the tycho plugin (bug?)
+            sed -i "s/source_[^\"]*/source_$newVersion/g" org.drools.updatesite/category.xml
+            sed -i "s/version=\"[0-9\.]*qualifier\"/version=\"$newVersion\"/g" org.drools.updatesite/category.xml
             cd ..
             if [ $returnCode == 0 ]; then
-                mvn -Dfull versions:update-parent -N -DparentVersion=[$releaseNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
-                # TODO remove this WORKAROUND for http://jira.codehaus.org/browse/MVERSIONS-161
+                updateParentVersion
+                # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
                 mvn clean install -N -DskipTests
                 cd drools-eclipse
-                mvn -Dfull versions:update-parent -N -DparentVersion=[$releaseNewVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
+                updateParentVersion
                 cd ..
-                mvn -Dfull versions:update-child-modules -DallowSnapshots=true -DgenerateBackupPoms=false
+                updateChildModulesVersion
                 returnCode=$?
             fi
-            # TODO drools-ant, drools-eclipse, droolsjbpm-tools-distribution
+
+        else
+            updateParentAndChildVersions
+            returnCode=$?
         fi
 
-        cd ..
         if [ $returnCode != 0 ] ; then
             exit $returnCode
         fi
+
+        cd ..
     fi
 done
-
-cd droolsjbpm-build-distribution
-mvn antrun:run -N -DdroolsOldVersion=$releaseOldVersion -DdroolsNewVersion=$releaseNewVersion -DjbpmOldVersion=$releaseOldVersion -DjbpmNewVersion=$releaseNewVersion
-returnCode=$?
-cd ..
-if [ $returnCode != 0 ] ; then
-    exit $returnCode
-fi
 
 endDateTime=`date +%s`
 spentSeconds=`expr $endDateTime - $startDateTime`
