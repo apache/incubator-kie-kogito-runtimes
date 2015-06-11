@@ -328,18 +328,6 @@
       <!-- droolsjbpm-integration -->
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-camel-server-example</artifactId>
-        <type>war</type>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-camel-server-example</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
         <artifactId>drools-simulator</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>

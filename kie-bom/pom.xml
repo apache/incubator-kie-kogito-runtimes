@@ -350,17 +350,6 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-camel</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-camel</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
         <artifactId>kie-aries-blueprint</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
