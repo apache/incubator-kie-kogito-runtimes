@@ -46,6 +46,7 @@
     <version.org.assertj>1.7.1</version.org.assertj>
     <version.org.eclipse.jetty>8.1.14.v20131031</version.org.eclipse.jetty>
     <version.org.eclipse.jgit>3.7.1.201504261725-r</version.org.eclipse.jgit>
+    <version.org.jbpm.jbpm5.jbpmmigration>0.14</version.org.jbpm.jbpm5.jbpmmigration>
     <version.org.jolokia>1.2.2</version.org.jolokia>
 
     <version.org.mvel>2.2.5.Final</version.org.mvel>
@@ -597,6 +598,11 @@
         <version>${version.org.owasp.encoder}</version>
       </dependency>
 
+      <dependency><!-- Not part of the KIE release lifecycle, so it counts as an external dependency -->
+        <groupId>org.jbpm.jbpm5</groupId>
+        <artifactId>jbpmmigration</artifactId>
+        <version>${version.org.jbpm.jbpm5.jbpmmigration}</version>
+      </dependency>
 
       <!-- Errai (needed for Guice exclusion) -->
       <dependency>
