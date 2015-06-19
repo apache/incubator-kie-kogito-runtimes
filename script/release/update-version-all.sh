@@ -70,10 +70,10 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         cd $repository
         if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
-            mvn -Dfull versions:set -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
+            mvn -B -Dfull versions:set -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
             sed -i "s/<version\.org\.kie>.*<\/version.org.kie>/<version.org.kie>$newVersion<\/version.org.kie>/" pom.xml
             # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
-            mvn clean install -DskipTests
+            mvn -B clean install -DskipTests
             returnCode=$?
 
         elif [ $repository = 'jbpm' ]; then
@@ -83,7 +83,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 
         elif [ $repository = 'droolsjbpm-tools' ]; then
             cd drools-eclipse
-            mvn -Dfull tycho-versions:set-version -DnewVersion=$newVersion
+            mvn -B -Dfull tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
             # replace the leftovers not covered by the tycho plugin (bug?)
             sed -i "s/source_[^\"]*/source_$newVersion/g" org.drools.updatesite/category.xml
@@ -92,7 +92,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             if [ $returnCode == 0 ]; then
                 updateParentVersion
                 # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
-                mvn clean install -N -DskipTests
+                mvn -B clean install -N -DskipTests
                 cd drools-eclipse
                 updateParentVersion
                 cd ..
