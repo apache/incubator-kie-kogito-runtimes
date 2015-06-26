@@ -17,3 +17,4 @@ optaplanner-wb
 jbpm-dashboard
 kie-wb-distributions
 droolsjbpm-build-distribution
+kie-eap-modules
