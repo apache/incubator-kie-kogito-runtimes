@@ -289,6 +289,12 @@
       </dependency>
 
       <dependency>
+        <groupId>link.bek.tools</groupId>
+        <artifactId>issue-keeper-junit</artifactId>
+        <version>${version.link.bek.tools.issue-keeper-junit}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-bindings-xml</artifactId>
         <version>${version.org.apache.cxf}</version>
