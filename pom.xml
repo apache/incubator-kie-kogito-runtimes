@@ -173,6 +173,10 @@
     <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overriden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
+
+    <!-- Remove hibermate-jpamodelgen prop when we move to jboss-integration-platform-bom 6.0.0.CR27+ -->
+    <!-- When we move to hibernate 4.3+: version.org.hibernate.jpamodelgen should be removed and version.org.hibernate used instead  -->
+    <version.org.hibernate.jpamodelgen>1.3.0.Final</version.org.hibernate.jpamodelgen>
   </properties>
 
   <repositories>

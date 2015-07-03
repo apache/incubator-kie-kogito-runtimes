@@ -1119,6 +1119,13 @@
         <version>2.13.0.Final</version>
       </dependency>
 
+      <!-- Remove hibermate-jpamodelgen 
+           when we move to jboss-integration-platform-bom 6.0.0.CR27+ -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-jpamodelgen</artifactId>
+        <version>${version.org.hibernate.jpamodelgen}</version>
+      </dependency>
     </dependencies>
 
   </dependencyManagement>
