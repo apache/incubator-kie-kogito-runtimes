@@ -257,10 +257,27 @@
       </dependency>
 
       <dependency>
+        <groupId>com.android</groupId>
+        <artifactId>dx</artifactId>
+        <version>${version.com.android-dx}</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.github.tomakehurst</groupId>
         <artifactId>wiremock</artifactId>
         <classifier>standalone</classifier>
         <version>${version.com.github.tomakehurst.wiremock}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.android</groupId>
+        <artifactId>android</artifactId>
+        <version>${version.com.google.android}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.android</groupId>
+        <artifactId>android-test</artifactId>
+        <version>${version.com.google.android}</version>
       </dependency>
 
       <dependency>
@@ -676,6 +693,27 @@
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
         <version>0.9.9-RC1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.roboguice</groupId>
+        <artifactId>roboguice</artifactId>
+        <version>${version.org.roboguice}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.roboguice</groupId>
+        <artifactId>roboblender</artifactId>
+        <version>${version.org.roboguice}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.robolectric</groupId>
+        <artifactId>robolectric</artifactId>
+        <version>${version.org.robolectric}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.robolectric</groupId>
+        <artifactId>robolectric-annotations</artifactId>
+        <version>${version.org.robolectric}</version>
       </dependency>
 
       <dependency>

@@ -273,6 +273,12 @@
         <version>${version.org.drools}</version>
       </dependency>
       <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>multiple-kbases</artifactId>
+        <version>${version.org.drools}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.kie</groupId>
         <!-- Does this belong in the kie-bom or in the drools-bom ? -->
         <artifactId>kie-ci</artifactId>
@@ -377,6 +383,18 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-karaf-itests</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-android</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-android</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>sources</classifier>
       </dependency>
 
       <dependency>
