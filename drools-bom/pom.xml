@@ -273,12 +273,14 @@
         <version>${version.org.drools}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie</groupId><!-- Does this belong in the kie-bom or in the drools-bom ? -->
+        <groupId>org.kie</groupId>
+        <!-- Does this belong in the kie-bom or in the drools-bom ? -->
         <artifactId>kie-ci</artifactId>
         <version>${version.org.drools}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie</groupId><!-- Does this belong in the kie-bom or in the drools-bom ? -->
+        <groupId>org.kie</groupId>
+        <!-- Does this belong in the kie-bom or in the drools-bom ? -->
         <artifactId>kie-ci-osgi</artifactId>
         <version>${version.org.drools}</version>
       </dependency>
@@ -364,19 +366,20 @@
         <artifactId>drools-karaf-features</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
-	  <dependency>
+      <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-karaf-features</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>features</classifier>
         <type>xml</type>
       </dependency>
-	  <dependency>
+      <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-karaf-itest</artifactId>
+        <artifactId>drools-karaf-itests</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
       </dependency>
-	  <dependency>
+
+      <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-rhq-plugin</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
