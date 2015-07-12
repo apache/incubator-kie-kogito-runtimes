@@ -155,7 +155,7 @@ Show source of reference:
     is described as "an abstract structure that describes a formal language
     precisely, i.e., a set of rules that mathematically delineates a (usually
     infinite) set of finite-length strings over a (usually finite) alphabet"
-    (<citetitle><link xlink:href="http://en.wikipedia.org/wiki/Formal_grammar">Wikipedia</ulink></citetitle>).
+    (<citetitle><link xlink:href="http://en.wikipedia.org/wiki/Formal_grammar">Wikipedia</link></citetitle>).
 </para>
 
 You can see the the effect of the above example code here:

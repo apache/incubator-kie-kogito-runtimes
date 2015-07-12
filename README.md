@@ -235,7 +235,7 @@ Working with git
             Many people get confused when a merge conflict occurs, because you're *in limbo*.
             Just fix the merge conflicts and commit (even if the git seems to contain many files),
             only then is the merge over. Then run `git log` to see what happened.
-            The many files in the merge conflict resolving commit are a side-affect of non-linear history.
+            The many files in the merge conflict resolving commit are a side effect of non-linear history.
 
 * You may delete your topic branch after your pull request is closed (first one deletes remotely, second one locally):
 
@@ -526,7 +526,7 @@ Any dependency used in any KIE project must fulfill these hard requirements:
 
     * It must be compiled for Java target 1.6 or lower (even if it's compiled with JDK 7 or JDK 8).
 
-    * It must not use any JDK API's that were not yet available in Java 1.6.
+    * It must not use any JDK APIs that were not yet available in Java 1.6.
 
 * **Do not release the dependency yourself** (by building it from source).
 
@@ -557,7 +557,7 @@ Any dependency used in any KIE project should fulfill these soft requirements:
 
 * Only use dependencies with **an active community**.
 
-    * Check for activity in the last year through [Ohloh](http://www.ohloh.net).
+    * Check for activity in the last year through [Open Hub](https://www.openhub.net).
 
 * Less is more: **less dependencies is better**. Bloat is bad.
 
@@ -1258,7 +1258,7 @@ Knowing what's going on
 
                 * If you think this can be the case, check the build times.
 
-* Join us on IRC: irc.codehaus.org #drools #jbpm #guvnor
+* Join us on IRC: chat.freenode.net #drools #jbpm #guvnor #optaplanner
 
 Writing documentation
 =====================
@@ -1507,7 +1507,7 @@ A release branch name should always end with `.x` so it looks different from a t
     # where 6.2.x is the drools and 6.2.x is the jbpm release branch name
     ```
 
-    * Note: this srcript creates a release branch, pushes it to origin and sets the upstream from local release branch to remote release branch
+    * Note: this script creates a release branch, pushes it to origin and sets the upstream from local release branch to remote release branch
 
 
 * Switch back and forth from master to the release branches for all git repositories
@@ -2004,7 +2004,7 @@ Here are the steps:
     $ ./git-all.sh push product master
 
 
-Synching the Product Repository
+Syncing the Product Repository
 ===============================
 
 **Note: This is only for 6.0.x versions!**
@@ -2031,7 +2031,7 @@ The second command above will raise an error in the Uberfire repository as the b
 
     $ ./git-all.sh fetch prod
 
-At the time of this writing, there are only 4 repositories that contain product specific branches. The fetch should only return changes, if it returns, in those 4 repositories. In case any change is picked up in any other repository or in any branch that is not the product branch, someone made a mistake and commited changes to the product repository. This has to be fixed. The 4 repositories are:
+At the time of this writing, there are only 4 repositories that contain product specific branches. The fetch should only return changes, if it returns, in those 4 repositories. In case any change is picked up in any other repository or in any branch that is not the product branch, someone made a mistake and committed changes to the product repository. This has to be fixed. The 4 repositories are:
 
 * jbpm-console-ng
 * dashboard-builder
@@ -2133,6 +2133,6 @@ FAQ
 
             * Write an article about the improvements you did! Contact us if you don't have write authorization on the blog yet.
 
-        * with [ohloh](https://www.ohloh.net/p/jboss-drools/contributors) which also has statistics
+        * with [Open Hub](https://www.openhub.net/p/jboss-drools/contributors) which also has statistics
 
         * in [the GitHub web interface](https://github.com/droolsjbpm).
