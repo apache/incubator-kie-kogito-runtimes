@@ -1127,6 +1127,19 @@
         <version>${version.com.allen-sauer.gwt.dnd}</version>
       </dependency>
 
+      <!-- temporary, should be moved to jboss-ip-bom -->
+      <dependency>
+        <groupId>org.gwtbootstrap3</groupId>
+        <artifactId>gwtbootstrap3</artifactId>
+        <version>${version.org.gwtbootstrap3}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.gwtbootstrap3</groupId>
+        <artifactId>gwtbootstrap3-extras</artifactId>
+        <version>${version.org.gwtbootstrap3}</version>
+      </dependency>
+
       <!-- selenium dependencies -->
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
