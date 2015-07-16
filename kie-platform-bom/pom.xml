@@ -322,12 +322,14 @@
         <version>${version.org.apache.cxf}</version>
       </dependency>
 
+      <!-- when merged PR #202 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.apache.helix</groupId>
         <artifactId>helix-core</artifactId>
         <version>${version.org.apache.helix}</version>
       </dependency>
 
+      <!-- when merged PR #195 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
@@ -358,6 +360,8 @@
         <artifactId>lucene-sandbox</artifactId>
         <version>${version.org.apache.lucene}</version>
       </dependency>
+
+
       <!-- dependency of org.apache.lucene:lucene-sandbox -->
       <dependency>
         <groupId>jakarta-regexp</groupId>
@@ -365,6 +369,7 @@
         <version>${version.jakarta-regexp}</version>
       </dependency>
 
+      <!-- when merged PR #197 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.apache.ws.xmlschema</groupId>
         <artifactId>xmlschema-core</artifactId>
@@ -446,6 +451,7 @@
         <version>${version.org.assertj}</version>
       </dependency>
 
+      <!-- when merged PR #198 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.eclipse.jgit</groupId>
         <artifactId>org.eclipse.jgit</artifactId>
@@ -640,6 +646,7 @@
       </dependency>
 
       <!-- GWT -->
+      <!-- when merged PR #193 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
@@ -653,13 +660,13 @@
         <artifactId>jetty</artifactId>
         <version>${version.org.mortbay.jetty}</version>
       </dependency>
-
+      <!-- when merged PR #192 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-dev</artifactId>
         <version>${version.com.google.gwt}</version>
       </dependency>
-
+      <!-- when merged PR #192 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
@@ -723,6 +730,7 @@
       </dependency>
 
       <!-- kie-ci -->
+      <!-- when merged PR #196 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
@@ -888,6 +896,7 @@
         </exclusions>
       </dependency>
 
+      <!-- when merged PR #201 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-container-karaf</artifactId>
@@ -923,6 +932,7 @@
         <artifactId>pax-exam-invoker-junit</artifactId>
         <version>${version.org.ops4j.pax.exam}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-atinject_1.0_spec</artifactId>
@@ -1109,6 +1119,7 @@
       </dependency>
 
       <!-- if upgraded jboss.xnio version in jboss-ip-bom to 3.2.0.Final this can be removed -->
+      <!-- when merged PR #200 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.jboss.xnio</groupId>
         <artifactId>xnio-api</artifactId>
@@ -1146,11 +1157,13 @@
         <artifactId>selenium-java</artifactId>
         <version>${version.org.seleniumhq.selenium}</version>
       </dependency>
+      <!-- when merged PR #194 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
         <version>${version.org.apache.commons.commons-exec}</version>
       </dependency>
+
       <dependency>
         <groupId>com.github.detro</groupId>
         <artifactId>phantomjsdriver</artifactId>
@@ -1158,12 +1171,13 @@
       </dependency>
 
       <!-- this override should be removed when pull request on integration platform bom is performed -->
+      <!-- when merged PR #199 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.jboss.forge.roaster</groupId>
         <artifactId>roaster-api</artifactId>
         <version>2.13.0.Final</version>
       </dependency>
-
+      <!-- when merged PR #199 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.jboss.forge.roaster</groupId>
         <artifactId>roaster-jdt</artifactId>
