@@ -329,7 +329,6 @@
         <version>${version.org.apache.helix}</version>
       </dependency>
 
-      <!-- when merged PR #195 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
