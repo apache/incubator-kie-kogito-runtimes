@@ -646,7 +646,6 @@
       </dependency>
 
       <!-- GWT -->
-      <!-- when merged PR #193 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
@@ -660,13 +659,11 @@
         <artifactId>jetty</artifactId>
         <version>${version.org.mortbay.jetty}</version>
       </dependency>
-      <!-- when merged PR #192 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-dev</artifactId>
         <version>${version.com.google.gwt}</version>
       </dependency>
-      <!-- when merged PR #192 in jboss-i-p-bom this can be removed-->
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>

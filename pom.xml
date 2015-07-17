@@ -132,17 +132,17 @@
     <version.org.robolectric>2.4</version.org.robolectric>
     <version.org.seleniumhq.selenium>2.46.0</version.org.seleniumhq.selenium>
     <version.org.simpleframework>6.0.1</version.org.simpleframework>
-
-    <!-- when merged PR #193 in jboss-i-p-bom this can be removed-->
+    <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
+    <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
     <version.com.google.gwt>2.7.0</version.com.google.gwt>
     <!-- version overwrites jboss.xnio in ip-bom, needed by WildFly Embedded (used by webapps) -->
     <!-- when merged PR #200 in jboss-i-p-bom this can be removed-->
     <version.org.jboss.xnio>3.2.0.Final</version.org.jboss.xnio>
-    <!-- when merged PR #192 in jboss-i-p-bom this can be removed-->
+    <!-- this version will overwrite jboss-ip-version 3.1.2. The version in jboss-ip-bom couldn't be upgraded as this version needs GWT 2.7.0 -->
+    <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
     <!-- temporary, should be moved to jboss-ip-bom -->
     <version.org.gwtbootstrap3>0.9.1</version.org.gwtbootstrap3>
-
     <version.javax.security.jacc>1.4</version.javax.security.jacc>
     <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
