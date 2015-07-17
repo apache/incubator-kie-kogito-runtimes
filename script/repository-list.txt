@@ -15,6 +15,7 @@ jbpm-console-ng
 dashboard-builder
 optaplanner-wb
 jbpm-dashboard
+kie-docs
 kie-wb-distributions
 droolsjbpm-build-distribution
 kie-eap-modules
