@@ -89,6 +89,12 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-query-jpa</artifactId>
+        <type>test-jar</type>
+        <version>${version.org.jbpm}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-query-jpa</artifactId>
         <version>${version.org.jbpm}</version>
         <classifier>sources</classifier>
       </dependency>
