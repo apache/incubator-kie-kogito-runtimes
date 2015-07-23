@@ -86,8 +86,6 @@
     <!-- Override from ip-bom, required by Selenium + PhantomJS driver -->
     <!-- when merged PR #194 in jboss-i-p-bom this can be removed-->
     <version.org.apache.commons.commons-exec>1.3</version.org.apache.commons.commons-exec>
-    <!-- kie-camel requires newer cxf -->
-    <version.org.apache.cxf>3.0.4</version.org.apache.cxf>
     <!-- when merged PR #202 in jboss-i-p-bom this can be removed-->
     <version.org.apache.helix>0.6.5</version.org.apache.helix>
     <!-- this version will overwrite the jboss-ip-bom version 3.6.2. the jboss-ip-bom version has to remain as the 4.0.0 breaks ModeShape nor is Lucene 4.0.0 part of the latest EAP-->
