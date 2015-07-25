@@ -132,6 +132,12 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-pmml</artifactId>
+        <version>${version.org.drools}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-verifier</artifactId>
         <version>${version.org.drools}</version>
       </dependency>
@@ -177,6 +183,17 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
+        <version>${version.org.drools}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-beliefs</artifactId>
+        <version>${version.org.drools}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-beliefs</artifactId>
         <version>${version.org.drools}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -307,6 +324,12 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-scorecards</artifactId>
         <version>${version.org.drools}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-scorecards</artifactId>
+        <version>${version.org.drools}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
