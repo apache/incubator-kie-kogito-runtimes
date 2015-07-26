@@ -798,6 +798,7 @@
             <maxmemory>512m</maxmemory>
             <author>false</author>
             <breakiterator>true</breakiterator>
+            <quiet>true</quiet>
           </configuration>
         </plugin>
         <plugin>
