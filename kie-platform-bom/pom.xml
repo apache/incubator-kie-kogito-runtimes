@@ -281,6 +281,12 @@
       </dependency>
 
       <dependency>
+        <groupId>com.sun.codemodel</groupId>
+        <artifactId>codemodel</artifactId>
+        <version>${version.com.sun.codemodel}</version>
+      </dependency>
+
+      <dependency>
         <groupId>de.benediktmeurer.gwt-slf4j</groupId>
         <artifactId>gwt-slf4j</artifactId>
         <version>${version.de.benediktmeurer.gwt-slf4j}</version>
