@@ -868,18 +868,6 @@
         <version>${version.com.github.detro}</version>
       </dependency>
 
-      <!-- this version overwrites the 2.2.11 version in jboss-ip-bom because a class in 2.2.5 is still needed for droolsjbpm-integration -->
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>${version.com.sun.xml.bind}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-xjc</artifactId>
-        <version>${version.com.sun.xml.bind}</version>
-      </dependency>
-
       <!-- Remove hibermate-jpamodelgen
            when we move to jboss-integration-platform-bom 6.0.0.CR27+ -->
       <dependency>

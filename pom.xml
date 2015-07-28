@@ -120,9 +120,6 @@
     <version.org.jboss.byteman>2.2.0.1</version.org.jboss.byteman>
     <version.org.roboguice>3.0.1</version.org.roboguice>
     <version.org.robolectric>2.4</version.org.robolectric>
-    <!-- this version overwrites the 2.2.11 version in jboss-ip-bom because a class in 2.2.5 is still needed for droolsjbpm-integration
-    "https://github.com/jboss-integration/jboss-integration-platform-bom/commit/e1059ed12405ffa224d5363a0ac967f8ae7709f1" -->
-    <version.com.sun.xml.bind>2.2.5</version.com.sun.xml.bind>
     <version.org.seleniumhq.selenium>2.46.0</version.org.seleniumhq.selenium>
     <version.org.simpleframework>6.0.1</version.org.simpleframework>
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
