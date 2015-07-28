@@ -280,6 +280,8 @@
         <version>${version.com.google.android}</version>
       </dependency>
 
+      <!-- Can be removed once https://github.com/jboss-integration/jboss-integration-platform-bom/pull/213 is merged
+           and next ip-bom released. -->
       <dependency>
         <groupId>com.sun.codemodel</groupId>
         <artifactId>codemodel</artifactId>
