@@ -483,12 +483,6 @@
         <version>${version.org.owasp.encoder}</version>
       </dependency>
 
-      <dependency><!-- Not part of the KIE release lifecycle, so it counts as an external dependency -->
-        <groupId>org.jbpm.jbpm5</groupId>
-        <artifactId>jbpmmigration</artifactId>
-        <version>${version.org.jbpm.jbpm5.jbpmmigration}</version>
-      </dependency>
-
       <!-- Errai (needed for Guice exclusion) -->
       <dependency>
         <groupId>org.jboss.errai</groupId>
@@ -635,12 +629,6 @@
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz-oracle</artifactId>
         <version>${version.org.quartz-scheduler}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.reflections</groupId>
-        <artifactId>reflections</artifactId>
-        <version>0.9.10</version>
       </dependency>
 
       <dependency>
@@ -868,13 +856,6 @@
         <version>${version.com.github.detro}</version>
       </dependency>
 
-      <!-- Remove hibermate-jpamodelgen
-           when we move to jboss-integration-platform-bom 6.0.0.CR27+ -->
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-jpamodelgen</artifactId>
-        <version>${version.org.hibernate.jpamodelgen}</version>
-      </dependency>
     </dependencies>
 
   </dependencyManagement>
