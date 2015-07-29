@@ -86,8 +86,13 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             mvn -B -Dfull tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
             # replace the leftovers not covered by the tycho plugin (bug?)
-            sed -i "s/source_[^\"]*/source_$newVersion/g" org.drools.updatesite/category.xml
-            sed -i "s/version=\"[0-9\.]*qualifier\"/version=\"$newVersion\"/g" org.drools.updatesite/category.xml
+            # SNAPSHOT and release versions need to be handled differently
+            versionToUse=$newVersion
+            if [[ $newVersion == *-SNAPSHOT ]]; then
+                versionToUse=`sed "s/-SNAPSHOT/.qualifier/" <<< $newVersion`
+            fi
+            sed -i "s/source_[^\"]*/source_$versionToUse/" org.drools.updatesite/category.xml
+            sed -i "s/version=\"[0-9\.]*qualifier\"/version=\"$versionToUse\"/" org.drools.updatesite/category.xml
             cd ..
             if [ $returnCode == 0 ]; then
                 updateParentVersion
