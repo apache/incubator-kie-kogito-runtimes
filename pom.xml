@@ -164,9 +164,6 @@
     <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overriden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
-
-    <!-- Set default argLine value to empty to prevent surefire failure when jacoco is disabled -->
-    <surefire.argLine></surefire.argLine>
   </properties>
 
   <repositories>
@@ -428,8 +425,7 @@
             <excludes>
               <exclude>**/*IntegrationTest.java</exclude>
             </excludes>
-            <!-- Append surefire.argLine property populated by JaCoCo plugin -->
-            <argLine>-Xmx1024m -XX:MaxPermSize=128m -Dfile.encoding=UTF-8 @{surefire.argLine}</argLine>
+            <argLine>-Xmx1024m -XX:MaxPermSize=128m -Dfile.encoding=UTF-8</argLine>
             <systemProperties>
               <property>
                 <name>apple.awt.UIElement</name>
@@ -1022,6 +1018,18 @@
         </property>
       </activation>
       <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <configuration>
+                <!-- Append surefire.argLine property populated by JaCoCo plugin -->
+                <argLine>-Xmx1024m -XX:MaxPermSize=128m -Dfile.encoding=UTF-8 @{surefire.argLine}</argLine>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
         <plugins>
           <plugin>
             <groupId>org.jacoco</groupId>
