@@ -589,6 +589,20 @@
           <version>2.4</version>
         </plugin>
         <plugin>
+          <groupId>org.commonjava.maven.plugins</groupId>
+          <artifactId>project-sources-maven-plugin</artifactId>
+          <version>0.3</version>
+          <executions>
+            <execution>
+              <id>project-sources-archive</id>
+              <phase>initialize</phase>
+              <goals>
+                <goal>archive</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>1.7</version>
@@ -1062,6 +1076,23 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!-- This profile needs to be triggered during releases. -->
+    <profile>
+      <id>releaseProfile</id>
+      <activation>
+        <property>
+          <name>release</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.commonjava.maven.plugins</groupId>
+            <artifactId>project-sources-maven-plugin</artifactId>
           </plugin>
         </plugins>
       </build>
