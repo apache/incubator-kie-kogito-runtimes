@@ -33,6 +33,8 @@ updateChildModulesVersion() {
 
 # Updates parent version and child modules versions for Maven project in current working dir
 updateParentAndChildVersions() {
+    # install the current version first (usually SNAPSHOT) as it is then needed later on when updating child modules
+    mvn -B clean install -N
     updateParentVersion
     updateChildModulesVersion
 }
@@ -70,6 +72,8 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         cd $repository
         if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
+            # first build&install the current version (usually SNAPSHOT) as it is needed later by other repos
+            mvn -B -Dfull clean install
             mvn -B -Dfull versions:set -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
             sed -i "s/<version\.org\.kie>.*<\/version.org.kie>/<version.org.kie>$newVersion<\/version.org.kie>/" pom.xml
             # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
@@ -95,6 +99,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             sed -i "s/version=\"[0-9\.]*qualifier\"/version=\"$versionToUse\"/" org.drools.updatesite/category.xml
             cd ..
             if [ $returnCode == 0 ]; then
+                mvn -B clean install -N
                 updateParentVersion
                 # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
                 mvn -B clean install -N -DskipTests
