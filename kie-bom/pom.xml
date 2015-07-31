@@ -289,6 +289,39 @@
         <classifier>webc</classifier>
         <type>war</type>
       </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-api</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-api</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-impl</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-impl</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-rest</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-rest</artifactId>
+        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <classifier>sources</classifier>
+      </dependency>
 
       <!-- KIE Remote WS -->
       <dependency>
