@@ -72,7 +72,7 @@
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
-
+    <version.org.eclipse.bpmn2>0.7.6-jboss</version.org.eclipse.bpmn2>
     <version.avalon-framework>4.1.4</version.avalon-framework>
     <version.com.ahome-it.lienzo-core>2.0.118-RC0</version.com.ahome-it.lienzo-core>
     <version.com.android-dx>1.10</version.com.android-dx>

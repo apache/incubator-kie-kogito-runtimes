@@ -444,6 +444,12 @@
         <artifactId>assertj-core</artifactId>
         <version>${version.org.assertj}</version>
       </dependency>
+	
+     <dependency>
+	<groupId>org.eclipse</groupId>
+	<artifactId>org.eclipse.bpmn2</artifactId>
+	<version>${version.org.eclipse.bpmn2}</version>
+     </dependency>
 
       <!-- needed by jbpm-form-modeler -->
       <dependency>
