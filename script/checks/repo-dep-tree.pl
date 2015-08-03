@@ -329,10 +329,10 @@ if( $create_dot_file ) {
   # Transform the build graph into DOT language.
   my $dot = "digraph {\n";
   foreach my $repo (keys %repo_tree) {
-    $dot .= sprintf("  %s;\n", $repo =~ s/-/_/gr);
+    $dot .= sprintf("  \"%s\";\n", $repo);
     foreach my $leaf_repo (keys %{$repo_tree{$repo}}) {
       if ( scalar @{ $repo_tree{$repo}{$leaf_repo} } > 0) {
-        $dot .= sprintf( "  %s -> %s;\n", $repo =~ s/-/_/gr, $leaf_repo =~ s/-/_/gr );
+        $dot .= sprintf( "  \"%s\" -> \"%s\" [label = %s];\n", $repo, $leaf_repo, scalar @{ $repo_tree{$repo}{$leaf_repo} } );
       }
     }
     $dot .= "\n";
