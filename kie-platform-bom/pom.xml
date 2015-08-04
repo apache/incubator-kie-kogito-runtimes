@@ -864,6 +864,11 @@
         <version>${version.com.github.detro}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.mvel</groupId>
+        <artifactId>mvel2</artifactId>
+        <version>${version.org.mvel}</version>
+      </dependency>
     </dependencies>
 
   </dependencyManagement>

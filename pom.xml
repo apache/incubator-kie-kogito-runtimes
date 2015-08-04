@@ -143,6 +143,8 @@
     <version.org.eclipse.jdt.core.compiler>4.3.1</version.org.eclipse.jdt.core.compiler>
     <!-- version overwrites resteasy in ip-bom - this upgrade has to be done in the jboss-ip-bom> -->
     <version.org.jboss.resteasy>2.3.10.Final</version.org.jboss.resteasy>
+    <!-- version overwrites mvel in ip-bom - this upgrade has to be done in the jboss-ip-bom> -->
+    <version.org.mvel>2.2.6.Final</version.org.mvel>
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
 
