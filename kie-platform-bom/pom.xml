@@ -821,8 +821,33 @@
 
       <dependency>
         <groupId>org.jboss.byteman</groupId>
-        <artifactId>byteman-bmunit</artifactId>
+        <artifactId>byteman</artifactId>
+        <scope>test</scope>
         <version>${version.org.jboss.byteman}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.byteman</groupId>
+          <artifactId>byteman-submit</artifactId>
+          <scope>test</scope>
+          <version>${version.org.jboss.byteman}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.byteman</groupId>
+          <artifactId>byteman-install</artifactId>
+          <scope>test</scope>
+          <version>${version.org.jboss.byteman}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.byteman</groupId>
+          <artifactId>byteman-bmunit</artifactId>
+          <scope>test</scope>
+          <version>${version.org.jboss.byteman}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.testng</groupId>
+                  <artifactId>testng</artifactId>
+              </exclusion>
+          </exclusions>
       </dependency>
 
       <dependency>
