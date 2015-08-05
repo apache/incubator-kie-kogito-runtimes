@@ -330,7 +330,7 @@ Installing Maven
             export PATH="$M3_HOME/bin:$PATH"
             ```
 
-    * Give more memory to maven, so it can the big projects too:
+    * Give more memory to maven, so it can build the big projects too:
 
         * Add this to your `~/.bashrc` file:
 
@@ -340,7 +340,7 @@ Installing Maven
 
 * Windows:
 
-    * Give more memory to maven, so it can the big projects too:
+    * Give more memory to maven, so it can build the big projects too:
 
         * Open menu *Configuration screen*, menu item *System*, tab *Advanced*, button *environment variables*:
 
