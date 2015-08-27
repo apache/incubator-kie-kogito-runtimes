@@ -90,6 +90,8 @@
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
     <version.org.assertj>1.7.1</version.org.assertj>
+    <!-- overwrites the version of org.jboss.xnio defined in jboss-ip-bom because needed by WildFly -->
+    <version.org.jboss.xnio>3.2.0.Final</version.org.jboss.xnio>
     <!-- overwrites the version of jroups in ip-bom because the needed artifacts don't exit it the ip-bom version -->
     <version.org.jgroups>3.2.13.Final</version.org.jgroups>
     <version.org.jolokia>1.2.2</version.org.jolokia>
