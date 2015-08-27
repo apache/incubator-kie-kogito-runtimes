@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-parent</artifactId>
     <!-- Keep in sync with property <version.org.jboss.integration-platform> -->
-    <version>6.0.0.CR27</version>
+    <version>6.0.0.CR28</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -68,7 +68,7 @@
 
     <!-- External dependency versions bom -->
     <!-- Keep in sync with <parent>'s <version> -->
-    <version.org.jboss.integration-platform>6.0.0.CR27</version.org.jboss.integration-platform>
+    <version.org.jboss.integration-platform>6.0.0.CR28</version.org.jboss.integration-platform>
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
@@ -90,8 +90,9 @@
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
     <version.org.assertj>1.7.1</version.org.assertj>
+    <!-- overwrites the version of jroups in ip-bom because the needed artifacts don't exit it the ip-bom version -->
+    <version.org.jgroups>3.2.13.Final</version.org.jgroups>
     <version.org.jolokia>1.2.2</version.org.jolokia>
-
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
@@ -109,7 +110,7 @@
     <!-- Dependency of maven 3.2.2  -->
     <version.org.sonatype.sisu.sisu-guice>3.1.0</version.org.sonatype.sisu.sisu-guice>
     <!-- Dependency of maven 3.2.2  -->
-    <version.org.jboss.errai>3.2.0-SNAPSHOT</version.org.jboss.errai>
+    <version.org.jboss.errai>3.2.1-SNAPSHOT</version.org.jboss.errai>
     <!-- Version of Errai compatible with CDI 1.0. Few artifacts in this version are used for CDI 1.0 compatible WAR distributions. -->
     <version.org.jboss.errai.cdi10-compatible>3.0.6.Final</version.org.jboss.errai.cdi10-compatible>
     <version.org.picketlink>2.6.0.Final</version.org.picketlink>
@@ -141,10 +142,6 @@
     <version.org.jboss.ironjacamar>1.0.31.Final</version.org.jboss.ironjacamar>
     <!-- jboss ip-bom has org.eclipse.jdt.core.compiler:ecj:4.4.2.redhat-1 but jbpm-form-modeler needs 4.3.1 -->
     <version.org.eclipse.jdt.core.compiler>4.3.1</version.org.eclipse.jdt.core.compiler>
-    <!-- version overwrites resteasy in ip-bom - this upgrade has to be done in the jboss-ip-bom> -->
-    <version.org.jboss.resteasy>2.3.10.Final</version.org.jboss.resteasy>
-    <!-- version overwrites mvel in ip-bom - this upgrade has to be done in the jboss-ip-bom> -->
-    <version.org.mvel>2.2.6.Final</version.org.mvel>
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
 
