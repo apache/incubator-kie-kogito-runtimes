@@ -693,6 +693,12 @@ Configuring Eclipse
 
         * Note on note: GWT i18n properties files override that and must be in `UTF-8` as specified by the GWT contract.
 
+* Recommended: import our code style
+
+    * If you don't do this, you need to set the number of spaces correctly manually.
+
+    * Use the one from `droolsjbpm-build-bootstrap/ide-configuration`
+
 * Set the correct number of spaces when pressing tab:
 
     * Warning: If you imported the `eclipse-formatter.xml` file, you don't need to set it for Java, but you do need to set it for XML anyway!
@@ -987,15 +993,13 @@ Configuring IntelliJ
 
             * For `XML Files`, add `*.rf`
 
-* Optionally import one of our code styles:
+* Recommended: import our code style
 
     * If you don't do this, you need to set the file encoding and number of spaces correctly manually.
 
-    * Choose the correct one from `droolsjbpm-build-bootstrap/ide-configuration`
+    * Use the one from `droolsjbpm-build-bootstrap/ide-configuration`
 
-        * The `droolsjbpm-knowledge` and `drools` repositories use original, not java-conventions.
-
-    * Copy to `~/.IntelliJIdea10/config/codestyles/` (on mac: `~/Library/Preferences/IntelliJIdea10/config/codestyles/`)
+    * Copy to `~/.IntelliJIdea*/config/codestyles/` (on mac: `~/Library/Preferences/IntelliJIdea*/config/codestyles/`)
 
     * Restart, open menu *File*, menu item *Settings*
 
