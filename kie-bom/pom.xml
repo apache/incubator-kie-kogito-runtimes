@@ -269,7 +269,7 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie</groupId>
+        <groupId>org.kie.server</groupId>
         <artifactId>kie-server</artifactId>
         <version>${version.org.drools.droolsjbpm-integration}</version>
         <classifier>ee6</classifier>
