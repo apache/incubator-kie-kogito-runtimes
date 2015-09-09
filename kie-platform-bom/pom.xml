@@ -633,6 +633,11 @@
         <artifactId>quartz-oracle</artifactId>
         <version>${version.org.quartz-scheduler}</version>
       </dependency>
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz-weblogic</artifactId>
+        <version>${version.org.quartz-scheduler}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.roboguice</groupId>
