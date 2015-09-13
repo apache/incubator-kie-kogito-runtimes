@@ -158,12 +158,14 @@
     <!-- Used by maven-enforcer-plugin -->
     <jdk.min.version>1.6.0</jdk.min.version>
     <maven.min.version>3.2.3</maven.min.version>
+    <!-- exposed additional params for javadoc, such as Xlint -->
+    <javadoc.additional.params/>
     <!-- enabling the next line will do that the build will not break when an illegal transitive dependency is found,
          the default is: the next line commented -->
     <!-- <illegaltransitivereportonly>true</illegaltransitivereportonly> -->
     <!-- property for productisation to know the last released version -->
     <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
-    <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overriden by productisation. -->
+    <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overridden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
   </properties>
 
@@ -834,6 +836,7 @@
             <author>false</author>
             <breakiterator>true</breakiterator>
             <quiet>true</quiet>
+            <additionalparam>${javadoc.additional.params}</additionalparam>
           </configuration>
         </plugin>
         <plugin>
@@ -1119,6 +1122,17 @@
       <properties>
         <!-- Stop m2eclipse from continuously regenerating the OSGi manifest timestamp every second -->
         <osgi.snapshot.qualifier>qualifier</osgi.snapshot.qualifier>
+      </properties>
+    </profile>
+    <profile>
+      <!-- Can be removed once ip-parent upgrades to jboss-parent 18+.
+           See https://github.com/jboss/jboss-parent-pom/commit/1868ef628417e82fde1e442176d5f66eaa57ecb2 -->
+      <id>doclint-java8-disable</id>
+      <activation>
+        <jdk>[1.8,)</jdk>
+      </activation>
+      <properties>
+        <javadoc.additional.params>-Xdoclint:none</javadoc.additional.params>
       </properties>
     </profile>
   </profiles>
