@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # Update the version for for all droolsjbpm repositories
 
 initializeWorkingDirAndScriptDir() {
@@ -76,6 +76,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             mvn -B -Dfull clean install
             mvn -B -Dfull versions:set -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
             sed -i "s/<version\.org\.kie>.*<\/version.org.kie>/<version.org.kie>$newVersion<\/version.org.kie>/" pom.xml
+            sed -i "s/<latestReleasedVersionFromThisBranch>.*<\/latestReleasedVersionFromThisBranch>/<latestReleasedVersionFromThisBranch>$newVersion<\/latestReleasedVersionFromThisBranch>/" pom.xml
             # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
             mvn -B clean install -DskipTests
             returnCode=$?
