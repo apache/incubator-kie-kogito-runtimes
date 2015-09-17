@@ -79,10 +79,10 @@
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
     <version.com.google.android>4.1.1.4</version.com.google.android>
-    <version.com.sun.codemodel>2.6</version.com.sun.codemodel>
     <version.de.benediktmeurer.gwt-slf4j>0.0.2</version.de.benediktmeurer.gwt-slf4j>
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
     <version.link.bek.tools.issue-keeper-junit>4.11.1</version.link.bek.tools.issue-keeper-junit>
+    <!-- this can be removed when #PR 230 is merged in jboss-ip-bom -->
     <version.net.jcip>1.0</version.net.jcip>
     <!-- this version will overwrite the jboss-ip-bom version 3.6.2. the jboss-ip-bom version has to remain as the 4.0.0 breaks ModeShape nor is Lucene 4.0.0 part of the latest EAP-->
     <version.org.apache.lucene>4.0.0</version.org.apache.lucene>

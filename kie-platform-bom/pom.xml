@@ -280,14 +280,6 @@
         <version>${version.com.google.android}</version>
       </dependency>
 
-      <!-- Can be removed once https://github.com/jboss-integration/jboss-integration-platform-bom/pull/213 is merged
-           and next ip-bom released. -->
-      <dependency>
-        <groupId>com.sun.codemodel</groupId>
-        <artifactId>codemodel</artifactId>
-        <version>${version.com.sun.codemodel}</version>
-      </dependency>
-
       <dependency>
         <groupId>de.benediktmeurer.gwt-slf4j</groupId>
         <artifactId>gwt-slf4j</artifactId>
@@ -611,6 +603,7 @@
         <version>${version.com.google.gwt}</version>
       </dependency>
 
+      <!-- this can be removed when #PR 230 is merged in jboss-ip-bom -->
       <dependency>
         <groupId>net.jcip</groupId>
         <artifactId>jcip-annotations</artifactId>
