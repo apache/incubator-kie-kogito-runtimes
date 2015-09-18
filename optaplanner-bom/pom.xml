@@ -59,6 +59,75 @@
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-common</artifactId>
+        <version>${version.org.optaplanner}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-common</artifactId>
+        <version>${version.org.optaplanner}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-common</artifactId>
+        <type>test-jar</type>
+        <version>${version.org.optaplanner}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-common</artifactId>
+        <version>${version.org.optaplanner}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-xstream</artifactId>
+        <version>${version.org.optaplanner}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-xstream</artifactId>
+        <version>${version.org.optaplanner}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-xstream</artifactId>
+        <type>test-jar</type>
+        <version>${version.org.optaplanner}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-xstream</artifactId>
+        <version>${version.org.optaplanner}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-jpa</artifactId>
+        <version>${version.org.optaplanner}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-jpa</artifactId>
+        <version>${version.org.optaplanner}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-jpa</artifactId>
+        <type>test-jar</type>
+        <version>${version.org.optaplanner}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-jpa</artifactId>
+        <version>${version.org.optaplanner}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-benchmark</artifactId>
         <version>${version.org.optaplanner}</version>
       </dependency>
