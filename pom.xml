@@ -101,6 +101,7 @@
     <version.org.owasp.encoder>1.1</version.org.owasp.encoder>
     <version.org.drools.guvnor-api>5.6.0.Final</version.org.drools.guvnor-api>
     <version.org.eclipse.sisu>0.0.0.M5</version.org.eclipse.sisu>
+    <!-- TODO All these plexus overwrites are already expired because ip-bom already uses maven 3.2.2 or higher. Please delete them! -->
     <!-- Dependency of maven 3.2.2  -->
     <version.org.codehaus.plexus.plexus-classworlds>2.5.1</version.org.codehaus.plexus.plexus-classworlds>
     <!-- Dependency of maven 3.2.2  -->
@@ -138,6 +139,7 @@
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <version.org.ops4j.pax.url>2.2.0</version.org.ops4j.pax.url>
     <version.org.geronimo.atinject>1.0</version.org.geronimo.atinject>
+    <!-- TODO All these plexus overwrites are already expired because ip-bom already uses maven 3.2.2 or higher. Please delete them! -->
     <!-- overrides <version.org.codehaus.plexus>3.0.7 used in jbos-ip-bom 6.0.0.CR13 -->
     <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus>
     <!-- since ironjacamar was removed from the ip-ip-bom but is still needed from dashboard-builder all dependencies are placed here -->
