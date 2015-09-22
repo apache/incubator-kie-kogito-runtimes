@@ -292,12 +292,6 @@
         <version>${version.com.unboundid}</version>
       </dependency>
 
-      <dependency>
-        <groupId>javax.security.jacc</groupId>
-        <artifactId>javax.security.jacc-api</artifactId>
-        <version>${version.javax.security.jacc}</version>
-      </dependency>
-
       <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
       <dependency>
         <groupId>javax.xml.stream</groupId>

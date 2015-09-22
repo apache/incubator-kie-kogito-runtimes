@@ -132,7 +132,6 @@
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
     <!-- temporary, should be moved to jboss-ip-bom -->
     <version.org.gwtbootstrap3>0.9.1</version.org.gwtbootstrap3>
-    <version.javax.security.jacc>1.4</version.javax.security.jacc>
     <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
     <!-- overrides <version.org.jboss.as> 7.4.0.Final used in jboss-ip-bom 6.0.0.CR13 -->
