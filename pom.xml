@@ -149,6 +149,8 @@
 
     <!-- TODO: remove this once all repositories comply to the defined checkstyle rules -->
     <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
+    <!-- TODO: remove this once all repositories/modules are fixed and do not contain duplicated classes -->
+    <enforcer.failOnDuplicatedClasses>false</enforcer.failOnDuplicatedClasses>
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>0.24.0</version.org.eclipse.tycho>
     <version.org.jboss.tools.tycho-plugins>0.23.1</version.org.jboss.tools.tycho-plugins>
@@ -276,6 +278,13 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>extra-enforcer-rules</artifactId>
+              <version>1.0-beta-6</version>
+            </dependency>
+          </dependencies>
           <executions>
             <execution>
               <id>enforce-plugin-versions</id>
@@ -314,10 +323,10 @@
             </execution>
             <execution>
               <id>ban-blacklisted-dependencies</id>
+              <phase>validate</phase>
               <goals>
                 <goal>enforce</goal>
               </goals>
-              <phase>validate</phase>
               <configuration>
                 <rules>
                   <bannedDependencies>
@@ -332,6 +341,29 @@
                     </excludes>
                   </bannedDependencies>
                 </rules>
+                <fail>true</fail>
+              </configuration>
+            </execution>
+            <execution>
+              <id>ban-duplicated-classes</id>
+              <phase>validate</phase>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <banDuplicateClasses>
+                    <ignoreClasses>
+                      <!-- Duplicated by XStream's transitive deps, with very little chance to get properly fixed -->
+                      <ignoreClass>org.xmlpull.v1.XmlPullParserException</ignoreClass>
+                      <ignoreClass>org.xmlpull.v1.XmlPullParser</ignoreClass>
+                      <!-- Bundled by both com.sun:tools and com.sun.xml.bind:jaxb-xjc. No easy way to exclude one of them. -->
+                      <ignoreClass>org.relaxng.datatype.*</ignoreClass>
+                    </ignoreClasses>
+                    <findAllDuplicates>true</findAllDuplicates>
+                  </banDuplicateClasses>
+                </rules>
+                <fail>${enforcer.failOnDuplicatedClasses}</fail>
               </configuration>
             </execution>
           </executions>
