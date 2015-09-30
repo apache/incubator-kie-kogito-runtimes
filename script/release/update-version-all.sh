@@ -27,14 +27,12 @@ updateParentVersion() {
 }
 
 updateChildModulesVersion() {
-    mvn -B -s $scriptDir/update-version-all-settings.xml versions:update-child-modules -Dfull\
+    mvn -N -B -s $scriptDir/update-version-all-settings.xml versions:update-child-modules -Dfull\
      -DallowSnapshots=true -DgenerateBackupPoms=false
 }
 
 # Updates parent version and child modules versions for Maven project in current working dir
 updateParentAndChildVersions() {
-    # install the current version first (usually SNAPSHOT) as it is then needed later on when updating child modules
-    mvn -B clean install -N
     updateParentVersion
     updateChildModulesVersion
 }
@@ -74,7 +72,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
             # first build&install the current version (usually SNAPSHOT) as it is needed later by other repos
             mvn -B -Dfull clean install
-            mvn -B -Dfull versions:set -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
+            mvn -B -N -Dfull versions:set -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
             sed -i "s/<version\.org\.kie>.*<\/version.org.kie>/<version.org.kie>$newVersion<\/version.org.kie>/" pom.xml
             # update latest released version property only for non-SNAPSHOT versions
             if [[ ! $newVersion == *-SNAPSHOT ]]; then
@@ -103,10 +101,10 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             sed -i "s/version=\"[0-9\.]*qualifier\"/version=\"$versionToUse\"/" org.drools.updatesite/category.xml
             cd ..
             if [ $returnCode == 0 ]; then
-                mvn -B clean install -N
+                mvn -B -N clean install
                 updateParentVersion
                 # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
-                mvn -B clean install -N -DskipTests
+                mvn -B -N clean install -DskipTests
                 cd drools-eclipse
                 updateParentVersion
                 cd ..
