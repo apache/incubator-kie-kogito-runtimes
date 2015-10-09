@@ -875,11 +875,15 @@
         <version>${version.org.gwtbootstrap3}</version>
       </dependency>
 
-      <!-- selenium dependencies -->
+      <!-- Selenium dependencies -->
+      <!-- There is no official Selenium BOM, so we are using one coming from Arquillian
+           (contains only pure Selenium deps, no ARQ deps are leaking from this BOM) -->
       <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-java</artifactId>
+        <groupId>org.jboss.arquillian.selenium</groupId>
+        <artifactId>selenium-bom</artifactId>
         <version>${version.org.seleniumhq.selenium}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <dependency>
