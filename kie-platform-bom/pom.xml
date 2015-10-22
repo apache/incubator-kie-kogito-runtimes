@@ -407,6 +407,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>xmlgraphics-commons</artifactId>
@@ -430,20 +431,6 @@
         <groupId>org.eclipse.jdt.core.compiler</groupId>
         <artifactId>ecj</artifactId>
         <version>${version.org.eclipse.jdt.core.compiler}</version>
-      </dependency>
-
-      <!-- needed by jbpm -->
-      <dependency>
-        <groupId>org.jgroups</groupId>
-        <artifactId>jgroups</artifactId>
-        <version>${version.org.jgroups}</version>
-      </dependency>
-
-      <!-- Jolokia  -->
-      <dependency>
-        <groupId>org.jolokia</groupId>
-        <artifactId>jolokia-client-java</artifactId>
-        <version>${version.org.jolokia}</version>
       </dependency>
 
       <!-- Dependency of maven 3.2.2  -->
@@ -598,12 +585,6 @@
       </dependency>
 
       <!-- this can be removed when #PR 230 is merged in jboss-ip-bom -->
-      <dependency>
-        <groupId>net.jcip</groupId>
-        <artifactId>jcip-annotations</artifactId>
-        <version>${version.net.jcip}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-embedded</artifactId>
