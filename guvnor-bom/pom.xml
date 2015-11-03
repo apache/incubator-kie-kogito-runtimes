@@ -69,6 +69,12 @@
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-structure-client</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
         <artifactId>guvnor-project-api</artifactId>
         <version>${version.org.guvnor}</version>
       </dependency>
