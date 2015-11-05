@@ -22,12 +22,12 @@ initializeWorkingDirAndScriptDir() {
 
 
 updateParentVersion() {
-    mvn -B -N -s $scriptDir/update-version-all-settings.xml versions:update-parent -Dfull\
+    mvn -B -N -s $settingsXmlFile versions:update-parent -Dfull\
      -DparentVersion=[$newVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
 }
 
 updateChildModulesVersion() {
-    mvn -N -B -s $scriptDir/update-version-all-settings.xml versions:update-child-modules -Dfull\
+    mvn -N -B -s $settingsXmlFile versions:update-child-modules -Dfull\
      -DallowSnapshots=true -DgenerateBackupPoms=false
 }
 
@@ -40,18 +40,36 @@ updateParentAndChildVersions() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 
-if [ $# != 1 ]; then
+if [ $# != 1 ] && [ $# != 2 ]; then
     echo
     echo "Usage:"
-    echo "  $0 releaseNewVersion"
+    echo "  $0 newVersion releaseType"
     echo "For example:"
-    echo "  $0 6.3.0.Final"
+    echo "  $0 6.3.0.Final community"
+    echo "  $0 6.3.1.20151105 prod"
     echo
     exit 1
 fi
 
 newVersion=$1
 echo "New version is $newVersion"
+
+releaseType=$2
+# check if the release type was set, if not default to "community"
+if [ "x$releaseType" == "x" ]; then
+    releaseType="community"
+fi
+
+if [ $releaseType == "community" ]; then
+    settingsXmlFile="$scriptDir/update-version-all-community-settings.xml"
+elif [ $releaseType == "prod" ]; then
+    settingsXmlFile="$scriptDir/update-version-all-prod-settings.xml"
+else
+    echo "Incorrect release type specified: '$releaseType'. Supported values are 'community' or 'prod'"
+    exit 1
+fi
+echo "Specified release type: $releaseType"
+echo "Using following settings.xml: $settingsXmlFile"
 
 startDateTime=`date +%s`
 

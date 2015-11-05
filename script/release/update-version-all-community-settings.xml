@@ -11,15 +11,18 @@
   <proxies/>
   <profiles>
     <profile>
-      <!-- The 'versions:update-child-modules' goal needs to resolve parent POM when updating the child modules.
-           The parent version was already updated before calling the update-child-modules, so the (usually)
-           SNAPSHOT parent POM needs to be downloaded from remote repo (JBoss Nexus). -->
-      <id>jboss-public-repository-group</id>
+      <!-- Additional repositories are needed in case dependencies are not cached locally. -->
+      <id>additional-repos</id>
       <repositories>
         <repository>
           <id>jboss-public-repository-group</id>
           <name>JBoss Public Repository Group</name>
           <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+          <id>kie-staging-repository-group</id>
+          <name>KIE Staging Repository Group</name>
+          <url>https://repository.jboss.org/nexus/content/groups/kie-group/</url>
         </repository>
       </repositories>
       <pluginRepositories>
@@ -28,12 +31,17 @@
           <name>JBoss Public Repository Group</name>
           <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </pluginRepository>
+        <pluginRepository>
+          <id>kie-staging-repository-group</id>
+          <name>KIE Staging Repository Group</name>
+          <url>https://repository.jboss.org/nexus/content/groups/kie-group/</url>
+        </pluginRepository>
       </pluginRepositories>
     </profile>
   </profiles>
 
   <activeProfiles>
-    <activeProfile>jboss-public-repository-group</activeProfile>
+    <activeProfile>additional-repos</activeProfile>
   </activeProfiles>
 
 </settings>
