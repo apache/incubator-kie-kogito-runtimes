@@ -108,7 +108,7 @@
     <!-- Dependency of maven 3.2.2  -->
     <version.org.sonatype.sisu.sisu-guice>3.1.0</version.org.sonatype.sisu.sisu-guice>
     <!-- Dependency of maven 3.2.2  -->
-    <version.org.jboss.errai>3.2.1-SNAPSHOT</version.org.jboss.errai>
+    <version.org.jboss.errai>3.2.2-SNAPSHOT</version.org.jboss.errai>
     <!-- Version of Errai compatible with CDI 1.0. Few artifacts in this version are used for CDI 1.0 compatible WAR distributions. -->
     <version.org.jboss.errai.cdi10-compatible>3.0.6.Final</version.org.jboss.errai.cdi10-compatible>
     <version.org.picketlink>2.6.0.Final</version.org.picketlink>
