@@ -72,7 +72,6 @@
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
-    <version.org.eclipse.bpmn2>0.7.6-jboss</version.org.eclipse.bpmn2>
     <version.avalon-framework>4.1.4</version.avalon-framework>
     <version.com.ahome-it.lienzo-core>2.0.118-RC0</version.com.ahome-it.lienzo-core>
     <version.com.android-dx>1.10</version.com.android-dx>
@@ -117,7 +116,6 @@
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
     <version.org.roboguice>3.0.1</version.org.roboguice>
     <version.org.robolectric>2.4</version.org.robolectric>
-    <version.org.seleniumhq.selenium>2.46.0</version.org.seleniumhq.selenium>
     <version.org.simpleframework>6.0.1</version.org.simpleframework>
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
