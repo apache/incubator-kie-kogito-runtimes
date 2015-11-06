@@ -29,7 +29,7 @@ startDateTime=`date +%s`
 # Anonymous users on blessed gitUrlPrefix="git://github.com/droolsjbpm/"
 cd "${scriptDir}"
 droolsjbpmGitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
-droolsjbpmGitUrlPrefix=`echo ${droolsjbpmGitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap\.git.*//g'`
+droolsjbpmGitUrlPrefix=`echo ${droolsjbpmGitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap.*//g'`
 
 cd "$droolsjbpmOrganizationDir"
 
