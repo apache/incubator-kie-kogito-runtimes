@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-parent</artifactId>
     <!-- Keep in sync with property <version.org.jboss.integration-platform> -->
-    <version>6.0.0.CR29</version>
+    <version>6.0.0.CR30</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -68,7 +68,7 @@
 
     <!-- External dependency versions bom -->
     <!-- Keep in sync with <parent>'s <version> -->
-    <version.org.jboss.integration-platform>6.0.0.CR29</version.org.jboss.integration-platform>
+    <version.org.jboss.integration-platform>6.0.0.CR30</version.org.jboss.integration-platform>
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
