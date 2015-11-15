@@ -281,12 +281,6 @@
       </dependency>
 
       <dependency>
-        <groupId>de.benediktmeurer.gwt-slf4j</groupId>
-        <artifactId>gwt-slf4j</artifactId>
-        <version>${version.de.benediktmeurer.gwt-slf4j}</version>
-      </dependency>
-
-      <dependency>
         <groupId>com.unboundid</groupId>
         <artifactId>unboundid-ldapsdk</artifactId>
         <version>${version.com.unboundid}</version>
@@ -414,14 +408,6 @@
         <version>${version.org.apache.xmlgraphics.commons}</version>
       </dependency>
 
-      <!-- Dependency of maven 3.2.2  -->
-      <dependency>
-        <groupId>org.eclipse.sisu</groupId>
-        <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>${version.org.eclipse.sisu}</version>
-      </dependency>
-
-      <!-- Dependency of maven 3.2.2  -->
       <dependency>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.inject</artifactId>
@@ -432,12 +418,6 @@
             <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.owasp.encoder</groupId>
-        <artifactId>encoder</artifactId>
-        <version>${version.org.owasp.encoder}</version>
       </dependency>
 
       <!-- Errai (needed for Guice exclusion) -->
@@ -505,6 +485,21 @@
       <dependency>
         <groupId>org.picketlink</groupId>
         <artifactId>picketlink-idm-api</artifactId>
+        <version>${version.org.picketlink}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-impl</artifactId>
+        <version>${version.org.picketlink}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-idm-impl</artifactId>
+        <version>${version.org.picketlink}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-tomcat7-single</artifactId>
         <version>${version.org.picketlink}</version>
       </dependency>
 
@@ -596,35 +591,15 @@
       </dependency>
 
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-jdk14</artifactId>
-        <version>${version.org.slf4j}</version>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-servlet</artifactId>
+        <version>${version.org.sonatype.sisu.sisu-guice}</version>
       </dependency>
 
       <dependency>
         <groupId>org.springframework.osgi</groupId>
         <artifactId>spring-osgi-core</artifactId>
         <version>${version.org.springframework.osgi}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-utils</artifactId>
-        <version>${version.org.codehaus.plexus}</version>
-      </dependency>
-
-      <!-- Dependency of maven 3.2.2  -->
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-classworlds</artifactId>
-        <version>${version.org.codehaus.plexus.plexus-classworlds}</version>
-      </dependency>
-
-      <!-- Dependency of maven 3.2.2  -->
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-interpolation</artifactId>
-        <version>${version.org.codehaus.plexus.plexus-interpolation}</version>
       </dependency>
 
       <!-- jboss as and arquillian deps (JBPM-4403) -->
@@ -644,40 +619,6 @@
         <artifactId>jboss-as-naming</artifactId>
         <version>${version.org.jboss.as}</version>
         <scope>test</scope>
-      </dependency>
-
-      <!-- Dependency of maven 3.2.2  -->
-      <dependency>
-        <groupId>org.sonatype.plexus</groupId>
-        <artifactId>plexus-cipher</artifactId>
-        <version>${version.org.sonatype.plexus.plexus-cipher}</version>
-      </dependency>
-
-      <!-- Dependency of maven 3.2.2  -->
-      <dependency>
-        <groupId>org.sonatype.plexus</groupId>
-        <artifactId>plexus-sec-dispatcher</artifactId>
-        <version>${version.org.sonatype.plexus.plexus-sec-dispatcher}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <!-- Dependency of maven 3.2.2  -->
-      <dependency>
-        <groupId>org.sonatype.sisu</groupId>
-        <artifactId>sisu-guice</artifactId>
-        <version>${version.org.sonatype.sisu.sisu-guice}</version>
-        <classifier>no_aop</classifier>
-        <exclusions>
-          <exclusion>
-            <groupId>org.sonatype.sisu</groupId>
-            <artifactId>sisu-guava</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
@@ -808,19 +749,6 @@
         <groupId>com.allen-sauer.gwt.dnd</groupId>
         <artifactId>gwt-dnd</artifactId>
         <version>${version.com.allen-sauer.gwt.dnd}</version>
-      </dependency>
-
-      <!-- temporary, should be moved to jboss-ip-bom -->
-      <dependency>
-        <groupId>org.gwtbootstrap3</groupId>
-        <artifactId>gwtbootstrap3</artifactId>
-        <version>${version.org.gwtbootstrap3}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.gwtbootstrap3</groupId>
-        <artifactId>gwtbootstrap3-extras</artifactId>
-        <version>${version.org.gwtbootstrap3}</version>
       </dependency>
 
       <dependency>

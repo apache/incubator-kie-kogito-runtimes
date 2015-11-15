@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-parent</artifactId>
     <!-- Keep in sync with property <version.org.jboss.integration-platform> -->
-    <version>6.0.0.CR31</version>
+    <version>6.0.0.Final</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -68,7 +68,7 @@
 
     <!-- External dependency versions bom -->
     <!-- Keep in sync with <parent>'s <version> -->
-    <version.org.jboss.integration-platform>6.0.0.CR31</version.org.jboss.integration-platform>
+    <version.org.jboss.integration-platform>6.0.0.Final</version.org.jboss.integration-platform>
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
@@ -78,7 +78,6 @@
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
     <version.com.google.android>4.1.1.4</version.com.google.android>
-    <version.de.benediktmeurer.gwt-slf4j>0.0.2</version.de.benediktmeurer.gwt-slf4j>
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
     <version.link.bek.tools.issue-keeper-junit>4.11.1</version.link.bek.tools.issue-keeper-junit>
     <!-- this version will overwrite the jboss-ip-bom version 3.6.2. the jboss-ip-bom version has to remain as the 4.0.0 breaks ModeShape nor is Lucene 4.0.0 part of the latest EAP-->
@@ -89,21 +88,7 @@
     <!-- overwrites the version of org.jboss.xnio defined in jboss-ip-bom because needed by WildFly -->
     <version.org.jboss.xnio>3.2.0.Final</version.org.jboss.xnio>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
-    <version.org.owasp.encoder>1.1</version.org.owasp.encoder>
     <version.org.drools.guvnor-api>5.6.0.Final</version.org.drools.guvnor-api>
-    <version.org.eclipse.sisu>0.0.0.M5</version.org.eclipse.sisu>
-    <!-- TODO All these plexus overwrites are already expired because ip-bom already uses maven 3.2.2 or higher. Please delete them! -->
-    <!-- Dependency of maven 3.2.2  -->
-    <version.org.codehaus.plexus.plexus-classworlds>2.5.1</version.org.codehaus.plexus.plexus-classworlds>
-    <!-- Dependency of maven 3.2.2  -->
-    <version.org.codehaus.plexus.plexus-interpolation>1.19</version.org.codehaus.plexus.plexus-interpolation>
-    <!-- Dependency of maven 3.2.2  -->
-    <version.org.sonatype.plexus.plexus-cipher>1.4</version.org.sonatype.plexus.plexus-cipher>
-    <!-- Dependency of maven 3.2.2  -->
-    <version.org.sonatype.plexus.plexus-sec-dispatcher>1.3</version.org.sonatype.plexus.plexus-sec-dispatcher>
-    <!-- Dependency of maven 3.2.2  -->
-    <version.org.sonatype.sisu.sisu-guice>3.1.0</version.org.sonatype.sisu.sisu-guice>
-    <!-- Dependency of maven 3.2.2  -->
     <version.org.jboss.errai>3.2.2-SNAPSHOT</version.org.jboss.errai>
     <!-- Version of Errai compatible with CDI 1.0. Few artifacts in this version are used for CDI 1.0 compatible WAR distributions. -->
     <version.org.jboss.errai.cdi10-compatible>3.0.6.Final</version.org.jboss.errai.cdi10-compatible>
@@ -121,24 +106,17 @@
     <!-- this version will overwrite jboss-ip-version 3.1.2. The version in jboss-ip-bom couldn't be upgraded as this version needs GWT 2.7.0 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
-    <!-- temporary, should be moved to jboss-ip-bom -->
-    <version.org.gwtbootstrap3>0.9.1</version.org.gwtbootstrap3>
     <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
     <!-- overrides <version.org.jboss.as> 7.4.0.Final used in jboss-ip-bom 6.0.0.CR13 -->
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <version.org.ops4j.pax.url>2.2.0</version.org.ops4j.pax.url>
     <version.org.geronimo.atinject>1.0</version.org.geronimo.atinject>
-    <!-- TODO All these plexus overwrites are already expired because ip-bom already uses maven 3.2.2 or higher. Please delete them! -->
-    <!-- overrides <version.org.codehaus.plexus>3.0.7 used in jbos-ip-bom 6.0.0.CR13 -->
     <!-- since ironjacamar was removed from the ip-ip-bom but is still needed from dashboard-builder all dependencies are placed here -->
     <version.org.jboss.ironjacamar>1.0.31.Final</version.org.jboss.ironjacamar>
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
 
-    <!-- Make build platform independent -->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
     <!-- Make OSGi happy -->
     <osgi.snapshot.qualifier>${maven.build.timestamp}</osgi.snapshot.qualifier>
@@ -159,8 +137,6 @@
     <version.org.eclipse.tycho>0.24.0</version.org.eclipse.tycho>
     <version.org.jboss.tools.tycho-plugins>0.23.1</version.org.jboss.tools.tycho-plugins>
     
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
     <!-- Used by maven-enforcer-plugin -->
     <jdk.min.version>1.6.0</jdk.min.version>
     <maven.min.version>3.2.3</maven.min.version>
@@ -171,9 +147,6 @@
     <!-- Number of GWT compiler worker processes. Defined as property so that it can be easily overridden from cmd line.
          Default value is 1 to enable building on older machines as well (minimum is still about 4GiB of RAM memory). -->
     <gwt.compiler.localWorkers>1</gwt.compiler.localWorkers>
-    <!-- enabling the next line will do that the build will not break when an illegal transitive dependency is found,
-         the default is: the next line commented -->
-    <!-- <illegaltransitivereportonly>true</illegaltransitivereportonly> -->
     <!-- property for productisation to know the last released version -->
     <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overridden by productisation. -->
