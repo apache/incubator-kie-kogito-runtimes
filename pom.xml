@@ -73,7 +73,7 @@
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
     <version.avalon-framework>4.1.4</version.avalon-framework>
-    <version.com.ahome-it.lienzo-core>2.0.118-RC0</version.com.ahome-it.lienzo-core>
+    <version.com.ahome-it.lienzo-core>2.0.192-RC1</version.com.ahome-it.lienzo-core>
     <version.com.android-dx>1.10</version.com.android-dx>
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
