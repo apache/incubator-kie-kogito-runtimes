@@ -46,7 +46,7 @@ if [ $# != 1 ] && [ $# != 2 ]; then
     echo "  $0 newVersion releaseType"
     echo "For example:"
     echo "  $0 6.3.0.Final community"
-    echo "  $0 6.3.1.20151105 prod"
+    echo "  $0 6.3.1.20151105 productized"
     echo
     exit 1
 fi
@@ -62,10 +62,10 @@ fi
 
 if [ $releaseType == "community" ]; then
     settingsXmlFile="$scriptDir/update-version-all-community-settings.xml"
-elif [ $releaseType == "prod" ]; then
-    settingsXmlFile="$scriptDir/update-version-all-prod-settings.xml"
+elif [ $releaseType == "productized" ]; then
+    settingsXmlFile="$scriptDir/update-version-all-productized-settings.xml"
 else
-    echo "Incorrect release type specified: '$releaseType'. Supported values are 'community' or 'prod'"
+    echo "Incorrect release type specified: '$releaseType'. Supported values are 'community' or 'productized'"
     exit 1
 fi
 echo "Specified release type: $releaseType"
