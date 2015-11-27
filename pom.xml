@@ -394,6 +394,7 @@
               <_snapshot>${osgi.snapshot.qualifier}</_snapshot>
               <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}</Bundle-Version>
             </instructions>
+            <obrRepository>NONE</obrRepository>
           </configuration>
         </plugin>
 
