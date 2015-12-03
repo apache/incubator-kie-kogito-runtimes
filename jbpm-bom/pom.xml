@@ -706,6 +706,12 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
         <version>${version.org.jbpm.jbpm-console-ng}</version>
+	<type>test-jar</type>
+      </dependency>
+	<dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
+        <version>${version.org.jbpm.jbpm-console-ng}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
