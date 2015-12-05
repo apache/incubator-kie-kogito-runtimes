@@ -768,7 +768,7 @@ Configuring Eclipse
 
         ```
         /*
-         * Copyright 2015 JBoss Inc
+         * Copyright 2015 Red Hat, Inc. and/or its affiliates.
          *
          * Licensed under the Apache License, Version 2.0 (the "License");
          * you may not use this file except in compliance with the License.
@@ -1069,12 +1069,12 @@ Configuring IntelliJ
 
         * Click button *+* to add a *Copyright profile*
 
-        * Textfield *name*: `JBoss Inc`
+        * Textfield *name*: `Red Hat, Inc. and/or its affiliates`
 
         * Textarea with content:
 
             ```
-            Copyright $today.year JBoss Inc
+            Copyright $today.year Red Hat, Inc. and/or its affiliates.
 
             Licensed under the Apache License, Version 2.0 (the "License");
             you may not use this file except in compliance with the License.
@@ -1095,7 +1095,7 @@ Configuring IntelliJ
 
     * Click tree item *Copyright*
 
-        * Combobox *Default project copyright*: `JBoss Inc`
+        * Combobox *Default project copyright*: `Red Hat, Inc. and/or its affiliates`
 
 Extra IntelliJ plugins
 ----------------------
