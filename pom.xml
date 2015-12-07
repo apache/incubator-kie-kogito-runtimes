@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-parent</artifactId>
     <!-- Keep in sync with property <version.org.jboss.integration-platform> -->
-    <version>6.0.0.CR30</version>
+    <version>6.0.0.CR31</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -68,7 +68,7 @@
 
     <!-- External dependency versions bom -->
     <!-- Keep in sync with <parent>'s <version> -->
-    <version.org.jboss.integration-platform>6.0.0.CR30</version.org.jboss.integration-platform>
+    <version.org.jboss.integration-platform>6.0.0.CR31</version.org.jboss.integration-platform>
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
@@ -86,11 +86,8 @@
     <version.org.apache.xmlgraphics.batik>1.6.1-1</version.org.apache.xmlgraphics.batik>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
-    <version.org.assertj>1.7.1</version.org.assertj>
     <!-- overwrites the version of org.jboss.xnio defined in jboss-ip-bom because needed by WildFly -->
     <version.org.jboss.xnio>3.2.0.Final</version.org.jboss.xnio>
-    <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
-    <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
     <version.org.owasp.encoder>1.1</version.org.owasp.encoder>
     <version.org.drools.guvnor-api>5.6.0.Final</version.org.drools.guvnor-api>
@@ -110,6 +107,7 @@
     <version.org.jboss.errai>3.2.2-SNAPSHOT</version.org.jboss.errai>
     <!-- Version of Errai compatible with CDI 1.0. Few artifacts in this version are used for CDI 1.0 compatible WAR distributions. -->
     <version.org.jboss.errai.cdi10-compatible>3.0.6.Final</version.org.jboss.errai.cdi10-compatible>
+    <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.picketlink>2.6.0.Final</version.org.picketlink>
     <version.com.unboundid>2.3.6</version.com.unboundid>
     <version.com.wordnik.swagger>1.3.10</version.com.wordnik.swagger>
@@ -133,7 +131,6 @@
     <version.org.geronimo.atinject>1.0</version.org.geronimo.atinject>
     <!-- TODO All these plexus overwrites are already expired because ip-bom already uses maven 3.2.2 or higher. Please delete them! -->
     <!-- overrides <version.org.codehaus.plexus>3.0.7 used in jbos-ip-bom 6.0.0.CR13 -->
-    <version.org.codehaus.plexus>3.0.17</version.org.codehaus.plexus>
     <!-- since ironjacamar was removed from the ip-ip-bom but is still needed from dashboard-builder all dependencies are placed here -->
     <version.org.jboss.ironjacamar>1.0.31.Final</version.org.jboss.ironjacamar>
     <!-- jboss ip-bom has org.eclipse.jdt.core.compiler:ecj:4.4.2.redhat-1 but jbpm-form-modeler needs 4.3.1 -->
@@ -147,13 +144,18 @@
     <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
     <!-- Make OSGi happy -->
     <osgi.snapshot.qualifier>${maven.build.timestamp}</osgi.snapshot.qualifier>
+
+    <!-- Plugin version overrides.
+         IMPORTANT: always explain the reason for overriding the plugin version! -->
+    <!-- jboss-parent uses findbugs-plugin version 3.x which is not Java 6 compatible -->
+    <version.findbugs.plugin>2.5.5</version.findbugs.plugin>
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>0.22.0</version.org.eclipse.tycho>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
     <!-- Used by maven-enforcer-plugin -->
     <jdk.min.version>1.6.0</jdk.min.version>
     <maven.min.version>3.2.3</maven.min.version>
-    <!-- exposed additional params for javadoc, such as Xlint -->
-    <javadoc.additional.params/>
     <!-- Important: this is one and only place where the supported user agents (browsers) are configured.
          All webapps/showcases must use this property in their *.gwt.xml files.
          We only need to support IE11+, but there is no ie11 permutation. IE11 will use the Firefox one (gecko1_8) -->
@@ -216,13 +218,13 @@
   <developers>
     <developer>
       <name>All developers are listed on the team website</name>
-      <url>http://www.jboss.org/drools/team</url>
+      <url>http://www.drools.org/community/team.html</url>
     </developer>
   </developers>
   <contributors>
     <contributor>
       <name>All contributors are listed on the team website</name>
-      <url>http://www.jboss.org/drools/team</url>
+      <url>http://www.drools.org/community/team.html</url>
     </contributor>
   </contributors>
   <mailingLists>
@@ -297,7 +299,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>2.13</version>
           <executions>
             <execution>
               <id>validate</id>
@@ -370,7 +371,6 @@
         </plugin>
         <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.7</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.ant</groupId>
@@ -383,7 +383,9 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>2.3.7</version>
+          <!-- Override version 2.5.4 coming from jboss-present as it forks executions, which is a bug.
+               See https://issues.apache.org/jira/browse/FELIX-4882 for more details. -->
+          <version>3.0.1</version>
           <extensions>true</extensions>
           <configuration>
             <!-- Split packages in combination with <Export-Package> causes bloated jars otherwise -->
@@ -400,18 +402,7 @@
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-help-plugin</artifactId>
-          <version>2.1.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>2.4.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>2.6</version>
           <configuration>
             <encoding>UTF-8</encoding>
           </configuration>
@@ -419,22 +410,18 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.5.1</version>
           <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
             <fork>true</fork>
             <meminitial>128m</meminitial>
             <maxmem>512m</maxmem>
-            <showDeprecation>false</showDeprecation>
-            <showWarnings>false</showWarnings>
+            <showDeprecation>true</showDeprecation>
+            <showWarnings>true</showWarnings>
           </configuration>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.18.1</version>
           <configuration>
             <includes>
               <include>**/*Test.java</include>
@@ -459,7 +446,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.18.1</version>
           <executions>
             <execution>
               <goals>
@@ -524,7 +510,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.3.1</version>
           <executions>
             <!-- No OSGi manifestEntries for <goal>jar</goal>: if it supported, then felix has already added them -->
             <execution>
@@ -560,7 +545,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.1.2</version>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -601,11 +585,6 @@
           </executions>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-war-plugin</artifactId>
-          <version>2.4</version>
-        </plugin>
-        <plugin>
           <groupId>org.commonjava.maven.plugins</groupId>
           <artifactId>project-sources-maven-plugin</artifactId>
           <version>0.3</version>
@@ -622,7 +601,6 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.7</version>
           <executions>
             <execution>
               <goals>
@@ -712,14 +690,13 @@
           <version>1.5.2</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.8</version>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>native2ascii-maven-plugin</artifactId>
+          <version>1.0-beta-1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.5.4</version>
           <dependencies>
             <dependency>
               <!-- Entry needed to enable jdocbook unzipping -->
@@ -731,13 +708,7 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.3.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.7</version>
           <configuration>
             <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
           </configuration>
@@ -750,33 +721,11 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.2.1</version>
           <configuration>
             <!-- Manually push changes (including git tags) after nexus staged repo is successfully closed -->
             <pushChanges>false</pushChanges>
             <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
-        </plugin>
-        <!-- IDE -->
-        <plugin>
-          <!-- This plugin is deprecated, please use m2eclipse instead. -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.8</version>
-          <configuration>
-            <!--<downloadSources>true</downloadSources>-->
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>1.4.0</version>
-        </plugin>
-        <!--Site -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.1</version>
         </plugin>
         <!--Fix translations from Zanata -->
         <plugin>
@@ -840,7 +789,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.1</version>
           <configuration>
             <links>
               <link>http://docs.oracle.com/javase/6/docs/api</link>
@@ -852,12 +800,6 @@
             <quiet>true</quiet>
             <additionalparam>${javadoc.additional.params}</additionalparam>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
-          <!-- Keep in sync with <reporting><plugins> -->
-          <version>2.5.5</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1003,12 +945,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1137,17 +1077,6 @@
       <properties>
         <!-- Stop m2eclipse from continuously regenerating the OSGi manifest timestamp every second -->
         <osgi.snapshot.qualifier>qualifier</osgi.snapshot.qualifier>
-      </properties>
-    </profile>
-    <profile>
-      <!-- Can be removed once ip-parent upgrades to jboss-parent 18+.
-           See https://github.com/jboss/jboss-parent-pom/commit/1868ef628417e82fde1e442176d5f66eaa57ecb2 -->
-      <id>doclint-java8-disable</id>
-      <activation>
-        <jdk>[1.8,)</jdk>
-      </activation>
-      <properties>
-        <javadoc.additional.params>-Xdoclint:none</javadoc.additional.params>
       </properties>
     </profile>
   </profiles>

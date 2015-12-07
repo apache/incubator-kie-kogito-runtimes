@@ -414,13 +414,6 @@
         <version>${version.org.apache.xmlgraphics.commons}</version>
       </dependency>
 
-      <!-- Can be removed once ip-bom with https://github.com/jboss-integration/jboss-integration-platform-bom/pull/248 is used -->
-      <dependency>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-core</artifactId>
-        <version>${version.org.assertj}</version>
-      </dependency>
-
       <!-- needed by jbpm-form-modeler -->
       <dependency>
         <groupId>org.eclipse.jdt.core.compiler</groupId>
@@ -554,19 +547,17 @@
         <version>${version.org.jboss.ironjacamar}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-runner</artifactId>
+        <version>${version.org.mortbay.jetty.runner}</version>
+      </dependency>
+
       <!-- GWT -->
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
         <version>${version.com.google.gwt}</version>
-      </dependency>
-      <!-- CDI Development Utils -->
-      <!-- This must be placed above com.google.gwt:gwt-dev to override the
-         Jetty that is present there -->
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
@@ -577,18 +568,6 @@
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
         <version>${version.com.google.gwt}</version>
-      </dependency>
-
-      <!-- this can be removed when #PR 230 is merged in jboss-ip-bom -->
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-embedded</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-runner</artifactId>
-        <version>${version.org.mortbay.jetty.runner}</version>
       </dependency>
 
       <dependency>
@@ -789,28 +768,28 @@
         <version>${version.org.jboss.byteman}</version>
       </dependency>
       <dependency>
-          <groupId>org.jboss.byteman</groupId>
-          <artifactId>byteman-submit</artifactId>
-          <scope>test</scope>
-          <version>${version.org.jboss.byteman}</version>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman-submit</artifactId>
+        <scope>test</scope>
+        <version>${version.org.jboss.byteman}</version>
       </dependency>
       <dependency>
-          <groupId>org.jboss.byteman</groupId>
-          <artifactId>byteman-install</artifactId>
-          <scope>test</scope>
-          <version>${version.org.jboss.byteman}</version>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman-install</artifactId>
+        <scope>test</scope>
+        <version>${version.org.jboss.byteman}</version>
       </dependency>
       <dependency>
-          <groupId>org.jboss.byteman</groupId>
-          <artifactId>byteman-bmunit</artifactId>
-          <scope>test</scope>
-          <version>${version.org.jboss.byteman}</version>
-          <exclusions>
-              <exclusion>
-                  <groupId>org.testng</groupId>
-                  <artifactId>testng</artifactId>
-              </exclusion>
-          </exclusions>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman-bmunit</artifactId>
+        <scope>test</scope>
+        <version>${version.org.jboss.byteman}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- WildFly -->
