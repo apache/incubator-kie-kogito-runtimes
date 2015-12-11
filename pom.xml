@@ -158,8 +158,9 @@
     <version.checkstyle>6.1.1</version.checkstyle>
 
     <!-- org.eclipse.tycho plugin version -->
-    <version.org.eclipse.tycho>0.22.0</version.org.eclipse.tycho>
-
+    <version.org.eclipse.tycho>0.24.0</version.org.eclipse.tycho>
+    <version.org.jboss.tools.tycho-plugins>0.23.1</version.org.jboss.tools.tycho-plugins>
+    
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <!-- Used by maven-enforcer-plugin -->
@@ -868,6 +869,11 @@
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-p2-plugin</artifactId>
           <version>${version.org.eclipse.tycho}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jboss.tools.tycho-plugins</groupId>
+          <artifactId>repository-utils</artifactId>
+          <version>${version.org.jboss.tools.tycho-plugins}</version>
         </plugin>
         <!-- This plugin's configuration is used to store Eclipse m2e settings only.
              It has no influence on the Maven build itself. -->
