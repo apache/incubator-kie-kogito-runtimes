@@ -153,6 +153,9 @@
          See https://issues.apache.org/jira/browse/FELIX-4882 for more details.
          Version 3.x requires Java 7 (not directly, but one of transitive deps does). -->
     <version.bundle.plugin>2.5.3</version.bundle.plugin>
+    <!-- Override6.1.1 is the last version supporting Java 6. We need to be able to run certain modules
+         (e.g. jbpm-test-coverage) with Java 6. -->
+    <version.checkstyle>6.1.1</version.checkstyle>
 
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>0.22.0</version.org.eclipse.tycho>
