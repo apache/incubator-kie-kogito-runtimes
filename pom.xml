@@ -149,8 +149,14 @@
          IMPORTANT: always explain the reason for overriding the plugin version! -->
     <!-- jboss-parent uses findbugs-plugin version 3.x which is not Java 6 compatible -->
     <version.findbugs.plugin>2.5.5</version.findbugs.plugin>
+    <!-- Override version 2.5.4 coming from jboss-parent as it forks executions, which is a bug.
+         See https://issues.apache.org/jira/browse/FELIX-4882 for more details.
+         Version 3.x requires Java 7 (not directly, but one of transitive deps does). -->
+    <version.bundle.plugin>2.5.3</version.bundle.plugin>
+
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>0.22.0</version.org.eclipse.tycho>
+
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <!-- Used by maven-enforcer-plugin -->
@@ -383,9 +389,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <!-- Override version 2.5.4 coming from jboss-present as it forks executions, which is a bug.
-               See https://issues.apache.org/jira/browse/FELIX-4882 for more details. -->
-          <version>3.0.1</version>
+
           <extensions>true</extensions>
           <configuration>
             <!-- Split packages in combination with <Export-Package> causes bloated jars otherwise -->
