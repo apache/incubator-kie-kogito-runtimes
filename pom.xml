@@ -133,8 +133,6 @@
     <!-- overrides <version.org.codehaus.plexus>3.0.7 used in jbos-ip-bom 6.0.0.CR13 -->
     <!-- since ironjacamar was removed from the ip-ip-bom but is still needed from dashboard-builder all dependencies are placed here -->
     <version.org.jboss.ironjacamar>1.0.31.Final</version.org.jboss.ironjacamar>
-    <!-- jboss ip-bom has org.eclipse.jdt.core.compiler:ecj:4.4.2.redhat-1 but jbpm-form-modeler needs 4.3.1 -->
-    <version.org.eclipse.jdt.core.compiler>4.3.1</version.org.eclipse.jdt.core.compiler>
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
 

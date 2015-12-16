@@ -414,13 +414,6 @@
         <version>${version.org.apache.xmlgraphics.commons}</version>
       </dependency>
 
-      <!-- needed by jbpm-form-modeler -->
-      <dependency>
-        <groupId>org.eclipse.jdt.core.compiler</groupId>
-        <artifactId>ecj</artifactId>
-        <version>${version.org.eclipse.jdt.core.compiler}</version>
-      </dependency>
-
       <!-- Dependency of maven 3.2.2  -->
       <dependency>
         <groupId>org.eclipse.sisu</groupId>
