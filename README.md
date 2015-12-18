@@ -497,6 +497,9 @@ Any dependency used in any KIE project must fulfill these hard requirements:
     * Forbidden: no license, GPL, AGPL, proprietary license, field of use restrictions ("this software shall be used for good, not evil"), ...
 
         * Even test scope dependencies cannot use these licenses.
+        
+    * To check the ALS compatibily license please visit these links:[Similarity in terms to the Apache License 2.0](http://www.apache.org/legal/resolved.html#category-a)&nbsp; 
+    [How should so-called "Weak Copyleft" Licenses be handled](http://www.apache.org/legal/resolved.html#category-b)
 
 * The dependency shall be **available in [Maven Central](http://search.maven.org/) or [JBoss Nexus](https://repository.jboss.org/nexus)**.
 
