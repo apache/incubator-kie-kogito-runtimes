@@ -620,6 +620,18 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
 
         * [http://docs.jboss.org/drools/release/latestFinal/](http://docs.jboss.org/drools/release/latestFinal/)
 
+* If it's a Final, non-hotfix release: publish the XSD file(s), by copying each XSD file to its website.
+
+    * The Drools XSD files are at http://www.drools.org/xsd/[http://www.drools.org/xsd/]
+    
+    * Go to the https://github.com/droolsjbpm/droolsjbpm-knowledge/blob/master/kie-api/src/main/resources/org/kie/api/kmodule.xsd[kmodule.xsd] file (on master) and switch to the release tag.
+    
+    * Copy the raw file to https://github.com/droolsjbpm/drools-website/tree/master/xsd[drools-website's `xsd` directory].
+    
+    * Rename it from `kmodule.xsd` to `kmodule_<major>_<minor>.xsd` so it includes its version (major and minor only, not hotfixes or quantifiers). For example for release `6.3.0.Final` it is renamed to `kmodule_6_3.xsd`. Do not overwrite an existing file as there should never be an existing file (because the XSD is only copied for Final, non-hotfix releases).
+    
+    * Publish drools.org
+
 Announcing the release
 ----------------------
 
