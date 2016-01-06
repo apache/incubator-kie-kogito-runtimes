@@ -2,10 +2,34 @@
 
 use DateTime;
 use Cwd qw(abs_path);
+use Getopt::Std;
 
 use POSIX;
 use strict;
 use warnings;
+
+my %opts;
+getopts( 'vhr:', \%opts );
+
+if( exists $opts{h} ) {
+  print "\n"
+      . " h ........ print [h]elp (this)\n"
+      . " v ........ [v]erbose\n"
+      . " r [file] . specify file containing [r]epositories [REQUIRED]\n";
+  die "\n";
+}
+
+my $repoFile = "";
+if( exists $opts{r} ) { 
+  $repoFile = $opts{r};
+} else { 
+  die "\n Please provide a -r [file] argument, where [file] contains a list of repositories!\n\n";
+}
+
+my $verbose = 0;
+if( exists $opts{v} ) {
+  ++$verbose;
+}
 
 my $home = abs_path($0);
 $home =~ s#/[\w-]+/[\w-]+/[\w-]+/[\w+\.]+$##;
@@ -34,15 +58,24 @@ my $now = DateTime->new(
 );
 
 my %source;
-while(<DATA>) { 
+
+open(REPOS, "<", $repoFile ) 
+  || die "Unable to open repository list file $repoFile: $!\n";
+
+while(<REPOS>) { 
   chomp;
   my $repo;
   if( /^#/ ) { 
     next;
   }
-  if( /^([^:]+):(.*)/) { 
+  if( /^([^:]+)(:(.*))?/) { 
     $repo = $1;
-    $source{$repo} = $2;
+    my $branch = $3;
+    if( ! defined $3 ) { 
+      $branch = "upstream";
+    }
+    print "$repo [$branch]\n";
+    $source{$repo} = $branch;
   }
   chdir "$home/$repo"
     || die "Unable to change directory to [$home/$repo]: $!\n";
@@ -64,6 +97,7 @@ while(<DATA>) {
       chomp;
       push @list, "$_ $branch";
     }
+    close(INFO);
   }
   my @sorted = sort @list;
   foreach $branch (sort @list) { 
@@ -84,7 +118,7 @@ while(<DATA>) {
       my $out = sprintf( "%s-%s-%s - %-25s %s\n", $y, $m, $d, $who, $br );
       if( $days >= $daysAfterWhichBranchIsTooOld ) { 
         print $out;
-      } else { 
+      } elsif( $verbose ) { 
         print "* too recent: $out";
       }
     } else {
@@ -92,6 +126,7 @@ while(<DATA>) {
     }
   }
 }
+close(REPOS);
 print "\n";
 
 ## subroutines
@@ -100,24 +135,29 @@ sub gbrh() {
   my $source = $_[0];
   my $branch = $_[1];
   # update
-  call("$git remote update $source -p");
+  call("$git remote update $source -p &> /dev/null ");
   # get branches
   my $cmd = "$git branch -a";
   open( BRANCHES, "$cmd |" )
     || die "Unable to execute [$cmd]: $!\n";
   my @branches;
-  print "$branch excludes:\n";
+  if( $verbose ) { 
+    print "$branch excludes:\n";
+  }
   while(<BRANCHES>) { 
     chomp;
     s/^..([^ ]+).*/$1/;
     if( s#remotes/$source/## ) { 
-      if( m/r?[567]\.\d\.(\d\.((M\d|Beta\d|GA)\.)?)?(x|Final)|HEAD|master$/ ) { 
-        print "  $_\n";
+      if( m/r?\d\.\d\.(\d\.((M\d|Beta\d|GA)\.)?)?(x|Final)|HEAD|master$/ ) { 
+        if( $verbose ) { 
+          print "  $_\n";
+        }
       } else {
         push(@branches, $_);
       }
     }
   }
+  close(BRANCHES);
   return @branches;
 }
 
@@ -134,11 +174,3 @@ sub call {
   }
 }
 
-__DATA__
-drools:origin
-jbpm:origin
-droolsjbpm-knowledge:upstream
-droolsjbpm-build-bootstrap:upstream
-droolsjbpm-integration:upstream
-guvnor:upstream
-kie-wb-distributions:upstream
