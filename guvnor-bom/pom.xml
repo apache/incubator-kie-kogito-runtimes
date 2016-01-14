@@ -36,6 +36,18 @@
       -->
       <dependency>
         <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-test-utils</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-test-utils</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.guvnor</groupId>
         <artifactId>guvnor-structure-api</artifactId>
         <version>${version.org.guvnor}</version>
       </dependency>
