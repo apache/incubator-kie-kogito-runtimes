@@ -72,6 +72,7 @@
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
+    <version.org.javassist>3.18.2-GA</version.org.javassist>
     <version.avalon-framework>4.1.4</version.avalon-framework>
     <version.com.ahome-it.lienzo-core>2.0.192-RC1</version.com.ahome-it.lienzo-core>
     <version.com.android-dx>1.10</version.com.android-dx>
@@ -89,7 +90,7 @@
     <version.org.jboss.xnio>3.2.0.Final</version.org.jboss.xnio>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
     <version.org.drools.guvnor-api>5.6.0.Final</version.org.drools.guvnor-api>
-    <version.org.jboss.errai>3.2.2-SNAPSHOT</version.org.jboss.errai>
+    <version.org.jboss.errai>4.0.0-SNAPSHOT</version.org.jboss.errai>
     <!-- Version of Errai compatible with CDI 1.0. Few artifacts in this version are used for CDI 1.0 compatible WAR distributions. -->
     <version.org.jboss.errai.cdi10-compatible>3.0.6.Final</version.org.jboss.errai.cdi10-compatible>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
@@ -102,7 +103,8 @@
     <version.org.simpleframework>6.0.1</version.org.simpleframework>
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
-    <version.com.google.gwt>2.7.0</version.com.google.gwt>
+    <version.com.google.gwt>2.8.0-beta1</version.com.google.gwt>
+    <version.com.google.guava>20.0-SNAPSHOT</version.com.google.guava>
     <!-- this version will overwrite jboss-ip-version 3.1.2. The version in jboss-ip-bom couldn't be upgraded as this version needs GWT 2.7.0 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
@@ -135,8 +137,12 @@
     <version.org.eclipse.tycho>0.24.0</version.org.eclipse.tycho>
     <version.org.jboss.tools.tycho-plugins>0.23.1</version.org.jboss.tools.tycho-plugins>
     
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.argument.source>1.8</maven.compiler.argument.source>
+    <maven.compiler.argument.target>1.8</maven.compiler.argument.target>
     <!-- Used by maven-enforcer-plugin -->
-    <jdk.min.version>1.6.0</jdk.min.version>
+    <jdk.min.version>1.8.0</jdk.min.version>
     <maven.min.version>3.2.3</maven.min.version>
     <!-- Important: this is one and only place where the supported user agents (browsers) are configured.
          All webapps/showcases must use this property in their *.gwt.xml files.
@@ -400,6 +406,8 @@
             <maxmem>512m</maxmem>
             <showDeprecation>true</showDeprecation>
             <showWarnings>true</showWarnings>
+            <source>${maven.compiler.argument.source}</source>
+            <target>${maven.compiler.argument.target}</target>
           </configuration>
         </plugin>
 
@@ -413,7 +421,7 @@
             <excludes>
               <exclude>**/*IntegrationTest.java</exclude>
             </excludes>
-            <argLine>-Xmx1024m -XX:MaxPermSize=128m -Dfile.encoding=UTF-8</argLine>
+            <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
             <systemProperties>
               <property>
                 <name>apple.awt.UIElement</name>
@@ -442,7 +450,7 @@
             <includes>
               <include>**/*IntegrationTest.java</include>
             </includes>
-            <argLine>-Xmx1024m -XX:MaxPermSize=128m -Dfile.encoding=UTF-8</argLine>
+            <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
           </configuration>
         </plugin>
         <plugin>
@@ -987,7 +995,7 @@
               <artifactId>maven-surefire-plugin</artifactId>
               <configuration>
                 <!-- Append surefire.argLine property populated by JaCoCo plugin -->
-                <argLine>-Xmx1024m -XX:MaxPermSize=128m -Dfile.encoding=UTF-8 @{surefire.argLine}</argLine>
+                <argLine>-Xmx1024m -Dfile.encoding=UTF-8 @{surefire.argLine}</argLine>
               </configuration>
             </plugin>
           </plugins>

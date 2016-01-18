@@ -286,6 +286,12 @@
         <version>${version.com.unboundid}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>${version.org.javassist}</version>
+      </dependency>
+
       <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
       <dependency>
         <groupId>javax.xml.stream</groupId>
@@ -467,7 +473,7 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-weld-integration</artifactId>
+        <artifactId>errai-cdi-server</artifactId>
         <version>${version.org.jboss.errai}</version>
         <exclusions>
           <exclusion>
@@ -556,6 +562,16 @@
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
         <version>${version.com.google.gwt}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${version.com.google.guava}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-gwt</artifactId>
+        <version>${version.com.google.guava}</version>
       </dependency>
 
       <dependency>
