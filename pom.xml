@@ -22,7 +22,7 @@
   <!-- major.minor.micro.Final -->
   <!-- For example: 1.2.3 without the suffix ".Final" corrupts the OSGi eclipse updatesite -->
   <!-- For example: 1.2.3.M2 corrupts the OSGi eclipse updatesite update order -->
-  <version>6.4.0-SNAPSHOT</version>
+  <version>7.0.0-SNAPSHOT</version>
 
   <name>KIE (Drools, jBPM, OptaPlanner) parent metadata</name>
   <description>
@@ -45,14 +45,14 @@
 
   <properties>
     <!-- Internal dependencies -->
-    <version.org.kie>6.4.0-SNAPSHOT</version.org.kie>
+    <version.org.kie>7.0.0-SNAPSHOT</version.org.kie>
     <version.org.drools>${version.org.kie}</version.org.drools>
     <version.org.optaplanner>${version.org.kie}</version.org.optaplanner>
     <version.org.jbpm>${version.org.kie}</version.org.jbpm>
     <version.org.jbpm.dashboard-builder>${version.org.kie}</version.org.jbpm.dashboard-builder>
     <version.org.drools.droolsjbpm-integration>${version.org.drools}</version.org.drools.droolsjbpm-integration>
-    <version.org.uberfire>0.8.0-SNAPSHOT</version.org.uberfire>
-    <version.org.dashbuilder>0.4.0-SNAPSHOT</version.org.dashbuilder>
+    <version.org.uberfire>0.9.0-SNAPSHOT</version.org.uberfire>
+    <version.org.dashbuilder>0.5.0-SNAPSHOT</version.org.dashbuilder>
     <version.org.guvnor>${version.org.drools}</version.org.guvnor>
     <version.org.kie.uberfire.extensions>${version.org.drools}</version.org.kie.uberfire.extensions>
     <version.org.drools.droolsjbpm-tools>${version.org.drools}</version.org.drools.droolsjbpm-tools>
