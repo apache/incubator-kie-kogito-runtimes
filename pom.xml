@@ -129,9 +129,6 @@
          See https://issues.apache.org/jira/browse/FELIX-4882 for more details.
          Version 3.x requires Java 7 (not directly, but one of transitive deps does). -->
     <version.bundle.plugin>2.5.3</version.bundle.plugin>
-    <!-- Override6.1.1 is the last version supporting Java 6. We need to be able to run certain modules
-         (e.g. jbpm-test-coverage) with Java 6. -->
-    <version.checkstyle>6.1.1</version.checkstyle>
 
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>0.24.0</version.org.eclipse.tycho>
@@ -143,6 +140,7 @@
     <maven.compiler.argument.target>1.8</maven.compiler.argument.target>
     <!-- Used by maven-enforcer-plugin -->
     <jdk.min.version>1.8.0</jdk.min.version>
+
     <maven.min.version>3.2.3</maven.min.version>
     <!-- Important: this is one and only place where the supported user agents (browsers) are configured.
          All webapps/showcases must use this property in their *.gwt.xml files.
@@ -307,37 +305,6 @@
                 <logViolationsToConsole>false</logViolationsToConsole>
                 <failOnViolation>false</failOnViolation>
                 <failsOnError>false</failsOnError>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>1.13</version>
-          <dependencies>
-            <!-- Upgrade ASM and support Java 8 bytecode -->
-            <!-- This is a workaround as it is already fixed in version 1.14.
-                 However, that one fails with NPE for even simple cases, so it can't be used -->
-            <dependency>
-              <groupId>org.ow2.asm</groupId>
-              <artifactId>asm-all</artifactId>
-              <version>5.0.3</version>
-            </dependency>
-          </dependencies>
-          <executions>
-            <execution>
-              <id>check-java-1.6-compatibility</id>
-              <phase>test-compile</phase>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <configuration>
-                <signature>
-                  <groupId>org.codehaus.mojo.signature</groupId>
-                  <artifactId>java16</artifactId>
-                  <version>1.1</version>
-                </signature>
               </configuration>
             </execution>
           </executions>
@@ -783,7 +750,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
             <links>
-              <link>http://docs.oracle.com/javase/6/docs/api</link>
+              <link>http://docs.oracle.com/javase/8/docs/api</link>
             </links>
             <minmemory>128m</minmemory>
             <maxmemory>512m</maxmemory>
@@ -1017,10 +984,6 @@
       </activation>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>animal-sniffer-maven-plugin</artifactId>
-          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
