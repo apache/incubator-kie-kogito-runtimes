@@ -1149,6 +1149,26 @@ Extra IntelliJ plugins
 
         * Run that configuration.
 
+Linux inotify
+-------------
+
+We have encountered some issues with different Linux distribution's *inotify* when running any of the Workbench's in Super Dev Mode from within InteliJ.
+
+Error message `User limit of inotify instances reached or too many open files` has been observed with both Ubuntu and Fedora. Should you encounter this issue you will need to reconfigure your *inotify* settings.
+
+Add the following to `/etc/sysctl.conf` and then run `sudo sysctl -p`:
+
+`fs.inotify.max_user_watches = 524288`
+
+`fs.inotify.max_user_instances = 524288`
+
+You may also need to add the following lines (replacing `user-id` with your User Id) to `/etc/security/limits.conf`:
+
+`user-id soft nofile 4096`
+
+`user-id hard nofile 10240`
+
+
 Team communication
 ==================
 
