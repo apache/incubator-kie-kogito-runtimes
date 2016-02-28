@@ -312,12 +312,12 @@
         <plugin>
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
-          <version>0.3.11</version>
+          <version>0.4.1</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.5.2</version>
+              <version>0.6.0</version>
             </dependency>
           </dependencies>
         </plugin>
