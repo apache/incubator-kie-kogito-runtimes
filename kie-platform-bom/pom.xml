@@ -161,6 +161,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.apache.deltaspike.cdictrl</groupId>
+        <artifactId>deltaspike-cdictrl-weld</artifactId>
+        <version>${version.org.apache.deltaspike.core}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.xmlbeans</groupId>
         <artifactId>xmlbeans</artifactId>
         <version>${version.org.apache.xmlbeans}</version>
