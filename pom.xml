@@ -147,8 +147,6 @@
     <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overridden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
-    <!-- itext pdf -->
-    <version.org.itext.itextpdf>5.5.9</version.org.itext.itextpdf>
   </properties>
 
   <repositories>
