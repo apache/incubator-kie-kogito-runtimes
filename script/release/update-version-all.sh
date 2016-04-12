@@ -89,7 +89,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         cd $repository
         if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
             # first build&install the current version (usually SNAPSHOT) as it is needed later by other repos
-            mvn -B -Dfull clean install
+            mvn -B -U -Dfull clean install
             mvn -B -N -Dfull versions:set -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
             sed -i "s/<version\.org\.kie>.*<\/version.org.kie>/<version.org.kie>$newVersion<\/version.org.kie>/" pom.xml
             # update latest released version property only for non-SNAPSHOT versions
