@@ -311,6 +311,14 @@
       </dependency>
 
       <dependency>
+        <groupId>net.sf.docbook</groupId>
+        <artifactId>docbook-xsl</artifactId>
+        <version>${version.net.sf.docbook.docbook-xsl}</version>
+        <classifier>resources</classifier>
+        <type>zip</type>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
         <version>${version.org.apache.lucene}</version>

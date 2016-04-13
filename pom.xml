@@ -80,6 +80,7 @@
     <version.com.google.android>4.1.1.4</version.com.google.android>
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
     <version.link.bek.tools.issue-keeper-junit>4.11.1</version.link.bek.tools.issue-keeper-junit>
+    <version.net.sf.docbook.docbook-xsl>1.76.1</version.net.sf.docbook.docbook-xsl>
     <version.org.apache.xmlgraphics.batik>1.6.1-1</version.org.apache.xmlgraphics.batik>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
