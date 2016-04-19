@@ -95,6 +95,11 @@
     <version.com.wordnik.swagger>1.3.10</version.com.wordnik.swagger>
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
+    <!-- Remove once we use ip-bom with https://github.com/jboss-integration/jboss-integration-platform-bom/pull/301 -->
+    <version.org.jboss.classfilewriter>1.1.2.Final</version.org.jboss.classfilewriter>
+    <!-- Remove Weld overrides once we use ip-bom with https://github.com/jboss-integration/jboss-integration-platform-bom/pull/301 -->
+    <version.org.jboss.weld.weld>2.3.3.Final</version.org.jboss.weld.weld>
+    <version.org.jboss.weld.weld-api>2.3.SP1</version.org.jboss.weld.weld-api>
     <version.org.roboguice>3.0.1</version.org.roboguice>
     <version.org.robolectric>2.4</version.org.robolectric>
     <version.org.simpleframework>6.0.1</version.org.simpleframework>

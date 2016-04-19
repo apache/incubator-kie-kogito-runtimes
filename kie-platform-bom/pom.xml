@@ -439,6 +439,12 @@
         </exclusions>
       </dependency>
 
+      <dependency>
+        <groupId>org.jboss.classfilewriter</groupId>
+        <artifactId>jboss-classfilewriter</artifactId>
+        <version>${version.org.jboss.classfilewriter}</version>
+      </dependency>
+
       <!-- Errai (needed for Guice exclusion) -->
       <dependency>
         <groupId>org.jboss.errai</groupId>
@@ -494,6 +500,50 @@
             <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <!-- Weld deps should be removed once we use ip-bom with https://github.com/jboss-integration/jboss-integration-platform-bom/pull/301 -->
+      <dependency>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-api</artifactId>
+        <version>${version.org.jboss.weld.weld-api}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-core</artifactId>
+        <version>${version.org.jboss.weld.weld}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-spi</artifactId>
+        <version>${version.org.jboss.weld.weld-api}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.environment</groupId>
+        <artifactId>weld-environment-common</artifactId>
+        <version>${version.org.jboss.weld.weld}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.se</groupId>
+        <artifactId>weld-se-core</artifactId>
+        <version>${version.org.jboss.weld.weld}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.servlet</groupId>
+        <artifactId>weld-servlet-core</artifactId>
+        <version>${version.org.jboss.weld.weld}</version>
       </dependency>
 
       <dependency>
