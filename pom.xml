@@ -12,7 +12,7 @@
   </parent>
 
   <groupId>org.kie</groupId>
-  <artifactId>kie-parent-metadata</artifactId>
+  <artifactId>kie-parent</artifactId>
   <packaging>pom</packaging>
   <!-- On updating the version, also look for these variations for OSGi stuff: "5.3.0.qualifier" and "5.3.0.SNAPSHOT" -->
   <!-- Important a released version should always follow any of these patterns: -->
@@ -1078,7 +1078,7 @@
     <module>kie-uberfire-extensions-bom</module>
     <module>guvnor-bom</module>
     <module>dashboard-builder-bom</module>
-    <module>kie-platform-bom</module>
+    <module>kie-third-party-bom</module>
     <module>kie-parent-with-dependencies</module>
   </modules>
 

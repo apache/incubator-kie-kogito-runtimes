@@ -5,24 +5,24 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie</groupId>
-    <artifactId>kie-parent-metadata</artifactId>
+    <artifactId>kie-parent</artifactId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>kie-platform-bom</artifactId>
+  <artifactId>kie-third-party-bom</artifactId>
   <packaging>pom</packaging>
 
-  <name>KIE (Drools, jBPM, OptaPlanner) platform BOM</name>
+  <name>Third party BOM for KIE projects (Drools, jBPM, OptaPlanner)</name>
   <description>
-    The BOM declares all (internal + 3rd party) dependency versions in dependencyManagement.
+    The BOM declares only 3rd party (not maintained by KIE team) dependency versions in dependencyManagement.
     All modules should (transitively) import this BOM, except for the user-facing BOMs (which are used here).
   </description>
 
-  <!-- IMPORTANT: Do not declare any properties here! Declare them in kie-parent-metadata. This way the properties
+  <!-- IMPORTANT: Do not declare any properties here! Declare them in kie-parent. This way the properties
        will be at single place and can be shared between the BOMs and all the other modules. -->
   <properties/>
 
-  <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent-metadata. -->
+  <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent. -->
   <build/>
 
   <!-- IMPORTANT: Do not declare any dependencies here! This is a platform BOM and such should
@@ -32,70 +32,6 @@
   <dependencyManagement>
     <dependencies>
       <!-- ################################################################################ -->
-      <!-- Internal dependencies -->
-      <!-- ################################################################################ -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.kie}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.drools}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>guvnor-api</artifactId>
-        <version>${version.org.drools.guvnor-api}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.optaplanner</groupId>
-        <artifactId>optaplanner-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.optaplanner}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.jbpm}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.dashboard</groupId>
-        <artifactId>jbpm-dashboard-webapp</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.uberfire</groupId>
-        <artifactId>kie-uberfire-extensions-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.kie.uberfire.extensions}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.guvnor}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.dashboard-builder</groupId>
-        <artifactId>dashboard-builder-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.jbpm.dashboard-builder}</version>
-        <scope>import</scope>
-      </dependency>
-
-      <!-- ################################################################################ -->
       <!-- External dependencies -->
       <!-- ################################################################################ -->
       <dependency>
@@ -103,36 +39,6 @@
         <artifactId>jboss-integration-platform-bom</artifactId>
         <type>pom</type>
         <version>${version.org.jboss.integration-platform}</version>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.dashbuilder</groupId>
-        <artifactId>dashbuilder-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.dashbuilder}</version>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.uberfire}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-extensions-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.uberfire}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.errai.bom</groupId>
-        <artifactId>errai-internal-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.jboss.errai}</version>
         <scope>import</scope>
       </dependency>
 

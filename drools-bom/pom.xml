@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie</groupId>
-    <artifactId>kie-parent-metadata</artifactId>
+    <artifactId>kie-parent</artifactId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
@@ -19,7 +19,7 @@
   </description>
 
 
-  <!-- IMPORTANT: Do not declare any build things here! Declare them in kie-parent-metadata. -->
+  <!-- IMPORTANT: Do not declare any build things here! Declare them in kie-parent. -->
   <build/>
 
   <dependencyManagement>
