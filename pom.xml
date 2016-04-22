@@ -136,6 +136,8 @@
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>0.24.0</version.org.eclipse.tycho>
     <version.org.jboss.tools.tycho-plugins>0.23.1</version.org.jboss.tools.tycho-plugins>
+    <!-- Override plexus Archiver with version 3.0.3 as older don't work on JDK9. Can be removed after upgrade to jboss-parent:20+ -->
+    <version.org.codehaus.plexus.plexus-archiver>3.0.3</version.org.codehaus.plexus.plexus-archiver>
     
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -470,6 +472,13 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-archiver</artifactId>
+              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
+            </dependency>
+          </dependencies>
           <executions>
             <!-- No OSGi manifestEntries for <goal>jar</goal>: if it supported, then felix has already added them -->
             <execution>
@@ -505,6 +514,13 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-archiver</artifactId>
+              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
+            </dependency>
+          </dependencies>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -659,6 +675,11 @@
           <artifactId>maven-assembly-plugin</artifactId>
           <dependencies>
             <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-archiver</artifactId>
+              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
+            </dependency>
+            <dependency>
               <!-- Entry needed to enable jdocbook unzipping -->
               <groupId>org.jboss.maven.plugins</groupId>
               <artifactId>maven-jdocbook-plugin</artifactId>
@@ -749,6 +770,13 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-archiver</artifactId>
+              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
+            </dependency>
+          </dependencies>
           <configuration>
             <links>
               <link>http://docs.oracle.com/javase/8/docs/api</link>
