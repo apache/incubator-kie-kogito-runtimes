@@ -106,8 +106,8 @@
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
     <version.com.google.gwt>2.8.0-beta1</version.com.google.gwt>
-    <!-- 19.0.0.jbossorg-1 was created from upstream Guava version 20.0-SNAPSHOT as Errai 4.0/GWT 2.8 needs it. Once the version 20.0 is released, we should upgrade to that. -->
-    <version.com.google.guava>19.0.0.jbossorg-1</version.com.google.guava>
+    <!-- 19.0.0.jbossorg-2 was created from upstream Guava version 20.0-SNAPSHOT as Errai 4.0/GWT 2.8 needs it. Once the version 20.0 is released, we should upgrade to that. -->
+    <version.com.google.guava>19.0.0.jbossorg-2</version.com.google.guava>
     <!-- this version will overwrite jboss-ip-version 3.1.2. The version in jboss-ip-bom couldn't be upgraded as this version needs GWT 2.7.0 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
