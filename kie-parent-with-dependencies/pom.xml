@@ -103,13 +103,6 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-extensions-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.uberfire}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
         <groupId>org.jboss.errai.bom</groupId>
         <artifactId>errai-internal-bom</artifactId>
         <type>pom</type>
