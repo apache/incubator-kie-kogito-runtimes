@@ -488,6 +488,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <dependencies>
+            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-archiver</artifactId>
@@ -530,6 +531,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <dependencies>
+            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-archiver</artifactId>
@@ -593,6 +595,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <dependencies>
+            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-archiver</artifactId>
@@ -604,6 +607,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-ear-plugin</artifactId>
           <dependencies>
+            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-archiver</artifactId>
@@ -711,6 +715,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <dependencies>
+            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-archiver</artifactId>
@@ -808,6 +813,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <dependencies>
+            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-archiver</artifactId>
