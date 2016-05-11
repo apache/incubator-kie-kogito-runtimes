@@ -434,6 +434,7 @@
           <configuration>
             <includes>
               <include>**/*IntegrationTest.java</include>
+              <include>**/*IT.java</include>
             </includes>
             <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
           </configuration>
