@@ -151,7 +151,7 @@ One week in advance:
 
     * Do a sanity check of the artifacts by running each runExamples.sh from the zips.
 
-        * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target/*/download_jboss_org`:
+        * Go to `kie-wb-distributions/droolsjbpm-uber-distribution/target/*/download_jboss_org`:
 
             * Unzip the zips to a temporary directory.
 
@@ -590,7 +590,7 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
 
 * Upload the zips, documentation and javadocs to filemgmt and update the website.
 
-    * Go to `droolsjbpm-build-distribution/droolsjbpm-uber-distribution/target`.
+    * Go to `kie-wb-distributions/droolsjbpm-uber-distribution/target`.
 
     * To get access to `filemgmt.jboss.org`, see preparation above.
 

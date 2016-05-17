@@ -366,7 +366,7 @@ Running the build
     ```shell
     $ cd ~/projects/droolsjbpm
     $ ls
-    drools  droolsjbpm-build-bootstrap  droolsjbpm-build-distribution  droolsjbpm-integration  droolsjbpm-knowledge  droolsjbpm-tools  optaplanner  guvnor
+    drools  droolsjbpm-build-bootstrap droolsjbpm-integration  droolsjbpm-knowledge  droolsjbpm-tools  optaplanner  guvnor
     $ cd guvnor
     $ ls
     ...  guvnor-repository  guvnor-webapp-drools  pom.xml

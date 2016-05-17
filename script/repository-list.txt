@@ -17,5 +17,4 @@ dashboard-builder
 jbpm-dashboard
 kie-docs
 kie-wb-distributions
-droolsjbpm-build-distribution
 kie-eap-modules

@@ -56,7 +56,6 @@
     <version.org.guvnor>${version.org.drools}</version.org.guvnor>
     <version.org.kie.uberfire.extensions>${version.org.drools}</version.org.kie.uberfire.extensions>
     <version.org.drools.droolsjbpm-tools>${version.org.drools}</version.org.drools.droolsjbpm-tools>
-    <version.org.drools.droolsjbpm-build-distribution>${version.org.drools}</version.org.drools.droolsjbpm-build-distribution>
     <version.org.jbpm.jbpm-designer>${version.org.jbpm}</version.org.jbpm.jbpm-designer>
     <version.org.jbpm.jbpm-form-modeler>${version.org.jbpm}</version.org.jbpm.jbpm-form-modeler>
     <version.org.jbpm.jbpm-console-ng>${version.org.jbpm}</version.org.jbpm.jbpm-console-ng>
