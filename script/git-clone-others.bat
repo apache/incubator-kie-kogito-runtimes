@@ -25,7 +25,7 @@ for /F %%r in ('type %scriptDir%\repository-list.txt') do (
         echo ===============================================================================
         echo Repository: %%r
         echo ===============================================================================
-        call git clone %gitUrlPrefix%\%%r.git %%r
+        call git clone %gitUrlPrefix%%%r.git %%r
         if "%ERRORLEVEL%" NEQ "0" (
             echo git clone failed
             goto:eof
