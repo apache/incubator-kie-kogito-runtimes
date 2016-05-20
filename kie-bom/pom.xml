@@ -772,6 +772,18 @@
         <version>${version.org.guvnor}</version>
         <classifier>sources</classifier>
       </dependency>
+      <!--Workbench-->
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-workbench-client</artifactId>
+        <version>${version.org.guvnor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-workbench-client</artifactId>
+        <version>${version.org.guvnor}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <!-- Data Modeller Screen -->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
