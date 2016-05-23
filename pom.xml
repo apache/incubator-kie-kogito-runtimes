@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-parent</artifactId>
     <!-- Keep in sync with property <version.org.jboss.integration-platform> -->
-    <version>7.0.0.CR1</version>
+    <version>7.0.0.CR3</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -67,7 +67,7 @@
 
     <!-- External dependency versions bom -->
     <!-- Keep in sync with <parent>'s <version> -->
-    <version.org.jboss.integration-platform>7.0.0.CR1</version.org.jboss.integration-platform>
+    <version.org.jboss.integration-platform>7.0.0.CR3</version.org.jboss.integration-platform>
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
@@ -97,11 +97,6 @@
     <version.com.wordnik.swagger>1.3.10</version.com.wordnik.swagger>
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
-    <!-- Remove once we use ip-bom with https://github.com/jboss-integration/jboss-integration-platform-bom/pull/301 -->
-    <version.org.jboss.classfilewriter>1.1.2.Final</version.org.jboss.classfilewriter>
-    <!-- Remove Weld overrides once we use ip-bom with https://github.com/jboss-integration/jboss-integration-platform-bom/pull/301 -->
-    <version.org.jboss.weld.weld>2.3.3.Final</version.org.jboss.weld.weld>
-    <version.org.jboss.weld.weld-api>2.3.SP1</version.org.jboss.weld.weld-api>
     <version.org.roboguice>3.0.1</version.org.roboguice>
     <version.org.robolectric>2.4</version.org.robolectric>
     <version.org.jboss.arquillian.selenium>2.53.0</version.org.jboss.arquillian.selenium>
