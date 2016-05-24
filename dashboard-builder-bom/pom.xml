@@ -5,8 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie</groupId>
-    <artifactId>kie-parent</artifactId>
+    <artifactId>kie-user-bom-parent</artifactId>
     <version>7.0.0-SNAPSHOT</version>
+    <relativePath>../kie-user-bom-parent/pom.xml</relativePath>
   </parent>
 
   <groupId>org.jboss.dashboard-builder</groupId>
@@ -19,7 +20,7 @@
   </description>
 
 
-  <!-- IMPORTANT: Do not declare any build things here! Declare them in kie-parent. -->
+  <!-- IMPORTANT: Do not declare any build things here! Declare them in kie-user-bom-parent. -->
   <build/>
 
   <dependencyManagement>
@@ -28,7 +29,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-bom</artifactId>
         <type>pom</type>
-        <version>${project.version}</version>
+        <version>${version.org.kie}</version>
         <scope>import</scope>
       </dependency>
 
@@ -47,18 +48,18 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-commons</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-commons</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-commons</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
@@ -67,12 +68,12 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-security</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-security</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -80,18 +81,18 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-api</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-api</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-api</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
@@ -100,12 +101,12 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-core</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-core</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -113,13 +114,13 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-csv</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
       </dependency>
 
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-csv</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -127,12 +128,12 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-sql</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-provider-sql</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -140,12 +141,12 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-displayer-core</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-displayer-core</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -154,18 +155,18 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-displayer-api</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-displayer-api</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-displayer-api</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
@@ -176,19 +177,19 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-core</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-core</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-core</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
 
@@ -196,13 +197,13 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-panels</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-panels</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -210,13 +211,13 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-resources</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-resources</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -224,19 +225,19 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-nvd3</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-nvd3</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-nvd3</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -244,19 +245,19 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-ofc2</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-ofc2</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-ofc2</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -264,19 +265,19 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-gauge</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-gauge</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-gauge</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -284,19 +285,19 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-webapp</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-webapp</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-webapp</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -304,7 +305,7 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-ui-google</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
 
@@ -312,7 +313,7 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-samples</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
 
@@ -320,7 +321,7 @@
       <dependency>
         <groupId>org.jboss.dashboard-builder</groupId>
         <artifactId>dashboard-showcase</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
 

@@ -5,8 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie</groupId>
-    <artifactId>kie-parent</artifactId>
+    <artifactId>kie-user-bom-parent</artifactId>
     <version>7.0.0-SNAPSHOT</version>
+    <relativePath>../kie-user-bom-parent/pom.xml</relativePath>
   </parent>
 
   <groupId>org.kie.uberfire</groupId>
@@ -19,7 +20,7 @@
   </description>
 
 
-  <!-- IMPORTANT: Do not declare any build things here! Declare them in kie-parent. -->
+  <!-- IMPORTANT: Do not declare any build things here! Declare them in kie-user-bom-parent. -->
   <build/>
 
   <dependencyManagement>
@@ -39,46 +40,46 @@
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-api</artifactId>
-        <version>${version.org.kie.uberfire.extensions}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-api</artifactId>
-        <version>${version.org.kie.uberfire.extensions}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-client</artifactId>
-        <version>${version.org.kie.uberfire.extensions}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-client</artifactId>
-        <version>${version.org.kie.uberfire.extensions}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-backend</artifactId>
-        <version>${version.org.kie.uberfire.extensions}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>kie-uberfire-social-activities-backend</artifactId>
-        <version>${version.org.kie.uberfire.extensions}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>i18n-taglib</artifactId>
-        <version>${version.org.kie.uberfire.extensions}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.uberfire</groupId>
         <artifactId>i18n-taglib</artifactId>
-        <version>${version.org.kie.uberfire.extensions}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 

@@ -6,8 +6,8 @@
   <parent>
     <!-- That parent extends the org.jboss:jboss-parent -->
     <groupId>org.jboss.integration-platform</groupId>
-    <artifactId>jboss-integration-platform-parent</artifactId>
-    <!-- Keep in sync with property <version.org.jboss.integration-platform> -->
+    <artifactId>jboss-integration-platform-bom</artifactId>
+    <!-- Keep in sync with ip-parent version in kie-user-bom-parent/pom.xml -->
     <version>7.0.0.CR3</version>
   </parent>
 
@@ -24,12 +24,12 @@
   <!-- For example: 1.2.3.M2 corrupts the OSGi eclipse updatesite update order -->
   <version>7.0.0-SNAPSHOT</version>
 
-  <name>KIE (Drools, jBPM, OptaPlanner) parent metadata</name>
+  <name>KIE (Drools, jBPM, OptaPlanner) parent</name>
   <description>
-    The metadata parent contains all parent metadata (including plugins) except for dependency versions.
-    This is to avoid a chicken-and-egg problem with the boms.
+    The parent contains all metadata (including plugins) including dependency versions. All modules, except for user BOMS,
+    should (transitively) inherit from this parent.
   </description>
-  <url>http://www.jboss.org/drools</url>
+  <url>http://www.kiegroup.org</url>
   <inceptionYear>2001</inceptionYear>
   <organization>
     <name>JBoss by Red Hat</name>
@@ -66,12 +66,11 @@
      -->
 
     <!-- External dependency versions bom -->
-    <!-- Keep in sync with <parent>'s <version> -->
-    <version.org.jboss.integration-platform>7.0.0.CR3</version.org.jboss.integration-platform>
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
     <version.avalon-framework>4.1.4</version.avalon-framework>
+    <version.batik>1.6.1-1</version.batik>
     <version.com.ahome-it.lienzo-core>2.0.192-RC1</version.com.ahome-it.lienzo-core>
     <version.com.android-dx>1.10</version.com.android-dx>
     <version.com.github.detro>1.2.0</version.com.github.detro>
@@ -80,7 +79,6 @@
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
     <version.link.bek.tools.issue-keeper-junit>4.11.1</version.link.bek.tools.issue-keeper-junit>
     <version.net.sf.docbook.docbook-xsl>1.76.1</version.net.sf.docbook.docbook-xsl>
-    <version.org.apache.xmlgraphics.batik>1.6.1-1</version.org.apache.xmlgraphics.batik>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
@@ -168,6 +166,7 @@
   </properties>
 
   <repositories>
+    <!-- Bootstrap repository to locate the parent pom when the parent pom has not been build locally. -->
     <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
     <repository>
       <id>jboss-public-repository-group</id>
@@ -198,13 +197,13 @@
   </pluginRepositories>
 
   <scm>
-    <connection>scm:git:git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git</connection>
+    <connection>scm:git:https://github.com/droolsjbpm/droolsjbpm-build-bootstrap.git</connection>
     <developerConnection>scm:git:git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git</developerConnection>
     <url>https://github.com/droolsjbpm/droolsjbpm-build-bootstrap</url>
   </scm>
   <ciManagement>
-    <system>hudson</system>
-    <url>https://hudson.jboss.org/hudson/view/Drools%20jBPM/</url>
+    <system>jenkins</system>
+    <url>https://jenkins-kieci.rhcloud.com</url>
   </ciManagement>
   <issueManagement>
     <system>jira</system>
@@ -224,19 +223,23 @@
   </contributors>
   <mailingLists>
     <mailingList>
-      <name>user</name>
-      <subscribe>https://lists.jboss.org/mailman/listinfo/rules-users</subscribe>
-      <unsubscribe>https://lists.jboss.org/mailman/listinfo/rules-users</unsubscribe>
-      <archive>http://dir.gmane.org/gmane.comp.java.drools.user</archive>
+      <name>setup</name>
+      <subscribe>https://groups.google.com/forum/#!forum/drools-setup</subscribe>
+      <unsubscribe>https://groups.google.com/forum/#!forum/drools-setup</unsubscribe>
       <otherArchives>
+        <!-- Very old (and long deprecated) user mailing list -->
         <otherArchive>http://drools.46999.n3.nabble.com/Drools-User-forum-f47000.html</otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
-      <name>dev</name>
-      <subscribe>https://lists.jboss.org/mailman/listinfo/rules-dev</subscribe>
-      <unsubscribe>https://lists.jboss.org/mailman/listinfo/rules-dev</unsubscribe>
-      <archive>http://dir.gmane.org/gmane.comp.java.drools.devel</archive>
+      <name>usage</name>
+      <subscribe>https://groups.google.com/forum/#!forum/drools-usage</subscribe>
+      <unsubscribe>https://groups.google.com/forum/#!forum/drools-usage</unsubscribe>
+    </mailingList>
+    <mailingList>
+      <name>development</name>
+      <subscribe>https://groups.google.com/forum/#!forum/drools-development</subscribe>
+      <unsubscribe>https://groups.google.com/forum/#!forum/drools-development</unsubscribe>
     </mailingList>
   </mailingLists>
 
@@ -499,6 +502,7 @@
                 <goal>test-jar</goal>
               </goals>
               <configuration>
+                <skipIfEmpty>true</skipIfEmpty>
                 <excludes>
                   <exclude>**/logback-test.xml</exclude>
                   <exclude>**/jndi.properties</exclude>
@@ -1110,6 +1114,7 @@
   </profiles>
 
   <modules>
+    <module>kie-user-bom-parent</module>
     <module>kie-bom</module>
     <module>drools-bom</module>
     <module>optaplanner-bom</module>
@@ -1117,14 +1122,694 @@
     <module>kie-uberfire-extensions-bom</module>
     <module>guvnor-bom</module>
     <module>dashboard-builder-bom</module>
-    <module>kie-third-party-bom</module>
+    <module>kie-platform-bom</module>
     <module>kie-parent-with-dependencies</module>
   </modules>
 
-  <!-- IMPORTANT: Do not declare any dependencies here! Declare them in kie-parent-with-dependencies. -->
-  <dependencyManagement/>
-  <!-- Intentionally empty -->
-  <dependencies/>
-  <!-- Intentionally empty -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>avalon-framework</groupId>
+        <artifactId>avalon-framework</artifactId>
+        <version>${version.avalon-framework}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.deltaspike.cdictrl</groupId>
+        <artifactId>deltaspike-cdictrl-weld</artifactId>
+        <version>${version.org.apache.deltaspike.core}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.xmlbeans</groupId>
+        <artifactId>xmlbeans</artifactId>
+        <version>${version.org.apache.xmlbeans}</version>
+      </dependency>
+
+      <!-- TODO BZ-996210 use org.apache.xmlgraphics:batik* instead -->
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-parser</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-transcoder</artifactId>
+        <version>${version.batik}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>fop</groupId>
+            <artifactId>fop</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-extension</artifactId>
+        <version>${version.batik}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-dom</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-xml</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-bridge</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-css</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-svg-dom</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-svggen</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-util</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-ext</artifactId>
+        <version>${version.batik}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-script</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-gvt</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-awt-util</artifactId>
+        <version>${version.batik}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.android</groupId>
+        <artifactId>dx</artifactId>
+        <version>${version.com.android-dx}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.tomakehurst</groupId>
+        <artifactId>wiremock</artifactId>
+        <classifier>standalone</classifier>
+        <version>${version.com.github.tomakehurst.wiremock}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.android</groupId>
+        <artifactId>android</artifactId>
+        <version>${version.com.google.android}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.android</groupId>
+        <artifactId>android-test</artifactId>
+        <version>${version.com.google.android}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.unboundid</groupId>
+        <artifactId>unboundid-ldapsdk</artifactId>
+        <version>${version.com.unboundid}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${version.javax.validation}</version>
+      </dependency>
+      <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
+      <dependency>
+        <groupId>javax.xml.stream</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>${version.javax.xml.stream.stax}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>link.bek.tools</groupId>
+        <artifactId>issue-keeper-junit</artifactId>
+        <version>${version.link.bek.tools.issue-keeper-junit}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.sf.docbook</groupId>
+        <artifactId>docbook-xsl</artifactId>
+        <version>${version.net.sf.docbook.docbook-xsl}</version>
+        <classifier>resources</classifier>
+        <type>zip</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${version.org.apache.lucene}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${version.org.apache.lucene}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-codecs</artifactId>
+        <version>${version.org.apache.lucene}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${version.org.apache.lucene}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queries</artifactId>
+        <version>${version.org.apache.lucene}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-sandbox</artifactId>
+        <version>${version.org.apache.lucene}</version>
+      </dependency>
+
+
+      <!-- dependency of org.apache.lucene:lucene-sandbox -->
+      <dependency>
+        <groupId>jakarta-regexp</groupId>
+        <artifactId>jakarta-regexp</artifactId>
+        <version>${version.jakarta-regexp}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>fop</artifactId>
+        <version>${version.org.apache.xmlgraphics.fop}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-svg-dom</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-anim</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-css</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-dom</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-parser</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-bridge</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-script</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-xml</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-awt-util</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-gvt</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-transcoder</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-svggen</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-extension</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-ext</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>xmlgraphics-commons</artifactId>
+        <version>${version.org.apache.xmlgraphics.commons}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-proxy</artifactId>
+        <version>${version.org.eclipse.jetty}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>org.eclipse.sisu.inject</artifactId>
+        <version>${version.org.eclipse.sisu}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- Errai (needed for Guice exclusion) -->
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-bus</artifactId>
+        <version>${version.org.jboss.errai}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-ioc</artifactId>
+        <version>${version.org.jboss.errai}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-tools</artifactId>
+        <version>${version.org.jboss.errai}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-js</artifactId>
+        <version>${version.org.jboss.errai}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-cdi-server</artifactId>
+        <version>${version.org.jboss.errai}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- Weld deps should be removed once we use ip-bom with https://github.com/jboss-integration/jboss-integration-platform-bom/pull/301 -->
+      <dependency>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-core</artifactId>
+        <version>${version.org.jboss.weld.weld}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.se</groupId>
+        <artifactId>weld-se-core</artifactId>
+        <version>${version.org.jboss.weld.weld}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-api</artifactId>
+        <version>${version.org.picketlink}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-idm-api</artifactId>
+        <version>${version.org.picketlink}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-impl</artifactId>
+        <version>${version.org.picketlink}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-idm-impl</artifactId>
+        <version>${version.org.picketlink}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-tomcat7-single</artifactId>
+        <version>${version.org.picketlink}</version>
+      </dependency>
+
+      <!-- dashboard-builder -->
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-core-api</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-embedded</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-deployers-fungal</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-deployers-common</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-common-impl-papaki</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-jdbc</artifactId>
+        <version>${version.org.jboss.ironjacamar}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-runner</artifactId>
+        <version>${version.org.mortbay.jetty.runner}</version>
+      </dependency>
+
+      <!-- GWT -->
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-servlet</artifactId>
+        <version>${version.com.google.gwt}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${version.com.google.gwt}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <version>${version.com.google.gwt}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${version.com.google.guava}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-gwt</artifactId>
+        <version>${version.com.google.guava}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz-oracle</artifactId>
+        <version>${version.org.quartz-scheduler}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz-weblogic</artifactId>
+        <version>${version.org.quartz-scheduler}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.roboguice</groupId>
+        <artifactId>roboguice</artifactId>
+        <version>${version.org.roboguice}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.roboguice</groupId>
+        <artifactId>roboblender</artifactId>
+        <version>${version.org.roboguice}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.robolectric</groupId>
+        <artifactId>robolectric</artifactId>
+        <version>${version.org.robolectric}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.robolectric</groupId>
+        <artifactId>robolectric-annotations</artifactId>
+        <version>${version.org.robolectric}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-servlet</artifactId>
+        <version>${version.org.sonatype.sisu.sisu-guice}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.osgi</groupId>
+        <artifactId>spring-osgi-core</artifactId>
+        <version>${version.org.springframework.osgi}</version>
+      </dependency>
+
+      <!-- jboss as and arquillian deps (JBPM-4403) -->
+      <dependency>
+        <groupId>org.jboss.as</groupId>
+        <artifactId>jboss-as-controller</artifactId>
+        <version>${version.org.jboss.as}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.as</groupId>
+        <artifactId>jboss-as-server</artifactId>
+        <version>${version.org.jboss.as}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.as</groupId>
+        <artifactId>jboss-as-naming</artifactId>
+        <version>${version.org.jboss.as}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-atinject_1.0_spec</artifactId>
+        <version>${version.org.geronimo.atinject}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.url</groupId>
+        <artifactId>pax-url-aether</artifactId>
+        <version>${version.org.ops4j.pax.url}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-spi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-util</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-impl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-connector-wagon</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-aether-provider</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-provider-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-file</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http-lightweight</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- Lienzo -->
+      <dependency>
+        <groupId>com.ahome-it</groupId>
+        <artifactId>lienzo-core</artifactId>
+        <version>${version.com.ahome-it.lienzo-core}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.wordnik</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>${version.com.wordnik.swagger}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman</artifactId>
+        <scope>test</scope>
+        <version>${version.org.jboss.byteman}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman-submit</artifactId>
+        <scope>test</scope>
+        <version>${version.org.jboss.byteman}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman-install</artifactId>
+        <scope>test</scope>
+        <version>${version.org.jboss.byteman}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman-bmunit</artifactId>
+        <scope>test</scope>
+        <version>${version.org.jboss.byteman}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- WildFly -->
+      <dependency>
+        <groupId>org.jboss.xnio</groupId>
+        <artifactId>xnio-api</artifactId>
+        <version>${version.org.jboss.xnio}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.xnio</groupId>
+        <artifactId>xnio-nio</artifactId>
+        <version>${version.org.jboss.xnio}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.simpleframework</groupId>
+        <artifactId>simple-http</artifactId>
+        <version>${version.org.simpleframework}</version>
+      </dependency>
+
+      <!-- if upgraded allen-sauer.gwt.dnd version in jboss-ip-bom to 3.3.3 this can be removed -->
+      <dependency>
+        <groupId>com.allen-sauer.gwt.dnd</groupId>
+        <artifactId>gwt-dnd</artifactId>
+        <version>${version.com.allen-sauer.gwt.dnd}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.detro</groupId>
+        <artifactId>phantomjsdriver</artifactId>
+        <version>${version.com.github.detro}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>simple-jndi</groupId>
+        <artifactId>simple-jndi</artifactId>
+        <version>${version.simple-jndi}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>

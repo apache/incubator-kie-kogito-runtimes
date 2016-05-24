@@ -15,8 +15,7 @@
   <name>KIE (Drools, jBPM, OptaPlanner) parent with dependencies</name>
   <description>
     The parent with dependencies imports the KIE third party BOM, all user BOMs and adds the default test-scoped dependencies.
-    This is a temporary POM which should eventually removed once all the downstream projects migrate to kie-third-party-bom
-    directly.
+    This is a temporary POM which should eventually removed once all the downstream projects migrate to kie-parent + user BOMs.
   </description>
 
   <!-- IMPORTANT: Do not declare any build configuration here! Declare it in kie-parent. -->
@@ -24,114 +23,14 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Dependency management should import only the kie-third-party-bom and KIE user BOMs.
-           All required dependency versions need to be already there.
-           When adding new dependencies, do it in the kie-third-party-bom/user BOMs and not here!-->
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-bom</artifactId>
-        <type>pom</type>
+        <artifactId>kie-platform-bom</artifactId>
         <version>${version.org.kie}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-bom</artifactId>
         <type>pom</type>
-        <version>${version.org.drools}</version>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>guvnor-api</artifactId>
-        <version>${version.org.drools.guvnor-api}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.optaplanner</groupId>
-        <artifactId>optaplanner-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.optaplanner}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.jbpm}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm.dashboard</groupId>
-        <artifactId>jbpm-dashboard-webapp</artifactId>
-        <version>${version.org.jbpm.dashboard-builder}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.uberfire</groupId>
-        <artifactId>kie-uberfire-extensions-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.kie.uberfire.extensions}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.guvnor}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.dashboard-builder</groupId>
-        <artifactId>dashboard-builder-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.jbpm.dashboard-builder}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.dashbuilder</groupId>
-        <artifactId>dashbuilder-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.dashbuilder}</version>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.uberfire}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.errai.bom</groupId>
-        <artifactId>errai-internal-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.jboss.errai}</version>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-third-party-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.kie}</version>
-        <scope>import</scope>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
-
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
 </project>

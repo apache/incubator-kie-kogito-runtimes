@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie</groupId>
-    <artifactId>kie-parent</artifactId>
+    <artifactId>kie-user-bom-parent</artifactId>
     <version>7.0.0-SNAPSHOT</version>
+    <relativePath>../kie-user-bom-parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>org.kie</groupId>
   <artifactId>kie-bom</artifactId>
   <packaging>pom</packaging>
 
@@ -18,8 +18,7 @@
     Import this BOM in your dependencyManagement if you want to depend on multiple KIE artifacts.
   </description>
 
-
-  <!-- IMPORTANT: Do not declare any build things here! Declare them in kie-parent. -->
+  <!-- IMPORTANT: Do not declare any build things here! Declare them in kie-user-bom-parent. -->
   <build/>
 
   <dependencyManagement>
@@ -39,121 +38,121 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-api</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-api</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-api</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.kie}</version>
         <classifier>javadoc</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-internal</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-internal</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-internal</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.kie}</version>
         <classifier>javadoc</classifier>
       </dependency>
 
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-maven-plugin</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.kie}</version>
       </dependency>
 
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-identity-session-provider</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
 
       <!-- KIE Remote -->
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-jaxb</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-jaxb</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-jaxb</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-jaxb-gen</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-jaxb-gen</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-client</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-client</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-rest-api</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-rest-api</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-services</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-services</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-common</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote</groupId>
         <artifactId>kie-remote-common</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -161,187 +160,187 @@
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-api</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-api</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-client</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-client</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-common</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-common</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-drools</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-drools</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-jbpm</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-jbpm</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-jbpm-ui</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-jbpm-ui</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-jms</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-jms</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-common</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-common</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-drools</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-drools</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-jbpm</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-jbpm</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-jbpm-ui</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-jbpm-ui</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-ws</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-ws</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>ee6</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>ee7</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>webc</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-controller-api</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-controller-api</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-controller-impl</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-controller-impl</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-controller-rest</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-controller-rest</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -349,45 +348,45 @@
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-common</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-common</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-wsdl</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-wsdl</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-wsdl-cmd</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-wsdl-cmd</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-impl</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.remote.ws</groupId>
         <artifactId>kie-remote-ws-impl</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -395,23 +394,23 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-spring</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-spring</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-aries-blueprint</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-aries-blueprint</artifactId>
-        <version>${version.org.drools.droolsjbpm-integration}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -419,23 +418,23 @@
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-services-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-services-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-services-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-services-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -443,12 +442,12 @@
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-common-ui</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-common-ui</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -456,23 +455,23 @@
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-datamodel-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-datamodel-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-datamodel-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-datamodel-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -480,536 +479,536 @@
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-data-modeller-core</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-data-modeller-core</artifactId>
         <classifier>tests</classifier>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
 
       <!--Kie Workbench - Common Widgets -->
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-decorated-grid-widget</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-decorated-grid-widget</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-metadata-widget</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-metadata-widget</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-config-resource-widget</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.widgets</groupId>
         <artifactId>kie-wb-config-resource-widget</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Home Page - Community-->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-home-page-community</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-home-page-community</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-home-page-community</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-home-page-community</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-home-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-home-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-home-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-home-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Home Page - Product-->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-home-page-product</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-home-page-product</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-home-page-product</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-home-page-product</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-home-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-home-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-home-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-home-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Default Editor-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-default-editor-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-default-editor-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-default-editor-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-default-editor-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-default-editor-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-default-editor-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Project Editor-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-editor-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-editor-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-editor-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-editor-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-editor-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-editor-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Project Config Editor-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-imports-editor-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-imports-editor-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-imports-editor-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-imports-editor-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Project Explorer-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-explorer-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-explorer-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-explorer-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-explorer-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-explorer-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-explorer-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Search Screen-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-search-screen-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-search-screen-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-search-screen-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-search-screen-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-search-screen-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-search-screen-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Workbench-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-workbench-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-workbench-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- Data Modeller Screen -->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-data-modeller-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-data-modeller-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-data-modeller-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-data-modeller-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-data-modeller-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-data-modeller-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-data-modeller-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- Java editor -->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-java-editor-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-java-editor-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-java-editor-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-java-editor-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- Kie Server UI -->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-server-ui-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-server-ui-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-server-ui-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-server-ui-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-server-ui-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-server-ui-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
         <!-- Kie Social Home Page UI -->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-social-home-page-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- Contributors Screen -->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-contributors-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-contributors-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-contributors-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-contributors-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-contributors-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-contributors-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- Refactoring support -->
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-refactoring-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-refactoring-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-refactoring-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-refactoring-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
         <artifactId>kie-wb-common-refactoring-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>tests</classifier>
       </dependency>
       <!--Examples Screen-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-examples-screen-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-examples-screen-api</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-examples-screen-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-examples-screen-client</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-examples-screen-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-examples-screen-backend</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -1017,37 +1016,37 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-webapp</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-webapp</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-config-cli</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.kie}</version>
         <classifier>dist</classifier>
         <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-example-repositories</artifactId>
-        <version>${version.org.drools}</version>
+        <version>${version.org.kie}</version>
         <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-tomcat-integration</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-tomcat-integration</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
 
@@ -1055,35 +1054,35 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>wildfly8</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>eap6_4</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>tomcat7</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>was8</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>weblogic12</classifier>
         <type>war</type>
       </dependency>
@@ -1092,35 +1091,35 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>wildfly8</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>eap6_4</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>tomcat7</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>was8</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-wars</artifactId>
-        <version>${version.org.guvnor}</version>
+        <version>${version.org.kie}</version>
         <classifier>weblogic12</classifier>
         <type>war</type>
       </dependency>
