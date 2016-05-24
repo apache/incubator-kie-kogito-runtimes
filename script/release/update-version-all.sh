@@ -1,12 +1,10 @@
 #!/bin/bash
 set -e
-# Update the version for for all droolsjbpm repositories
 
-initializeWorkingDirAndScriptDir() {
-    # Set working directory and remove all symbolic links
-    workingDir=`pwd -P`
+# Updates the version for all droolsjbpm repositories
 
-    # Go the script directory
+initializeScriptDir() {
+    # Go to the script directory
     cd `dirname $0`
     # If the file itself is a symbolic link (ignoring parent directory links), then follow that link recursively
     # Note that scriptDir=`pwd -P` does not do that and cannot cope with a link directly to the file
@@ -20,24 +18,27 @@ initializeWorkingDirAndScriptDir() {
     scriptDir=`pwd -P`
 }
 
-
-updateParentVersion() {
-    mvn -B -N -s $settingsXmlFile versions:update-parent -Dfull\
-     -DparentVersion=[$newVersion] -DallowSnapshots=true -DgenerateBackupPoms=false
+mvnVersionsSet() {
+    mvn -B -N -e -Dfull versions:set -DnewVersion="$newVersion" -DallowSnapshots=true -DgenerateBackupPoms=false
 }
 
-updateChildModulesVersion() {
-    mvn -N -B -s $settingsXmlFile versions:update-child-modules -Dfull\
+mvnVersionsUpdateParent() {
+    mvn -B -N -e -s $settingsXmlFile versions:update-parent -Dfull\
+     -DparentVersion="[$newVersion]" -DallowSnapshots=true -DgenerateBackupPoms=false
+}
+
+mvnVersionsUpdateChildModules() {
+    mvn -B -N -e -s $settingsXmlFile versions:update-child-modules -Dfull\
      -DallowSnapshots=true -DgenerateBackupPoms=false
 }
 
 # Updates parent version and child modules versions for Maven project in current working dir
-updateParentAndChildVersions() {
-    updateParentVersion
-    updateChildModulesVersion
+mvnVersionsUpdateParentAndChildModules() {
+    mvnVersionsUpdateParent
+    mvnVersionsUpdateChildModules
 }
 
-initializeWorkingDirAndScriptDir
+initializeScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 
 if [ $# != 1 ] && [ $# != 2 ]; then
@@ -87,25 +88,29 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
-        if [ $repository == 'droolsjbpm-build-bootstrap' ]; then
+        if [ "$repository" == "droolsjbpm-build-bootstrap" ]; then
             # first build&install the current version (usually SNAPSHOT) as it is needed later by other repos
             mvn -B -U -Dfull clean install
-            mvn -B -N -Dfull versions:set -DnewVersion=$newVersion -DallowSnapshots=true -DgenerateBackupPoms=false
+            mvnVersionsSet
             sed -i "s/<version\.org\.kie>.*<\/version.org.kie>/<version.org.kie>$newVersion<\/version.org.kie>/" pom.xml
             # update latest released version property only for non-SNAPSHOT versions
             if [[ ! $newVersion == *-SNAPSHOT ]]; then
                 sed -i "s/<latestReleasedVersionFromThisBranch>.*<\/latestReleasedVersionFromThisBranch>/<latestReleasedVersionFromThisBranch>$newVersion<\/latestReleasedVersionFromThisBranch>/" pom.xml
             fi
+            # update version also for user BOMs, since they do not use the top level kie-parent
+            cd kie-user-bom-parent
+            mvnVersionsSet
+            cd ..
             # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
             mvn -B clean install -DskipTests
             returnCode=$?
 
-        elif [ $repository = 'jbpm' ]; then
-            updateParentAndChildVersions
+        elif [ "$repository" = "jbpm" ]; then
+            mvnVersionsUpdateParentAndChildModules
             returnCode=$?
             sed -i "s/release.version=.*$/release.version=$newVersion/" jbpm-installer/build.properties
 
-        elif [ $repository = 'droolsjbpm-tools' ]; then
+        elif [ "$repository" = "droolsjbpm-tools" ]; then
             cd drools-eclipse
             mvn -B -Dfull tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
@@ -120,18 +125,18 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             cd ..
             if [ $returnCode == 0 ]; then
                 mvn -B -N clean install
-                updateParentVersion
+                mvnVersionsUpdateParent
                 # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
                 mvn -B -N clean install -DskipTests
                 cd drools-eclipse
-                updateParentVersion
+                mvnVersionsUpdateParent
                 cd ..
-                updateChildModulesVersion
+                mvnVersionsUpdateChildModules
                 returnCode=$?
             fi
 
         else
-            updateParentAndChildVersions
+            mvnVersionsUpdateParentAndChildModules
             returnCode=$?
         fi
 
