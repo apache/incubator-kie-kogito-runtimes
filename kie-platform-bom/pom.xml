@@ -46,7 +46,7 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>guvnor-api</artifactId>
-        <version>${version.org.kie}</version>
+        <version>${version.org.drools.guvnor-api}</version>
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
