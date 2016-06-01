@@ -71,7 +71,8 @@
     <!-- ################################################################################ -->
     <version.avalon-framework>4.1.4</version.avalon-framework>
     <version.batik>1.6.1-1</version.batik>
-    <version.com.ahome-it.lienzo-core>2.0.192-RC1</version.com.ahome-it.lienzo-core>
+    <version.com.ahome-it.lienzo-core>2.0.270-RELEASE</version.com.ahome-it.lienzo-core>
+    <version.com.ahome-it.lienzo-tests>1.0.0-RC1</version.com.ahome-it.lienzo-tests>
     <version.com.android-dx>1.10</version.com.android-dx>
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
@@ -1720,6 +1721,12 @@
         <groupId>com.ahome-it</groupId>
         <artifactId>lienzo-core</artifactId>
         <version>${version.com.ahome-it.lienzo-core}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.ahome-it</groupId>
+        <artifactId>lienzo-tests</artifactId>
+        <version>${version.com.ahome-it.lienzo-tests}</version>
       </dependency>
 
       <dependency>
