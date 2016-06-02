@@ -156,6 +156,19 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- KIE Security -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-security</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-security</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <!-- KIE Server -->
       <dependency>
         <groupId>org.kie.server</groupId>
