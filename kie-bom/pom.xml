@@ -1185,6 +1185,18 @@
         <version>${version.org.kie}</version>
         <classifier>test-sources</classifier>
       </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-docs-code</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-docs-code</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
