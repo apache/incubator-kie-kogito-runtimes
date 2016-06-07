@@ -1150,12 +1150,6 @@
         <version>${version.org.apache.deltaspike.core}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.apache.xmlbeans</groupId>
-        <artifactId>xmlbeans</artifactId>
-        <version>${version.org.apache.xmlbeans}</version>
-      </dependency>
-
       <!-- TODO BZ-996210 use org.apache.xmlgraphics:batik* instead -->
       <dependency>
         <groupId>batik</groupId>
@@ -1276,11 +1270,6 @@
         <version>${version.com.unboundid}</version>
       </dependency>
 
-      <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>${version.javax.validation}</version>
-      </dependency>
       <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
       <dependency>
         <groupId>javax.xml.stream</groupId>
@@ -1304,35 +1293,9 @@
 
       <dependency>
         <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-        <version>${version.org.apache.lucene}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
-        <version>${version.org.apache.lucene}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-codecs</artifactId>
-        <version>${version.org.apache.lucene}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-queryparser</artifactId>
-        <version>${version.org.apache.lucene}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queries</artifactId>
         <version>${version.org.apache.lucene}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-sandbox</artifactId>
-        <version>${version.org.apache.lucene}</version>
-      </dependency>
-
 
       <!-- dependency of org.apache.lucene:lucene-sandbox -->
       <dependency>
@@ -1486,56 +1449,6 @@
         </exclusions>
       </dependency>
 
-      <!-- Weld deps should be removed once we use ip-bom with https://github.com/jboss-integration/jboss-integration-platform-bom/pull/301 -->
-      <dependency>
-        <groupId>org.jboss.weld</groupId>
-        <artifactId>weld-core</artifactId>
-        <version>${version.org.jboss.weld.weld}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.weld.se</groupId>
-        <artifactId>weld-se-core</artifactId>
-        <version>${version.org.jboss.weld.weld}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.picketlink</groupId>
-        <artifactId>picketlink-api</artifactId>
-        <version>${version.org.picketlink}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.picketlink</groupId>
-        <artifactId>picketlink-idm-api</artifactId>
-        <version>${version.org.picketlink}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.picketlink</groupId>
-        <artifactId>picketlink-impl</artifactId>
-        <version>${version.org.picketlink}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.picketlink</groupId>
-        <artifactId>picketlink-idm-impl</artifactId>
-        <version>${version.org.picketlink}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.picketlink</groupId>
-        <artifactId>picketlink-tomcat7-single</artifactId>
-        <version>${version.org.picketlink}</version>
-      </dependency>
-
       <!-- dashboard-builder -->
       <dependency>
         <groupId>org.jboss.ironjacamar</groupId>
@@ -1577,23 +1490,8 @@
       <!-- GWT -->
       <dependency>
         <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-servlet</artifactId>
-        <version>${version.com.google.gwt}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
         <artifactId>gwt-dev</artifactId>
         <version>${version.com.google.gwt}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-user</artifactId>
-        <version>${version.com.google.gwt}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${version.com.google.guava}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -1773,18 +1671,6 @@
             <artifactId>testng</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <!-- WildFly -->
-      <dependency>
-        <groupId>org.jboss.xnio</groupId>
-        <artifactId>xnio-api</artifactId>
-        <version>${version.org.jboss.xnio}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.xnio</groupId>
-        <artifactId>xnio-nio</artifactId>
-        <version>${version.org.jboss.xnio}</version>
       </dependency>
 
       <dependency>
