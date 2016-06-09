@@ -13,7 +13,5 @@ drools-wb
 optaplanner-wb
 jbpm-designer
 jbpm-console-ng
-dashboard-builder
-jbpm-dashboard
 kie-docs
 kie-wb-distributions

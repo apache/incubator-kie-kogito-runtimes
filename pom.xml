@@ -49,7 +49,6 @@
     <version.org.drools>${version.org.kie}</version.org.drools>
     <version.org.optaplanner>${version.org.kie}</version.org.optaplanner>
     <version.org.jbpm>${version.org.kie}</version.org.jbpm>
-    <version.org.jbpm.dashboard-builder>${version.org.kie}</version.org.jbpm.dashboard-builder>
     <version.org.drools.droolsjbpm-integration>${version.org.drools}</version.org.drools.droolsjbpm-integration>
     <version.org.uberfire>0.9.0-SNAPSHOT</version.org.uberfire>
     <version.org.dashbuilder>0.5.0-SNAPSHOT</version.org.dashbuilder>
@@ -1131,7 +1130,6 @@
     <module>jbpm-bom</module>
     <module>kie-uberfire-extensions-bom</module>
     <module>guvnor-bom</module>
-    <module>dashboard-builder-bom</module>
     <module>kie-platform-bom</module>
     <module>kie-parent-with-dependencies</module>
   </modules>
