@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-bom</artifactId>
     <!-- Keep in sync with ip-parent version in kie-user-bom-parent/pom.xml -->
-    <version>7.0.0.CR4</version>
+    <version>7.0.0.CR5</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -102,8 +102,6 @@
     <version.org.jboss.errai>4.0.0-SNAPSHOT</version.org.jboss.errai>
     <!-- Version of Errai compatible with CDI 1.0. Few artifacts in this version are used for CDI 1.0 compatible WAR distributions. -->
     <version.org.jboss.errai.cdi10-compatible>3.0.6.Final</version.org.jboss.errai.cdi10-compatible>
-    <!-- MVEL 2.3.0.Final override can be removed once we use IP BOM which includes https://github.com/jboss-integration/jboss-integration-platform-bom/pull/320 -->
-    <version.org.mvel>2.3.0.Final</version.org.mvel>
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.picketlink>2.6.0.Final</version.org.picketlink>
     <version.com.unboundid>2.3.6</version.com.unboundid>
@@ -140,9 +138,9 @@
     <version.simple-jndi>0.11.4.1</version.simple-jndi>
     <version.org.asciidoctor.pdf>1.5.0-alpha.11</version.org.asciidoctor.pdf>
 
-    <!-- Required for Errai Dynamic Bean validation  -->
+    <!-- Downgrade required for Errai Dynamic Bean validation  -->
     <version.org.hibernate.hibernate-validator>4.1.0.Final</version.org.hibernate.hibernate-validator>
-    <version.javax.validation.validation-api>1.0.0.GA</version.javax.validation.validation-api>
+    <version.javax.validation>1.0.0.GA</version.javax.validation>
 
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
@@ -1721,13 +1719,6 @@
         <scope>test</scope>
       </dependency>
 
-     <!-- TODO: remove this once we use ip-bom which contains https://github.com/jboss-integration/jboss-integration-platform-bom/pull/323 -->
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-client</artifactId>
-        <version>${version.org.jboss.resteasy}</version>
-      </dependency>
-
       <!-- Required for Errai Dynamic Bean validation  -->
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -1743,12 +1734,12 @@
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>${version.javax.validation.validation-api}</version>
+        <version>${version.javax.validation}</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>${version.javax.validation.validation-api}</version>
+        <version>${version.javax.validation}</version>
         <classifier>sources</classifier>
       </dependency>
 
