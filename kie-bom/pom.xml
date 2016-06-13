@@ -1101,7 +1101,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>wildfly8</classifier>
+        <classifier>wildfly10</classifier>
         <type>war</type>
       </dependency>
       <dependency>
@@ -1138,7 +1138,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-wars</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>wildfly8</classifier>
+        <classifier>wildfly10</classifier>
         <type>war</type>
       </dependency>
       <dependency>
