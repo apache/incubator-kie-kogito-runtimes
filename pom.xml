@@ -1147,8 +1147,6 @@
                 <systemPropertyVariables>
                   <drools.dialect.java.compiler>${drools.dialect.java.compiler}</drools.dialect.java.compiler>
                 </systemPropertyVariables>
-                <!-- Append Java 9 specific config to enable EE modules by default (to simulate the same setup as with Java 8) -->
-                <argLine>-Xmx1G -Dfile.encoding=UTF-8 -addmods java.se.ee</argLine>
               </configuration>
             </plugin>
             <plugin>
@@ -1158,8 +1156,6 @@
                 <systemPropertyVariables>
                   <drools.dialect.java.compiler>${drools.dialect.java.compiler}</drools.dialect.java.compiler>
                 </systemPropertyVariables>
-                <!-- Append Java 9 specific config to enable EE modules by default (to simulate the same setup as with Java 8) -->
-                <argLine>-Xmx1G -Dfile.encoding=UTF-8 -addmods java.se.ee</argLine>
               </configuration>
             </plugin>
           </plugins>
