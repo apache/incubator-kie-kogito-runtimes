@@ -1124,6 +1124,48 @@
         <osgi.snapshot.qualifier>qualifier</osgi.snapshot.qualifier>
       </properties>
     </profile>
+    <!-- Temporary profile which enables building/testing on Early JDK 9 builds.
+         Related JIRAs:
+             - https://issues.jboss.org/browse/DROOLS-1169 -->
+    <profile>
+      <id>java9-specific-config</id>
+      <activation>
+        <jdk>[1.9,)</jdk>
+      </activation>
+      <properties>
+        <!-- There is no public ECJ release (yet) which supports Java 9, so fallback to the native compiler -->
+        <!-- TODO remove the line below (and fix the surefire+failsafe config) after resolving https://issues.jboss.org/browse/DROOLS-1169 -->
+        <drools.dialect.java.compiler>NATIVE</drools.dialect.java.compiler>
+      </properties>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <configuration>
+                <systemPropertyVariables>
+                  <drools.dialect.java.compiler>${drools.dialect.java.compiler}</drools.dialect.java.compiler>
+                </systemPropertyVariables>
+                <!-- Append Java 9 specific config to enable EE modules by default (to simulate the same setup as with Java 8) -->
+                <argLine>-Xmx1G -Dfile.encoding=UTF-8 -addmods java.se.ee</argLine>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-failsafe-plugin</artifactId>
+              <configuration>
+                <systemPropertyVariables>
+                  <drools.dialect.java.compiler>${drools.dialect.java.compiler}</drools.dialect.java.compiler>
+                </systemPropertyVariables>
+                <!-- Append Java 9 specific config to enable EE modules by default (to simulate the same setup as with Java 8) -->
+                <argLine>-Xmx1G -Dfile.encoding=UTF-8 -addmods java.se.ee</argLine>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
   </profiles>
 
   <modules>
