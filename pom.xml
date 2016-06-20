@@ -1468,17 +1468,6 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-js</artifactId>
-        <version>${version.org.jboss.errai}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
         <artifactId>errai-cdi-server</artifactId>
         <version>${version.org.jboss.errai}</version>
         <exclusions>
