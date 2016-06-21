@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-bom</artifactId>
     <!-- Keep in sync with ip-parent version in kie-user-bom-parent/pom.xml -->
-    <version>7.0.0.CR3</version>
+    <version>7.0.0.CR4</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -141,17 +141,12 @@
          See https://issues.apache.org/jira/browse/FELIX-4882 for more details.
          Version 3.x requires Java 7 (not directly, but one of transitive deps does). -->
     <version.bundle.plugin>2.5.3</version.bundle.plugin>
+    <!-- Surefire version 2.19.1 coming from parent is buggy and drools-osgi tests in droolsjbpm-integration are failing because of that. -->
+    <version.surefire.plugin>2.18.1</version.surefire.plugin>
 
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>0.24.0</version.org.eclipse.tycho>
     <version.org.jboss.tools.tycho-plugins>0.23.1</version.org.jboss.tools.tycho-plugins>
-    <!-- Override plexus Archiver with version 3.0.3 as older don't work on JDK9. Can be removed after upgrade to jboss-parent:20+ -->
-    <version.org.codehaus.plexus.plexus-archiver>3.0.3</version.org.codehaus.plexus.plexus-archiver>
-    
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <!-- Used by maven-enforcer-plugin -->
-    <jdk.min.version>1.8.0</jdk.min.version>
 
     <maven.min.version>3.2.3</maven.min.version>
     <!-- Important: this is one and only place where the supported user agents (browsers) are configured.
@@ -494,14 +489,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <dependencies>
-            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-archiver</artifactId>
-              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
-            </dependency>
-          </dependencies>
           <executions>
             <!-- No OSGi manifestEntries for <goal>jar</goal>: if it supported, then felix has already added them -->
             <execution>
@@ -538,14 +525,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <dependencies>
-            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-archiver</artifactId>
-              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
-            </dependency>
-          </dependencies>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -607,7 +586,7 @@
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-archiver</artifactId>
-              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
+              <version>${version.plexus.archiver}</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -619,7 +598,7 @@
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-archiver</artifactId>
-              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
+              <version>${version.plexus.archiver}</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -723,12 +702,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <dependencies>
-            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-archiver</artifactId>
-              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
-            </dependency>
             <dependency>
               <!-- Entry needed to enable jdocbook unzipping -->
               <groupId>org.jboss.maven.plugins</groupId>
@@ -825,14 +798,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <dependencies>
-            <!-- Workaround for JDK9. Should be removed once we upgrade the plugin to version which depends directly on plexus-archiver 3.0.3+ -->
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-archiver</artifactId>
-              <version>${version.org.codehaus.plexus.plexus-archiver}</version>
-            </dependency>
-          </dependencies>
           <configuration>
             <links>
               <link>http://docs.oracle.com/javase/8/docs/api</link>
