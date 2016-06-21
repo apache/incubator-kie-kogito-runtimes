@@ -84,7 +84,6 @@
     <version.link.bek.tools.issue-keeper-junit>4.11.1</version.link.bek.tools.issue-keeper-junit>
     <version.net.sf.docbook.docbook-xsl>1.76.1</version.net.sf.docbook.docbook-xsl>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
-    <version.org.apache.xmlgraphics.fop>0.95</version.org.apache.xmlgraphics.fop>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
     <version.org.codehaus.cargo>1.4.19</version.org.codehaus.cargo>
     <version.org.jboss.arquillian.extension.drone>2.0.0.Final</version.org.jboss.arquillian.extension.drone>
@@ -1307,70 +1306,6 @@
         <groupId>jakarta-regexp</groupId>
         <artifactId>jakarta-regexp</artifactId>
         <version>${version.jakarta-regexp}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.xmlgraphics</groupId>
-        <artifactId>fop</artifactId>
-        <version>${version.org.apache.xmlgraphics.fop}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-svg-dom</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-anim</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-css</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-dom</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-parser</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-bridge</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-script</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-xml</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-awt-util</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-gvt</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-transcoder</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-svggen</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-extension</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-ext</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
