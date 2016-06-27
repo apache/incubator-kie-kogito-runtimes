@@ -294,6 +294,28 @@
                 </rules>
               </configuration>
             </execution>
+            <execution>
+              <id>ban-blacklisted-dependencies</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <phase>validate</phase>
+              <configuration>
+                <rules>
+                  <bannedDependencies>
+                    <excludes combine.children="append">
+                      <!-- Ban blacklisted logging deps (we only use SLF4J + Logback) -->
+                      <!-- In case of transitive dependency, exclude it and use 'org.slf4j:jcl-over-slf4j' instead -->
+                      <exclude>commons-logging:commons-log*</exclude>
+                      <!-- In case of transitive dependency, exclude it and use 'org.slf4j:log4j-over-slf4j' instead -->
+                      <exclude>log4j:log4j</exclude>
+                      <!-- In case of transitive dependency, exclude it and use 'org.javassist:javassist' instead -->
+                      <exclude>javassist:javassist</exclude>
+                    </excludes>
+                  </bannedDependencies>
+                </rules>
+              </configuration>
+            </execution>
           </executions>
         </plugin>
         <plugin>
