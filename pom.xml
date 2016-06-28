@@ -1649,6 +1649,13 @@
         <version>${version.simple-jndi}</version>
         <scope>test</scope>
       </dependency>
+
+      <!-- TODO: remove this once we use ip-bom which contains https://github.com/jboss-integration/jboss-integration-platform-bom/pull/323 -->
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-client</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
