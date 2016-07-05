@@ -160,6 +160,29 @@
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-jackson</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-jackson</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-jackson</artifactId>
+        <type>test-jar</type>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-persistence-jackson</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-persistence-jpa</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
@@ -201,6 +224,29 @@
       <dependency>
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-benchmark</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-test</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-test</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-test</artifactId>
+        <type>test-jar</type>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-test</artifactId>
         <version>${version.org.kie}</version>
         <classifier>javadoc</classifier>
       </dependency>
