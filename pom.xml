@@ -124,6 +124,8 @@
     <version.org.jboss.ironjacamar>1.0.31.Final</version.org.jboss.ironjacamar>
     <!-- simple-jndi is a small library that helps us avoid JNDI error messages during testing -->
     <version.simple-jndi>0.11.4.1</version.simple-jndi>
+    <version.org.asciidoctor.pdf>1.5.0-alpha.11</version.org.asciidoctor.pdf>
+
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
 
@@ -712,7 +714,7 @@
         <plugin>
           <groupId>org.asciidoctor</groupId>
           <artifactId>asciidoctor-maven-plugin</artifactId>
-          <version>1.5.2</version>
+          <version>1.5.2.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

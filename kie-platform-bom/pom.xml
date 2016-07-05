@@ -99,6 +99,12 @@
         <scope>import</scope>
       </dependency>
 
+      <dependency>
+        <groupId>org.asciidoctor</groupId>
+        <artifactId>asciidoctorj-pdf</artifactId>
+        <version>${version.org.asciidoctor.pdf}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
