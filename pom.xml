@@ -126,6 +126,10 @@
     <version.simple-jndi>0.11.4.1</version.simple-jndi>
     <version.org.asciidoctor.pdf>1.5.0-alpha.11</version.org.asciidoctor.pdf>
 
+    <!-- Required for Errai Dynamic Bean validation  -->
+    <version.org.hibernate.hibernate-validator>4.1.0.Final</version.org.hibernate.hibernate-validator>
+    <version.javax.validation.validation-api>1.0.0.GA</version.javax.validation.validation-api>
+
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
 
@@ -1658,6 +1662,31 @@
         <artifactId>resteasy-client</artifactId>
         <version>${version.org.jboss.resteasy}</version>
       </dependency>
+
+      <!-- Required for Errai Dynamic Bean validation  -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${version.org.hibernate.hibernate-validator}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${version.org.hibernate.hibernate-validator}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${version.javax.validation.validation-api}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${version.javax.validation.validation-api}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
