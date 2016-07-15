@@ -647,6 +647,30 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
+      <!--Kie Theme Community-->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-theme-community</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-theme-community</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--Kie Theme Product-->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-theme-product</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-theme-product</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <!--Default Editor-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
