@@ -185,17 +185,6 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-asset-mgmt-project</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-asset-mgmt-project</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
       <!--Guvnor Working Set Services -->
       <dependency>
         <groupId>org.guvnor</groupId>
