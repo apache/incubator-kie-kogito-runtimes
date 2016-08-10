@@ -369,7 +369,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-docs</artifactId>
         <version>${version.org.kie}</version>
-        <type>jdocbook</type>
+        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
