@@ -156,6 +156,8 @@
     <!-- Surefire version 2.19.1 coming from parent is buggy and drools-osgi tests in droolsjbpm-integration are failing because of that. -->
     <version.surefire.plugin>2.18.1</version.surefire.plugin>
 
+    <!-- TODO: remove this once all repositories comply to the defined checkstyle rules -->
+    <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>0.24.0</version.org.eclipse.tycho>
     <version.org.jboss.tools.tycho-plugins>0.23.1</version.org.jboss.tools.tycho-plugins>
@@ -344,7 +346,9 @@
               <configuration>
                 <checkstyleRules>
                   <module name="Checker">
+                    <!-- Checks for whitespace. -->
                     <module name="FileTabCharacter">
+                      <property name="severity" value="error"/>
                       <property name="eachLine" value="true"/>
                     </module>
                   </module>
@@ -355,7 +359,6 @@
                 <includeTestResources>true</includeTestResources>
                 <consoleOutput>false</consoleOutput>
                 <logViolationsToConsole>false</logViolationsToConsole>
-                <failOnViolation>false</failOnViolation>
                 <failsOnError>false</failsOnError>
               </configuration>
             </execution>
