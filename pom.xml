@@ -854,6 +854,7 @@
           <configuration>
             <localWorkers>${gwt.compiler.localWorkers}</localWorkers>
             <strict>true</strict>
+            <printJavaCommandOnError>false</printJavaCommandOnError>
           </configuration>
         </plugin>
         <plugin>
