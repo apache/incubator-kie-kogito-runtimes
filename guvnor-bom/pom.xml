@@ -231,7 +231,7 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
-      
+
       <!--Guvnor Core Services -->
       <dependency>
         <groupId>org.guvnor</groupId>
