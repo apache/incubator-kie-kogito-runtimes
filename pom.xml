@@ -103,7 +103,7 @@
     <version.org.jboss.as>7.2.0.Final</version.org.jboss.as>
     <version.org.jboss.byteman>3.0.1</version.org.jboss.byteman>
     <version.org.roboguice>3.0.1</version.org.roboguice>
-    <version.org.robolectric>2.4</version.org.robolectric>
+    <version.org.robolectric>3.1.2</version.org.robolectric>
     <version.org.jboss.arquillian.selenium>2.53.0</version.org.jboss.arquillian.selenium>
     <version.org.simpleframework>6.0.1</version.org.simpleframework>
     <!-- WildFly version used together with  the GWT's Super Dev Mode -->
@@ -1506,6 +1506,16 @@
       <dependency>
         <groupId>org.robolectric</groupId>
         <artifactId>robolectric-annotations</artifactId>
+        <version>${version.org.robolectric}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.robolectric</groupId>
+        <artifactId>shadows-core</artifactId>
+        <version>${version.org.robolectric}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.robolectric</groupId>
+        <artifactId>robolectric-shadows</artifactId>
         <version>${version.org.robolectric}</version>
       </dependency>
 
