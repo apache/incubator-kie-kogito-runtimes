@@ -249,6 +249,17 @@
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-services-case-mgmt</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-services-case-mgmt</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
         <artifactId>kie-server-jms</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
@@ -310,6 +321,17 @@
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-jbpm-ui</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-rest-case-mgmt</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-rest-case-mgmt</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
