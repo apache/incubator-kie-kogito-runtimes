@@ -22,14 +22,34 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../.."
 
-if [ $# = 0 ] ; then
+# default repository list is stored in the repository-list.txt file
+REPOSITORY_LIST=`cat "${scriptDir}/repository-list.txt"`
+MVN_ARG_LINE=""
+
+for arg in "$@"
+do
+    case "$arg" in
+        --repo-list=*)
+            REPOSITORY_LIST=$(echo $arg | sed 's/[-a-zA-Z0-9]*=//')
+            # replace the commas with spaces so that the for loop treats the individual repos as different values
+            REPOSITORY_LIST=${REPOSITORY_LIST//,/ }
+        ;;
+
+        *)
+            MVN_ARG_LINE="$MVN_ARG_LINE$arg"
+        ;;
+    esac
+done
+
+if [ "x$MVN_ARG_LINE" = "x" ] ; then
     echo
     echo "Usage:"
-    echo "  $0 [arguments of mvn]"
+    echo "  $0 <arguments of maven> [--repo-list=<list-of-repositories>]"
     echo "For example:"
     echo "  $0 --version"
     echo "  $0 -DskipTests clean install"
     echo "  $0 -Dfull clean install"
+    echo "  $0 clean test --repo-list=drools,jbpm"
     echo
     exit 1
 fi
@@ -38,22 +58,22 @@ startDateTime=`date +%s`
 
 cd "$droolsjbpmOrganizationDir"
 
-for repository in `cat "${scriptDir}/repository-list.txt"` ; do
+for repository in $REPOSITORY_LIST; do
     echo
     if [ ! -d "$droolsjbpmOrganizationDir/$repository" ]; then
         echo "==============================================================================="
         echo "Missing Repository: $repository. SKIPPING!"
         echo "==============================================================================="   
-else
+    else
         echo "==============================================================================="
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
 
         if [ -a $M3_HOME/bin/mvn ] ; then
-            $M3_HOME/bin/mvn "$@"
+            $M3_HOME/bin/mvn $MVN_ARG_LINE
         else
-            mvn "$@"
+            mvn $MVN_ARG_LINE
         fi
 
         returnCode=$?

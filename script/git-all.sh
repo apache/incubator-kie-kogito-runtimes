@@ -22,14 +22,34 @@ initializeWorkingDirAndScriptDir() {
 initializeWorkingDirAndScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../.."
 
-if [ $# = 0 ] ; then
+# default repository list is stored in the repository-list.txt file
+REPOSITORY_LIST=`cat "${scriptDir}/repository-list.txt"`
+GIT_ARG_LINE=""
+
+for arg in "$@"
+do
+    case "$arg" in
+        --repo-list=*)
+            REPOSITORY_LIST=$(echo "$arg" | sed 's/[-a-zA-Z0-9]*=//')
+            # replace the commas with spaces so that the for loop treats the individual repos as different values
+            REPOSITORY_LIST=${REPOSITORY_LIST//,/ }
+        ;;
+
+        *)
+        GIT_ARG_LINE="$GIT_ARG_LINE$arg"
+        ;;
+    esac
+done
+
+if [ "x$GIT_ARG_LINE" = "x" ] ; then
     echo
     echo "Usage:"
-    echo "  $0 [arguments of git]"
+    echo "  $0 <arguments of git> [--repo-list=<list-of-repositories>]"
     echo "For example:"
     echo "  $0 fetch"
     echo "  $0 pull --rebase"
     echo "  $0 commit -m\"JIRAKEY-1 Fix typo\""
+    echo "  $0 checkout master --repo-list=drools,jbpm"
     echo
     exit 1
 fi
@@ -38,7 +58,7 @@ startDateTime=`date +%s`
 
 cd "$droolsjbpmOrganizationDir"
 
-for repository in `cat "${scriptDir}/repository-list.txt"` ; do
+for repository in $REPOSITORY_LIST ; do
     echo
     if [ ! -d "$droolsjbpmOrganizationDir/$repository" ]; then
         echo "==============================================================================="
@@ -50,7 +70,7 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
         echo "==============================================================================="
         cd $repository
 
-        git "$@"
+        git $GIT_ARG_LINE
 
         returnCode=$?
         cd ..
