@@ -36,7 +36,7 @@ do
         ;;
 
         *)
-        GIT_ARG_LINE="$GIT_ARG_LINE$arg"
+        GIT_ARG_LINE="$GIT_ARG_LINE $arg"
         ;;
     esac
 done

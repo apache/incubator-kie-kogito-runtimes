@@ -36,7 +36,7 @@ do
         ;;
 
         *)
-            MVN_ARG_LINE="$MVN_ARG_LINE$arg"
+            MVN_ARG_LINE="$MVN_ARG_LINE $arg"
         ;;
     esac
 done
