@@ -22,7 +22,7 @@ One week in advance:
 
 * All external dependencies must be on a non-SNAPSHOT version, to avoid failing to *close* the staging repo on nexus near the end of the release.
 
-    * Get those dependencies (ubefire, uberfire-extensions, dashbuilder) released if needed, preferably 1 week before the kie release. This way, those released artifacts gets tested by our tests.
+    * Get those dependencies (uberfire, uberfire-extensions, dashbuilder) released if needed, preferably 1 week before the kie release. This way, those released artifacts gets tested by our tests.
 
 * Ask kie-wb module (kie-uberfire-extensions, uberfire, guvnor, kie-wb-common, drools-wb, jbpm-console-ng, jbpm-designer, jbpm-form-modeler, jbpm-dashboard, dashboard-builder, and kie-wb-distributions) leads to update the translations with Zanata:
 
@@ -254,7 +254,7 @@ A release branch name should always end with `.x` so it looks different from a t
                Don't do this before you did the first run that fails - you have to run the script first!
             3. re-run droolsjbpm-build-bootstrap/script/release/update-version-all
 
-        * NOTE: the repository fuse-bxms-integ has to be upgradede manually
+        * NOTE: the repository fuse-bxms-integ has to be upgraded manually
 
         * Commit those changes (so you can tag them properly):
 
@@ -421,9 +421,13 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
         5. jboss-ip-bom version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L66)
            should be the same version as in point 1
 
-        6. last released version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L85)
-           this is a property productizsation needs to get the last released version on the branch where released from.
-           When updated this shoud be pushed to the branch of the blessed repository
+        6. latest released version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L85)
+           this is a property productisation needs to get the last released version on the branch where released from.
+           When updated this should be pushed to the branch of the blessed repository
+
+        7. latest released *Final* version, property called `version.org.kie.latestFinal.release`
+           This property needs to be updated only with *Final* releases (not for Betas, CRs, etc). This property is being
+           used to check KIE API backwards compatibility (and there may be other uses as well).
 
     * Commit those changes (so you can tag them properly):
 
