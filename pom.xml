@@ -116,7 +116,7 @@
     <version.org.jboss.jboss-dmr>1.3.0.Final</version.org.jboss.jboss-dmr>
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
-    <version.com.google.gwt>2.8.0-rc1</version.com.google.gwt>
+    <version.com.google.gwt>2.8.0-rc2</version.com.google.gwt>
     <!-- TODO Remove this when gson version is updated in ip-bom -->
     <version.com.google.code.gson>2.6.2</version.com.google.code.gson>
     <!-- 19.0.0.jbossorg-2 was created from upstream Guava version 20.0-SNAPSHOT as Errai 4.0/GWT 2.8 needs it. Once the version 20.0 is released, we should upgrade to that. -->
