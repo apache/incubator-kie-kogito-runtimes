@@ -108,7 +108,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         elif [ "$repository" = "jbpm" ]; then
             mvnVersionsUpdateParentAndChildModules
             returnCode=$?
-            sed -i "s/release.version=.*$/release.version=$newVersion/" jbpm-installer/build.properties
+            sed -i "s/release.version=.*$/release.version=$newVersion/" jbpm-installer/src/main/resources/build.properties
 
         elif [ "$repository" = "droolsjbpm-tools" ]; then
             cd drools-eclipse
