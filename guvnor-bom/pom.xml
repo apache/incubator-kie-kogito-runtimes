@@ -151,7 +151,53 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!--Guvnor Management -->
+      <!-- Guvnor ALA -->
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-spi</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-build-maven</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-docker-provider</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-wildfly-provider</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-registry-local</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-source-git</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-services-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.guvnor</groupId>
+          <artifactId>guvnor-ala-services-backend</artifactId>
+          <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.guvnor</groupId>
+          <artifactId>guvnor-ala-services-rest</artifactId>
+          <version>${version.org.kie}</version>
+      </dependency>
+      <!--Guvnor Asset Management -->
       <dependency>
         <groupId>org.guvnor</groupId>
         <artifactId>guvnor-asset-mgmt-api</artifactId>

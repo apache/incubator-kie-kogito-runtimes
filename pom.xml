@@ -68,6 +68,7 @@
     <!-- ################################################################################ -->
     <!-- New and overwritten dependencies -->
     <!-- ################################################################################ -->
+    <version.javaee.api>7.0</version.javaee.api>
     <version.org.apache.commons.commons-dbcp2>2.1.1</version.org.apache.commons.commons-dbcp2>
     <version.org.apache.commons.commons-pool2>2.4.2</version.org.apache.commons.commons-pool2>
     <version.avalon-framework>4.1.4</version.avalon-framework>
@@ -179,6 +180,11 @@
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overridden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
 
+    <version.wildfly.swarm>2016.9</version.wildfly.swarm>
+    <version.net.byte-buddy>1.4.16</version.net.byte-buddy>
+    <version.commons-beanutils>1.8.3</version.commons-beanutils>
+    <version.docker-client>3.5.12</version.docker-client>
+    <version.arquillian-cube>1.0.0.Alpha15</version.arquillian-cube>
     <!-- Using origin-repository.jboss.org as that is the canonical URL for deployment. repository.jboss.org is just a proxy
          which should delegate the calls to origin-repository.jboss.org, but that is often buggy. Using the canonical URL
          directly should help to avoid some of the issues with deploying artifacts. -->
@@ -1189,6 +1195,11 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>javax</groupId>
+        <artifactId>javaee-api</artifactId>
+        <version>${version.javaee.api}</version>
+      </dependency>
+      <dependency>
         <groupId>avalon-framework</groupId>
         <artifactId>avalon-framework</artifactId>
         <version>${version.avalon-framework}</version>
@@ -1751,7 +1762,58 @@
         <artifactId>hibernate-envers</artifactId>
         <version>${version.org.hibernate}</version>
       </dependency>
-
+      <dependency>
+          <groupId>net.bytebuddy</groupId>
+          <artifactId>byte-buddy</artifactId>
+          <version>${version.net.byte-buddy}</version>
+      </dependency>
+      <dependency>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils</artifactId>
+          <version>${version.commons-beanutils}</version>
+      </dependency>
+      <dependency>
+          <groupId>com.spotify</groupId>
+          <artifactId>docker-client</artifactId>
+          <classifier>shaded</classifier>
+          <version>${version.docker-client}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>commons-logging</groupId>
+                  <artifactId>commons-logging</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpmime</artifactId>
+          <version>${version.org.apache.httpcomponents.httpclient}</version>
+      </dependency>
+      <dependency>
+            <groupId>org.arquillian.cube</groupId>
+            <artifactId>arquillian-cube-docker</artifactId>
+            <version>${version.arquillian-cube}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.arquillian.cube</groupId>
+            <artifactId>arquillian-cube-requirement</artifactId>
+            <version>${version.arquillian-cube}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>bom</artifactId>
+            <version>${version.wildfly.swarm}</version>
+            <scope>import</scope>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jackson2-provider</artifactId>
+            <version>${version.org.jboss.resteasy}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
   </dependencyManagement>
