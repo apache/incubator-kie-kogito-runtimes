@@ -182,7 +182,7 @@
 
     <version.wildfly.swarm>2016.9</version.wildfly.swarm>
     <version.net.byte-buddy>1.4.16</version.net.byte-buddy>
-    <version.commons-beanutils>1.8.3</version.commons-beanutils>
+    <version.commons-beanutils>1.9.2</version.commons-beanutils>
     <version.docker-client>3.5.12</version.docker-client>
     <version.arquillian-cube>1.0.0.Alpha15</version.arquillian-cube>
     <!-- Using origin-repository.jboss.org as that is the canonical URL for deployment. repository.jboss.org is just a proxy
