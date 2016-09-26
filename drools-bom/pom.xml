@@ -428,31 +428,31 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-osgi-integration</artifactId>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-osgi-integration</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-osgi-integration</artifactId>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-osgi-integration</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-karaf-features</artifactId>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-karaf-features</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-karaf-features</artifactId>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-karaf-features</artifactId>
         <version>${version.org.kie}</version>
         <classifier>features</classifier>
         <type>xml</type>
       </dependency>
       <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-karaf-itests</artifactId>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-karaf-itests</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
 

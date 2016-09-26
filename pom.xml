@@ -158,7 +158,7 @@
          See https://issues.apache.org/jira/browse/FELIX-4882 for more details.
          Version 3.x requires Java 7 (not directly, but one of transitive deps does). -->
     <version.bundle.plugin>2.5.3</version.bundle.plugin>
-    <!-- Surefire version 2.19.1 coming from parent is buggy and drools-osgi tests in droolsjbpm-integration are failing because of that. -->
+    <!-- Surefire version 2.19.1 coming from parent is buggy and kie-osgi tests in droolsjbpm-integration are failing because of that. -->
     <version.surefire.plugin>2.18.1</version.surefire.plugin>
 
     <!-- TODO: remove this once all repositories comply to the defined checkstyle rules -->
