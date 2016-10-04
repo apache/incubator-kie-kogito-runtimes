@@ -1140,6 +1140,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-datasource-mgmt-backend</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-datasource-mgmt-wildfly</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
