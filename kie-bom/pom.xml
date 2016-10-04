@@ -1253,12 +1253,23 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
-        <artifactId>kie-wb-common-forms-common-widgets</artifactId>
+        <artifactId>kie-wb-common-forms-common-rendering-shared</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
-        <artifactId>kie-wb-common-forms-common-widgets</artifactId>
+        <artifactId>kie-wb-common-forms-common-rendering-shared</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-common-rendering-client</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-common-rendering-client</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
