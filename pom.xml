@@ -73,6 +73,7 @@
     <version.org.apache.commons.commons-pool2>2.4.2</version.org.apache.commons.commons-pool2>
     <version.avalon-framework>4.1.4</version.avalon-framework>
     <version.batik>1.6.1-1</version.batik>
+    <!-- when the new jboss-ip-bom 7.0.0.CR5 was released the lienzo versions can be removed -->
     <version.com.ahome-it.lienzo-core>2.0.277-RELEASE</version.com.ahome-it.lienzo-core>
     <version.com.ahome-it.lienzo-tests>1.0.0-RC3</version.com.ahome-it.lienzo-tests>
     <version.com.ahome-it.lienzo.tooling.nativetools>1.0.185-RELEASE</version.com.ahome-it.lienzo.tooling.nativetools>
@@ -1630,7 +1631,8 @@
           </exclusion>
         </exclusions>
       </dependency>
-
+   
+      <!-- when the new jboss-ip-bom 7.0.0.CR5 was released the lienzo artifacts can be removed -->
       <!-- Lienzo -->
       <dependency>
         <groupId>com.ahome-it</groupId>
