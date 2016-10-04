@@ -24,7 +24,7 @@ droolsjbpmOrganizationDir="$scriptDir/../.."
 
 # default repository list is stored in the repository-list.txt file
 REPOSITORY_LIST=`cat "${scriptDir}/repository-list.txt"`
-GIT_ARG_LINE=""
+GIT_ARG_LINE=()
 
 for arg in "$@"
 do
@@ -36,7 +36,7 @@ do
         ;;
 
         *)
-        GIT_ARG_LINE="$GIT_ARG_LINE $arg"
+            GIT_ARG_LINE+=("$arg")
         ;;
     esac
 done
@@ -56,6 +56,7 @@ fi
 
 startDateTime=`date +%s`
 
+echo "Git arg. line=${GIT_ARG_LINE[@]}"
 cd "$droolsjbpmOrganizationDir"
 
 for repository in $REPOSITORY_LIST ; do
@@ -70,7 +71,7 @@ for repository in $REPOSITORY_LIST ; do
         echo "==============================================================================="
         cd $repository
 
-        git $GIT_ARG_LINE
+        git "${GIT_ARG_LINE[@]}"
 
         returnCode=$?
         cd ..

@@ -24,7 +24,7 @@ droolsjbpmOrganizationDir="$scriptDir/../.."
 
 # default repository list is stored in the repository-list.txt file
 REPOSITORY_LIST=`cat "${scriptDir}/repository-list.txt"`
-MVN_ARG_LINE=""
+MVN_ARG_LINE=()
 
 for arg in "$@"
 do
@@ -36,7 +36,7 @@ do
         ;;
 
         *)
-            MVN_ARG_LINE="$MVN_ARG_LINE $arg"
+            MVN_ARG_LINE+=("$arg")
         ;;
     esac
 done
@@ -56,6 +56,7 @@ fi
 
 startDateTime=`date +%s`
 
+echo "Maven arg. line=${MVN_ARG_LINE[@]}"
 cd "$droolsjbpmOrganizationDir"
 
 for repository in $REPOSITORY_LIST; do
@@ -71,9 +72,9 @@ for repository in $REPOSITORY_LIST; do
         cd $repository
 
         if [ -a $M3_HOME/bin/mvn ] ; then
-            $M3_HOME/bin/mvn $MVN_ARG_LINE
+            $M3_HOME/bin/mvn "${MVN_ARG_LINE[@]}"
         else
-            mvn $MVN_ARG_LINE
+            mvn "${MVN_ARG_LINE[@]}"
         fi
 
         returnCode=$?
