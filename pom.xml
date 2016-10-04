@@ -73,8 +73,10 @@
     <version.org.apache.commons.commons-pool2>2.4.2</version.org.apache.commons.commons-pool2>
     <version.avalon-framework>4.1.4</version.avalon-framework>
     <version.batik>1.6.1-1</version.batik>
-    <version.com.ahome-it.lienzo-core>2.0.270-RELEASE</version.com.ahome-it.lienzo-core>
-    <version.com.ahome-it.lienzo-tests>1.0.0-RC1</version.com.ahome-it.lienzo-tests>
+    <version.com.ahome-it.lienzo-core>2.0.277-RELEASE</version.com.ahome-it.lienzo-core>
+    <version.com.ahome-it.lienzo-tests>1.0.0-RC3</version.com.ahome-it.lienzo-tests>
+    <version.com.ahome-it.lienzo.tooling.nativetools>1.0.185-RELEASE</version.com.ahome-it.lienzo.tooling.nativetools>
+    <version.com.ahome-it.lienzo.tooling.common>1.0.185-RELEASE</version.com.ahome-it.lienzo.tooling.common>
     <version.com.android-dx>1.10</version.com.android-dx>
     <!-- commons cli 1.3.1+ required by Dashbuilder's ElasticSearch module. This override can be removed once IP BOM upgrades as well. -->
     <version.commons-cli>1.3.1</version.commons-cli>
@@ -1640,6 +1642,18 @@
         <groupId>com.ahome-it</groupId>
         <artifactId>lienzo-tests</artifactId>
         <version>${version.com.ahome-it.lienzo-tests}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.ahome-it</groupId>
+        <artifactId>ahome-tooling-nativetools</artifactId>
+        <version>${version.com.ahome-it.lienzo.tooling.nativetools}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.ahome-it</groupId>
+        <artifactId>ahome-tooling-common</artifactId>
+        <version>${version.com.ahome-it.lienzo.tooling.common}</version>
       </dependency>
 
       <dependency>
