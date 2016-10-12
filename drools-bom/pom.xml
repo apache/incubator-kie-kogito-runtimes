@@ -473,6 +473,20 @@
         <artifactId>drools-rhq-plugin</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
+
+      <!--Verification-->
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-verifier-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-wb-verifier-api</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+ 
       <!--Categories Editor-->
       <dependency>
         <groupId>org.drools</groupId>
