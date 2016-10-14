@@ -82,80 +82,6 @@
         <version>${version.org.kie}</version>
       </dependency>
 
-      <!-- KIE Remote -->
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-jaxb</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-jaxb</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-jaxb</artifactId>
-        <version>${version.org.kie}</version>
-        <type>test-jar</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-jaxb-gen</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-jaxb-gen</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-client</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-client</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-rest-api</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-rest-api</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-services</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-services</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-common</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote</groupId>
-        <artifactId>kie-remote-common</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
       <!-- KIE Security -->
       <dependency>
         <groupId>org.kie</groupId>
@@ -178,6 +104,17 @@
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-api</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-common</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-common</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -397,52 +334,6 @@
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-controller-rest</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
-      <!-- KIE Remote WS -->
-      <dependency>
-        <groupId>org.kie.remote.ws</groupId>
-        <artifactId>kie-remote-ws-common</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote.ws</groupId>
-        <artifactId>kie-remote-ws-common</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote.ws</groupId>
-        <artifactId>kie-remote-ws-wsdl</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote.ws</groupId>
-        <artifactId>kie-remote-ws-wsdl</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote.ws</groupId>
-        <artifactId>kie-remote-ws-wsdl-cmd</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote.ws</groupId>
-        <artifactId>kie-remote-ws-wsdl-cmd</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote.ws</groupId>
-        <artifactId>kie-remote-ws-impl</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.remote.ws</groupId>
-        <artifactId>kie-remote-ws-impl</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
