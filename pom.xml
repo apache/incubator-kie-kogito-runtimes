@@ -828,10 +828,7 @@
             <projectConfig>${session.executionRootDirectory}/src/main/config/zanata.xml</projectConfig>
             <srcDir>src/main/resources/</srcDir>
             <transDir>src/main/resources/</transDir>
-            <includes>
-              <include>**/*Constants.properties</include>
-              <include>**/*Constants_en.properties</include>
-            </includes>
+            <includes>**/*Constants.properties</includes>
           </configuration>
         </plugin>
         <plugin>
