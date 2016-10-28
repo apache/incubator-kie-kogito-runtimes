@@ -1057,6 +1057,17 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-datasource-mgmt-dashbuilder</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.screens</groupId>
+        <artifactId>kie-wb-common-datasource-mgmt-dashbuilder</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
 
       <!-- Forms -->
       <dependency>
