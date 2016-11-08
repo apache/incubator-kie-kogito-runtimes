@@ -598,11 +598,6 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-form-modeler-form-provider</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-form-modeler-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
@@ -688,6 +683,11 @@
          <groupId>org.jbpm</groupId>
          <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
          <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-generic-forms-backend</artifactId>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -784,6 +784,21 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-human-tasks-forms-modeler-backend</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-workbench-forms-integration-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-workbench-forms-integration-backend</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-workbench-forms-integration-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
