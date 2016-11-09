@@ -707,36 +707,6 @@
 
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-admin-api</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-admin-client</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-admin-backend</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-           <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-admin-api</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-admin-client</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-admin-backend</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
