@@ -9,10 +9,10 @@ droolsjbpm-tools
 kie-uberfire-extensions
 guvnor
 kie-wb-common
+jbpm-form-modeler
 drools-wb
 optaplanner-wb
 jbpm-designer
-jbpm-form-modeler
 jbpm-console-ng
 kie-docs
 kie-wb-distributions

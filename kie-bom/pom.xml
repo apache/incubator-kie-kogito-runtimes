@@ -1261,6 +1261,11 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-bpmn-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
 
       <!-- Stunner - Core -->
       <dependency>
