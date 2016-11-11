@@ -187,6 +187,7 @@
     <version.commons-beanutils>1.9.2</version.commons-beanutils>
     <version.docker-client>3.5.12</version.docker-client>
     <version.arquillian-cube>1.0.0.Alpha15</version.arquillian-cube>
+    <version.org.wildfly.arquillian.container>2.0.0.Final</version.org.wildfly.arquillian.container>
     <!-- Using origin-repository.jboss.org as that is the canonical URL for deployment. repository.jboss.org is just a proxy
          which should delegate the calls to origin-repository.jboss.org, but that is often buggy. Using the canonical URL
          directly should help to avoid some of the issues with deploying artifacts. -->
@@ -1815,6 +1816,12 @@
             <artifactId>arquillian-cube-requirement</artifactId>
             <version>${version.arquillian-cube}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.wildfly.arquillian</groupId>
+          <artifactId>wildfly-arquillian-container-managed</artifactId>
+          <version>${version.org.wildfly.arquillian.container}</version>
+          <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.wildfly.swarm</groupId>
