@@ -318,7 +318,7 @@ Installing Maven
 
             ```shell
             $ cd ~/opt/build/
-            $ ln -s apache-maven-3.0.3 apache-maven
+            $ ln -s apache-maven-3.2.5 apache-maven
             ```
 
             Next time you only have to remove the link and recreate the link to the new version.
@@ -335,7 +335,7 @@ Installing Maven
         * Add this to your `~/.bashrc` file:
 
             ```shell
-            export MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+            export MAVEN_OPTS="-Xms256m -Xmx1024m"
             ```
 
 * Windows:
@@ -345,15 +345,15 @@ Installing Maven
         * Open menu *Configuration screen*, menu item *System*, tab *Advanced*, button *environment variables*:
 
             ```shell
-            set MAVEN_OPTS="-Xms256m -Xmx1024m -XX:MaxPermSize=512m"
+            set MAVEN_OPTS="-Xms256m -Xmx1024m"
             ```
 
 * Check if maven is installed correctly.
 
     ```shell
     $ mvn --version
-    Apache Maven 3.0.3 (...)
-    Java version: 1.6.0_24
+    Apache Maven 3.2.5 (...)
+    Java version: 1.8.0_112
     ```
 
     Note: the enforcer plugin enforces a minimum maven and java version.
