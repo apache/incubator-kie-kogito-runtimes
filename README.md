@@ -500,7 +500,7 @@ Any dependency used in any KIE project must fulfill these hard requirements:
 
         * Even test scope dependencies cannot use these licenses.
         
-    * To check the ALS compatibily license please visit these links:[Similarity in terms to the Apache License 2.0](http://www.apache.org/legal/resolved.html#category-a)&nbsp; 
+    * To check the ALS compatibility license please visit these links:[Similarity in terms to the Apache License 2.0](http://www.apache.org/legal/resolved.html#category-a)&nbsp; 
     [How should so-called "Weak Copyleft" Licenses be handled](http://www.apache.org/legal/resolved.html#category-b)
 
 * The dependency shall be **available in [Maven Central](http://search.maven.org/) or [JBoss Nexus](https://repository.jboss.org/nexus)**.
@@ -523,11 +523,11 @@ Any dependency used in any KIE project must fulfill these hard requirements:
 
         * Get that dependency into JBoss Nexus as a 3rd party library.
 
-* The dependency must be able to run on any **JVM 1.6 and higher**.
+* The dependency must be able to run on any **JVM 1.8 and higher**.
 
-    * It must be compiled for Java target 1.6 or lower (even if it's compiled with JDK 7 or JDK 8).
+    * It must be compiled for Java target 1.8 or lower (even if it's compiled with JDK 7 or JDK 8).
 
-    * It must not use any JDK APIs that were not yet available in Java 1.6.
+    * It must not use any JDK APIs that were not yet available in Java 1.8.
 
 * **Do not release the dependency yourself** (by building it from source).
 
@@ -541,6 +541,19 @@ Any dependency used in any KIE project must fulfill these hard requirements:
 
     * We don't expect you to check this manually:
     The victims enforcer plugin will automatically fail the build if a known bad dependency is used.
+
+* **The sources are publicly available**
+
+    * We may need to rebuild the dependency from sources ourselves in future. This may be in the rare case when
+      the dependency is no longer maintained, but we need to fix a specific CVE there. The other reason is that
+      productisation needs to be able to easily rebuild the dependency internally.
+
+    * Make sure the dependency's pom.xml contains link to the source repository (`scm` tag).
+
+* The dependency needs to use **reasonable build system**
+
+    * Since we may need to rebuild the dependency from sources, we also need to make sure it is easily buildable.
+      Maven or Gradle are acceptable as build systems.
 
 Any dependency used in any KIE project should fulfill these soft requirements:
 
