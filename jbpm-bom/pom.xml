@@ -645,21 +645,6 @@
 
       <!-- jBPM console NG -->
       <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-documents-client</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-documents-backend</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-documents-api</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
          <groupId>org.jbpm</groupId>
          <artifactId>jbpm-console-ng-generic-client</artifactId>
          <version>${version.org.kie}</version>
