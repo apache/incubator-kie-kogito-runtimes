@@ -381,6 +381,15 @@
           </executions>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <!-- Forking temporarily enabled as it seems to workaround the wrong behavior of UF annotation processor, resulting
+                 in corrupted perspective definitions, etc. This needs to fixed directly in UF and the forking disabled again. -->
+            <fork>true</fork>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <version>0.6.1</version>
