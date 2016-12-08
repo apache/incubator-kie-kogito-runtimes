@@ -814,11 +814,6 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-console-ng-dashboard-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
