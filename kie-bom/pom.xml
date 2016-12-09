@@ -338,6 +338,29 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-router-proxy</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-router-proxy</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-router-client</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-router-client</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <!-- Other droolsjbpm-integration -->
       <dependency>
         <groupId>org.kie</groupId>
