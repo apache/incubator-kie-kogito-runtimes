@@ -1023,6 +1023,8 @@ Configuring IntelliJ
 
     * Click tree item *Code Style* and select it.
 
+        * Note: IntelliJ IDEA doesn't format your code automatically. You have to press Ctrl+Alt+L keyboard combination to trigger auto formatting when coding is done.
+
 * Set the correct file encoding (UTF-8 except for properties files) and end-of-line characters (unix):
 
     * Open menu *File*, menu item *Settings*
