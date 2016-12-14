@@ -1212,6 +1212,19 @@
         <version>${version.org.apache.deltaspike.core}</version>
       </dependency>
 
+      <!-- needed for drools-wb-jcr2vfs-migration -->
+      <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>pdfbox</artifactId>
+        <version>${version.org.apache.pdfbox}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
       <!-- TODO BZ-996210 use org.apache.xmlgraphics:batik* instead -->
       <dependency>
         <groupId>batik</groupId>
