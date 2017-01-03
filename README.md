@@ -294,6 +294,8 @@ A pull request is like a patch file, but easier to apply, more powerful and you'
 
         * Or use the button *Merge* if there are no merge conflicts.
 
+If the change being proposed is affecting more than a single repository, it will require creating a pull request for each of the repositories being affected; in this case, it is required for the *topic branch* to share the same name across all pull requests, in order for the CI build tool to include the necessary dependencies while performing the build with the proposed change. It is also highly recommended to use the github *Autolinked references* in the pull request comments, in order to make these depedencies explicit and emphasized during code reviews.
+
 Building with Maven
 ===================
 
