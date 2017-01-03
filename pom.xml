@@ -386,6 +386,21 @@
                       <property name="severity" value="error"/>
                       <property name="eachLine" value="true"/>
                     </module>
+                    <module name="TreeWalker">
+                      <!-- Import settings: getting rid of redundant import, forbid star notation, defined order of imports. -->
+                      <module name="RedundantImport"/>
+                      <module name="AvoidStarImport">
+                        <property name="excludes" value="org.junit.Assert,org.assertj.core.api.Assertions,org.mockito.Mockito"/>
+                        <property name="allowClassImports" value="false"/>
+                        <property name="allowStaticMemberImports" value="false"/>
+                      </module>
+                      <module name="CustomImportOrder">
+                        <property name="customImportOrderRules"
+                                  value="STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE###STATIC"/>
+                        <property name="sortImportsInGroupAlphabetically" value="true"/>
+                        <property name="separateLineBetweenGroups" value="true"/>
+                      </module>
+                    </module>
                   </module>
                 </checkstyleRules>
                 <outputFile>${project.build.directory}/checkstyle.log</outputFile>
