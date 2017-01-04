@@ -501,19 +501,7 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-verifier-web-worker</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-wb-verifier-web-worker</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
- 
-
+      
 
 
       <!--Categories Editor-->
