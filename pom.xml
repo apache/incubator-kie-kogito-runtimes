@@ -89,6 +89,8 @@
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
     <version.link.bek.tools.issue-keeper-junit>4.11.1</version.link.bek.tools.issue-keeper-junit>
     <version.net.sf.docbook.docbook-xsl>1.76.1</version.net.sf.docbook.docbook-xsl>
+
+    <version.org.apache.pdfbox>1.8.6</version.org.apache.pdfbox> <!-- Remove after upgrading to IP BOM 7.0.0.CR6 -->
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
     <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
     <version.org.codehaus.cargo>1.5.0</version.org.codehaus.cargo>
