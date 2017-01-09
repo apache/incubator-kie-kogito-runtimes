@@ -1451,12 +1451,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-proxy</artifactId>
-        <version>${version.org.eclipse.jetty}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.inject</artifactId>
         <version>${version.org.eclipse.sisu}</version>
