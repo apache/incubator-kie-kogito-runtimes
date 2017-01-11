@@ -867,22 +867,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- jbpm-console-ng wars -->
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-distribution-wars</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>tomcat7</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-distribution-wars</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>wildfly8</classifier>
-        <type>war</type>
-      </dependency>
-
       <!-- designer and jbpm-simulation -->
       <dependency>
         <groupId>org.jbpm</groupId>
