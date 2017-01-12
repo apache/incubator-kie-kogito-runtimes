@@ -385,6 +385,13 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- KIE Workbench Playground Repository -->
+      <dependency>
+        <groupId>org.kie.workbench.playground</groupId>
+        <artifactId>playground-parent</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+
       <!--KIE Common - Core Services -->
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
