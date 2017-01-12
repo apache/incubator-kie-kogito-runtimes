@@ -646,223 +646,223 @@
       <!-- jBPM console NG -->
       <dependency>
          <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-console-ng-generic-client</artifactId>
+         <artifactId>jbpm-wb-generic-client</artifactId>
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
          <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-console-ng-generic-api</artifactId>
+         <artifactId>jbpm-wb-generic-api</artifactId>
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
          <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-console-ng-data-filters-client</artifactId>
+         <artifactId>jbpm-wb-data-filters-client</artifactId>
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
          <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
+         <artifactId>jbpm-wb-generic-forms-client</artifactId>
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
          <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+         <artifactId>jbpm-wb-generic-forms-api</artifactId>
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-generic-forms-backend</artifactId>
+        <artifactId>jbpm-wb-generic-forms-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
+        <artifactId>jbpm-wb-human-tasks-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
+        <artifactId>jbpm-wb-human-tasks-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
+        <artifactId>jbpm-wb-human-tasks-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
 
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
+        <artifactId>jbpm-wb-human-tasks-forms-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
+        <artifactId>jbpm-wb-human-tasks-forms-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
+        <artifactId>jbpm-wb-human-tasks-forms-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-forms-api</artifactId>
+        <artifactId>jbpm-wb-process-runtime-forms-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
+        <artifactId>jbpm-wb-process-runtime-forms-client</artifactId>
         <version>${version.org.kie}</version>
         <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
+        <artifactId>jbpm-wb-process-runtime-forms-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-forms-backend</artifactId>
+        <artifactId>jbpm-wb-process-runtime-forms-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-forms-modeler-api</artifactId>
+        <artifactId>jbpm-wb-human-tasks-forms-modeler-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-forms-modeler-client</artifactId>
+        <artifactId>jbpm-wb-human-tasks-forms-modeler-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-human-tasks-forms-modeler-backend</artifactId>
+        <artifactId>jbpm-wb-human-tasks-forms-modeler-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-workbench-forms-integration-api</artifactId>
+        <artifactId>jbpm-wb-workbench-forms-integration-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-workbench-forms-integration-backend</artifactId>
+        <artifactId>jbpm-wb-workbench-forms-integration-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-workbench-forms-integration-client</artifactId>
+        <artifactId>jbpm-wb-workbench-forms-integration-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-workbench-integration-api</artifactId>
+        <artifactId>jbpm-wb-workbench-integration-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-workbench-integration-client</artifactId>
+        <artifactId>jbpm-wb-workbench-integration-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-workbench-integration-backend</artifactId>
+        <artifactId>jbpm-wb-workbench-integration-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
 
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-kie-server-api</artifactId>
+        <artifactId>jbpm-wb-kie-server-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-kie-server-backend</artifactId>
+        <artifactId>jbpm-wb-kie-server-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
+        <artifactId>jbpm-wb-process-runtime-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
+        <artifactId>jbpm-wb-process-runtime-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-process-runtime-backend</artifactId>
+        <artifactId>jbpm-wb-process-runtime-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-executor-service-api</artifactId>
+        <artifactId>jbpm-wb-executor-service-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-executor-service-backend</artifactId>
+        <artifactId>jbpm-wb-executor-service-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-executor-service-client</artifactId>
+        <artifactId>jbpm-wb-executor-service-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-dashboard-api</artifactId>
+        <artifactId>jbpm-wb-dashboard-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-dashboard-client</artifactId>
+        <artifactId>jbpm-wb-dashboard-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-dashboard-backend</artifactId>
+        <artifactId>jbpm-wb-dashboard-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-showcase</artifactId>
+        <artifactId>jbpm-wb-showcase</artifactId>
         <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-case-mgmt-client</artifactId>
+        <artifactId>jbpm-wb-case-mgmt-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-case-mgmt-client</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-case-mgmt-backend</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-case-mgmt-backend</artifactId>
+        <artifactId>jbpm-wb-case-mgmt-client</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-case-mgmt-api</artifactId>
+        <artifactId>jbpm-wb-case-mgmt-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-console-ng-case-mgmt-api</artifactId>
+        <artifactId>jbpm-wb-case-mgmt-backend</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-wb-case-mgmt-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-wb-case-mgmt-api</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
