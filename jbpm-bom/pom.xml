@@ -758,17 +758,17 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-workbench-integration-api</artifactId>
+        <artifactId>jbpm-wb-integration-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-workbench-integration-client</artifactId>
+        <artifactId>jbpm-wb-integration-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-workbench-integration-backend</artifactId>
+        <artifactId>jbpm-wb-integration-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
 
