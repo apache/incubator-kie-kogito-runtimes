@@ -728,17 +728,17 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-human-tasks-forms-modeler-api</artifactId>
+        <artifactId>jbpm-wb-forms-modeler-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-human-tasks-forms-modeler-client</artifactId>
+        <artifactId>jbpm-wb-forms-modeler-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-human-tasks-forms-modeler-backend</artifactId>
+        <artifactId>jbpm-wb-forms-modeler-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
