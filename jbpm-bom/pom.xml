@@ -661,17 +661,17 @@
       </dependency>
       <dependency>
          <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-wb-generic-forms-client</artifactId>
+         <artifactId>jbpm-wb-forms-client</artifactId>
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
          <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-wb-generic-forms-api</artifactId>
+         <artifactId>jbpm-wb-forms-api</artifactId>
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-generic-forms-backend</artifactId>
+        <artifactId>jbpm-wb-forms-backend</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
@@ -692,42 +692,6 @@
 
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-human-tasks-forms-api</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-human-tasks-forms-client</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-human-tasks-forms-backend</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-process-runtime-forms-api</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-process-runtime-forms-client</artifactId>
-        <version>${version.org.kie}</version>
-        <type>test-jar</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-process-runtime-forms-client</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-process-runtime-forms-backend</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
         <artifactId>jbpm-wb-forms-modeler-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
@@ -739,21 +703,6 @@
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-wb-forms-modeler-backend</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-workbench-forms-integration-api</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-workbench-forms-integration-backend</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-workbench-forms-integration-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
