@@ -643,15 +643,15 @@
       </dependency>
 
 
-      <!-- jBPM console NG -->
+      <!-- jBPM WB -->
       <dependency>
          <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-wb-generic-client</artifactId>
+         <artifactId>jbpm-wb-common-client</artifactId>
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
          <groupId>org.jbpm</groupId>
-         <artifactId>jbpm-wb-generic-api</artifactId>
+         <artifactId>jbpm-wb-common-api</artifactId>
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
