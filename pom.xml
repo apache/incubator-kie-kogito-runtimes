@@ -57,7 +57,7 @@
     <version.org.drools.droolsjbpm-tools>${version.org.drools}</version.org.drools.droolsjbpm-tools>
     <version.org.jbpm.jbpm-designer>${version.org.jbpm}</version.org.jbpm.jbpm-designer>
     <version.org.jbpm.jbpm-form-modeler>${version.org.jbpm}</version.org.jbpm.jbpm-form-modeler>
-    <version.org.jbpm.jbpm-console-ng>${version.org.jbpm}</version.org.jbpm.jbpm-console-ng>
+    <version.org.jbpm.jbpm-wb>${version.org.jbpm}</version.org.jbpm.jbpm-wb>
 
     <!-- CONVENTIONS:
            - A version property must be specified in the format "version.{groupId}", optionally with a suffix to make it unique.
