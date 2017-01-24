@@ -1874,7 +1874,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>eap6_4</classifier>
+        <classifier>eap7</classifier>
         <type>war</type>
       </dependency>
       <dependency>
@@ -1911,7 +1911,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-wars</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>eap6_4</classifier>
+        <classifier>eap7</classifier>
         <type>war</type>
       </dependency>
       <dependency>
