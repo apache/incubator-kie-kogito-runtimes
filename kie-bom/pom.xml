@@ -1148,9 +1148,69 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
-        <artifactId>kie-wb-common-forms-api</artifactId>
+        <artifactId>kie-wb-common-forms-fields</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-fields</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-fields</artifactId>
+        <version>${version.org.kie}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-base</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-base</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-engine-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-engine-api</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-engine-api</artifactId>
+        <version>${version.org.kie}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-engine-backend</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-engine-client</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-engine-client</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-processors</artifactId>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
@@ -1172,7 +1232,13 @@
         <groupId>org.kie.workbench.forms</groupId>
         <artifactId>kie-wb-common-dynamic-forms-api</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>tests</classifier>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-dynamic-forms-api</artifactId>
+        <version>${version.org.kie}</version>
+        <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
@@ -1221,7 +1287,7 @@
         <groupId>org.kie.workbench.forms</groupId>
         <artifactId>kie-wb-common-forms-crud-component</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>tests</classifier>
+        <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
