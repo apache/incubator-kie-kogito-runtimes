@@ -145,7 +145,8 @@
     <version.bundle.plugin>2.5.3</version.bundle.plugin>
     <!-- Surefire version 2.19.1 coming from parent is buggy and kie-osgi tests in droolsjbpm-integration are failing because of that. -->
     <version.surefire.plugin>2.18.1</version.surefire.plugin>
-
+    <!-- findbugs-maven-plugin 3.0.3- does not support Maven 3.4+ -->
+    <version.findbugs.plugin>3.0.4</version.findbugs.plugin>
     <!-- TODO: remove this once all repositories comply to the defined checkstyle rules -->
     <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
     <!-- TODO: remove this once all repositories/modules are fixed and do not contain duplicated classes -->
