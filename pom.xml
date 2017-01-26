@@ -344,28 +344,6 @@
                 <fail>true</fail>
               </configuration>
             </execution>
-            <execution>
-              <id>ban-duplicated-classes</id>
-              <phase>validate</phase>
-              <goals>
-                <goal>enforce</goal>
-              </goals>
-              <configuration>
-                <rules>
-                  <banDuplicateClasses>
-                    <ignoreClasses>
-                      <!-- Duplicated by XStream's transitive deps, with very little chance to get properly fixed -->
-                      <ignoreClass>org.xmlpull.v1.XmlPullParserException</ignoreClass>
-                      <ignoreClass>org.xmlpull.v1.XmlPullParser</ignoreClass>
-                      <!-- Bundled by both com.sun:tools and com.sun.xml.bind:jaxb-xjc. No easy way to exclude one of them. -->
-                      <ignoreClass>org.relaxng.datatype.*</ignoreClass>
-                    </ignoreClasses>
-                    <findAllDuplicates>true</findAllDuplicates>
-                  </banDuplicateClasses>
-                </rules>
-                <fail>${enforcer.failOnDuplicatedClasses}</fail>
-              </configuration>
-            </execution>
           </executions>
         </plugin>
         <plugin>
@@ -1152,6 +1130,34 @@
       </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>ban-duplicated-classes</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <banDuplicateClasses>
+                      <ignoreClasses>
+                        <!-- Duplicated by XStream's transitive deps, with very little chance to get properly fixed -->
+                        <ignoreClass>org.xmlpull.v1.XmlPullParserException</ignoreClass>
+                        <ignoreClass>org.xmlpull.v1.XmlPullParser</ignoreClass>
+                        <!-- Bundled by both com.sun:tools and com.sun.xml.bind:jaxb-xjc. No easy way to exclude one of them. -->
+                        <ignoreClass>org.relaxng.datatype.*</ignoreClass>
+                      </ignoreClasses>
+                      <findAllDuplicates>true</findAllDuplicates>
+                    </banDuplicateClasses>
+                  </rules>
+                  <fail>${enforcer.failOnDuplicatedClasses}</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
