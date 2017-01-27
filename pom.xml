@@ -84,7 +84,6 @@
     <version.net.sf.docbook.docbook-xsl>1.76.1</version.net.sf.docbook.docbook-xsl>
 
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
-    <version.org.apache.xmlbeans>2.3.0</version.org.apache.xmlbeans>
     <version.org.codehaus.cargo>1.6.2</version.org.codehaus.cargo>
     <version.org.jboss.arquillian.extension.drone>2.0.0.Final</version.org.jboss.arquillian.extension.drone>
     <version.org.jboss.arquillian.graphene>2.1.0.CR1</version.org.jboss.arquillian.graphene>
@@ -1153,6 +1152,15 @@
                         <ignoreClass>org.xmlpull.v1.XmlPullParser</ignoreClass>
                         <!-- Bundled by both com.sun:tools and com.sun.xml.bind:jaxb-xjc. No easy way to exclude one of them. -->
                         <ignoreClass>org.relaxng.datatype.*</ignoreClass>
+                        <!-- Classes duplicated by the jar itself (bug), see https://issues.apache.org.jira/browse/XMLBEANS-499 -->
+                        <ignoreClass>org.apache.xmlbeans.xml.stream.XMLName</ignoreClass>
+                        <ignoreClass>org.apache.xmlbeans.xml.stream.XMLInputStream</ignoreClass>
+                        <ignoreClass>org.apache.xmlbeans.xml.stream.utils.NestedThrowable</ignoreClass>
+                        <ignoreClass>org.apache.xmlbeans.xml.stream.utils.NestedThrowable$Util</ignoreClass>
+                        <ignoreClass>org.apache.xmlbeans.xml.stream.XMLStreamException</ignoreClass>
+                        <ignoreClass>org.apache.xmlbeans.xml.stream.ReferenceResolver</ignoreClass>
+                        <ignoreClass>org.apache.xmlbeans.xml.stream.XMLEvent</ignoreClass>
+                        <ignoreClass>org.apache.xmlbeans.xml.stream.Location</ignoreClass>
                       </ignoreClasses>
                       <findAllDuplicates>true</findAllDuplicates>
                     </banDuplicateClasses>
