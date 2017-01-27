@@ -155,6 +155,8 @@
     <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
     <!-- TODO: remove this once all repositories/modules are fixed and do not contain duplicated classes -->
     <enforcer.failOnDuplicatedClasses>false</enforcer.failOnDuplicatedClasses>
+    <!-- Set to "true" on every project that has no violations. -->
+    <findbugs.failOnViolation>false</findbugs.failOnViolation>
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>0.24.0</version.org.eclipse.tycho>
     <version.org.jboss.tools.tycho-plugins>0.23.1</version.org.jboss.tools.tycho-plugins>
@@ -1067,6 +1069,33 @@
           <artifactId>wildfly-swarm-plugin</artifactId>
           <version>${version.org.wildfly.swarm}</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.kie</groupId>
+              <artifactId>kie-build-tools</artifactId>
+              <version>${version.org.kie}</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <maxRank>6</maxRank>
+            <effort>Max</effort>
+            <xmlOutput>true</xmlOutput>
+            <failOnError>${findbugs.failOnViolation}</failOnError>
+            <excludeFilterFile>findbugs-excludes.xml</excludeFilterFile>
+          </configuration>
+          <executions>
+            <execution>
+              <id>findbugs-check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <phase>compile</phase>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -1153,8 +1182,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <!-- Keep in sync with <build><plugins> -->
-        <version>2.5.5</version>
       </plugin>
     </plugins>
   </reporting>
@@ -1221,6 +1248,10 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
           </plugin>
         </plugins>
       </build>
@@ -1306,6 +1337,7 @@
   </profiles>
 
   <modules>
+    <module>kie-build-tools</module>
     <module>kie-user-bom-parent</module>
     <module>kie-bom</module>
     <module>drools-bom</module>
