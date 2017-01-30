@@ -14,6 +14,6 @@ jbpm-form-modeler
 drools-wb
 optaplanner-wb
 jbpm-designer
-jbpm-console-ng
+jbpm-wb
 kie-docs
 kie-wb-distributions
