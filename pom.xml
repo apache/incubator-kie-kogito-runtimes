@@ -167,6 +167,9 @@
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overridden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
 
+    <!-- TODO: remove the Weld + Weld API override once we upgrade to IP BOM 7.0.0.CR7+-->
+    <version.org.jboss.weld.weld>2.4.1.Final</version.org.jboss.weld.weld>
+    <version.org.jboss.weld.weld-api>2.4.Final</version.org.jboss.weld.weld-api>
     <version.org.wildfly.swarm>2016.9</version.org.wildfly.swarm>
     <version.net.byte-buddy>1.4.16</version.net.byte-buddy>
     <version.commons-beanutils>1.9.2</version.commons-beanutils>
