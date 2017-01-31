@@ -351,6 +351,39 @@
                 <fail>true</fail>
               </configuration>
             </execution>
+            <execution>
+              <id>ban-duplicated-classes</id>
+              <!-- Using phase=none as we don't want this execution as part of the default build. The phase
+                   is specified in the "full" profile and thus the execution will only be activated when using that profile. -->
+              <phase>none</phase>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <banDuplicateClasses>
+                    <ignoreClasses>
+                      <!-- Duplicated by XStream's transitive deps, with very little chance to get properly fixed -->
+                      <ignoreClass>org.xmlpull.v1.XmlPullParserException</ignoreClass>
+                      <ignoreClass>org.xmlpull.v1.XmlPullParser</ignoreClass>
+                      <!-- Bundled by both com.sun:tools and com.sun.xml.bind:jaxb-xjc. No easy way to exclude one of them. -->
+                      <ignoreClass>org.relaxng.datatype.*</ignoreClass>
+                      <!-- Classes duplicated by the jar itself (bug), see https://issues.apache.org.jira/browse/XMLBEANS-499 -->
+                      <ignoreClass>org.apache.xmlbeans.xml.stream.XMLName</ignoreClass>
+                      <ignoreClass>org.apache.xmlbeans.xml.stream.XMLInputStream</ignoreClass>
+                      <ignoreClass>org.apache.xmlbeans.xml.stream.utils.NestedThrowable</ignoreClass>
+                      <ignoreClass>org.apache.xmlbeans.xml.stream.utils.NestedThrowable$Util</ignoreClass>
+                      <ignoreClass>org.apache.xmlbeans.xml.stream.XMLStreamException</ignoreClass>
+                      <ignoreClass>org.apache.xmlbeans.xml.stream.ReferenceResolver</ignoreClass>
+                      <ignoreClass>org.apache.xmlbeans.xml.stream.XMLEvent</ignoreClass>
+                      <ignoreClass>org.apache.xmlbeans.xml.stream.Location</ignoreClass>
+                    </ignoreClasses>
+                    <findAllDuplicates>true</findAllDuplicates>
+                  </banDuplicateClasses>
+                </rules>
+                <fail>${enforcer.failOnDuplicatedClasses}</fail>
+              </configuration>
+            </execution>
           </executions>
         </plugin>
         <plugin>
@@ -1143,34 +1176,9 @@
             <executions>
               <execution>
                 <id>ban-duplicated-classes</id>
+                <!-- The execution's configuration is part of the pluginManagement. This piece here only makes sure the
+                     execution is enabled (by specifying a phase) for full profile builds. -->
                 <phase>validate</phase>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <banDuplicateClasses>
-                      <ignoreClasses>
-                        <!-- Duplicated by XStream's transitive deps, with very little chance to get properly fixed -->
-                        <ignoreClass>org.xmlpull.v1.XmlPullParserException</ignoreClass>
-                        <ignoreClass>org.xmlpull.v1.XmlPullParser</ignoreClass>
-                        <!-- Bundled by both com.sun:tools and com.sun.xml.bind:jaxb-xjc. No easy way to exclude one of them. -->
-                        <ignoreClass>org.relaxng.datatype.*</ignoreClass>
-                        <!-- Classes duplicated by the jar itself (bug), see https://issues.apache.org.jira/browse/XMLBEANS-499 -->
-                        <ignoreClass>org.apache.xmlbeans.xml.stream.XMLName</ignoreClass>
-                        <ignoreClass>org.apache.xmlbeans.xml.stream.XMLInputStream</ignoreClass>
-                        <ignoreClass>org.apache.xmlbeans.xml.stream.utils.NestedThrowable</ignoreClass>
-                        <ignoreClass>org.apache.xmlbeans.xml.stream.utils.NestedThrowable$Util</ignoreClass>
-                        <ignoreClass>org.apache.xmlbeans.xml.stream.XMLStreamException</ignoreClass>
-                        <ignoreClass>org.apache.xmlbeans.xml.stream.ReferenceResolver</ignoreClass>
-                        <ignoreClass>org.apache.xmlbeans.xml.stream.XMLEvent</ignoreClass>
-                        <ignoreClass>org.apache.xmlbeans.xml.stream.Location</ignoreClass>
-                      </ignoreClasses>
-                      <findAllDuplicates>true</findAllDuplicates>
-                    </banDuplicateClasses>
-                  </rules>
-                  <fail>${enforcer.failOnDuplicatedClasses}</fail>
-                </configuration>
               </execution>
             </executions>
           </plugin>
