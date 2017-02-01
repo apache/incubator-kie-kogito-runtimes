@@ -381,6 +381,10 @@
                       <ignoreClass>org.apache.xmlbeans.xml.stream.ReferenceResolver</ignoreClass>
                       <ignoreClass>org.apache.xmlbeans.xml.stream.XMLEvent</ignoreClass>
                       <ignoreClass>org.apache.xmlbeans.xml.stream.Location</ignoreClass>
+                      <!-- Packaged both in hornetq-commons and hornetq-client. Remove this once we move the testing
+                           from HornetQ to ActiveMQ (https://issues.jboss.org/browse/JBPM-5503) -->
+                      <ignoreClass>org.hornetq.utils.HornetQUtilBundle_$bundle</ignoreClass>
+                      <ignoreClass>org.hornetq.utils.HornetQUtilLogger_$logger</ignoreClass>
                     </ignoreClasses>
                     <findAllDuplicates>true</findAllDuplicates>
                   </banDuplicateClasses>
