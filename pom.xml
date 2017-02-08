@@ -381,10 +381,26 @@
                       <ignoreClass>org.apache.xmlbeans.xml.stream.ReferenceResolver</ignoreClass>
                       <ignoreClass>org.apache.xmlbeans.xml.stream.XMLEvent</ignoreClass>
                       <ignoreClass>org.apache.xmlbeans.xml.stream.Location</ignoreClass>
+                      <!-- Duplicated in xml-apis:xml-apis:jar:1.4.01 and xerces:xercesImpl:jar:2.11.0.SP4. The class is identical
+                           and there is very little chance this will get ever fixed. -->
+                      <ignoreClass>org.w3c.dom.ElementTraversal</ignoreClass>
+                      <ignoreClass>org.w3c.dom.UserDataHandler</ignoreClass>
                       <!-- Packaged both in hornetq-commons and hornetq-client. Remove this once we move the testing
                            from HornetQ to ActiveMQ (https://issues.jboss.org/browse/JBPM-5503) -->
                       <ignoreClass>org.hornetq.utils.HornetQUtilBundle_$bundle</ignoreClass>
                       <ignoreClass>org.hornetq.utils.HornetQUtilLogger_$logger</ignoreClass>
+                      <!-- Classes bundled in errai-javax-enterprise which are GWT friendly.
+                           See https://github.com/errai/errai/blob/master/errai-javax-enterprise/README -->
+                      <ignoreClass>javax.interceptor.InvocationContext</ignoreClass>
+                      <ignoreClass>javax.inject.Provider</ignoreClass>
+                      <ignoreClass>javax.inject.Named</ignoreClass>
+                      <ignoreClass>javax.inject.Scope</ignoreClass>
+                      <ignoreClass>javax.inject.Qualifier</ignoreClass>
+                      <ignoreClass>javax.inject.Singleton</ignoreClass>
+                      <ignoreClass>javax.enterprise.*</ignoreClass>
+                      <!-- Classes from gwt-user duplicated in errai-uibinder -->
+                      <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderWriter</ignoreClass>
+                      <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderGenerator</ignoreClass>
                     </ignoreClasses>
                     <findAllDuplicates>true</findAllDuplicates>
                   </banDuplicateClasses>
