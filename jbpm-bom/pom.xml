@@ -549,7 +549,7 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-designer-distribution-wars</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>tomcat7</classifier>
+        <classifier>tomcat8</classifier>
         <type>war</type>
       </dependency>
       <dependency>

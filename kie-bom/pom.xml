@@ -1901,7 +1901,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-drools-wb-distribution-wars</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>tomcat7</classifier>
+        <classifier>tomcat8</classifier>
         <type>war</type>
       </dependency>
       <dependency>
@@ -1938,7 +1938,7 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-wb-distribution-wars</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>tomcat7</classifier>
+        <classifier>tomcat8</classifier>
         <type>war</type>
       </dependency>
       <dependency>
