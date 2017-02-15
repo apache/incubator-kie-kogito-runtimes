@@ -1077,15 +1077,6 @@
             <failOnError>${findbugs.failOnViolation}</failOnError>
             <excludeFilterFile>findbugs-excludes.xml</excludeFilterFile>
           </configuration>
-          <executions>
-            <execution>
-              <id>findbugs-check</id>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <phase>compile</phase>
-            </execution>
-          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1243,6 +1234,15 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>findbugs-check</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
