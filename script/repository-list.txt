@@ -2,8 +2,8 @@ droolsjbpm-build-bootstrap
 droolsjbpm-knowledge
 drools
 optaplanner
-jbpm
 kie-dmn
+jbpm
 droolsjbpm-integration
 droolsjbpm-tools
 kie-uberfire-extensions
