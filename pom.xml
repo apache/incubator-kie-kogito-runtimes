@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-bom</artifactId>
     <!-- Keep in sync with ip-parent version in kie-user-bom-parent/pom.xml -->
-    <version>7.0.0.CR6</version>
+    <version>7.0.0.CR7</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -143,18 +143,12 @@
 
     <!-- Plugin version overrides.
          IMPORTANT: always explain the reason for overriding the plugin version! -->
-    <!-- Override version 2.5.4 coming from jboss-parent as it forks executions, which is a bug.
-         See https://issues.apache.org/jira/browse/FELIX-4882 for more details.
-         Version 3.x requires Java 7 (not directly, but one of transitive deps does). -->
-    <version.bundle.plugin>2.5.3</version.bundle.plugin>
     <!-- Surefire version 2.19.1 coming from parent is buggy and kie-osgi tests in droolsjbpm-integration are failing because of that. -->
     <version.surefire.plugin>2.18.1</version.surefire.plugin>
     <!-- Jacoco plugin configurations -->
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coveredratio.minimum>0.9</jacoco.line.coveredratio.minimum>
     <version.jacoco.plugin>0.7.5.201505241946</version.jacoco.plugin>
-    <!-- findbugs-maven-plugin 3.0.3- does not support Maven 3.4+ -->
-    <version.findbugs.plugin>3.0.4</version.findbugs.plugin>
     <!-- TODO: remove this once all repositories comply to the defined checkstyle rules -->
     <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
     <!-- TODO: remove this once all repositories/modules are fixed and do not contain duplicated classes -->
@@ -178,9 +172,6 @@
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overridden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
 
-    <!-- TODO: remove the Weld + Weld API override once we upgrade to IP BOM 7.0.0.CR7+-->
-    <version.org.jboss.weld.weld>2.4.1.Final</version.org.jboss.weld.weld>
-    <version.org.jboss.weld.weld-api>2.4.Final</version.org.jboss.weld.weld-api>
     <version.org.wildfly.swarm>2016.9</version.org.wildfly.swarm>
     <version.net.byte-buddy>1.4.16</version.net.byte-buddy>
     <version.commons-beanutils>1.9.2</version.commons-beanutils>
