@@ -411,6 +411,14 @@
                            are just duplicates of the exactly same sources. In ideal world, this get eventually fixed,
                            but it may very well not be worth the effort. -->
                       <ignoreClass>javax.servlet.*</ignoreClass>
+                      <!-- Classes in javax.annotation package are just marker annotations used to aid the programmers.
+                           These annotations do not influence the actual behavior of the code, so it's reasonable to
+                           ignore them. Following dependencies contain these classes: 'com.google.code.findbugs:jsr305'
+                           and 'com.google.code.findbugs:annotations'. -->
+                      <ignoreClass>javax.annotation.*</ignoreClass>
+                      <!-- Exactly the same case as for above 'javax.annotation.*' classes. Following dependencies contain
+                           these classes: 'net.jcip:jcip-annotations' and 'com.google.code.findbugs:annotations'. -->
+                      <ignoreClass>net.jcip.annotations.*</ignoreClass>
                       <!-- Classes from gwt-user duplicated in errai-uibinder -->
                       <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderWriter</ignoreClass>
                       <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderGenerator</ignoreClass>
