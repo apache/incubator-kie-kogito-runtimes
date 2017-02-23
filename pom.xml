@@ -406,6 +406,11 @@
                       <ignoreClass>javax.inject.Qualifier</ignoreClass>
                       <ignoreClass>javax.inject.Singleton</ignoreClass>
                       <ignoreClass>javax.enterprise.*</ignoreClass>
+                      <!-- Servlet API is bundled in way too many different dependencies, causing nightmares trying to
+                           properly exclude everything. There were no real issues with this so far as mostly the APIs
+                           are just duplicates of the exactly same sources. In ideal world, this get eventually fixed,
+                           but it may very well not be worth the effort. -->
+                      <ignoreClass>javax.servlet.*</ignoreClass>
                       <!-- Classes from gwt-user duplicated in errai-uibinder -->
                       <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderWriter</ignoreClass>
                       <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderGenerator</ignoreClass>
