@@ -815,6 +815,12 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-wb-case-mgmt-showcase</artifactId>
+        <version>${version.org.kie}</version>
+        <type>war</type>
+      </dependency>
 
       <!-- designer and jbpm-simulation -->
       <dependency>
