@@ -423,6 +423,19 @@
                       <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderWriter</ignoreClass>
                       <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderGenerator</ignoreClass>
                     </ignoreClasses>
+                    <dependencies>
+                      <!-- gwt-dev bundles dozens of different 3rd party dependencies, but can not be usually excluded
+                           as e.g. GWT Mockito tests are using the com.google.gwt classes inside. Ignoring it for the
+                           duplicate classes check seems to be the only way. -->
+                      <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-dev</artifactId>
+                        <type>jar</type>
+                        <ignoreClasses>
+                          <ignoreClass>*</ignoreClass>
+                        </ignoreClasses>
+                      </dependency>
+                    </dependencies>
                     <findAllDuplicates>true</findAllDuplicates>
                   </banDuplicateClasses>
                 </rules>
