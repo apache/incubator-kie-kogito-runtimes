@@ -127,6 +127,9 @@
     <version.org.hibernate.hibernate-validator>4.1.0.Final</version.org.hibernate.hibernate-validator>
     <version.javax.validation>1.0.0.GA</version.javax.validation>
 
+    <!-- Lienzo core upgrade required by Stunner. Can be removed once IP BOM is upgraded.-->
+    <version.com.ahome-it.lienzo-core>2.0.284-RELEASE</version.com.ahome-it.lienzo-core>
+
     <!-- CSS parsing library from Apache used by Stunner. -->
     <version.net.sourceforge.cssparser>0.9.21</version.net.sourceforge.cssparser>
     <version.org.w3c.css.sac>1.3</version.org.w3c.css.sac>
