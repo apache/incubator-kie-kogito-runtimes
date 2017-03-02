@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-bom</artifactId>
     <!-- Keep in sync with ip-parent version in kie-user-bom-parent/pom.xml -->
-    <version>7.0.0.CR7</version>
+    <version>7.0.0.CR8</version>
   </parent>
 
   <groupId>org.kie</groupId>
