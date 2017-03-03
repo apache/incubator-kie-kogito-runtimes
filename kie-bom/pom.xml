@@ -164,6 +164,17 @@
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-services-dmn</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-services-dmn</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>      
+      <dependency>
+        <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-jbpm</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
@@ -236,6 +247,17 @@
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-optaplanner</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-rest-dmn</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-rest-dmn</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
