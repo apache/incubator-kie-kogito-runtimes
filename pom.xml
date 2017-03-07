@@ -430,6 +430,16 @@
                           <ignoreClass>*</ignoreClass>
                         </ignoreClasses>
                       </dependency>
+                      <dependency>
+                        <groupId>org.elasticsearch</groupId>
+                        <artifactId>elasticsearch</artifactId>
+                        <ignoreClasses>
+                          <!-- Elasticsearch team claims they fixed performance issues in the class and re-bundled it.
+                               See https://discuss.elastic.co/t/an-unshaded-joda-time-classes-in-elasticsearch-2-1-1-jar/38943
+                               Nothing we can do here. -->
+                          <ignoreClass>org.joda.time.base.BaseDateTime</ignoreClass>
+                        </ignoreClasses>
+                      </dependency>
                     </dependencies>
                     <findAllDuplicates>true</findAllDuplicates>
                   </banDuplicateClasses>
