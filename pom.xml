@@ -155,8 +155,7 @@
     <version.jacoco.plugin>0.7.5.201505241946</version.jacoco.plugin>
     <!-- TODO: remove this once all repositories comply to the defined checkstyle rules -->
     <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
-    <!-- TODO: remove this once all repositories/modules are fixed and do not contain duplicated classes -->
-    <enforcer.failOnDuplicatedClasses>false</enforcer.failOnDuplicatedClasses>
+    <enforcer.failOnDuplicatedClasses>true</enforcer.failOnDuplicatedClasses>
     <!-- Set to "true" on every project that has no violations. -->
     <findbugs.failOnViolation>false</findbugs.failOnViolation>
     <!-- org.eclipse.tycho plugin version -->
