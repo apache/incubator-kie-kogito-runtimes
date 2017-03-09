@@ -7,7 +7,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-parent</artifactId>
     <!-- Keep in sync with the parent version in ../pom.xml (kie-parent)  -->
-    <version>7.0.0.CR8</version>
+    <version>7.0.0.CR9</version>
     <!-- Empty relativePath needed to fix Maven warning 'parent.relativePath points at wrong POM' -->
     <relativePath/>
   </parent>

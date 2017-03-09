@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-bom</artifactId>
     <!-- Keep in sync with ip-parent version in kie-user-bom-parent/pom.xml -->
-    <version>7.0.0.CR8</version>
+    <version>7.0.0.CR9</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -117,6 +117,7 @@
     <version.javax.validation>1.0.0.GA</version.javax.validation>
     <!-- temporary because it was removed/rename in jboss-ip-bom and it is needed by droolsjbpm-knowledge/kie-api/pom.xml -->
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
+    <version.org.javassist>3.20.0-GA</version.org.javassist><!-- Temporary override for Hibernate 5.1.x. Can be removed once we upgrade to IP BOM 7.0.0.CR10-->
     <version.org.ops4j.pax.url>2.2.0</version.org.ops4j.pax.url>
     <version.org.geronimo.atinject>1.0</version.org.geronimo.atinject>
     <!-- since ironjacamar was removed from the ip-ip-bom but is still needed from dashboard-builder all dependencies are placed here -->
