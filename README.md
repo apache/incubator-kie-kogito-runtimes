@@ -453,6 +453,20 @@ Guvnor uses Arquillian to run tests in a J2EE container and hence tests need to 
     $ mvn test [-Dtest=ATestClassName]
     ```
 
+Running code-coverage checks
+----------------------------
+
+JaCoCo plugin allows to measure code-coverage for any child of droolsjbpm-build-bootstrap. 
+The check binds to the verify phase and for the plugin to run, the code-coverage profile has to be enabled.
+
+* From the module/project folder run command:
+   
+    ```shell
+    $ mvn clean verify -Pcode-coverage
+    ```
+
+* The coverage report is then generated in ./target/site/jacoco/index.html
+
 Configuring Maven
 -----------------
 
