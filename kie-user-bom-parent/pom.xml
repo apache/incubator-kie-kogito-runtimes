@@ -58,6 +58,20 @@
   </properties>
 
   <repositories>
+    <repository>
+      <!-- Duplicating the Maven Central repository here (as it is already coming from Super POM) makes the build much faster,
+           as the Maven Central is now treated as the first (default) repository (because it is before the JBoss.org one).
+           Artifacts with release (fixed) versions are being downloaded primarily from there. Without the central being the
+           first repository the JBoss.org Nexus would be contacted first and since it is quite slow it slows down the build.
+           We use JBoss.org repo only to download our SNAPSHOTs. -->
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
     <!-- Bootstrap repository to locate the parent pom when the parent pom has not been build locally. -->
     <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
     <repository>
@@ -74,6 +88,33 @@
       </snapshots>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <!-- Duplicating the Maven Central repository here (as it is already coming from Super POM) makes the build much faster,
+           as the Maven Central is now treated as the first (default) repository (because it is before the JBoss.org one).
+           Artifacts with release (fixed) versions are being downloaded primarily from there. Without the central being the
+           first repository the JBoss.org Nexus would be contacted first and since it is quite slow it slows down the build.
+           We use JBoss.org repo only to download our SNAPSHOTs. -->
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
 
 
