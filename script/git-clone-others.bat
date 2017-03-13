@@ -6,7 +6,7 @@ call :initializeWorkingDirAndScriptDir
 
 rem set startDateTime=`date +%s`
 
-set gitUrlPrefix=https://github.com/droolsjbpm/
+set gitUrlPrefix=https://github.com/kiegroup/
 rem TODO dynamic gitUrlPrefix detection does not work on mac
 rem cd $scriptDir
 rem gitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`

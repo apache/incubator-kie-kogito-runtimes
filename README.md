@@ -1,7 +1,7 @@
 Developing Drools and jBPM
 ==========================
 
-**If you want to build or contribute to a droolsjbpm project, read this document.**
+**If you want to build or contribute to a kiegroup project, read this document.**
 
 **This document will save you and us a lot of time by setting up your development environment correctly.**
 It solves all known pitfalls that can disrupt your development.
@@ -9,7 +9,7 @@ It also describes all guidelines, tips and tricks.
 If you want your pull requests (or patches) to be merged into master, please respect those guidelines.
 
 If you are reading this document with a normal text editor, please take a look
-at the more readable [formatted version](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/README.md).
+at the more readable [formatted version](https://github.com/kiegroup/droolsjbpm-build-bootstrap/blob/master/README.md).
 
 If you discover pitfalls, tips and tricks not described in this document,
 please update it using the [markdown syntax](http://daringfireball.net/projects/markdown/syntax).
@@ -40,14 +40,14 @@ If you don't want to contribute to this project and you know git and maven, thes
 * To build 1 repository, for example `guvnor`:
 
     ```shell
-    $ git clone git@github.com:droolsjbpm/guvnor.git
+    $ git clone git@github.com:kiegroup/guvnor.git
     $ cd guvnor
     $ mvn clean install -DskipTests
     ```
 * To build all repositories:
 
     ```shell
-    $ git clone git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git
+    $ git clone git@github.com:kiegroup/droolsjbpm-build-bootstrap.git
     $ droolsjbpm-build-bootstrap/script/git-clone-others.sh
     $ droolsjbpm-build-bootstrap/script/mvn-all.sh clean install -DskipTests
     ```
@@ -118,12 +118,12 @@ For more info on forking, read [GitHub's help on forking](http://help.github.com
 
 * First fork the repository you want to work on, for example `guvnor`:
 
-    * Surf to [the blessed repositories on github](https://github.com/droolsjbpm) and log in.
+    * Surf to [the blessed repositories on github](https://github.com/kiegroup) and log in.
 
         * Note: **Every git repository can be build alone.**
         You only need to fork/clone the repositories you're interested in (`guvnor` in this case).
 
-    * Surf to [the specific repository (guvnor)](https://github.com/droolsjbpm/guvnor)
+    * Surf to [the specific repository (guvnor)](https://github.com/kiegroup/guvnor)
 
     * Click the top right button *Fork*
 
@@ -133,9 +133,9 @@ For more info on forking, read [GitHub's help on forking](http://help.github.com
 * **Clone your fork locally:**
 
     ```shell
-    # First make a directory to hold all the droolsjbpm projects
-    $ mkdir droolsjbpm
-    $ cd droolsjbpm
+    # First make a directory to hold all the kiegroup projects
+    $ mkdir kiegroup
+    $ cd kiegroup
 
     # Then clone the repository you want to clone.
     $ git clone git@github.com:MY_GITHUB_USERNAME/guvnor.git
@@ -158,7 +158,7 @@ For more info on forking, read [GitHub's help on forking](http://help.github.com
 * Add the blessed repository as upstream (if you've directly cloned the blessed repository, don't do this):
 
     ```shell
-    $ git remote add upstream git@github.com:droolsjbpm/guvnor.git
+    $ git remote add upstream git@github.com:kiegroup/guvnor.git
     $ git fetch upstream
     ```
 
@@ -251,7 +251,7 @@ Working with git
     * To run a git command (except clone) over all repositories (only works if you cloned all repositories):
 
         ```shell
-        $ cd ~/projects/droolsjbpm
+        $ cd ~/projects/kiegroup
         $ droolsjbpm-build-bootstrap/script/git-all.sh push
         ```
 
@@ -260,13 +260,13 @@ Working with git
         * Linux tip: Create a symbolic link to the `git-all.sh` script and place it in your `PATH` by linking it in `~/bin`:
 
             ```shell
-            $ ln -s ~/projects/droolsjbpm/droolsjbpm-build-bootstrap/script/git-all.sh ~/bin/droolsjbpm-git
+            $ ln -s ~/projects/kiegroup/droolsjbpm-build-bootstrap/script/git-all.sh ~/bin/kiegroup-git
             ```
 
             For command line completion, add the following line in `~/.bashrc`:
 
             ```shell
-            $ complete -o bashdefault -o default -o nospace -F _git droolsjbpm-git
+            $ complete -o bashdefault -o default -o nospace -F _git kiegroup-git
             ```
 
 Share your changes with a pull request
@@ -366,7 +366,7 @@ Running the build
 * Go into a project's base directory, for example `guvnor`:
 
     ```shell
-    $ cd ~/projects/droolsjbpm
+    $ cd ~/projects/kiegroup
     $ ls
     drools  droolsjbpm-build-bootstrap droolsjbpm-integration  droolsjbpm-knowledge  droolsjbpm-tools  optaplanner  guvnor
     $ cd guvnor
@@ -410,18 +410,18 @@ Running the build
 * To run a maven build over all repositories (only works if you cloned all repositories):
 
     ```shell
-    $ cd ~/projects/droolsjbpm
+    $ cd ~/projects/kiegroup
     $ droolsjbpm-build-bootstrap/script/mvn-all.sh -DskipTests clean install
     ```
 
     * Note: the `mvn-all.sh` script is working directory independent.
 
-* Warning: The first `mvn` build of a day will download the latest SNAPSHOT dependencies of other droolsjbpm projects,
-unless you build all those droolsjbpm projects from source.
+* Warning: The first `mvn` build of a day will download the latest SNAPSHOT dependencies of other kiegroup projects,
+unless you build all those kiegroup projects from source.
 Those SNAPSHOTS were build and deployed last night by Jenkins jobs.
 
     * If you've pulled all changes (or cloned a repository) today, this is a good thing:
-    it saves you from having to download and build all those other latest droolsjbpm projects from source.
+    it saves you from having to download and build all those other latest kiegroup projects from source.
 
     * If you haven't pulled all changes today, this is probably a bad thing:
     you 're probably not ready to deal with those new snapshots.
@@ -442,14 +442,14 @@ Guvnor uses Arquillian to run tests in a J2EE container and hence tests need to 
 * Guvnor
 
     ```shell
-    $ cd ~/projects/droolsjbpm/guvnor/guvnor-webapp-drools
+    $ cd ~/projects/kiegroup/guvnor/guvnor-webapp-drools
     $ mvn integration-test [-Dtest=ATestClassName]
     ```
 
 * All other modules
 
     ```shell
-    $ cd ~/projects/droolsjbpm/drools
+    $ cd ~/projects/kiegroup/drools
     $ mvn test [-Dtest=ATestClassName]
     ```
 
@@ -655,7 +655,7 @@ This is the new way (and compatible with tycho).
 
 * Click menu *File*, menu item *Import*, tree item *Maven*, tree item *Existing Maven Projects*.
 
-* Click button *Browse*, select a repository directory. For example `~/projects/droolsjbpm/guvnor`.
+* Click button *Browse*, select a repository directory. For example `~/projects/kiegroup/guvnor`.
 
 * Unfold *Advanced*, textfield *Profiles*: `notSoaProfile,fullProfile`.
 
@@ -896,7 +896,7 @@ Extra Eclipse plugins
             For example:
 
             ```
-            -war /home/manstis/workspaces/git/droolsjbpm/guvnor/guvnor-webapp-drools/target/guvnor-webapp-drools-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor
+            -war /home/manstis/workspaces/git/kiegroup/guvnor/guvnor-webapp-drools/target/guvnor-webapp-drools-5.4.0-SNAPSHOT -remoteUI "${gwt_remote_ui_server_port}:${unique_id}" -startupUrl index.jsp -logLevel INFO -codeServerPort 9997 -port 8888 org.drools.guvnor.FastCompiledGuvnor org.drools.guvnor.Guvnor
             ```
 
         * Tab *Arguments*, it is recommended to set `VM Arguments` to: `-XX:MaxPermSize=512m -Xms512m -Xmx2048m`. You might be able to try smaller values, but these are known to work.
@@ -914,9 +914,9 @@ Extra Eclipse plugins
 Eclipse plugin development
 --------------------------
 
-* Installing a droolsjbpm eclipse plugin into a fresh Eclipse from a local update site.
+* Installing a kiegroup eclipse plugin into a fresh Eclipse from a local update site.
 
-    * Follow the intructions in [the description entity in the org.drools.updatesite pom.xml file](https://github.com/droolsjbpm/droolsjbpm-tools/blob/master/drools-eclipse/org.drools.updatesite/pom.xml).
+    * Follow the intructions in [the description entity in the org.drools.updatesite pom.xml file](https://github.com/kiegroup/droolsjbpm-tools/blob/master/drools-eclipse/org.drools.updatesite/pom.xml).
 
 Developing with IntelliJ
 ========================
@@ -945,9 +945,9 @@ IntelliJ has very good build-in support for Maven.
 
     * Click radiobutton *Create project from scratch*, button *Next*
 
-    * Textfield *name*: `droolsjbpm`
+    * Textfield *name*: `kiegroup`
 
-    * Textfield *Project files location*: `~/projects/droolsjbpm`
+    * Textfield *Project files location*: `~/projects/kiegroup`
 
     * Checkbox *Create module*: `off`
 
@@ -958,7 +958,7 @@ projects as modules.
 
     * Radiobutton *Import from external model*, button *Next*, button *Next*
 
-    * Textfield *Root directory*: `~/projects/droolsjbpm/guvnor`
+    * Textfield *Root directory*: `~/projects/kiegroup/guvnor`
 
         * That is the directory that contains the multiproject `pom.xml` file from a project base directory.
 
@@ -966,7 +966,7 @@ projects as modules.
 
     * Go grab a coffee while it's indexing.
 
-    * Repeat if you want to work on more than 1 droolsjbpm project.
+    * Repeat if you want to work on more than 1 kiegroup project.
 
 Note: Don't use the `maven-idea-plugin` on the command line with `mvn`: it's dead.
 
@@ -1272,23 +1272,23 @@ Knowing what's going on
 
     * Subscribe to github repository commits:
 
-        * [droolsjbpm-build-bootstrap](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom)
+        * [droolsjbpm-build-bootstrap](https://github.com/kiegroup/droolsjbpm-build-bootstrap/commits/master.atom)
 
-        * [droolsjbpm-knowledge](https://github.com/droolsjbpm/droolsjbpm-knowledge/commits/master.atom)
+        * [droolsjbpm-knowledge](https://github.com/kiegroup/droolsjbpm-knowledge/commits/master.atom)
 
-        * [drools](https://github.com/droolsjbpm/drools/commits/master.atom)
+        * [drools](https://github.com/kiegroup/drools/commits/master.atom)
 
-        * [optaplanner](https://github.com/droolsjbpm/optaplanner/commits/master.atom)
+        * [optaplanner](https://github.com/kiegroup/optaplanner/commits/master.atom)
 
-        * [jbpm](https://github.com/droolsjbpm/jbpm/commits/master.atom)
+        * [jbpm](https://github.com/kiegroup/jbpm/commits/master.atom)
 
-        * [droolsjbpm-integration](https://github.com/droolsjbpm/droolsjbpm-integration/commits/master.atom)
+        * [droolsjbpm-integration](https://github.com/kiegroup/droolsjbpm-integration/commits/master.atom)
 
-        * [guvnor](https://github.com/droolsjbpm/guvnor/commits/master.atom)
+        * [guvnor](https://github.com/kiegroup/guvnor/commits/master.atom)
 
-        * [droolsjbpm-tools](https://github.com/droolsjbpm/droolsjbpm-tools/commits/master.atom)
+        * [droolsjbpm-tools](https://github.com/kiegroup/droolsjbpm-tools/commits/master.atom)
 
-        * [droolsjbpm-build-bootstrap](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/commits/master.atom)
+        * [droolsjbpm-build-bootstrap](https://github.com/kiegroup/droolsjbpm-build-bootstrap/commits/master.atom)
 
     * Subscribe to [Jenkins](https://hudson.jboss.org/hudson/view/Drools%20jBPM/)
 
@@ -1358,7 +1358,7 @@ Writing documentation
 * To generate the html and pdf output run maven with `-Dfull`:
 
     ```shell
-    $ cd droolsjbpm
+    $ cd kiegroup
     $ cd optaplanner/optaplanner-docs
     $ mvn clean install -Dfull
     ...
@@ -1409,4 +1409,4 @@ FAQ
 
         * with [Open Hub](https://www.openhub.net/p/jboss-drools/contributors) which also has statistics
 
-        * in [the GitHub web interface](https://github.com/droolsjbpm).
+        * in [the GitHub web interface](https://github.com/kiegroup).

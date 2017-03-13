@@ -20,9 +20,9 @@
   </description>
 
   <scm>
-    <connection>scm:git:https://github.com/droolsjbpm/guvnor.git</connection>
-    <developerConnection>scm:git:git@github.com:droolsjbpm/guvnor.git</developerConnection>
-    <url>https://github.com/droolsjbpm/guvnor</url>
+    <connection>scm:git:https://github.com/kiegroup/guvnor.git</connection>
+    <developerConnection>scm:git:git@github.com:kiegroup/guvnor.git</developerConnection>
+    <url>https://github.com/kiegroup/guvnor</url>
   </scm>
   <issueManagement>
     <system>jira</system>

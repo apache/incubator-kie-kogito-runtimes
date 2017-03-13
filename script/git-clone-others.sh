@@ -25,8 +25,8 @@ droolsjbpmOrganizationDir="$scriptDir/../.."
 startDateTime=`date +%s`
 
 # The gitUrlPrefix differs between committers and anonymous users. Also it differs on forks.
-# Committers on blessed gitUrlPrefix="git@github.com:droolsjbpm/"
-# Anonymous users on blessed gitUrlPrefix="git://github.com/droolsjbpm/"
+# Committers on blessed gitUrlPrefix="git@github.com:kiegroup/"
+# Anonymous users on blessed gitUrlPrefix="git://github.com/kiegroup/"
 cd "${scriptDir}"
 droolsjbpmGitUrlPrefix=`git remote -v | grep --regex "^origin.*(fetch)$"`
 droolsjbpmGitUrlPrefix=`echo ${droolsjbpmGitUrlPrefix} | sed 's/^origin\s*//g' | sed 's/droolsjbpm\-build\-bootstrap.*//g'`

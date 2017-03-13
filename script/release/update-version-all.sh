@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Updates the version for all droolsjbpm repositories
+# Updates the version for all kiegroup repositories
 
 initializeScriptDir() {
     # Go to the script directory

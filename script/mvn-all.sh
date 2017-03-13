@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Run a mvn command on all droolsjbpm repositories.
+# Run a mvn command on all kiegroup repositories.
 
 initializeWorkingDirAndScriptDir() {
     # Set working directory and remove all symbolic links

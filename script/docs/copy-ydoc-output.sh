@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Copies the ydoc output into the drools-docs.
-# For more information, see droolsjbpm/droolsjbpm-knowledge/knowledge-api/pom.xml#maven-javadoc-plugin
+# For more information, see kiegroup/droolsjbpm-knowledge/knowledge-api/pom.xml#maven-javadoc-plugin
 
 initializeWorkingDirAndScriptDir() {
     # Set working directory and remove all symbolic links

@@ -406,22 +406,22 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
 
         NOTE: in droolsjbpm-build-bootstrap pom.xml there are some properties where you should pay attention to:
 
-        1. jboss-ip bom version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L11)
+        1. jboss-ip bom version (https://github.com/kiegroup/droolsjbpm-build-bootstrap/blob/master/pom.xml#L11)
            the version of jboss-integration-platform-bom. should be the most recent version released  in jboss-ip-bom
 
-        2. org.kie version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L48)
+        2. org.kie version (https://github.com/kiegroup/droolsjbpm-build-bootstrap/blob/master/pom.xml#L48)
            org.kie version sometimes has to be changed manually, if needed, should be updated to release version
 
-        3. uberfire version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L54)
+        3. uberfire version (https://github.com/kiegroup/droolsjbpm-build-bootstrap/blob/master/pom.xml#L54)
            has to be updated manually to the last released version
 
-        4. dashbuilder version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L55)
+        4. dashbuilder version (https://github.com/kiegroup/droolsjbpm-build-bootstrap/blob/master/pom.xml#L55)
            has to be updated manually to the last released version
 
-        5. jboss-ip-bom version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L66)
+        5. jboss-ip-bom version (https://github.com/kiegroup/droolsjbpm-build-bootstrap/blob/master/pom.xml#L66)
            should be the same version as in point 1
 
-        6. latest released version (https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/pom.xml#L85)
+        6. latest released version (https://github.com/kiegroup/droolsjbpm-build-bootstrap/blob/master/pom.xml#L85)
            this is a property productisation needs to get the last released version on the branch where released from.
            When updated this should be pushed to the branch of the blessed repository
 
@@ -628,9 +628,9 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
 
     * The Drools XSD files are at http://www.drools.org/xsd/[http://www.drools.org/xsd/]
     
-    * Go to the https://github.com/droolsjbpm/droolsjbpm-knowledge/blob/master/kie-api/src/main/resources/org/kie/api/kmodule.xsd[kmodule.xsd] file (on master) and switch to the release tag.
+    * Go to the https://github.com/kiegroup/droolsjbpm-knowledge/blob/master/kie-api/src/main/resources/org/kie/api/kmodule.xsd[kmodule.xsd] file (on master) and switch to the release tag.
     
-    * Copy the raw file to https://github.com/droolsjbpm/drools-website/tree/master/xsd[drools-website's `xsd` directory].
+    * Copy the raw file to https://github.com/kiegroup/drools-website/tree/master/xsd[drools-website's `xsd` directory].
     
     * Rename it from `kmodule.xsd` to `kmodule_<major>_<minor>.xsd` so it includes its version (major and minor only, not hotfixes or quantifiers). For example for release `6.3.0.Final` it is renamed to `kmodule_6_3.xsd`. Do not overwrite an existing file as there should never be an existing file (because the XSD is only copied for Final, non-hotfix releases).
     
@@ -639,7 +639,7 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
 Announcing the release
 ----------------------
 
-* Create a blog entry on [the droolsjbpm blog](http://blog.athico.com/)
+* Create a blog entry on [the kiegroup blog](http://blog.athico.com/)
 
     * Include a direct link to the new and noteworthy section and to that blog entry in all other correspondence.
 
@@ -659,7 +659,7 @@ Building a Product Tag
 **This paragraph describes the building of a product tag when the version is > = 6.2.x!
 (for version == 6.0.x please look at the next paragraph Synching the Product Repository)**
 
-The community code repositories under the @droolsjbpm account contains all the code released as part of the community projects for Drools and jBPM. Every time a new minor or major version is released,
+The community code repositories under the @kiegroup account contains all the code released as part of the community projects for Drools and jBPM. Every time a new minor or major version is released,
 a new community branch is created for that version. For instance, at the time of this writing, we have, for instance, branches *6.0.x*, *5.6.x*, *5.5.x*, etc for each minor/major version released and
 the *master* branch for future releases. Red Hat also has a mirror private repository that is used as a base for the product releases. This mirror repository contains all the code from the community
 repositories, plus a few product specific commits, comprising branding commits (changing names, for instance from Drools to BRMS), different icons/images, etc.
@@ -669,7 +669,7 @@ This new tag will usually be based on the HEAD of a specific community branch wi
 Follows an instruction on how to do that. These instructions assume:
 
 * You have a local clone of all Drools/jBPM repositories (18 at the time of this writing).
-* The clones have a remote repository reference to the @droolsjbpm repositories that we will name **main**
+* The clones have a remote repository reference to the @kiegroup repositories that we will name **main**
 * The clones have a remote repository reference to the @jboss-integration mirrors of these repositories that we will name **product**
 
 Here are the steps:

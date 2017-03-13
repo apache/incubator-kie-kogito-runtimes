@@ -232,9 +232,9 @@
   </pluginRepositories>
 
   <scm>
-    <connection>scm:git:https://github.com/droolsjbpm/droolsjbpm-build-bootstrap.git</connection>
-    <developerConnection>scm:git:git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git</developerConnection>
-    <url>https://github.com/droolsjbpm/droolsjbpm-build-bootstrap</url>
+    <connection>scm:git:https://github.com/kiegroup/droolsjbpm-build-bootstrap.git</connection>
+    <developerConnection>scm:git:git@github.com:kiegroup/droolsjbpm-build-bootstrap.git</developerConnection>
+    <url>https://github.com/kiegroup/droolsjbpm-build-bootstrap</url>
   </scm>
   <ciManagement>
     <system>jenkins</system>

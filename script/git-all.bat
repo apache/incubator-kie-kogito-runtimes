@@ -1,6 +1,6 @@
 @echo off
 
-rem Runs a git command on all droolsjbpm repositories.
+rem Runs a git command on all kiegroup repositories.
 
 call :initializeWorkingDirAndScriptDir
  
