@@ -58,10 +58,16 @@
   </properties>
 
   <repositories>
+    <!-- Having the <repositories> in this POM is an ugly hack to make sure we can always find
+         the jboss-integration-platform-parent (ip-parent). In most of the cases the ip-parent is available directly from
+         Maven Central. However, when new version gets released it takes up to 24 hours to get it synced into the Maven
+         Central. So in that period the local build of droolsjbpm-build-bootstrap would fail (unless one would
+         locally build the ip-parent from the sources as well, which is not something users should be doing). Configuring the
+         'repository.jboss.org' directly works around this issue. -->
     <repository>
       <!-- Duplicating the Maven Central repository here (as it is already coming from Super POM) makes the build much faster,
            as the Maven Central is now treated as the first (default) repository (because it is before the JBoss.org one).
-           Artifacts with release (fixed) versions are being downloaded primarily from there. Without the central being the
+           Artifacts with release (fixed) versions are being downloaded primarily from central. Without the central being the
            first repository the JBoss.org Nexus would be contacted first and since it is quite slow it slows down the build.
            We use JBoss.org repo only to download our SNAPSHOTs. -->
       <id>central</id>
