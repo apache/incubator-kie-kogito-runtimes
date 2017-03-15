@@ -15,19 +15,19 @@ sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bo
 
 def jbpmTestCoverageMatrix=
 """
-git clone https://github.com/droolsjbpm/droolsjbpm-build-bootstrap.git -b master
+git clone https://github.com/kiegroup/droolsjbpm-build-bootstrap.git -b master
 sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04a.KIE_jbpmTestCoverMartix.sh
 """
 
 def kieAllServerMatrix=
 """
-git clone https://github.com/droolsjbpm/droolsjbpm-build-bootstrap.git -b master
+git clone https://github.com/kiegroup/droolsjbpm-build-bootstrap.git -b master
 sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04c.KIE_kieAllServerMatrix.sh
 """
 
 def kieWbSmokeTestsMatrix=
 """
-git clone https://github.com/droolsjbpm/droolsjbpm-build-bootstrap.git -b master
+git clone https://github.com/kiegroup/droolsjbpm-build-bootstrap.git -b master
 sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04d.KIE_kieWbSmokeTestsMatrix.sh
 """
 
@@ -55,18 +55,18 @@ sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bo
 
 job("01.pushReleaseBranches-7.0.x") {
 
-  description("This job: <br> checksout the right source- upgrades the version in poms <br> - modifies the kie-parent-metadata pom <br> - pushes the generated release branches to droolsjbpm <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
+  description("This job: <br> checksout the right source- upgrades the version in poms <br> - modifies the kie-parent-metadata pom <br> - pushes the generated release branches to kiegroup <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
   
   parameters {
-    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community <b> community </b> or <br> if it is for building a productization tag <b>productized <br> ******************************************************** <br> ")
+    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community: <b> community </b><br>or<br> if it is for building a productization tag: <b>productized <br> ******************************************************** <br> ")
     choiceParam("SOURCE", ["community-branch", "community-tag", "production-tag"], " please select the source of this release <br> or it is the master branch ( <b> community-branch </b> ) <br> or a community tag ( <b> community-tag </b> ) <br> or a productization tag ( <b> production-tag </b> ) <br> ******************************************************** <br> ")
-    stringParam("TAG", "7.0.0.CR1", "if you selected as <b> SOURCE=community-tag </b> or <b> SOURCE=production-tag </b> please edit the name of the tag <br> if selected as <b> SOURCE=community-branch </b> the parameter <b> TAG </b> will be ignored <br> The tag should typically look like <b> 7.0.0.CR1 </b> for <b> community </b> or <b> sync-7.0.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
-    stringParam("RELEASE_VERSION", "7.0.0.CR1", "please edit the version for this release <br> The <b> RELEASE_VERSION </b> should typically look like <b> 7.0.0.CR1 </b> for <b> community </b> or <b> 6.5.0.20160805-productization </b> for <b> productization </b> <br>******************************************************** <br> ")
-    choiceParam("BASE_BRANCH", ["master","7.0.x"], "please select the base branch <br> ******************************************************** <br> ")
+    stringParam("TAG", "tag", "if you selected as <b> SOURCE=community-tag </b> or <b> SOURCE=production-tag </b> please edit the name of the tag <br> if selected as <b> SOURCE=community-branch </b> the parameter <b> TAG </b> will be ignored <br> The tag should typically look like <b> 7.0.0.CR1 </b> for <b> community </b> or <b> sync-7.0.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
+    stringParam("RELEASE_VERSION", "release version", "please edit the version for this release <br> The <b> RELEASE_VERSION </b> should typically look like <b> 7.0.0.CR1 </b> for <b> community </b> or <b> 6.5.1.20160805-productization </b> for <b> productization </b> <br>******************************************************** <br> ")
+    stringParam("BASE_BRANCH", "release branch", "please select the base branch <br> ******************************************************** <br> ")
     stringParam("RELEASE_BRANCH", "r7.0.0.CR1", "please edit the name of the release branch <br> i.e. typically <b> r7.0.0.CR1 </b> for <b> community </b>or <b> bsync-7.0.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
-    stringParam("UBERFIRE_VERSION", "1.0.0.CR1", "please edit the right version to use of uberfire/uberfire-extensions <br> The tag should typically look like <b> 1.0.0.CR1 </b> for <b> community </b> or <b> 1.0.0.20170122-productization </b> for <b> productization </b> <br> ******************************************************** <br> ")
-    stringParam("DASHBUILDER_VERSION", "0.6.0.CR1", "please edit the right version to use of dashbuilder <br> The tag should typically look like <b> 0.6.0.CR1 </b> for <b> community </b> or <b> 0.6.0.20170122-productization </b> for <b> productization </b> <br> ******************************************************** <br> ") 
-    choiceParam("ERRAI_VERSION", ["4.0.0.Beta1","4.0.0.Beta2","4.0.0.Beta3","4.0.0.Beta4","4.0.0.Beta5","4.0.0.Beta6","4.0.0.Beta7"], " please select the errai version<br> ******************************************************** <br> ")
+    stringParam("UBERFIRE_VERSION", "uberfire version", "please edit the right version to use of uberfire/uberfire-extensions <br> The tag should typically look like <b> 1.0.0.CR1 </b> for <b> community </b> or <b> 6.5.1.20170122-productization </b> for <b> productization </b> <br> ******************************************************** <br> ")
+    stringParam("DASHBUILDER_VERSION", "dashbuilder version", "please edit the right version to use of dashbuilder <br> The tag should typically look like <b> 0.6.0.CR1 </b> for <b> community </b> or <b> 6.5.1.20170122-productization </b> for <b> productization </b> <br> ******************************************************** <br> ") 
+    stringParam("ERRAI_VERSION", "errai version", " please select the errai version<br> ******************************************************** <br> ")
   };
   
   label("kie-releases")
@@ -109,7 +109,7 @@ job("02.buildDeployLocally-7.0.x") {
   
   parameters {
     choiceParam("TARGET", ["community", "productized"], "please select if this release is for community <b> community </b> or <br> if it is for building a productization tag <b>productized <br> ******************************************************** <br> ")
-    stringParam("RELEASE_BRANCH", "r7.0.0.CR1", "please edit the name of the release branch <br> i.e. typically <b> r7.0.0.CR1 </b> for <b> community </b>or <b> bsync-7.0.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
+    stringParam("RELEASE_BRANCH", "release branch", "please edit the name of the release branch <br> i.e. typically <b> r7.0.0.CR1 </b> for <b> community </b>or <b> bsync-6.5.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
   };
   
   label("kie-releases")
@@ -155,7 +155,7 @@ job("03.copyToNexus-7.0.x") {
   description("This job: <br> - copies binaries from local dir to Nexus <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
 
   parameters {
-    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community <b> community </b> or <br> if it is for building a productization tag <b>productized <br> ******************************************************** <br> ")
+    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community: <b> community </b> or <br> if it is for building a productization tag: <b>productized <br> ******************************************************** <br> ")
   };
 
   label("kie-releases")
@@ -211,8 +211,8 @@ matrixJob("04a.allJbpmTestCoverageMatrix-7.0.x") {
 
   description("This job: <br> - Test coverage Matrix for jbpm <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
   parameters {
-    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community <b> community </b> or <br> if it is for building a productization tag <b>productized <br> Version to test. Will be supplied by the parent job. <br> ******************************************************** <br> ")
-    stringParam("KIE_VERSION", "7.0.0.CR1", "please edit the version of the KIE release <br> i.e. typically <b> 7.0.0.CR1 </b> for <b> community </b>or <b> 6.5.0.20160805-productized </b> for <b> productization </b> <br> Version to test. Will be supplied by the parent job. <br> ******************************************************** <br> ")
+    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community <b> community: </b> or <br> if it is for building a productization tag: <b>productized <br> Version to test. Will be supplied by the parent job. <br> ******************************************************** <br> ")
+    stringParam("KIE_VERSION", "KIE version", "please edit the version of the KIE release <br> i.e. typically <b> 7.0.0.CR1 </b> for <b> community </b>or <b> 6.5.1.20160805-productized </b> for <b> productization </b> <br> Version to test. Will be supplied by the parent job. <br> ******************************************************** <br> ")
   };
 
   axes {
@@ -243,7 +243,7 @@ matrixJob("04a.allJbpmTestCoverageMatrix-7.0.x") {
       goals("clean verify -e -B -Dmaven.test.failure.ignore=true -Dintegration-tests")
       rootPOM("jbpm-test-coverage/pom.xml")
       mavenOpts("-Xmx3g")
-      providedSettings("settings-consume-internal-kie-builds")
+      providedSettings("org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig1438340407905")
     }  
   }  
 }
@@ -255,7 +255,7 @@ matrixJob("04b.kieAllServerMatrix-7.0.x") {
 
   parameters {
     choiceParam("TARGET", ["community", "productized"], "<br> ******************************************************** <br> ")
-    stringParam("KIE_VERSION", "7.0.0.CR1", "the KIE_VERSION will be supplied by parent job")
+    stringParam("KIE_VERSION", "KIE version", "the KIE_VERSION will be supplied by parent job")
   };
   
   axes {
@@ -278,7 +278,7 @@ matrixJob("04b.kieAllServerMatrix-7.0.x") {
     colorizeOutput()
     preBuildCleanup()
     configFiles {
-      mavenSettings("settings-consume-internal-kie-builds"){
+      mavenSettings("org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig1438340407905"){
         variable("SETTINGS_XML_FILE")      
       }  
     }    
@@ -312,7 +312,7 @@ matrixJob("04b.kieAllServerMatrix-7.0.x") {
       properties("container.startstop.timeout.millis":"240000")
       properties("eap64x.download.url":"http://download.devel.redhat.com/released/JBEAP-6/6.4.4/jboss-eap-6.4.4-full-build.zip")
       mavenOpts("-Xms1024m -Xmx1536m")
-      providedSettings("settings-consume-internal-kie-builds")
+      providedSettings("org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig1438340407905")
     }  
   }  
 }
@@ -324,7 +324,7 @@ matrixJob("04c.kieWbSmokeTestsMatrix-7.0.x") {
 
   parameters {
     choiceParam("TARGET", ["community", "productized"], "<br> ******************************************************** <br> ")
-    stringParam("KIE_VERSION", "7.0.0.CR1", "the KIE_VERSION will be supplied by parent job")
+    stringParam("KIE_VERSION", "kie version", "the KIE_VERSION will be supplied by parent job")
   };
   
   axes {
@@ -385,7 +385,7 @@ matrixJob("04c.kieWbSmokeTestsMatrix-7.0.x") {
       properties("webdriver.firefox.bin":"/opt/tools/firefox-38esr/firefox-bin")
       properties("eap7.download.url":"http://download.eng.brq.redhat.com/released/JBEAP-7/7.0.2/jboss-eap-7.0.2-full-build.zip")
       mavenOpts("-Xms1024m -Xmx1536m")
-      providedSettings("settings-consume-internal-kie-builds")
+      providedSettings("org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig1438340407905")
     }  
   }  
 }
@@ -394,12 +394,12 @@ matrixJob("04c.kieWbSmokeTestsMatrix-7.0.x") {
 
 job("05.pushTags-7.0.x") {
 
-  description("This job: <br> creates and pushes the tags for <br> community (droolsjbpm) or product (jboss-integration) <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
+  description("This job: <br> creates and pushes the tags for <br> community (kiegroup) or product (jboss-integration) <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
 
   parameters {
-    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community <b> community </b> or <br> if it is for building a productization tag <b>productized <br> ******************************************************** <br> ")
-    stringParam("RELEASE_BRANCH", "r7.0.0.CR1", "please edit the name of the release branch <br> i.e. typically <b> r7.0.0.CR1 </b> for <b> community </b>or <b> bsync-7.0.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
-    stringParam("TAG_NAME", "Please enter the name of the tag", "The tag should typically look like <b> 7.0.0.CR1 </b> for <b> community </b> or <b> sync-7.0.x-2017.01.22 </b> for <b> productization </b> <br> ******************************************************** <br> ")
+    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community: <b> community </b> or <br> if it is for building a productization tag: <b>productized <br> ******************************************************** <br> ")
+    stringParam("RELEASE_BRANCH", "release branch", "please edit the name of the release branch <br> i.e. typically <b> r7.0.0.CR1 </b> for <b> community </b>or <b> bsync-6.5.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
+    stringParam("TAG_NAME", "tag", "Please enter the tag. The tag should typically look like <b> 7.0.0.CR1 </b> for <b> community </b> or <b> sync-6.5.x-2017.01.22 </b> for <b> productization </b> <br> ******************************************************** <br> ")
   };
 
   label("kie-releases")
@@ -445,12 +445,12 @@ job("05.pushTags-7.0.x") {
 
 job("06.removeReleaseBranches-7.0.x") {
 
-  description("This job: <br> creates and pushes the tags for <br> community (droolsjbpm) or product (jboss-integration) <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
+  description("This job: <br> creates and pushes the tags for <br> community (kiegroup) or product (jboss-integration) <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
 
   parameters {
-    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community <b> community </b> or <br> if it is for building a productization tag <b>productized <br> ******************************************************** <br> ")
-    choiceParam("BASE_BRANCH", ["master","7.0.x"], "please select the base branch <br> ******************************************************** <br> ")
-    stringParam("RELEASE_BRANCH", "r7.0.0.CR1", "please edit the name of the release branch <br> i.e. typically <b> r7.0.0.CR1 </b> for <b> community </b>or <b> bsync-7.0.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
+    choiceParam("TARGET", ["community", "productized"], "please select if this release is for community: <b> community </b> or <br> if it is for building a productization tag: <b>productized <br> ******************************************************** <br> ")
+    stringParam("BASE_BRANCH", "base branch", "please select the base branch <br> ******************************************************** <br> ")
+    stringParam("RELEASE_BRANCH", "release branch", "please edit the name of the release branch <br> i.e. typically <b> r7.0.0.CR1 </b> for <b> community </b>or <b> bsync-6.5.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
   };
 
   label("kie-releases")
@@ -499,10 +499,10 @@ job("07.updateToNextDevelopmentVersion-7.0.x") {
   description("This job: <br> updates the KIE repositories to a new developmenmt version <br> for 6.4.x, 6.5.x or 7.0.x branches <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
  
   parameters {
-    stringParam("newVersion", "7.0.1-SNAPSHOT", "Edit the next KIE development version")
-    stringParam("UBERFIRE_VERSION", "1.0.1-SNAPSHOT", "Edit the next uberfire development version")
-    stringParam("DASHBUILDER_VERSION", "0.6.1-SNAPSHOT", "Edit the next dashbuilder development version")
-    stringParam("ERRAI_VERSION", "4.0.1-SNAPSHOT", "Edit the next errai development version")
+    stringParam("newVersion", "new KIE version", "Edit the next KIE development version")
+    stringParam("UBERFIRE_VERSION", "uberfire version", "Edit the next uberfire development version")
+    stringParam("DASHBUILDER_VERSION", "dashbuilder version", "Edit the next dashbuilder development version")
+    stringParam("ERRAI_VERSION", "errai version", "Edit the next errai development version")
   }
 
   label("kie-releases")
@@ -548,7 +548,7 @@ job("07.updateToNextDevelopmentVersion-7.0.x") {
 
 job("08.copyBinariesToFilemgmt-7.0.x") {
 
-  description("This job: <br> copies droolsjbpm binaries to filemgmt.jbosss.org  <br> IMPORTANT: makes only sense for community releases <br><b> Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.<b>")
+  description("This job: <br> copies kiegroup binaries to filemgmt.jbosss.org  <br> IMPORTANT: makes only sense for community releases <br><b> Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.<b>")
 
   label("kie-releases")
 

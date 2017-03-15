@@ -1,6 +1,6 @@
 # clone the build-bootstrap that contains the other build scripts
 if [ "$TARGET" == "community" ]; then 
-   SOURCE=droolsjbpm
+   SOURCE=kiegroup
 else
    SOURCE=jboss-integration
 fi

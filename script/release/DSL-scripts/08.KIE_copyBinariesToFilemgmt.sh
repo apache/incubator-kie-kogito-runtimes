@@ -69,9 +69,8 @@ scp -r droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-di
 scp drools/drools-distribution/target/drools-distribution-$VERSION.zip $DROOLS_HTDOCS/$VERSION
 scp droolsjbpm-integration/droolsjbpm-integration-distribution/target/droolsjbpm-integration-distribution-$VERSION.zip $DROOLS_HTDOCS/$VERSION
 scp droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-distribution-$VERSION.zip $DROOLS_HTDOCS/$VERSION
-scp kie-wb-distributions/kie-drools-wb/kie-drools-wb-distribution-wars/target/kie-drools-wb-$VERSION-*.war $DROOLS_HTDOCS/$VERSION
+scp kie-wb-distributions/kie-drools-wb-parent/kie-drools-wb-distribution-wars/target/kie-drools-wb-$VERSION-*.war $DROOLS_HTDOCS/$VERSION
 scp drools-wb/drools-wb-jcr2vfs-migration/drools-wb-jcr2vfs-distribution/target/drools-wb-jcr2vfs-distribution-$VERSION.zip $DROOLS_HTDOCS/$VERSION 
-scp kie-wb-distributions/kie-wb-example-repositories/target/kie-wb-example-repositories-$VERSION.zip $DROOLS_HTDOCS/$VERSION
 scp droolsjbpm-integration/kie-server-parent/kie-server-wars/kie-server-distribution/target/kie-server-distribution-$VERSION.zip $DROOLS_HTDOCS/$VERSION
 
 #copies drools-docs and kie-api-javadoc to filemgmt.jboss.or

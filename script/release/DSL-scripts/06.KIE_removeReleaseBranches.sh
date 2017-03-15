@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$TARGET" == "community" ]; then 
-   SOURCE=origin
+   SOURCE=kiegroup
 else
    SOURCE=jboss-integration
 fi
@@ -19,6 +19,6 @@ else
    # clone rest of the repos and checkout to this branch
    ./droolsjbpm-build-bootstrap/script/git-clone-others.sh --branch $RELEASE_BRANCH --depth 50
 
-   # remove release-branches on droolsjbpm or on jboss-integration
+   # remove release-branches on kiegroup or on jboss-integration
    ./droolsjbpm-build-bootstrap/script/git-all.sh push $SOURCE :$RELEASE_BRANCH 
 fi

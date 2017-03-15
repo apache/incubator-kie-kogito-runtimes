@@ -4,8 +4,8 @@ TARGET_USER_REMOTE=kie
 DATE=$(date "+%Y-%m-%d")
 PR_BRANCH=PR_BRANCH_$DATE
 
-# clone droolsjbm-build-bootstrap branch from droolsjbpm
-git clone git@github.com:droolsjbpm/droolsjbpm-build-bootstrap.git --branch $BASE_BRANCH
+# clone droolsjbm-build-bootstrap branch from kiegroup
+git clone git@github.com:kiegroup/droolsjbpm-build-bootstrap.git --branch $BASE_BRANCH
 
 # clone rest of the repos
 ./droolsjbpm-build-bootstrap/script/git-clone-others.sh --branch $BASE_BRANCH --depth 70
@@ -45,7 +45,7 @@ for REP_DIR in `cat $REPOSITORY_LIST` ; do
       # adds a remote to kiereleaseuser
       git remote add $TARGET_USER_REMOTE git@github.com:$TARGET_USER/$REP_DIR
       
-      SOURCE=droolsjbpm
+      SOURCE=kiegroup
       
       echo "we are at: "$REP_DIR
       echo "the new remote is: " 
