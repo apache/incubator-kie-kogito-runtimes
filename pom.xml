@@ -102,6 +102,7 @@
     <version.org.jboss.arquillian.selenium>2.53.0</version.org.jboss.arquillian.selenium>
     <version.org.simpleframework>6.0.1</version.org.simpleframework>
     <version.org.xmlunit>2.3.0</version.org.xmlunit>
+    <version.org.skyscreamer.jsonassert>1.2.3</version.org.skyscreamer.jsonassert>
     <!-- WildFly version used together with  the GWT's Super Dev Mode -->
     <version.org.wildfly.gwt.sdm>10.0.0.Final</version.org.wildfly.gwt.sdm>
     <version.org.wildfly.core>2.1.0.Final</version.org.wildfly.core>
@@ -1962,6 +1963,13 @@
       	<groupId>org.xmlunit</groupId>
       	<artifactId>xmlunit-matchers</artifactId>
       	<version>${version.org.xmlunit}</version>
+      	<scope>test</scope>
+      </dependency>
+      
+      <dependency>
+      	<groupId>org.skyscreamer</groupId>
+      	<artifactId>jsonassert</artifactId>
+      	<version>${version.org.skyscreamer.jsonassert}</version>
       	<scope>test</scope>
       </dependency>
 
