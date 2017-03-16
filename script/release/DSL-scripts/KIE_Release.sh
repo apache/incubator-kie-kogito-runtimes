@@ -62,8 +62,8 @@ job("01.pushReleaseBranches-7.0.x") {
     choiceParam("SOURCE", ["community-branch", "community-tag", "production-tag"], " please select the source of this release <br> or it is the master branch ( <b> community-branch </b> ) <br> or a community tag ( <b> community-tag </b> ) <br> or a productization tag ( <b> production-tag </b> ) <br> ******************************************************** <br> ")
     stringParam("TAG", "tag", "if you selected as <b> SOURCE=community-tag </b> or <b> SOURCE=production-tag </b> please edit the name of the tag <br> if selected as <b> SOURCE=community-branch </b> the parameter <b> TAG </b> will be ignored <br> The tag should typically look like <b> 7.0.0.CR1 </b> for <b> community </b> or <b> sync-7.0.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
     stringParam("RELEASE_VERSION", "release version", "please edit the version for this release <br> The <b> RELEASE_VERSION </b> should typically look like <b> 7.0.0.CR1 </b> for <b> community </b> or <b> 6.5.1.20160805-productization </b> for <b> productization </b> <br>******************************************************** <br> ")
-    stringParam("BASE_BRANCH", "release branch", "please select the base branch <br> ******************************************************** <br> ")
-    stringParam("RELEASE_BRANCH", "r7.0.0.CR1", "please edit the name of the release branch <br> i.e. typically <b> r7.0.0.CR1 </b> for <b> community </b>or <b> bsync-7.0.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
+    stringParam("BASE_BRANCH", "base branch", "please select the base branch <br> ******************************************************** <br> ")
+    stringParam("RELEASE_BRANCH", "release branch", "please edit the name of the release branch <br> i.e. typically <b> r7.0.0.CR1 </b> for <b> community </b>or <b> bsync-7.0.x-2017.01.22  </b> for <b> productization </b> <br> ******************************************************** <br> ")
     stringParam("UBERFIRE_VERSION", "uberfire version", "please edit the right version to use of uberfire/uberfire-extensions <br> The tag should typically look like <b> 1.0.0.CR1 </b> for <b> community </b> or <b> 6.5.1.20170122-productization </b> for <b> productization </b> <br> ******************************************************** <br> ")
     stringParam("DASHBUILDER_VERSION", "dashbuilder version", "please edit the right version to use of dashbuilder <br> The tag should typically look like <b> 0.6.0.CR1 </b> for <b> community </b> or <b> 6.5.1.20170122-productization </b> for <b> productization </b> <br> ******************************************************** <br> ") 
     stringParam("ERRAI_VERSION", "errai version", " please select the errai version<br> ******************************************************** <br> ")
@@ -186,7 +186,7 @@ job("03.copyToNexus-7.0.x") {
 
   publishers{
     downstreamParameterized {
-      trigger("04a.allJbpmTestCoverageMatrix, 04b.kieAllServerMatrix, 04c.kieWbSmokeTestsMatrix") {
+      trigger("04a.allJbpmTestCoverageMatrix-7.0.x, 04b.kieAllServerMatrix-7.0.x, 04c.kieWbSmokeTestsMatrix-7.0.x") {
         condition("SUCCESS")
         parameters {
           propertiesFile("kie.properties", true)
@@ -216,15 +216,14 @@ matrixJob("04a.allJbpmTestCoverageMatrix-7.0.x") {
   };
 
   axes {
+    labelExpression("label-exp","linux && mem4g")
     jdk("jdk1.8")
-  }              
+  }
 
   logRotator {
     numToKeep(10)
   }
 
-  label("linux && mem4g")
-  
   wrappers {
     timestamps()
     colorizeOutput()
@@ -329,7 +328,7 @@ matrixJob("04c.kieWbSmokeTestsMatrix-7.0.x") {
   
   axes {
     jdk("jdk1.8")
-    text("container", "wildfly10")
+    text("container", "wildfly10". "tomcat8", "eap7")
     text("war", "kie-wb", "kie-drools-wb")
     labelExpression("label_exp", "linux && mem4g && gui-testing")
   }              
@@ -595,28 +594,25 @@ job("08.copyBinariesToFilemgmt-7.0.x") {
 // *****
 // *****
 
-nestedView("7.0.x-Releases") {
-    views {
-        listView("KIE-7.0.x") {
-            jobs {
-                name("01.pushReleaseBranches-7.0.x")
-                name("02.buildDeployLocally-7.0.x")
-                name("03.copyToNexus-7.0.x")
-                name("04a.allJbpmTestCoverageMatrix-7.0.x")
-                name("04b.kieAllServerMatrix-7.0.x")
-                name("04c.kieWbSmokeTestsMatrix-7.0.x")
-                name("05.pushTags-7.0.x")
-                name("06.removeReleaseBranches-7.0.x")
-                name("07.updateToNextDevelopmentVersion-7.0.x")
-                name("08.copyBinariesToFilemgmt-7.0.x")
-            }
-            columns {
-                status()
-                weather()
-                name()
-                lastSuccess()
-                lastFailure()
-            }
-        }
-    }
+listView("7.0.x-KIE-releases") {
+  description("all needed scripts for builing a release of 7.0.x branch")
+  jobs {
+       name("01.pushReleaseBranches-7.0.x")
+       name("02.buildDeployLocally-7.0.x")
+       name("03.copyToNexus-7.0.x")
+       name("04a.allJbpmTestCoverageMatrix-7.0.x")
+       name("04b.kieAllServerMatrix-7.0.x")
+       name("04c.kieWbSmokeTestsMatrix-7.0.x")
+       name("05.pushTags-7.0.x")
+       name("06.removeReleaseBranches-7.0.x")
+       name("07.updateToNextDevelopmentVersion-7.0.x")
+       name("08.copyBinariesToFilemgmt-7.0.x")
+  }
+  columns {
+       status()
+       weather()
+       name()
+       lastSuccess()
+       lastFailure()
+  }
 }
