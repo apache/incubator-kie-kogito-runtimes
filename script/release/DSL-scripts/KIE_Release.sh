@@ -227,7 +227,7 @@ matrixJob("04a.allJbpmTestCoverageMatrix-7.0.x") {
   wrappers {
     timeout {
       absolute(120)
-    ean
+    }
     timestamps()
     colorizeOutput()
     preBuildCleanup()
