@@ -22,13 +22,13 @@ sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04a.KIE_jbp
 def kieAllServerMatrix=
 """
 git clone https://github.com/kiegroup/droolsjbpm-build-bootstrap.git -b master
-sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04c.KIE_kieAllServerMatrix.sh
+sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04b.KIE_kieAllServerMatrix.sh
 """
 
 def kieWbSmokeTestsMatrix=
 """
 git clone https://github.com/kiegroup/droolsjbpm-build-bootstrap.git -b master
-sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04d.KIE_kieWbSmokeTestsMatrix.sh
+sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04b.KIE_kieWbSmokeTestsMatrix.sh
 """
 
 def pushTags=
@@ -225,6 +225,9 @@ matrixJob("04a.allJbpmTestCoverageMatrix-7.0.x") {
   }
 
   wrappers {
+    timeout {
+      absolute(120)
+    ean
     timestamps()
     colorizeOutput()
     preBuildCleanup()
@@ -234,7 +237,17 @@ matrixJob("04a.allJbpmTestCoverageMatrix-7.0.x") {
     archiveJunit("**/TEST-*.xml")
     mailer('mbiarnes@redhat.com', false, false)
   }
-  
+ 
+  configure { project ->
+    project / 'buildWrappers' << 'org.jenkinsci.plugins.proccleaner.PreBuildCleanup' {
+      cleaner(class: 'org.jenkinsci.plugins.proccleaner.PsCleaner') {
+        killerType 'org.jenkinsci.plugins.proccleaner.PsAllKiller'
+        killer(class: 'org.jenkinsci.plugins.proccleaner.PsAllKiller')
+        username 'jenkins'
+      }
+    }
+  }
+ 
   steps {
     shell(jbpmTestCoverageMatrix)
     maven{
@@ -328,7 +341,7 @@ matrixJob("04c.kieWbSmokeTestsMatrix-7.0.x") {
   
   axes {
     jdk("jdk1.8")
-    text("container", "wildfly10". "tomcat8", "eap7")
+    text("container", "wildfly10", "tomcat8", "eap7")
     text("war", "kie-wb", "kie-drools-wb")
     labelExpression("label_exp", "linux && mem4g && gui-testing")
   }              
