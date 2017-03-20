@@ -28,7 +28,7 @@ sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04b.KIE_kie
 def kieWbSmokeTestsMatrix=
 """
 git clone https://github.com/kiegroup/droolsjbpm-build-bootstrap.git -b master
-sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04b.KIE_kieWbSmokeTestsMatrix.sh
+sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04c.KIE_kieWbSmokeTestsMatrix.sh
 """
 
 def pushTags=
