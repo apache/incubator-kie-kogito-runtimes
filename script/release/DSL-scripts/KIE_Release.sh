@@ -1,59 +1,59 @@
 def pushReleaseBranches =
 """
-sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/01.KIE_pushReleaseBranches.sh
+sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_pushReleaseBranches.sh
 """
 
 def deployLocally=
 """
-sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/02.KIE_deployLocally.sh
+sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_deployLocally.sh
 """
 
 def copyToNexus=
 """
-sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/03.KIE_copyToNexus.sh
+sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_copyToNexus.sh
 """
 
 def jbpmTestCoverageMatrix=
 """
 git clone https://github.com/kiegroup/droolsjbpm-build-bootstrap.git -b master
-sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04a.KIE_jbpmTestCoverMartix.sh
+sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_jbpmTestCoverMartix.sh
 """
 
 def kieAllServerMatrix=
 """
 git clone https://github.com/kiegroup/droolsjbpm-build-bootstrap.git -b master
-sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04b.KIE_kieAllServerMatrix.sh
+sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_allServerMatrix.sh
 """
 
 def kieWbSmokeTestsMatrix=
 """
 git clone https://github.com/kiegroup/droolsjbpm-build-bootstrap.git -b master
-sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/04c.KIE_kieWbSmokeTestsMatrix.sh
+sh \$WORKSPACE/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_wbSmokeTestsMatrix.sh
 """
 
 def pushTags=
 """
-sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/05.KIE_pushTag.sh
+sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_pushTag.sh
 """
 
 def removeBranches=
 """
-sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/06.KIE_removeReleaseBranches.sh
+sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_removeReleaseBranches.sh
 """
 
 def updateVersions=
 """
-sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/07.KIE_updateToNextDevelopmentVersion.sh
+sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_updateToNextDevelopmentVersion.sh
 """
 
 def copyBinariesToFilemgmt=
 """
-sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/08.KIE_copyBinariesToFilemgmt.sh
+sh /home/jenkins/workspace/KIE-Release-7.0.x/release-scripts/droolsjbpm-build-bootstrap/script/release/DSL-scripts/KIE_copyBinariesToFilemgmt.sh
 """
 
 // **************************************************************************
 
-job("01.pushReleaseBranches-7.0.x") {
+job("KIE-pushReleaseBranches-7.0.x") {
 
   description("This job: <br> checksout the right source- upgrades the version in poms <br> - modifies the kie-parent-metadata pom <br> - pushes the generated release branches to kiegroup <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
   
@@ -103,7 +103,7 @@ job("01.pushReleaseBranches-7.0.x") {
 
 // **************************************************************************************
 
-job("02.buildDeployLocally-7.0.x") {
+job("KIE-buildDeployLocally-7.0.x") {
 
   description("This job: <br> - builds all repositories and deploys them locally <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
   
@@ -150,7 +150,7 @@ job("02.buildDeployLocally-7.0.x") {
 
 // ********************************************************************************
 
-job("03.copyToNexus-7.0.x") {
+job("KIE-copyToNexus-7.0.x") {
 
   description("This job: <br> - copies binaries from local dir to Nexus <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
 
@@ -166,7 +166,7 @@ job("03.copyToNexus-7.0.x") {
 
   jdk("jdk1.8")
   
-  customWorkspace("\$HOME/workspace/02.buildDeployLocally-7.0.x")
+  customWorkspace("\$HOME/workspace/KIE-buildDeployLocally-7.0.x")
 
   wrappers {
     timestamps()
@@ -186,7 +186,7 @@ job("03.copyToNexus-7.0.x") {
 
   publishers{
     downstreamParameterized {
-      trigger("04a.allJbpmTestCoverageMatrix-7.0.x, 04b.kieAllServerMatrix-7.0.x, 04c.kieWbSmokeTestsMatrix-7.0.x") {
+      trigger("KIE-allJbpmTestCoverageMatrix-7.0.x, KIE-AllServerMatrix-7.0.x, KIE-WbSmokeTestsMatrix-7.0.x") {
         condition("SUCCESS")
         parameters {
           propertiesFile("kie.properties", true)
@@ -207,7 +207,7 @@ job("03.copyToNexus-7.0.x") {
 
 // **************************************************************************************
 
-matrixJob("04a.allJbpmTestCoverageMatrix-7.0.x") {
+matrixJob("KIE-allJbpmTestCoverageMatrix-7.0.x") {
 
   description("This job: <br> - Test coverage Matrix for jbpm <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
   parameters {
@@ -262,7 +262,7 @@ matrixJob("04a.allJbpmTestCoverageMatrix-7.0.x") {
 
 // **********************************************************************************
 
-matrixJob("04b.kieAllServerMatrix-7.0.x") {
+matrixJob("KIE-AllServerMatrix-7.0.x") {
   description("This job: <br> - Runs the KIE Server integration tests on mutiple supported containers and JDKs <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated. ")
 
   parameters {
@@ -331,7 +331,7 @@ matrixJob("04b.kieAllServerMatrix-7.0.x") {
 
 // ****************************************************************************************************
 
-matrixJob("04c.kieWbSmokeTestsMatrix-7.0.x") {
+matrixJob("KIE-WbSmokeTestsMatrix-7.0.x") {
   description("This job: <br> - Runs the smoke tests on KIE <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated. ")
 
   parameters {
@@ -404,7 +404,7 @@ matrixJob("04c.kieWbSmokeTestsMatrix-7.0.x") {
 
 // ************************************************************************************************
 
-job("05.pushTags-7.0.x") {
+job("KIE-pushTags-7.0.x") {
 
   description("This job: <br> creates and pushes the tags for <br> community (kiegroup) or product (jboss-integration) <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
 
@@ -455,7 +455,7 @@ job("05.pushTags-7.0.x") {
 
 // ***********************************************************************************
 
-job("06.removeReleaseBranches-7.0.x") {
+job("KIE-removeReleaseBranches-7.0.x") {
 
   description("This job: <br> creates and pushes the tags for <br> community (kiegroup) or product (jboss-integration) <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
 
@@ -506,7 +506,7 @@ job("06.removeReleaseBranches-7.0.x") {
 
 // ****************************************************************************************
 
-job("07.updateToNextDevelopmentVersion-7.0.x") {
+job("KIE-updateToNextDevelopmentVersion-7.0.x") {
 
   description("This job: <br> updates the KIE repositories to a new developmenmt version <br> for 6.4.x, 6.5.x or 7.0.x branches <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
  
@@ -558,7 +558,7 @@ job("07.updateToNextDevelopmentVersion-7.0.x") {
 
 // ****************************************************************************************
 
-job("08.copyBinariesToFilemgmt-7.0.x") {
+job("KIE-copyBinariesToFilemgmt-7.0.x") {
 
   description("This job: <br> copies kiegroup binaries to filemgmt.jbosss.org  <br> IMPORTANT: makes only sense for community releases <br><b> Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.<b>")
 
@@ -570,7 +570,7 @@ job("08.copyBinariesToFilemgmt-7.0.x") {
 
   jdk("jdk1.8")
 
-  customWorkspace("\$HOME/workspace/02.buildDeployLocally-7.0.x")
+  customWorkspace("\$HOME/workspace/KIE-buildDeployLocally-7.0.x")
 
   wrappers {
     timeout {
@@ -610,16 +610,16 @@ job("08.copyBinariesToFilemgmt-7.0.x") {
 listView("7.0.x-KIE-releases") {
   description("all needed scripts for builing a release of 7.0.x branch")
   jobs {
-       name("01.pushReleaseBranches-7.0.x")
-       name("02.buildDeployLocally-7.0.x")
-       name("03.copyToNexus-7.0.x")
-       name("04a.allJbpmTestCoverageMatrix-7.0.x")
-       name("04b.kieAllServerMatrix-7.0.x")
-       name("04c.kieWbSmokeTestsMatrix-7.0.x")
-       name("05.pushTags-7.0.x")
-       name("06.removeReleaseBranches-7.0.x")
-       name("07.updateToNextDevelopmentVersion-7.0.x")
-       name("08.copyBinariesToFilemgmt-7.0.x")
+       name("KIE-pushReleaseBranches-7.0.x")
+       name("KIE-buildDeployLocally-7.0.x")
+       name("KIE-copyToNexus-7.0.x")
+       name("KIE-allJbpmTestCoverageMatrix-7.0.x")
+       name("KIE-AllServerMatrix-7.0.x")
+       name("KIE-WbSmokeTestsMatrix-7.0.x")
+       name("KIE-pushTags-7.0.x")
+       name("KIE-removeReleaseBranches-7.0.x")
+       name("KIE-updateToNextDevelopmentVersion-7.0.x")
+       name("KIE-copyBinariesToFilemgmt-7.0.x")
   }
   columns {
        status()
