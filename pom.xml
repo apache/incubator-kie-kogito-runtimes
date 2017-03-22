@@ -1647,6 +1647,28 @@
       </dependency>
 
       <dependency>
+        <!-- Can be removed once we upgrade to IP BOM 7.0.0.CR10+ -->
+        <groupId>com.lowagie</groupId>
+        <artifactId>itext</artifactId>
+        <version>${version.com.lowagie.itext}</version>
+        <exclusions>
+          <!-- The bouncycastle dependencies should be optional=true in itext's pom -->
+          <exclusion>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcmail-jdk14</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcprov-jdk14</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bctsp-jdk14</artifactId>
+           </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
         <groupId>com.unboundid</groupId>
         <artifactId>unboundid-ldapsdk</artifactId>
         <version>${version.com.unboundid}</version>
