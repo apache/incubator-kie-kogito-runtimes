@@ -337,10 +337,11 @@ Releasing from a release branch
     ```
 
 * Create a local release branch
+
     Name should begin with r, i.e if the release will be 6.2.0.Final the name should be r6.2.0.Final (localReleaseBranchName == r6.2.0.Final)
 
     ```shell
-    $ git-all.sh checkout -b <localReleaseBranchName> <branchname>
+    $ git-all.sh checkout -b <localReleaseBranchName> <branchname>    
     ```
 
 * Check if everything builds after the last pull & execute all unit tests
@@ -451,11 +452,21 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
          * Add this change
          * Commit this change.
 
+
+        
+* Push release branches to github repository
+
+    The release branches rX.X.X.Y should be pushed to the github repository (community=kiegroup/... or product=jboss-integration/...), so the branch
+    is available for all future steps. People can access it to review, if all commits that should be in the release were commited.<br>
+    This branch has to be removed when doing the next release as a new branch starting with "r" will be pushed and we want prevent having a bunch of "obsolete" release branches.
+
+
 * Create the tag locally. The arguments are the Drools version, the jBPM version:
 
     ```shell
     $ droolsjbpm-build-bootstrap/script/release/git-tag-locally-all.sh 6.2.0.Final 6.2.0.Final
     ```
+
 
 * Go to [nexus](https://repository.jboss.org/nexus), menu item *Staging repositories*, drop all your old staging repositories.
 
