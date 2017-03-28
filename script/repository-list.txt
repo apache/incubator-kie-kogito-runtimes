@@ -2,7 +2,6 @@ droolsjbpm-build-bootstrap
 droolsjbpm-knowledge
 drools
 optaplanner
-kie-dmn
 jbpm
 droolsjbpm-integration
 droolsjbpm-tools
