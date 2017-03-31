@@ -80,7 +80,7 @@ scp -r droolsjbpm-knowledge/kie-api/target/apidocs/* $DROOLS_DOCS/$VERSION/kie-a
 #copies jbpm binaries to filemgmt.jboss.org
 scp -r droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-distribution-$VERSION/droolsjbpm-tools-distribution-$VERSION/binaries/org.drools.updatesite/* $JBPM_HTDOCS/$VERSION/updatesite
 scp jbpm/jbpm-distribution/target/jbpm-$VERSION-bin.zip $JBPM_HTDOCS/$VERSION
-scp jbpm/jbpm-distribution/target/jbpm-$VERSION-installer.zip $JBPM_HTDOCS/$VERSION
+scp jbpm/jbpm-installer/target/jbpm-installer-$VERSION.zip $JBPM_HTDOCS/$VERSION
 scp jbpm/jbpm-distribution/target/jbpm-$VERSION-examples.zip $JBPM_HTDOCS/$VERSION
 
 #copies jbpm-docs to filemgmt.jboss.org

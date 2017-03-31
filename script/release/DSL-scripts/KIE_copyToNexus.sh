@@ -3,10 +3,10 @@ KIE_VERSION=$(sed -e 's/^[ \t]*//' -e 's/[ \t]*$//' -n -e 's/<version.org.kie>\(
 
 if [ "$TARGET" == "community" ]; then 
    STAGING_REP_ID=15c58a1abc895b
-   DEPLOY_DIR=$WORKSPACE/KIE_Deploy_dir_community_7.0.x
+   DEPLOY_DIR=$WORKSPACE/community_Deploy_dir
 else
    STAGING_REP_ID=15c3321d12936e
-   DEPLOY_DIR=$WORKSPACE/KIE_Deploy_dir_prod_7.0.x
+   DEPLOY_DIR=$WORKSPACE/prod_Deploy_dir
 fi
 
 cd $DEPLOY_DIR

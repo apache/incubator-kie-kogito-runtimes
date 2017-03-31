@@ -427,6 +427,7 @@ job("KIE-pushTags-7.0.x") {
       absolute(30)
     }
     timestamps()
+    preBuildCleanup()
     colorizeOutput()
     toolenv("APACHE_MAVEN_3_2_5", "JDK1_8")
   }
@@ -478,6 +479,7 @@ job("KIE-removeReleaseBranches-7.0.x") {
       absolute(30)
     }
     timestamps()
+    preBuildCleanup()
     colorizeOutput()
     toolenv("APACHE_MAVEN_3_2_5", "JDK1_8")
   }
@@ -511,10 +513,11 @@ job("KIE-updateToNextDevelopmentVersion-7.0.x") {
   description("This job: <br> updates the KIE repositories to a new developmenmt version <br> for 6.4.x, 6.5.x or 7.0.x branches <br> IMPORTANT: Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.")
  
   parameters {
-    stringParam("newVersion", "new KIE version", "Edit the next KIE development version")
-    stringParam("UBERFIRE_VERSION", "uberfire version", "Edit the next uberfire development version")
-    stringParam("DASHBUILDER_VERSION", "dashbuilder version", "Edit the next dashbuilder development version")
-    stringParam("ERRAI_VERSION", "errai version", "Edit the next errai development version")
+    stringParam("BASE_BRANCH","master","Branch you want to upgrade")
+    stringParam("newVersion", "new KIE version", "Edit the KIE development version")
+    stringParam("UF_DEVEL_VERSION", "uberfire version", "Edit the uberfire development version")
+    stringParam("DASHB_DEVEL_VERSION", "dashbuilder version", "Edit the dashbuilder development version")
+    stringParam("ERRAI_DEVEL_VERSION", "errai version", "Edit the errai development version")
   }
 
   label("kie-releases")
@@ -530,6 +533,7 @@ job("KIE-updateToNextDevelopmentVersion-7.0.x") {
       absolute(30)
     }
     timestamps()
+    preBuildCleanup()
     colorizeOutput()
     toolenv("APACHE_MAVEN_3_2_5", "JDK1_8")
   }
@@ -562,6 +566,10 @@ job("KIE-copyBinariesToFilemgmt-7.0.x") {
 
   description("This job: <br> copies kiegroup binaries to filemgmt.jbosss.org  <br> IMPORTANT: makes only sense for community releases <br><b> Created automatically by Jenkins job DSL plugin. Do not edit manually! The changes will get lost next time the job is generated.<b>")
 
+   parameters{
+     stringParam("VERSION", "release version", "Edit the version of release, i.e. 7.0.0.Final")
+   }
+
   label("kie-releases")
 
   logRotator {
@@ -574,11 +582,10 @@ job("KIE-copyBinariesToFilemgmt-7.0.x") {
 
   wrappers {
     timeout {
-      absolute(30)
+      absolute(90)
     }
     timestamps()
     colorizeOutput()
-    preBuildCleanup()
     toolenv("APACHE_MAVEN_3_2_5", "JDK1_8")
   }
 

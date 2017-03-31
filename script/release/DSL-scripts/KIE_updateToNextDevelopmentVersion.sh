@@ -1,3 +1,5 @@
+#!/bin/bash
+
 TARGET=community
 TARGET_USER=kiereleaseuser
 TARGET_USER_REMOTE=kie
@@ -14,19 +16,20 @@ git clone git@github.com:kiegroup/droolsjbpm-build-bootstrap.git --branch $BASE_
 ./droolsjbpm-build-bootstrap/script/git-all.sh checkout -b $PR_BRANCH $BASE_BRANCH
 
 # upgrades the version to the release/tag version
-sh script/release/update-version-all.sh $newVersion $TARGET
+./droolsjbpm-build-bootstrap/script/release/update-version-all.sh $newVersion $TARGET
 
 # change <version.org.uberfire>, <version.org.dashbuilder> and <version.org.jboss.errai>
-sed -i "$!N;s/<version.org.uberfire>.*.<\/version.org.uberfire>/<version.org.uberfire>$UBERFIRE_VERSION<\/version.org.uberfire>/;P;D" pom.xml
-sed -i "$!N;s/<version.org.dashbuilder>.*.<\/version.org.dashbuilder>/<version.org.dashbuilder>$DASHBUILDER_VERSION<\/version.org.dashbuilder>/;P;D" pom.xml
-sed -i "$!N;s/<version.org.jboss.errai>.*.<\/version.org.jboss.errai>/<version.org.jboss.errai>$ERRAI_VERSION<\/version.org.jboss.errai>/;P;D" pom.xml
+cd $WORKSPACE/droolsjbpm-build-bootstrap
+sed -i "$!N;s/<version.org.uberfire>.*.<\/version.org.uberfire>/<version.org.uberfire>$UF_DEVEL_VERSION<\/version.org.uberfire>/;P;D" pom.xml
+sed -i "$!N;s/<version.org.dashbuilder>.*.<\/version.org.dashbuilder>/<version.org.dashbuilder>$DASHB_DEVEL_VERSION<\/version.org.dashbuilder>/;P;D" pom.xml
+sed -i "$!N;s/<version.org.jboss.errai>.*.<\/version.org.jboss.errai>/<version.org.jboss.errai>$ERRAI_DEVEL_VERSION<\/version.org.jboss.errai>/;P;D" pom.xml
 
 cd $WORKSPACE
 
 # git add and commit the version update changes 
-sh script/git-all.sh add .
+./droolsjbpm-build-bootstrap/script/git-all.sh add .
 CommitMSG="Upgraded to next development version $newVersion"
-sh script/git-all.sh commit -m "$CommitMSG"
+./droolsjbpm-build-bootstrap/script/git-all.sh commit -m "$CommitMSG"
 
 # add a remote to all repositories
 REPOSITORY_LIST=$WORKSPACE/droolsjbpm-build-bootstrap/script/repository-list.txt

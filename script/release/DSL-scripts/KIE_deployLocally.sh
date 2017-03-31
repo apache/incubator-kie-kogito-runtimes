@@ -40,13 +40,13 @@ echo TARGET=$TARGET >> kie.properties
 
 # build release branches
 if [ "$TARGET" == "community" ]; then 
-   DEPLOY_DIR=$WORKSPACE/KIE_Deploy_dir_community_7.0.x
+   DEPLOY_DIR=$WORKSPACE/community_Deploy_dir
    # (1) do a full build, but deploy only into local dir
    # we will deploy into remote staging repo only once the whole build passed (to save time and bandwith)   
    ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Drelease -T1C -DaltDeploymentRepository=local::default::file://$DEPLOY_DIR -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx4g -Xms1g -Xss1M" -Dgwt.compiler.localWorkers=2
   
 else
-   DEPLOY_DIR=$WORKSPACE/KIE_Deploy_dir_prod_7.0.x
+   DEPLOY_DIR=$WORKSPACE/prod_Deploy_dir
    # (1) do a full build with prod look & feel (-Dproductized), but deploy only into local dir
    # we will deploy into remote staging repo only once the whole build passed (to save time and bandwith)   
    ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Dproductized -Drelease -T1C -DaltDeploymentRepository=local::default::file://$DEPLOY_DIR -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx4g -Xms1g -Xss1M" -Dgwt.compiler.localWorkers=2
