@@ -1670,6 +1670,12 @@
       </dependency>
 
       <dependency>
+        <!-- Can be removed when we use ip-bom 7.0.0.CR10+ -->
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream-hibernate</artifactId>
+        <version>${version.com.thoughtworks.xstream}</version>
+      </dependency>
+      <dependency>
         <groupId>com.unboundid</groupId>
         <artifactId>unboundid-ldapsdk</artifactId>
         <version>${version.com.unboundid}</version>
