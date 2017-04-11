@@ -159,6 +159,7 @@
     <version.jacoco.plugin>0.7.5.201505241946</version.jacoco.plugin>
     <!-- TODO: remove this once all repositories comply to the defined checkstyle rules -->
     <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
+    <checkstyle.logViolationsToConsole>false</checkstyle.logViolationsToConsole>
     <enforcer.failOnDuplicatedClasses>true</enforcer.failOnDuplicatedClasses>
     <!-- Set to "true" on every project that has no violations. -->
     <findbugs.failOnViolation>false</findbugs.failOnViolation>
@@ -526,7 +527,7 @@
                 <includeResources>true</includeResources>
                 <includeTestResources>true</includeTestResources>
                 <consoleOutput>false</consoleOutput>
-                <logViolationsToConsole>false</logViolationsToConsole>
+                <logViolationsToConsole>${checkstyle.logViolationsToConsole}</logViolationsToConsole>
                 <failsOnError>false</failsOnError>
               </configuration>
             </execution>
@@ -2015,7 +2016,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-     
+
       <dependency>
       	<groupId>org.xmlunit</groupId>
       	<artifactId>xmlunit-core</artifactId>
@@ -2028,7 +2029,7 @@
       	<version>${version.org.xmlunit}</version>
       	<scope>test</scope>
       </dependency>
-      
+
       <dependency>
       	<groupId>org.skyscreamer</groupId>
       	<artifactId>jsonassert</artifactId>
