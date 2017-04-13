@@ -337,6 +337,39 @@
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-guided-rule-editor-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-guided-rule-editor-api</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-guided-rule-editor-backend</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-guided-rule-editor-backend</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-guided-rule-editor-client</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-wb-guided-rule-editor-client</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-wb-domain-editor-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
