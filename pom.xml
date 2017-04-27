@@ -133,7 +133,8 @@
     <version.javax.validation>1.0.0.GA</version.javax.validation>
 
     <!-- Lienzo core upgrade required by Stunner. Can be removed once IP BOM is upgraded.-->
-    <version.com.ahome-it.lienzo-core>2.0.286-RELEASE</version.com.ahome-it.lienzo-core>
+    <version.com.ahome-it.lienzo-core>2.0.287-RELEASE</version.com.ahome-it.lienzo-core>
+    <version.com.ahome-it.lienzo-tests>2.0.287-RELEASE</version.com.ahome-it.lienzo-tests>
 
     <!-- CSS parsing library from Apache used by Stunner. -->
     <version.net.sourceforge.cssparser>0.9.21</version.net.sourceforge.cssparser>
