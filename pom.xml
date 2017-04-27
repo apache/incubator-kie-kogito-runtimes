@@ -473,6 +473,15 @@
                           <ignoreClass>org.joda.time.base.BaseDateTime</ignoreClass>
                         </ignoreClasses>
                       </dependency>
+                      <!-- ignore jboss-logging included in kie server router as it is required by undertow and uberjar usage-->
+                      <dependency>
+                        <groupId>org.kie.server</groupId>
+                        <artifactId>kie-server-router-proxy</artifactId>
+                        <type>jar</type>
+                        <ignoreClasses>
+                          <ignoreClass>org.jboss.logging.*</ignoreClass>
+                        </ignoreClasses>
+                      </dependency>
                     </dependencies>
                     <findAllDuplicates>true</findAllDuplicates>
                   </banDuplicateClasses>
