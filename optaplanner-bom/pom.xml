@@ -206,6 +206,12 @@
       </dependency>
       <dependency>
         <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-core-gwt</artifactId>
+        <version>${version.org.kie}</version>
+        <type>gwt-lib</type>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-benchmark</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
