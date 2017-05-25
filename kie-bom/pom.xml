@@ -283,6 +283,7 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-jbpm-search</artifactId>
         <version>${version.org.kie}</version>
@@ -293,6 +294,7 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-rest-jbpm-ui</artifactId>
         <version>${version.org.kie}</version>
