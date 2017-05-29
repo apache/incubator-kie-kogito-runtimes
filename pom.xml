@@ -195,7 +195,7 @@
     <jboss.snapshots.repo.url>https://origin-repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
     <!-- Latest release to be used by api-compatibility-check to check backwards compatibility of the Kie API. -->
-    <version.org.kie.latestFinal.release>6.5.0.Final</version.org.kie.latestFinal.release>
+    <version.org.kie.latestFinal.release>7.0.0.Final</version.org.kie.latestFinal.release>
     <revapi.oldKieVersion>${version.org.kie.latestFinal.release}</revapi.oldKieVersion>
     <revapi.newKieVersion>${project.version}</revapi.newKieVersion>
 

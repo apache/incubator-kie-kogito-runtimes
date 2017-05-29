@@ -20,7 +20,7 @@ elif [ "$#" -ne 2 ]; then
     usage
 else
     # First, delete ignores
-    find . -iname "revapi-config.json" -exec perl -i -0pe 's/("ignore":.*)\[.*\]/\1\[\]/s' {} \;
+    find . -iname "revapi-config.json" -exec perl -i -0pe 's/("ignore":.*?)\[.*\]/\1\[\]/s' {} \;
     # Secondly, change versions in the comment
     find . -iname "revapi-config.json" -exec perl -i -0pe "s/(\"Changes between).*(and the current branch.*when).*(is available)/\1 $1 \2 $2 \3/s" {} \;
 fi
