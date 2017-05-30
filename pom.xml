@@ -92,6 +92,12 @@
 
     <version.org.drools.guvnor-api>5.6.0.Final</version.org.drools.guvnor-api>
     <version.org.jboss.errai>4.0.1-SNAPSHOT</version.org.jboss.errai>
+
+    <!-- Required for kie-wb-common to build in IntelliJ Idea 2017, due to -->
+    <!-- https://youtrack.jetbrains.com/issue/IDEA-166417 -->
+    <!-- Property can be removed when the above issue is fixed -->
+    <version.org.jboss.errai.wildfly>10.0.0.Final</version.org.jboss.errai.wildfly>
+
     <version.org.mortbay.jetty.runner>8.1.7.v20120910</version.org.mortbay.jetty.runner>
     <version.org.picketlink>2.6.0.Final</version.org.picketlink>
     <version.com.unboundid>2.3.6</version.com.unboundid>
