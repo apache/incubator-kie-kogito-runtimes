@@ -1508,6 +1508,17 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-maven-support</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-maven-integration</artifactId>
+        <version>${version.org.uberfire}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-core</artifactId>
         <version>${version.org.apache.camel}</version>
