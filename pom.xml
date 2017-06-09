@@ -1186,6 +1186,11 @@
             <excludeFilterFile>findbugs-excludes.xml</excludeFilterFile>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-maven-plugin</artifactId>
+          <version>${version.org.kie}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
