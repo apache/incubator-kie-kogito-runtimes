@@ -64,6 +64,11 @@ echo "mkdir optaplanner-javadoc" > upload_optaplanner_javadoc
 chmod +x upload_optaplanner_javadoc
 sftp -b upload_optaplanner_javadoc $OPTAPLANNER_DOCS/$VERSION
 
+touch upload_optaplanner_wb_es_docs
+echo "mkdir optaplanner-wb-es-docs" > upload_optaplanner_wb_es_docs
+chmod +x upload_optaplanner_wb_es_docs
+sftp -b upload_optaplanner_wb_es_docs $OPTAPLANNER_DOCS/$VERSION
+
 # copies drools binaries to filemgmt.jboss.org
 scp -r droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-distribution-$VERSION/droolsjbpm-tools-distribution-$VERSION/binaries/org.drools.updatesite/* $DROOLS_HTDOCS/$VERSION/org.drools.updatesite  
 scp drools/drools-distribution/target/drools-distribution-$VERSION.zip $DROOLS_HTDOCS/$VERSION
@@ -92,6 +97,7 @@ scp optaplanner/optaplanner-distribution/target/optaplanner-distribution-$VERSIO
 #copies optaplanner-docs and optaplanner-javadoc to filemgmt.jboss.org
 scp -r optaplanner/optaplanner-docs/target/generated-docs/* $OPTAPLANNER_DOCS/$VERSION/optaplanner-docs
 scp -r optaplanner/optaplanner-distribution/target/optaplanner-distribution-$VERSION/optaplanner-distribution-$VERSION/javadocs/* $OPTAPLANNER_DOCS/$VERSION/optaplanner-javadoc
+scp -r kie-docs/docs/optaplanner-wb-es-docs/target/generated-docs/* $OPTAPLANNER_DOCS/$VERSION/optaplanner-wb-es-docs
 
 # clean upload files
 rm upload_*

@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# clone the build-bootstrap that contains the other build scripts
-
-# clone droolsjbm-build-bootstrap branch from kiegroup
-git clone git@github.com:kiegroup/droolsjbpm-build-bootstrap.git --branch $BASE_BRANCH
+# clone droolsjbpm-build-bootstrap
+git clone git@github.com:kiegroup/droolsjbpm-build-bootstrap.git --branch $BASE_BRANCH --depth 70
 
 # clone rest of the repos
 ./droolsjbpm-build-bootstrap/script/git-clone-others.sh --branch $BASE_BRANCH --depth 70
@@ -69,6 +67,6 @@ CommitMSG="Upgraded versions for release $RELEASE_VERSION"
 if [ "$TARGET" == "community" ]; then
   ./droolsjbpm-build-bootstrap/script/git-all.sh push origin $RELEASE_BRANCH
 else
-  ./droolsjbpm-build-bootstrap/script/git-all.sh push  jboss-integration $RELEASE_BRANCH
-  ./droolsjbpm-build-bootstrap/script/git-all.sh push  jboss-integration $BASE_BRANCH
+  ./droolsjbpm-build-bootstrap/script/git-all.sh push jboss-integration $RELEASE_BRANCH
+  ./droolsjbpm-build-bootstrap/script/git-all.sh push jboss-integration $BASE_BRANCH
 fi
