@@ -467,6 +467,29 @@ The check binds to the verify phase and for the plugin to run, the code-coverage
 
 * The coverage report is then generated in ./target/site/jacoco/index.html
 
+Running Pitest mutation coverage analysis
+-----------------------------------------
+
+Mutation coverage is used to measure how good the tests are at making assertions about the tested code.
+It is a good idea to check the mutation coverage of tests added together with any changes, be it a newly developed
+feature or a bug fix. Code coverage is analyzed for free as part of the mutation analysis.
+
+To analyze the complete module:
+
+```shell
+$ mvn verify -Dmutation-coverage
+```
+
+To limit analyzed classes to a sub-package:
+
+```shell
+$ mvn verify -Dmutation-coverage -DtargetClasses=org.drools*
+```
+
+The HTML report will be stored in `local/pit-reports/` directory.
+Currently, it is not possible to get a report aggregated over multiple modules.
+Learn more about using [Pitest](http://pitest.org/quickstart/maven/).
+
 Configuring Maven
 -----------------
 
