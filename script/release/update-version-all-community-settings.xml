@@ -24,6 +24,11 @@
           <name>KIE Staging Repository Group</name>
           <url>https://repository.jboss.org/nexus/content/groups/kie-group/</url>
         </repository>
+        <repository>
+          <id>kie-repository-group</id>
+          <name>KIE Repositories</name>
+          <url>https://repository.jboss.org/nexus/content/repositories/kie</url>
+        </repository>     
       </repositories>
       <pluginRepositories>
         <pluginRepository>
@@ -35,6 +40,11 @@
           <id>kie-staging-repository-group</id>
           <name>KIE Staging Repository Group</name>
           <url>https://repository.jboss.org/nexus/content/groups/kie-group/</url>
+        </pluginRepository>
+        <pluginRepository>
+          <id>kie-repository-group</id>
+          <name>KIE Repositories</name>
+          <url>https://repository.jboss.org/nexus/content/repositories/kie</url>
         </pluginRepository>
       </pluginRepositories>
     </profile>
