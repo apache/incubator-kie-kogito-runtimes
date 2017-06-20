@@ -147,6 +147,9 @@
     <version.net.sourceforge.cssparser>0.9.21</version.net.sourceforge.cssparser>
     <version.org.w3c.css.sac>1.3</version.org.w3c.css.sac>
 
+    <!-- narayana dependencies for tomcat and kie server -->
+    <version.org.jboss.narayana.tomcat>5.6.2.Final</version.org.jboss.narayana.tomcat>
+
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
 
@@ -488,6 +491,16 @@
                         <type>jar</type>
                         <ignoreClasses>
                           <ignoreClass>org.jboss.logging.*</ignoreClass>
+                        </ignoreClasses>
+                      </dependency>
+                      <!-- ignore jboss-logging included in kie server on tomcat using narayana-->
+                      <dependency>
+                        <groupId>org.jboss.narayana.tomcat</groupId>
+                        <artifactId>tomcat-jta</artifactId>
+                        <type>jar</type>
+                        <ignoreClasses>
+                          <ignoreClass>org.jboss.logging.*</ignoreClass>
+                          <ignoreClass>javax.transaction.*</ignoreClass>
                         </ignoreClasses>
                       </dependency>
                     </dependencies>
@@ -2299,6 +2312,12 @@
         <version>${version.org.w3c.css.sac}</version>
       </dependency>
 
+      <!-- Narayana is used as transaction manager for KIE Server on Tomcat -->
+      <dependency>
+        <groupId>org.jboss.narayana.tomcat</groupId>
+        <artifactId>tomcat-jta</artifactId>
+        <version>${version.org.jboss.narayana.tomcat}</version>
+      </dependency>
     </dependencies>
 
   </dependencyManagement>
