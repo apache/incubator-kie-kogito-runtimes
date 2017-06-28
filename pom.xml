@@ -171,6 +171,8 @@
     <!-- TODO: remove this once all repositories comply to the defined checkstyle rules -->
     <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
     <checkstyle.logViolationsToConsole>false</checkstyle.logViolationsToConsole>
+    <checkstyle.header.template>.*</checkstyle.header.template>
+    <checkstyle.header.extensions>java</checkstyle.header.extensions>
     <enforcer.failOnDuplicatedClasses>true</enforcer.failOnDuplicatedClasses>
     <!-- Set to "true" on every project that has no violations. -->
     <findbugs.failOnViolation>false</findbugs.failOnViolation>
@@ -545,11 +547,14 @@
                         <property name="sortImportsInGroupAlphabetically" value="true"/>
                         <property name="separateLineBetweenGroups" value="true"/>
                       </module>
-
                       <module name="NeedBraces">
                         <property name="tokens" value="LITERAL_IF, LITERAL_ELSE, LITERAL_FOR, LITERAL_WHILE, LITERAL_DO"/>
                       </module>
                       <module name="EqualsHashCode"/>
+                    </module>
+                    <module name="RegexpHeader">
+                      <property name="header" value="${checkstyle.header.template}"/>
+                      <property name="fileExtensions" value="${checkstyle.header.extensions}"/>
                     </module>
                   </module>
                 </checkstyleRules>
