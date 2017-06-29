@@ -214,6 +214,7 @@
     <!-- Overrides the version in the jboss-integration-platform-bom. A peer PR will be sent to jboss-integration-platform project.
          Please move this new version number there when possible -->
     <version.org.jboss.forge.roaster>2.19.4.Final</version.org.jboss.forge.roaster>
+    <version.org.jboss.spec.javax.enterprise.concurrent>1.0.0.Final</version.org.jboss.spec.javax.enterprise.concurrent>
   </properties>
 
   <repositories>
@@ -1330,10 +1331,10 @@
       </activation>
       <dependencies>
         <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>org.jacoco.agent</artifactId>
-            <classifier>runtime</classifier>
-            <scope>test</scope>
+          <groupId>org.jacoco</groupId>
+          <artifactId>org.jacoco.agent</artifactId>
+          <classifier>runtime</classifier>
+          <scope>test</scope>
         </dependency>
       </dependencies>
       <build>
@@ -1768,7 +1769,7 @@
           <exclusion>
             <groupId>bouncycastle</groupId>
             <artifactId>bctsp-jdk14</artifactId>
-           </exclusion>
+          </exclusion>
         </exclusions>
       </dependency>
 
@@ -2127,23 +2128,23 @@
       </dependency>
 
       <dependency>
-      	<groupId>org.xmlunit</groupId>
-      	<artifactId>xmlunit-core</artifactId>
-      	<version>${version.org.xmlunit}</version>
-      	<scope>test</scope>
+        <groupId>org.xmlunit</groupId>
+        <artifactId>xmlunit-core</artifactId>
+        <version>${version.org.xmlunit}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
-      	<groupId>org.xmlunit</groupId>
-      	<artifactId>xmlunit-matchers</artifactId>
-      	<version>${version.org.xmlunit}</version>
-      	<scope>test</scope>
+        <groupId>org.xmlunit</groupId>
+        <artifactId>xmlunit-matchers</artifactId>
+        <version>${version.org.xmlunit}</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
-      	<groupId>org.skyscreamer</groupId>
-      	<artifactId>jsonassert</artifactId>
-      	<version>${version.org.skyscreamer.jsonassert}</version>
-      	<scope>test</scope>
+        <groupId>org.skyscreamer</groupId>
+        <artifactId>jsonassert</artifactId>
+        <version>${version.org.skyscreamer.jsonassert}</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -2310,6 +2311,12 @@
         <groupId>org.w3c.css</groupId>
         <artifactId>sac</artifactId>
         <version>${version.org.w3c.css.sac}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.spec.javax.enterprise.concurrent</groupId>
+        <artifactId>jboss-concurrency-api_1.0_spec</artifactId>
+        <version>${version.org.jboss.spec.javax.enterprise.concurrent}</version>
       </dependency>
 
       <!-- Narayana is used as transaction manager for KIE Server on Tomcat -->
