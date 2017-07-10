@@ -667,6 +667,12 @@
          <version>${version.org.kie}</version>
       </dependency>
       <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-wb-common-client</artifactId>
+        <classifier>tests</classifier>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
          <groupId>org.jbpm</groupId>
          <artifactId>jbpm-wb-common-api</artifactId>
          <version>${version.org.kie}</version>
