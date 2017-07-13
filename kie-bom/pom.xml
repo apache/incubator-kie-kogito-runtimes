@@ -1971,6 +1971,68 @@
         <type>war</type>
       </dependency>
 
+      <!-- Stunner - DMN Editor -->
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-dmn-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-dmn-api</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-dmn-backend</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-dmn-client</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-dmn-client</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-dmn-project-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-dmn-project-api</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-dmn-project-client</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-dmn-project-client</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-dmn-model</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-dmn-model</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <!-- Distribution -->
       <dependency>
         <groupId>org.kie</groupId>
