@@ -50,7 +50,7 @@
     <version.org.optaplanner>${version.org.kie}</version.org.optaplanner>
     <version.org.jbpm>${version.org.kie}</version.org.jbpm>
     <version.org.drools.droolsjbpm-integration>${version.org.drools}</version.org.drools.droolsjbpm-integration>
-    <version.org.uberfire>1.3.0-SNAPSHOT</version.org.uberfire>
+    <version.org.uberfire>1.2.0-SNAPSHOT</version.org.uberfire>
     <version.org.dashbuilder>0.8.0-SNAPSHOT</version.org.dashbuilder>
     <version.org.guvnor>${version.org.drools}</version.org.guvnor>
     <version.org.kie.uberfire.extensions>${version.org.drools}</version.org.kie.uberfire.extensions>
