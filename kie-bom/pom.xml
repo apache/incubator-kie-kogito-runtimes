@@ -1306,6 +1306,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-layout-generator</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
         <artifactId>kie-wb-common-dynamic-forms-api</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
