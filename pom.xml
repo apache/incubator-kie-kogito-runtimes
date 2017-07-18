@@ -82,7 +82,8 @@
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
     <version.link.bek.tools.issue-keeper-junit>4.11.1</version.link.bek.tools.issue-keeper-junit>
     <version.net.sf.docbook.docbook-xsl>1.76.1</version.net.sf.docbook.docbook-xsl>
-
+    <!-- Java 8 requires 3.5.2 version. This override can be removed once IP BOM upgrades as well -->
+    <version.org.antlr>3.5.2</version.org.antlr>
     <version.org.antlr4>4.5.3</version.org.antlr4>
     <version.org.apache.camel>2.18.2</version.org.apache.camel>
     <version.org.apache.xmlgraphics.commons>1.4</version.org.apache.xmlgraphics.commons>
