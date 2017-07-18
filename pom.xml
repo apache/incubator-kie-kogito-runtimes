@@ -192,6 +192,8 @@
     <gwt.compiler.localWorkers>1</gwt.compiler.localWorkers>
     <!-- property for productisation to know the last released version -->
     <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
+    <version.io.takari.maven.plugins>1.12.6</version.io.takari.maven.plugins>
+    <version.io.takari.maven.plugins.integration-testing>2.9.1</version.io.takari.maven.plugins.integration-testing>
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overridden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
 
@@ -1236,6 +1238,12 @@
             </mutators>
             <avoidCallsTo>java.lang.StringBuilder</avoidCallsTo>
           </configuration>
+        </plugin>
+        <!-- Incremental compiler-->
+        <plugin>
+          <groupId>io.takari.maven.plugins</groupId>
+          <artifactId>takari-lifecycle-plugin</artifactId>
+          <version>${version.io.takari.maven.plugins}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -2326,6 +2334,13 @@
         <version>${version.org.jboss.spec.javax.enterprise.concurrent}</version>
       </dependency>
 
+      <!-- Incremental compiler-->
+      <dependency>
+        <groupId>io.takari.maven.plugins</groupId>
+        <artifactId>takari-plugin-testing</artifactId>
+        <version>${version.io.takari.maven.plugins.integration-testing}</version>
+      </dependency>
+
       <!-- Narayana is used as transaction manager for KIE Server on Tomcat -->
       <dependency>
         <groupId>org.jboss.narayana.tomcat</groupId>
@@ -2343,6 +2358,7 @@
         <version>${version.org.jboss.transaction.spi}</version>
       </dependency>
     </dependencies>
+
 
   </dependencyManagement>
 

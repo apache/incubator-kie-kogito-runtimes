@@ -78,6 +78,12 @@
 
       <dependency>
         <groupId>org.kie</groupId>
+        <artifactId>kie-takari-plugin</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
         <artifactId>kie-identity-session-provider</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
