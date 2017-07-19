@@ -1060,7 +1060,7 @@ Configuring IntelliJ
 
     * Click tree item *Code Style* and select it.
 
-        * Note: IntelliJ IDEA doesn't format your code automatically. You have to press Ctrl+Alt+L keyboard combination to trigger auto formatting when coding is done.
+        * Note: IntelliJ IDEA doesn't format your code automatically. You have to press Ctrl+Alt+L keyboard combination to trigger auto formatting when coding is done. Another option is to commit your code directly from IntelliJ IDEA (open menu *VCS*, menu item *Commit Changes...*), and select the option *Reformat Code*, which will reformat all files changed in the commit.
 
 * Set the correct file encoding (UTF-8 except for properties files) and end-of-line characters (unix):
 
