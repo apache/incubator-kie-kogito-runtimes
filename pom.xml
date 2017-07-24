@@ -91,6 +91,9 @@
     <version.org.jboss.arquillian.extension.drone>2.0.0.Final</version.org.jboss.arquillian.extension.drone>
     <version.org.jboss.arquillian.graphene>2.1.0.CR1</version.org.jboss.arquillian.graphene>
 
+    <!-- Required to support SNI requests, see RHBRMS-2870 -->
+    <version.org.apache.httpcomponents.httpclient>4.5.3</version.org.apache.httpcomponents.httpclient>
+
     <version.org.drools.guvnor-api>5.6.0.Final</version.org.drools.guvnor-api>
     <version.org.jboss.errai>4.0.2-SNAPSHOT</version.org.jboss.errai>
 
