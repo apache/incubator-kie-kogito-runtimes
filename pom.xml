@@ -1252,6 +1252,11 @@
           <artifactId>takari-lifecycle-plugin</artifactId>
           <version>${version.io.takari.maven.plugins}</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.5.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
