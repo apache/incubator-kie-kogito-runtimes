@@ -74,7 +74,15 @@
     <version.com.android-dx>1.10</version.com.android-dx>
     <!-- commons cli 1.3.1+ required by Dashbuilder's ElasticSearch module. This override can be removed once IP BOM upgrades as well. -->
     <version.commons-cli>1.3.1</version.commons-cli>
-    <!-- Jackson 2.6.2+ required by Dashbuilder's ElasticSearch module. This override can be removed once IP BOM upgrades as well. -->
+    <!-- IP BOM 7.0.0.CR9 defines Jackson 2.5.4
+         Wildfly 10.0.0.Final includes Jackson 2.5.4
+         Wildfly 10.1.0.Final includes Jackson 2.7.4
+         JBoss EAP 6.4.16 includes Jackson 2.5.4
+         JBoss EAP 7.1.0.Beta4 includes Jackson 2.8.6
+         Dashbuilder's ElasticSearch module requires Jackson 2.6.2+, so defined here
+         Fabric8 Kubernetes/OpenShift Client 2.5.7 requires Jackson 2.6+, but built against Jackson 2.7.7
+         guvnor-ala-openshift-client shades Jackson 2.7.7 with Fabric8 Kubernetes/OpenShift Client 2.5.7
+         Once the IP BOM gets upgraded and we solely deploy on Wildfly 10.1+ and EAP 7.1+, guvnor-ala-openshift-client can be removed. -->
     <version.com.fasterxml.jackson>2.6.2</version.com.fasterxml.jackson>
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
@@ -208,6 +216,10 @@
     <version.net.byte-buddy>1.4.16</version.net.byte-buddy>
     <version.commons-beanutils>1.9.2</version.commons-beanutils>
     <version.docker-client>3.5.12</version.docker-client>
+    <version.kubernetes-model>1.1.0</version.kubernetes-model>
+    <version.kubernetes-client>2.5.7</version.kubernetes-client>
+    <version.okhttp>3.8.1</version.okhttp>
+    <version.zjsonpatch>0.3.0</version.zjsonpatch>
     <version.arquillian-cube>1.0.0.Alpha15</version.arquillian-cube>
     <version.org.wildfly.arquillian.container>2.0.0.Final</version.org.wildfly.arquillian.container>
     <!-- Using origin-repository.jboss.org as that is the canonical URL for deployment. repository.jboss.org is just a proxy
@@ -387,8 +399,11 @@
                            (transitive dependencies), which then results in the dependency check failure.
                            From the maintenance point of view, ignoring these generated classes seems like the
                            best option. -->
-                      <regexIgnoredClass>org\.jboss\.errai\.marshalling\.server\.impl\.ServerMarshallingFactory.*
-                      </regexIgnoredClass>
+                      <regexIgnoredClass>org\.jboss\.errai\.marshalling\.server\.impl\.ServerMarshallingFactory.*</regexIgnoredClass>
+                      <!-- The maven-shade-plugin needs these classes to be compile-scope in guvnor-ala-openshift-client to be picked up, and
+                           then referenced in guvnor-ala-openshift-provider. When we don't need to shade anymore, we can remove these lines. -->
+                      <regexIgnoredClass>io\.fabric8\.kubernetes.*</regexIgnoredClass>
+                      <regexIgnoredClass>io\.fabric8\.openshift.*</regexIgnoredClass>
                     </regexIgnoredClasses>
                   </illegalTransitiveDependencyCheck>
                 </rules>
@@ -516,6 +531,19 @@
                         <ignoreClasses>
                           <ignoreClass>org.jboss.logging.*</ignoreClass>
                           <ignoreClass>javax.transaction.*</ignoreClass>
+                        </ignoreClasses>
+                      </dependency>
+                      <dependency>
+                        <!-- The openshift-client duplicates these classes from the kubernetes-client.
+                             It is an upstream io.fabric8 issue that needs to be fixed there:
+                             https://github.com/fabric8io/kubernetes-client/issues/828 -->
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>openshift-client</artifactId>
+                        <type>jar</type>
+                        <ignoreClasses>
+                          <ignoreClass>io.fabric8.kubernetes.client.ConfigFluent</ignoreClass>
+                          <ignoreClass>io.fabric8.kubernetes.client.ConfigBuilder</ignoreClass>
+                          <ignoreClass>io.fabric8.kubernetes.client.ConfigFluentImpl</ignoreClass>
                         </ignoreClasses>
                       </dependency>
                     </dependencies>
@@ -1019,6 +1047,11 @@
             <pushChanges>false</pushChanges>
             <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.0.0</version>
         </plugin>
         <!--Fix translations from Zanata -->
         <plugin>
@@ -2295,6 +2328,110 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>kubernetes-model</artifactId>
+        <version>${version.kubernetes-model}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>kubernetes-client</artifactId>
+        <version>${version.kubernetes-client}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>openshift-client</artifactId>
+        <version>${version.kubernetes-client}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>zjsonpatch</artifactId>
+        <version>${version.zjsonpatch}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-json-provider</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-base</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-jaxb-annotations</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>${version.okhttp}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>logging-interceptor</artifactId>
+        <version>${version.okhttp}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>

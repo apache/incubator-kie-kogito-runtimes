@@ -207,6 +207,17 @@
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-openshift-client</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-openshift-client</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
         <artifactId>guvnor-ala-openshift-provider</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
