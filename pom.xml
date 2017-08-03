@@ -228,6 +228,7 @@
          Please move this new version number there when possible -->
     <version.org.jboss.forge.roaster>2.19.4.Final</version.org.jboss.forge.roaster>
     <version.org.jboss.spec.javax.enterprise.concurrent>1.0.0.Final</version.org.jboss.spec.javax.enterprise.concurrent>
+    <version.org.jboss.spec.javax.websocket>1.0.0.Final</version.org.jboss.spec.javax.websocket>
   </properties>
 
   <repositories>
@@ -2368,6 +2369,23 @@
         <groupId>org.jboss</groupId>
         <artifactId>jboss-transaction-spi</artifactId>
         <version>${version.org.jboss.transaction.spi}</version>
+      </dependency>
+
+      <!-- kie server controller over websockets -->
+      <dependency>
+        <groupId>org.jboss.spec.javax.websocket</groupId>
+        <artifactId>jboss-websocket-api_1.0_spec</artifactId>
+        <version>${version.org.jboss.spec.javax.websocket}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-servlet</artifactId>
+        <version>${version.io.undertow.core}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-websockets-jsr</artifactId>
+        <version>${version.io.undertow.core}</version>
       </dependency>
     </dependencies>
 

@@ -178,7 +178,7 @@
         <artifactId>kie-server-services-dmn</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-services-jbpm</artifactId>
@@ -384,6 +384,39 @@
       <dependency>
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server-controller-rest</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-websocket</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-websocket</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-websocket-common</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-websocket-common</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-websocket-client</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-websocket-client</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
