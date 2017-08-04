@@ -159,6 +159,18 @@
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-spi</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-spi</artifactId>
+        <version>${version.org.kie}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
         <artifactId>guvnor-ala-build-maven</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
@@ -262,8 +274,14 @@
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-ala-registry-local</artifactId>
+        <artifactId>guvnor-ala-registry-vfs</artifactId>
         <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-registry-vfs</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
