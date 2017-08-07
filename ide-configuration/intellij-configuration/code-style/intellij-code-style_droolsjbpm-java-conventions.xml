@@ -3,15 +3,12 @@
   <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99999" />
   <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99999" />
   <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
-    <value>
-      <package name="org.junit.Assert" withSubpackages="true" static="true" />
-      <package name="org.assertj.core.api.Assertions" withSubpackages="true" static="true" />
-      <package name="org.mockito.Mockito" withSubpackages="true" static="true" />
-    </value>
+    <value />
   </option>
   <option name="IMPORT_LAYOUT_TABLE">
     <value>
       <package name="java" withSubpackages="true" static="false" />
+      <emptyLine />
       <package name="javax" withSubpackages="true" static="false" />
       <emptyLine />
       <package name="" withSubpackages="true" static="false" />

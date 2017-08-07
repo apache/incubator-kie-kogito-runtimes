@@ -750,6 +750,8 @@ Configuring Eclipse
 
 * Recommended: import our code style
 
+    * Set up formatter for edited code only: Open menu *Window*, menu item *Preferences*, click tree item *Java*, tree item *Editor*, and click *Save actions*. Enable *Perform the selected actions on save*: select *Format source code* (*Format edited lines*) and *Organize imports*
+
     * If you don't do this, you need to set the number of spaces correctly manually.
 
     * Use the one from `droolsjbpm-build-bootstrap/ide-configuration`
