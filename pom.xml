@@ -152,8 +152,8 @@
     <version.javax.validation>1.0.0.GA</version.javax.validation>
 
     <!-- Lienzo core upgrade required by Stunner. Can be removed once IP BOM is upgraded.-->
-    <version.com.ahome-it.lienzo-core>2.0.287-RELEASE</version.com.ahome-it.lienzo-core>
-    <version.com.ahome-it.lienzo-tests>2.0.287-RELEASE</version.com.ahome-it.lienzo-tests>
+    <version.com.ahome-it.lienzo-core>2.0.291-RELEASE</version.com.ahome-it.lienzo-core>
+    <version.com.ahome-it.lienzo-tests>2.0.291-RELEASE</version.com.ahome-it.lienzo-tests>
 
     <!-- JGIT 4.8.0.201706111038-r required by UberFire/AppFormer. Can be removed once IP BOM is upgraded.-->
     <version.org.eclipse.jgit>4.8.0.201706111038-r</version.org.eclipse.jgit>
