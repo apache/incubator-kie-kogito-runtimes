@@ -8,6 +8,11 @@ master:
   - uberfire: master
   - dashbuilder: master
 
+7.3.x:
+  - errai: 4.0.x
+  - uberfire: 1.3.x
+  - dashbuilder: 0.9.x
+
 7.2.x:
   - errai: 4.0.x
   - uberfire: 1.2.x
