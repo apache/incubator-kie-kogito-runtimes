@@ -6,7 +6,7 @@
 master:
   - errai/errai: master
   - AppFormer/uberfire: master
-  - dashbuilder: master
+  - dashbuilder/dashbuilder: master
 
 7.3.x:
   - errai/errai: 4.0.x
