@@ -4,55 +4,55 @@
 # <kie-branch>:
 #  - [<org.unit>/]<repo>: <branch> -- <org.unit> is optional in case it's equal to the repo name
 master:
-  - errai: master
-  - uberfire: master
+  - errai/errai: master
+  - AppFormer/uberfire: master
   - dashbuilder: master
 
 7.3.x:
-  - errai: 4.0.x
-  - uberfire: 1.3.x
-  - dashbuilder: 0.9.x
+  - errai/errai: 4.0.x
+  - AppFormer/uberfire: 1.3.x
+  - dashbuilder/dashbuilder: 0.9.x
 
 7.2.x:
-  - errai: 4.0.x
-  - uberfire: 1.2.x
-  - dashbuilder: 0.8.x
+  - errai/errai: 4.0.x
+  - AppFormer/uberfire: 1.2.x
+  - dashbuilder/dashbuilder: 0.8.x
 
 7.1.x:
-  - errai: 4.0.x
-  - uberfire: 1.1.x
-  - dashbuilder: 0.7.x
+  - errai/errai: 4.0.x
+  - AppFormer/uberfire: 1.1.x
+  - dashbuilder/dashbuilder: 0.7.x
 
 7.0.x:
-  - errai: 4.0.x
-  - uberfire: 1.0.x
-  - dashbuilder: 0.6.x
+  - errai/errai: 4.0.x
+  - AppFormer/uberfire: 1.0.x
+  - dashbuilder/dashbuilder: 0.6.x
 
 6.5.x:
-  - uberfire: 0.9.x
-  - uberfire/uberfire-extensions: 0.9.x
-  - dashbuilder: 0.5.x
+  - AppFormer/uberfire: 0.9.x
+  - AppFormer/uberfire-extensions: 0.9.x
+  - dashbuilder/dashbuilder: 0.5.x
 
 6.4.x:
-  - uberfire: 0.8.x
-  - uberfire/uberfire-extensions: 0.8.x
-  - dashbuilder: 0.4.x
+  - AppFormer/uberfire: 0.8.x
+  - AppFormer/uberfire-extensions: 0.8.x
+  - dashbuilder/dashbuilder: 0.4.x
 
 6.3.x:
-  - uberfire: 0.7.x
-  - uberfire/uberfire-extensions: 0.7.x
-  - dashbuilder: 0.3.x
+  - AppFormer/uberfire: 0.7.x
+  - AppFormer/uberfire-extensions: 0.7.x
+  - dashbuilder/dashbuilder: 0.3.x
 
 6.2.x:
-  - uberfire: 0.5.x
-  - uberfire/uberfire-extensions: 0.5.x
-  - dashbuilder: 0.2.x
+  - AppFormer/uberfire: 0.5.x
+  - AppFormer/uberfire-extensions: 0.5.x
+  - dashbuilder/dashbuilder: 0.2.x
 
 6.1.x:
-  - uberfire: 0.4.x
-  - uberfire/uberfire-extensions: 0.4.x
+  - AppFormer/uberfire: 0.4.x
+  - AppFormer/uberfire-extensions: 0.4.x
 
 6.0.x:
-  - uberfire: 0.3.x
-  - uberfire/uberfire-extensions: 0.3.x
+  - AppFormer/uberfire: 0.3.x
+  - AppFormer/uberfire-extensions: 0.3.x
 
