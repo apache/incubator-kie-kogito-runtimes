@@ -102,7 +102,6 @@
     <!-- Required to support SNI requests, see RHBRMS-2870 -->
     <version.org.apache.httpcomponents.httpclient>4.5.3</version.org.apache.httpcomponents.httpclient>
 
-    <version.org.drools.guvnor-api>5.6.0.Final</version.org.drools.guvnor-api>
     <version.org.jboss.errai>4.1.0-SNAPSHOT</version.org.jboss.errai>
 
     <!-- Required for kie-wb-common to build in IntelliJ Idea 2017, due to -->
@@ -1670,19 +1669,6 @@
         <groupId>org.apache.deltaspike.cdictrl</groupId>
         <artifactId>deltaspike-cdictrl-weld</artifactId>
         <version>${version.org.apache.deltaspike.core}</version>
-      </dependency>
-
-      <!-- needed for drools-wb-jcr2vfs-migration -->
-      <dependency>
-        <groupId>org.apache.pdfbox</groupId>
-        <artifactId>pdfbox</artifactId>
-        <version>${version.org.apache.pdfbox}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <!-- TODO BZ-996210 use org.apache.xmlgraphics:batik* instead -->

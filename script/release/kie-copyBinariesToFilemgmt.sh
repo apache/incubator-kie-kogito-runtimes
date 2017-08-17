@@ -75,7 +75,6 @@ scp drools/drools-distribution/target/drools-distribution-$version.zip $drools-h
 scp droolsjbpm-integration/droolsjbpm-integration-distribution/target/droolsjbpm-integration-distribution-$version.zip $drools-htdocs/$version
 scp droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-distribution-$version.zip $drools-htdocs/$version
 scp kie-wb-distributions/kie-drools-wb-parent/kie-drools-wb-distribution-wars/target/kie-drools-wb-$version-*.war $drools-htdocs/$version
-scp drools-wb/drools-wb-jcr2vfs-migration/drools-wb-jcr2vfs-distribution/target/drools-wb-jcr2vfs-distribution-$version.zip $drools-htdocs/$version
 scp droolsjbpm-integration/kie-server-parent/kie-server-wars/kie-server-distribution/target/kie-server-distribution-$version.zip $drools-htdocs/$version
 
 #copies drools-docs and kie-api-javadoc to filemgmt.jboss.or
