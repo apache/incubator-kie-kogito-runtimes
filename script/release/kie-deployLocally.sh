@@ -44,12 +44,12 @@ if [ "$target" == "community" ]; then
    deploy-dir=$WORKSPACE/community-deploy-dir
    # (1) do a full build, but deploy only into local dir
    # we will deploy into remote staging repo only once the whole build passed (to save time and bandwith)   
-   ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Drelease -T1C -DaltDeploymentRepository=local::default::file://$deploy-dir -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx4g -Xms1g -Xss1M" -Dgwt.compiler.localWorkers=2
+   ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Drelease -T2 -DaltDeploymentRepository=local::default::file://$deploy-dir -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx4g -Xms1g -Xss1M" -Dgwt.compiler.localWorkers=2
   
 else
    deploy-dir=$WORKSPACE/prod-deploy-dir
    # (1) do a full build with prod look & feel (-Dproductized), but deploy only into local dir
    # we will deploy into remote staging repo only once the whole build passed (to save time and bandwith)   
-   ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Dproductized -Drelease -T1C -DaltDeploymentRepository=local::default::file://$deploy-dir -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx4g -Xms1g -Xss1M" -Dgwt.compiler.localWorkers=2
+   ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Dproductized -Drelease -T2 -DaltDeploymentRepository=local::default::file://$deploy-dir -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx4g -Xms1g -Xss1M" -Dgwt.compiler.localWorkers=2
 
 fi
