@@ -80,8 +80,8 @@
          JBoss EAP 6.4.16 includes Jackson 2.5.4
          JBoss EAP 7.1.0.Beta4 includes Jackson 2.8.6
          Dashbuilder's ElasticSearch module requires Jackson 2.6.2+, so defined here
-         Fabric8 Kubernetes/OpenShift Client 2.5.7 requires Jackson 2.6+, but built against Jackson 2.7.7
-         guvnor-ala-openshift-client shades Jackson 2.7.7 with Fabric8 Kubernetes/OpenShift Client 2.5.7
+         Fabric8 Kubernetes/OpenShift Client 2.6.1 requires Jackson 2.6+, but built against Jackson 2.7.7
+         guvnor-ala-openshift-client shades Jackson 2.7.7 with Fabric8 Kubernetes/OpenShift Client 2.6.1
          Once the IP BOM gets upgraded and we solely deploy on Wildfly 10.1+ and EAP 7.1+, guvnor-ala-openshift-client can be removed. -->
     <version.com.fasterxml.jackson>2.6.2</version.com.fasterxml.jackson>
     <version.com.github.detro>1.2.0</version.com.github.detro>
@@ -215,8 +215,8 @@
     <version.net.byte-buddy>1.4.16</version.net.byte-buddy>
     <version.commons-beanutils>1.9.2</version.commons-beanutils>
     <version.docker-client>3.5.12</version.docker-client>
-    <version.kubernetes-model>1.1.0</version.kubernetes-model>
-    <version.kubernetes-client>2.5.7</version.kubernetes-client>
+    <version.kubernetes-model>1.1.2</version.kubernetes-model>
+    <version.kubernetes-client>2.6.1</version.kubernetes-client>
     <version.okhttp>3.8.1</version.okhttp>
     <version.zjsonpatch>0.3.0</version.zjsonpatch>
     <version.arquillian-cube>1.0.0.Alpha15</version.arquillian-cube>
