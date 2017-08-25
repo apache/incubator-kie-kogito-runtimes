@@ -5,14 +5,14 @@ kieVersion=$(sed -e 's/^[ \t]*//' -e 's/[ \t]*$//' -n -e 's/<version.org.kie>\(.
 
 if [ "$target" == "community" ]; then
    stagingRep=15c58a1abc895b
-   deploy-dir=$WORKSPACE/community-deploy-dir
+   deployDir=$WORKSPACE/community-deploy-dir
 else
    stagingRep=15c3321d12936e
-   deploy-dir=$WORKSPACE/prod-deploy-dir
+   deployDir=$WORKSPACE/prod-deploy-dir
 fi
 
-cd $deploy-dir
+cd $deployDir
 # upload the content to remote staging repo
 mvn -B -e org.sonatype.plugins:nexus-staging-maven-plugin:1.6.5:deploy-staged-repository -DnexusUrl=https://repository.jboss.org/nexus -DserverId=jboss-releases-repository\
- -DrepositoryDirectory=$deploy-dir -DstagingProfileId=$stagingRep -DstagingDescription="kie-$kieVersion" -DstagingProgressTimeoutMinutes=30
+ -DrepositoryDirectory=$deployDir -DstagingProfileId=$stagingRep -DstagingDescription="kie-$kieVersion" -DstagingProgressTimeoutMinutes=30
 
