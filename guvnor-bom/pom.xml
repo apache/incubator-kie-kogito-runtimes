@@ -294,14 +294,14 @@
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
-          <groupId>org.guvnor</groupId>
-          <artifactId>guvnor-ala-services-backend</artifactId>
-          <version>${version.org.kie}</version>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-services-backend</artifactId>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
-          <groupId>org.guvnor</groupId>
-          <artifactId>guvnor-ala-services-rest</artifactId>
-          <version>${version.org.kie}</version>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-services-rest</artifactId>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.guvnor</groupId>
@@ -353,6 +353,16 @@
         <artifactId>guvnor-ala-ui-backend</artifactId>
         <version>${version.org.kie}</version>
         <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-provisioning-pipelines-openshift</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-provisioning-pipelines-wildfly</artifactId>
+        <version>${version.org.kie}</version>
       </dependency>
       <!--Guvnor Asset Management -->
       <dependency>
