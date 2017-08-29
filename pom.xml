@@ -230,7 +230,7 @@
 
     <!-- Overrides the version in the jboss-integration-platform-bom. A peer PR will be sent to jboss-integration-platform project.
          Please move this new version number there when possible -->
-    <version.org.jboss.forge.roaster>2.19.4.Final</version.org.jboss.forge.roaster>
+    <version.org.jboss.forge.roaster>2.19.5.Final</version.org.jboss.forge.roaster>
     <version.org.jboss.spec.javax.enterprise.concurrent>1.0.0.Final</version.org.jboss.spec.javax.enterprise.concurrent>
     <version.org.jboss.spec.javax.websocket>1.0.0.Final</version.org.jboss.spec.javax.websocket>
   </properties>
