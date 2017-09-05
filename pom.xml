@@ -87,6 +87,7 @@
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
     <version.com.google.android>4.1.1.4</version.com.google.android>
+    <version.com.google.testing.compile>0.11</version.com.google.testing.compile>
     <version.jakarta-regexp>1.4</version.jakarta-regexp>
     <version.link.bek.tools.issue-keeper-junit>4.11.1</version.link.bek.tools.issue-keeper-junit>
     <version.net.sf.docbook.docbook-xsl>1.76.1</version.net.sf.docbook.docbook-xsl>
@@ -1803,6 +1804,12 @@
             <artifactId>apache-el</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.testing.compile</groupId>
+        <artifactId>compile-testing</artifactId>
+        <version>${version.com.google.testing.compile}</version>
       </dependency>
 
       <dependency>
