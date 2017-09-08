@@ -2066,7 +2066,7 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-runtime-webapp</artifactId>
+        <artifactId>kie-wb-monitoring-webapp</artifactId>
         <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
@@ -2156,21 +2156,21 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-runtime</artifactId>
+        <artifactId>kie-wb-monitoring</artifactId>
         <version>${version.org.kie}</version>
         <classifier>wildfly10</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-runtime</artifactId>
+        <artifactId>kie-wb-monitoring</artifactId>
         <version>${version.org.kie}</version>
         <classifier>eap7</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-runtime</artifactId>
+        <artifactId>kie-wb-monitoring</artifactId>
         <version>${version.org.kie}</version>
         <classifier>tomcat8</classifier>
         <type>war</type>
