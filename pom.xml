@@ -233,6 +233,8 @@
     <version.org.jboss.forge.roaster>2.19.5.Final</version.org.jboss.forge.roaster>
     <version.org.jboss.spec.javax.enterprise.concurrent>1.0.0.Final</version.org.jboss.spec.javax.enterprise.concurrent>
     <version.org.jboss.spec.javax.websocket>1.0.0.Final</version.org.jboss.spec.javax.websocket>
+
+    <version.org.mvel>2.3.2.Final</version.org.mvel>
   </properties>
 
   <repositories>
@@ -2524,6 +2526,11 @@
         <groupId>io.undertow</groupId>
         <artifactId>undertow-websockets-jsr</artifactId>
         <version>${version.io.undertow.core}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mvel</groupId>
+        <artifactId>mvel2</artifactId>
+        <version>${version.org.mvel}</version>
       </dependency>
     </dependencies>
 
