@@ -5,6 +5,7 @@
 #  - [<org.unit>/]<repo>: <branch> -- <org.unit> is optional in case it's equal to the repo name
 master:
   - errai/errai: master
+  - kiegroup/kie-soup: master
   - AppFormer/uberfire: master
   - dashbuilder/dashbuilder: master
 
