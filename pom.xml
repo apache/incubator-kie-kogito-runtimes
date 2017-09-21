@@ -138,8 +138,6 @@
     <version.javax.xml.stream.stax>1.0-2</version.javax.xml.stream.stax>
     <version.org.ops4j.pax.url>2.2.0</version.org.ops4j.pax.url>
     <version.org.geronimo.atinject>1.0</version.org.geronimo.atinject>
-    <!-- since ironjacamar was removed from the ip-ip-bom but is still needed from dashboard-builder all dependencies are placed here -->
-    <version.org.jboss.ironjacamar>1.0.31.Final</version.org.jboss.ironjacamar>
     <!-- simple-jndi is a small library that helps us avoid JNDI error messages during testing -->
     <version.simple-jndi>0.11.4.1</version.simple-jndi>
     <version.org.asciidoctor.pdf>1.5.0-alpha.11</version.org.asciidoctor.pdf>
@@ -1963,38 +1961,6 @@
             <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <!-- dashboard-builder -->
-      <dependency>
-        <groupId>org.jboss.ironjacamar</groupId>
-        <artifactId>ironjacamar-core-api</artifactId>
-        <version>${version.org.jboss.ironjacamar}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ironjacamar</groupId>
-        <artifactId>ironjacamar-embedded</artifactId>
-        <version>${version.org.jboss.ironjacamar}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ironjacamar</groupId>
-        <artifactId>ironjacamar-deployers-fungal</artifactId>
-        <version>${version.org.jboss.ironjacamar}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ironjacamar</groupId>
-        <artifactId>ironjacamar-deployers-common</artifactId>
-        <version>${version.org.jboss.ironjacamar}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ironjacamar</groupId>
-        <artifactId>ironjacamar-common-impl-papaki</artifactId>
-        <version>${version.org.jboss.ironjacamar}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ironjacamar</groupId>
-        <artifactId>ironjacamar-jdbc</artifactId>
-        <version>${version.org.jboss.ironjacamar}</version>
       </dependency>
 
       <dependency>
