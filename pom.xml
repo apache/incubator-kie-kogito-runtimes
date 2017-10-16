@@ -1647,14 +1647,19 @@
         <version>${version.org.uberfire}</version>
       </dependency>
       <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-project-datamodel-api</artifactId>
-        <version>${version.org.uberfire}</version>
+        <groupId>org.kie.soup</groupId>
+        <artifactId>kie-soup-commons</artifactId>
+        <version>${version.org.kie}</version>
       </dependency>
       <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-project-datamodel-commons</artifactId>
-        <version>${version.org.uberfire}</version>
+        <groupId>org.kie.soup</groupId>
+        <artifactId>kie-soup-project-datamodel-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.soup</groupId>
+        <artifactId>kie-soup-project-datamodel-commons</artifactId>
+        <version>${version.org.kie}</version>
       </dependency>
 
       <dependency>
