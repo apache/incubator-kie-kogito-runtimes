@@ -24,7 +24,7 @@ One week in advance:
 
     * Get those dependencies (uberfire, uberfire-extensions, dashbuilder) released if needed, preferably 1 week before the kie release. This way, those released artifacts gets tested by our tests.
 
-* Ask kie-wb module (kie-uberfire-extensions, uberfire, guvnor, kie-wb-common, drools-wb, jbpm-console-ng, jbpm-designer, jbpm-form-modeler, jbpm-dashboard, dashboard-builder, and kie-wb-distributions) leads to update the translations with Zanata:
+* Ask kie-wb module (kie-uberfire-extensions, uberfire, guvnor, kie-wb-common, drools-wb, jbpm-console-ng, jbpm-designer, jbpm-dashboard, dashboard-builder, and kie-wb-distributions) leads to update the translations with Zanata:
 
     * Translations into different locales are handled within Zanata (https://translate.jboss.org/)
 
@@ -44,7 +44,7 @@ One week in advance:
         $ mvn replacer:replace -N
         ```
 
-    * NOTE: For the repositories jbpm-form-modeler and kie-wb-distributions it has to be added to the workflow
+    * NOTE: For the repositories kie-wb-distributions it has to be added to the workflow
 
         ```shell
         $ mvn native2ascii:native2ascii
