@@ -65,8 +65,8 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-bom</artifactId>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-bom</artifactId>
         <type>pom</type>
         <version>${version.org.kie}</version>
         <scope>import</scope>
