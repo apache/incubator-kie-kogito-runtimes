@@ -1588,6 +1588,7 @@
         <!-- There is no public ECJ release (yet) which supports Java 9, so fallback to the native compiler -->
         <!-- TODO remove the line below (and fix the surefire+failsafe config) after resolving https://issues.jboss.org/browse/DROOLS-1169 -->
         <drools.dialect.java.compiler>NATIVE</drools.dialect.java.compiler>
+        <javadoc.additional.params>-Xdoclint:none --add-modules=java.xml.bind --add-modules=java.xml.ws.annotation --add-modules=java.xml.ws</javadoc.additional.params>
       </properties>
       <build>
         <pluginManagement>
@@ -1608,6 +1609,19 @@
                 <systemPropertyVariables>
                   <drools.dialect.java.compiler>${drools.dialect.java.compiler}</drools.dialect.java.compiler>
                 </systemPropertyVariables>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <configuration>
+                <additionalDependencies>
+                  <additionalDependency>
+                    <groupId>org.jboss.spec.javax.transaction</groupId>
+                    <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+                    <version>${version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.2_spec}</version>
+                  </additionalDependency>
+                </additionalDependencies>
               </configuration>
             </plugin>
           </plugins>
