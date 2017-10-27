@@ -174,6 +174,8 @@
          IMPORTANT: always explain the reason for overriding the plugin version! -->
     <!-- Surefire version 2.19.1 coming from parent is buggy and kie-osgi tests in droolsjbpm-integration are failing because of that. -->
     <version.surefire.plugin>2.18.1</version.surefire.plugin>
+    <version.enforcer.plugin>3.0.0-M1</version.enforcer.plugin> <!-- Needed to support JDK 9. Can be removed once IP BOM 8.0.0.CR1 is used. -->
+    <version.javadoc.plugin>3.0.0-M1</version.javadoc.plugin> <!-- Needed to support JDK 9. Can be removed once IP BOM 8.0.0.CR1 is used. -->
     <!-- Jacoco plugin configurations -->
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coveredratio.minimum>0.9</jacoco.line.coveredratio.minimum>
