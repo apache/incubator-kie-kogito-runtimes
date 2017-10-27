@@ -170,9 +170,9 @@
     <org.kie.productized>false</org.kie.productized>
 
     <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
-    <!-- This property needs to be defined in all modules that use maven-bundle-plugin and packaging 'bundle'. It is
-         being used by different plugins to make sure the bundle names are consistent. -->
-    <osgi.Bundle-SymbolicName/>
+    <!-- This property needs to be defined in all modules that use the packaging 'jar' or 'bundle'. It is
+         being used by different plugins to make sure the module/bundle names are consistent. -->
+    <java.module.name/>
     <!-- Make OSGi happy -->
     <osgi.snapshot.qualifier>${maven.build.timestamp}</osgi.snapshot.qualifier>
 
@@ -693,11 +693,12 @@
             <!-- Split packages in combination with <Export-Package> causes bloated jars otherwise -->
             <excludeDependencies>true</excludeDependencies>
             <instructions>
-              <Bundle-SymbolicName>${osgi.Bundle-SymbolicName}</Bundle-SymbolicName>
+              <Bundle-SymbolicName>${java.module.name}</Bundle-SymbolicName>
               <_removeheaders>Ignore-Package</_removeheaders>
               <_nouses>true</_nouses>
               <_snapshot>${osgi.snapshot.qualifier}</_snapshot>
               <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}</Bundle-Version>
+              <Automatic-Module-Name>${java.module.name}</Automatic-Module-Name>
             </instructions>
             <obrRepository>NONE</obrRepository>
           </configuration>
@@ -805,6 +806,16 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <executions>
+            <execution>
+              <id>default-jar</id>
+              <configuration>
+                <archive>
+                  <manifestEntries combine.children="append">
+                    <Automatic-Module-Name>${java.module.name}</Automatic-Module-Name>
+                  </manifestEntries>
+                </archive>
+              </configuration>
+            </execution>
             <!-- No OSGi manifestEntries for <goal>jar</goal>: if it supported, then felix has already added them -->
             <execution>
               <id>test-jar</id>
@@ -819,7 +830,7 @@
                 </excludes>
                 <archive>
                   <manifestEntries>
-                    <Bundle-SymbolicName>${osgi.Bundle-SymbolicName}.tests</Bundle-SymbolicName>
+                    <Bundle-SymbolicName>${java.module.name}.tests</Bundle-SymbolicName>
                     <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}</Bundle-Version>
                     <Bundle-Name>${project.name}</Bundle-Name>
                     <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
@@ -850,11 +861,11 @@
                 <archive>
                   <manifestEntries>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                    <Bundle-SymbolicName>${osgi.Bundle-SymbolicName}.source</Bundle-SymbolicName>
+                    <Bundle-SymbolicName>${java.module.name}.source</Bundle-SymbolicName>
                     <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}</Bundle-Version>
                     <Bundle-Name>${project.name}</Bundle-Name>
                     <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
-                    <Eclipse-SourceBundle>${osgi.Bundle-SymbolicName};version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}";roots:="."</Eclipse-SourceBundle>
+                    <Eclipse-SourceBundle>${java.module.name};version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}";roots:="."</Eclipse-SourceBundle>
                   </manifestEntries>
                 </archive>
               </configuration>
@@ -868,11 +879,11 @@
                 <archive>
                   <manifestEntries>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                    <Bundle-SymbolicName>${osgi.Bundle-SymbolicName}.tests.source</Bundle-SymbolicName>
+                    <Bundle-SymbolicName>${java.module.name}.tests.source</Bundle-SymbolicName>
                     <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}</Bundle-Version>
                     <Bundle-Name>${project.name}</Bundle-Name>
                     <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
-                    <Eclipse-SourceBundle>${osgi.Bundle-SymbolicName}.tests;version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}";roots:="."</Eclipse-SourceBundle>
+                    <Eclipse-SourceBundle>${java.module.name}.tests;version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}";roots:="."</Eclipse-SourceBundle>
                   </manifestEntries>
                 </archive>
               </configuration>
