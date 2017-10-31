@@ -65,13 +65,6 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.kie}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
         <groupId>org.dashbuilder</groupId>
         <artifactId>dashbuilder-bom</artifactId>
         <type>pom</type>
