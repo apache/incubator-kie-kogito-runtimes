@@ -65,6 +65,13 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>org.kie.soup</groupId>
+        <artifactId>kie-soup-bom</artifactId>
+        <type>pom</type>
+        <version>${version.org.kie}</version>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>org.dashbuilder</groupId>
         <artifactId>dashbuilder-bom</artifactId>
         <type>pom</type>
