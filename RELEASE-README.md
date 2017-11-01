@@ -426,10 +426,6 @@ If everything is perfect (compiles, Jenkins is all blue, sanity checks succeed a
            this is a property productisation needs to get the last released version on the branch where released from.
            When updated this should be pushed to the branch of the blessed repository
 
-        7. latest released *Final* version, property called `version.org.kie.latestFinal.release`
-           This property needs to be updated only with *Final* releases (not for Betas, CRs, etc). This property is being
-           used to check KIE API backwards compatibility (and there may be other uses as well).
-
     * Commit those changes (so you can tag them properly):
 
         * Add changes from untracked files if there are any. WARNING: DO NOT USE `git add .` . You may accidentally add files that are not meant to be added into git.

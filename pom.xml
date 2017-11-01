@@ -224,8 +224,7 @@
     <jboss.snapshots.repo.url>https://origin-repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
     <!-- Latest release to be used by api-compatibility-check to check backwards compatibility of the Kie API. -->
-    <version.org.kie.latestFinal.release>7.4.1.Final</version.org.kie.latestFinal.release>
-    <revapi.oldKieVersion>${version.org.kie.latestFinal.release}</revapi.oldKieVersion>
+    <revapi.oldKieVersion>7.0.0.Final</revapi.oldKieVersion>
     <revapi.newKieVersion>${project.version}</revapi.newKieVersion>
 
     <!-- using undertow for kie server router - same version as it comes with WildFly 10.0.0.Final-->
