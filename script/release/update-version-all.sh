@@ -19,7 +19,8 @@ initializeScriptDir() {
 }
 
 mvnVersionsSet() {
-    mvn -B -N -e -Dfull versions:set -DnewVersion="$newVersion" -DallowSnapshots=true -DgenerateBackupPoms=false
+    mvn -B -N -e -s $settingsXmlFile versions:set -Dfull\
+      -DnewVersion="$newVersion" -DallowSnapshots=true -DgenerateBackupPoms=false
 }
 
 mvnVersionsUpdateParent() {
