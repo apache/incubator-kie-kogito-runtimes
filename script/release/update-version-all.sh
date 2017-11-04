@@ -103,7 +103,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             mvnVersionsSet
             cd ..
             # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
-            mvn -B clean install -DskipTests
+            mvn -B -s $settingsXmlFile clean install -DskipTests
             returnCode=$?
 
         elif [ "$repository" = "jbpm" ]; then
@@ -113,7 +113,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 
         elif [ "$repository" = "droolsjbpm-tools" ]; then
             cd drools-eclipse
-            mvn -B -Dfull tycho-versions:set-version -DnewVersion=$newVersion
+            mvn -B -s $settingsXmlFile -Dfull tycho-versions:set-version -DnewVersion=$newVersion
             returnCode=$?
             # replace the leftovers not covered by the tycho plugin (bug?)
             # SNAPSHOT and release versions need to be handled differently
@@ -125,7 +125,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             sed -i "s/version=\"[^\"]*\">/version=\"$versionToUse\">/" org.drools.updatesite/category.xml
             cd ..
             if [ $returnCode == 0 ]; then
-                mvn -B -N clean install
+                mvn -B -N -s $settingsXmlFile clean install
                 mvnVersionsUpdateParent
                 # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
                 mvn -B -N clean install -DskipTests
