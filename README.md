@@ -706,11 +706,11 @@ Important note: `mvn eclipse:eclipse` does not work for our eclipse plugins beca
 Configuring Eclipse
 -------------------
 
-* Force language level 6, to fail-fast when (accidentally) using features available only in newer Java versions.
+* Force language level 8, to fail-fast when (accidentally) using features available only in newer Java versions.
 
     * Open menu *Window*, menu item *Preferences*
 
-    * Click tree item *Java*, tree item *Compiler*, section *JDK Compliance*, combobox *Compiler compliance level* should be `1.6`.
+    * Click tree item *Java*, tree item *Compiler*, section *JDK Compliance*, combobox *Compiler compliance level* should be `1.8`.
 
 * Remove the test resources Java Build Path exclusion filter to ensure JUnit tests ran inside Eclipse can find the necessary resources.
 
@@ -825,14 +825,14 @@ Configuring Eclipse
 
         ```
         /*
-         * Copyright 2015 Red Hat, Inc. and/or its affiliates.
-         *
+         * Copyright ${year} Red Hat, Inc. and/or its affiliates.
+         * 
          * Licensed under the Apache License, Version 2.0 (the "License");
          * you may not use this file except in compliance with the License.
          * You may obtain a copy of the License at
-         *
+         * 
          *     http://www.apache.org/licenses/LICENSE-2.0
-         *
+         * 
          * Unless required by applicable law or agreed to in writing, software
          * distributed under the License is distributed on an "AS IS" BASIS,
          * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -844,8 +844,7 @@ Configuring Eclipse
     * Note: Do not start or end with a newline character
 
     * Note: Do not start with `/**`: it is not a valid javadoc.
-
-    * Update the year (2015) every year.
+   
 
 Extra Eclipse plugins
 ---------------------
@@ -998,11 +997,11 @@ Note: Don't use the `maven-idea-plugin` on the command line with `mvn`: it's dea
 Configuring IntelliJ
 --------------------
 
-* Force language level 6, to fail-fast when (accidentally) using features available only in newer Java versions.
+* Force language level 8, to fail-fast when (accidentally) using features available only in newer Java versions.
 
     * Open menu *File*, menu item *Project Structure*
 
-    * Click list item *Modules*, for each module, tab *Sources*, combobox *Language level* should be automatically set to `6.0 ...`
+    * Click list item *Modules*, for each module, tab *Sources*, combobox *Language level* should be automatically set to `8.0 ...`
 
 * Avoid that changes in some resources are ignored in the next run/debug (and you are forced to use mvn)
 
@@ -1016,7 +1015,7 @@ Configuring IntelliJ
 
     * Click tree item *Compiler*, tree item *Java Compiler*, textfield *Additional command line parameters*
 
-    * Add `-J-Xss1024k` so it becomes something like `-target 1.6 -J-Xss1024k`
+    * Add `-J-Xss1024k` so it becomes something like `-target 1.8 -J-Xss1024k`
 
 * Include files with non-default extensions in your searches and refactors
 
