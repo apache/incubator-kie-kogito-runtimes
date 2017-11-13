@@ -94,13 +94,6 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>org.kie.soup</groupId>
-        <artifactId>kie-soup-bom</artifactId>
-        <type>pom</type>
-        <version>${version.org.kie}</version>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
         <groupId>org.jboss.errai.bom</groupId>
         <artifactId>errai-internal-bom</artifactId>
         <type>pom</type>
