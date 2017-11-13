@@ -857,9 +857,9 @@ Extra Eclipse plugins
 
 * GWT plugin
 
-    * [Download and install the Eclipse GWT plugin](http://code.google.com/intl/en/eclipse/docs/getting_started.html)
+    * [Download and install the Eclipse GWT plugin](http://gwt-plugins.github.io/documentation/gwt-eclipse-plugin/Download.html)
 
-        * Note: it is recommended to keep your Eclipse GWT plugin version in sync with the GWT version that we use.
+        * Note: it is recommended to use the same [GWT SDK version](https://developers.google.com/eclipse/docs/using_sdks#selecting-sdks-for-a-project) like the GWT version it is used in [droolsjbpm-build-bootstrap/pom.xml](pom.xml) `version.com.google.gwt` property value.
 
     * In *Package Explorer*, right click on the project `guvnor-webapp`, menu item *Properties*.
 
