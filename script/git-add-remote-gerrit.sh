@@ -38,7 +38,7 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
         echo "==============================================================================="
         cd $repository
 
-        git remote add jboss-integration git@github.com:jboss-integration/$repository.git
+        git remote add gerrit ssh://jb-ip-tooling-jenkins@code.engineering.redhat.com/kiegroup/$repository
 
         returnCode=$?
         cd ..

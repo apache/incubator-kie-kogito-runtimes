@@ -48,10 +48,6 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
         gitUrlPrefix=${droolsjbpmGitUrlPrefix}
-        if [ "${repository}" == "kie-eap-modules" ]; then
-            # prefix is different for kie-eap-modules repo as it is under jboss-integration org. unit
-            gitUrlPrefix=`echo ${droolsjbpmGitUrlPrefix} | sed 's/droolsjbpm/jboss\-integration/g'`
-        fi
         echo -- prefix ${gitUrlPrefix} --
         echo -- repository ${repository} --
         echo -- ${gitUrlPrefix}${repository}.git -- ${repository} --

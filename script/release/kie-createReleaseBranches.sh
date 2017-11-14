@@ -31,11 +31,11 @@ fi
    
 if [ "$source" == "production-tag" ]; then
 
-   # add new remote pointing to jboss-integration
-   ./droolsjbpm-build-bootstrap/script/git-add-remote-jboss-integration.sh
+   # add new remote pointing to gerrit
+   ./droolsjbpm-build-bootstrap/script/git-add-remote-gerrit.sh
    
-   # get the tags of jboss-integration
-   ./droolsjbpm-build-bootstrap/script/git-all.sh fetch --tags jboss-integration
+   # get the tags of gerrit
+   ./droolsjbpm-build-bootstrap/script/git-all.sh fetch --tags gerrit
    
    # checkout to local release names
    ./droolsjbpm-build-bootstrap/script/git-all.sh checkout -b $releaseBranch $tag
@@ -63,10 +63,4 @@ cd $WORKSPACE
 commitMsg="Upgraded versions for release $releaseVersion"
 ./droolsjbpm-build-bootstrap/script/git-all.sh commit -m "$commitMsg"
 
-# pushes the local release branches to kiegroup or to jboss-integration [IMPORTANT: "push -n" (--dryrun) should be replaced by "push" when script will be in production]
-if [ "$target" == "community" ]; then
-  ./droolsjbpm-build-bootstrap/script/git-all.sh push origin $releaseBranch
-else
-  ./droolsjbpm-build-bootstrap/script/git-all.sh push jboss-integration $releaseBranch
-  ./droolsjbpm-build-bootstrap/script/git-all.sh push jboss-integration $baseBranch
-fi
+
