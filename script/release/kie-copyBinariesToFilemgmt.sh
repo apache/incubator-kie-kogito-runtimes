@@ -86,6 +86,27 @@ scp -r droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-di
 scp jbpm/jbpm-distribution/target/jbpm-$version-bin.zip $jbpmHtdocs/$version
 scp jbpm/jbpm-distribution/target/jbpm-$version-examples.zip $jbpmHtdocs/$version
 
+#copies the jbpm-installers to filemgmt.jboss.org
+jbpmHtdocs=jbpm@filemgmt.jboss.org:/downloads_htdocs/jbpm/release
+
+uploadInstaller(){
+        # upload installers to filemgmt.jboss.org
+        scp jbpm-installer-$version.zip $jbpmHtdocs/$version
+}
+
+uploadAllInstaller(){
+        # upload installers to filemgmt.jboss.org
+        scp jbpm-installer-$version.zip $jbpmHtdocs/$version
+        # upload installers to filemgmt.jboss.org
+        scp jbpm-installer-full-$version.zip $jbpmHtdocs/$version
+}
+
+if [[ $version == *"Final"* ]] ;then
+        uploadAllInstaller
+else
+        uploadInstaller
+fi
+
 #copies jbpm-docs to filemgmt.jboss.org
 scp -r kie-docs/docs/jbpm-docs/target/generated-docs/* $jbpmDocs/$version/jbpm-docs
 
