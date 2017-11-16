@@ -98,6 +98,7 @@
     <version.org.jboss.arquillian.extension.drone>2.0.0.Final</version.org.jboss.arquillian.extension.drone>
     <version.org.jboss.arquillian.graphene>2.1.0.CR1</version.org.jboss.arquillian.graphene>
 
+    <version.com.google.elemental2>1.0.0-beta-1</version.com.google.elemental2>
     <version.org.jboss.errai>4.1.1-SNAPSHOT</version.org.jboss.errai>
 
     <!-- Required for kie-wb-common to build in IntelliJ Idea 2017, due to -->
@@ -1989,6 +1990,12 @@
             <artifactId>guice</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.elemental2</groupId>
+        <artifactId>elemental2-dom</artifactId>
+        <version>${version.com.google.elemental2}</version>
       </dependency>
 
       <dependency>
