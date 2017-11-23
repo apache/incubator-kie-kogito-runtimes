@@ -128,7 +128,7 @@
     <version.org.jboss.jboss-dmr>1.3.0.Final</version.org.jboss.jboss-dmr>
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
-    <version.com.google.gwt>2.8.1</version.com.google.gwt>
+    <version.com.google.gwt>2.8.2</version.com.google.gwt>
     <version.net.ltgt.gwt.maven>1.0-rc-6</version.net.ltgt.gwt.maven>
     <version.com.google.guava>20.0</version.com.google.guava>
     <!-- this version will overwrite jboss-ip-version 3.1.2. The version in jboss-ip-bom couldn't be upgraded as this version needs GWT 2.7.0 -->
