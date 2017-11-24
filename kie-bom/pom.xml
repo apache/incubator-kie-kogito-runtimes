@@ -1708,6 +1708,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-jbpm-integration-backend</artifactId>
+        <version>${version.org.kie}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
         <artifactId>kie-wb-common-forms-jbpm-integration-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
