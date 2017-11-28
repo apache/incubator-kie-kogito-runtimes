@@ -7,7 +7,6 @@ master:
   - errai/errai: master
   - kiegroup/kie-soup: master
   - AppFormer/uberfire: master
-  - dashbuilder/dashbuilder: master
 
 7.4.x:
   - errai/errai: 4.0.x
