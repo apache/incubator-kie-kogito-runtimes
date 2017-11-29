@@ -89,7 +89,20 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "Repository: $repository"
         echo "==============================================================================="
         cd $repository
-        if [ "$repository" == "droolsjbpm-build-bootstrap" ]; then
+
+        if [ "$repository" == "kie-soup" ]; then
+            echo "==============================================================================="
+            echo "Skipping $repository because it has its own version"
+            echo "==============================================================================="
+            returnCode=$?
+
+        elif [ "$repository" == "appformer" ]; then
+            echo "==============================================================================="
+            echo "Skipping $repository because it has its own version"
+            echo "==============================================================================="
+            returnCode=$?
+
+        elif [ "$repository" == "droolsjbpm-build-bootstrap" ]; then
             # first build&install the current version (usually SNAPSHOT) as it is needed later by other repos
             mvn -B -U -Dfull clean install
             mvnVersionsSet
