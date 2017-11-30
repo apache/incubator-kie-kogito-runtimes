@@ -9,6 +9,7 @@ droolsDocs=drools@filemgmt.jboss.org:/docs_htdocs/drools/release
 droolsHtdocs=drools@filemgmt.jboss.org:/downloads_htdocs/drools/release
 jbpmDocs=jbpm@filemgmt.jboss.org:/docs_htdocs/jbpm/release
 jbpmHtdocs=jbpm@filemgmt.jboss.org:/downloads_htdocs/jbpm/release
+jbpmServiceRepo=jbpm@filemgmt.jboss.org:/downloads_htdocs/jbpm/release
 optaplannerDocs=optaplanner@filemgmt.jboss.org:/docs_htdocs/optaplanner/release
 optaplannerHtdocs=optaplanner@filemgmt.jboss.org:/downloads_htdocs/optaplanner/release
 
@@ -23,6 +24,7 @@ sftp -b upload_version $droolsDocs
 sftp -b upload_version $droolsHtdocs
 sftp -b upload_version $jbpmDocs
 sftp -b upload_version $jbpmHtdocs
+sftp -b upload_version $jbpmServiceRepo
 sftp -b upload_version $optaplannerDocs
 sftp -b upload_version $optaplannerHtdocs
 
@@ -69,6 +71,11 @@ echo "mkdir optaplanner-wb-es-docs" > upload_optaplanner_wb_es_docs
 chmod +x upload_optaplanner_wb_es_docs
 sftp -b upload_optaplanner_wb_es_docs $optaplannerDocs/$version
 
+touch upload_jbpmrepo
+echo "mkdir jbpm repo" > upload_jbpmrepo
+chmod +x upload_jbpmrepo
+sftp -b uploadrepo_jbpm $jbpmServiceRepo/$version
+
 # copies drools binaries to filemgmt.jboss.org
 scp -r droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-distribution-$version/droolsjbpm-tools-distribution-$version/binaries/org.drools.updatesite/* $droolsHtdocs/$version/org.drools.updatesite
 scp drools/drools-distribution/target/drools-distribution-$version.zip $droolsHtdocs/$version
@@ -106,6 +113,10 @@ if [[ $version == *"Final"* ]] ;then
 else
         uploadInstaller
 fi
+
+# copies jbpm work items into service repository
+jbpmServiceRepo=jbpm@filemgmt.jboss.org:/downloads_htdocs/jbpm/service-repository
+scp -r jbpm-work-items/repository/target/repository-$version/* $jbpmServiceRepo/$version
 
 #copies jbpm-docs to filemgmt.jboss.org
 scp -r kie-docs/docs/jbpm-docs/target/generated-docs/* $jbpmDocs/$version/jbpm-docs
