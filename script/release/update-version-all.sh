@@ -42,13 +42,13 @@ mvnVersionsUpdateParentAndChildModules() {
 initializeScriptDir
 droolsjbpmOrganizationDir="$scriptDir/../../.."
 
-if [ $# != 1 ] && [ $# != 2 ]; then
+if [ $# != 1 ] && [ $# != 3 ]; then
     echo
     echo "Usage:"
-    echo "  $0 newVersion releaseType"
+    echo "  $0 newVersion newAppformerVersion releaseType"
     echo "For example:"
-    echo "  $0 6.3.0.Final community"
-    echo "  $0 6.3.1.20151105 productized"
+    echo "  $0 7.5.0.Final 2.2.0.Final community"
+    echo "  $0 7.5.0.20171120-prod 2.2.0.20171120-prod productized"
     echo
     exit 1
 fi
@@ -56,7 +56,7 @@ fi
 newVersion=$1
 echo "New version is $newVersion"
 
-releaseType=$2
+releaseType=$3
 # check if the release type was set, if not default to "community"
 if [ "x$releaseType" == "x" ]; then
     releaseType="community"
@@ -91,15 +91,24 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         cd $repository
 
         if [ "$repository" == "kie-soup" ]; then
-            echo "==============================================================================="
-            echo "Skipping $repository because it has its own version"
-            echo "==============================================================================="
+            mvnVersionsSet
+            cd kie-soup-bom
+            mvnVersionsSet
+            cd ..
+            mvn -B -U -Dfull -s $settingsXmlFile clean install -DskipTests
             returnCode=$?
 
         elif [ "$repository" == "appformer" ]; then
-            echo "==============================================================================="
-            echo "Skipping $repository because it has its own version"
-            echo "==============================================================================="
+            #appformer has its own version
+            # newVersion is updated with newVersion for appformer
+            newVersion=$2
+            mvnVersionsSet
+            cd uberfire-bom
+            mvnVersionsSet
+            cd ..
+            mvn -B -U -Dfull -s $settingsXmlFile clean install -DskipTests
+            # switch back to kie version
+            newVersion=$1
             returnCode=$?
 
         elif [ "$repository" == "droolsjbpm-build-bootstrap" ]; then

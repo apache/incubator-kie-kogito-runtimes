@@ -43,20 +43,27 @@ if [ "$source" == "production-tag" ]; then
 fi
 
 # upgrades the version to the release/tag version
-./droolsjbpm-build-bootstrap/script/release/update-version-all.sh $releaseVersion $target
+./droolsjbpm-build-bootstrap/script/release/update-version-all.sh $releaseVersion $uberfireVersion $target
 
-# update kie-parent-metadata
-cd droolsjbpm-build-bootstrap/
 
 # change properties via sed as they don't update automatically
+#appformer
+cd appformer
+sed -i \
+-e "$!N;s/<version.org.kie>.*.<\/version.org.kie>/<version.org.kie>$releaseVersion<\/version.org.kie>/;" \
+-e "s/<version.org.jboss.errai>.*.<\/version.org.jboss.errai>/<version.org.jboss.errai>$erraiVersion<\/version.org.jboss.errai>/;P;D" \
+pom.xml
+cd ..
+
+#droolsjbpm-build-bootstrap
+cd droolsjbpm-build-bootstrap/
 sed -i \
 -e "$!N;s/<version.org.uberfire>.*.<\/version.org.uberfire>/<version.org.uberfire>$uberfireVersion<\/version.org.uberfire>/;" \
--e "s/<version.org.dashbuilder>.*.<\/version.org.dashbuilder>/<version.org.dashbuilder>$dashbuilderVersion<\/version.org.dashbuilder>/;" \
+-e "s/<version.org.kie>.*.<\/version.org.kie>/<version.org.kie>$releaseVersion<\/version.org.kie>/;" \
 -e "s/<version.org.jboss.errai>.*.<\/version.org.jboss.errai>/<version.org.jboss.errai>$erraiVersion<\/version.org.jboss.errai>/;" \
 -e "s/<latestReleasedVersionFromThisBranch>.*.<\/latestReleasedVersionFromThisBranch>/<latestReleasedVersionFromThisBranch>$releaseVersion<\/latestReleasedVersionFromThisBranch>/;P;D" \
 pom.xml
-
-cd $WORKSPACE
+cd ..
 
 # git add and commit the version update changes 
 ./droolsjbpm-build-bootstrap/script/git-all.sh add .
