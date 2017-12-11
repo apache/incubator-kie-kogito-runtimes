@@ -128,6 +128,13 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
             mvn -B -s $settingsXmlFile clean install -DskipTests
             returnCode=$?
 
+        elif [ "$repository" = "drlx-parser" ];then
+            #update version in drlx-parser/pom.xml
+            cd drlx-parser
+            mvnVersionsUpdateParent
+            cd ..
+            returnCode=$?
+
         elif [ "$repository" = "jbpm" ]; then
             mvnVersionsUpdateParentAndChildModules
             returnCode=$?
