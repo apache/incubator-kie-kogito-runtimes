@@ -10,17 +10,11 @@ if [ "$source" == "community-branch" ]; then
 
    # checkout to local release names
    ./droolsjbpm-build-bootstrap/script/git-all.sh checkout -b $releaseBranch $baseBranch
-   
-   # add new remote pointing to jboss-integration
-   ./droolsjbpm-build-bootstrap/script/git-add-remote-jboss-integration.sh
 
 fi
 
 if [ "$source" == "community-tag" ]; then
 
-   # add new remote pointing to jboss-integration
-   ./droolsjbpm-build-bootstrap/script/git-add-remote-jboss-integration.sh
-   
    # get the tags of community
    ./droolsjbpm-build-bootstrap/script/git-all.sh fetch --tags origin
    
@@ -35,7 +29,7 @@ if [ "$source" == "production-tag" ]; then
    ./droolsjbpm-build-bootstrap/script/git-add-remote-gerrit.sh
    
    # get the tags of gerrit
-   ./droolsjbpm-build-bootstrap/script/git-all.sh fetch --tags gerrit
+   ./droolsjbpm-build-bootstrap/script/git-all.sh fetch gerrit --tags
    
    # checkout to local release names
    ./droolsjbpm-build-bootstrap/script/git-all.sh checkout -b $releaseBranch $tag
