@@ -1,6 +1,6 @@
-#!/bin/bash
+!/bin/bash
 
-# Create a release branch for all git repositories
+# Create a new branch for all git repositories
 
 initializeWorkingDirAndScriptDir() {
     # Set working directory and remove all symbolic links
@@ -25,9 +25,9 @@ droolsjbpmOrganizationDir="$scriptDir/../../.."
 if [ $# != 1 ] && [ $# != 2 ] ; then  # && [ $# != 3 ] ; then
     echo
     echo "Usage:"
-    echo "  $0 ReleaseBranchName"
+    echo "  $0 NewBranchName"
     echo "For example:"
-    echo "  $0 6.1.x"
+    echo "  $0 7.6.x"
     echo
     exit 1
 fi
@@ -52,11 +52,11 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         cd $repository
 
-        releaseBranchName=$1
-        git checkout -b $releaseBranchName
-        git push origin $releaseBranchName
+        newBranchName=$1
+        git checkout -b $newBranchName
+        git push origin $newBranchName
         # Set up the local branch to track the remote branch
-        git branch --set-upstream $releaseBranchName origin/$releaseBranchName
+        git branch --set-upstream $newBranchName origin/$newBranchName
 
         returnCode=$?
         cd ..

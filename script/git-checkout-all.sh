@@ -25,15 +25,14 @@ droolsjbpmOrganizationDir="$scriptDir/../.."
 if [ $# != 1 ]; then
     echo
     echo "Usage:"
-    echo "  $0 ReleaseBranchName"
+    echo "  $0 branchName"
     echo "For example:"
     echo "  $0 master"
-    echo "  $0 6.2.x"
     echo
     exit 1
 fi
 
-echo "The drools, guvnor, ... and jbpm release branch name is $1"
+echo "The KIE branch name is $1"
 
 echo -n "Is this ok? (Hit control-c if is not): "
 read ok
@@ -55,8 +54,8 @@ for repository in `cat "${scriptDir}/repository-list.txt"` ; do
         cd $repository
 
         
-        releaseBranchName=$1
-        git checkout $releaseBranchName
+        branchName=$1
+        git checkout $branchName
 
         returnCode=$?
         cd ..
