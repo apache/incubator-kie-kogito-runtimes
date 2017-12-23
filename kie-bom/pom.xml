@@ -444,7 +444,7 @@
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
-        <artifactId>kie-server-controller-mgmt-client</artifactId>
+        <artifactId>kie-server-controller-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
