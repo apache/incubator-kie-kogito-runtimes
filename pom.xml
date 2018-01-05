@@ -248,10 +248,12 @@
     <version.org.jboss.spec.javax.websocket>1.0.0.Final</version.org.jboss.spec.javax.websocket>
 
     <version.org.mvel>2.4.0.Final</version.org.mvel>
-    
+
     <version.javax.xml.soap>1.3.5</version.javax.xml.soap>
     <version.javax.jws>1.0-MR1</version.javax.jws>
-    
+
+    <version.org.quartz-scheduler>2.2.3</version.org.quartz-scheduler>
+
   </properties>
 
   <repositories>
