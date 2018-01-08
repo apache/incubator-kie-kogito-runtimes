@@ -14,13 +14,10 @@ fi
 
 # clone the build-bootstrap that contains the other build scripts
 if [ "$target" == "community" ]; then
-   source=kiegroup
+   git clone git@github.com:kiegroup/droolsjbpm-build-bootstrap.git --branch $releaseBranch
 else
-   source=jboss-integration
+   git clone ssh://jb-ip-tooling-jenkins@code.engineering.redhat.com/kiegroup/droolsjbpm-build-bootstrap --branch $releaseBranch
 fi
-
-git clone git@github.com:"$source"/droolsjbpm-build-bootstrap.git --branch $releaseBranch
-
 
 # clone rest of the repos and checkout to this branch
 ./droolsjbpm-build-bootstrap/script/git-clone-others.sh --branch $releaseBranch --depth 100

@@ -9,6 +9,7 @@ if [ "$target" == "community" ]; then
 else
    git clone ssh://jb-ip-tooling-jenkins@code.engineering.redhat.com/kiegroup/droolsjbpm-build-bootstrap --branch $releaseBranch --depth 70
 fi
+
 # clone rest of the repos and checkout to this branch
 ./droolsjbpm-build-bootstrap/script/git-clone-others.sh --branch $releaseBranch --depth 70
 
