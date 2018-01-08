@@ -283,6 +283,17 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>kie-pmml</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>kie-pmml</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-workbench-models-commons</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
