@@ -56,7 +56,7 @@ chmod +x upload_jbpm_docs
 sftp -b upload_jbpm_docs $jbpmDocs/$version
 
 touch upload_optaplanner_docs
-echo "mkdir optaplanner-docs" > upload_optaplannerDocs
+echo "mkdir optaplanner-docs" > upload_optaplanner_docs
 chmod +x upload_optaplanner_docs
 sftp -b upload_optaplanner_docs $optaplannerDocs/$version
 
@@ -71,7 +71,7 @@ chmod +x upload_optaplanner_wb_es_docs
 sftp -b upload_optaplanner_wb_es_docs $optaplannerDocs/$version
 
 touch upload_service_repository
-echo "mkdir service_repository" > upload_service_repository
+echo "mkdir service-repository" > upload_service_repository
 chmod +x upload_service_repository
 sftp -b upload_service_repository $jbpmServiceRepo/$version
 
