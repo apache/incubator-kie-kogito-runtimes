@@ -18,10 +18,6 @@ commitMsg="Tagging $tag"
 ./droolsjbpm-build-bootstrap/script/git-all.sh tag -a $tag -m "$commitMsg"
 
 # pushes tag to kiegroup or gerrit
-if [ "$target" == "community" ]; then
-   ./droolsjbpm-build-bootstrap/script/git-all.sh push origin $tag
-else
-   # create remote pointing to Gerrit
-   ./droolsjbpm-build-bootstrap/script/git-remote-add-gerrit.sh
-   ./droolsjbpm-build-bootstrap/script/git-all.sh push gerrit $tag
-fi
+
+./droolsjbpm-build-bootstrap/script/git-all.sh push origin $tag
+
