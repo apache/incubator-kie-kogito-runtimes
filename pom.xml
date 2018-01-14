@@ -245,7 +245,7 @@
          Please move this new version number there when possible -->
     <version.org.jboss.forge.roaster>2.19.5.Final</version.org.jboss.forge.roaster>
     <version.org.jboss.spec.javax.enterprise.concurrent>1.0.0.Final</version.org.jboss.spec.javax.enterprise.concurrent>
-    <version.org.jboss.spec.javax.websocket>1.0.0.Final</version.org.jboss.spec.javax.websocket>
+    <version.org.jboss.spec.javax.websocket>1.1.1.Final</version.org.jboss.spec.javax.websocket>
 
     <version.org.mvel>2.4.0.Final</version.org.mvel>
 
@@ -2515,7 +2515,7 @@
       <!-- kie server controller over websockets -->
       <dependency>
         <groupId>org.jboss.spec.javax.websocket</groupId>
-        <artifactId>jboss-websocket-api_1.0_spec</artifactId>
+        <artifactId>jboss-websocket-api_1.1_spec</artifactId>
         <version>${version.org.jboss.spec.javax.websocket}</version>
       </dependency>
       <dependency>
