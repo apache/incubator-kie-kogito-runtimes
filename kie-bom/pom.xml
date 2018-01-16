@@ -679,6 +679,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-ala-build-maven</artifactId>
+        <classifier>tests</classifier>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
         <artifactId>kie-wb-common-ala-docker-provider</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
