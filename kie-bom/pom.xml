@@ -2063,47 +2063,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- Stunner - Basic Set-->
-
-      <dependency>
-        <groupId>org.kie.workbench.stunner</groupId>
-        <artifactId>kie-wb-common-stunner-basicset-api</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie.workbench.stunner</groupId>
-        <artifactId>kie-wb-common-stunner-basicset-api</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie.workbench.stunner</groupId>
-        <artifactId>kie-wb-common-stunner-basicset-backend</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie.workbench.stunner</groupId>
-        <artifactId>kie-wb-common-stunner-basicset-backend</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie.workbench.stunner</groupId>
-        <artifactId>kie-wb-common-stunner-basicset-client</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie.workbench.stunner</groupId>
-        <artifactId>kie-wb-common-stunner-basicset-client</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
       <!-- Stunner - BPMN-->
 
       <dependency>
