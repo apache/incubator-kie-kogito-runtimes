@@ -23,13 +23,14 @@ initializeWorkingDirAndScriptDir() {
 printUsage() {
     echo
     echo "Usage:"
-    echo "  $0 <Maven arguments> [--repo-list=<list-of-repositories>] [--clean-up-script=<absolute-path>]"
+    echo "  $0 <Maven arguments> [--repo-list=<list-of-repositories>|--target-repo=<repository>] [--clean-up-script=<absolute-path>]"
     echo "For example:"
     echo "  $0 --version"
     echo "  $0 -DskipTests clean install"
     echo "  $0 -Dfull clean install"
     echo "  $0 clean test --repo-list=drools,jbpm"
     echo "  $0 clean test --clean-up-script=\`pwd\`/remove-big-dirs.sh"
+    echo "  $0 clean install --target-repo=drools-wb"
     echo
 }
 
@@ -43,6 +44,11 @@ MVN_ARG_LINE=()
 for arg in "$@"
 do
     case "$arg" in
+        --target-repo=*)
+            REPOSITORY_LIST=$($scriptDir/checks/repo-dep-tree.pl -w -t ${arg#*=})
+            REPOSITORY_LIST=${REPOSITORY_LIST//,/ }
+        ;;
+
         --repo-list=*)
             REPOSITORY_LIST=$(echo $arg | sed 's/[-a-zA-Z0-9]*=//')
             # replace the commas with spaces so that the for loop treats the individual repos as different values

@@ -49,13 +49,13 @@ if( exists $opts{d} ) {
 }
 
 if( exists $opts{h} ) {
-  print "\n";
-  print " h ........ print [h]elp (this)\n";
-  print " d ........ create [d]ot file (implies -f)\n";
-  print " f ........ [f]ilter transitive dependencies (not compatible with -t)\n";
-  print " w ........ [w]arn instead of dying on invalid module versions\n";
-  print " v ........ [v]erbose: show which modules are referenced\n";
-  print " t <repo> . print the repositories that should be built before the [t]arget repository\n";
+  print STDERR "\n";
+  print STDERR " h ........ print [h]elp (this)\n";
+  print STDERR " d ........ create [d]ot file (implies -f)\n";
+  print STDERR " f ........ [f]ilter transitive dependencies (not compatible with -t)\n";
+  print STDERR " w ........ [w]arn instead of dying on invalid module versions\n";
+  print STDERR " v ........ [v]erbose: show which modules are referenced\n";
+  print STDERR " t <repo> . print the repositories that should be built before the [t]arget repository\n";
   die "\n";
 }
 
@@ -66,7 +66,6 @@ if( exists $opts{w} ) {
 
 # variables
 
-my $repo_file = "../repository-list.txt";
 my (%repo_mods, %repo_deps, %mod_repos, %repo_tree, %repo_sorted);
 my (@repo_list, @repo_sorted);
 my ($dep, $branch_version);
@@ -85,8 +84,6 @@ sub collectModules {
   my $this_repo = $dir;
   $this_repo =~ s#/.*##;
 
-  my $file = $File::Find::name;
-
   $xml = new XML::Simple;
   $data = $xml->XMLin($_);
   $module = getModule($data, $this_repo);
@@ -96,6 +93,18 @@ sub collectModules {
     $repo_mods{$this_repo} = {};
   }
   $repo_mods{$this_repo}->{$module} = 1;
+
+  # add parent dependency
+  my $parent_ref = $data->{'parent'};
+  if ( keys %{$parent_ref} ) {
+    my $parent_id = "$parent_ref->{'groupId'}:$parent_ref->{'artifactId'}";
+    if( ! exists $repo_deps{$parent_id} ) {
+      $repo_deps{$parent_id} = {};
+    }
+    $repo_deps{$parent_id}{$this_repo} = 1;
+  } elsif ( $verbose ) {
+    print STDERR "No parent for $module in $this_repo\n";
+  }
 
   # collect repo dependency info
   my $dep_arr_ref = $data->{'dependencies'}->{'dependency'};
@@ -141,7 +150,7 @@ sub getModule() {
     if( $branch_version ne $version ) { 
       my $msg = "Incorrect version ($version) for $module in $repo\n";
       if( $warn ) { 
-        print $msg;
+        print STDERR $msg;
       } else {
         die "$msg";
       }
@@ -228,15 +237,15 @@ sub show {
 
 # main
 
+my $script_home_dir = dirname(abs_path($0));
+my $repo_file = dirname($script_home_dir) . "/repository-list.txt";
 open(LIST, "<$repo_file" ) 
   || die "Unable to open $repo_file: $!\n";
 while(<LIST>) { 
   chomp($_);
   push( @repo_list, $_ );
 }
-push( @repo_list, "uberfire" );
 
-my $script_home_dir = dirname(abs_path($0));
 chdir "$script_home_dir/../../../";
 my $root_dir = Cwd::getcwd();
 
@@ -253,19 +262,19 @@ for my $i (0 .. $#repo_list ) {
     }, $repo);
 }
 
-print "- Finished collecting module information.\n";
+print STDERR "- Finished collecting module information.\n";
 
 foreach my $repo (keys %repo_mods) {
   foreach $dep (keys %{$repo_mods{$repo}}) {
     if( exists $mod_repos{$dep} ) { 
-      print "The $dep module exists in both the $mod_repos{$dep} AND $repo repositories!\n";
+      print STDERR "The $dep module exists in both the $mod_repos{$dep} AND $repo repositories!\n";
     } else { 
       $mod_repos{$dep} = $repo;
     }
   }
 }
 
-print "- Finished ordering module information.\n";
+print STDERR "- Finished ordering module information.\n";
 
 # repo_deps : dependency -> repository in which the dependency is used (dependent)
 # mod_repos : module -> repository in which the module is located (source) 
@@ -289,7 +298,7 @@ foreach $dep ( keys %repo_deps ) {
   }
 }
 
-print "- Finished creating repository dependency tree.\n";
+print STDERR "- Finished creating repository dependency tree.\n";
 
 my %build_tree;
 
@@ -354,9 +363,9 @@ if ( defined $build_target ) {
   build( $build_target, 0 );
 
   if( $blocked{$build_target} > 0 ) {
-    print "\nRepository '$build_target' cannot be built in a non-snapshot version due to circular dependencies!\n";
-    if( ! $verbose ) { print "Re-run in verbose mode to see the cause.\n"; }
+    print STDERR "\nRepository '$build_target' cannot be built in a non-snapshot version due to circular dependencies!\n";
+    if( ! $verbose ) { print STDERR "Re-run in verbose mode to see the cause.\n"; }
   }
-  print "\nYou need to build following repositories before building '$build_target' (in order):\n";
+  print STDERR "\nYou need to build following repositories before building '$build_target' (in order):\n";
   print join( ',', @build_chain ), "\n";
 }

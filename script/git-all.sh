@@ -29,6 +29,11 @@ GIT_ARG_LINE=()
 for arg in "$@"
 do
     case "$arg" in
+        --target-repo=*)
+            REPOSITORY_LIST=$($scriptDir/checks/repo-dep-tree.pl -w -t ${arg#*=})
+            REPOSITORY_LIST=${REPOSITORY_LIST//,/ }
+        ;;
+
         --repo-list=*)
             REPOSITORY_LIST=$(echo "$arg" | sed 's/[-a-zA-Z0-9]*=//')
             # replace the commas with spaces so that the for loop treats the individual repos as different values

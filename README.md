@@ -416,6 +416,11 @@ Running the build
 
     * Note: the `mvn-all.sh` script is working directory independent.
 
+* You can use `mvn-all.sh` to compile a specific repository and all repositories that your target repository depends on.
+  This is done using the `--target-repo` option which will invoke `repo-dep-tree.pl` script to discover cross-repository
+  project dependencies. Use `--repo-list` to specify custom list of repositories. These options work for `git-all.sh`
+  too.
+
 * Warning: The first `mvn` build of a day will download the latest SNAPSHOT dependencies of other kiegroup projects,
 unless you build all those kiegroup projects from source.
 Those SNAPSHOTS were build and deployed last night by Jenkins jobs.
