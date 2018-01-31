@@ -10,7 +10,7 @@ fi
 
 createJbpmInstaller(){
         # download and unzip the jbpm-installer-<version>.zip
-        wget https://repository.jboss.org/nexus/content/groups/$group/org/jbpm/jbpm-installer/$version/jbpm-installer-$version.zip
+        wget https://repository.jboss.org/nexus/content/groups/$URLgroup/org/jbpm/jbpm-installer/$version/jbpm-installer-$version.zip
         unzip jbpm-installer*.zip
 
         # modifications in build.properties
