@@ -995,6 +995,11 @@
         <type>war</type>
         <version>${version.org.kie}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-deployment-validation</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
       <!--Default Editor-->
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
