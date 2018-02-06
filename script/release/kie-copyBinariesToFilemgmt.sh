@@ -114,7 +114,7 @@ else
 fi
 
 # copies jbpm work items into service repository
-scp -r jbpm-work-items/repository/target/repository-$version/* $jbpmServiceRepo/$version/service_repository
+scp -r jbpm-work-items/repository/target/repository-$version/* $jbpmServiceRepo/$version/service-repository
 
 #copies jbpm-docs to filemgmt.jboss.org
 scp -r kie-docs/docs/jbpm-docs/target/generated-docs/* $jbpmDocs/$version/jbpm-docs
