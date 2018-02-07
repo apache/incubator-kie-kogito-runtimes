@@ -541,7 +541,7 @@
       <!-- KIE Workbench Playground Repository -->
       <dependency>
         <groupId>org.kie.workbench.playground</groupId>
-        <artifactId>playground-parent</artifactId>
+        <artifactId>kie-all-playground</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
 
