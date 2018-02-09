@@ -538,6 +538,31 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- KIE - Custom lienzo artifacts -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>lienzo-core</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>lienzo-core</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>lienzo-tests</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>lienzo-tests</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+
       <!-- KIE Workbench Playground Repository -->
       <dependency>
         <groupId>org.kie.workbench.playground</groupId>
