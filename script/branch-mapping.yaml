@@ -6,8 +6,11 @@
 master:
   - errai/errai: master
 
+7.6.x:
+  - errai/errai: 4.1.x
+
 7.5.x:
-  - errai/errai: master
+  - errai/errai: 4.1.x
 
 7.4.x:
   - errai/errai: 4.0.x
