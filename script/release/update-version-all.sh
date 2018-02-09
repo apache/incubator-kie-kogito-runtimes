@@ -90,7 +90,15 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
         echo "==============================================================================="
         cd $repository
 
-        if [ "$repository" == "kie-soup" ]; then
+        if [ "$repository" == "lienzo-core" ]; then
+            mvnVersionsSet
+            returnCode=$?
+
+        elif [ "$repository" == "lienzo-tests" ]; then
+            mvnVersionsSet
+            returnCode=$?
+
+        elif [ "$repository" == "kie-soup" ]; then
             mvnVersionsSet
             cd kie-soup-bom
             mvnVersionsSet
