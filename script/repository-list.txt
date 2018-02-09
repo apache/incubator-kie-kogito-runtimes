@@ -1,3 +1,5 @@
+lienzo-core
+lienzo-tests
 kie-soup
 appformer
 droolsjbpm-build-bootstrap
