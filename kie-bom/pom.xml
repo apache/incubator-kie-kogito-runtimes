@@ -2303,9 +2303,23 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
+        <artifactId>kie-drools-wb-webapp</artifactId>
+        <version>${version.org.kie}</version>
+        <type>jar</type>
+        <classifier>swarm</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
         <artifactId>kie-wb-webapp</artifactId>
         <version>${version.org.kie}</version>
         <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-wb-webapp</artifactId>
+        <version>${version.org.kie}</version>
+        <type>jar</type>
+        <classifier>swarm</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
