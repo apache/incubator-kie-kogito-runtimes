@@ -80,7 +80,7 @@
          guvnor-ala-openshift-client shades Jackson 2.7.7 with Fabric8 Kubernetes/OpenShift Client 2.6.3
          Once the IP BOM gets upgraded and we solely deploy on Wildfly 10.1+ and EAP 7.1+, guvnor-ala-openshift-client can be removed. -->
     <version.org.eclipse.bpmn2>0.8.2-jboss</version.org.eclipse.bpmn2>
-    <version.com.fasterxml.jackson>2.6.2</version.com.fasterxml.jackson>
+    <version.com.fasterxml.jackson>2.8.9</version.com.fasterxml.jackson>
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
     <version.com.google.android>4.1.1.4</version.com.google.android>
@@ -90,7 +90,7 @@
     <version.net.sf.docbook.docbook-xsl>1.76.1</version.net.sf.docbook.docbook-xsl>
     <version.org.antlr4>4.5.3</version.org.antlr4>
     <version.org.apache.camel>2.18.2</version.org.apache.camel>
-    <version.org.codehaus.cargo>1.6.2</version.org.codehaus.cargo>
+    <version.org.codehaus.cargo>1.6.6</version.org.codehaus.cargo>
     <!-- Custom Freemarker build with workaround for random concurrent access issue (annotation processors). See AF-600 for more info.-->
     <version.org.freemarker>2.3.26.jbossorg-1</version.org.freemarker>
     <version.org.jboss.arquillian.extension.drone>2.0.0.Final</version.org.jboss.arquillian.extension.drone>
@@ -102,7 +102,7 @@
     <!-- Required for kie-wb-common to build in IntelliJ Idea 2017, due to -->
     <!-- https://youtrack.jetbrains.com/issue/IDEA-166417 -->
     <!-- Property can be removed when the above issue is fixed -->
-    <version.org.jboss.errai.wildfly>10.1.0.Final</version.org.jboss.errai.wildfly>
+    <version.org.jboss.errai.wildfly>11.0.0.Final</version.org.jboss.errai.wildfly>
     <version.org.jboss.remoting>5.0.3.Final</version.org.jboss.remoting>
     <version.org.jboss.remotingjmx>3.0.0.Final</version.org.jboss.remotingjmx>
     <!-- Required by jboss-remoting version above -->
@@ -122,8 +122,8 @@
     <version.org.xmlunit>2.3.0</version.org.xmlunit>
     <version.org.skyscreamer.jsonassert>1.2.3</version.org.skyscreamer.jsonassert>
     <!-- WildFly version used together with  the GWT's Super Dev Mode -->
-    <version.org.wildfly.gwt.sdm>10.1.0.Final</version.org.wildfly.gwt.sdm>
-    <version.org.jboss.jboss-dmr>1.3.0.Final</version.org.jboss.jboss-dmr>
+    <version.org.wildfly.gwt.sdm>11.0.0.Final</version.org.wildfly.gwt.sdm>
+    <version.org.jboss.jboss-dmr>1.4.1.Final</version.org.jboss.jboss-dmr>
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
     <version.com.google.gwt>2.8.2</version.com.google.gwt>
@@ -215,7 +215,7 @@
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overridden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
 
-    <version.org.wildfly.swarm>2017.8.0</version.org.wildfly.swarm>
+    <version.org.wildfly.swarm>2017.12.1</version.org.wildfly.swarm>
     <version.net.byte-buddy>1.4.16</version.net.byte-buddy>
     <version.commons-beanutils>1.9.2</version.commons-beanutils>
     <version.docker-client>3.5.12</version.docker-client>
@@ -501,6 +501,8 @@
                       <!-- Classes from gwt-user duplicated in errai-uibinder -->
                       <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderWriter</ignoreClass>
                       <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderGenerator</ignoreClass>
+                      <!-- ignoring java 9 compatible class for modules -->
+                      <ignoreClass>module-info</ignoreClass>
                     </ignoreClasses>
                     <dependencies>
                       <!-- gwt-dev bundles dozens of different 3rd party dependencies, but can not be usually excluded
