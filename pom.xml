@@ -454,6 +454,10 @@
                 <rules>
                   <banDuplicateClasses>
                     <ignoreClasses>
+                      <!-- ASM is in Wildfly Swarm through Undertow but exclusion will break the swarm jar -->
+                      <!-- when docker-client shaded GAV will be removed, this ignore can be removed too -->
+                      <!-- kie-wb-common-ala-distribution is affected by this -->
+                      <ignoreClass>org.objectweb.asm.*</ignoreClass>
                       <!-- Duplicated by XStream's transitive deps, with very little chance to get properly fixed -->
                       <ignoreClass>org.xmlpull.v1.XmlPullParserException</ignoreClass>
                       <ignoreClass>org.xmlpull.v1.XmlPullParser</ignoreClass>
