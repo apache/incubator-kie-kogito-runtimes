@@ -52,6 +52,7 @@ if( exists $opts{h} ) {
   print STDERR "\n";
   print STDERR " h ........ print [h]elp (this)\n";
   print STDERR " d ........ create [d]ot file (implies -f)\n";
+  print STDERR "            use with -t to highlight target repository dependencies in the graph\n";
   print STDERR " f ........ [f]ilter transitive dependencies (not compatible with -t)\n";
   print STDERR " w ........ [w]arn instead of dying on invalid module versions\n";
   print STDERR " v ........ [v]erbose: show which modules are referenced\n";
@@ -330,6 +331,17 @@ foreach my $repo (sort keys %build_tree) {
   }
 }
 
+# Print the list of repositories required to be built before building target repository.
+if ( defined $build_target ) {
+  build( $build_target, 0 );
+
+  if( $blocked{$build_target} > 0 ) {
+    print STDERR "\nRepository '$build_target' cannot be built in a non-snapshot version due to circular dependencies!\n";
+    if( ! $verbose ) { print STDERR "Re-run in verbose mode to see the cause.\n"; }
+  }
+  print STDERR "\nYou need to build following repositories before building '$build_target' (in order):\n";
+  print join( ',', @build_chain ), "\n";
+}
 
 if( $create_dot_file ) { 
   if( ! $filter_transitive ) { 
@@ -338,10 +350,12 @@ if( $create_dot_file ) {
   # Transform the build graph into DOT language.
   my $dot = "digraph {\n";
   foreach my $repo (keys %repo_tree) {
-    $dot .= sprintf("  \"%s\";\n", $repo);
+    my $node_style = " [style=filled, fillcolor=lightskyblue]";
+    $dot .= sprintf( "  \"%s\"%s;\n", $repo, ( grep ( /^$repo$/, @build_chain ) ) ? $node_style : "" );
     foreach my $leaf_repo (keys %{$repo_tree{$repo}}) {
       if ( scalar @{ $repo_tree{$repo}{$leaf_repo} } > 0) {
-        $dot .= sprintf( "  \"%s\" -> \"%s\" [label = %s];\n", $repo, $leaf_repo, scalar @{ $repo_tree{$repo}{$leaf_repo} } );
+        $dot .= sprintf( "  \"%s\" -> \"%s\" [label=%s];\n",
+                         $repo, $leaf_repo, scalar @{ $repo_tree{$repo}{$leaf_repo} } );
       }
     }
     $dot .= "\n";
@@ -358,14 +372,3 @@ if( $create_dot_file ) {
   print "Run 'dot -O -Tpng $filename' to render PNG image.\n";
 }
 
-# Print the list of repositories required to be built before building target repository.
-if ( defined $build_target ) {
-  build( $build_target, 0 );
-
-  if( $blocked{$build_target} > 0 ) {
-    print STDERR "\nRepository '$build_target' cannot be built in a non-snapshot version due to circular dependencies!\n";
-    if( ! $verbose ) { print STDERR "Re-run in verbose mode to see the cause.\n"; }
-  }
-  print STDERR "\nYou need to build following repositories before building '$build_target' (in order):\n";
-  print join( ',', @build_chain ), "\n";
-}
