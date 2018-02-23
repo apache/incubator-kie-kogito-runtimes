@@ -1867,6 +1867,13 @@
 
       <dependency>
         <groupId>org.kie.workbench.stunner</groupId>
+        <artifactId>kie-wb-common-stunner-backend-common</artifactId>
+        <version>${version.org.kie}</version>
+        <type>test-jar</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.workbench.stunner</groupId>
         <artifactId>kie-wb-common-stunner-client-common</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
