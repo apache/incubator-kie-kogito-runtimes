@@ -2307,6 +2307,13 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- KIE Workbench Common Dev Tools and Extensions -->
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-wf-sdm-extensions</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+
       <!-- Distribution -->
       <dependency>
         <groupId>org.kie</groupId>
