@@ -1528,6 +1528,28 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- Kie-wb CLI migration tools -->
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-cli-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-cli-migration-tool</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-cli-project-migration</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-cli-forms-migration</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+
       <!-- Forms -->
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
@@ -1657,7 +1679,7 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
-        <artifactId>kie-wb-common-forms-serialization</artifactId>
+        <artifactId>kie-wb-common-forms-backend-services</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
