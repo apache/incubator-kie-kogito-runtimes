@@ -756,6 +756,15 @@ Configuring Eclipse
 * Recommended: import our code style
 
     * Set up formatter for edited code only: Open menu *Window*, menu item *Preferences*, click tree item *Java*, tree item *Editor*, and click *Save actions*. Enable *Perform the selected actions on save*: select *Format source code* (*Format edited lines*) and *Organize imports*
+    
+    * **IMPORTANT** Eclipse uses three seperate formatters, and you need to setup each one seperately (click Import...,
+    select the file, and click apply for each one):
+    
+        - Clean Up: Uses "eclipse-code-style-clean-up_droolsjbpm-java-conventions.xml"
+        
+        - Formatter: Uses "eclipse-code-style-formatter_droolsjbpm-java-conventions.xml"
+        
+        - Organize Imports: Uses "eclipse-code-style-organize-imports_droolsjbpm-java-conventions.importorder"
 
     * If you don't do this, you need to set the number of spaces correctly manually.
 
