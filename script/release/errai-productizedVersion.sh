@@ -26,13 +26,13 @@ git commit -m "upgraded to $erraiVersionNew version"
 deployDir=$WORKSPACE/deploy-dir
 
 # we will deploy into remote staging repo only once the whole build passed (to save time and bandwith)
-mvn -U -B -e clean deploy -T2 -Dfull -Drelease -DaltDeploymentRepository=local::default::file://$deployDir -s $SETTINGS_XML_FILE\
+mvn -U -B -e clean deploy -T2 -Dfull -Drelease -DaltDeploymentRepository=local::default::file://$deployDir\
  -Dmaven.test.failure.ignore=true -Dgwt.compiler.localWorkers=3
 
 # upload the content to remote staging repo
 cd $deployDir
 mvn -B -e org.sonatype.plugins:nexus-staging-maven-plugin:1.6.8:deploy-staged-repository -DnexusUrl=https://repository.jboss.org/nexus -DserverId=jboss-releases-repository -DrepositoryDirectory=$deployDir\
- -s $SETTINGS_XML_FILE -DstagingProfileId=15c3321d12936e -DstagingDescription="errai $erraiVersionNew" -DstagingProgressTimeoutMinutes=30
+ -DstagingProfileId=15c3321d12936e -DstagingDescription="errai $erraiVersionNew" -DstagingProgressTimeoutMinutes=30
 
 # tag errai for prod
 git tag -a $erraiTag -m "tagged $erraiTag"
@@ -40,5 +40,5 @@ git tag -a $erraiTag -m "tagged $erraiTag"
 # add a new remote ponting to gerrit
 git remote add gerrit ssh://jb-ip-tooling-jenkins@code.engineering.redhat.com/errai/errai
 
-@ push the tag to gerrit
+# push the tag to gerrit
 git push gerrit $erraiTag
