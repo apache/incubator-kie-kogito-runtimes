@@ -1549,6 +1549,11 @@
         <artifactId>kie-wb-common-cli-forms-migration</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-common-cli-system-configuration-migration</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
 
       <!-- Forms -->
       <dependency>
