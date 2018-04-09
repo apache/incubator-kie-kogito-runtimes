@@ -75,21 +75,17 @@ One week in advance:
         $ git push <upstream> <branch> # push changes to blessed repository
         ```
 
-* Since Zanata translations was outsorced it have to be clafirfied before a release if the Zanata translations will be needed.
+* Since Zanata translations was outsourced it have to be clafirfied before a release if the Zanata translations will be needed.
   (mvn -B zanata:pull-module).
   
 * Get access to `filemgmt.jboss.org`
 
-    * Note: This is for internal Red Hat developer information only and requires access to Red Hat's VPN.
-
-    * See [https://docspace.corp.redhat.com/docs/DOC-35393](https://docspace.corp.redhat.com/docs/DOC-35393)
-
-    * Create ssh Key (if not already done)
+    * Create an SSH key (if not already done)
 
         * Key must:
 
-            * be RSA-2 ( default for many keygen apps )
-            * have 1024+ bit ( 2048 is preferred )
+            * be RSA-2 (default for many keygen apps)
+            * have 1024+ bit (2048 is preferred)
             * have comment with user email address
 
         * Using many keygen tools the following command will work
