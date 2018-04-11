@@ -607,6 +607,19 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!--Testing-->
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-testing-utils</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench</groupId>
+        <artifactId>kie-wb-testing-utils</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <!--Core API-->
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
