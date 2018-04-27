@@ -175,6 +175,13 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.drools.testcoverage</groupId>
+        <artifactId>drools-test-suite</artifactId>
+        <version>${version.org.kie}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-cdi</artifactId>
         <version>${version.org.kie}</version>
