@@ -226,11 +226,8 @@
     <version.zjsonpatch>0.3.0</version.zjsonpatch>
     <version.arquillian-cube>1.0.0.Alpha15</version.arquillian-cube>
     <version.org.wildfly.arquillian.container>2.0.0.Final</version.org.wildfly.arquillian.container>
-    <!-- Using origin-repository.jboss.org as that is the canonical URL for deployment. repository.jboss.org is just a proxy
-         which should delegate the calls to origin-repository.jboss.org, but that is often buggy. Using the canonical URL
-         directly should help to avoid some of the issues with deploying artifacts. -->
-    <jboss.releases.repo.url>https://origin-repository.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
-    <jboss.snapshots.repo.url>https://origin-repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
+    <jboss.releases.repo.url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
+    <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
     <!-- Latest release to be used by api-compatibility-check to check backwards compatibility of the Kie API. -->
     <revapi.oldKieVersion>7.0.0.Final</revapi.oldKieVersion>
