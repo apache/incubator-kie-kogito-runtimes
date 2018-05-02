@@ -34,7 +34,9 @@ cd $deployDir
 mvn -B -e org.sonatype.plugins:nexus-staging-maven-plugin:1.6.8:deploy-staged-repository -DnexusUrl=https://repository.jboss.org/nexus -DserverId=jboss-releases-repository -DrepositoryDirectory=$deployDir\
  -DstagingProfileId=15c3321d12936e -DstagingDescription="errai $erraiVersionNew" -DstagingProgressTimeoutMinutes=30
 
+
 # tag errai for prod
+cd $WORKSPACE/errai
 git tag -a $erraiTag -m "tagged $erraiTag"
 
 # add a new remote ponting to gerrit
