@@ -359,13 +359,6 @@
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server</artifactId>
         <version>${version.org.kie}</version>
-        <classifier>ee6</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.server</groupId>
-        <artifactId>kie-server</artifactId>
-        <version>${version.org.kie}</version>
         <classifier>ee7</classifier>
         <type>war</type>
       </dependency>
@@ -457,13 +450,6 @@
         <artifactId>kie-server-controller-standalone-impl</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.server</groupId>
-        <artifactId>kie-server-controller-standalone</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>ee6</classifier>
-        <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
