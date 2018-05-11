@@ -13,13 +13,13 @@ for REPOSITORY_URL in `cat $ZANATA` ; do
       echo "==============================================================================="
 
       cd $WORKSPACE
-      git clone $REPOSITORY_URL
+      git clone $REPOSITORY_URL --branch $KIE_BRANCH
       echo $REPOSITORY_URL > rep.txt
       REP_DIR=$(sed -e 's/.*\///' -e 's/.\{4\}$//' rep.txt)
       echo "rep_dir="$REP_DIR
       cd $REP_DIR
       ZANATA_BRANCH="$REP_DIR-ZanataChanges-$DATE-$KIE_BRANCH"
-      git checkout -b $ZANATA_BRANCH master
+      git checkout -b $ZANATA_BRANCH $KIE_BRANCH
 
       if [ "$REP_DIR" == "appformer" ]; then
         mvn -B zanata:pull-module -pl '!uberfire-bom'
@@ -60,7 +60,7 @@ for REPOSITORY_URL in `cat $ZANATA` ; do
 
       LOCAL=$(git rev-parse HEAD)
       REMOTE=$(git rev-parse $KIE_BRANCH)
-      BLESSED_BRANCH=$IKE_BRANCH
+      BLESSED_BRANCH=$KIE_BRANCH
       SOURCE=kiegroup
 
       if [ "$LOCAL" == "$REMOTE" ]; then

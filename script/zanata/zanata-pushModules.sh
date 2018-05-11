@@ -9,7 +9,7 @@ for repositoryUrl in `cat $ZANATA` ; do
       echo "==============================================================================="
 
       cd $WORKSPACE
-      git clone $repositoryUrl
+      git clone $repositoryUrl --branch $kieMainBranch
       echo $repositoryUrl > rep.txt
       repDir=$(sed -e 's/.*\///' -e 's/.\{4\}$//' rep.txt)
       echo "repository="$repDir
