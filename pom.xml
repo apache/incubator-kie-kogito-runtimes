@@ -98,7 +98,7 @@
     <version.org.jboss.arquillian.graphene>2.1.0.CR1</version.org.jboss.arquillian.graphene>
 
     <version.com.google.elemental2>1.0.0-beta-1</version.com.google.elemental2>
-    <version.org.jboss.errai>4.2.1-SNAPSHOT</version.org.jboss.errai>
+    <version.org.jboss.errai>4.3.0-SNAPSHOT</version.org.jboss.errai>
 
     <!-- Required for kie-wb-common to build in IntelliJ Idea 2017, due to -->
     <!-- https://youtrack.jetbrains.com/issue/IDEA-166417 -->
