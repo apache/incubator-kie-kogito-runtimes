@@ -1088,6 +1088,12 @@
       <!--drools-wb distribution-->
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-wb-ui</artifactId>
+        <type>war</type>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-wb-webapp</artifactId>
         <type>war</type>
         <version>${version.org.kie}</version>
