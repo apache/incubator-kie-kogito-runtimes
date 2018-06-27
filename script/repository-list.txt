@@ -18,6 +18,6 @@ optaplanner-wb
 jbpm-designer
 jbpm-wb
 kie-docs
-kie-wb-distributions
 jbpm-work-items
+kie-wb-distributions
 optashift-employee-rostering
