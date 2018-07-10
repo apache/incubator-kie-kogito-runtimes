@@ -160,8 +160,11 @@
     <version.org.apache.lucene>6.6.1</version.org.apache.lucene>
 
     <!-- narayana dependencies for tomcat and kie server -->
-    <version.org.jboss.narayana.tomcat>5.6.4.Final</version.org.jboss.narayana.tomcat>
+    <version.org.jboss.narayana.tomcat>5.9.0.Final</version.org.jboss.narayana.tomcat>
     <version.org.jboss.transaction.spi>7.6.0.Final</version.org.jboss.transaction.spi>
+
+    <!-- DBCP connection pooling for Narayana -->
+    <version.org.apache.tomcat>9.0.10</version.org.apache.tomcat>
 
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
@@ -2668,6 +2671,12 @@
         <groupId>org.jboss</groupId>
         <artifactId>jboss-transaction-spi</artifactId>
         <version>${version.org.jboss.transaction.spi}</version>
+      </dependency>
+      <!-- Narayana uses DBCP for DB connection pooling on Tomcat and for embedded engine use case -->
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-dbcp</artifactId>
+        <version>${version.org.apache.tomcat}</version>
       </dependency>
 
       <!-- kie server controller over websockets -->
