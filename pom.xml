@@ -2725,6 +2725,22 @@
         <version>${version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec}</version>
       </dependency>
 
+      <dependency>
+        <groupId>javax.enterprise</groupId>
+        <artifactId>cdi-api</artifactId>
+        <version>${version.javax.enterprise}</version>
+        <!-- Avoid collisions with equivalent JBoss Spec APIs -->
+        <exclusions>
+          <exclusion>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.interceptor</groupId>
+            <artifactId>javax.interceptor-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
     </dependencies>
 
   </dependencyManagement>
