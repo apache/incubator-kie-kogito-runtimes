@@ -160,7 +160,7 @@
     <version.org.apache.lucene>6.6.1</version.org.apache.lucene>
 
     <!-- narayana dependencies for tomcat and kie server -->
-    <version.org.jboss.narayana.tomcat>5.9.0.Final</version.org.jboss.narayana.tomcat>
+    <version.org.jboss.narayana.tomcat>5.6.4.Final</version.org.jboss.narayana.tomcat>
     <version.org.jboss.transaction.spi>7.6.0.Final</version.org.jboss.transaction.spi>
 
     <!-- DBCP connection pooling for Narayana -->
