@@ -164,7 +164,7 @@
     <version.org.jboss.transaction.spi>7.6.0.Final</version.org.jboss.transaction.spi>
 
     <!-- DBCP connection pooling for Narayana -->
-    <version.org.apache.tomcat>9.0.10</version.org.apache.tomcat>
+    <version.org.apache.tomcat.tomcat-dbcp>9.0.10</version.org.apache.tomcat.tomcat-dbcp>
 
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
@@ -2676,7 +2676,7 @@
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-dbcp</artifactId>
-        <version>${version.org.apache.tomcat}</version>
+        <version>${version.org.apache.tomcat.tomcat-dbcp}</version>
       </dependency>
 
       <!-- kie server controller over websockets -->
