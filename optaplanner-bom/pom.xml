@@ -424,12 +424,6 @@
         <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
-      <!--KIE Drools Workbench Playground -->
-      <dependency>
-        <groupId>org.kie.workbench.playground</groupId>
-        <artifactId>kie-decision-playground</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
