@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+# IMPORTANT: if you want the script to use a custom settings.xml instead of a predefined (community or productized)
+# set the variable SETTINGS_XML_FILE with the full path to your settings.xml like
+#
+# export SETTINGS_XML_FILE="<full path>/settings.xml"
+#
+# and run the script > sh update-version-all.sh newVersion newAppformerVersion custom.
+
+
 # Updates the version for all kiegroup repositories
 
 initializeScriptDir() {
@@ -62,16 +70,20 @@ if [ "x$releaseType" == "x" ]; then
     releaseType="community"
 fi
 
+
 if [ $releaseType == "community" ]; then
     settingsXmlFile="$scriptDir/update-version-all-community-settings.xml"
 elif [ $releaseType == "productized" ]; then
     settingsXmlFile="$scriptDir/update-version-all-productized-settings.xml"
+elif [ $releaseType == "custom" ]; then
+    settingsXmlFile="$SETTINGS_XML_FILE"
 else
-    echo "Incorrect release type specified: '$releaseType'. Supported values are 'community' or 'productized'"
+    echo "Incorrect release type specified: '$releaseType'. Supported values are 'community' or 'productized' or 'custom'"
     exit 1
 fi
 echo "Specified release type: $releaseType"
 echo "Using following settings.xml: $settingsXmlFile"
+
 
 startDateTime=`date +%s`
 
