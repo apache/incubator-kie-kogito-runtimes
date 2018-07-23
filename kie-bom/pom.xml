@@ -489,6 +489,12 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-integ-tests-common</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+
       <!-- Other droolsjbpm-integration -->
       <dependency>
         <groupId>org.kie</groupId>
