@@ -185,7 +185,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
                 returnCode=$?
             fi
 
-        elif [ "$repository" == "optashift-employee-rostering" ]; then
+        elif [ "$repository" == "optaweb-employee-rostering" ]; then
            mvnVersionsSet
            returnCode=$?
 

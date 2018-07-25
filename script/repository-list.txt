@@ -20,4 +20,4 @@ jbpm-wb
 kie-docs
 jbpm-work-items
 kie-wb-distributions
-optashift-employee-rostering
+optaweb-employee-rostering
