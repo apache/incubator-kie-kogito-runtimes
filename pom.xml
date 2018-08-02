@@ -216,8 +216,11 @@
     <gwt.compiler.localWorkers>1</gwt.compiler.localWorkers>
     <!-- property for productisation to know the last released version -->
     <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
-    <version.io.takari.maven.plugins>1.12.6</version.io.takari.maven.plugins>
-    <version.io.takari.maven.plugins.integration-testing>2.9.1</version.io.takari.maven.plugins.integration-testing>
+    <version.io.takari.maven.plugins>1.13.5</version.io.takari.maven.plugins>
+    <version.io.takari.maven.plugins.integration-testing>2.9.2</version.io.takari.maven.plugins.integration-testing>
+    <version.org.codehaus.plexus.plexus-io>3.0.0</version.org.codehaus.plexus.plexus-io>
+    <version.org.apache.maven.shared.maven-artifact-transfer>0.9.1</version.org.apache.maven.shared.maven-artifact-transfer>
+    <version.org.apache.maven.plugins.maven-compiler-plugin>3.7.0</version.org.apache.maven.plugins.maven-compiler-plugin>
     <!-- Version of the KIE Workbench application. Shown for example in About dialog. Will be usually overridden by productisation. -->
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
 
@@ -255,6 +258,7 @@
     <version.org.quartz-scheduler>2.2.3</version.org.quartz-scheduler>
 
     <version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>1.0.0.Final</version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>
+    <version.org.apache.maven.plugins.dependency>3.0.2</version.org.apache.maven.plugins.dependency>
 
   </properties>
 
@@ -512,6 +516,10 @@
                       <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderGenerator</ignoreClass>
                       <!-- ignoring java 9 compatible class for modules -->
                       <ignoreClass>module-info</ignoreClass>
+                      <!-- Classes repackaged in the maven world-->
+                      <ignoreClass>org.eclipse.aether.*</ignoreClass>
+                      <ignoreClass>org.apache.maven.*</ignoreClass>
+                      <ignoreClass>org.codehaus.plexus.*</ignoreClass>
                     </ignoreClasses>
                     <dependencies>
                       <!-- gwt-dev bundles dozens of different 3rd party dependencies, but can not be usually excluded
@@ -2655,6 +2663,24 @@
         <artifactId>takari-plugin-testing</artifactId>
         <version>${version.io.takari.maven.plugins.integration-testing}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${version.org.apache.maven.plugins.dependency}</version>
+      </dependency>
+
+        <dependency>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-io</artifactId>
+          <version>${version.org.codehaus.plexus.plexus-io}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.apache.maven.shared</groupId>
+          <artifactId>maven-artifact-transfer</artifactId>
+          <version>${version.org.apache.maven.shared.maven-artifact-transfer}</version>
+        </dependency>
 
       <!-- Narayana is used as transaction manager for KIE Server on Tomcat -->
       <dependency>
