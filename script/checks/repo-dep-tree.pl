@@ -90,44 +90,59 @@ sub collectModules {
   $module = getModule($data, $this_repo);
 
   # collect repo module info
+  ##########################
   if( ! exists $repo_mods{$this_repo} ) { 
     $repo_mods{$this_repo} = {};
   }
   $repo_mods{$this_repo}->{$module} = 1;
 
+  # collect repo dependency info
+  ##############################
+
   # add parent dependency
   my $parent_ref = $data->{'parent'};
   if ( keys %{$parent_ref} ) {
-    my $parent_id = "$parent_ref->{'groupId'}:$parent_ref->{'artifactId'}";
-    if( ! exists $repo_deps{$parent_id} ) {
-      $repo_deps{$parent_id} = {};
-    }
-    $repo_deps{$parent_id}{$this_repo} = 1;
+    recordDependency($parent_ref, $this_repo);
   } elsif ( $verbose ) {
     print STDERR "No parent for $module in $this_repo\n";
   }
 
-  # collect repo dependency info
+  # add dependencies
   my $dep_arr_ref = $data->{'dependencies'}->{'dependency'};
-  if( ! defined $dep_arr_ref ) { 
-    return;
-  } elsif( $dep_arr_ref =~ /^HASH/ ) { 
-    my $dep_id = "$dep_arr_ref->{'groupId'}:$dep_arr_ref->{'artifactId'}";
-    if( ! exists $repo_deps{$dep_id} ) { 
-      $repo_deps{$dep_id} = {};
-    }
-    $repo_deps{$dep_id}{$this_repo} = 1;
-    return;
-  } else { 
-    foreach my $dep (@{$dep_arr_ref}) { 
-      my $dep_id = "$dep->{'groupId'}:$dep->{'artifactId'}";
-      if( ! exists $repo_deps{$dep_id} ) { 
-        $repo_deps{$dep_id} = {};
+  if( defined $dep_arr_ref ) {
+    if( $dep_arr_ref =~ /^HASH/ ) {
+      recordDependency($dep_arr_ref, $this_repo);
+    } else {
+      foreach my $dep (@{$dep_arr_ref}) {
+        recordDependency($dep, $this_repo);
       }
-      $repo_deps{$dep_id}{$this_repo} = 1;
     }
   }
- 
+
+  # add imported POMs from dependency management
+  my $depmgmt_arr_ref = $data->{'dependencyManagement'}->{'dependencies'}->{'dependency'};
+  if( defined $depmgmt_arr_ref ) {
+    if( $depmgmt_arr_ref =~ /^HASH/ ) {
+      recordDependency($depmgmt_arr_ref, $this_repo, 1);
+    } else {
+      foreach my $dep (@{$depmgmt_arr_ref}) {
+        recordDependency($dep, $this_repo, 1);
+      }
+    }
+  }
+}
+
+sub recordDependency {
+  my $dep_id = "$_[0]->{'groupId'}:$_[0]->{'artifactId'}";
+  my $this_repo = $_[1];
+  my $isDependencyManagement = $_[2];
+  if( $isDependencyManagement && ( ! defined $_[0]->{'scope'} || $_[0]->{'scope'} ne 'import' ) ) {
+    return;
+  }
+  if( ! exists $repo_deps{$dep_id} ) {
+    $repo_deps{$dep_id} = {};
+  }
+  $repo_deps{$dep_id}{$this_repo} = 1;
 }
 
 sub getModule() {
