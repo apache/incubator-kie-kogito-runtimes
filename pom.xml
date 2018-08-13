@@ -91,7 +91,7 @@
     <version.org.antlr4>4.5.3</version.org.antlr4>
     <version.org.apache.camel>2.21.0</version.org.apache.camel>
     <version.org.apache.cxf>3.2.2</version.org.apache.cxf>
-    <version.org.codehaus.cargo>1.6.6</version.org.codehaus.cargo>
+    <version.org.codehaus.cargo>1.6.9</version.org.codehaus.cargo>
     <!-- Custom Freemarker build with workaround for random concurrent access issue (annotation processors). See AF-600 for more info.-->
     <version.org.freemarker>2.3.26.jbossorg-1</version.org.freemarker>
     <version.org.jboss.arquillian.extension.drone>2.0.0.Final</version.org.jboss.arquillian.extension.drone>
