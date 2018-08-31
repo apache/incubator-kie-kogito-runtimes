@@ -216,10 +216,6 @@
     <gwt.compiler.localWorkers>1</gwt.compiler.localWorkers>
     <!-- property for productisation to know the last released version -->
     <latestReleasedVersionFromThisBranch>notYetReleased</latestReleasedVersionFromThisBranch>
-    <!-- This is overrided in the builds with a working version with the repos with required authentication.
-         We will fix with a patch like this https://github.com/takari/takari-lifecycle/pull/38
-    -->       
-    <version.io.takari.maven.plugins>1.13.5</version.io.takari.maven.plugins>
     <version.io.takari.maven.plugins.compiler>1.13.5</version.io.takari.maven.plugins.compiler>
     <version.io.takari.maven.plugins.integration-testing>2.9.2</version.io.takari.maven.plugins.integration-testing>
     <version.org.codehaus.plexus.plexus-io>3.0.0</version.org.codehaus.plexus.plexus-io>
