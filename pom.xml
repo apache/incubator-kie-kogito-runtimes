@@ -249,6 +249,7 @@
     <version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>1.0.0.Final</version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>
     <version.org.apache.maven.plugins.dependency>3.0.2</version.org.apache.maven.plugins.dependency>
 
+    <version.org.mvel>2.4.2.Final</version.org.mvel>
   </properties>
 
   <repositories>
@@ -2667,6 +2668,12 @@
             <artifactId>javax.interceptor-api</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mvel</groupId>
+        <artifactId>mvel2</artifactId>
+        <version>${version.org.mvel}</version>
       </dependency>
     </dependencies>
 
