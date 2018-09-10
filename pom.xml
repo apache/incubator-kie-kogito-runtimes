@@ -153,9 +153,7 @@
     <version.org.apache.lucene>6.6.1</version.org.apache.lucene>
 
     <!-- narayana dependencies for tomcat and kie server -->
-    <version.org.jboss.narayana.tomcat>1.0.0.Final</version.org.jboss.narayana.tomcat>
-    <version.org.jboss.narayana>5.9.0.Final</version.org.jboss.narayana>
-
+    <version.org.jboss.narayana.tomcat>5.6.4.Final</version.org.jboss.narayana.tomcat>
     <version.org.jboss.transaction.spi>7.6.0.Final</version.org.jboss.transaction.spi>
 
     <!-- DBCP connection pooling for Narayana -->
@@ -543,6 +541,16 @@
                         <type>jar</type>
                         <ignoreClasses>
                           <ignoreClass>org.jboss.logging.*</ignoreClass>
+                        </ignoreClasses>
+                      </dependency>
+                      <!-- ignore jboss-logging included in kie server on tomcat using narayana-->
+                      <dependency>
+                        <groupId>org.jboss.narayana.tomcat</groupId>
+                        <artifactId>tomcat-jta</artifactId>
+                        <type>jar</type>
+                        <ignoreClasses>
+                          <ignoreClass>org.jboss.logging.*</ignoreClass>
+                          <ignoreClass>javax.transaction.*</ignoreClass>
                         </ignoreClasses>
                       </dependency>
                       <dependency>
@@ -2585,14 +2593,14 @@
 
       <!-- Narayana is used as transaction manager for KIE Server on Tomcat -->
       <dependency>
-        <groupId>org.jboss.integration</groupId>
-        <artifactId>narayana-tomcat</artifactId>
+        <groupId>org.jboss.narayana.tomcat</groupId>
+        <artifactId>tomcat-jta</artifactId>
         <version>${version.org.jboss.narayana.tomcat}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.narayana.jta</groupId>
         <artifactId>narayana-jta</artifactId>
-        <version>${version.org.jboss.narayana}</version>
+        <version>${version.org.jboss.narayana.tomcat}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss</groupId>
