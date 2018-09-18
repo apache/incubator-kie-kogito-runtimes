@@ -2239,6 +2239,13 @@
         <version>${version.org.simpleframework}</version>
       </dependency>
 
+      <!-- RHDM-588 freemarker -->
+      <dependency>
+        <groupId>org.freemarker</groupId>
+        <artifactId>freemarker</artifactId>
+        <version>${version.org.freemarker}</version>
+      </dependency>
+
       <!-- if upgraded allen-sauer.gwt.dnd version in jboss-ip-bom to 3.3.3 this can be removed -->
       <dependency>
         <groupId>com.allen-sauer.gwt.dnd</groupId>
