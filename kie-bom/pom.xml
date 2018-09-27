@@ -1566,12 +1566,23 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-verifier-reporting</artifactId>
+        <artifactId>kie-wb-common-verifier-reporting-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.services</groupId>
-        <artifactId>kie-wb-common-verifier-reporting</artifactId>
+        <artifactId>kie-wb-common-verifier-reporting-client</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-verifier-service</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.services</groupId>
+        <artifactId>kie-wb-common-verifier-service</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
