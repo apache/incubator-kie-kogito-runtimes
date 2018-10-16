@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-bom</artifactId>
     <!-- Keep in sync with ip-parent version in kie-user-bom-parent/pom.xml -->
-    <version>8.1.0.Final</version>
+    <version>8.2.0.Final</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -80,7 +80,6 @@
          guvnor-ala-openshift-client shades Jackson 2.7.7 with Fabric8 Kubernetes/OpenShift Client 2.6.3
          Once the IP BOM gets upgraded and we solely deploy on Wildfly 10.1+ and EAP 7.1+, guvnor-ala-openshift-client can be removed. -->
     <version.org.eclipse.bpmn2>0.8.2-jboss</version.org.eclipse.bpmn2>
-    <version.com.fasterxml.jackson>2.8.10</version.com.fasterxml.jackson>
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
     <version.com.google.android>4.1.1.4</version.com.google.android>
@@ -129,7 +128,6 @@
     <version.org.jboss.jboss-dmr>1.4.1.Final</version.org.jboss.jboss-dmr>
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
-    <version.com.google.gwt>2.8.2</version.com.google.gwt>
     <version.net.ltgt.gwt.maven>1.0-rc-6</version.net.ltgt.gwt.maven>
     <version.com.google.guava>20.0</version.com.google.guava>
     <!-- this version will overwrite jboss-ip-version 3.1.2. The version in jboss-ip-bom couldn't be upgraded as this version needs GWT 2.7.0 -->
@@ -254,7 +252,6 @@
 
     <version.org.mvel>2.4.2.Final</version.org.mvel>
     <version.org.postgresql>9.4.1207</version.org.postgresql>
-    <version.mysql-connector>5.1.38</version.mysql-connector>
     <version.mariadb-java-client>1.3.4</version.mariadb-java-client>
   </properties>
 
@@ -2459,47 +2456,7 @@
         <artifactId>zjsonpatch</artifactId>
         <version>${version.zjsonpatch}</version>
       </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-yaml</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-base</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.module</groupId>
-        <artifactId>jackson-module-jaxb-annotations</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
+ 
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jul-to-slf4j</artifactId>
