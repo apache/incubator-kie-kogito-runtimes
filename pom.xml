@@ -253,7 +253,6 @@
     <version.org.apache.maven.plugins.dependency>3.0.2</version.org.apache.maven.plugins.dependency>
 
     <version.org.mvel>2.4.2.Final</version.org.mvel>
-    <version.ecj>4.6.1</version.ecj>
     <version.org.postgresql>9.4.1207</version.org.postgresql>
     <version.mysql-connector>5.1.38</version.mysql-connector>
     <version.mariadb-java-client>1.3.4</version.mariadb-java-client>
@@ -2688,12 +2687,6 @@
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
         <version>${version.org.mvel}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.jdt.core.compiler</groupId>
-        <artifactId>ecj</artifactId>
-        <version>${version.ecj}</version>
       </dependency>
 
       <dependency>
