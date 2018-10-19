@@ -153,12 +153,14 @@
 
     <version.org.apache.lucene>6.6.1</version.org.apache.lucene>
 
+    <!-- Tomcat integration with Narayana -->
+    <version.org.jboss.integration.narayana-tomcat>1.0.0.Final</version.org.jboss.integration.narayana-tomcat>
     <!-- narayana dependencies for tomcat and kie server -->
     <version.org.jboss.narayana.tomcat>5.6.4.Final</version.org.jboss.narayana.tomcat>
     <version.org.jboss.transaction.spi>7.6.0.Final</version.org.jboss.transaction.spi>
 
     <!-- DBCP connection pooling for Narayana -->
-    <version.org.apache.tomcat.tomcat-dbcp>9.0.11</version.org.apache.tomcat.tomcat-dbcp>
+    <version.org.apache.tomcat.tomcat-dbcp>9.0.12.jbossorg-00001</version.org.apache.tomcat.tomcat-dbcp>
 
     <!-- In community builds productized is false, in product builds it's true to enable branding changes -->
     <org.kie.productized>false</org.kie.productized>
@@ -2560,7 +2562,13 @@
         <version>${version.net.openhft.chronicle-wire}</version>
       </dependency>
 
-      <!-- Narayana is used as transaction manager for KIE Server on Tomcat -->
+      <!-- Integration between Tomcat and Narayana -->
+      <dependency>
+        <groupId>org.jboss.integration</groupId>
+        <artifactId>narayana-tomcat</artifactId>
+        <version>${version.org.jboss.integration.narayana-tomcat}</version>
+      </dependency>
+      <!-- TODO: remove this legacy dependency once all repositories switch to narayana-tomcat -->
       <dependency>
         <groupId>org.jboss.narayana.tomcat</groupId>
         <artifactId>tomcat-jta</artifactId>
