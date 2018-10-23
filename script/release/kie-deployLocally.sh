@@ -41,12 +41,12 @@ if [ "$target" == "community" ]; then
    deployDir=$WORKSPACE/community-deploy-dir
    # (1) do a full build, but deploy only into local dir
    # we will deploy into remote staging repo only once the whole build passed (to save time and bandwith)   
-   ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Drelease -T2 -DaltDeploymentRepository=local::default::file://$deployDir -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx10g" -Dgwt.compiler.localWorkers=2
+   ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Drelease -DaltDeploymentRepository=local::default::file://$deployDir -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx10g"
   
 else
    deployDir=$WORKSPACE/prod-deploy-dir
    # (1) do a full build with prod look & feel (-Dproductized), but deploy only into local dir
    # we will deploy into remote staging repo only once the whole build passed (to save time and bandwith)   
-   ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Dproductized -Drelease -T2 -DaltDeploymentRepository=local::default::file://$deployDir -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx10g" -Dgwt.compiler.localWorkers=2
+   ./droolsjbpm-build-bootstrap/script/mvn-all.sh -B -e -U clean deploy -Dfull -Dproductized -Drelease -DaltDeploymentRepository=local::default::file://$deployDir -Dmaven.test.failure.ignore=true -Dgwt.memory.settings="-Xmx10g"
 
 fi
