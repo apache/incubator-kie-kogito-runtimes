@@ -88,7 +88,7 @@
     <version.link.bek.tools.issue-keeper-junit>4.11.1</version.link.bek.tools.issue-keeper-junit>
     <version.net.sf.docbook.docbook-xsl>1.76.1</version.net.sf.docbook.docbook-xsl>
     <version.org.antlr4>4.5.3</version.org.antlr4>
-    <version.org.apache.camel>2.21.0</version.org.apache.camel>
+    <version.org.apache.camel>2.21.1</version.org.apache.camel>
     <version.org.apache.cxf>3.2.2</version.org.apache.cxf>
     <version.org.codehaus.cargo>1.6.9</version.org.codehaus.cargo>
     <!-- Custom Freemarker build with workaround for random concurrent access issue (annotation processors). See AF-600 for more info.-->
