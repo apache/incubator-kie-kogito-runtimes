@@ -60,7 +60,7 @@ Source control with Git
 Installing and configuring git
 ------------------------------
 
-* Install it in your OS:
+* Install git in your OS:
 
     * Linux: Install the package git
 
