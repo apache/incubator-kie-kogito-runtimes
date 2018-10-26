@@ -126,6 +126,10 @@
     <!-- WildFly version used together with  the GWT's Super Dev Mode -->
     <version.org.wildfly.gwt.sdm>11.0.0.Final</version.org.wildfly.gwt.sdm>
     <version.org.jboss.jboss-dmr>1.4.1.Final</version.org.jboss.jboss-dmr>
+
+    <!-- Version of Camel patch for Wildfly -->
+    <version.org.wildfly.camel>5.1.0</version.org.wildfly.camel>
+
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
     <version.net.ltgt.gwt.maven>1.0-rc-6</version.net.ltgt.gwt.maven>
