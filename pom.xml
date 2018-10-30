@@ -240,6 +240,9 @@
     <jboss.releases.repo.url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
     <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
+
+    <version.org.infinispan>9.3.2.Final</version.org.infinispan>
+
     <!-- Latest release to be used by api-compatibility-check to check backwards compatibility of the Kie API. -->
     <revapi.oldKieVersion>7.5.0.Final</revapi.oldKieVersion>
     <revapi.newKieVersion>${project.version}</revapi.newKieVersion>
@@ -519,6 +522,12 @@
                       <ignoreClass>org.eclipse.aether.*</ignoreClass>
                       <ignoreClass>org.apache.maven.*</ignoreClass>
                       <ignoreClass>org.codehaus.plexus.*</ignoreClass>
+                      <!-- Infinispan core includes commons and they have duplicated classes. We can't remove commons because
+                       core needs them. Infinispan team has been informed about this packaging problem -->
+                      <ignoreClass>org.infinispan.util.AbstractDelegatingConcurrentMap</ignoreClass>
+                      <ignoreClass>org.infinispan.util.AbstractDelegatingMap</ignoreClass>
+                      <ignoreClass>org.infinispan.util.AbstractDelegatingSet</ignoreClass>
+                      <ignoreClass>org.infinispan.util.AbstractDelegatingCollection</ignoreClass>
                     </ignoreClasses>
                     <dependencies>
                       <!-- gwt-dev bundles dozens of different 3rd party dependencies, but can not be usually excluded
@@ -2633,6 +2642,27 @@
         <groupId>org.jboss.spec.javax.ws.rs</groupId>
         <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
         <version>${version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-query-dsl</artifactId>
+        <version>${version.org.infinispan}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-remote-query-client</artifactId>
+        <version>${version.org.infinispan}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-client-hotrod</artifactId>
+        <version>${version.org.infinispan}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-commons</artifactId>
+        <version>${version.org.infinispan}</version>
       </dependency>
 
       <dependency>
