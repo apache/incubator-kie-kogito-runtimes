@@ -244,7 +244,7 @@
     <version.org.infinispan>9.3.2.Final</version.org.infinispan>
 
     <!-- Latest release to be used by api-compatibility-check to check backwards compatibility of the Kie API. -->
-    <revapi.oldKieVersion>7.5.0.Final</revapi.oldKieVersion>
+    <revapi.oldKieVersion>7.11.0.Final</revapi.oldKieVersion>
     <revapi.newKieVersion>${project.version}</revapi.newKieVersion>
 
     <!-- using undertow for kie server router - same version as it comes with WildFly 10.0.0.Final-->
