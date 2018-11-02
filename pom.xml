@@ -104,7 +104,7 @@
     <!-- Required for kie-wb-common to build in IntelliJ Idea 2017, due to -->
     <!-- https://youtrack.jetbrains.com/issue/IDEA-166417 -->
     <!-- Property can be removed when the above issue is fixed -->
-    <version.org.jboss.errai.wildfly>11.0.0.Final</version.org.jboss.errai.wildfly>
+    <version.org.jboss.errai.wildfly>14.0.1.Final</version.org.jboss.errai.wildfly>
     <version.org.jboss.remotingjmx>3.0.0.Final</version.org.jboss.remotingjmx>
     <version.org.jboss.resteasy.async>3.0.19.Final</version.org.jboss.resteasy.async>
     <!-- Required by jboss-remoting version above -->
@@ -123,12 +123,10 @@
     <version.org.xmlunit>2.3.0</version.org.xmlunit>
     <version.org.skyscreamer.jsonassert>1.2.3</version.org.skyscreamer.jsonassert>
     <!-- WildFly version used together with  the GWT's Super Dev Mode -->
-    <version.org.wildfly.gwt.sdm>11.0.0.Final</version.org.wildfly.gwt.sdm>
+    <version.org.wildfly.gwt.sdm>14.0.1.Final</version.org.wildfly.gwt.sdm>
     <version.org.jboss.jboss-dmr>1.4.1.Final</version.org.jboss.jboss-dmr>
-
     <!-- Version of Camel patch for Wildfly -->
-    <version.org.wildfly.camel>5.1.0</version.org.wildfly.camel>
-
+    <version.org.wildfly.camel>8.0.0</version.org.wildfly.camel>
     <!-- this version will overwrite jboss-ip-bom version 2.5.1. The version in jboss-ip-bom couldn't be upgraded as it will break ModeShape Web Explorer application which uses GWT 2.5.1 -->
     <!-- please look at https://github.com/fredsa/gwt-dnd/wiki/GettingStarted -->
     <version.net.ltgt.gwt.maven>1.0-rc-6</version.net.ltgt.gwt.maven>
@@ -255,6 +253,12 @@
 
     <version.org.postgresql>9.4.1207</version.org.postgresql>
     <version.mariadb-java-client>1.3.4</version.mariadb-java-client>
+
+    <!-- this versions can be removed once these were migrated to jboss-ip-bom > 8.3.0.Final -->
+    <version.org.wildfly>14.0.1.Final</version.org.wildfly>
+    <version.org.wildfly.core>6.0.2.Final</version.org.wildfly.core>
+
+
   </properties>
 
   <repositories>
@@ -2330,6 +2334,19 @@
         <groupId>org.wildfly.core</groupId>
         <artifactId>wildfly-launcher</artifactId>
         <version>${version.org.wildfly.core}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-jms-client-bom</artifactId>
+        <version>${version.org.wildfly}</version>
+        <type>pom</type>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!--this artifact is not existing in the version coming from jboss-ip-bom-->
