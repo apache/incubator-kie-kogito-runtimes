@@ -91,7 +91,7 @@
     <version.org.antlr4>4.5.3</version.org.antlr4>
     <!-- overrides version of cxf coming from jboss-ip-bom 8.3.2.Final since tests in kie-spring-boot (droolsjbpm-integration) fail -->
     <version.org.apache.cxf>3.1.16</version.org.apache.cxf>
-    <version.org.apache.camel>2.21.1</version.org.apache.camel>
+    <version.org.apache.camel>2.21.3</version.org.apache.camel>
     <version.org.codehaus.cargo>1.6.11</version.org.codehaus.cargo>
     <!-- Custom Freemarker build with workaround for random concurrent access issue (annotation processors). See AF-600 for more info.-->
     <version.org.freemarker>2.3.26.jbossorg-1</version.org.freemarker>
