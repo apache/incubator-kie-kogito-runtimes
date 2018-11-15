@@ -262,6 +262,8 @@
     <version.org.wildfly.core>6.0.2.Final</version.org.wildfly.core>
 
     <version.org.mvel>2.4.3.Final</version.org.mvel>
+    
+    <version.ch.obermuhlner>2.0.1</version.ch.obermuhlner>
   </properties>
 
   <repositories>
@@ -2705,6 +2707,13 @@
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
         <version>2.3.1</version>
+      </dependency>
+      
+      <!-- used by DMN for BigDecimal arithmetics -->
+      <dependency>
+        <groupId>ch.obermuhlner</groupId>
+        <artifactId>big-math</artifactId>
+        <version>${version.ch.obermuhlner}</version>
       </dependency>
     </dependencies>
 
