@@ -971,23 +971,12 @@
       <!--Home Page - Community-->
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-home-page-community</artifactId>
+        <artifactId>business-central-home-page-community</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-home-page-community</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb-home-page-community</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb-home-page-community</artifactId>
+        <artifactId>business-central-home-page-community</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -1016,23 +1005,12 @@
       <!--Home Page - Product-->
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-home-page-product</artifactId>
+        <artifactId>business-central-home-page-product</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-home-page-product</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb-home-page-product</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb-home-page-product</artifactId>
+        <artifactId>business-central-home-page-product</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -1054,44 +1032,44 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-distribution-home-client</artifactId>
+        <artifactId>business-central-distribution-home-client</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Kie Theme Community-->
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-theme-community</artifactId>
+        <artifactId>business-central-theme-community</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-theme-community</artifactId>
+        <artifactId>business-central-theme-community</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!--Kie Theme Product-->
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-theme-product</artifactId>
+        <artifactId>business-central-theme-product</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-theme-product</artifactId>
+        <artifactId>business-central-theme-product</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
       <!-- KIE Workbench WebApp Common -->
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-webapp-common</artifactId>
+        <artifactId>business-central-webapp-common</artifactId>
         <type>war</type>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-deployment-validation</artifactId>
+        <artifactId>business-central-deployment-validation</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <!--Default Editor-->
@@ -1216,6 +1194,18 @@
       <dependency>
         <groupId>org.kie.workbench.screens</groupId>
         <artifactId>kie-wb-common-project-explorer-client</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <!--profile-->
+      <dependency>
+        <groupId>org.kie.workbench.profile</groupId>
+        <artifactId>kie-wb-common-profile-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.profile</groupId>
+        <artifactId>kie-wb-common-profile-api</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -2447,33 +2437,20 @@
       <!-- Distribution -->
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb-webapp</artifactId>
+        <artifactId>business-central-webapp</artifactId>
         <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb-webapp</artifactId>
+        <artifactId>business-central-webapp</artifactId>
         <version>${version.org.kie}</version>
         <type>jar</type>
         <classifier>swarm</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-webapp</artifactId>
-        <version>${version.org.kie}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-wb-webapp</artifactId>
-        <version>${version.org.kie}</version>
-        <type>jar</type>
-        <classifier>swarm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-wb-monitoring-webapp</artifactId>
+        <artifactId>business-monitoring-webapp</artifactId>
         <version>${version.org.kie}</version>
         <type>war</type>
       </dependency>
@@ -2502,36 +2479,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- kie-drools-wb distribution wars -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>wildfly14</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>eap7</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>was8</classifier>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-drools-wb</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>weblogic12</classifier>
-        <type>war</type>
-      </dependency>
-
       <!-- kie-wb distribution wars -->
       <dependency>
         <groupId>org.kie</groupId>
@@ -2549,14 +2496,14 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-monitoring</artifactId>
+        <artifactId>business-monitoring</artifactId>
         <version>${version.org.kie}</version>
         <classifier>wildfly14</classifier>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-wb-monitoring</artifactId>
+        <artifactId>business-monitoring</artifactId>
         <version>${version.org.kie}</version>
         <classifier>eap7</classifier>
         <type>war</type>
