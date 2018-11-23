@@ -227,7 +227,7 @@
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
 
     <version.org.wildfly.swarm>2018.3.3</version.org.wildfly.swarm>
-    <version.net.byte-buddy>1.4.16</version.net.byte-buddy>
+    <version.net.byte-buddy>1.8.17</version.net.byte-buddy>
     <version.docker-client>3.5.12</version.docker-client>
     <version.kubernetes-model>1.1.4</version.kubernetes-model>
     <version.kubernetes-client>2.6.3</version.kubernetes-client>
