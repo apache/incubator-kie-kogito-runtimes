@@ -80,6 +80,7 @@ scp -r droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-di
 scp drools/drools-distribution/target/drools-distribution-$version.zip $droolsHtdocs/$version
 scp droolsjbpm-integration/droolsjbpm-integration-distribution/target/droolsjbpm-integration-distribution-$version.zip $droolsHtdocs/$version
 scp droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-distribution-$version.zip $droolsHtdocs/$version
+scp kie-wb-distributions/business-central-parent/business-central-distribution-wars/business-central/target/business-central-$version-*.war $droolsHtdocs/$version
 scp droolsjbpm-integration/kie-server-parent/kie-server-wars/kie-server-distribution/target/kie-server-distribution-$version.zip $droolsHtdocs/$version
 
 #copies drools-docs and kie-api-javadoc to filemgmt.jboss.or
@@ -90,7 +91,7 @@ scp -r droolsjbpm-knowledge/kie-api/target/apidocs/* $droolsDocs/$version/kie-ap
 scp -r droolsjbpm-tools/droolsjbpm-tools-distribution/target/droolsjbpm-tools-distribution-$version/droolsjbpm-tools-distribution-$version/binaries/org.drools.updatesite/* $jbpmHtdocs/$version/updatesite
 scp jbpm/jbpm-distribution/target/jbpm-$version-bin.zip $jbpmHtdocs/$version
 scp jbpm/jbpm-distribution/target/jbpm-$version-examples.zip $jbpmHtdocs/$version
-scp kie-wb-distributions/kie-server-distributions/jbpm-server-distribution/target/jbpm-server-$version-dist.zip $jbpmHtdocs/$version
+scp kie-wb-distributions/jbpm-server-distribution/target/jbpm-server-$version-dist.zip $jbpmHtdocs/$version
 
 #copies the jbpm-installers to filemgmt.jboss.org
 jbpmHtdocs=jbpm@filemgmt.jboss.org:/downloads_htdocs/jbpm/release
