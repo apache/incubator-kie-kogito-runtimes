@@ -236,6 +236,17 @@
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-services-openshift</artifactId>
+        <version>${version.org.kie}</version>
+       </dependency>
+       <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-services-openshift</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
         <artifactId>kie-server-jms</artifactId>
         <version>${version.org.kie}</version>
       </dependency>

@@ -229,8 +229,8 @@
     <version.org.wildfly.swarm>2018.3.3</version.org.wildfly.swarm>
     <version.net.byte-buddy>1.8.17</version.net.byte-buddy>
     <version.docker-client>3.5.12</version.docker-client>
-    <version.kubernetes-model>1.1.4</version.kubernetes-model>
-    <version.kubernetes-client>2.6.3</version.kubernetes-client>
+    <version.kubernetes-client>4.1.0</version.kubernetes-client>
+    <version.okhttp>3.8.1</version.okhttp>
     <version.zjsonpatch>0.3.0</version.zjsonpatch>
     <version.arquillian-cube>1.0.0.Alpha15</version.arquillian-cube>
     <jboss.releases.repo.url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
@@ -2436,7 +2436,7 @@
       <dependency>
         <groupId>io.fabric8</groupId>
         <artifactId>kubernetes-model</artifactId>
-        <version>${version.kubernetes-model}</version>
+        <version>${version.kubernetes-client}</version>
         <exclusions>
           <exclusion>
             <groupId>com.fasterxml.jackson.module</groupId>
