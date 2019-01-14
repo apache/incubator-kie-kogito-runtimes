@@ -16,8 +16,8 @@ kie-wb-common
 drools-wb
 optaplanner-wb
 jbpm-designer
+jbpm-work-items
 jbpm-wb
 kie-docs
-jbpm-work-items
 kie-wb-distributions
 optaweb-employee-rostering

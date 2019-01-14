@@ -646,7 +646,7 @@
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
-      
+
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-event-emitters-elasticsearch</artifactId>
@@ -897,6 +897,19 @@
         <artifactId>jbpm-process-svg</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
+      </dependency>
+
+      <!-- service task repository -->
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>repository</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm.contrib</groupId>
+        <artifactId>repository</artifactId>
+        <version>${version.org.kie}</version>
+        <type>zip</type>
       </dependency>
 
       <!-- droolsjbpm-tools -->
