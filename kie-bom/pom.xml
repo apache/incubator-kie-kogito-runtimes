@@ -2252,6 +2252,13 @@
 
       <dependency>
         <groupId>org.kie.workbench.stunner</groupId>
+        <artifactId>kie-wb-common-stunner-bpmn-backend</artifactId>
+        <version>${version.org.kie}</version>
+        <type>test-jar</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.workbench.stunner</groupId>
         <artifactId>kie-wb-common-stunner-bpmn-client</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
@@ -2261,6 +2268,13 @@
         <artifactId>kie-wb-common-stunner-bpmn-client</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.workbench.stunner</groupId>
+        <artifactId>kie-wb-common-stunner-bpmn-client</artifactId>
+        <version>${version.org.kie}</version>
+        <type>test-jar</type>
       </dependency>
 
       <dependency>
