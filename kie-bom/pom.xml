@@ -1717,6 +1717,11 @@
       </dependency>
       <dependency>
         <groupId>org.kie.workbench.forms</groupId>
+        <artifactId>kie-wb-common-forms-adf-processors-tests</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.workbench.forms</groupId>
         <artifactId>kie-wb-common-forms-layout-generator</artifactId>
         <version>${version.org.kie}</version>
       </dependency>

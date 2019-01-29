@@ -8,7 +8,7 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-bom</artifactId>
     <!-- Keep in sync with ip-parent version in kie-user-bom-parent/pom.xml -->
-    <version>8.3.2.Final</version>
+    <version>8.4.0.Final</version>
   </parent>
 
   <groupId>org.kie</groupId>
@@ -80,7 +80,6 @@
          guvnor-ala-openshift-client shades Jackson 2.7.7 with Fabric8 Kubernetes/OpenShift Client 2.6.3
          Once the IP BOM gets upgraded and we solely deploy on Wildfly 10.1+ and EAP 7.1+, guvnor-ala-openshift-client can be removed. -->
     <version.org.eclipse.bpmn2>0.8.2-jboss</version.org.eclipse.bpmn2>
-    <version.org.apache.lucene>6.6.1</version.org.apache.lucene> 
     <version.com.github.detro>1.2.0</version.com.github.detro>
     <version.com.github.tomakehurst.wiremock>1.53</version.com.github.tomakehurst.wiremock>
     <version.com.google.android>4.1.1.4</version.com.google.android>
@@ -149,7 +148,6 @@
 
     <!-- Downgrade required for Errai Dynamic Bean validation  -->
     <version.org.hibernate.hibernate-validator>4.1.0.Final</version.org.hibernate.hibernate-validator>
-    <version.javax.validation>1.0.0.GA</version.javax.validation>
 
     <!-- CSS parsing library from Apache used by Stunner. -->
     <version.net.sourceforge.cssparser>0.9.21</version.net.sourceforge.cssparser>
@@ -243,9 +241,7 @@
     <revapi.oldKieVersion>7.14.0.Final</revapi.oldKieVersion>
     <revapi.newKieVersion>${project.version}</revapi.newKieVersion>
 
-    <!-- using undertow for kie server router - same version as it comes with WildFly 10.0.0.Final-->
-    <version.io.undertow.core>1.3.15.Final</version.io.undertow.core>
-
+    <version.org.jboss.spec.javax.enterprise.concurrent>1.0.0.Final</version.org.jboss.spec.javax.enterprise.concurrent>
     <version.org.jboss.spec.javax.websocket>1.1.1.Final</version.org.jboss.spec.javax.websocket>
 
     <version.javax.xml.soap>1.3.5</version.javax.xml.soap>
@@ -257,13 +253,10 @@
     <version.org.postgresql>9.4.1207</version.org.postgresql>
     <version.mariadb-java-client>1.3.4</version.mariadb-java-client>
 
-    <!-- this versions can be removed once these were migrated to jboss-ip-bom > 8.3.0.Final -->
-    <version.org.wildfly>14.0.1.Final</version.org.wildfly>
-    <version.org.wildfly.core>6.0.2.Final</version.org.wildfly.core>
-
     <version.org.mvel>2.4.3.Final</version.org.mvel>
     
     <version.ch.obermuhlner>2.0.1</version.ch.obermuhlner>
+
   </properties>
 
   <repositories>
@@ -1774,12 +1767,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-rs-client</artifactId>
-        <version>${version.org.apache.cxf}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-core</artifactId>
         <version>${version.org.apache.camel}</version>
@@ -2332,13 +2319,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- kie server router based on undertow -->
-      <dependency>
-        <groupId>io.undertow</groupId>
-        <artifactId>undertow-core</artifactId>
-        <version>${version.io.undertow.core}</version>
-      </dependency>
-
       <!-- WildFly Core Dependencies missing from ip-bom -->
       <dependency>
         <groupId>org.wildfly.core</groupId>
@@ -2603,16 +2583,6 @@
         <groupId>org.jboss.spec.javax.websocket</groupId>
         <artifactId>jboss-websocket-api_1.1_spec</artifactId>
         <version>${version.org.jboss.spec.javax.websocket}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.undertow</groupId>
-        <artifactId>undertow-servlet</artifactId>
-        <version>${version.io.undertow.core}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.undertow</groupId>
-        <artifactId>undertow-websockets-jsr</artifactId>
-        <version>${version.io.undertow.core}</version>
       </dependency>
 
       <dependency>
