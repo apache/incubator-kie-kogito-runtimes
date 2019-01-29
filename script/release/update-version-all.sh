@@ -133,7 +133,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
 
         elif [ "$repository" == "droolsjbpm-build-bootstrap" ]; then
             # first build&install the current version (usually SNAPSHOT) as it is needed later by other repos
-            mvn -B -U -Dfull clean install
+            mvn -B -U -Dfull -s $settingsXmlFile clean install
             mvnVersionsSet
             sed -i "s/<version\.org\.kie>.*<\/version.org.kie>/<version.org.kie>$newVersion<\/version.org.kie>/" pom.xml
             # update latest released version property only for non-SNAPSHOT versions
@@ -177,7 +177,7 @@ for repository in `cat ${scriptDir}/../repository-list.txt` ; do
                 mvn -B -N -s $settingsXmlFile clean install
                 mvnVersionsUpdateParent
                 # workaround for http://jira.codehaus.org/browse/MVERSIONS-161
-                mvn -B -N clean install -DskipTests
+                mvn -B -N -s $settingsXmlFile clean install -DskipTests
                 cd drools-eclipse
                 mvnVersionsUpdateParent
                 cd ..
