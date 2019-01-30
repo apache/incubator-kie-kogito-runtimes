@@ -101,7 +101,7 @@
     <version.com.google.guava.for-selenium>23.0</version.com.google.guava.for-selenium>
 
     <version.com.google.elemental2>1.0.0-beta-1</version.com.google.elemental2>
-    <version.org.jboss.errai>4.4.2-SNAPSHOT</version.org.jboss.errai>
+    <version.org.jboss.errai>4.5.0-SNAPSHOT</version.org.jboss.errai>
 
     <!-- Required for kie-wb-common to build in IntelliJ Idea 2017, due to -->
     <!-- https://youtrack.jetbrains.com/issue/IDEA-166417 -->
