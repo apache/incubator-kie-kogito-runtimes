@@ -158,6 +158,9 @@
     <version.org.jboss.narayana.tomcat>5.9.0.Final</version.org.jboss.narayana.tomcat>
     <version.org.jboss.transaction.spi>7.6.0.Final</version.org.jboss.transaction.spi>
 
+    <!-- override of version coming from jboss-ip-bom since this is needed for kie-wb-common -->
+    <version.org.mockito>1.10.19</version.org.mockito>
+
     <!-- DBCP connection pooling for Narayana -->
     <version.org.apache.tomcat.tomcat-dbcp>9.0.12.jbossorg-00003</version.org.apache.tomcat.tomcat-dbcp>
 
@@ -224,7 +227,7 @@
     <version.org.kie.workbench.app>${version.org.kie}</version.org.kie.workbench.app>
 
     <version.org.wildfly.swarm>2018.3.3</version.org.wildfly.swarm>
-    <version.net.byte-buddy>1.9.3</version.net.byte-buddy>
+    <version.net.byte-buddy>1.8.17</version.net.byte-buddy>
     <version.docker-client>3.5.12</version.docker-client>
     <version.kubernetes-client>4.1.0</version.kubernetes-client>
     <version.okhttp>3.8.1</version.okhttp>
