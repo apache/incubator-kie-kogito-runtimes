@@ -2673,6 +2673,11 @@
         <version>${version.javax.xml.ws}</version>
       </dependency>
       <dependency>
+        <groupId>javax.xml.soap</groupId>
+        <artifactId>javax.xml.soap-api</artifactId>
+        <version>${version.javax.xml.soap}</version>
+      </dependency>
+      <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>javax.annotation-api</artifactId>
         <version>${version.javax.annotation-api}</version>
