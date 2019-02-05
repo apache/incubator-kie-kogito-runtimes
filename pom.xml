@@ -258,7 +258,10 @@
     <version.org.mvel>2.4.3.Final</version.org.mvel>
     
     <version.ch.obermuhlner>2.0.1</version.ch.obermuhlner>
-
+    <version.javax.jws-api>1.1</version.javax.jws-api>
+    <version.javax.xml.ws>2.3.1</version.javax.xml.ws>
+    <version.javax.annotation-api>1.3.2</version.javax.annotation-api>
+    <version.com.sun.xml.messaging.saaj>1.5.0</version.com.sun.xml.messaging.saaj>
   </properties>
 
   <repositories>
@@ -2593,11 +2596,6 @@
         <artifactId>jsr181-api</artifactId>
         <version>${version.javax.jws}</version>
       </dependency>
-      <dependency>
-        <groupId>javax.xml.soap</groupId>
-        <artifactId>javax.xml.soap-api</artifactId>
-        <version>${version.javax.xml.soap}</version>
-      </dependency>
 
       <dependency>
         <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -2667,22 +2665,22 @@
       <dependency>
         <groupId>javax.jws</groupId>
         <artifactId>javax.jws-api</artifactId>
-        <version>1.1</version>
+        <version>${version.javax.jws-api}</version>
       </dependency>
       <dependency>
         <groupId>javax.xml.ws</groupId>
         <artifactId>jaxws-api</artifactId>
-        <version>2.3.1</version>
+        <version>${version.javax.xml.ws}</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>javax.annotation-api</artifactId>
-        <version>1.3.2</version>
+        <version>${version.javax.annotation-api}</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.messaging.saaj</groupId>
         <artifactId>saaj-impl</artifactId>
-        <version>1.5.0</version>
+        <version>${version.com.sun.xml.messaging.saaj}</version>
       </dependency>
       
       <!-- used by DMN for BigDecimal arithmetics -->
