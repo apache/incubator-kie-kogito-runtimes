@@ -10,5 +10,5 @@ public interface ProcessRuntimeServiceProvider {
 
     ProcessInstanceManager getProcessInstanceManager();
 
-    SignalManager getSignalManager(InternalKnowledgeRuntime kruntime);
+    SignalManager getSignalManager();
 }
