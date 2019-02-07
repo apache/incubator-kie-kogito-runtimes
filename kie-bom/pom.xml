@@ -370,6 +370,13 @@
         <groupId>org.kie.server</groupId>
         <artifactId>kie-server</artifactId>
         <version>${version.org.kie}</version>
+        <classifier>ee8</classifier>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server</artifactId>
+        <version>${version.org.kie}</version>
         <classifier>ee7</classifier>
         <type>war</type>
       </dependency>
