@@ -411,6 +411,14 @@
       </dependency>
       <dependency>
         <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-impl</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>tests</classifier>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
         <artifactId>kie-server-controller-rest</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
@@ -482,6 +490,17 @@
         <version>${version.org.kie}</version>
         <classifier>webc</classifier>
         <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-openshift</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.server</groupId>
+        <artifactId>kie-server-controller-openshift</artifactId>
+        <version>${version.org.kie}</version>
+        <classifier>sources</classifier>
       </dependency>
 
       <dependency>
