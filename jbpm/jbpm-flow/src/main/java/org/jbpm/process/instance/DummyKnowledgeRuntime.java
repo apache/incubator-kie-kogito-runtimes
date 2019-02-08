@@ -9,7 +9,7 @@ import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.impl.EnvironmentImpl;
 import org.drools.core.runtime.process.InternalProcessRuntime;
-import org.drools.core.time.TimerService;
+import org.kie.services.time.TimerService;
 import org.kie.api.KieBase;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.rule.AgendaEventListener;
