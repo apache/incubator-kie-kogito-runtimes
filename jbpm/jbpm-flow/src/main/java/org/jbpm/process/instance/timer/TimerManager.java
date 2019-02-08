@@ -43,7 +43,6 @@ import org.jbpm.marshalling.impl.JBPMMessages;
 import org.jbpm.marshalling.impl.ProtobufProcessMarshaller;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
-import org.jbpm.process.instance.event.SignalManager;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.time.SessionClock;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
