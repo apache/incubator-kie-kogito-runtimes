@@ -5,6 +5,9 @@ import java.util.Map;
 import org.kie.services.signal.SignalManager;
 import org.kie.api.time.SessionClock;
 
+/**
+ * A smaller API surface than StatefulSession/KieRuntime
+ */
 public interface TimerManagerRuntime {
 
     void startOperation();
