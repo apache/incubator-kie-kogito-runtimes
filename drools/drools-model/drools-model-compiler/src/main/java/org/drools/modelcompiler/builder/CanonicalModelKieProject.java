@@ -144,6 +144,7 @@ public class CanonicalModelKieProject extends KieModuleKieProject {
                         "\n" +
                         "public class ProjectModel implements CanonicalKieModuleModel {\n" +
                         "\n" +
+                        "    @Override\n" +
                         "    public String getVersion() {\n" +
                         "        return \"" );
         sb.append( Drools.getFullVersion() );
@@ -151,6 +152,7 @@ public class CanonicalModelKieProject extends KieModuleKieProject {
                 "\";\n" +
                         "    }\n" +
                         "\n" +
+                        "    @Override\n" +
                         "    public java.util.List<Model> getModels() {\n" +
                         "        return java.util.Arrays.asList(" );
         sb.append( modelSources.isEmpty() ? "" : modelSources.stream().collect( joining("(), new ", "new ", "()") ) );
@@ -158,6 +160,7 @@ public class CanonicalModelKieProject extends KieModuleKieProject {
                 ");\n" +
                         "    }\n" +
                         "\n" +
+                        "    @Override\n" +
                         "    public ReleaseId getReleaseId() {\n" +
                         "        return new ReleaseIdImpl(\"" );
         sb.append( releaseId.getGroupId() ).append( "\", \"" );
@@ -166,8 +169,11 @@ public class CanonicalModelKieProject extends KieModuleKieProject {
         sb.append(
                 ");\n" +
                         "    }\n");
+        sb.append(
+                "\n" +
+                "    @Override\n");
         sb.append(new KieModuleModelMethod(kBaseModels).toMethod());
-        sb.append("}" );
+        sb.append("\n}" );
         return sb.toString();
     }
 }
