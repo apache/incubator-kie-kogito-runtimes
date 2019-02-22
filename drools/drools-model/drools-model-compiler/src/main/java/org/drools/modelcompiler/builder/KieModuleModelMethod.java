@@ -14,7 +14,6 @@ import org.drools.javaparser.ast.expr.NameExpr;
 import org.drools.javaparser.ast.expr.StringLiteralExpr;
 import org.drools.javaparser.ast.expr.VariableDeclarationExpr;
 import org.drools.javaparser.ast.stmt.BlockStmt;
-import org.drools.javaparser.ast.stmt.Statement;
 import org.drools.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.api.builder.model.KieBaseModel;
 import org.kie.api.builder.model.KieModuleModel;
@@ -29,7 +28,7 @@ public class KieModuleModelMethod {
 
     public static final String KMODULE_MODEL_NAME = "kModuleModel";
 
-    private MethodDeclaration methodDeclaration = createMethodDeclaration();
+    private MethodDeclaration methodDeclaration = new MethodDeclaration(nodeList(publicModifier()), new ClassOrInterfaceType(null, KieModuleModel.class.getName()), "getKieModuleModel");
     private BlockStmt stmt = new BlockStmt();
 
     public KieModuleModelMethod(Map<String, KieBaseModel> kBaseModels) {
@@ -38,16 +37,14 @@ public class KieModuleModelMethod {
 
     public String toMethod() {
 
-        stmt.addStatement(moduleModelInitialization());
+        stmt.addStatement(JavaParser.parseStatement("KieModuleModel " +
+                                                            KMODULE_MODEL_NAME +
+                                                            " = KieServices.get().newKieModuleModel();"));
 
         List<KieBaseModel> values = new ArrayList<>(kBaseModels.values());
         for (int i = 0; i < values.size(); i++) {
             KieBaseModel kieBaseModel = values.get(i);
-            KieBaseModelGenerator kieBaseModelGenerator = new KieBaseModelGenerator(kieBaseModel, i);
-            kieBaseModelGenerator.initStatement();
-
-            kieBaseModelPackages(kieBaseModel, kieBaseModelGenerator.getKieBaseModelNameExpr());
-            kieSession(kieBaseModel, kieBaseModelGenerator.getKieBaseModelNameExpr());
+            new BaseModelGenerator(kieBaseModel, i).toSourceCode();
         }
 
         stmt.addStatement(JavaParser.parseStatement("return " + KMODULE_MODEL_NAME + ";"));
@@ -56,24 +53,28 @@ public class KieModuleModelMethod {
         return methodDeclaration.toString();
     }
 
-    class KieBaseModelGenerator {
+    class BaseModelGenerator {
 
         private KieBaseModel kieBaseModel;
         private String kieBaseModelName;
         private NameExpr kieBaseModelNameExpr;
 
-        KieBaseModelGenerator(KieBaseModel kieBaseModel, int index) {
+        BaseModelGenerator(KieBaseModel kieBaseModel, int index) {
             this.kieBaseModel = kieBaseModel;
             this.kieBaseModelName = "kieBaseModel" + index;
-
             kieBaseModelNameExpr = new NameExpr(kieBaseModelName);
         }
 
-        void initStatement() {
-            stmt.addStatement(newInstance(KieBaseModel.class.getName(), kieBaseModelName, moduleModelNameExpr(), "newKieBaseModel", kieBaseModel.getName()));
-
+        void toSourceCode() {
+            newBaseModelInstance();
             kieBaseModelDefault();
             eventProcessingType();
+            kieBaseModelPackages();
+            kieSession();
+        }
+
+        private BlockStmt newBaseModelInstance() {
+            return stmt.addStatement(newInstance(KieBaseModel.class.getName(), kieBaseModelName, moduleModelNameExpr(), "newKieBaseModel", kieBaseModel.getName()));
         }
 
         private void kieBaseModelDefault() {
@@ -86,33 +87,61 @@ public class KieModuleModelMethod {
             createEnum(kieBaseModelNameExpr, kieBaseModel.getEventProcessingMode().getClass().getCanonicalName(), kieBaseModel.getEventProcessingMode().getMode().toUpperCase(), "setEventProcessingMode");
         }
 
-        NameExpr getKieBaseModelNameExpr() {
-            return kieBaseModelNameExpr;
+        void kieBaseModelPackages() {
+            for (String p : kieBaseModel.getPackages()) {
+                stmt.addStatement(new MethodCallExpr(kieBaseModelNameExpr, "addPackage", nodeList(new StringLiteralExpr(p))));
+            }
+        }
+
+        private void kieSession() {
+            List<KieSessionModel> values1 = new ArrayList<>(kieBaseModel.getKieSessionModels().values());
+            for (int kieSessionModelIndex = 0; kieSessionModelIndex < values1.size(); kieSessionModelIndex++) {
+                KieSessionModel kieSessionModel = values1.get(kieSessionModelIndex);
+                new SessionModelGenerator(kieSessionModelIndex, kieSessionModel, kieBaseModelNameExpr).toSourceCode();
+            }
         }
     }
 
-    private MethodDeclaration createMethodDeclaration() {
-        return new MethodDeclaration(nodeList(publicModifier()), new ClassOrInterfaceType(null, KieModuleModel.class.getName()), "getKieModuleModel");
-    }
+    class SessionModelGenerator {
+        int kieSessionModelIndex;
+        KieSessionModel kieSessionModel;
+        NameExpr kieBaseModelNameExpr;
+        String name;
+        NameExpr nameExpr;
 
-    private void kieSession(KieBaseModel kieBaseModel, NameExpr kieBaseModelNameExpr) {
-        List<KieSessionModel> values1 = new ArrayList<>(kieBaseModel.getKieSessionModels().values());
-        for (int kieSessionModelIndex = 0; kieSessionModelIndex < values1.size(); kieSessionModelIndex++) {
-            KieSessionModel kieSessionModel = values1.get(kieSessionModelIndex);
-            String name = "kieSessionModel" + kieSessionModelIndex;
-            NameExpr nameExpr = new NameExpr(name);
+        public SessionModelGenerator(int kieSessionModelIndex, KieSessionModel kieSessionModel, NameExpr kieBaseModelNameExpr) {
+            this.kieSessionModelIndex = kieSessionModelIndex;
+            this.kieSessionModel = kieSessionModel;
+            this.kieBaseModelNameExpr = kieBaseModelNameExpr;
+            name = "kieSessionModel" + kieSessionModelIndex;
+            nameExpr = new NameExpr(name);
+        }
 
+        void toSourceCode() {
+            newSessionModelInstance();
+            sessionDefault();
+            setSessionModelType();
+            setClockType();
+        }
+
+        private void newSessionModelInstance() {
             stmt.addStatement(newInstance(KieSessionModel.class.getName(), name, kieBaseModelNameExpr, "newKieSessionModel", kieSessionModel.getName()));
+        }
 
-            if (kieSessionModel.isDefault()) {
-                stmt.addStatement(new MethodCallExpr(nameExpr, "setDefault", nodeList(new BooleanLiteralExpr(true))));
-            }
-
+        private void setSessionModelType() {
             createEnum(nameExpr, kieSessionModel.getType().getClass().getCanonicalName(), kieSessionModel.getType().toString(), "setType");
+        }
 
+        private void setClockType() {
             NameExpr type = new NameExpr(kieSessionModel.getClockType().getClass().getCanonicalName());
             MethodCallExpr clockTypeEnum = new MethodCallExpr(type, "get", nodeList(new StringLiteralExpr(kieSessionModel.getClockType().getClockType())));
             stmt.addStatement(new MethodCallExpr(nameExpr, "setClockType", nodeList(clockTypeEnum)));
+        }
+
+        private void sessionDefault() {
+            if (kieSessionModel.isDefault()) {
+                stmt.addStatement(new MethodCallExpr(nameExpr, "setDefault", nodeList(new BooleanLiteralExpr(true))));
+            }
         }
     }
 
@@ -122,22 +151,8 @@ public class KieModuleModelMethod {
         stmt.addStatement(new MethodCallExpr(nameExpr, enumSetter, nodeList(sessionTypeEnum)));
     }
 
-    private void kieBaseModelPackages(KieBaseModel kieBaseModel, NameExpr kieBaseModelNameExpr) {
-        List<String> packages = kieBaseModel.getPackages();
-        for (String p : packages) {
-            MethodCallExpr addPackage = new MethodCallExpr(kieBaseModelNameExpr, "addPackage", nodeList(new StringLiteralExpr(p)));
-            stmt.addStatement(addPackage);
-        }
-    }
-
     private NameExpr moduleModelNameExpr() {
         return new NameExpr(KMODULE_MODEL_NAME);
-    }
-
-    private Statement moduleModelInitialization() {
-        return JavaParser.parseStatement("KieModuleModel " +
-                                                 KMODULE_MODEL_NAME +
-                                                 " = KieServices.get().newKieModuleModel();");
     }
 
     AssignExpr newInstance(String type, String variableName, NameExpr scope, String methodName, String parameter) {
