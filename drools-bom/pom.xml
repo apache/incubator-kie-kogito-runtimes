@@ -105,20 +105,18 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
-      <!-- DRLX Parser -->
+      <!-- Drools Model -->
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drlx-parser</artifactId>
+        <artifactId>drools-constraint-parser</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drlx-parser</artifactId>
+        <artifactId>drools-constraint-parser</artifactId>
         <version>${version.org.kie}</version>
         <classifier>sources</classifier>
       </dependency>
-      <!-- /DRLX Parser -->
-      <!-- Drools Model -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-canonical-model</artifactId>
