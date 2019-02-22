@@ -3,6 +3,7 @@ package org.drools.modelcompiler.builder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.drools.javaparser.JavaParser;
 import org.drools.javaparser.ast.body.MethodDeclaration;
@@ -26,9 +27,10 @@ public class KieModuleModelMethod {
 
     private Map<String, KieBaseModel> kBaseModels;
 
-    public static final String KMODULE_MODEL_NAME = "kModuleModel";
+    private static final String KMODULE_MODEL_NAME = "kModuleModel";
 
-    private MethodDeclaration methodDeclaration = new MethodDeclaration(nodeList(publicModifier()), new ClassOrInterfaceType(null, KieModuleModel.class.getName()), "getKieModuleModel");
+    private final String kieModuleModelCanonicalName = KieModuleModel.class.getCanonicalName();
+    private MethodDeclaration methodDeclaration = new MethodDeclaration(nodeList(publicModifier()), new ClassOrInterfaceType(null, kieModuleModelCanonicalName), "getKieModuleModel");
     private BlockStmt stmt = new BlockStmt();
 
     public KieModuleModelMethod(Map<String, KieBaseModel> kBaseModels) {
@@ -37,17 +39,15 @@ public class KieModuleModelMethod {
 
     public String toMethod() {
 
-        stmt.addStatement(JavaParser.parseStatement("KieModuleModel " +
-                                                            KMODULE_MODEL_NAME +
-                                                            " = KieServices.get().newKieModuleModel();"));
+        stmt.addStatement(JavaParser.parseStatement(String.format("%s %s = org.kie.api.KieServices.get().newKieModuleModel();", kieModuleModelCanonicalName, KMODULE_MODEL_NAME)));
 
         List<KieBaseModel> values = new ArrayList<>(kBaseModels.values());
-        for (int i = 0; i < values.size(); i++) {
+        IntStream.range(0, values.size()).forEach(i -> {
             KieBaseModel kieBaseModel = values.get(i);
             new BaseModelGenerator(kieBaseModel, i).toSourceCode();
-        }
+        });
 
-        stmt.addStatement(JavaParser.parseStatement("return " + KMODULE_MODEL_NAME + ";"));
+        stmt.addStatement(JavaParser.parseStatement(String.format("return %s;", KMODULE_MODEL_NAME)));
 
         methodDeclaration.setBody(stmt);
         return methodDeclaration.toString();
@@ -57,12 +57,14 @@ public class KieModuleModelMethod {
 
         private KieBaseModel kieBaseModel;
         private String kieBaseModelName;
+        private int index;
         private NameExpr kieBaseModelNameExpr;
 
         BaseModelGenerator(KieBaseModel kieBaseModel, int index) {
             this.kieBaseModel = kieBaseModel;
             this.kieBaseModelName = "kieBaseModel" + index;
-            kieBaseModelNameExpr = new NameExpr(kieBaseModelName);
+            this.index = index;
+            this.kieBaseModelNameExpr = new NameExpr(kieBaseModelName);
         }
 
         void toSourceCode() {
@@ -70,11 +72,11 @@ public class KieModuleModelMethod {
             kieBaseModelDefault();
             eventProcessingType();
             kieBaseModelPackages();
-            kieSession();
+            sessionModels();
         }
 
-        private BlockStmt newBaseModelInstance() {
-            return stmt.addStatement(newInstance(KieBaseModel.class.getName(), kieBaseModelName, moduleModelNameExpr(), "newKieBaseModel", kieBaseModel.getName()));
+        private void newBaseModelInstance() {
+            stmt.addStatement(newInstance(KieBaseModel.class.getName(), kieBaseModelName, moduleModelNameExpr(), "newKieBaseModel", kieBaseModel.getName()));
         }
 
         private void kieBaseModelDefault() {
@@ -93,27 +95,29 @@ public class KieModuleModelMethod {
             }
         }
 
-        private void kieSession() {
-            List<KieSessionModel> values1 = new ArrayList<>(kieBaseModel.getKieSessionModels().values());
-            for (int kieSessionModelIndex = 0; kieSessionModelIndex < values1.size(); kieSessionModelIndex++) {
-                KieSessionModel kieSessionModel = values1.get(kieSessionModelIndex);
-                new SessionModelGenerator(kieSessionModelIndex, kieSessionModel, kieBaseModelNameExpr).toSourceCode();
-            }
+        private void sessionModels() {
+            List<KieSessionModel> sessionModels = new ArrayList<>(kieBaseModel.getKieSessionModels().values());
+            IntStream.range(0, sessionModels.size()).forEach(kieSessionModelIndex -> {
+                KieSessionModel kieSessionModel = sessionModels.get(kieSessionModelIndex);
+                new SessionModelGenerator(index, kieSessionModelIndex, kieSessionModel, kieBaseModelNameExpr).toSourceCode();
+            });
         }
     }
 
     class SessionModelGenerator {
+        int baseModelIndex;
         int kieSessionModelIndex;
         KieSessionModel kieSessionModel;
         NameExpr kieBaseModelNameExpr;
         String name;
         NameExpr nameExpr;
 
-        public SessionModelGenerator(int kieSessionModelIndex, KieSessionModel kieSessionModel, NameExpr kieBaseModelNameExpr) {
+        SessionModelGenerator(int baseModelIndex, int kieSessionModelIndex, KieSessionModel kieSessionModel, NameExpr kieBaseModelNameExpr) {
+            this.baseModelIndex = baseModelIndex;
             this.kieSessionModelIndex = kieSessionModelIndex;
             this.kieSessionModel = kieSessionModel;
             this.kieBaseModelNameExpr = kieBaseModelNameExpr;
-            name = "kieSessionModel" + kieSessionModelIndex;
+            name = "kieSessionModel" + baseModelIndex + kieSessionModelIndex;
             nameExpr = new NameExpr(name);
         }
 
@@ -129,7 +133,8 @@ public class KieModuleModelMethod {
         }
 
         private void setSessionModelType() {
-            createEnum(nameExpr, kieSessionModel.getType().getClass().getCanonicalName(), kieSessionModel.getType().toString(), "setType");
+            KieSessionModel.KieSessionType type = kieSessionModel.getType();
+            createEnum(nameExpr, type.getClass().getCanonicalName(), type.toString(), "setType");
         }
 
         private void setClockType() {
