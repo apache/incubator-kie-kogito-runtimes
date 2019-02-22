@@ -35,10 +35,8 @@ import org.drools.core.util.Drools;
 import org.drools.model.Model;
 import org.drools.modelcompiler.CanonicalKieModule;
 import org.drools.modelcompiler.CanonicalKieModuleModel;
-import org.kie.api.KieServices;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.ReleaseId;
-import org.kie.api.builder.model.KieModuleModel;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.jci.CompilationProblem;
 import org.slf4j.Logger;
@@ -143,8 +141,6 @@ public class CanonicalModelKieProject extends KieModuleKieProject {
                         "import " + CanonicalKieModuleModel.class.getCanonicalName()  + ";\n" +
                         "import " + ReleaseId.class.getCanonicalName()  + ";\n" +
                         "import " + ReleaseIdImpl.class.getCanonicalName()  + ";\n" +
-                        "import " + KieModuleModel.class.getCanonicalName()  + ";\n" +
-                        "import " + KieServices.class.getCanonicalName()  + ";\n" +
                         "\n" +
                         "public class ProjectModel implements CanonicalKieModuleModel {\n" +
                         "\n" +
