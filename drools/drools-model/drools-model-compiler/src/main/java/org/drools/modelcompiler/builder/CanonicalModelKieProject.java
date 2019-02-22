@@ -170,7 +170,7 @@ public class CanonicalModelKieProject extends KieModuleKieProject {
         sb.append(
                 ");\n" +
                         "    }\n");
-        sb.append(new KieModuleModelClass(kBaseModels).toMethod());
+        sb.append(new KieModuleModelMethod(kBaseModels).toMethod());
         sb.append("}" );
         return sb.toString();
     }
