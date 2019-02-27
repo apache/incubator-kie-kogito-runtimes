@@ -199,10 +199,12 @@
     <checkstyle.header.extensions>java</checkstyle.header.extensions>
     <enforcer.failOnDuplicatedClasses>true</enforcer.failOnDuplicatedClasses>
     <!-- Set to "true" on every project that has no violations. -->
-    <findbugs.failOnViolation>false</findbugs.failOnViolation>
+    <spotbugs.failOnViolation>false</spotbugs.failOnViolation>
     <!-- org.eclipse.tycho plugin version -->
     <version.org.eclipse.tycho>1.0.0</version.org.eclipse.tycho>
     <version.org.jboss.tools.tycho-plugins>1.0.0</version.org.jboss.tools.tycho-plugins>
+    <!-- replaces findbugs-maven-plugin -->
+    <version.com.github.spotbugs-maven-plugin>3.1.8</version.com.github.spotbugs-maven-plugin>
 
     <maven.min.version>3.3.9</maven.min.version>
     <!-- Important: this is one and only place where the supported user agents (browsers) are configured.
@@ -1305,8 +1307,9 @@
           <version>${version.org.wildfly.swarm}</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>${version.com.github.spotbugs-maven-plugin}</version>
           <dependencies>
             <dependency>
               <groupId>org.kie</groupId>
@@ -1318,8 +1321,8 @@
             <maxRank>6</maxRank>
             <effort>Max</effort>
             <xmlOutput>true</xmlOutput>
-            <failOnError>${findbugs.failOnViolation}</failOnError>
-            <excludeFilterFile>findbugs-excludes.xml</excludeFilterFile>
+	    <failOnError>${spotbugs.failOnViolation}</failOnError>
+	    <excludeFilterFile>spotbugs-excludes.xml</excludeFilterFile>
           </configuration>
         </plugin>
         <plugin>
@@ -1452,8 +1455,8 @@
         <version>2.4</version>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </reporting>
@@ -1600,11 +1603,11 @@
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>findbugs-maven-plugin</artifactId>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>findbugs-check</id>
+                <id>spotbugs-check</id>
                 <phase>compile</phase>
                 <goals>
                   <goal>check</goal>
