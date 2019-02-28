@@ -265,6 +265,9 @@
     <version.javax.annotation-api>1.3.2</version.javax.annotation-api>
     <version.com.sun.xml.messaging.saaj>1.5.0</version.com.sun.xml.messaging.saaj>
 
+    <!-- Remove this property when jboss-ip-bom 8.5.1.Final will be released -->
+    <version.org.javassist>3.22.0-GA</version.org.javassist>
+
     <!-- specifal versions to support different version of hibernate for ee7 servers such as WAS and WLS -->
     <version.org.hibernate-4ee7>5.1.15.Final</version.org.hibernate-4ee7>
     <version.org.jboss.logging-4ee7>3.3.1.Final</version.org.jboss.logging-4ee7>
