@@ -1,2 +1,4 @@
 Creating initial commit
 Merged drools from git history, moved onto /drools
+Merged jbpm from git history, moved onto /jbpm
+
