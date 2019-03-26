@@ -1,2 +1,2 @@
 Creating initial commit
-
+Merged drools from git history, moved onto /drools
