@@ -11,6 +11,20 @@
   <name>Submarine Runtimes</name>
   <description>Submarine Runtimes</description>
 
+  <!-- distributionManagement section -->
+  <distributionManagement>
+    <repository>
+      <id>jboss-releases-repository</id>
+      <name>JBoss Releases Repository</name>
+      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>jboss-snapshots-repository</id>
+      <name>JBoss Snapshot Repository</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <modules>
     <module>api</module>
     <module>drools</module>
