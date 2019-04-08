@@ -16,16 +16,21 @@
 package org.kie.maven.plugin;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -51,6 +56,7 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.api.runtime.process.WorkItemHandler;
 import org.xml.sax.SAXException;
 
 import com.github.javaparser.JavaParser;
@@ -99,6 +105,8 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNExtensionsSemanticModule());
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNDISemanticModule());
     }
+    
+    private static final List<String> DEFAULT_HANDLERS = Arrays.asList("Log", "Human Task");
 
     @Parameter(required = true, defaultValue = "${project.basedir}/src")
     private File sourceDir;
@@ -132,6 +140,7 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
             setSystemProperties(properties);
 
             final List<String> compiledClassNames = new ArrayList<>();
+            final Set<String> workItems = new HashSet<>();
             List<File> processFiles = getBPMNFiles();
             Map<String, String> labels = new HashMap<>();
 
@@ -152,7 +161,7 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
                 WorkflowProcess workFlowProcess = (WorkflowProcess) process;
 
                 ProcessMetaData processMetaData = ProcessToExecModelGenerator.INSTANCE.generate(workFlowProcess);
-                
+                workItems.addAll(processMetaData.getWorkItems());
                 // create class with executable model for the process
                 String processClazzName = processMetaData.getProcessClassName();
                 final Path processFileNameRelative = transformPathToMavenPath(processClazzName, ".java");
@@ -185,7 +194,7 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
                 }
             }
             if (!compiledClassNames.isEmpty()) {
-                String boostrapClass = generateProcessRuntimeBootstrap(compiledClassNames);
+                String boostrapClass = generateProcessRuntimeBootstrap(compiledClassNames, workItems);
                 final Path bootstrapFileNameRelative = transformPathToMavenPath(BOOTSTRAP_CLASS, ".java");
                 final Path rbootstrapFileName = Paths.get(targetDirectory.getPath(), additionalCompilerPath, bootstrapFileNameRelative.toString());
                 createSourceFile(rbootstrapFileName, boostrapClass);
@@ -376,7 +385,7 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
         return clazz.toString();
     }
 
-    protected String generateProcessRuntimeBootstrap(List<String> compiledClassNames) {
+    protected String generateProcessRuntimeBootstrap(List<String> compiledClassNames, Set<String> workItems) {
         CompilationUnit clazz = JavaParser.parse(this.getClass().getResourceAsStream("/class-templates/ProcessRuntimeTemplate.java"));
         clazz.setPackageDeclaration(BOOTSTRAP_PACKAGE);
         clazz.addImport(ArrayList.class);
@@ -386,7 +395,7 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
 
             ClassOrInterfaceDeclaration resourceClass = resourceClassOptional.get();
 
-
+            // set processes found
             MethodDeclaration getProcessesMethod = resourceClass.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("getProcesses")).get();
             BlockStmt body = new BlockStmt();
 
@@ -402,7 +411,41 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
 
             body.addStatement(new ReturnStmt(new NameExpr("processes")));
             getProcessesMethod.setBody(body);
-
+            
+            
+            // set work item handlers if found
+            workItems.removeAll(DEFAULT_HANDLERS);
+            if (!workItems.isEmpty()) {
+                Properties handlers = new Properties();
+                
+                try (FileInputStream in = new FileInputStream(new File(projectDir, "src/main/resources/workitem-handlers.properties"))){
+                    
+                    handlers.load(in);
+                } catch (Exception e) {
+                    getLog().info("Work item handlers config file was not found");
+                }
+            
+            
+                MethodDeclaration getHandlersMethod = resourceClass.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("getWorkItemHandlers")).get();
+                BlockStmt hanldersBody = new BlockStmt();
+    
+                ClassOrInterfaceType handlersListType = new ClassOrInterfaceType(null, new SimpleName(List.class.getSimpleName()), NodeList.nodeList(new ClassOrInterfaceType(null, WorkItemHandler.class.getSimpleName())));
+                VariableDeclarationExpr handlersField = new VariableDeclarationExpr(handlersListType, "handlers");
+    
+                hanldersBody.addStatement(new AssignExpr(handlersField, new ObjectCreationExpr(null, new ClassOrInterfaceType(null, ArrayList.class.getSimpleName()), NodeList.nodeList()), AssignExpr.Operator.ASSIGN));
+    
+                for (String workItem : workItems) {
+                    String handlerClass = handlers.getProperty(workItem);
+                    if (handlerClass == null) {
+                        throw new IllegalArgumentException("Cannot find work work item handler for " + workItem);
+                    }
+                    MethodCallExpr addHandler = new MethodCallExpr(new NameExpr("handlers"), "add").addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, handlerClass), NodeList.nodeList()));
+                    hanldersBody.addStatement(addHandler);
+                }
+    
+                hanldersBody.addStatement(new ReturnStmt(new NameExpr("handlers")));
+                getHandlersMethod.setBody(hanldersBody);
+            }
         }
 
         return clazz.toString();
