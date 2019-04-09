@@ -283,8 +283,10 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
             ClassOrInterfaceDeclaration resourceClass = resourceClassOptional.get();
 
             resourceClass.setName(StringUtils.capitalize(extractedProcessId) + RESOURCE_CLASS_SUFFIX);
-            resourceClass.addAnnotation(new SingleMemberAnnotationExpr(new Name("Path"), new StringLiteralExpr("/" + extractedProcessId)))
-            .addAnnotation(new SingleMemberAnnotationExpr(new Name("Api"), new StringLiteralExpr(documentation)));
+            resourceClass.addAnnotation(new SingleMemberAnnotationExpr(new Name("Path"), new StringLiteralExpr("/" + extractedProcessId)));
+            NormalAnnotationExpr apiExpression = new NormalAnnotationExpr(new Name("Api"), new NodeList<>());
+            apiExpression.addPair("description", new StringLiteralExpr(documentation));
+            resourceClass.addAnnotation(apiExpression);
 
             MethodCallExpr bootstrapMethod = new MethodCallExpr(new NameExpr(BOOTSTRAP_CLASS), "getProcessRuntime");
             resourceClass.addFieldWithInitializer(InternalProcessRuntime.class, "processRuntime", bootstrapMethod, Keyword.PRIVATE);
@@ -306,7 +308,12 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
             createOperationExpression.addPair("tags", "{\"" + dataClazzName + "\"}");
             create = create.addAnnotation(createOperationExpression);
 
-            create.addParameter(type, "resource");
+            com.github.javaparser.ast.body.Parameter createParameter = new com.github.javaparser.ast.body.Parameter(type, "resource");
+            NormalAnnotationExpr requestBodyAnnotationExp = new NormalAnnotationExpr(new Name("ApiParam"), new NodeList<>());
+            requestBodyAnnotationExp.addPair("value", "\"" + dataClazzName + " Object that needs to be created\"");
+            createParameter.addAnnotation(requestBodyAnnotationExp);
+
+            create.addParameter(createParameter);
             BlockStmt bodyCreate = create.createBody();
 
             IfStmt nullResource = new IfStmt(new BinaryExpr(new NameExpr("resource"), new NullLiteralExpr(), com.github.javaparser.ast.expr.BinaryExpr.Operator.EQUALS)
