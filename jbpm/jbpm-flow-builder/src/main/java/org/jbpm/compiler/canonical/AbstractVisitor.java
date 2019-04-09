@@ -102,6 +102,24 @@ public abstract class AbstractVisitor {
         return new ExpressionStmt(assignExpr);
     }
 
+    protected Statement makeVariableAssignment(Variable v) {
+        ClassOrInterfaceType type = JavaParser.parseClassOrInterfaceType(v.getType().getStringType());
+        String name = v.getName();
+
+        // `type` `name` = (`type`) `kcontext.getVariable
+        AssignExpr assignExpr = new AssignExpr(
+                new VariableDeclarationExpr(type, name),
+                new CastExpr(
+                        type,
+                        new MethodCallExpr(
+                                new NameExpr("kcontext"),
+                                "getVariable")
+                                .addArgument(new StringLiteralExpr(name))),
+                AssignExpr.Operator.ASSIGN);
+
+        return new ExpressionStmt(assignExpr);
+    }
+
     protected String getOrDefault(String value, String defaultValue) {
         if (value == null) {
             return defaultValue;
@@ -110,9 +128,14 @@ public abstract class AbstractVisitor {
         return value;
     }
 
+
+
     protected void addWorkItemParameters(Work work, BlockStmt body, String variableName) {
 
         for (Entry<String, Object> entry : work.getParameters().entrySet()) {
+            if (entry.getValue() == null) {
+                continue; // interfaceImplementationRef ?
+            }
             addFactoryMethodWithArgs(body, variableName, "workParameter", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue().toString()));
         }
 
