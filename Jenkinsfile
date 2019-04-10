@@ -44,8 +44,8 @@ pipeline {
         }
         stage ('Build submarine-bom') {
             when {
-                not {
-                    equals expected: null, actual: submarineBomScm
+                expression {
+                    return submarineBomScm != null
                 }
             }
             steps {
@@ -81,19 +81,20 @@ pipeline {
                 }
             }
         }
+        stage('Publish test results') {
+            steps {
+                junit '**/target/surefire-reports/**/*.xml'
+            }
+        }
     }
     post {
-        success {
-            junit '**/target/surefire-reports/**/*.xml'
-        }
         unstable {
-            junit '**/target/surefire-reports/**/*.xml'
             mail to: "$CHANGE_AUTHOR_EMAIL", subject: "Build for PR $BRANCH_NAME failed!", body: "For more details see $BUILD_URL"
         }
         failure {
             mail to: "$CHANGE_AUTHOR_EMAIL", subject: "Build for PR $BRANCH_NAME failed!", body: "For more details see $BUILD_URL"
         }
-        cleanup {
+        always {
             cleanWs()
         }
     }
