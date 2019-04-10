@@ -21,30 +21,30 @@ pipeline {
                 echo "Original branch: $CHANGE_BRANCH"
                 echo "Target branch: $CHANGE_TARGET"
                 echo "PR author: $CHANGE_AUTHOR_EMAIL"
-                @NonCPS
-                script {
-                    submarineBomScm = resolveScm(
-                            source: github(
-                                    credentialsId: 'kie-ci',
-                                    repoOwner: "$CHANGE_AUTHOR",
-                                    repository: 'submarine-bom',
-                                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-                                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-                                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
-                            ignoreErrors: true,
-                            targets: ["$CHANGE_BRANCH"])
-
-                    submarineExamplesScm = resolveScm(
-                            source: github(
-                                    credentialsId: 'kie-ci',
-                                    repoOwner: "$CHANGE_AUTHOR",
-                                    repository: 'submarine-examples',
-                                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-                                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-                                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
-                            ignoreErrors: true,
-                            targets: ["$CHANGE_BRANCH"])
-                }
+//                script {
+//                    submarineBomScm = resolveScm(
+//                            source: github(
+//                                    credentialsId: 'kie-ci',
+////                                    repoOwner: "$CHANGE_AUTHOR",
+//                                    repoOwner: "$CHANGE_AUTHOR",
+//                                    repository: 'submarine-bom',
+//                                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
+//                                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+//                                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
+//                            ignoreErrors: true,
+//                            targets: ["$CHANGE_BRANCH"])
+//
+//                    submarineExamplesScm = resolveScm(
+//                            source: github(
+//                                    credentialsId: 'kie-ci',
+//                                    repoOwner: "$CHANGE_AUTHOR",
+//                                    repository: 'submarine-examples',
+//                                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
+//                                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+//                                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
+//                            ignoreErrors: true,
+//                            targets: ["$CHANGE_BRANCH"])
+//                }
             }
         }
         stage('Build submarine-bom') {
