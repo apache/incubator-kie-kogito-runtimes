@@ -1,4 +1,5 @@
 def submarineBomScm = null
+def submarineExamplesScm = null
 
 pipeline {
     agent {
@@ -29,6 +30,15 @@ pipeline {
                                      gitHubForkDiscovery(strategyId: 1, trust: gitHubTrustPermissions())]),
                             ignoreErrors: true,
                             targets: ["$CHANGE_BRANCH"])
+                    submarineExamplesScm = resolveScm(source: github(
+                            credentialsId: 'kie-ci',
+                            repoOwner: "$CHANGE_AUTHOR",
+                            repository: 'submarine-examples',
+                            traits: [gitHubBranchDiscovery(1),
+                                     [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+                                     gitHubForkDiscovery(strategyId: 1, trust: gitHubTrustPermissions())]),
+                            ignoreErrors: true,
+                            targets: ["$CHANGE_BRANCH"])
                 }
             }
         }
@@ -53,14 +63,20 @@ pipeline {
         stage('Build submarine-examples') {
             steps {
                 dir("submarine-examples") {
-                    checkout(resolveScm(source: github(
-                            credentialsId: 'kie-ci',
-                            repoOwner: 'kiegroup',
-                            repository: 'submarine-examples',
-                            traits: [gitHubBranchDiscovery(1),
-                                     [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-                                     gitHubForkDiscovery(strategyId: 1, trust: gitHubTrustPermissions())]),
-                            targets: ["$CHANGE_TARGET"]))
+                    script {
+                        if (submarineExamplesScm != null) {
+                            checkout submarineExamplesScm
+                        } else {
+                            checkout(resolveScm(source: github(
+                                    credentialsId: 'kie-ci',
+                                    repoOwner: 'kiegroup',
+                                    repository: 'submarine-examples',
+                                    traits: [gitHubBranchDiscovery(1),
+                                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+                                             gitHubForkDiscovery(strategyId: 1, trust: gitHubTrustPermissions())]),
+                                    targets: ["$CHANGE_TARGET"]))
+                        }
+                    }
                     sh 'mvn clean install'
                 }
             }
