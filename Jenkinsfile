@@ -3,7 +3,7 @@ def submarineExamplesScm = null
 
 pipeline {
     agent {
-        label 'kie-rhel7 && kie-mem8g'
+        label 'kie-rhel7'
     }
     tools {
         maven 'kie-maven-3.5.4'
