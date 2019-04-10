@@ -21,6 +21,7 @@ pipeline {
                 echo "Original branch: $CHANGE_BRANCH"
                 echo "Target branch: $CHANGE_TARGET"
                 echo "PR author: $CHANGE_AUTHOR_EMAIL"
+                @NonCPS
                 script {
                     submarineBomScm = resolveScm(
                             source: github(
