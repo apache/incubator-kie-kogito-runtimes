@@ -19,6 +19,7 @@ package org.jbpm.compiler.canonical;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.ParameterDefinition;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.variable.Variable;
@@ -97,6 +98,23 @@ public abstract class AbstractVisitor {
                                                                                new NameExpr("kcontext"),
                                                                                "getVariable")
                                                                                              .addArgument(new StringLiteralExpr(name))),
+                                               AssignExpr.Operator.ASSIGN);
+
+        return new ExpressionStmt(assignExpr);
+    }
+    
+    protected Statement makeAssignmentFromModel(Variable v) {
+        ClassOrInterfaceType type = JavaParser.parseClassOrInterfaceType(v.getType().getStringType());
+        String name = v.getName();
+
+        // `type` `name` = (`type`) `kcontext.getVariable
+        AssignExpr assignExpr = new AssignExpr(
+                                               new VariableDeclarationExpr(type, name),
+                                               new CastExpr(
+                                                            type,
+                                                            new MethodCallExpr(
+                                                                               new NameExpr("model"),
+                                                                               "get" + StringUtils.capitalize(name))),
                                                AssignExpr.Operator.ASSIGN);
 
         return new ExpressionStmt(assignExpr);

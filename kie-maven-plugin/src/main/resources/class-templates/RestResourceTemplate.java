@@ -32,8 +32,9 @@ public class $Type$Resource {
             resource = new $Type$();
         }
 
-        process.createInstance(resource).start();
-        return resource;
+        ProcessInstance<$Type$> pi = process.createInstance(resource);
+        pi.start();
+        return pi.variables();
     }
 
     @GET()

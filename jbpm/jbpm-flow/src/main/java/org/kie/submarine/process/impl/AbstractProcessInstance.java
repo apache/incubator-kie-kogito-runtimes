@@ -40,18 +40,19 @@ public abstract class AbstractProcessInstance<T> implements ProcessInstance<T> {
     public void start() {
         Map<String, Object> map = bind(variables);
         String id = process.legacyProcess().getId();
-        this.legacyProcessInstance =
-                rt.createProcessInstance(id, map);
+        this.legacyProcessInstance = rt.createProcessInstance(id, map);
         long pid = legacyProcessInstance.getId();
-        process.instances().update(
-                pid, this);
-        this.rt.startProcessInstance(pid);
-        unbind(variables, map);
+        process.instances().update(pid, this);
+        org.kie.api.runtime.process.ProcessInstance pi = this.rt.startProcessInstance(pid);
+        unbind(variables, pi.getVariables());
     }
 
     public void abort() {
-        if (legacyProcessInstance == null) return;
+        if (legacyProcessInstance == null) {
+            return;
+        }
         long pid = legacyProcessInstance.getId();
+        unbind(variables, legacyProcessInstance.getVariables());
         process.instances().remove(pid);
         this.rt.abortProcessInstance(pid);
     }

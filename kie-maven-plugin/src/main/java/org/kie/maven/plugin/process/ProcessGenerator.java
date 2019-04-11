@@ -102,6 +102,7 @@ public class ProcessGenerator {
         CompilationUnit compilationUnit = new CompilationUnit(packageName);
         compilationUnit.addImport("org.jbpm.process.core.datatype.impl.type.ObjectDataType");
         compilationUnit.addImport("org.jbpm.ruleflow.core.RuleFlowProcessFactory");
+        compilationUnit.addImport("org.drools.core.util.KieFunctions");
         compilationUnit.getTypes().add(classDeclaration());
         return compilationUnit;
     }

@@ -105,7 +105,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractVisitor {
         BlockStmt stmts = new BlockStmt();
 
         for (Map.Entry<String, String> e : subProcessNode.getOutMappings().entrySet()) {
-            stmts.addStatement(makeAssignment(variableScope.findVariable(e.getKey())));
+            stmts.addStatement(makeAssignmentFromModel(variableScope.findVariable(e.getKey())));
             stmts.addStatement(new MethodCallExpr()
                                        .setScope(new NameExpr("kcontext"))
                                        .setName("setVariable")

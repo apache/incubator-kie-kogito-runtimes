@@ -93,7 +93,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         SubProcessFactory subProcessFactory = getSubProcessNode().getSubProcessFactory();
         Object o = subProcessFactory.bind(context);
         org.kie.submarine.process.ProcessInstance<?> processInstance = subProcessFactory.createInstance(o);
-        subProcessFactory.unbind(context, o);
+        
 
 //            KieRuntime kruntime = ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime();
 //            if (getSubProcessNode().getMetaData("MICollectionInput") != null) {
@@ -134,6 +134,8 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
 
 
         processInstance.start();
+        
+        subProcessFactory.unbind(context, processInstance.variables());
     }
 
     private Map<String, Object> prepareParameters() {

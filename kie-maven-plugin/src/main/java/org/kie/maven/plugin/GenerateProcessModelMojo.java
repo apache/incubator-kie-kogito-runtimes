@@ -111,6 +111,9 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
             setSystemProperties(properties);
 
             List<File> processFiles = getBPMNFiles();
+            if (processFiles.isEmpty()) {
+                return;
+            }
             Map<String, String> labels = new HashMap<>();
 
             getLog().debug("Process Files to process: " + processFiles);
@@ -205,7 +208,7 @@ public class GenerateProcessModelMojo extends AbstractKieMojo {
                 Files.write(pathOf(pi.generatedFilePath()), pi.generate().getBytes());
             }
 
-            String workItemHandlerConfigClass = "org.kie.submarine.project.WorkItemHandlerConfig";
+            String workItemHandlerConfigClass = project.getGroupId() + ".WorkItemHandlerConfig";
             Path p = Paths.get(sourceDir.getPath(),
                                "main/java",
                                workItemHandlerConfigClass.replace('.', '/') + ".java");
