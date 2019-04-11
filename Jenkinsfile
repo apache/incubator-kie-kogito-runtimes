@@ -64,28 +64,34 @@ pipeline {
                 }
             }
             steps {
-                dir("submarine-bom") {
-                    checkout submarineBomScmCustom
-                    sh 'mvn clean install -DskipTests'
+                timeout(15) {
+                    dir("submarine-bom") {
+                        checkout submarineBomScmCustom
+                        sh 'mvn clean install -DskipTests'
+                    }
                 }
             }
         }
         stage('Build submarine-runtimes') {
             steps {
-                sh 'mvn clean install'
+                timeout(30) {
+                    sh 'mvn clean install'
+                }
             }
         }
         stage('Build submarine-examples') {
             steps {
-                dir("submarine-examples") {
-                    script {
-                        if (submarineExamplesScmCustom != null) {
-                            checkout submarineExamplesScmCustom
-                        } else {
-                            checkout(resolveRepository('submarine-examples', 'kiegroup', "$CHANGE_TARGET", false))
+                timeout(30) {
+                    dir("submarine-examples") {
+                        script {
+                            if (submarineExamplesScmCustom != null) {
+                                checkout submarineExamplesScmCustom
+                            } else {
+                                checkout(resolveRepository('submarine-examples', 'kiegroup', "$CHANGE_TARGET", false))
+                            }
                         }
+                        sh 'mvn clean install'
                     }
-                    sh 'mvn clean install'
                 }
             }
         }
