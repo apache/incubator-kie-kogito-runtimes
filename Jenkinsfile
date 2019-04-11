@@ -18,7 +18,7 @@ def sendEmailFailure() {
     emailext (
             subject: "Build for PR $BRANCH_NAME failed",
             body: "Build for PR $BRANCH_NAME failed! For more infformation see $BUILD_URL",
-            recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+            recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
     )
 }
 
