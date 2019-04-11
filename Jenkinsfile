@@ -21,30 +21,37 @@ pipeline {
                 echo "Original branch: $CHANGE_BRANCH"
                 echo "Target branch: $CHANGE_TARGET"
                 echo "PR author: $CHANGE_AUTHOR_EMAIL"
-//                script {
-//                    submarineBomScm = resolveScm(
-//                            source: github(
-//                                    credentialsId: 'kie-ci',
-////                                    repoOwner: "$CHANGE_AUTHOR",
-//                                    repoOwner: "$CHANGE_AUTHOR",
-//                                    repository: 'submarine-bom',
-//                                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-//                                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-//                                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
-//                            ignoreErrors: true,
-//                            targets: ["$CHANGE_BRANCH"])
-//
-//                    submarineExamplesScm = resolveScm(
-//                            source: github(
-//                                    credentialsId: 'kie-ci',
-//                                    repoOwner: "$CHANGE_AUTHOR",
-//                                    repository: 'submarine-examples',
-//                                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-//                                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-//                                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
-//                            ignoreErrors: true,
-//                            targets: ["$CHANGE_BRANCH"])
-//                }
+                script {
+                    try {
+                        submarineBomScm = resolveScm(
+                                source: github(
+                                        credentialsId: 'kie-ci',
+                                        repoOwner: "$CHANGE_AUTHOR",
+                                        repository: 'submarine-bom',
+                                        traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
+                                                 [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+                                                 [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
+                                ignoreErrors: true,
+                                targets: ["$CHANGE_BRANCH"])
+                    } catch (Exception ex) {
+                        echo "Branch $CHANGE_BRANCH from repository submarine-bom not found in $CHANGE_AUTHOR organisation."
+                    }
+
+                    try {
+                        submarineExamplesScm = resolveScm(
+                                source: github(
+                                        credentialsId: 'kie-ci',
+                                        repoOwner: "$CHANGE_AUTHOR",
+                                        repository: 'submarine-examples',
+                                        traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
+                                                 [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+                                                 [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
+                                ignoreErrors: true,
+                                targets: ["$CHANGE_BRANCH"])
+                    } catch (Exception ex) {
+                        echo "Branch $CHANGE_BRANCH from repository submarine-examples not found in $CHANGE_AUTHOR organisation."
+                    }
+                }
             }
         }
         stage('Build submarine-bom') {
@@ -62,7 +69,7 @@ pipeline {
         }
         stage('Build submarine-runtimes') {
             steps {
-                sh 'mvn clean install'
+                sh 'mvn clean install -DskipTests'
             }
         }
         stage('Build submarine-examples') {
@@ -82,7 +89,7 @@ pipeline {
                                     targets: ["$CHANGE_TARGET"]))
                         }
                     }
-                    sh 'mvn clean install'
+                    sh 'mvn clean install -DskipTests'
                 }
             }
         }
