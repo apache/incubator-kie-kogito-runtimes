@@ -1,6 +1,19 @@
 def submarineBomScm = null
 def submarineExamplesScm = null
 
+def resolveRepository(String repository, String author, String branches, boolean ignoreErrors) {
+    return resolveScm(
+            source: github(
+                    credentialsId: 'kie-ci',
+                    repoOwner: author,
+                    repository: repository,
+                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
+                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
+            ignoreErrors: ignoreErrors,
+            targets: [branches])
+}
+
 pipeline {
     agent {
 //        label 'kie-rhel7'
@@ -23,31 +36,13 @@ pipeline {
                 echo "PR author: $CHANGE_AUTHOR_EMAIL"
                 script {
                     try {
-                        submarineBomScm = resolveScm(
-                                source: github(
-                                        credentialsId: 'kie-ci',
-                                        repoOwner: "$CHANGE_AUTHOR",
-                                        repository: 'submarine-bom',
-                                        traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-                                                 [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-                                                 [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
-                                ignoreErrors: true,
-                                targets: ["$CHANGE_BRANCH"])
+                        submarineBomScm = resolveRepository('submarine-bom', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
                     } catch (Exception ex) {
                         echo "Branch $CHANGE_BRANCH from repository submarine-bom not found in $CHANGE_AUTHOR organisation."
                     }
 
                     try {
-                        submarineExamplesScm = resolveScm(
-                                source: github(
-                                        credentialsId: 'kie-ci',
-                                        repoOwner: "$CHANGE_AUTHOR",
-                                        repository: 'submarine-examples',
-                                        traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-                                                 [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-                                                 [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
-                                ignoreErrors: true,
-                                targets: ["$CHANGE_BRANCH"])
+                        submarineExamplesScm = resolveRepository('submarine-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
                     } catch (Exception ex) {
                         echo "Branch $CHANGE_BRANCH from repository submarine-examples not found in $CHANGE_AUTHOR organisation."
                     }
@@ -79,14 +74,7 @@ pipeline {
                         if (submarineExamplesScm != null) {
                             checkout submarineExamplesScm
                         } else {
-                            checkout(resolveScm(source: github(
-                                    credentialsId: 'kie-ci',
-                                    repoOwner: 'kiegroup',
-                                    repository: 'submarine-examples',
-                                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-                                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-                                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
-                                    targets: ["$CHANGE_TARGET"]))
+                            checkout(resolveRepository('submarine-examples', 'kiegroup', "$CHANGE_TARGET", false))
                         }
                     }
                     sh 'mvn clean install -DskipTests'
