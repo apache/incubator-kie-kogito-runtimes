@@ -1,26 +1,7 @@
+@Library('jenkins-pipeline-shared-libraries')_
+
 def submarineBomScmCustom = null
 def submarineExamplesScmCustom = null
-
-def resolveRepository(String repository, String author, String branches, boolean ignoreErrors) {
-    return resolveScm(
-            source: github(
-                    credentialsId: 'kie-ci',
-                    repoOwner: author,
-                    repository: repository,
-                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-                             [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
-            ignoreErrors: ignoreErrors,
-            targets: [branches])
-}
-
-def sendEmailFailure() {
-    emailext (
-            subject: "Build $BRANCH_NAME failed",
-            body: "Build $BRANCH_NAME failed! For more information see $BUILD_URL",
-            recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
-    )
-}
 
 pipeline {
     agent {
@@ -40,13 +21,13 @@ pipeline {
                 sh 'printenv'
                 script {
                     try {
-                        submarineBomScmCustom = resolveRepository('submarine-bom', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
+                        submarineBomScmCustom = githubscm.resolveRepository('submarine-bom', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
                     } catch (Exception ex) {
                         echo "Branch $CHANGE_BRANCH from repository submarine-bom not found in $CHANGE_AUTHOR organisation."
                     }
 
                     try {
-                        submarineExamplesScmCustom = resolveRepository('submarine-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
+                        submarineExamplesScmCustom = githubscm.resolveRepository('submarine-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
                     } catch (Exception ex) {
                         echo "Branch $CHANGE_BRANCH from repository submarine-examples not found in $CHANGE_AUTHOR organisation."
                     }
@@ -83,7 +64,7 @@ pipeline {
                             if (submarineExamplesScmCustom != null) {
                                 checkout submarineExamplesScmCustom
                             } else {
-                                checkout(resolveRepository('submarine-examples', 'kiegroup', "$CHANGE_TARGET", false))
+                                checkout(githubscm.resolveRepository('submarine-examples', 'kiegroup', "$CHANGE_TARGET", false))
                             }
                         }
                         sh 'mvn clean install'
@@ -100,12 +81,12 @@ pipeline {
     post {
         unstable {
             script {
-                sendEmailFailure()
+                mailer.sendEmailFailure()
             }
         }
         failure {
             script {
-                sendEmailFailure()
+                mailer.sendEmailFailure()
             }
         }
         always {
