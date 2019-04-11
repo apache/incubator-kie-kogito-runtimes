@@ -64,7 +64,7 @@ pipeline {
         }
         stage('Build submarine-runtimes') {
             steps {
-                sh 'mvn clean install -DskipTests'
+                sh 'mvn clean install'
             }
         }
         stage('Build submarine-examples') {
@@ -77,7 +77,7 @@ pipeline {
                             checkout(resolveRepository('submarine-examples', 'kiegroup', "$CHANGE_TARGET", false))
                         }
                     }
-                    sh 'mvn clean install -DskipTests'
+                    sh 'mvn clean install'
                 }
             }
         }
