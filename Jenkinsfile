@@ -14,6 +14,14 @@ def resolveRepository(String repository, String author, String branches, boolean
             targets: [branches])
 }
 
+def sendEmailFailure() {
+    emailext (
+            subject: "Build for PR $BRANCH_NAME failed",
+            body: "Build for PR $BRANCH_NAME failed! For more infformation see $BUILD_URL",
+            recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+    )
+}
+
 pipeline {
     agent {
 //        label 'kie-rhel7'
@@ -89,12 +97,17 @@ pipeline {
     }
     post {
         unstable {
-            mail to: "$CHANGE_AUTHOR_EMAIL", subject: "Build for PR $BRANCH_NAME failed!", body: "For more details see $BUILD_URL"
+            script {
+                sendEmailFailure()
+            }
         }
         failure {
-            mail to: "$CHANGE_AUTHOR_EMAIL", subject: "Build for PR $BRANCH_NAME failed!", body: "For more details see $BUILD_URL"
+            script {
+                sendEmailFailure()
+            }
         }
         always {
+            sendEmailFailure()
             cleanWs()
         }
     }
