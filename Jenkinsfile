@@ -37,11 +37,6 @@ pipeline {
     stages {
         stage('Initialize') {
             steps {
-//                echo "PATH = ${PATH}"
-//                echo "M2_HOME = ${M2_HOME}"
-//                echo "Original branch: $CHANGE_BRANCH"
-//                echo "Target branch: $CHANGE_TARGET"
-//                echo "PR author: $CHANGE_AUTHOR_EMAIL"
                 sh 'printenv'
                 script {
                     try {
