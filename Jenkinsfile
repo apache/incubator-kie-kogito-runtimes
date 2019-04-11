@@ -76,9 +76,9 @@ pipeline {
                                     credentialsId: 'kie-ci',
                                     repoOwner: 'kiegroup',
                                     repository: 'submarine-examples',
-                                    traits: [gitHubBranchDiscovery(1),
+                                    traits: [[$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
                                              [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-                                             gitHubForkDiscovery(strategyId: 1, trust: gitHubTrustPermissions())]),
+                                             [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustPermission']]]),
                                     targets: ["$CHANGE_TARGET"]))
                         }
                     }
