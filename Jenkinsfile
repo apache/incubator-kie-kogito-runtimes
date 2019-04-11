@@ -1,5 +1,5 @@
-def submarineBomScm = null
-def submarineExamplesScm = null
+def submarineBomScmCustom = null
+def submarineExamplesScmCustom = null
 
 def resolveRepository(String repository, String author, String branches, boolean ignoreErrors) {
     return resolveScm(
@@ -44,13 +44,13 @@ pipeline {
                 echo "PR author: $CHANGE_AUTHOR_EMAIL"
                 script {
                     try {
-                        submarineBomScm = resolveRepository('submarine-bom', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
+                        submarineBomScmCustom = resolveRepository('submarine-bom', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
                     } catch (Exception ex) {
                         echo "Branch $CHANGE_BRANCH from repository submarine-bom not found in $CHANGE_AUTHOR organisation."
                     }
 
                     try {
-                        submarineExamplesScm = resolveRepository('submarine-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
+                        submarineExamplesScmCustom = resolveRepository('submarine-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", true)
                     } catch (Exception ex) {
                         echo "Branch $CHANGE_BRANCH from repository submarine-examples not found in $CHANGE_AUTHOR organisation."
                     }
@@ -60,12 +60,12 @@ pipeline {
         stage('Build submarine-bom') {
             when {
                 expression {
-                    return submarineBomScm != null
+                    return submarineBomScmCustom != null
                 }
             }
             steps {
                 dir("submarine-bom") {
-                    checkout submarineBomScm
+                    checkout submarineBomScmCustom
                     sh 'mvn clean install -DskipTests'
                 }
             }
@@ -79,8 +79,8 @@ pipeline {
             steps {
                 dir("submarine-examples") {
                     script {
-                        if (submarineExamplesScm != null) {
-                            checkout submarineExamplesScm
+                        if (submarineExamplesScmCustom != null) {
+                            checkout submarineExamplesScmCustom
                         } else {
                             checkout(resolveRepository('submarine-examples', 'kiegroup', "$CHANGE_TARGET", false))
                         }
