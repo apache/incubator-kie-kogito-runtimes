@@ -16,8 +16,8 @@ def resolveRepository(String repository, String author, String branches, boolean
 
 def sendEmailFailure() {
     emailext (
-            subject: "Build for PR $BRANCH_NAME failed",
-            body: "Build for PR $BRANCH_NAME failed! For more infformation see $BUILD_URL",
+            subject: "Build $BRANCH_NAME failed",
+            body: "Build $BRANCH_NAME failed! For more information see $BUILD_URL",
             recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
     )
 }
@@ -107,7 +107,6 @@ pipeline {
             }
         }
         always {
-            sendEmailFailure()
             cleanWs()
         }
     }
