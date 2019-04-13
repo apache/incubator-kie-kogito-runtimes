@@ -47,7 +47,7 @@ import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsfor
 @Mojo(name = "generateModel",
         requiresDependencyResolution = ResolutionScope.NONE,
         requiresProject = true,
-        defaultPhase = LifecyclePhase.COMPILE)
+        defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class GenerateModelMojo extends AbstractKieMojo {
 
     public static PathMatcher drlFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.drl");

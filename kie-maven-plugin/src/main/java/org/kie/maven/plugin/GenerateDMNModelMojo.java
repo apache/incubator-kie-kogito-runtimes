@@ -38,7 +38,7 @@ import org.kie.internal.io.ResourceWithConfigurationImpl;
 @Mojo(name = "generateDMNModel",
         requiresDependencyResolution = ResolutionScope.NONE,
         requiresProject = true,
-        defaultPhase = LifecyclePhase.COMPILE)
+        defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class GenerateDMNModelMojo extends AbstractKieMojo {
 
     @Parameter(required = true, defaultValue = "${project.build.directory}")

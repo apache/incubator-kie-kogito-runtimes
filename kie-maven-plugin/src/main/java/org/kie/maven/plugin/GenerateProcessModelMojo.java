@@ -57,7 +57,7 @@ import org.xml.sax.SAXException;
 @Mojo(name = "generateProcessModel",
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
         requiresProject = true,
-        defaultPhase = LifecyclePhase.COMPILE)
+        defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class GenerateProcessModelMojo extends AbstractKieMojo {
 
     public static final String BOOTSTRAP_PACKAGE = "org.kie.bootstrap.process";
