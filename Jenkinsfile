@@ -2,7 +2,7 @@
 
 pipeline {
     agent {
-        label 'kie-rhel7'
+        label 'submarine-static || kie-rhel7'
     }
     tools {
         maven 'kie-maven-3.5.4'
