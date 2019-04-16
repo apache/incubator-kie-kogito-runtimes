@@ -131,3 +131,6 @@ according to the FEEL grammar, these are not valid function names, as `and` and 
 2. __TypeRef link between Decision Tables and Item Definitions__: on decision tables/input clause,
   if no values list is defined, the engine automatically checks the type reference and apply the
   allowed values check if it is defined.
+  
+  
+check for Jenkins CI
