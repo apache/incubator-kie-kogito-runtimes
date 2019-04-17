@@ -17,7 +17,7 @@
   <description>SUBMARINE Top level pom for the KIE DMN support implementation</description>
 
   <modules>
-    <module>kie-dmn-rest-quarkus</module>
+    <module>kie-dmn-rest-utils</module>
   </modules>
 
 </project>
