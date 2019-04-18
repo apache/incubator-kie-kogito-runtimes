@@ -9,6 +9,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,19 +30,15 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
-import org.drools.compiler.kie.builder.impl.KieBuilderImpl;
-import org.drools.compiler.kie.builder.impl.MemoryKieModule;
 import org.drools.compiler.kie.builder.impl.ZipKieModule;
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.modelcompiler.CanonicalKieModule;
-import org.drools.modelcompiler.ExecutableModelCodeGenerationProject;
-import org.drools.modelcompiler.builder.CanonicalModelCodeGenerationKieProject;
-import org.kie.api.KieServices;
 import org.kie.api.builder.ReleaseId;
 import org.kie.api.builder.model.KieModuleModel;
+import org.kie.submarine.codegen.GeneratedFile;
+import org.kie.submarine.codegen.rules.RuleCodegen;
 
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 
@@ -72,7 +69,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
     private File outputDirectory;
 
     @Parameter(defaultValue = "${project.build.directory}/generated-sources/drools-model-compiler")
-    private File modelCompilerOutputDirectory;
+    private File generatedSources;
 
     @Parameter(defaultValue = "${project.source.directory}")
     private File projectSourceDirectory;
@@ -87,49 +84,36 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (ExecModelMode.shouldGenerateModel(generateModel)) {
-            generateModel();
+            try {
+                generateModel();
+            } catch (IOException e) {
+                throw new MojoExecutionException("An I/O error occurred", e);
+            }
         }
     }
 
-    private void generateModel() throws MojoExecutionException {
+    private void generateModel() throws MojoExecutionException, IOException {
+        project.addCompileSourceRoot(generatedSources.getPath());
+
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        KieServices ks = KieServices.Factory.get();
 
         try {
-            ClassLoader projectClassLoader = createProjectClassLoader();
-
-            Thread.currentThread().setContextClassLoader(projectClassLoader);
-
             setSystemProperties(properties);
 
-            final KieBuilderImpl kieBuilder = (KieBuilderImpl) ks.newKieBuilder(projectDir);
+            ClassLoader projectClassLoader = createProjectClassLoader();
+            Thread.currentThread().setContextClassLoader(projectClassLoader);
 
-            getLog().info("Begin code generation");
+            RuleCodegen codegen =
+                    RuleCodegen.ofPath(projectDir.toPath())
+                            .withDependencyInjection(dependencyInjection);
 
-            kieBuilder.buildAll((kieModule1, classLoader) ->
-                                        new CanonicalModelCodeGenerationKieProject(kieModule1, classLoader)
-                                                .withCdi(dependencyInjection),
-                                s -> !s.contains("src/test/java"));
+            List<GeneratedFile> generatedFiles = codegen.generate();
 
-            InternalKieModule kieModule = (InternalKieModule) kieBuilder.getKieModule();
-            getLog().info("kieBuilder is type: "+kieBuilder.getClass());
-            getLog().info("kieModule is type: "+kieModule.getClass());
-            MemoryFileSystem mfs = getMemoryFileSystem(kieModule);
-
-            String modelCompilerOutputPath =
-                    modelCompilerOutputDirectory.getPath();
-
-            new CanonicalModelWriter(
-                    mfs,
-                    kieModule.getFileNames(),
-                    modelCompilerOutputPath,
-                    getLog()).write();
-
-            project.addCompileSourceRoot(modelCompilerOutputPath);
-
-            new ResourceFileWriter(
-                    mfs,
-                    targetDirectory.getPath()).write();
+            for (GeneratedFile f : generatedFiles) {
+                Files.write(
+                        pathOf(f.relativePath()),
+                        f.contents());
+            }
 
             if (ExecModelMode.shouldDeleteFile(generateModel)) {
                 deleteDrlFiles();
@@ -139,6 +123,12 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
 
         getLog().info("DSL successfully generated");
+    }
+
+    private Path pathOf(String end) {
+        Path path = Paths.get(generatedSources.getPath(), end);
+        path.getParent().toFile().mkdirs();
+        return path;
     }
 
     private ClassLoader createProjectClassLoader() throws MojoExecutionException {
@@ -174,12 +164,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
         } catch (DependencyResolutionRequiredException | MalformedURLException e) {
             throw new MojoExecutionException("Error setting up Kie ClassLoader", e);
         }
-    }
-
-    private MemoryFileSystem getMemoryFileSystem(InternalKieModule kieModule) {
-        return kieModule instanceof CanonicalKieModule ?
-                ((MemoryKieModule) ((CanonicalKieModule) kieModule).getInternalKieModule()).getMemoryFileSystem() :
-                ((MemoryKieModule) kieModule).getMemoryFileSystem();
     }
 
     private void deleteDrlFiles() throws MojoExecutionException {

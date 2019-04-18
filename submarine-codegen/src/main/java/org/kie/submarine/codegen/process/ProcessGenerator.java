@@ -13,12 +13,13 @@
  * limitations under the License.
  */
 
-package org.kie.maven.plugin.process;
+package org.kie.submarine.codegen.process;
 
 import java.util.Map;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -113,7 +114,7 @@ public class ProcessGenerator {
         ReturnStmt returnStmt = new ReturnStmt(
                 new ObjectCreationExpr()
                         .setType(processInstanceFQCN)
-                        .setArguments(nodeList(
+                        .setArguments(NodeList.nodeList(
                                 new ThisExpr(),
                                 new NameExpr("value"),
                                 createProcessRuntime())));

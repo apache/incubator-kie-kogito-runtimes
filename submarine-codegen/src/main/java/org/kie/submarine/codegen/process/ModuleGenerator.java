@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.maven.plugin.process;
+package org.kie.submarine.codegen.process;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +28,8 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.kie.maven.plugin.process.config.WorkItemConfigGenerator;
 import org.kie.submarine.process.impl.DefaultProcessEventListenerConfig;
 import org.kie.submarine.process.impl.DefaultWorkItemHandlerConfig;
-import org.kie.submarine.rules.RuleUnit;
 
 public class ModuleGenerator {
 
@@ -47,8 +45,8 @@ public class ModuleGenerator {
     private String workItemConfigClass = DefaultWorkItemHandlerConfig.class.getCanonicalName();
     private String processEventListenerConfigClass = DefaultProcessEventListenerConfig.class.getCanonicalName();
 
-    public ModuleGenerator(String groupId) {
-        this.packageName = groupId;
+    public ModuleGenerator(String packageName) {
+        this.packageName = packageName;
         this.targetTypeName = "Module";
         this.targetCanonicalName = packageName + "." + targetTypeName;
         this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
@@ -92,7 +90,7 @@ public class ModuleGenerator {
 
         cls.findFirst(ObjectCreationExpr.class, p -> p.getType().getNameAsString().equals("$WorkItemHandlerConfig$"))
                 .ifPresent(o -> o.setType(workItemConfigClass));
-        
+
         cls.findFirst(ObjectCreationExpr.class, p -> p.getType().getNameAsString().equals("$ProcessEventListenerConfig$"))
         .ifPresent(o -> o.setType(processEventListenerConfigClass));
 
@@ -118,7 +116,7 @@ public class ModuleGenerator {
     public void setWorkItemHandlerClass(String className) {
         this.workItemConfigClass = className;
     }
-    
+
     public void setProcessEventListenerConfigClass(String processEventListenerConfigClass) {
         this.processEventListenerConfigClass = processEventListenerConfigClass;
     }
