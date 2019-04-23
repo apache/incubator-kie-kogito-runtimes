@@ -152,7 +152,7 @@ public class ProcessCodegen implements Generator {
     }
 
     public ProcessCodegen withProcessEventListenerConfig(String customProcessListenerConfigExists) {
-        this.processEventListenerConfigClass = DefaultProcessEventListenerConfig.class.getCanonicalName();
+        this.processEventListenerConfigClass = customProcessListenerConfigExists;
         return this;
     }
 
@@ -263,7 +263,6 @@ public class ProcessCodegen implements Generator {
             moduleGenerator.setProcessEventListenerConfigClass(processEventListenerConfigClass);
         }
 
-        // I don't love that labels is a kind of "separate" return value, but let's keep it this way for now
         for (ProcessExecutableModelGenerator legacyProcessGenerator : processExecutableModelGenerators) {
             if (legacyProcessGenerator.isPublic()) {
                 publicProcesses.add(legacyProcessGenerator.extractedProcessId());
