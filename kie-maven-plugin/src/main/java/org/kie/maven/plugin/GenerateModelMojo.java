@@ -34,10 +34,11 @@ import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.drools.compiler.kie.builder.impl.ZipKieModule;
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
-import org.drools.modelcompiler.CanonicalKieModule;
 import org.kie.api.builder.ReleaseId;
 import org.kie.api.builder.model.KieModuleModel;
+import org.kie.submarine.codegen.ApplicationGenerator;
 import org.kie.submarine.codegen.GeneratedFile;
+import org.kie.submarine.codegen.process.ProcessCodegen;
 import org.kie.submarine.codegen.rules.RuleCodegen;
 
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
@@ -68,31 +69,34 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
     private File outputDirectory;
 
-    @Parameter(defaultValue = "${project.build.directory}/generated-sources/drools-model-compiler")
+    @Parameter(defaultValue = "${project.build.directory}/generated-sources/submarine")
     private File generatedSources;
-
-    @Parameter(defaultValue = "${project.source.directory}")
-    private File projectSourceDirectory;
 
     @Parameter(property = "generateModel", defaultValue = "no")
     private String generateModel;
 
+    @Parameter(property = "generateProcessModel", defaultValue = "yes")
+    private String generateProcessModel;
+
     @Parameter(property = "dependencyInjection", defaultValue = "true")
     private boolean dependencyInjection;
 
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (ExecModelMode.shouldGenerateModel(generateModel)) {
-            try {
-                generateModel();
-            } catch (IOException e) {
-                throw new MojoExecutionException("An I/O error occurred", e);
-            }
+        try {
+            generateModel();
+        } catch (IOException e) {
+            throw new MojoExecutionException("An I/O error occurred", e);
         }
     }
 
     private void generateModel() throws MojoExecutionException, IOException {
+        // these should be probably substituted by boolean params
+        boolean generateRuleUnits =
+                ExecModelMode.shouldGenerateModel(generateModel);
+        boolean generateProcesses =
+                BPMNModelMode.shouldGenerateBPMNModel(generateProcessModel);
+
         project.addCompileSourceRoot(generatedSources.getPath());
 
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -103,16 +107,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
             ClassLoader projectClassLoader = createProjectClassLoader();
             Thread.currentThread().setContextClassLoader(projectClassLoader);
 
-            RuleCodegen codegen =
-                    RuleCodegen.ofPath(projectDir.toPath())
-                            .withDependencyInjection(dependencyInjection);
+            ApplicationGenerator appGen = createApplicationGenerator(
+                    generateRuleUnits, generateProcesses);
 
-            List<GeneratedFile> generatedFiles = codegen.generate();
-
-            for (GeneratedFile f : generatedFiles) {
-                Files.write(
-                        pathOf(f.relativePath()),
-                        f.contents());
+            for (GeneratedFile generatedFile : appGen.generate()) {
+                writeGeneratedFile(generatedFile);
             }
 
             if (ExecModelMode.shouldDeleteFile(generateModel)) {
@@ -121,8 +120,59 @@ public class GenerateModelMojo extends AbstractKieMojo {
         } finally {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
+    }
 
-        getLog().info("DSL successfully generated");
+    private ApplicationGenerator createApplicationGenerator(boolean generateRuleUnits, boolean generateProcesses) throws IOException {
+        String appPackageName = project.getGroupId();
+        Path projectPath = projectDir.toPath();
+
+        ApplicationGenerator appGen =
+                new ApplicationGenerator(appPackageName)
+                        .withDependencyInjection(dependencyInjection);
+
+        if (generateRuleUnits) {
+            appGen.withGenerator(RuleCodegen.ofPath(projectPath));
+        }
+
+        if (generateProcesses) {
+            appGen.withGenerator(ProcessCodegen.ofPath(projectPath))
+                    .withWorkItemHandlerConfig(
+                            customWorkItemConfigExists(appPackageName))
+                    .withProcessEventListenerConfig(
+                            customProcessListenerConfigExists(appPackageName));
+        }
+
+        return appGen;
+    }
+
+    private String customWorkItemConfigExists(String appPackageName) {
+        String sourceDir = Paths.get(projectDir.getPath(), "src").toString();
+        String workItemHandlerConfigClass = ProcessCodegen.defaultWorkItemHandlerConfigClass(appPackageName);
+        Path p = Paths.get(sourceDir,
+                           "main/java",
+                           workItemHandlerConfigClass.replace('.', '/') + ".java");
+        return Files.exists(p) ? workItemHandlerConfigClass : null;
+    }
+    private String customProcessListenerConfigExists(String appPackageName) {
+        String sourceDir = Paths.get(projectDir.getPath(), "src").toString();
+        String processEventListenerClass = ProcessCodegen.defaultProcessListenerConfigClass(appPackageName);
+        Path p = Paths.get(sourceDir,
+                           "main/java",
+                           processEventListenerClass.replace('.', '/') + ".java");
+        return Files.exists(p) ? processEventListenerClass : null;
+    }
+
+
+    private void writeAll(List<GeneratedFile> generatedFiles) throws IOException {
+        for (GeneratedFile f : generatedFiles) {
+            writeGeneratedFile(f);
+        }
+    }
+
+    private void writeGeneratedFile(GeneratedFile f) throws IOException {
+        Files.write(
+                pathOf(f.relativePath()),
+                f.contents());
     }
 
     private Path pathOf(String end) {

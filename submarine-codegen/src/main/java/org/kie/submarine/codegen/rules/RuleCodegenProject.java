@@ -22,33 +22,44 @@ import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.drools.compiler.kie.builder.impl.KieModuleKieProject;
 import org.drools.compiler.kie.builder.impl.ResultsImpl;
+import org.drools.compiler.kproject.models.KieBaseModelImpl;
 import org.drools.modelcompiler.builder.CanonicalModelCodeGenerationKieProject;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.drools.modelcompiler.builder.PackageModel;
 import org.kie.api.builder.KieBuilder;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RuleCodegenProject extends CanonicalModelCodeGenerationKieProject implements KieBuilder.ProjectType {
 
     public static final BiFunction<InternalKieModule, ClassLoader, KieModuleKieProject> SUPPLIER = RuleCodegenProject::new;
 
+    private static final Logger log = LoggerFactory.getLogger(KieModuleKieProject.class);
+
+    private ModuleSourceClass moduleGenerator;
+
     public RuleCodegenProject(InternalKieModule kieModule, ClassLoader classLoader) {
         super(kieModule, classLoader);
+    }
+
+    public RuleCodegenProject withModuleGenerator(ModuleSourceClass moduleGenerator) {
+        this.moduleGenerator = moduleGenerator;
+        return this;
     }
 
     @Override
     public void writeProjectOutput(MemoryFileSystem trgMfs, ResultsImpl messages) {
         super.writeProjectOutput(trgMfs, messages);
 
-        ModuleSourceClass moduleSourceClass =
-                new ModuleSourceClass()
-                        .withCdi(hasCdi());
+        moduleGenerator.withCdi(hasCdi());
 
         for (ModelBuilderImpl modelBuilder : modelBuilders) {
             List<PackageModel> packageModels = modelBuilder.getPackageModels();
             for (PackageModel packageModel : packageModels) {
                 for (Class<?> ruleUnit : packageModel.getRuleUnits()) {
 
-                    moduleSourceClass.addRuleUnit(
+                    moduleGenerator.addRuleUnit(
                             new RuleUnitSourceClass(
                                     ruleUnit.getPackage().getName(),
                                     ruleUnit.getSimpleName(),
@@ -57,11 +68,7 @@ public class RuleCodegenProject extends CanonicalModelCodeGenerationKieProject i
             }
         }
 
-        trgMfs.write(
-                moduleSourceClass.generatedFilePath(),
-                moduleSourceClass.generate().getBytes());
-
-        for (RuleUnitSourceClass ruleUnit : moduleSourceClass.getRuleUnits()) {
+        for (RuleUnitSourceClass ruleUnit : moduleGenerator.getRuleUnits()) {
             trgMfs.write(
                     ruleUnit.generatedFilePath(),
                     ruleUnit.generate().getBytes());
@@ -71,6 +78,6 @@ public class RuleCodegenProject extends CanonicalModelCodeGenerationKieProject i
                     ruleUnitInstance.generatedFilePath(),
                     ruleUnitInstance.generate().getBytes());
         }
-
     }
+
 }

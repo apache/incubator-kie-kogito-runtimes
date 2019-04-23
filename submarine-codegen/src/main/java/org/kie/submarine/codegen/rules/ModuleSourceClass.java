@@ -26,6 +26,7 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.kie.submarine.rules.RuleUnit;
 
@@ -37,13 +38,18 @@ public class ModuleSourceClass {
     private final List<RuleUnitSourceClass> ruleUnits;
     private String targetTypeName;
     private boolean hasCdi;
+    private List<MethodDeclaration> factoryMethods = new ArrayList<>();
 
-    public ModuleSourceClass() {
-        this.packageName = "org.drools.project.model";
+    public ModuleSourceClass(String packageName) {
+        this.packageName = packageName;
         this.targetTypeName = "Module";
         this.targetCanonicalName = packageName + "." + targetTypeName;
         this.generatedFilePath = targetCanonicalName.replace('.', '/') + ".java";
         this.ruleUnits = new ArrayList<>();
+    }
+
+    public List<MethodDeclaration> factoryMethods() {
+        return factoryMethods;
     }
 
     public String generatedFilePath() {
@@ -52,6 +58,7 @@ public class ModuleSourceClass {
 
     public void addRuleUnit(RuleUnitSourceClass rusc) {
         ruleUnits.add(rusc);
+        addRuleUnitFactoryMethod(rusc);
     }
 
     public String generate() {
@@ -63,21 +70,21 @@ public class ModuleSourceClass {
         ClassOrInterfaceDeclaration cls =
                 compilationUnit.addClass(targetTypeName);
 
-        for (RuleUnitSourceClass r : ruleUnits) {
-            cls.addMember(ruleUnitFactoryMethod(r));
-        }
+        factoryMethods.forEach(cls::addMember);
 
         return compilationUnit;
     }
 
-    public static MethodDeclaration ruleUnitFactoryMethod( RuleUnitSourceClass r) {
-        return new MethodDeclaration()
-                .addModifier( Modifier.Keyword.PUBLIC)
+    public MethodDeclaration addRuleUnitFactoryMethod( RuleUnitSourceClass r) {
+        MethodDeclaration methodDeclaration = new MethodDeclaration()
+                .addModifier(Modifier.Keyword.PUBLIC)
                 .setName("create" + r.targetTypeName())
                 .setType(r.targetCanonicalName())
                 .setBody(new BlockStmt().addStatement(new ReturnStmt(
                         new ObjectCreationExpr()
                                 .setType(r.targetCanonicalName()))));
+        this.factoryMethods.add(methodDeclaration);
+        return methodDeclaration;
     }
 
     public static ClassOrInterfaceType ruleUnitType( String canonicalName) {

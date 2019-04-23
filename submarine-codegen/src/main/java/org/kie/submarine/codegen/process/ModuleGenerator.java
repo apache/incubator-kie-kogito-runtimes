@@ -40,6 +40,7 @@ public class ModuleGenerator {
     private final String targetCanonicalName;
     private final List<ProcessGenerator> processes;
     private final List<ProcessInstanceGenerator> processInstances;
+    private final List<MethodDeclaration> factoryMethods;
     private String targetTypeName;
     private boolean hasCdi;
     private String workItemConfigClass = DefaultWorkItemHandlerConfig.class.getCanonicalName();
@@ -53,6 +54,11 @@ public class ModuleGenerator {
         this.completePath = "src/main/java/" + sourceFilePath;
         this.processes = new ArrayList<>();
         this.processInstances = new ArrayList<>();
+        this.factoryMethods = new ArrayList<>();
+    }
+
+    public List<MethodDeclaration> factoryMethods() {
+        return factoryMethods;
     }
 
     public String targetCanonicalName() {
@@ -63,12 +69,13 @@ public class ModuleGenerator {
         return sourceFilePath;
     }
 
-    public void addProcess(ProcessGenerator rusc) {
-        processes.add(rusc);
+    public void addProcess(ProcessGenerator p) {
+        processes.add(p);
+        MethodDeclaration decl = addProcessFactoryMethod(p);
     }
 
-    public void addProcessInstance(ProcessInstanceGenerator ruisc) {
-        processInstances.add(ruisc);
+    public void addProcessInstance(ProcessInstanceGenerator pi) {
+        processInstances.add(pi);
     }
 
     public String generate() {
@@ -84,9 +91,7 @@ public class ModuleGenerator {
             cls.addAnnotation("javax.inject.Singleton");
         }
 
-        for (ProcessGenerator r : processes) {
-            cls.addMember(processFactoryMethod(r));
-        }
+        factoryMethods.forEach(cls::addMember);
 
         cls.findFirst(ObjectCreationExpr.class, p -> p.getType().getNameAsString().equals("$WorkItemHandlerConfig$"))
                 .ifPresent(o -> o.setType(workItemConfigClass));
@@ -97,8 +102,8 @@ public class ModuleGenerator {
         return compilationUnit;
     }
 
-    public static MethodDeclaration processFactoryMethod(ProcessGenerator r) {
-        return new MethodDeclaration()
+    public MethodDeclaration addProcessFactoryMethod(ProcessGenerator r) {
+        MethodDeclaration methodDeclaration = new MethodDeclaration()
                 .addModifier(Modifier.Keyword.PUBLIC)
                 .setName("create" + r.targetTypeName())
                 .setType(r.targetCanonicalName())
@@ -106,6 +111,8 @@ public class ModuleGenerator {
                         new ObjectCreationExpr()
                                 .setType(r.targetCanonicalName())
                                 .addArgument(new ThisExpr()))));
+        this.factoryMethods.add(methodDeclaration);
+        return methodDeclaration;
     }
 
     public ModuleGenerator withCdi(boolean hasCdi) {
@@ -119,5 +126,13 @@ public class ModuleGenerator {
 
     public void setProcessEventListenerConfigClass(String processEventListenerConfigClass) {
         this.processEventListenerConfigClass = processEventListenerConfigClass;
+    }
+
+    public String workItemConfigClass() {
+        return workItemConfigClass;
+    }
+
+    public String processEventListenerConfigClass() {
+        return processEventListenerConfigClass;
     }
 }

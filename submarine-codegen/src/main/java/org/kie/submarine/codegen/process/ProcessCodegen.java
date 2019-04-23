@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.swing.text.rtf.RTFEditorKit;
+
+import com.github.javaparser.ast.body.MethodDeclaration;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.util.StringUtils;
 import org.drools.core.xml.SemanticModules;
@@ -40,19 +43,14 @@ import org.jbpm.compiler.xml.XmlProcessReader;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
+import org.kie.submarine.codegen.ConfigGenerator;
 import org.kie.submarine.codegen.GeneratedFile;
+import org.kie.submarine.codegen.Generator;
+import org.kie.submarine.codegen.process.config.ProcessConfigGenerator;
+import org.kie.submarine.process.impl.DefaultProcessEventListenerConfig;
 import org.xml.sax.SAXException;
 
-public class ProcessCodegen {
-
-    private String packageName;
-    private final String workItemHandlerConfigClass;
-    private boolean dependencyInjection;
-
-    private final Map<String, WorkflowProcess> processes;
-    private final Map<String, String> labels = new HashMap<>();
-    private final List<GeneratedFile> generatedFiles = new ArrayList<>();
-    private boolean workItemConfig;
+public class ProcessCodegen implements Generator {
 
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
 
@@ -63,7 +61,8 @@ public class ProcessCodegen {
     }
 
     public static ProcessCodegen ofPath(Path path) throws IOException {
-        List<File> files = Files.walk(path)
+        Path srcPath = Paths.get(path.toString(), "src");
+        List<File> files = Files.walk(srcPath)
                 .filter(p -> p.toString().endsWith(".bpmn") || p.toString().endsWith(".bpmn2"))
                 .map(Path::toFile)
                 .collect(Collectors.toList());
@@ -100,6 +99,18 @@ public class ProcessCodegen {
         }
     }
 
+
+    private String packageName;
+    private String applicationCanonicalName;
+    private String workItemHandlerConfigClass = null;
+    private String processEventListenerConfigClass = null;
+    private boolean dependencyInjection;
+    private ModuleGenerator moduleGenerator;
+
+    private final Map<String, WorkflowProcess> processes;
+    private final Map<String, String> labels = new HashMap<>();
+    private final List<GeneratedFile> generatedFiles = new ArrayList<>();
+
     public ProcessCodegen(
             Collection<? extends Process> processes) {
         this.processes = new HashMap<>();
@@ -107,27 +118,48 @@ public class ProcessCodegen {
             this.processes.put(process.getId(), (WorkflowProcess) process);
         }
 
-        this.workItemHandlerConfigClass = packageName + ".WorkItemHandlerConfig";
     }
 
-    public ProcessCodegen withPackageName(String packageName) {
+    public static String defaultWorkItemHandlerConfigClass(String packageName) {
+        return packageName + ".WorkItemHandlerConfig";
+    }
+
+    public static String defaultProcessListenerConfigClass(String packageName) {
+        return packageName + ".ProcessEventListenerConfig";
+    }
+
+    public void setPackageName(String packageName) {
         this.packageName = packageName;
-        return this;
+        this.moduleGenerator = new ModuleGenerator(packageName)
+                .withCdi(dependencyInjection);
+        this.applicationCanonicalName = packageName + ".Application";
     }
 
-    public ProcessCodegen withDependencyInjection(boolean di) {
+    public void setDependencyInjection(boolean di) {
         dependencyInjection = di;
+        if (moduleGenerator != null) {
+            moduleGenerator.withCdi(di);
+        }
+    }
+
+    public ModuleGenerator moduleGenerator() {
+        return moduleGenerator;
+    }
+
+    public ProcessCodegen withWorkItemHandlerConfig(String workItemHandlerConfigClass) {
+        this.workItemHandlerConfigClass = workItemHandlerConfigClass;
         return this;
     }
 
-    public ProcessCodegen checkWorkItemHandlerConfig(String sourceDir) {
-        final String workItemHandlerConfigClass = packageName + ".WorkItemHandlerConfig";
-
-        Path p = Paths.get(sourceDir,
-                           "main/java",
-                           workItemHandlerConfigClass.replace('.', '/') + ".java");
-        this.workItemConfig = Files.exists(p);
+    public ProcessCodegen withProcessEventListenerConfig(String customProcessListenerConfigExists) {
+        this.processEventListenerConfigClass = DefaultProcessEventListenerConfig.class.getCanonicalName();
         return this;
+    }
+
+
+    @Override
+    public Collection<MethodDeclaration> factoryMethods() {
+        return moduleGenerator.factoryMethods();
     }
 
     public List<GeneratedFile> generate() {
@@ -144,9 +176,6 @@ public class ProcessCodegen {
 
         Map<String, ModelMetaData> processIdToModel = new HashMap<>();
         Map<String, ModelClassGenerator> processIdToModelGenerator = new HashMap<>();
-        ModuleGenerator moduleSourceClass;
-        moduleSourceClass = new ModuleGenerator(packageName)
-                .withCdi(dependencyInjection);
 
         // first we generate all the data classes from variable declarations
         for (WorkflowProcess workFlowProcess : processes.values()) {
@@ -181,7 +210,7 @@ public class ProcessCodegen {
                     processes,
                     classPrefix,
                     modelClassGenerator.className(),
-                    moduleSourceClass.targetCanonicalName())
+                    applicationCanonicalName)
                     .withCdi(dependencyInjection);
 
             ProcessInstanceGenerator pi = new ProcessInstanceGenerator(
@@ -201,7 +230,7 @@ public class ProcessCodegen {
                 rgs.add(resourceGenerator);
             }
 
-            moduleSourceClass.addProcess(p);
+            moduleGenerator.addProcess(p);
 
             ps.add(p);
             pis.add(pi);
@@ -226,12 +255,13 @@ public class ProcessCodegen {
             storeFile(pi.generatedFilePath(), pi.generate().getBytes());
         }
 
-        if (workItemConfig) {
-            moduleSourceClass.setWorkItemHandlerClass(workItemHandlerConfigClass);
+        if (workItemHandlerConfigClass != null) {
+            moduleGenerator.setWorkItemHandlerClass(workItemHandlerConfigClass);
         }
 
-        storeFile(moduleSourceClass.generatedFilePath(),
-                  moduleSourceClass.generate().getBytes());
+        if (processEventListenerConfigClass != null) {
+            moduleGenerator.setProcessEventListenerConfigClass(processEventListenerConfigClass);
+        }
 
         // I don't love that labels is a kind of "separate" return value, but let's keep it this way for now
         for (ProcessExecutableModelGenerator legacyProcessGenerator : processExecutableModelGenerators) {
@@ -242,6 +272,17 @@ public class ProcessCodegen {
         }
 
         return generatedFiles;
+    }
+
+    @Override
+    public void updateConfig(ConfigGenerator cfg) {
+        // fixme: we need to pass on whether this is a drools-only project
+        if (!processes.isEmpty()) {
+            cfg.withProcessConfig(
+                    new ProcessConfigGenerator()
+                            .withWorkItemConfig(moduleGenerator.workItemConfigClass())
+                            .withProcessEventListenerConfig(moduleGenerator.processEventListenerConfigClass()));
+        }
     }
 
     private void storeFile(String path, byte[] data) {
@@ -256,7 +297,4 @@ public class ProcessCodegen {
         return labels;
     }
 
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
 }

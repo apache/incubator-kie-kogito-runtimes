@@ -17,9 +17,11 @@ package org.kie.submarine.codegen.rules;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.ast.body.MethodDeclaration;
 import org.drools.compiler.compiler.io.memory.MemoryFile;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
@@ -27,9 +29,14 @@ import org.drools.compiler.kie.builder.impl.KieBuilderImpl;
 import org.drools.compiler.kie.builder.impl.MemoryKieModule;
 import org.drools.modelcompiler.CanonicalKieModule;
 import org.kie.api.KieServices;
+import org.kie.submarine.codegen.ConfigGenerator;
 import org.kie.submarine.codegen.GeneratedFile;
+import org.kie.submarine.codegen.Generator;
 
-public class RuleCodegen {
+public class RuleCodegen implements Generator {
+
+    private String packageName;
+    private ModuleSourceClass moduleGenerator;
 
     public static RuleCodegen ofPath(Path path) throws IOException {
         KieServices ks = KieServices.Factory.get();
@@ -45,16 +52,29 @@ public class RuleCodegen {
         this.kieBuilder = kieBuilder;
     }
 
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+        this.moduleGenerator = new ModuleSourceClass(packageName);
+    }
+
     private MemoryFileSystem getMemoryFileSystem(InternalKieModule kieModule) {
         return kieModule instanceof CanonicalKieModule ?
                 ((MemoryKieModule) ((CanonicalKieModule) kieModule).getInternalKieModule()).getMemoryFileSystem() :
                 ((MemoryKieModule) kieModule).getMemoryFileSystem();
     }
 
+    @Override
+    public Collection<MethodDeclaration> factoryMethods() {
+        return moduleGenerator.factoryMethods();
+    }
+
     public List<GeneratedFile> generate() {
         kieBuilder.buildAll(
-                (km, cl) -> new RuleCodegenProject(km, cl).withCdi(dependencyInjection),
-                s -> !s.contains("src/test/java"));
+                (km, cl) ->
+                        new RuleCodegenProject(km, cl)
+                                .withModuleGenerator(moduleGenerator)
+                                .withCdi(dependencyInjection),
+                s -> !s.contains("src/test/java") && !s.endsWith("bpmn") && !s.endsWith("bpmn2"));
 
         InternalKieModule kieModule = (InternalKieModule) kieBuilder.getKieModule();
 
@@ -69,8 +89,16 @@ public class RuleCodegen {
                 .collect(Collectors.toList());
     }
 
-    public RuleCodegen withDependencyInjection(boolean di) {
+    @Override
+    public void updateConfig(ConfigGenerator cfg) {
+        // no config yet
+    }
+
+    public ModuleSourceClass moduleGenerator() {
+        return moduleGenerator;
+    }
+
+    public void setDependencyInjection(boolean di) {
         this.dependencyInjection = di;
-        return this;
     }
 }
