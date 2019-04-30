@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.swing.text.rtf.RTFEditorKit;
-
 import com.github.javaparser.ast.body.MethodDeclaration;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.util.StringUtils;
@@ -48,7 +46,6 @@ import org.kie.submarine.codegen.ConfigGenerator;
 import org.kie.submarine.codegen.GeneratedFile;
 import org.kie.submarine.codegen.Generator;
 import org.kie.submarine.codegen.process.config.ProcessConfigGenerator;
-import org.kie.submarine.process.impl.DefaultProcessEventListenerConfig;
 import org.xml.sax.SAXException;
 
 public class ProcessCodegen implements Generator {
@@ -70,7 +67,7 @@ public class ProcessCodegen implements Generator {
         return ofFiles(files);
     }
 
-    public static ProcessCodegen ofFiles(List<File> processFiles) throws IOException {
+    public static ProcessCodegen ofFiles(Collection<File> processFiles) throws IOException {
         List<Process> allProcesses = parseProcesses(processFiles);
         return ofProcesses(allProcesses);
     }
@@ -79,7 +76,7 @@ public class ProcessCodegen implements Generator {
         return new ProcessCodegen(processes);
     }
 
-    private static List<Process> parseProcesses(List<File> processFiles) throws IOException {
+    private static List<Process> parseProcesses(Collection<File> processFiles) throws IOException {
         List<Process> processes = new ArrayList<>();
         for (File bpmnFile : processFiles) {
             FileSystemResource r = new FileSystemResource(bpmnFile);
@@ -100,7 +97,6 @@ public class ProcessCodegen implements Generator {
         }
     }
 
-
     private String packageName;
     private String applicationCanonicalName;
     private String workItemHandlerConfigClass = null;
@@ -118,7 +114,6 @@ public class ProcessCodegen implements Generator {
         for (Process process : processes) {
             this.processes.put(process.getId(), (WorkflowProcess) process);
         }
-
     }
 
     public static String defaultWorkItemHandlerConfigClass(String packageName) {
@@ -157,7 +152,6 @@ public class ProcessCodegen implements Generator {
         return this;
     }
 
-
     @Override
     public Collection<MethodDeclaration> factoryMethods() {
         return moduleGenerator.factoryMethods();
@@ -177,7 +171,7 @@ public class ProcessCodegen implements Generator {
 
         Map<String, ModelMetaData> processIdToModel = new HashMap<>();
         Map<String, ModelClassGenerator> processIdToModelGenerator = new HashMap<>();
-        
+
         Map<String, List<UserTaskModelMetaData>> processIdToUserTaskModel = new HashMap<>();
 
         // first we generate all the data classes from variable declarations
@@ -186,7 +180,7 @@ public class ProcessCodegen implements Generator {
             processIdToModelGenerator.put(workFlowProcess.getId(), mcg);
             processIdToModel.put(workFlowProcess.getId(), mcg.generate());
         }
-        
+
         // then we generate user task inputs and outputs if any
         for (WorkflowProcess workFlowProcess : processes.values()) {
             UserTasksModelClassGenerator utcg = new UserTasksModelClassGenerator(workFlowProcess);
@@ -251,12 +245,12 @@ public class ProcessCodegen implements Generator {
             storeFile(modelClassGenerator.generatedFilePath(),
                       mmd.generate().getBytes());
         }
-        
+
         for (List<UserTaskModelMetaData> utmd : processIdToUserTaskModel.values()) {
-            
+
             for (UserTaskModelMetaData ut : utmd) {
                 storeFile(UserTasksModelClassGenerator.generatedFilePath(ut.getInputModelClassName()), ut.generateInput().getBytes());
-                
+
                 storeFile(UserTasksModelClassGenerator.generatedFilePath(ut.getOutputModelClassName()), ut.generateOutput().getBytes());
             }
         }
@@ -314,5 +308,4 @@ public class ProcessCodegen implements Generator {
     public Map<String, String> getLabels() {
         return labels;
     }
-
 }
