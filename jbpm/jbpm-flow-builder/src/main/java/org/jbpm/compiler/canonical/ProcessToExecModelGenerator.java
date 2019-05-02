@@ -22,37 +22,27 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.comments.Comment;
-import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.CastExpr;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.visitor.GenericVisitor;
-import com.github.javaparser.ast.visitor.VoidVisitor;
 
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.ContextContainer;
@@ -63,7 +53,6 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.node.ActionNode;
-import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.FaultNode;
 import org.jbpm.workflow.core.node.HumanTaskNode;
@@ -76,6 +65,7 @@ import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.WorkflowProcess;
+import org.w3c.dom.NamedNodeMap;
 
 public class ProcessToExecModelGenerator extends AbstractVisitor {
 
@@ -115,11 +105,13 @@ public class ProcessToExecModelGenerator extends AbstractVisitor {
         }
         ClassOrInterfaceDeclaration processClazz = processMethod.get();
         processClazz.setName(StringUtils.capitalize(extractedProcessId + PROCESS_CLASS_SUFFIX));
+        String packageName = clazz.getPackageDeclaration().map(NodeWithName::getNameAsString).orElse(null);
         ProcessMetaData metadata = new ProcessMetaData(process.getId(),
                                                        extractedProcessId,
                                                        process.getName(),
                                                        process.getVersion(),
-                                                       (clazz.getPackageDeclaration().isPresent() ? clazz.getPackageDeclaration().get().getNameAsString() + "." : "") + processClazz.getNameAsString());
+                                                       packageName,
+                                                       processClazz.getNameAsString());
 
         Optional<MethodDeclaration> pmethod = clazz.findFirst(MethodDeclaration.class, sl -> sl.getName().asString().equals("process"));
 
@@ -137,11 +129,13 @@ public class ProcessToExecModelGenerator extends AbstractVisitor {
 
         String extractedProcessId = extractProcessId(process.getId());
 
+        String packageName = clazz.getPackageDeclaration().map(NodeWithName::getNameAsString).orElse(null);
         ProcessMetaData metadata = new ProcessMetaData(process.getId(),
                                                        extractedProcessId,
                                                        process.getName(),
                                                        process.getVersion(),
-                                                       (clazz.getPackageDeclaration().isPresent() ? clazz.getPackageDeclaration().get().getNameAsString() + "." : "") + "process");
+                                                       packageName,
+                                                       "process");
 
         MethodDeclaration processMethod = new MethodDeclaration();
         visitProcess(process, processMethod, metadata);
@@ -151,11 +145,16 @@ public class ProcessToExecModelGenerator extends AbstractVisitor {
 
     public ModelMetaData generateModel(WorkflowProcess process) {
         String packageName = process.getPackageName();
-        String name = StringUtils.capitalize(extractProcessId(process.getId()) + MODEL_CLASS_SUFFIX);
+        String name = extractModelClassName(process.getId());
 
-        return new ModelMetaData(packageName, name, (VariableScope) ((org.jbpm.process.core.Process) process).getDefaultContext(VariableScope.VARIABLE_SCOPE));
+        return new ModelMetaData(packageName, name,
+                                 VariableDeclarations.of((VariableScope) ((org.jbpm.process.core.Process) process).getDefaultContext(VariableScope.VARIABLE_SCOPE)));
     }
-    
+
+    public static String extractModelClassName(String processId) {
+        return StringUtils.capitalize(extractProcessId(processId) + MODEL_CLASS_SUFFIX);
+    }
+
     public List<UserTaskModelMetaData> generateUserTaskModel(WorkflowProcess process) {
         String packageName = process.getPackageName();
         List<UserTaskModelMetaData> usertaskModels = new ArrayList<>();
