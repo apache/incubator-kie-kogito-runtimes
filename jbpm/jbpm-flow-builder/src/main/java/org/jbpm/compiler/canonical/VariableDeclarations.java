@@ -21,13 +21,9 @@ import java.util.Map;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 
-public interface VariableDeclarations {
+public class VariableDeclarations {
 
-    String getType(String vname);
-
-    Map<String, String> getTypes();
-
-    static VariableDeclarations of(VariableScope vscope) {
+    public static VariableDeclarations of(VariableScope vscope) {
         HashMap<String, String> vs = new HashMap<>();
         for (Variable variable : vscope.getVariables()) {
             vs.put(variable.getName(), variable.getType().getStringType());
@@ -35,17 +31,21 @@ public interface VariableDeclarations {
         return of(vs);
     }
 
-    static VariableDeclarations of(Map<String, String> vscope) {
-        return new VariableDeclarations() {
-            @Override
-            public String getType(String vname) {
-                return vscope.get(vname);
-            }
+    public static VariableDeclarations of(Map<String, String> vscope) {
+        return new VariableDeclarations(vscope);
+    }
 
-            @Override
-            public Map<String, String> getTypes() {
-                return vscope;
-            }
-        };
+    private final Map<String, String> vscope;
+
+    public VariableDeclarations(Map<String, String> vscope) {
+        this.vscope = vscope;
+    }
+
+    public String getType(String vname) {
+        return vscope.get(vname);
+    }
+
+    public Map<String, String> getTypes() {
+        return vscope;
     }
 }
