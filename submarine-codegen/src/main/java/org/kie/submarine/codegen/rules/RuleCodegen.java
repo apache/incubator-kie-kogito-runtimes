@@ -97,11 +97,9 @@ public class RuleCodegen implements Generator {
                                 .withModuleGenerator(moduleGenerator)
                                 .withCdi(dependencyInjection),
                 s -> {
-                    System.out.println(s);
                     return !s.contains("src/test/java")
                             && !s.endsWith("bpmn")
                             && !s.endsWith("bpmn2");
-//                        && fileFilter.test(s)
                 }
         );
 
