@@ -141,7 +141,7 @@ public class ApplicationGenerator {
             
             Files.write(imageMetaDataFile, mapper.writerWithDefaultPrettyPrinter().writeValueAsString(imageMetadata).getBytes());
         } catch (IOException e) {
-            
+//            throw new RuntimeException(e);
         }
                
     }
