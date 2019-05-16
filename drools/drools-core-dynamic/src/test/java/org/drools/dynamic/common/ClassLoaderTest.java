@@ -16,6 +16,7 @@
 
 package org.drools.dynamic.common;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -24,11 +25,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.drools.reflective.classloader.ProjectClassLoader;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ClassLoaderTest {
 
-    @Test(timeout = 20000)
+    private static final Duration TIMEOUT = Duration.ofSeconds(5);
+
+    @Test
     public void testParallelClassLoading() {
 
         final Integer THREAD_COUNT = 100;
@@ -63,11 +67,14 @@ public class ClassLoaderTest {
             }
 
             for (int i = 1; i <= THREAD_COUNT; i++) {
-                try {
-                    futures.get(i - 1).get();
-                } catch (final InterruptedException | ExecutionException e) {
-                    // Nothing
-                }
+                final int threadId = i - 1;
+                Assertions.assertTimeout(TIMEOUT, () -> {
+                    try {
+                        futures.get(threadId).get();
+                    } catch (final InterruptedException | ExecutionException e) {
+                        // Nothing
+                    }
+                }, "Thread " + threadId + " did not finish in time.");
             }
         } finally {
             executorService.shutdownNow();
