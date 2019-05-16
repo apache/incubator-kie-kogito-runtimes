@@ -16,9 +16,6 @@
 
 package org.drools.compiler.integrationtests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +28,14 @@ import org.drools.compiler.Person;
 import org.drools.compiler.PersonInterface;
 import org.drools.compiler.Primitives;
 import org.drools.core.impl.KnowledgeBaseFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.conf.EqualityBehaviorOption;
 import org.kie.api.runtime.KieSession;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NullTest extends CommonTestMethodBase {
 
@@ -54,8 +54,8 @@ public class NullTest extends CommonTestMethodBase {
 
         ksession.fireAllRules();
 
-        assertEquals("Indexing with null values is not working correctly.", "OK", bob.getStatus());
-        assertEquals("Indexing with null values is not working correctly.", "OK", pete.getStatus());
+        Assertions.assertEquals("OK", bob.getStatus(), "Indexing with null values is not working correctly.");
+        Assertions.assertEquals("OK", pete.getStatus(), "Indexing with null values is not working correctly.");
     }
 
     @Test
@@ -89,7 +89,7 @@ public class NullTest extends CommonTestMethodBase {
 
         session = SerializationHelper.getSerialisedStatefulKnowledgeSession(session, true);
         session.fireAllRules();
-        assertEquals(2, ((List) session.getGlobal("messages")).size());
+        Assertions.assertEquals(2, ((List) session.getGlobal("messages")).size());
     }
 
     @Test
@@ -105,9 +105,9 @@ public class NullTest extends CommonTestMethodBase {
 
         ksession.fireAllRules();
 
-        assertEquals(1, list.size());
+        Assertions.assertEquals(1, list.size());
 
-        assertEquals("OK", list.get(0));
+        Assertions.assertEquals("OK", list.get(0));
     }
 
     @Test
@@ -125,7 +125,7 @@ public class NullTest extends CommonTestMethodBase {
         ksession.insert(new Person(null));
         ksession.insert(new Person("Mark"));
 
-        assertEquals(1, ksession.fireAllRules());
+        Assertions.assertEquals(1, ksession.fireAllRules());
         ksession.dispose();
     }
 
@@ -142,8 +142,8 @@ public class NullTest extends CommonTestMethodBase {
         ksession = SerializationHelper.getSerialisedStatefulKnowledgeSession(ksession, true);
         ksession.fireAllRules();
 
-        assertEquals(1, ((List) ksession.getGlobal("list")).size());
-        assertEquals("X", ((List) ksession.getGlobal("list")).get(0));
+        Assertions.assertEquals(1, ((List) ksession.getGlobal("list")).size());
+        Assertions.assertEquals("X", ((List) ksession.getGlobal("list")).get(0));
     }
 
     @Test
@@ -169,13 +169,13 @@ public class NullTest extends CommonTestMethodBase {
         session = SerializationHelper.getSerialisedStatefulKnowledgeSession(session, true);
         session.fireAllRules();
         //System.out.println(((List) session.getGlobal("list")).get(0));
-        assertEquals(3, ((List) session.getGlobal("list")).size());
+        Assertions.assertEquals(3, ((List) session.getGlobal("list")).size());
 
         nullPerson = new Person(null);
 
         session.insert(nullPerson);
         session.fireAllRules();
-        assertEquals(4, ((List) session.getGlobal("list")).size());
+        Assertions.assertEquals(4, ((List) session.getGlobal("list")).size());
     }
 
     @Test
@@ -192,7 +192,7 @@ public class NullTest extends CommonTestMethodBase {
 
         ksession.fireAllRules();
 
-        assertEquals(3, results.size());
+        Assertions.assertEquals(3, results.size());
     }
 
     @Test
@@ -251,7 +251,7 @@ public class NullTest extends CommonTestMethodBase {
 
         ksession.insert(new PrimitiveBean(0.9, 1.1));
         ksession.insert(new PrimitiveBean(0.9, null));
-        assertEquals(1, ksession.fireAllRules());
+        Assertions.assertEquals(1, ksession.fireAllRules());
         ksession.dispose();
     }
 

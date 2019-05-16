@@ -21,7 +21,7 @@ import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.compiler.compiler.io.memory.MemoryFolder;
 import org.drools.core.util.IoUtils;
 import org.drools.reflective.ResourceProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.builder.ReleaseId;
 import org.kie.api.builder.model.KieModuleModel;
 import org.mockito.Mock;

@@ -86,9 +86,9 @@ import org.drools.core.spi.PropagationContext;
 import org.drools.core.test.model.DroolsTestCase;
 import org.drools.core.util.LinkedList;
 import org.drools.core.util.LinkedListNode;
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.kie.api.definition.type.FactField;
 import org.kie.api.definition.type.FactType;
 import org.kie.api.definition.type.Role;
@@ -96,15 +96,15 @@ import org.kie.api.definition.type.TypeSafe;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class KnowledgeBuilderTest extends DroolsTestCase {
     
-    @After
+    @AfterEach
     public void tearDown() {
         System.getProperties().remove( "drools.warning.filters" );
         System.getProperties().remove( "drools.kbuilder.severity." + DuplicateFunction.KEY);
@@ -285,7 +285,7 @@ public class KnowledgeBuilderTest extends DroolsTestCase {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testNoPackageName() throws Exception {
         final KnowledgeBuilderImpl builder = new KnowledgeBuilderImpl();
         try {
@@ -376,9 +376,9 @@ public class KnowledgeBuilderTest extends DroolsTestCase {
 
         builder.addPackage( packageDescr );
 
-        assertEquals( "Should not have any errors",
-                      0,
-                      builder.getErrors().getErrors().length );
+        assertEquals( 0,
+                      builder.getErrors().getErrors().length,
+                      "Should not have any errors");
     }
 
     @Test
@@ -926,7 +926,7 @@ public class KnowledgeBuilderTest extends DroolsTestCase {
         return packageDescr;
     }
 
-    @Test @Ignore // TODO we now allow bindings on declarations, so update the test for this
+    @Test @Disabled // TODO we now allow bindings on declarations, so update the test for this
     public void testDuplicateDeclaration() {
         final KnowledgeBuilderImpl builder = new KnowledgeBuilderImpl();
 

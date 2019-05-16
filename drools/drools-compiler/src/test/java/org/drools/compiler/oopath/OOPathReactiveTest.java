@@ -18,7 +18,9 @@ package org.drools.compiler.oopath;
 
 import static org.drools.compiler.oopath.model.BodyMeasurement.CHEST;
 import static org.drools.compiler.oopath.model.BodyMeasurement.RIGHT_FOREARM;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,7 @@ import org.drools.core.reteoo.ObjectTypeNode;
 import org.drools.core.reteoo.ReactiveFromNode;
 import org.drools.core.reteoo.TupleMemory;
 import org.drools.core.util.Iterator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieFileSystem;

@@ -21,7 +21,7 @@ import java.util.Collection;
 import org.assertj.core.api.Assertions;
 import org.drools.compiler.oopath.model.Child;
 import org.drools.compiler.oopath.model.Man;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;

@@ -28,7 +28,7 @@ import org.drools.compiler.oopath.model.Child;
 import org.drools.compiler.oopath.model.Man;
 import org.drools.compiler.oopath.model.Toy;
 import org.drools.compiler.oopath.model.Woman;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;
@@ -40,7 +40,7 @@ public class OOPathBindTest {
         testBindInteger(false);
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void testBindIntegerFireUntilHalt() throws InterruptedException, ExecutionException {
         testBindInteger(true);
     }

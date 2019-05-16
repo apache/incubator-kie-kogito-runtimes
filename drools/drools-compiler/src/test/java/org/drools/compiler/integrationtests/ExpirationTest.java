@@ -16,9 +16,6 @@
 
 package org.drools.compiler.integrationtests;
 
-import static org.junit.Assert.*;
-import static org.kie.api.definition.type.Expires.Policy.TIME_SOFT;
-
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,7 +26,7 @@ import org.drools.core.ClassObjectFilter;
 import org.drools.core.ClockType;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.time.impl.PseudoClockScheduler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.definition.type.Expires;
@@ -39,6 +36,9 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.internal.utils.KieHelper;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.kie.api.definition.type.Expires.Policy.TIME_SOFT;
 
 public class ExpirationTest {
 

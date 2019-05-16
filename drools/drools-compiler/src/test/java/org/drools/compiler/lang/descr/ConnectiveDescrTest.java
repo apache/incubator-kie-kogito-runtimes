@@ -17,7 +17,7 @@ package org.drools.compiler.lang.descr;
 
 import org.assertj.core.api.Assertions;
 import org.drools.compiler.lang.descr.ConnectiveDescr.RestrictionConnectiveType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ConnectiveDescrTest {
 

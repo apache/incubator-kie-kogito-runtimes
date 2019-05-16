@@ -15,9 +15,6 @@
 
 package org.drools.compiler.oopath;
 
-import static org.drools.compiler.TestUtil.assertDrlHasCompilationError;
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -40,7 +37,7 @@ import org.drools.compiler.oopath.model.Toy;
 import org.drools.compiler.oopath.model.Woman;
 import org.drools.core.phreak.AbstractReactiveObject;
 import org.drools.core.phreak.ReactiveSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message;
@@ -52,6 +49,11 @@ import org.kie.api.event.rule.ObjectUpdatedEvent;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;
+
+import static org.drools.compiler.TestUtil.assertDrlHasCompilationError;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OOPathTest {
 

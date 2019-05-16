@@ -16,8 +16,6 @@
 
 package org.drools.compiler.oopath;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +25,7 @@ import org.drools.compiler.oopath.model.BabyGirl;
 import org.drools.compiler.oopath.model.Man;
 import org.drools.compiler.oopath.model.Toy;
 import org.drools.compiler.oopath.model.Woman;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message;
@@ -35,6 +33,8 @@ import org.kie.api.builder.Results;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OOPathCastTest {
 

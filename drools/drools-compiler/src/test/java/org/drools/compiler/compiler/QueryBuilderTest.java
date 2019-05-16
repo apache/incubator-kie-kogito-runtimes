@@ -15,8 +15,6 @@
 
 package org.drools.compiler.compiler;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Arrays;
 
 import org.drools.compiler.Cheese;
@@ -33,10 +31,12 @@ import org.drools.compiler.lang.descr.RuleDescr;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.test.model.DroolsTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QueryBuilderTest extends DroolsTestCase {
 

@@ -17,10 +17,10 @@ package org.drools.compiler.integrationtests;
 
 import static org.drools.core.reteoo.PropertySpecificUtil.calculateNegativeMask;
 import static org.drools.core.reteoo.PropertySpecificUtil.calculatePositiveMask;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -45,7 +45,7 @@ import org.drools.core.reteoo.RuleTerminalNode;
 import org.drools.core.spi.ObjectType;
 import org.drools.core.util.bitmask.AllSetBitMask;
 import org.drools.core.util.bitmask.EmptyBitMask;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.definition.type.FactType;
 import org.kie.api.definition.type.Modifies;
@@ -1295,7 +1295,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         ksession.dispose();
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testPropertySpecificOnAlphaNode() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                 "import " + PropertySpecificTest.C.class.getCanonicalName() + "\n" +
@@ -1320,7 +1320,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         ksession.dispose();
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testPropertySpecificWithUpdate() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                 "import " + PropertySpecificTest.C.class.getCanonicalName() + "\n" +
@@ -1411,7 +1411,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
                 .hasMessageContaining("Exception executing consequence for rule \"R1\"");
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testSharedWatchAnnotation() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                 "declare A\n" +
@@ -1525,7 +1525,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         assertEquals(2, hero.getPosition());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testPropSpecOnPatternWithThis() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                 "declare A\n" +
@@ -1604,7 +1604,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         assertEquals(3, rules);
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testConfig() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                 "declare A\n" +
@@ -1682,7 +1682,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         assertEquals(2, rules);
     }
 
-    @Test (timeout = 5000)
+    @Test
     public void testNoConstraint() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                 "import " + PropertySpecificTest.Cell.class.getCanonicalName() + "\n" +
@@ -1701,7 +1701,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         assertEquals(1, rules);
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testNodeSharing() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                 "import " + PropertySpecificTest.Cell.class.getCanonicalName() + "\n" +
@@ -1866,7 +1866,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         return null;
     }
     
-    @Test(timeout = 5000)
+    @Test
     public void testNoConstraint2() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                       "import " + PropertySpecificTest.Order.class.getCanonicalName() + "\n" +
@@ -1896,7 +1896,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         assertTrue(order1.isDiscounted());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testFrom() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                       "import " + PropertySpecificTest.Order.class.getCanonicalName() + "\n" +
@@ -1930,7 +1930,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         assertTrue(order1.isDiscounted());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testAccumulate() throws Exception {
         String rule = "package org.drools.compiler.integrationtests\n" +
                       "import " + PropertySpecificTest.Order.class.getCanonicalName() + "\n" +
@@ -2215,7 +2215,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         assertEquals( calculatePositiveMask(classType, list("a", "b"), sp), alphaNode.getInferredMask());
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testBetaWith2RTNSinksExecNoLoop() throws Exception {
         testBetaWith2RTNSinksExec(false);
     }
@@ -2293,7 +2293,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testBetaWith2BetaSinksExecNoLoop() throws Exception {
         testBetaWith2BetaSinksExec(false);
     }
@@ -2378,7 +2378,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testTypeDeclarationInitializationForPropertyReactive() {
         // JBRULES-3686
         String rule = "package org.drools.compiler.integrationtests\n" +

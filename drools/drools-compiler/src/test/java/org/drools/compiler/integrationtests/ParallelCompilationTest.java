@@ -17,6 +17,7 @@ package org.drools.compiler.integrationtests;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
@@ -26,9 +27,10 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
@@ -43,17 +45,17 @@ public class ParallelCompilationTest {
 
     private ExecutorService executor;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         executor = Executors.newFixedThreadPool(PARALLEL_THREADS);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         executor.shutdownNow();
     }
 
-    @Test(timeout=10000)
+    @Test
     public void testConcurrentRuleAdditions() throws Exception {
         parallelExecute(BuildExecutor.getSolvers());
     }
@@ -63,9 +65,11 @@ public class ParallelCompilationTest {
         for (Callable<KieBase> s : solvers) {
             ecs.submit(s);
         }
-        for (int i = 0; i < PARALLEL_THREADS; ++i) {
-            KieBase kbase = ecs.take().get();
-        }
+        Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+            for (int i = 0; i < PARALLEL_THREADS; ++i) {
+                KieBase kbase = ecs.take().get();
+            }
+        });
     }
 
     public static class BuildExecutor implements Callable<KieBase> {
