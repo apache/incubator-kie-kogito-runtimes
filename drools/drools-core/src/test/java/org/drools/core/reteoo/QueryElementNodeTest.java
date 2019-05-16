@@ -25,13 +25,12 @@ import org.drools.core.reteoo.builder.BuildContext;
 import org.drools.core.rule.QueryArgument;
 import org.drools.core.rule.QueryElement;
 import org.drools.core.spi.PropagationContext;
-import org.drools.core.test.model.DroolsTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class QueryElementNodeTest extends DroolsTestCase {
+public class QueryElementNodeTest {
     private PropagationContext  context;
     private StatefulKnowledgeSessionImpl workingMemory;
     private InternalKnowledgeBase kBase;

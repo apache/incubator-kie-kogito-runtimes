@@ -38,7 +38,7 @@ public class ReteOOWaltzTest extends CommonTestMethodBase {
 
     @Test
     public void testWaltz() {
-        Assertions.assertTimeout(Duration.ofSeconds(20), () -> {
+        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(20), () -> {
             try {
                 //load up the rulebase
                 final KieBase kBase = readKnowledegBase();

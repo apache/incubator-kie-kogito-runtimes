@@ -466,8 +466,8 @@ public class DescrBuilderTest extends CommonTestMethodBase {
         ArgumentCaptor<AfterMatchFiredEvent> cap = ArgumentCaptor.forClass( AfterMatchFiredEvent.class );
         verify( ael ).afterMatchFired(cap.capture());
         
-        assertThat((Number)cap.getValue().getMatch().getDeclarationValue( "$sum" )).isEqualTo(180);
-        assertThat((Number)cap.getValue().getMatch().getDeclarationValue( "$cnt" )).isEqualTo(2);
+        assertThat((Number)cap.getValue().getMatch().getDeclarationValue( "$sum" )).isEqualTo(180.0);
+        assertThat((Number)cap.getValue().getMatch().getDeclarationValue( "$cnt" )).isEqualTo(2L);
     }
     
     @Test

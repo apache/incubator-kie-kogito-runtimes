@@ -156,7 +156,7 @@ public class ChangeSetTest extends CommonTestMethodBase {
 
         URL url = ChangeSetTest.class.getResource(ChangeSetTest.class.getSimpleName() + ".class");
         AtomicReference<File> jar = new AtomicReference<>();
-        Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             File file = new File( url.toURI() );
             while ( true ) {
                 file = file.getParentFile();

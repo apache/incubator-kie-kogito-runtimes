@@ -119,7 +119,7 @@ public class ScenarioTest {
             // @formatter:on            
             fail("Should not reach here");
         } catch ( AssertionError e ) {
-            assertTrue( e.getMessage().contains( "Insert excpected more" ) );
+            assertTrue( e.getMessage().contains( "Insert expected more" ) );
         }
     }  
     
@@ -231,7 +231,7 @@ public class ScenarioTest {
             // @formatter:on            
             fail("Should not reach here");
         } catch ( AssertionError e ) {
-            assertTrue( e.getMessage().contains( "Insert excpected more" ) );
+            assertTrue( e.getMessage().contains( "Insert expected more" ) );
         }
     }    
     
@@ -252,7 +252,7 @@ public class ScenarioTest {
             // @formatter:on            
             fail("Should not reach here");
         } catch ( AssertionError e ) {
-            assertTrue( e.getMessage().contains( "Insert excpected more" ) );
+            assertTrue( e.getMessage().contains( "Insert expected more" ) );
         }
     }        
 
@@ -429,7 +429,7 @@ public class ScenarioTest {
             fail("Should not reach here");
         } catch ( AssertionError e ) {
             System.out.println( e.getMessage() );
-            assertTrue( e.getMessage().contains( "Insert excpected more" ) );
+            assertTrue( e.getMessage().contains( "Insert expected more" ) );
         }
     }    
     
@@ -581,7 +581,7 @@ public class ScenarioTest {
             // @formatter:on            
             fail("Should not reach here");
         } catch ( AssertionError e ) {
-            assertTrue( e.getMessage().contains( "Insert excpected more" ) );
+            assertTrue( e.getMessage().contains( "Insert expected more" ) );
         }
     }
     
@@ -696,7 +696,7 @@ public class ScenarioTest {
             // @formatter:on            
             fail("Should not reach here");
         } catch ( AssertionError e ) {
-            assertTrue( e.getMessage().contains( "Insert excpected more" ) );
+            assertTrue( e.getMessage().contains( "Insert expected more" ) );
         }
     }    
     

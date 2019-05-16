@@ -18,13 +18,12 @@ package org.drools.core.reteoo;
 
 import java.lang.reflect.Field;
 
-import org.drools.core.test.model.DroolsTestCase;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class TupleSourceTest extends DroolsTestCase {
+public class TupleSourceTest {
 
     @Test
     public void testObjectTupleConstructor() {

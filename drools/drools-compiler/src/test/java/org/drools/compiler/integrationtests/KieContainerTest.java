@@ -53,6 +53,7 @@ import static org.drools.core.util.DroolsAssert.assertUrlEnumerationContainsMatc
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 public class KieContainerTest extends CommonTestMethodBase {
 
@@ -256,7 +257,7 @@ public class KieContainerTest extends CommonTestMethodBase {
         t.setDaemon(true);
         t.start();
 
-        org.junit.jupiter.api.Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             while (true) {
                 KieSession kieSession2 = kieContainer.newKieSession();
                 ArrayList<String> list2 = new ArrayList<>();
@@ -266,8 +267,8 @@ public class KieContainerTest extends CommonTestMethodBase {
                 // There can be multiple items in the list if an updateToVersion is triggered during a fireAllRules
                 // (updateToVersion can be called multiple times during fireAllRules, especially on slower machines)
                 // in that case it may fire with the old rule and multiple new ones
-                Assertions.assertThat(list).isNotEmpty();
-                if (list.get(0).equals("rule9")) {
+                Assertions.assertThat(list2).isNotEmpty();
+                if (list2.get(0).equals("rule9")) {
                     break;
                 }
             }

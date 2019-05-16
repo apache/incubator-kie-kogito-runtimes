@@ -94,7 +94,7 @@ public class ChangeSetBuilderTest {
         ResourceChangeSet cs = changes.getChanges().get( modifiedFile );
         assertThat(cs).isNotNull();
         assertThat(cs.getChangeType()).isEqualTo(ChangeType.UPDATED);
-        assertThat( changes.getChanges()).hasSize(2);
+        assertThat( cs.getChanges()).hasSize(2);
         assertThat( cs.getChanges().get( 1 )).isEqualTo(new ResourceChange(ChangeType.ADDED, Type.RULE, "R3"));
         assertThat( cs.getChanges().get( 0 )).isEqualTo(new ResourceChange(ChangeType.REMOVED, Type.RULE, "R2"));
         

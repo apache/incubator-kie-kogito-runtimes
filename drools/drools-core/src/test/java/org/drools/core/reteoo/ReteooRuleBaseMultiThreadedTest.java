@@ -26,7 +26,6 @@ import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.rule.JavaDialectRuntimeData;
 import org.drools.core.spi.Consequence;
 import org.drools.core.spi.KnowledgeHelper;
-import org.drools.core.test.model.DroolsTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  * Test case to ensure that the ReteooRuleBase is thread safe. Specifically to test for
  * deadlocks when modifying the rulebase while creating new sessions.
  */
-public class ReteooRuleBaseMultiThreadedTest extends DroolsTestCase {
+public class ReteooRuleBaseMultiThreadedTest {
 
     InternalKnowledgeBase kBase;
     RuleImpl rule;

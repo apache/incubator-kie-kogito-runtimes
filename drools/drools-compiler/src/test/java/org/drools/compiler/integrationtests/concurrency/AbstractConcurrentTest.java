@@ -23,6 +23,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -92,7 +93,7 @@ public abstract class AbstractConcurrentTest {
             ecs.submit(task);
         }
 
-        org.junit.jupiter.api.Assertions.assertTimeout(Duration.ofSeconds(40), () -> {
+        org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofSeconds(40), () -> {
             int successCounter = 0;
             for (int i = 0; i < threadCount; i++) {
                 try {
@@ -222,6 +223,23 @@ public abstract class AbstractConcurrentTest {
 
         public boolean isSharedKieSession() {
             return sharedKieSession;
+        }
+
+        private static int bitSetToInt(final BitSet bitSet) {
+            int bitInteger = 0;
+            for(int i = 0 ; i < 32; i++)
+                if(bitSet.get(i))
+                    bitInteger |= (1 << i);
+            return bitInteger;
+        }
+
+        @Override
+        public String toString() {
+            int result = enforcedJitting ? 1 : 0;
+            result += serializeKieBase ? 2 : 0 ;
+            result += sharedKieBase ? 4 : 0;
+            result += sharedKieSession ? 8 : 0;
+            return "Parameters[" + result + "]";
         }
     }
 }

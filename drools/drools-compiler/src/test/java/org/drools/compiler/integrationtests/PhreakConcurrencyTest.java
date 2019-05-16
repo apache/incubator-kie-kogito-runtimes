@@ -204,7 +204,7 @@ public class PhreakConcurrencyTest extends CommonTestMethodBase {
                 ecs.submit(new EPManipulator2(ksession, i));
             }
 
-            Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+            Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
                 boolean success = true;
                 for (int i = 0; i < 3; i++) {
                     try {

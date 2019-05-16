@@ -65,7 +65,7 @@ public class ParallelCompilationTest {
         for (Callable<KieBase> s : solvers) {
             ecs.submit(s);
         }
-        Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             for (int i = 0; i < PARALLEL_THREADS; ++i) {
                 KieBase kbase = ecs.take().get();
             }

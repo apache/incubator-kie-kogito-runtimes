@@ -138,7 +138,7 @@ public class MultithreadTest extends CommonTestMethodBase {
                     });
                 }
 
-                org.junit.jupiter.api.Assertions.assertTimeout(Duration.ofMinutes(5), () -> {
+                org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofMinutes(5), () -> {
                     success.set(true);
                     for (int i = 0; i < THREAD_NR; i++) {
                         try {
@@ -151,7 +151,7 @@ public class MultithreadTest extends CommonTestMethodBase {
             } finally {
                 ksession.halt();
 
-                org.junit.jupiter.api.Assertions.assertTimeout(Duration.ofMinutes(5), () -> {
+                org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofMinutes(5), () -> {
                     try {
                         success.set(ecs.take().get() && success.get());
                     } catch (final Exception e) {
@@ -385,7 +385,7 @@ public class MultithreadTest extends CommonTestMethodBase {
                 });
             }
 
-            org.junit.jupiter.api.Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+            org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
                 boolean success = true;
                 for (int i = 0; i < THREAD_NR; i++) {
                     try {
@@ -447,7 +447,7 @@ public class MultithreadTest extends CommonTestMethodBase {
                 }
             }
 
-            org.junit.jupiter.api.Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+            org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
                 try {
                     barrier.await();
                 } catch (final Exception e) {
@@ -573,7 +573,7 @@ public class MultithreadTest extends CommonTestMethodBase {
             threads[i].start();
         }
 
-        org.junit.jupiter.api.Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+        org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             for (int i = 0; i < threadNr; i++) {
                 try {
                     threads[i].join();

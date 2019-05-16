@@ -128,9 +128,9 @@ public class DynamicRulesTest extends CommonTestMethodBase {
         // As we added person instance in advance, rule should fire now
         workingMemory.fireAllRules();
 
-        assertEquals("Rule from package 3 should have been fired",
-                     "match Person ok",
-                     bob.getStatus());
+        assertEquals("match Person ok",
+                     bob.getStatus(),
+                     "Rule from package 3 should have been fired");
 
         assertEquals(1,
                      list.size());
@@ -143,9 +143,9 @@ public class DynamicRulesTest extends CommonTestMethodBase {
         workingMemory.fireAllRules();
         kbase = SerializationHelper.serializeObject( kbase );
 
-        assertEquals("Rule from package 4 should have been fired",
-                     "Who likes Stilton ok",
-                     bob.getStatus());
+        assertEquals("Who likes Stilton ok",
+                     bob.getStatus(),
+                     "Rule from package 4 should have been fired");
 
         assertEquals( 2,
                       list.size() );

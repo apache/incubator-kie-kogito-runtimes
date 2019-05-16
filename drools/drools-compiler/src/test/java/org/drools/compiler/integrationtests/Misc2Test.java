@@ -7570,7 +7570,7 @@ public class Misc2Test extends CommonTestMethodBase {
         // thread for firing until halt
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit((Runnable) ksession::fireUntilHalt);
-        Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             try {
                 for ( int i = 0; i < factsNr; i++ ) {
                     ksession.insert( "" + i );

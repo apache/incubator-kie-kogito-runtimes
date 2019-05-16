@@ -76,7 +76,7 @@ public class DynamicRulesChangesTest extends CommonTestMethodBase {
         for (Callable<List<String>> s : solvers) {
             ecs.submit(s);
         }
-        Assertions.assertTimeout(Duration.ofSeconds(10), () -> {
+        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             for (int i = 0; i < PARALLEL_THREADS; ++i) {
                 List<String> events = ecs.take().get();
                 assertEquals(5, events.size());

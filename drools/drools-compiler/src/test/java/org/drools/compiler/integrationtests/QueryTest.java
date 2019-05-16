@@ -109,8 +109,7 @@ public class QueryTest extends CommonTestMethodBase {
                     fhStr = fhStr.substring(0, fhStr.lastIndexOf(":"));
                     String copyFhStr = copyFh.toExternalForm();
                     copyFhStr = copyFhStr.substring(0, copyFhStr.lastIndexOf(":"));
-                    assertEquals( "Unequal fact handles for fact handle '" + ((InternalFactHandle) fh).getId() + "':",
-                                  fhStr, copyFhStr );
+                    assertEquals(fhStr, copyFhStr, "Unequal fact handles for fact handle '" + ((InternalFactHandle) fh).getId() + "':");
                 }
             }
         }
