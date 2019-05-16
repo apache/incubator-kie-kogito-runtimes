@@ -2,9 +2,10 @@ package org.kie.submarine.codegen;
 
 import java.nio.charset.StandardCharsets;
 
-import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GeneratedFileTest {
 
@@ -21,16 +22,16 @@ public class GeneratedFileTest {
 
     @Test
     public void relativePath() {
-        Assertions.assertThat(testFile.relativePath()).isEqualTo(TEST_RELATIVE_PATH);
+        assertThat(testFile.relativePath()).isEqualTo(TEST_RELATIVE_PATH);
     }
 
     @Test
     public void contents() {
-        Assertions.assertThat(testFile.contents()).isEqualTo(TEST_CONTENTS);
+        assertThat(testFile.contents()).isEqualTo(TEST_CONTENTS);
     }
 
     @Test
     public void getType() {
-        Assertions.assertThat(testFile.getType()).isEqualTo(TEST_TYPE);
+        assertThat(testFile.getType()).isEqualTo(TEST_TYPE);
     }
 }

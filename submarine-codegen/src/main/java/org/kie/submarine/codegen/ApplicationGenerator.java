@@ -17,6 +17,7 @@ package org.kie.submarine.codegen;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +39,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 
+// TODO add edge cases, illegal input tests etc.
 public class ApplicationGenerator {
 
     private static final String RESOURCE = "/class-templates/ApplicationTemplate.java";
@@ -115,7 +117,9 @@ public class ApplicationGenerator {
         generators.forEach(gen -> gen.updateConfig(configGenerator));
         generators.forEach(gen -> factoryMethods.addAll(gen.factoryMethods()));        
         generators.forEach(gen -> writeLabelsImageMetadata(gen.getLabels()));
-        generatedFiles.add(new GeneratedFile(GeneratedFile.Type.APPLICATION, generatedFilePath(), compilationUnit().toString().getBytes()));
+        generatedFiles.add(new GeneratedFile(GeneratedFile.Type.APPLICATION,
+                                             generatedFilePath(),
+                                             compilationUnit().toString().getBytes(StandardCharsets.UTF_8)));
         return generatedFiles;
     }
 
@@ -139,9 +143,10 @@ public class ApplicationGenerator {
             }
             imageMetadata.add(labels);
             
-            Files.write(imageMetaDataFile, mapper.writerWithDefaultPrettyPrinter().writeValueAsString(imageMetadata).getBytes());
+            Files.write(imageMetaDataFile,
+                        mapper.writerWithDefaultPrettyPrinter().writeValueAsString(imageMetadata).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-//            throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
                
     }

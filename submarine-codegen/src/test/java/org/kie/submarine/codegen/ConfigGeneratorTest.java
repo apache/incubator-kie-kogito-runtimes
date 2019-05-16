@@ -2,11 +2,12 @@ package org.kie.submarine.codegen;
 
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.kie.submarine.StaticConfig;
 import org.kie.submarine.codegen.process.config.ProcessConfigGenerator;
 import org.mockito.Mockito;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConfigGeneratorTest {
 
@@ -14,13 +15,17 @@ public class ConfigGeneratorTest {
     public void withProcessConfig() {
         final ConfigGenerator generator = new ConfigGenerator();
         final ProcessConfigGenerator processConfigGenerator = Mockito.mock(ProcessConfigGenerator.class);
-        Assertions.assertThat(generator.withProcessConfig(processConfigGenerator)).isSameAs(generator);
+        final ConfigGenerator returnedConfigGenerator = generator.withProcessConfig(processConfigGenerator);
+        assertThat(returnedConfigGenerator).isNotNull();
+        assertThat(returnedConfigGenerator).isSameAs(generator);
     }
 
     @Test
     public void withProcessConfigNull() {
         final ConfigGenerator generator = new ConfigGenerator();
-        Assertions.assertThat(generator.withProcessConfig(null)).isSameAs(generator);
+        final ConfigGenerator returnedConfigGenerator = generator.withProcessConfig(null);
+        assertThat(returnedConfigGenerator).isNotNull();
+        assertThat(returnedConfigGenerator).isSameAs(generator);
     }
 
     @Test
@@ -37,8 +42,13 @@ public class ConfigGeneratorTest {
 
     private void newInstance(final ProcessConfigGenerator processConfigGenerator, final Class expectedArgumentType) {
         ObjectCreationExpr expression = new ConfigGenerator().withProcessConfig(processConfigGenerator).newInstance();
-        Assertions.assertThat(expression.getType().asString()).isEqualTo(StaticConfig.class.getCanonicalName());
-        Assertions.assertThat(expression.getArguments()).hasSize(1);
-        Assertions.assertThat(expression.getArgument(0)).isInstanceOf(expectedArgumentType);
+        assertThat(expression).isNotNull();
+
+        assertThat(expression.getType()).isNotNull();
+        assertThat(expression.getType().asString()).isEqualTo(StaticConfig.class.getCanonicalName());
+
+        assertThat(expression.getArguments()).isNotNull();
+        assertThat(expression.getArguments()).hasSize(1);
+        assertThat(expression.getArgument(0)).isInstanceOf(expectedArgumentType);
     }
 }
