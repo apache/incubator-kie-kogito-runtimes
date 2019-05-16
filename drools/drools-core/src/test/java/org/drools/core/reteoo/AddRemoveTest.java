@@ -22,7 +22,7 @@ import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.reteoo.builder.BuildContext;
 import org.drools.core.reteoo.builder.NodeFactory;
 import org.drools.core.test.model.DroolsTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class
         AddRemoveTest extends DroolsTestCase {

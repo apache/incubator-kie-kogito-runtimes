@@ -16,10 +16,6 @@
 
 package org.drools.core.reteoo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,10 +36,14 @@ import org.drools.core.rule.EntryPointId;
 import org.drools.core.spi.PropagationContext;
 import org.drools.core.test.model.Cheese;
 import org.drools.core.test.model.DroolsTestCase;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.FactHandle;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ReteTest extends DroolsTestCase {
     private PropagationContextFactory pctxFactory;
@@ -51,7 +51,7 @@ public class ReteTest extends DroolsTestCase {
     private BuildContext   buildContext;
     private EntryPointNode entryPoint;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.kBase = (InternalKnowledgeBase) KnowledgeBaseFactory.newKnowledgeBase();
 
@@ -234,7 +234,7 @@ public class ReteTest extends DroolsTestCase {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testHierarchy() {
         StatefulKnowledgeSessionImpl ksession = (StatefulKnowledgeSessionImpl)kBase.newKieSession();
 
@@ -412,7 +412,8 @@ public class ReteTest extends DroolsTestCase {
         final Object[] results = (Object[]) sink1.getAsserted().get(0);
     }
 
-    @Test @Ignore
+    @Test
+    @Disabled
     public void testNotShadowed() {
 
         Properties properties = new Properties();
