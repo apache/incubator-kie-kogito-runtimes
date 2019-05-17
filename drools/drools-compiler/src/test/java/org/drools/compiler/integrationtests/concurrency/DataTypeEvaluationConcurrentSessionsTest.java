@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import org.assertj.core.api.Assertions;
 import org.drools.compiler.integrationtests.facts.AnEnum;
 import org.drools.compiler.integrationtests.facts.FactWithBigDecimal;
 import org.drools.compiler.integrationtests.facts.FactWithBoolean;
@@ -69,113 +68,113 @@ public class DataTypeEvaluationConcurrentSessionsTest extends AbstractConcurrent
         ).map(Arguments::arguments);
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testBooleanPrimitive(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithBoolean: FactWithBoolean(booleanValue == false) \n",
                               new FactWithBoolean(false));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testBoolean(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithBoolean: FactWithBoolean(booleanObjectValue == false) \n",
                               new FactWithBoolean(false));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testBytePrimitive(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithByte: FactWithByte(byteValue == 15) \n",
                               new FactWithByte((byte) 15));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testByte(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithByte: FactWithByte(byteObjectValue == 15) \n",
                               new FactWithByte((byte) 15));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testShortPrimitive(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithShort: FactWithShort(shortValue == 15) \n",
                               new FactWithShort((short) 15));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testShort(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithShort: FactWithShort(shortObjectValue == 15) \n",
                               new FactWithShort((short) 15));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testIntPrimitive(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithInt: FactWithInteger(intValue == 15) \n", new FactWithInteger(15));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testInteger(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithInteger: FactWithInteger(integerValue == 15) \n",
                               new FactWithInteger(15));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testLongPrimitive(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithLong: FactWithLong(longValue == 15) \n", new FactWithLong(15));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testLong(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithLong: FactWithLong(longObjectValue == 15) \n",
                               new FactWithLong(15));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testFloatPrimitive(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithFloat: FactWithFloat(floatValue == 15.1) \n",
                               new FactWithFloat(15.1f));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testFloat(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithFloat: FactWithFloat(floatObjectValue == 15.1) \n",
                               new FactWithFloat(15.1f));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testDoublePrimitive(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithDouble: FactWithDouble(doubleValue == 15.1) \n",
                               new FactWithDouble(15.1d));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testDouble(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithDouble: FactWithDouble(doubleObjectValue == 15.1) \n",
                               new FactWithDouble(15.1d));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testBigDecimal(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithBigDecimal: FactWithBigDecimal(bigDecimalValue == 10) \n",
                               new FactWithBigDecimal(BigDecimal.TEN));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testCharPrimitive(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithChar: FactWithCharacter(charValue == 'a') \n",
                               new FactWithCharacter('a'));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testCharacter(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithChar: FactWithCharacter(characterValue == 'a') \n",
                               new FactWithCharacter('a'));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testString(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithString: FactWithString(stringValue == \"test\") \n",
                               new FactWithString("test"));
     }
 
-    @ParameterizedDataTypeEveluationConcurrentSessionsTest
+    @ParameterizedDataTypeEvaluationConcurrentSessionsTest
     public void testEnum(Parameters params) throws InterruptedException {
         testFactAttributeType(params, "    $factWithEnum: FactWithEnum(enumValue == AnEnum.FIRST) \n",
                               new FactWithEnum(AnEnum.FIRST));
@@ -216,7 +215,7 @@ public class DataTypeEvaluationConcurrentSessionsTest extends AbstractConcurrent
     @Retention(RetentionPolicy.RUNTIME)
     @ParameterizedTest
     @MethodSource("parameters")
-    public @interface ParameterizedDataTypeEveluationConcurrentSessionsTest {
+    public @interface ParameterizedDataTypeEvaluationConcurrentSessionsTest {
 
     }
 }
