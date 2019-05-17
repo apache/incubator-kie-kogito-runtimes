@@ -9,12 +9,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.assertj.core.api.Assertions;
 import org.kie.api.KieBase;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.utils.KieHelper;
+
+import static org.assertj.core.api.Assertions.*;
 
 abstract class AbstractConcurrentInsertionsTest {
 
@@ -99,7 +100,7 @@ abstract class AbstractConcurrentInsertionsTest {
                         throw new RuntimeException(e);
                     }
                 }
-                Assertions.assertThat(successCounter).isEqualTo(threadCount);
+                assertThat(successCounter).isEqualTo(threadCount);
             });
             if (ksession != null) {
                 ksession.dispose();

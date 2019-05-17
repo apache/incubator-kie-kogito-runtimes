@@ -35,6 +35,7 @@ import org.kie.api.KieBaseConfiguration;
 import org.kie.api.conf.EqualityBehaviorOption;
 import org.kie.api.runtime.KieSession;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NullTest extends CommonTestMethodBase {
@@ -54,8 +55,8 @@ public class NullTest extends CommonTestMethodBase {
 
         ksession.fireAllRules();
 
-        Assertions.assertEquals("OK", bob.getStatus(), "Indexing with null values is not working correctly.");
-        Assertions.assertEquals("OK", pete.getStatus(), "Indexing with null values is not working correctly.");
+        assertEquals("OK", bob.getStatus(), "Indexing with null values is not working correctly.");
+        assertEquals("OK", pete.getStatus(), "Indexing with null values is not working correctly.");
     }
 
     @Test
@@ -89,7 +90,7 @@ public class NullTest extends CommonTestMethodBase {
 
         session = SerializationHelper.getSerialisedStatefulKnowledgeSession(session, true);
         session.fireAllRules();
-        Assertions.assertEquals(2, ((List) session.getGlobal("messages")).size());
+        assertEquals(2, ((List) session.getGlobal("messages")).size());
     }
 
     @Test
@@ -105,9 +106,9 @@ public class NullTest extends CommonTestMethodBase {
 
         ksession.fireAllRules();
 
-        Assertions.assertEquals(1, list.size());
+        assertEquals(1, list.size());
 
-        Assertions.assertEquals("OK", list.get(0));
+        assertEquals("OK", list.get(0));
     }
 
     @Test
@@ -125,7 +126,7 @@ public class NullTest extends CommonTestMethodBase {
         ksession.insert(new Person(null));
         ksession.insert(new Person("Mark"));
 
-        Assertions.assertEquals(1, ksession.fireAllRules());
+        assertEquals(1, ksession.fireAllRules());
         ksession.dispose();
     }
 
@@ -142,8 +143,8 @@ public class NullTest extends CommonTestMethodBase {
         ksession = SerializationHelper.getSerialisedStatefulKnowledgeSession(ksession, true);
         ksession.fireAllRules();
 
-        Assertions.assertEquals(1, ((List) ksession.getGlobal("list")).size());
-        Assertions.assertEquals("X", ((List) ksession.getGlobal("list")).get(0));
+        assertEquals(1, ((List) ksession.getGlobal("list")).size());
+        assertEquals("X", ((List) ksession.getGlobal("list")).get(0));
     }
 
     @Test
@@ -169,13 +170,13 @@ public class NullTest extends CommonTestMethodBase {
         session = SerializationHelper.getSerialisedStatefulKnowledgeSession(session, true);
         session.fireAllRules();
         //System.out.println(((List) session.getGlobal("list")).get(0));
-        Assertions.assertEquals(3, ((List) session.getGlobal("list")).size());
+        assertEquals(3, ((List) session.getGlobal("list")).size());
 
         nullPerson = new Person(null);
 
         session.insert(nullPerson);
         session.fireAllRules();
-        Assertions.assertEquals(4, ((List) session.getGlobal("list")).size());
+        assertEquals(4, ((List) session.getGlobal("list")).size());
     }
 
     @Test
@@ -192,7 +193,7 @@ public class NullTest extends CommonTestMethodBase {
 
         ksession.fireAllRules();
 
-        Assertions.assertEquals(3, results.size());
+        assertEquals(3, results.size());
     }
 
     @Test
@@ -251,7 +252,7 @@ public class NullTest extends CommonTestMethodBase {
 
         ksession.insert(new PrimitiveBean(0.9, 1.1));
         ksession.insert(new PrimitiveBean(0.9, null));
-        Assertions.assertEquals(1, ksession.fireAllRules());
+        assertEquals(1, ksession.fireAllRules());
         ksession.dispose();
     }
 

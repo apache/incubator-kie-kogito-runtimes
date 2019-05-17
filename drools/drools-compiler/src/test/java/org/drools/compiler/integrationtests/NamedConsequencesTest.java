@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.assertj.core.api.Assertions;
 import org.drools.compiler.Cheese;
 import org.drools.compiler.CommonTestMethodBase;
 import org.drools.compiler.Person;
@@ -38,8 +37,9 @@ import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NamedConsequencesTest extends CommonTestMethodBase {
@@ -508,7 +508,7 @@ public class NamedConsequencesTest extends CommonTestMethodBase {
                 "    if (results.size() > 10) throw new RuntimeException();\n" +
                 "end\n";
 
-        Assertions.assertThatThrownBy(() -> executeTestWithDRL(str))
+        assertThatThrownBy(() -> executeTestWithDRL(str))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Exception executing consequence for rule \"R1\"");
     }
@@ -603,7 +603,7 @@ public class NamedConsequencesTest extends CommonTestMethodBase {
                 "    if (results.size() > 10) throw new RuntimeException();\n" +
                 "end\n";
 
-        Assertions.assertThatThrownBy(() -> executeTestWithDRL(str))
+        assertThatThrownBy(() -> executeTestWithDRL(str))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Exception executing consequence for rule \"R1\"");
     }
@@ -850,7 +850,7 @@ public class NamedConsequencesTest extends CommonTestMethodBase {
         Person mark = new Person("Mark", 37);
         ksession.insert(mario);
         ksession.insert(mark);
-        assertTimeout(Duration.ofSeconds(10), (ThrowingSupplier<Integer>) ksession::fireAllRules);
+        assertTimeoutPreemptively(Duration.ofSeconds(10), (ThrowingSupplier<Integer>) ksession::fireAllRules);
 
         assertEquals(35, mario.getAge());
         assertEquals(30, mark.getAge());

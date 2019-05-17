@@ -15,20 +15,12 @@
 
 package org.drools.compiler.integrationtests;
 
-import static org.drools.core.reteoo.PropertySpecificUtil.calculateNegativeMask;
-import static org.drools.core.reteoo.PropertySpecificUtil.calculatePositiveMask;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.assertj.core.api.Assertions;
 import org.drools.compiler.Cheese;
 import org.drools.compiler.CommonTestMethodBase;
 import org.drools.compiler.Person;
@@ -58,6 +50,14 @@ import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.builder.conf.PropertySpecificOption;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.drools.core.reteoo.PropertySpecificUtil.calculateNegativeMask;
+import static org.drools.core.reteoo.PropertySpecificUtil.calculatePositiveMask;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PropertySpecificTest extends CommonTestMethodBase {
 
@@ -1370,7 +1370,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         c.setS("test");
         ksession.insert( c );
 
-        Assertions.assertThatThrownBy(() -> ksession.fireAllRules())
+        assertThatThrownBy(() -> ksession.fireAllRules())
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Exception executing consequence for rule \"R1\"");
     }
@@ -1406,7 +1406,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
         factTypeB.set( factB, "on", false );
         ksession.insert( factB );
 
-        Assertions.assertThatThrownBy(() -> ksession.fireAllRules())
+        assertThatThrownBy(() -> ksession.fireAllRules())
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Exception executing consequence for rule \"R1\"");
     }
@@ -2222,7 +2222,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
 
     @Test
     public void testBetaWith2RTNSinksExecInfiniteLoop() throws Exception {
-        Assertions.assertThatThrownBy(() -> testBetaWith2RTNSinksExec(true))
+        assertThatThrownBy(() -> testBetaWith2RTNSinksExec(true))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Exception executing consequence for rule \"R1\"");
     }
@@ -2300,7 +2300,7 @@ public class PropertySpecificTest extends CommonTestMethodBase {
 
     @Test
     public void testBetaWith2BetaSinksExecInfiniteLoop() throws Exception {
-        Assertions.assertThatThrownBy(() -> testBetaWith2BetaSinksExec(true))
+        assertThatThrownBy(() -> testBetaWith2BetaSinksExec(true))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Exception executing consequence for rule \"R1\"");
     }

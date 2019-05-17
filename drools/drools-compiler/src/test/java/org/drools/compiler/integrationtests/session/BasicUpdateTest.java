@@ -38,6 +38,7 @@ import org.kie.api.runtime.rule.QueryResultsRow;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BasicUpdateTest {
 
@@ -95,7 +96,7 @@ public class BasicUpdateTest {
         final FactHandle factPerson = ksession.insert(person);
         verifyFactsPresentInSession(1, Person.class);
 
-        Assertions.assertThrows(NullPointerException.class, () -> ksession.update(factPerson, null));
+        assertThrows(NullPointerException.class, () -> ksession.update(factPerson, null));
     }
 
     @Test

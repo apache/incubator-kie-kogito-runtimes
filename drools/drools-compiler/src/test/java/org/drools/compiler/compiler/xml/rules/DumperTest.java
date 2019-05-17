@@ -15,13 +15,13 @@
 
 package org.drools.compiler.compiler.xml.rules;
 
-import org.assertj.core.api.Assertions;
 import org.drools.compiler.compiler.DrlParser;
 import org.drools.compiler.lang.DrlDumper;
 import org.drools.compiler.lang.descr.PackageDescr;
 import org.junit.jupiter.api.Test;
 import org.kie.internal.builder.conf.LanguageLevelOption;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -165,6 +165,6 @@ public class DumperTest {
         final PackageDescr pkgOriginal = parser.parse( false, drl );
         final DrlDumper dumper = new DrlDumper();
         String out = dumper.dump( pkgOriginal );
-        Assertions.assertThat(drl).isEqualToIgnoringWhitespace(out);
+        assertThat(drl).isEqualToIgnoringWhitespace(out);
     }
 }

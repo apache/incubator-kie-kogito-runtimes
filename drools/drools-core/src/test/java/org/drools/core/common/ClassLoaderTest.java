@@ -24,8 +24,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 public class ClassLoaderTest {
 
@@ -65,7 +66,7 @@ public class ClassLoaderTest {
 
             for (int i = 1; i <= THREAD_COUNT; i++) {
                 final int threadId = i - 1;
-                Assertions.assertTimeout(Duration.ofSeconds(5), () -> {
+                assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
                     try {
                         futures.get(threadId).get();
                     } catch (final InterruptedException | ExecutionException e) {

@@ -24,11 +24,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.drools.compiler.CommonTestMethodBase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -38,7 +38,7 @@ public class ReteOOWaltzTest extends CommonTestMethodBase {
 
     @Test
     public void testWaltz() {
-        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(20), () -> {
+        assertTimeoutPreemptively(Duration.ofSeconds(20), () -> {
             try {
                 //load up the rulebase
                 final KieBase kBase = readKnowledegBase();

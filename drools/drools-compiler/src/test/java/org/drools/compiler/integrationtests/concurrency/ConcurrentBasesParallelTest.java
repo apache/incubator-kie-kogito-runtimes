@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import org.assertj.core.api.Assertions;
 import org.drools.compiler.integrationtests.facts.BeanA;
 import org.drools.compiler.integrationtests.facts.BeanB;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,6 +34,8 @@ import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
+
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Test each thread having it's own separate KieBase and KieSession.
@@ -69,7 +70,7 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 for (int i = 0; i < numberOfObjects; i++) {
                     session.insert(new BeanA(i));
                 }
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(1);
+                assertThat(session.fireAllRules()).isEqualTo(1);
                 return true;
             } finally {
                 session.dispose();
@@ -98,7 +99,7 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                         session.insert(new BeanA(i));
                     }
                 }
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(0);
+                assertThat(session.fireAllRules()).isEqualTo(0);
                 return true;
             } finally {
                 session.dispose();
@@ -127,8 +128,8 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 session.insert(new BeanA());
                 final AtomicInteger r = new AtomicInteger(0);
                 session.setGlobal("result", r);
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(1);
-                Assertions.assertThat(r.get()).isEqualTo(counter);
+                assertThat(session.fireAllRules()).isEqualTo(1);
+                assertThat(r.get()).isEqualTo(counter);
                 return true;
             } finally {
                 session.dispose();
@@ -165,9 +166,9 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 final List<String> list = new ArrayList<>();
                 session.setGlobal("list", list);
                 final int rulesFired = session.fireAllRules();
-                Assertions.assertThat(list).hasSize(1);
-                Assertions.assertThat(list.get(0)).isEqualTo(className);
-                Assertions.assertThat(rulesFired).isEqualTo(1);
+                assertThat(list).hasSize(1);
+                assertThat(list.get(0)).isEqualTo(className);
+                assertThat(rulesFired).isEqualTo(1);
                 return true;
             } finally {
                 session.dispose();
@@ -201,7 +202,7 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 } else {
                     session.insert(new BeanA());
                 }
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(0);
+                assertThat(session.fireAllRules()).isEqualTo(0);
                 return true;
             } finally {
                 session.dispose();
@@ -235,7 +236,7 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 } else {
                     session.insert(new BeanB());
                 }
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(1);
+                assertThat(session.fireAllRules()).isEqualTo(1);
                 return true;
             } finally {
                 session.dispose();
@@ -270,7 +271,7 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 } else {
                     session.insert(new BeanB());
                 }
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(0);
+                assertThat(session.fireAllRules()).isEqualTo(0);
                 return true;
             } finally {
                 session.dispose();
@@ -305,7 +306,7 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 } else {
                     session.insert(new BeanB());
                 }
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(1);
+                assertThat(session.fireAllRules()).isEqualTo(1);
                 return true;
             } finally {
                 session.dispose();
@@ -347,10 +348,10 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 session.insert("test");
                 if (counter % 2 == 0) {
                     session.insert(new BeanA());
-                    Assertions.assertThat(session.fireAllRules()).isEqualTo(2);
+                    assertThat(session.fireAllRules()).isEqualTo(2);
                 } else {
                     session.insert(new BeanB());
-                    Assertions.assertThat(session.fireAllRules()).isEqualTo(1);
+                    assertThat(session.fireAllRules()).isEqualTo(1);
                 }
                 return true;
             } finally {
@@ -385,9 +386,9 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
             try {
                 if (counter % 2 == 0) {
                     session.insert(new BeanA(counter));
-                    Assertions.assertThat(session.fireAllRules()).isEqualTo(1);
+                    assertThat(session.fireAllRules()).isEqualTo(1);
                 } else {
-                    Assertions.assertThat(session.fireAllRules()).isEqualTo(0);
+                    assertThat(session.fireAllRules()).isEqualTo(0);
                 }
                 return true;
             } finally {
@@ -421,7 +422,7 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
             try {
                 session.insert(new BeanA());
                 session.insert(new BeanB());
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(2);
+                assertThat(session.fireAllRules()).isEqualTo(2);
                 return true;
             } finally {
                 session.dispose();
@@ -457,7 +458,7 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 } else {
                     session.insert(new BeanB(counter));
                 }
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(1);
+                assertThat(session.fireAllRules()).isEqualTo(1);
                 return true;
             } finally {
                 session.dispose();
@@ -493,7 +494,7 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 } else {
                     session.insert(new BeanB(counter));
                 }
-                Assertions.assertThat(session.fireAllRules()).isEqualTo(1);
+                assertThat(session.fireAllRules()).isEqualTo(1);
                 return true;
             } finally {
                 session.dispose();
@@ -527,9 +528,9 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 if (counter % 2 == 0) {
                     session.insert(new BeanA(counter));
                     session.insert(new BeanB(counter));
-                    Assertions.assertThat(session.fireAllRules()).isEqualTo(0);
+                    assertThat(session.fireAllRules()).isEqualTo(0);
                 } else {
-                    Assertions.assertThat(session.fireAllRules()).isEqualTo(2);
+                    assertThat(session.fireAllRules()).isEqualTo(2);
                 }
                 return true;
             } finally {
@@ -565,9 +566,9 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                 final List<String> list = new ArrayList<>();
                 session.setGlobal("list", list);
                 final int rulesFired = session.fireAllRules();
-                Assertions.assertThat(list).hasSize(1);
-                Assertions.assertThat(list.get(0)).isEqualTo("" + counter);
-                Assertions.assertThat(rulesFired).isEqualTo(1);
+                assertThat(list).hasSize(1);
+                assertThat(list.get(0)).isEqualTo("" + counter);
+                assertThat(rulesFired).isEqualTo(1);
                 return true;
             } finally {
                 session.dispose();
@@ -613,10 +614,10 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                     rulesFired += session.fireAllRules();
                 }
 
-                Assertions.assertThat(list).hasSize(objectCount);
-                Assertions.assertThat(list).contains(identifier);
-                Assertions.assertThat(list).doesNotContain(otherIdentifier);
-                Assertions.assertThat(rulesFired).isEqualTo(objectCount);
+                assertThat(list).hasSize(objectCount);
+                assertThat(list).contains(identifier);
+                assertThat(list).doesNotContain(otherIdentifier);
+                assertThat(rulesFired).isEqualTo(objectCount);
                 return true;
             } finally {
                 session.dispose();
@@ -648,9 +649,9 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                     }
                 }
                 final QueryResults results = session.getQueryResults("Query");
-                Assertions.assertThat(results).hasSize(1);
+                assertThat(results).hasSize(1);
                 for (final QueryResultsRow row : results) {
-                    Assertions.assertThat(row.get("bean")).isEqualTo(bean);
+                    assertThat(row.get("bean")).isEqualTo(bean);
                 }
                 return true;
             } finally {
@@ -682,10 +683,10 @@ public class ConcurrentBasesParallelTest extends AbstractConcurrentTest {
                     session.insert(new BeanA(seed));
                 }
                 final QueryResults results = session.getQueryResults("Query");
-                Assertions.assertThat(results).hasSize(numberOfObjects);
+                assertThat(results).hasSize(numberOfObjects);
                 for (final QueryResultsRow row : results) {
                     final BeanA bean = (BeanA) row.get("bean");
-                    Assertions.assertThat(bean.getSeed()).isEqualTo(seed);
+                    assertThat(bean.getSeed()).isEqualTo(seed);
                 }
                 return true;
             } finally {

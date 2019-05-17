@@ -32,12 +32,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.assertj.core.api.Assertions;
 import org.kie.api.KieBase;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.conf.ConstraintJittingThresholdOption;
 import org.kie.internal.utils.KieHelper;
+
+import static org.assertj.core.api.Assertions.*;
 
 public abstract class AbstractConcurrentTest {
 
@@ -104,7 +105,7 @@ public abstract class AbstractConcurrentTest {
                     throw new RuntimeException(e);
                 }
             }
-            Assertions.assertThat(successCounter).isEqualTo(threadCount);
+            assertThat(successCounter).isEqualTo(threadCount);
         });
     }
 

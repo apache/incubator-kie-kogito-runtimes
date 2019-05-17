@@ -41,6 +41,7 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.command.CommandFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 public class DynamicRulesChangesTest extends CommonTestMethodBase {
 
@@ -76,7 +77,7 @@ public class DynamicRulesChangesTest extends CommonTestMethodBase {
         for (Callable<List<String>> s : solvers) {
             ecs.submit(s);
         }
-        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             for (int i = 0; i < PARALLEL_THREADS; ++i) {
                 List<String> events = ecs.take().get();
                 assertEquals(5, events.size());

@@ -147,6 +147,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -7570,7 +7571,7 @@ public class Misc2Test extends CommonTestMethodBase {
         // thread for firing until halt
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit((Runnable) ksession::fireUntilHalt);
-        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             try {
                 for ( int i = 0; i < factsNr; i++ ) {
                     ksession.insert( "" + i );

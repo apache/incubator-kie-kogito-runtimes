@@ -48,6 +48,7 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.drools.core.util.DroolsAssert.assertEnumerationSize;
 import static org.drools.core.util.DroolsAssert.assertUrlEnumerationContainsMatch;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -267,7 +268,7 @@ public class KieContainerTest extends CommonTestMethodBase {
                 // There can be multiple items in the list if an updateToVersion is triggered during a fireAllRules
                 // (updateToVersion can be called multiple times during fireAllRules, especially on slower machines)
                 // in that case it may fire with the old rule and multiple new ones
-                Assertions.assertThat(list2).isNotEmpty();
+                assertThat(list2).isNotEmpty();
                 if (list2.get(0).equals("rule9")) {
                     break;
                 }
@@ -354,7 +355,7 @@ public class KieContainerTest extends CommonTestMethodBase {
         URL url = classLoader.getResources("org/drools/testdrl").nextElement();
         
         List<String> lines = read(url.openStream());
-        Assertions.assertThat(lines).contains("rules1.drl", "rules1.drl.properties", "rules2.drl", "rules2.drl.properties");
+        assertThat(lines).contains("rules1.drl", "rules1.drl.properties", "rules2.drl", "rules2.drl.properties");
 
         assertUrlEnumerationContainsMatch("^mfs\\:/$", classLoader.getResources(""));
     }

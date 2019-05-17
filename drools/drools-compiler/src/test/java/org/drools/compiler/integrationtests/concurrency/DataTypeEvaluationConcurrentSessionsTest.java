@@ -41,6 +41,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static org.assertj.core.api.Assertions.*;
+
 public class DataTypeEvaluationConcurrentSessionsTest extends AbstractConcurrentTest {
 
     private static final Integer NUMBER_OF_THREADS = 10;
@@ -204,9 +206,9 @@ public class DataTypeEvaluationConcurrentSessionsTest extends AbstractConcurrent
             // This is 1 because engine doesn't insert an already existing object twice, so when sharing a session
             // the object should be present just once in the session. When not sharing a session, there is N separate
             // sessions, so each one should fire.
-            Assertions.assertThat(numberOfFirings.get()).isEqualTo(1);
+            assertThat(numberOfFirings.get()).isEqualTo(1);
         } else {
-            Assertions.assertThat(numberOfFirings.get()).isEqualTo(10);
+            assertThat(numberOfFirings.get()).isEqualTo(10);
         }
     }
 

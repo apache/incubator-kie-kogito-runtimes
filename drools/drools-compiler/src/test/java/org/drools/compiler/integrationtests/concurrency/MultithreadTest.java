@@ -58,6 +58,9 @@ import org.kie.internal.utils.KieHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
 /**
  * This is a test case for multi-thred issues
  */
@@ -138,7 +141,7 @@ public class MultithreadTest extends CommonTestMethodBase {
                     });
                 }
 
-                org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofMinutes(5), () -> {
+                assertTimeoutPreemptively(Duration.ofMinutes(5), () -> {
                     success.set(true);
                     for (int i = 0; i < THREAD_NR; i++) {
                         try {
@@ -151,7 +154,7 @@ public class MultithreadTest extends CommonTestMethodBase {
             } finally {
                 ksession.halt();
 
-                org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofMinutes(5), () -> {
+                assertTimeoutPreemptively(Duration.ofMinutes(5), () -> {
                     try {
                         success.set(ecs.take().get() && success.get());
                     } catch (final Exception e) {
@@ -163,8 +166,8 @@ public class MultithreadTest extends CommonTestMethodBase {
                     e.printStackTrace();
                 }
 
-                Assertions.assertThat(errors).isEmpty();
-                Assertions.assertThat(success).isTrue();
+                assertThat(errors).isEmpty();
+                assertThat(success).isTrue();
 
                 ksession.dispose();
             }
@@ -385,7 +388,7 @@ public class MultithreadTest extends CommonTestMethodBase {
                 });
             }
 
-            org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+            assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
                 boolean success = true;
                 for (int i = 0; i < THREAD_NR; i++) {
                     try {
@@ -395,7 +398,7 @@ public class MultithreadTest extends CommonTestMethodBase {
                     }
                 }
 
-                Assertions.assertThat(success).isTrue();
+                assertThat(success).isTrue();
             });
         } finally {
             ksession.dispose();
@@ -447,7 +450,7 @@ public class MultithreadTest extends CommonTestMethodBase {
                 }
             }
 
-            org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+            assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
                 try {
                     barrier.await();
                 } catch (final Exception e) {
@@ -573,7 +576,7 @@ public class MultithreadTest extends CommonTestMethodBase {
             threads[i].start();
         }
 
-        org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             for (int i = 0; i < threadNr; i++) {
                 try {
                     threads[i].join();
@@ -583,7 +586,7 @@ public class MultithreadTest extends CommonTestMethodBase {
             }
         });
 
-        Assertions.assertThat(list).hasSize(0);
+        assertThat(list).hasSize(0);
     }
 
     public static class IntEvent {

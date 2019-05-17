@@ -23,11 +23,11 @@ import java.util.Arrays;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 
-import org.assertj.core.api.Assertions;
 import org.drools.core.common.DisconnectedFactHandle;
 import org.drools.core.xml.jaxb.util.JaxbListWrapper;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -114,7 +114,7 @@ public class CommandSerializationTest {
         InsertObjectCommand copyCmd = roundTrip(cmd);
 
         assertNotNull(copyCmd);
-        Assertions.assertThat(copyCmd.getObject()).isInstanceOf(List.class);
+        assertThat(copyCmd.getObject()).isInstanceOf(List.class);
         assertEquals(cmd.getObject(), copyCmd.getObject());
     }
 
@@ -128,7 +128,7 @@ public class CommandSerializationTest {
         InsertObjectCommand copyCmd = roundTrip(cmd);
 
         assertNotNull(copyCmd);
-        Assertions.assertThat(copyCmd.getObject()).isInstanceOf(List.class);
+        assertThat(copyCmd.getObject()).isInstanceOf(List.class);
         assertEquals(cmd.getObject(), copyCmd.getObject());
 
         // test empty list
@@ -136,7 +136,7 @@ public class CommandSerializationTest {
         copyCmd = roundTrip(cmd);
 
         assertNotNull(copyCmd);
-        Assertions.assertThat(copyCmd.getObject()).isInstanceOf(List.class);
+        assertThat(copyCmd.getObject()).isInstanceOf(List.class);
         assertEquals(cmd.getObject(), copyCmd.getObject());
 
     }

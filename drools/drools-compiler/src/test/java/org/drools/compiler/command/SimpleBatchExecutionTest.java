@@ -24,7 +24,6 @@ import org.drools.compiler.CommonTestMethodBase;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.api.command.Command;
@@ -40,6 +39,7 @@ import org.kie.internal.io.ResourceFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SimpleBatchExecutionTest extends CommonTestMethodBase {
 
@@ -96,14 +96,14 @@ public class SimpleBatchExecutionTest extends CommonTestMethodBase {
         List<Object> expectedList = new ArrayList<Object>(Arrays.asList(expectedArr));
         
         Collection<? extends Object> factList = ksession.getObjects();
-        Assertions.assertTrue(factList.size() == expectedList.size(),
+        assertTrue(factList.size() == expectedList.size(),
                               "Expected " + expectedList.size() + " objects but retrieved " + factList.size());
         for( Object fact : factList ) {
            if( expectedList.contains(fact) ) { 
                expectedList.remove(fact);
            }
         }
-        Assertions.assertTrue(expectedList.isEmpty(), "Retrieved object list did not contain expected objects.");
+        assertTrue(expectedList.isEmpty(), "Retrieved object list did not contain expected objects.");
     }
     
     @Test 
@@ -128,14 +128,14 @@ public class SimpleBatchExecutionTest extends CommonTestMethodBase {
         List<Object> expectedList = new ArrayList<Object>(Arrays.asList(expectedArr));
         
         Collection<? extends Object> factList = ksession.getObjects();
-        Assertions.assertTrue(factList.size() == expectedList.size(),
+        assertTrue(factList.size() == expectedList.size(),
                               "Expected " + expectedList.size() + " objects but retrieved " + factList.size());
         for( Object fact : factList ) {
            if( expectedList.contains(fact) ) { 
                expectedList.remove(fact);
            }
         }
-        Assertions.assertTrue(expectedList.isEmpty(), "Retrieved object list did not contain expected objects.");
+        assertTrue(expectedList.isEmpty(), "Retrieved object list did not contain expected objects.");
     }
 
     @Test 
@@ -230,18 +230,18 @@ public class SimpleBatchExecutionTest extends CommonTestMethodBase {
 
         List<Object> objectList = (List) result.getValue("out_list");
         boolean b = objectList != null && ! objectList.isEmpty();
-        Assertions.assertTrue(b, "Retrieved object list is null or empty!");
+        assertTrue(b, "Retrieved object list is null or empty!");
 
         Collection<? extends Object> factList = ksession.getObjects();
         Object [] expectedArr = {expected_1, expected_2};
         List<Object> expectedList = new ArrayList<Object>(Arrays.asList(expectedArr));
-        Assertions.assertTrue(factList.size() == expectedList.size(),
+        assertTrue(factList.size() == expectedList.size(),
                               "Expected " + expectedList.size() + " objects but retrieved " + factList.size());
         for( Object fact : factList ) {
            if( expectedList.contains(fact) ) { 
                expectedList.remove(fact);
            }
         }
-        Assertions.assertTrue(expectedList.isEmpty(), "Retrieved object list did not contain expected objects.");
+        assertTrue(expectedList.isEmpty(), "Retrieved object list did not contain expected objects.");
     }
 }

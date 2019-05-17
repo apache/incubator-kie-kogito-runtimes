@@ -39,6 +39,8 @@ import org.kie.internal.builder.KnowledgeBuilderConfiguration;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
 
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
 public class ParallelCompilationTest {
     private static final int PARALLEL_THREADS = 5;
     private static final String DRL_FILE = "parallel_compilation.drl";
@@ -65,7 +67,7 @@ public class ParallelCompilationTest {
         for (Callable<KieBase> s : solvers) {
             ecs.submit(s);
         }
-        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             for (int i = 0; i < PARALLEL_THREADS; ++i) {
                 KieBase kbase = ecs.take().get();
             }

@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.drools.reflective.util.ClassUtils.convertClassToResourcePath;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -99,21 +100,21 @@ public class ClassBuilderTest {
 
             byte[] d = builder.buildClass( classDef, classLoader );
 
-            Assertions.assertEquals(clazz, classDef.getDefinedClass(), "Returned class should be the same");
-            Assertions.assertEquals(classDef.getClassName(), clazz.getName(), "Class name should be equal");
+            assertEquals(clazz, classDef.getDefinedClass(), "Returned class should be the same");
+            assertEquals(classDef.getClassName(), clazz.getName(), "Class name should be equal");
 
             Serializable instance = (Serializable) clazz.newInstance();
 
             String stringValue = "Atributo String ok";
             stringDef.setValue( instance,
                                 stringValue );
-            Assertions.assertEquals(stringValue, stringDef.getValue(instance ),
+            assertEquals(stringValue, stringDef.getValue(instance ),
                                     "Attribute should have been correctly set");
 
             int intValue = 50;
             intDef.setValue( instance,
                              new Integer( intValue ) );
-            Assertions.assertEquals(intValue, ((Integer) intDef.getValue(instance )).intValue(),
+            assertEquals(intValue, ((Integer) intDef.getValue(instance )).intValue(),
                                     "Attribute should have been correctly set");
 
             // testing class rebuilding
@@ -295,8 +296,8 @@ public class ClassBuilderTest {
             strDef.setValue( x,
                              "abc" );
 
-            Assertions.assertEquals(31 + 10, x.hashCode(), "Wrong hashcode calculation");
-            Assertions.assertEquals(x.hashCode(), x.hashCode(), "Wrong hashcode calculation");
+            assertEquals(31 + 10, x.hashCode(), "Wrong hashcode calculation");
+            assertEquals(x.hashCode(), x.hashCode(), "Wrong hashcode calculation");
         } catch ( Exception e ) {
             e.printStackTrace();
             Assertions.fail( "Exception not expected" );
@@ -419,7 +420,7 @@ public class ClassBuilderTest {
 
             Constructor< ? >[] cons = clazz.getConstructors();
 
-            Assertions.assertEquals( 3,
+            assertEquals( 3,
                                  cons.length );
             for ( Constructor< ? > c : cons ) {
                 Class< ? >[] ptypes = c.getParameterTypes();
@@ -444,23 +445,23 @@ public class ClassBuilderTest {
                                                      "xyz",
                                                      true );
 
-                    Assertions.assertEquals( (byte) 1,
+                    assertEquals( (byte) 1,
                                   fields[0].getValue( instance ) );
-                    Assertions.assertEquals( (short) 2,
+                    assertEquals( (short) 2,
                                   fields[1].getValue( instance ) );
-                    Assertions.assertEquals( 3,
+                    assertEquals( 3,
                                   fields[2].getValue( instance ) );
-                    Assertions.assertEquals( 4l,
+                    assertEquals( 4l,
                                   fields[3].getValue( instance ) );
-                    Assertions.assertEquals( 5.0f,
+                    assertEquals( 5.0f,
                                   fields[4].getValue( instance ) );
-                    Assertions.assertEquals( 6.0d,
+                    assertEquals( 6.0d,
                                   fields[5].getValue( instance ) );
-                    Assertions.assertEquals( 'a',
+                    assertEquals( 'a',
                                   fields[6].getValue( instance ) );
-                    Assertions.assertEquals( "xyz",
+                    assertEquals( "xyz",
                                   fields[7].getValue( instance ) );
-                    Assertions.assertEquals( true,
+                    assertEquals( true,
                                   fields[8].getValue( instance ) );
                 } else if ( ptypes.length == ( fields.length / 2 +1 ) ) { // as defined in the beginning of the test
                     // constructor with key fields
@@ -477,15 +478,15 @@ public class ClassBuilderTest {
                                                      'a',
                                                      true );
 
-                    Assertions.assertEquals((byte) 1,
+                    assertEquals((byte) 1,
                                             fields[0].getValue( instance ) );
-                    Assertions.assertEquals( 3,
+                    assertEquals( 3,
                                   fields[2].getValue( instance ) );
-                    Assertions.assertEquals( 5.0f,
+                    assertEquals( 5.0f,
                                   fields[4].getValue( instance ) );
-                    Assertions.assertEquals( 'a',
+                    assertEquals( 'a',
                                   fields[6].getValue( instance ) );
-                    Assertions.assertEquals( true,
+                    assertEquals( true,
                                   fields[8].getValue( instance ) );
                     
                 } else {

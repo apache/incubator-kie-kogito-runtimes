@@ -32,7 +32,6 @@ import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.io.impl.UrlResource;
 import org.drools.core.xml.XmlChangeSetReader;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
@@ -48,6 +47,7 @@ import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ChangeSetTest extends CommonTestMethodBase {
@@ -156,7 +156,7 @@ public class ChangeSetTest extends CommonTestMethodBase {
 
         URL url = ChangeSetTest.class.getResource(ChangeSetTest.class.getSimpleName() + ".class");
         AtomicReference<File> jar = new AtomicReference<>();
-        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
             File file = new File( url.toURI() );
             while ( true ) {
                 file = file.getParentFile();

@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.assertj.core.api.Assertions;
 import org.drools.compiler.integrationtests.facts.BasicEvent;
 import org.drools.core.ClassObjectFilter;
 import org.drools.core.ClockType;
@@ -37,6 +36,7 @@ import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.internal.utils.KieHelper;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.kie.api.definition.type.Expires.Policy.TIME_SOFT;
 
@@ -493,8 +493,8 @@ public class ExpirationTest {
 
         clock.advanceTime(100, TimeUnit.MILLISECONDS);
 
-        Assertions.assertThat(kieSession.fireAllRules()).isEqualTo(1);
+        assertThat(kieSession.fireAllRules()).isEqualTo(1);
         clock.advanceTime(10, TimeUnit.MILLISECONDS);
-        Assertions.assertThat(kieSession.getObjects()).isEmpty();
+        assertThat(kieSession.getObjects()).isEmpty();
     }
 }

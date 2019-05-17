@@ -51,6 +51,7 @@ import org.kie.api.runtime.rule.FactHandle;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -204,7 +205,7 @@ public class PhreakConcurrencyTest extends CommonTestMethodBase {
                 ecs.submit(new EPManipulator2(ksession, i));
             }
 
-            Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+            assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
                 boolean success = true;
                 for (int i = 0; i < 3; i++) {
                     try {

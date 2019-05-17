@@ -34,6 +34,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.runtime.KieSession;
 
+import static org.assertj.core.api.Assertions.*;
+
 public class SharedSessionParallelTest extends AbstractConcurrentTest {
 
     static Stream<Arguments> parameters() {
@@ -109,9 +111,9 @@ public class SharedSessionParallelTest extends AbstractConcurrentTest {
         parallelTest(threadCount, exec);
         kieSession.dispose();
 
-        Assertions.assertThat(list).hasSize(threadCount);
+        assertThat(list).hasSize(threadCount);
         for (int i = 0; i < threadCount; i++) {
-            Assertions.assertThat(list).contains("" + i);
+            assertThat(list).contains("" + i);
         }
     }
 
@@ -169,10 +171,10 @@ public class SharedSessionParallelTest extends AbstractConcurrentTest {
 
         parallelTest(threadCount, exec);
         kieSession.dispose();
-        Assertions.assertThat(list).contains("" + 0);
-        Assertions.assertThat(list).doesNotContain("" + 1);
+        assertThat(list).contains("" + 0);
+        assertThat(list).doesNotContain("" + 1);
         final int expectedListSize = ((threadCount - 1) / 2) + 1;
-        Assertions.assertThat(list).hasSize(expectedListSize);
+        assertThat(list).hasSize(expectedListSize);
     }
 
     @ParameterizedSharedSessionParallelTest
@@ -343,11 +345,11 @@ public class SharedSessionParallelTest extends AbstractConcurrentTest {
         final int list2ExpectedSize = threadCount / 2 * objectCount;
         for (int i = 0; i < threadCount; i++) {
             if (i % 2 == 1) {
-                Assertions.assertThat(list2).contains("" + i);
+                assertThat(list2).contains("" + i);
             }
         }
-        Assertions.assertThat(list).hasSize(listExpectedSize);
-        Assertions.assertThat(list2).hasSize(list2ExpectedSize);
+        assertThat(list).hasSize(listExpectedSize);
+        assertThat(list2).hasSize(list2ExpectedSize);
     }
 
     @ParameterizedSharedSessionParallelTest
@@ -387,7 +389,7 @@ public class SharedSessionParallelTest extends AbstractConcurrentTest {
         parallelTest(threadCount, exec);
         kieSession.dispose();
         checkList(seed, list);
-        Assertions.assertThat(bean).hasFieldOrPropertyWithValue("seed", 0);
+        assertThat(bean).hasFieldOrPropertyWithValue("seed", 0);
     }
 
     @ParameterizedSharedSessionParallelTest
@@ -427,7 +429,7 @@ public class SharedSessionParallelTest extends AbstractConcurrentTest {
 
         checkList(0, seed, list, seed * threadCount);
         for (final BeanA bean : beans) {
-            Assertions.assertThat(bean).hasFieldOrPropertyWithValue("seed", 0);
+            assertThat(bean).hasFieldOrPropertyWithValue("seed", 0);
         }
     }
 
@@ -472,9 +474,9 @@ public class SharedSessionParallelTest extends AbstractConcurrentTest {
     }
 
     private void checkList(final int start, final int end, final List list, final int expectedSize) {
-        Assertions.assertThat(list).hasSize(expectedSize);
+        assertThat(list).hasSize(expectedSize);
         for (int i = start; i < end; i++) {
-            Assertions.assertThat(list).contains("" + i);
+            assertThat(list).contains("" + i);
         }
     }
 

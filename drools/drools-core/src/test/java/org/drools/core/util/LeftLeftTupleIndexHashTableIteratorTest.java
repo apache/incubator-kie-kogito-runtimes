@@ -19,7 +19,6 @@ package org.drools.core.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.base.ClassFieldAccessorCache;
 import org.drools.core.base.ClassFieldAccessorStore;
@@ -45,6 +44,7 @@ import org.drools.core.util.index.TupleList;
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -239,10 +239,10 @@ public class LeftLeftTupleIndexHashTableIteratorTest {
         FieldIndexHashTableFullIterator iterator = new FieldIndexHashTableFullIterator( table );
 
         // test it
-        Assertions.assertThat(iterator.next()).isSameAs(tuples[0]);
-        Assertions.assertThat(iterator.next()).isSameAs(tuples[1]);
-        Assertions.assertThat(iterator.next()).isSameAs(tuples[2]);
-        Assertions.assertThat(iterator.next()).isNull();
+        assertThat(iterator.next()).isSameAs(tuples[0]);
+        assertThat(iterator.next()).isSameAs(tuples[1]);
+        assertThat(iterator.next()).isSameAs(tuples[2]);
+        assertThat(iterator.next()).isNull();
 
     }
 
