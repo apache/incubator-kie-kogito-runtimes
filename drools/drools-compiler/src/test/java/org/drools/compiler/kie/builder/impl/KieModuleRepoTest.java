@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,14 +85,16 @@ public class KieModuleRepoTest {
      */
 
     protected static void waitFor(final CyclicBarrier barrier) {
-        final String threadName = Thread.currentThread().getName();
-        try {
-            barrier.await();
-        } catch( final InterruptedException e ) {
-            fail( "Thread '" + threadName + "' was interrupted while waiting for the other threads!");
-        } catch( final BrokenBarrierException e ) {
-            fail( "Thread '" + threadName + "' barrier was broken while waiting for the other threads!");
-        }
+        Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+            final String threadName = Thread.currentThread().getName();
+            try {
+                barrier.await();
+            } catch( final InterruptedException e ) {
+                fail( "Thread '" + threadName + "' was interrupted while waiting for the other threads!");
+            } catch( final BrokenBarrierException e ) {
+                fail( "Thread '" + threadName + "' barrier was broken while waiting for the other threads!");
+            }
+        });
     }
 
     private static KieContainerImpl createMockKieContainer(final ReleaseId projectReleaseId, final KieModuleRepo kieModuleRepo) throws Exception {

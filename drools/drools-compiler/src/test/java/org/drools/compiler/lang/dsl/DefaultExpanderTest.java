@@ -18,6 +18,7 @@ package org.drools.compiler.lang.dsl;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DefaultExpanderTest {
@@ -459,17 +461,19 @@ public class DefaultExpanderTest {
 
     @Test
     public void testExpandInfiniteLoop() throws Exception {
-        // DROOLS-73
-        DSLMappingFile file = new DSLTokenizedMappingFile();
-        String dsl = "[when]Foo with {var} bars=Foo( bars == {var} )";
-        file.parseAndLoad(new StringReader(dsl));
-        assertEquals(0, file.getErrors().size());
+        assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+            // DROOLS-73
+            DSLMappingFile file = new DSLTokenizedMappingFile();
+            String dsl = "[when]Foo with {var} bars=Foo( bars == {var} )";
+            file.parseAndLoad(new StringReader(dsl));
+            assertEquals(0, file.getErrors().size());
 
-        DefaultExpander ex = new DefaultExpander();
-        ex.addDSLMapping(file.getMapping());
-        String source = "rule 'dsl rule'" + NL + "when" + NL + " Foo with {var} bars" + NL + "then" + NL + NL + "end";
-        ex.expand(source);
-        assertFalse(ex.hasErrors());
+            DefaultExpander ex = new DefaultExpander();
+            ex.addDSLMapping(file.getMapping());
+            String source = "rule 'dsl rule'" + NL + "when" + NL + " Foo with {var} bars" + NL + "then" + NL + NL + "end";
+            ex.expand(source);
+            assertFalse(ex.hasErrors());
+        });
     }
 
     @Test

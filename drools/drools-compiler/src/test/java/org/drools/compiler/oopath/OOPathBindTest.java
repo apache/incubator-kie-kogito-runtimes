@@ -16,6 +16,7 @@
 
 package org.drools.compiler.oopath;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +34,7 @@ import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 public class OOPathBindTest {
 
@@ -89,14 +91,16 @@ public class OOPathBindTest {
 
     private void waitForResultAndStopFireUntilHalt(final List<Integer> resultList, final KieSession kieSession,
             final Future fireUntilHaltFuture) throws InterruptedException, ExecutionException {
-        try {
-            while (resultList.size() < 1) {
-                Thread.sleep(100);
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+            try {
+                while (resultList.size() < 1) {
+                    Thread.sleep(100);
+                }
+            } finally {
+                kieSession.halt();
+                fireUntilHaltFuture.get();
             }
-        } finally {
-            kieSession.halt();
-            fireUntilHaltFuture.get();
-        }
+        });
     }
 
     @Test
