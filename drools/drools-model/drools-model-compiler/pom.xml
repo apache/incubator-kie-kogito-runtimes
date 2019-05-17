@@ -88,7 +88,7 @@
     </dependency>
 
     <!--
-      this moduke is temporarily staying on JUnit 4, as in JUnit 5, we can not (yet) parameterize constructors and the
+      this module is temporarily staying on JUnit 4, as in JUnit 5, we can not (yet) parameterize constructors and the
       tests in this module make very heavy use of that.
       constructor parameterization is a feature that is scheduled for JUnit 5.5.
     -->
