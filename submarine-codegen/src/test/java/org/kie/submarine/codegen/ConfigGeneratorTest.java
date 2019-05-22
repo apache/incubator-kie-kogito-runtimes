@@ -30,17 +30,17 @@ public class ConfigGeneratorTest {
 
     @Test
     public void newInstanceNoProcessConfig() {
-        newInstance(null, NullLiteralExpr.class);
+        newInstanceTest(null, NullLiteralExpr.class);
     }
 
     @Test
     public void newInstanceWithProcessConfig() {
         final ProcessConfigGenerator processConfigGenerator = Mockito.mock(ProcessConfigGenerator.class);
         Mockito.when(processConfigGenerator.newInstance()).thenReturn(new ObjectCreationExpr());
-        newInstance(processConfigGenerator, ObjectCreationExpr.class);
+        newInstanceTest(processConfigGenerator, ObjectCreationExpr.class);
     }
 
-    private void newInstance(final ProcessConfigGenerator processConfigGenerator, final Class expectedArgumentType) {
+    private void newInstanceTest(final ProcessConfigGenerator processConfigGenerator, final Class expectedArgumentType) {
         ObjectCreationExpr expression = new ConfigGenerator().withProcessConfig(processConfigGenerator).newInstance();
         assertThat(expression).isNotNull();
 

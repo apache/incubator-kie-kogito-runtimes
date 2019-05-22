@@ -22,8 +22,11 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ApplicationGeneratorTest {
 
@@ -35,6 +38,12 @@ public class ApplicationGeneratorTest {
         final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, new File(""));
         assertThat(appGenerator.targetCanonicalName()).isNotNull();
         assertThat(appGenerator.targetCanonicalName()).isEqualTo(EXPECTED_APPLICATION_NAME);
+    }
+
+    @Test
+    public void packageNameNull() {
+        Assertions.assertThatThrownBy(() -> new ApplicationGenerator(null, new File("")))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -71,10 +80,9 @@ public class ApplicationGeneratorTest {
         assertCompilationUnit(compilationUnit, false, 1);
 
         final TypeDeclaration mainAppClass = compilationUnit.getTypes().get(0);
-        assertThat(mainAppClass.getMembers()
-                           .stream()
-                           .filter(member -> member instanceof MethodDeclaration
-                                   && ((MethodDeclaration) member).getName().toString().equals(testMethodName)))
+        assertThat(mainAppClass.getMembers())
+                .filteredOn(member -> member instanceof MethodDeclaration
+                        && ((MethodDeclaration) member).getName().toString().equals(testMethodName))
                 .hasSize(1);
     }
 
@@ -82,18 +90,38 @@ public class ApplicationGeneratorTest {
     public void generate() {
         final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, new File("target"));
         final Collection<GeneratedFile> generatedFiles = appGenerator.generate();
-        assertThat(generatedFiles).isNotNull();
-        assertThat(generatedFiles).hasSize(1);
-
-        final GeneratedFile generatedFile = generatedFiles.iterator().next();
-        assertThat(generatedFile).isNotNull();
-        assertThat(generatedFile.getType()).isEqualTo(GeneratedFile.Type.APPLICATION);
-        assertThat(generatedFile.relativePath()).isEqualTo(EXPECTED_APPLICATION_NAME.replace(".", "/") + ".java");
-        assertThat(generatedFile.contents()).isEqualTo(appGenerator.compilationUnit().toString().getBytes(StandardCharsets.UTF_8));
+        assertGeneratedFiles(generatedFiles, appGenerator.compilationUnit().toString().getBytes(StandardCharsets.UTF_8), 1);
     }
 
     @Test
-    public void generateWithOtherGenerator() {
+    public void generateWithOtherGenerator() throws IOException {
+        final Generator mockGenerator = Mockito.mock(Generator.class);
+
+        final MethodDeclaration mockMethod = new MethodDeclaration();
+        final Collection<MethodDeclaration> mockedMethods = Collections.singleton(mockMethod);
+        when(mockGenerator.factoryMethods()).thenReturn(mockedMethods);
+
+        final GeneratedFile generatedFile = mock(GeneratedFile.class);
+        when(generatedFile.getType()).thenReturn(GeneratedFile.Type.RULE);
+        final Collection<GeneratedFile> mockFiles = Collections.singleton(generatedFile);
+        when(mockGenerator.generate()).thenReturn(mockFiles);
+
+        final Map<String, String> mockLabels = new HashMap<>();
+        mockLabels.put("testKey", "testValue");
+        when(mockGenerator.getLabels()).thenReturn(mockLabels);
+
+        final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, new File("target"));
+        appGenerator.withGenerator(mockGenerator);
+
+        final Collection<GeneratedFile> generatedFiles = appGenerator.generate();
+        final CompilationUnit compilationUnit = appGenerator.compilationUnit();
+        assertGeneratedFiles(generatedFiles, compilationUnit.toString().getBytes(StandardCharsets.UTF_8), 2);
+
+        assertCompilationUnit(compilationUnit, false, 1);
+        final TypeDeclaration mainAppClass = compilationUnit.getTypes().get(0);
+        assertThat(mainAppClass.getMembers()).filteredOn(member -> member == mockMethod).hasSize(1);
+
+        assertImageMetadata(Paths.get("target"), mockLabels);
     }
 
     @Test
@@ -107,8 +135,11 @@ public class ApplicationGeneratorTest {
         labels.put("testKey3", "testValue3");
 
         appGenerator.writeLabelsImageMetadata(labels);
+        assertImageMetadata(targetDirectory, labels);
+    }
 
-        try (Stream<Path> stream = Files.walk(targetDirectory, 1)) {
+    private void assertImageMetadata(final Path directory, final Map<String, String> expectedLabels) throws IOException {
+        try (Stream<Path> stream = Files.walk(directory, 1)) {
             final Optional<Path> generatedFile = stream
                     .filter(file -> file.getFileName().toString().equals("image_metadata.json"))
                     .findFirst();
@@ -121,11 +152,12 @@ public class ApplicationGeneratorTest {
             final List<Map<String, String>> listWithLabelsMap = elementsFromFile.entrySet().iterator().next().getValue();
             assertThat(listWithLabelsMap).isNotNull();
             assertThat(listWithLabelsMap).hasSize(1);
-            assertThat(listWithLabelsMap.get(0)).containsAllEntriesOf(labels);
+            assertThat(listWithLabelsMap.get(0)).containsAllEntriesOf(expectedLabels);
         }
     }
 
-    private void assertCompilationUnit(final CompilationUnit compilationUnit, final boolean checkCDI, final int expectedNumberOfFactoryMethods) {
+    private void assertCompilationUnit(final CompilationUnit compilationUnit, final boolean checkCDI,
+                                       final int expectedNumberOfCustomFactoryMethods) {
         assertThat(compilationUnit).isNotNull();
 
         assertThat(compilationUnit.getPackageDeclaration()).isPresent();
@@ -150,22 +182,37 @@ public class ApplicationGeneratorTest {
         }
 
         assertThat(mainAppClass.getMembers()).isNotNull();
-        assertThat(mainAppClass.getMembers()).hasSize(2 + expectedNumberOfFactoryMethods);
+        assertThat(mainAppClass.getMembers()).hasSize(2 + expectedNumberOfCustomFactoryMethods);
 
-        assertThat(mainAppClass.getMembers()
-                           .stream()
-                           .filter(member -> member instanceof MethodDeclaration
-                                   && ((MethodDeclaration) member).getName().toString().equals("config")
-                                   && !((MethodDeclaration) member).isStatic()))
+        assertThat(mainAppClass.getMembers())
+                .filteredOn(member -> member instanceof MethodDeclaration
+                        && ((MethodDeclaration) member).getName().toString().equals("config")
+                        && !((MethodDeclaration) member).isStatic())
                 .hasSize(1);
-        assertThat(mainAppClass.getMembers()
-                           .stream()
-                           .filter(member -> member instanceof FieldDeclaration
-                                   && ((FieldDeclaration) member).getVariable(0).getName().toString().equals("config")
-                                   && ((FieldDeclaration) member).isStatic()))
+
+        assertThat(mainAppClass.getMembers())
+                .filteredOn(member -> member instanceof FieldDeclaration
+                        && ((FieldDeclaration) member).getVariable(0).getName().toString().equals("config")
+                        && ((FieldDeclaration) member).isStatic())
                 .hasSize(1);
 
         assertThat(mainAppClass.getMember(0)).isInstanceOfAny(MethodDeclaration.class, FieldDeclaration.class);
         assertThat(mainAppClass.getMember(1)).isInstanceOfAny(MethodDeclaration.class, FieldDeclaration.class);
+    }
+
+    private void assertGeneratedFiles(final Collection<GeneratedFile> generatedFiles,
+                                      final byte[] expectedApplicationContent,
+                                      final int expectedFilesCount) {
+        assertThat(generatedFiles).isNotNull();
+        assertThat(generatedFiles).hasSize(expectedFilesCount);
+
+        for (GeneratedFile generatedFile : generatedFiles) {
+            assertThat(generatedFile).isNotNull();
+            assertThat(generatedFile.getType()).isIn(GeneratedFile.Type.APPLICATION, GeneratedFile.Type.RULE);
+            if (generatedFile.getType() == GeneratedFile.Type.APPLICATION) {
+                assertThat(generatedFile.relativePath()).isEqualTo(EXPECTED_APPLICATION_NAME.replace(".", "/") + ".java");
+                assertThat(generatedFile.contents()).isEqualTo(expectedApplicationContent);
+            }
+        }
     }
 }

@@ -60,6 +60,9 @@ public class ApplicationGenerator {
     private List<Generator> generators = new ArrayList<>();
 
     public ApplicationGenerator(String packageName, File targetDirectory) {
+        if (packageName == null) {
+            throw new IllegalArgumentException("Package name cannot be undefined (null), please specify a package name!");
+        }
         this.packageName = packageName;
         this.targetDirectory = targetDirectory;
         this.targetTypeName = "Application";
@@ -131,10 +134,9 @@ public class ApplicationGenerator {
     }
     
     protected void writeLabelsImageMetadata(Map<String, String> labels) {
-        
         try {
             Path imageMetaDataFile = Paths.get(targetDirectory.getAbsolutePath(), "image_metadata.json");
-            ImageMetaData imageMetadata = null;
+            ImageMetaData imageMetadata;
             if (Files.exists(imageMetaDataFile)) {
                 // read the file to merge the content
                 imageMetadata =  mapper.readValue(imageMetaDataFile.toFile(), ImageMetaData.class);
