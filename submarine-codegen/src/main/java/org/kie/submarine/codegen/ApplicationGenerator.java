@@ -39,7 +39,6 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 
-// TODO add edge cases, illegal input tests etc.
 public class ApplicationGenerator {
 
     private static final String RESOURCE = "/class-templates/ApplicationTemplate.java";
@@ -144,7 +143,8 @@ public class ApplicationGenerator {
                 imageMetadata = new ImageMetaData();            
             }
             imageMetadata.add(labels);
-            
+
+            Files.createDirectories(imageMetaDataFile.getParent());
             Files.write(imageMetaDataFile,
                         mapper.writerWithDefaultPrettyPrinter().writeValueAsString(imageMetadata).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {

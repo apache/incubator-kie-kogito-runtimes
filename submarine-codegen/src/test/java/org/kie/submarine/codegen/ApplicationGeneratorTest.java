@@ -164,7 +164,7 @@ public class ApplicationGeneratorTest {
         assertThat(compilationUnit.getPackageDeclaration().get().getName().toString()).isEqualTo(PACKAGE_NAME);
 
         assertThat(compilationUnit.getImports()).isNotNull();
-        assertThat(compilationUnit.getImports()).hasSize(1);
+        assertThat(compilationUnit.getImports()).hasSize(2);
         assertThat(compilationUnit.getImports().get(0).getName().toString()).isEqualTo("org.kie.submarine.Config");
 
         assertThat(compilationUnit.getTypes()).isNotNull();
