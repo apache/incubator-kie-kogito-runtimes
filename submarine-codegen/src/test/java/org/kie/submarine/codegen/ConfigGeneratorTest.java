@@ -63,7 +63,7 @@ public class ConfigGeneratorTest {
         assertThat(expression.getType().asString()).isEqualTo(StaticConfig.class.getCanonicalName());
 
         assertThat(expression.getArguments()).isNotNull();
-        assertThat(expression.getArguments()).hasSize(1);
+        assertThat(expression.getArguments()).hasSize(2);
         assertThat(expression.getArgument(0)).isInstanceOf(expectedArgumentType);
     }
 }
