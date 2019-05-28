@@ -81,6 +81,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(property = "dependencyInjection", defaultValue = "true")
     private boolean dependencyInjection;
 
+    @Parameter(required = true, defaultValue = "${project.basedir}/src/main/resources")
+    private File kieSourcesDirectory;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -135,12 +138,12 @@ public class GenerateModelMojo extends AbstractKieMojo {
                         .withDependencyInjection(dependencyInjection);
 
         if (generateRuleUnits) {
-            appGen.withGenerator(RuleCodegen.ofPath(projectPath, false))
+            appGen.withGenerator(RuleCodegen.ofPath(kieSourcesDirectory.toPath(), false))
                 .withRuleEventListenersConfig(customRuleEventListenerConfigExists(appPackageName));
         }
 
         if (generateProcesses) {
-            appGen.withGenerator(ProcessCodegen.ofPath(projectPath))
+            appGen.withGenerator(ProcessCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withWorkItemHandlerConfig(
                             customWorkItemConfigExists(appPackageName))
                     .withProcessEventListenerConfig(

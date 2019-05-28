@@ -15,8 +15,10 @@
 
 package org.kie.kogito.codegen.rules;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,20 +26,21 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import org.drools.compiler.compiler.io.memory.MemoryFile;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
-import org.drools.compiler.kie.builder.impl.KieBuilderImpl;
 import org.drools.compiler.kie.builder.impl.MemoryKieModule;
+import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.modelcompiler.CanonicalKieModule;
 import org.kie.api.KieServices;
+import org.kie.api.builder.model.KieModuleModel;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.Generator;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
-
-import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
+import org.kie.kogito.codegen.rules.legacy.KogitoBuilder;
 
 public class RuleCodegen implements Generator {
 
@@ -45,34 +48,34 @@ public class RuleCodegen implements Generator {
     private ModuleSourceClass moduleGenerator;
 
     public static RuleCodegen ofPath(Path path) throws IOException {
-        return ofPath( path, false );
+        return ofPath(path, false);
     }
 
     public static RuleCodegen ofPath(Path path, boolean oneClassPerRule) throws IOException {
-        KieServices ks = KieServices.Factory.get();
-        return new RuleCodegen((KieBuilderImpl) ks.newKieBuilder(path.toFile()), oneClassPerRule, Collections.emptyList());
+        KogitoBuilder kieBuilder = new KogitoBuilder(path.toFile());
+        return new RuleCodegen(path, kieBuilder, oneClassPerRule, Collections.emptyList());
     }
 
     public static RuleCodegen ofFiles(Path basePath, Collection<File> files) throws IOException {
-        KieServices ks = KieServices.Factory.get();
-        KieBuilderImpl kieBuilder = (KieBuilderImpl) ks.newKieBuilder(basePath.toFile());
-        kieBuilder.setEnforceResourceLocation(false);
-        return new RuleCodegen(kieBuilder, true, files);
+        KogitoBuilder kieBuilder = new KogitoBuilder(basePath.toFile());
+        return new RuleCodegen(basePath, kieBuilder, true, files);
     }
 
     private final boolean oneClassPerRule;
 
-    private final KieBuilderImpl kieBuilder;
+    private final Path basePath;
+    private final KogitoBuilder kieBuilder;
     /**
      * will compile iff returns true for the given file
      */
     private final Predicate<String> fileFilter;
 
     private boolean dependencyInjection;
-    
+
     private String ruleEventListenersConfigClass = null;
 
-    public RuleCodegen( KieBuilderImpl kieBuilder, boolean oneClassPerRule, Collection<File> files ) {
+    public RuleCodegen(Path basePath, KogitoBuilder kieBuilder, boolean oneClassPerRule, Collection<File> files) {
+        this.basePath = basePath;
         this.kieBuilder = kieBuilder;
         this.oneClassPerRule = oneClassPerRule;
         if (files.isEmpty()) {
@@ -84,7 +87,7 @@ public class RuleCodegen implements Generator {
                             .anyMatch(f -> f.contains(fname));
         }
     }
-    
+
     public static String defaultRuleEventListenerConfigClass(String packageName) {
         return packageName + ".RuleEventListenerConfig";
     }
@@ -109,22 +112,26 @@ public class RuleCodegen implements Generator {
         if (ruleEventListenersConfigClass != null) {
             moduleGenerator.setRuleEventListenersConfigClass(ruleEventListenersConfigClass);
         }
-        
+
+        KieModuleModel kieModuleModel;
+        try {
+            kieModuleModel = KieModuleModelImpl.fromXML(
+                    new ByteArrayInputStream(
+                            Files.readAllBytes(basePath.resolve("META-INF/kmodule.xml"))));
+        } catch (IOException e) {
+            kieModuleModel = KieServices.Factory.get().newKieModuleModel();
+        }
+
         kieBuilder.buildAll(
                 (km, cl) ->
                         new RuleCodegenProject(km, cl)
                                 .withModuleGenerator(moduleGenerator)
                                 .withOneClassPerRule(oneClassPerRule)
                                 .withCdi(dependencyInjection),
-                s -> {
-                    return !s.contains("src/test/java")
-                            && !s.endsWith("bpmn")
-                            && !s.endsWith("bpmn2");
-                }
+                kieModuleModel
         );
 
-        InternalKieModule kieModule = (InternalKieModule) kieBuilder.getKieModule();
-
+        MemoryKieModule kieModule = kieBuilder.getMemoryKieModule();
         MemoryFileSystem mfs = getMemoryFileSystem(kieModule);
 
         return kieModule.getFileNames()
@@ -145,7 +152,7 @@ public class RuleCodegen implements Generator {
     public ModuleSourceClass moduleGenerator() {
         return moduleGenerator;
     }
-    
+
     public RuleCodegen withRuleEventListenersConfig(String ruleEventListenersConfigClass) {
         this.ruleEventListenersConfigClass = ruleEventListenersConfigClass;
         return this;
