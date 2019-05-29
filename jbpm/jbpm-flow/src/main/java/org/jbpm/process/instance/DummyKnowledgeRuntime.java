@@ -254,7 +254,7 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
 
     @Override
     public WorkItemManager getWorkItemManager() {
-        throw new UnsupportedOperationException("dummy");
+        return this.processRuntime.getWorkItemManager();
     }
 
     @Override
