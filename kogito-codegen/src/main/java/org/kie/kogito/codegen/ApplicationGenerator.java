@@ -41,6 +41,8 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 
 public class ApplicationGenerator {
 
+    public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
+    public static final String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
     private static final String RESOURCE = "/class-templates/ApplicationTemplate.java";
     private final static String LABEL_PREFIX = "org.kie/";
     

@@ -1,7 +1,6 @@
 package org.kie.kogito.maven.plugin;
 
-import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
-
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -25,6 +24,7 @@ import java.util.zip.ZipFile;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.resolver.filter.CumulativeScopeArtifactFilter;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -42,6 +42,8 @@ import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.RuleCodegen;
+
+import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 
 @Mojo(name = "generateModel",
         requiresDependencyResolution = ResolutionScope.NONE,
@@ -125,12 +127,12 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
     }
 
-    private ApplicationGenerator createApplicationGenerator(boolean generateRuleUnits, boolean generateProcesses) throws IOException {
+    private ApplicationGenerator createApplicationGenerator(boolean generateRuleUnits, boolean generateProcesses) throws IOException, MojoExecutionException {
         String appPackageName = project.getGroupId();
         Path projectPath = projectDir.toPath();
         // safe guard to not generate application classes that would clash with interfaces
-        if (appPackageName.equals("org.kie.kogito")) {
-        	appPackageName = "org.kie.kogito.app";
+        if (appPackageName.equals(ApplicationGenerator.DEFAULT_GROUP_ID)) {
+            appPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
         }
 
         ApplicationGenerator appGen =
@@ -139,7 +141,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
         if (generateRuleUnits) {
             appGen.withGenerator(RuleCodegen.ofPath(kieSourcesDirectory.toPath(), false))
-                .withRuleEventListenersConfig(customRuleEventListenerConfigExists(appPackageName));
+                    .withKModule(getKModuleModel())
+                    .withRuleEventListenersConfig(customRuleEventListenerConfigExists(appPackageName));
         }
 
         if (generateProcesses) {
@@ -153,6 +156,16 @@ public class GenerateModelMojo extends AbstractKieMojo {
         return appGen;
     }
 
+    private KieModuleModel getKModuleModel() throws IOException {
+        for (Resource resource : project.getResources()) {
+            Path moduleXmlPath = Paths.get(resource.getDirectory()).resolve(KieModuleModelImpl.KMODULE_JAR_PATH);
+            return KieModuleModelImpl.fromXML(
+                    new ByteArrayInputStream(
+                            Files.readAllBytes(moduleXmlPath)));
+        }
+        return new KieModuleModelImpl();
+    }
+
     private String customWorkItemConfigExists(String appPackageName) {
         String sourceDir = Paths.get(projectDir.getPath(), "src").toString();
         String workItemHandlerConfigClass = ProcessCodegen.defaultWorkItemHandlerConfigClass(appPackageName);
@@ -161,6 +174,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
                            workItemHandlerConfigClass.replace('.', '/') + ".java");
         return Files.exists(p) ? workItemHandlerConfigClass : null;
     }
+
     private String customProcessListenerConfigExists(String appPackageName) {
         String sourceDir = Paths.get(projectDir.getPath(), "src").toString();
         String processEventListenerClass = ProcessCodegen.defaultProcessListenerConfigClass(appPackageName);
@@ -169,6 +183,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
                            processEventListenerClass.replace('.', '/') + ".java");
         return Files.exists(p) ? processEventListenerClass : null;
     }
+
     private String customRuleEventListenerConfigExists(String appPackageName) {
         String sourceDir = Paths.get(projectDir.getPath(), "src").toString();
         String ruleEventListenerConfiglass = RuleCodegen.defaultRuleEventListenerConfigClass(appPackageName);
@@ -177,7 +192,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
                            ruleEventListenerConfiglass.replace('.', '/') + ".java");
         return Files.exists(p) ? ruleEventListenerConfiglass : null;
     }
-
 
     private void writeAll(List<GeneratedFile> generatedFiles) throws IOException {
         for (GeneratedFile f : generatedFiles) {

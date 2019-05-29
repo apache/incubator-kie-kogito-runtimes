@@ -15,10 +15,8 @@
 
 package org.kie.kogito.codegen.rules;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,8 +32,8 @@ import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.drools.compiler.kie.builder.impl.MemoryKieModule;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.modelcompiler.CanonicalKieModule;
-import org.kie.api.KieServices;
 import org.kie.api.builder.model.KieModuleModel;
+import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.Generator;
@@ -65,6 +63,8 @@ public class RuleCodegen implements Generator {
 
     private final Path basePath;
     private final KogitoBuilder kieBuilder;
+    private KieModuleModel kieModuleModel = new KieModuleModelImpl();
+
     /**
      * will compile iff returns true for the given file
      */
@@ -86,6 +86,8 @@ public class RuleCodegen implements Generator {
                             .map(f -> f.getPath())
                             .anyMatch(f -> f.contains(fname));
         }
+        // set default package name
+        setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
     }
 
     public static String defaultRuleEventListenerConfigClass(String packageName) {
@@ -111,15 +113,6 @@ public class RuleCodegen implements Generator {
     public List<GeneratedFile> generate() {
         if (ruleEventListenersConfigClass != null) {
             moduleGenerator.setRuleEventListenersConfigClass(ruleEventListenersConfigClass);
-        }
-
-        KieModuleModel kieModuleModel;
-        try {
-            kieModuleModel = KieModuleModelImpl.fromXML(
-                    new ByteArrayInputStream(
-                            Files.readAllBytes(basePath.resolve("META-INF/kmodule.xml"))));
-        } catch (IOException e) {
-            kieModuleModel = KieServices.Factory.get().newKieModuleModel();
         }
 
         kieBuilder.buildAll(
@@ -155,6 +148,11 @@ public class RuleCodegen implements Generator {
 
     public RuleCodegen withRuleEventListenersConfig(String ruleEventListenersConfigClass) {
         this.ruleEventListenersConfigClass = ruleEventListenersConfigClass;
+        return this;
+    }
+
+    public RuleCodegen withKModule(KieModuleModel model) {
+        kieModuleModel = model;
         return this;
     }
 
