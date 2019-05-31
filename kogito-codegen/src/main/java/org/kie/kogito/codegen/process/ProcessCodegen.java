@@ -52,6 +52,8 @@ import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import static org.kie.kogito.codegen.ApplicationGenerator.log;
+
 public class ProcessCodegen implements Generator {
 
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
@@ -252,36 +254,36 @@ public class ProcessCodegen implements Generator {
         for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
             storeFile(Type.MODEL, modelClassGenerator.generatedFilePath(),
-                      mmd.generate().getBytes());
+                      mmd.generate());
         }
         
         for (List<UserTaskModelMetaData> utmd : processIdToUserTaskModel.values()) {
             
             for (UserTaskModelMetaData ut : utmd) {
-                storeFile(Type.MODEL, UserTasksModelClassGenerator.generatedFilePath(ut.getInputModelClassName()), ut.generateInput().getBytes());
+                storeFile(Type.MODEL, UserTasksModelClassGenerator.generatedFilePath(ut.getInputModelClassName()), ut.generateInput());
                 
-                storeFile(Type.MODEL, UserTasksModelClassGenerator.generatedFilePath(ut.getOutputModelClassName()), ut.generateOutput().getBytes());
+                storeFile(Type.MODEL, UserTasksModelClassGenerator.generatedFilePath(ut.getOutputModelClassName()), ut.generateOutput());
             }
         }
 
         for (ResourceGenerator resourceGenerator : rgs) {
             storeFile(Type.REST, resourceGenerator.generatedFilePath(),
-                      resourceGenerator.generate().getBytes());
+                      resourceGenerator.generate());
         }
 
         for (ProcessGenerator p : ps) {
-            storeFile(Type.PROCESS, p.generatedFilePath(), p.generate().getBytes());
+            storeFile(Type.PROCESS, p.generatedFilePath(), p.generate());
             
             p.getAdditionalClasses().forEach(cp -> {
                 String packageName = cp.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
                 String clazzName = cp.findFirst(ClassOrInterfaceDeclaration.class).map(cls -> cls.getName().toString()).get();
                 String path = (packageName + "." + clazzName).replace('.', '/') + ".java";
-                storeFile(Type.CLASS, path, cp.toString().getBytes());
+                storeFile(Type.CLASS, path, cp.toString());
             });
         }
 
         for (ProcessInstanceGenerator pi : pis) {
-            storeFile(Type.PROCESS_INSTANCE, pi.generatedFilePath(), pi.generate().getBytes());
+            storeFile(Type.PROCESS_INSTANCE, pi.generatedFilePath(), pi.generate());
         }
 
         if (workItemHandlerConfigClass != null) {
@@ -313,8 +315,8 @@ public class ProcessCodegen implements Generator {
         }
     }
 
-    private void storeFile(GeneratedFile.Type type, String path, byte[] data) {
-        generatedFiles.add(new GeneratedFile(type, path, data));
+    private void storeFile(GeneratedFile.Type type, String path, String source) {
+        generatedFiles.add(new GeneratedFile(type, path, log( source ).getBytes()));
     }
 
     public List<GeneratedFile> getGeneratedFiles() {
