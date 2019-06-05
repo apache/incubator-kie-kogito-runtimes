@@ -34,13 +34,23 @@ import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.CatchClause;
+import com.github.javaparser.ast.stmt.TryStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.Config;
 import org.kie.kogito.codegen.metadata.ImageMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parse;
+import static org.kie.kogito.codegen.rules.RuleUnitsRegisterClass.RULE_UNIT_REGISTER_FQN;
 
 public class ApplicationGenerator {
 
@@ -100,9 +110,21 @@ public class ApplicationGenerator {
         }
 
         if (hasRuleUnits) {
-            cls.addStaticInitializer().addStatement( "try {\n" +
-                    "Class.forName( \"org.drools.project.model.RuleUnitRegister\" );\n" +
-                    "} catch (ClassNotFoundException e) { }" );
+            // static {
+            //    try {
+            //        Class.forName( RULE_UNIT_REGISTER_FQN );
+            //    } catch (ClassNotFoundException e) { }
+            // }
+
+            BlockStmt blockStmt = cls.addStaticInitializer();
+            TryStmt tryStmt = new TryStmt();
+            blockStmt.addStatement( tryStmt );
+
+            tryStmt.getTryBlock().addStatement( new MethodCallExpr( new NameExpr("Class"), "forName" )
+                    .addArgument( new StringLiteralExpr( RULE_UNIT_REGISTER_FQN ) ) );
+
+            tryStmt.getCatchClauses().add( new CatchClause()
+                    .setParameter( new Parameter( new ClassOrInterfaceType("ClassNotFoundException"), new SimpleName( "e" ) ) ) );
         }
 
         cls.addMember(new FieldDeclaration()

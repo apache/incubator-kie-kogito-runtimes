@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.kie.kogito.codegen.data.AdultUnit;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.data.Results;
+import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.impl.RuleUnitRegistry;
 
@@ -34,16 +35,17 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
     public void testRuleUnit() throws Exception {
         generateCodeRulesOnly("org/kie/kogito/codegen/data/RuleUnit.drl");
 
-        AdultUnit unit = new AdultUnit();
-        RuleUnitInstance<AdultUnit> instance = RuleUnitRegistry.instance(unit);
+        AdultUnit adults = new AdultUnit();
 
         Results results = new Results();
-        unit.getResults().add( results );
+        adults.getResults().add( results );
 
-        unit.getPersons().add(new Person( "Mario", 45 ));
-        unit.getPersons().add(new Person( "Marilena", 47 ));
-        unit.getPersons().add(new Person( "Sofia", 7 ));
+        adults.getPersons().add(new Person( "Mario", 45 ));
+        adults.getPersons().add(new Person( "Marilena", 47 ));
+        adults.getPersons().add(new Person( "Sofia", 7 ));
 
+        RuleUnit<AdultUnit> unit = RuleUnitRegistry.create(AdultUnit.class);
+        RuleUnitInstance<AdultUnit> instance = unit.createInstance(adults);
         assertEquals(2, instance.fire() );
 
         assertTrue( results.getResults().containsAll( asList("Mario", "Marilena") ) );
