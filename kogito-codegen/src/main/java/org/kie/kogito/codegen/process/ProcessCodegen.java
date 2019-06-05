@@ -17,6 +17,7 @@ package org.kie.kogito.codegen.process;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.util.StringUtils;
 import org.drools.core.xml.SemanticModules;
@@ -47,10 +50,6 @@ import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.Generator;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.xml.sax.SAXException;
-
-import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
@@ -316,7 +315,7 @@ public class ProcessCodegen implements Generator {
     }
 
     private void storeFile(GeneratedFile.Type type, String path, String source) {
-        generatedFiles.add(new GeneratedFile(type, path, log( source ).getBytes()));
+        generatedFiles.add(new GeneratedFile(type, path, log( source ).getBytes( StandardCharsets.UTF_8 )));
     }
 
     public List<GeneratedFile> getGeneratedFiles() {

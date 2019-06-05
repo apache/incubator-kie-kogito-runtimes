@@ -15,6 +15,7 @@
 
 package org.kie.kogito.codegen.rules;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -88,17 +89,17 @@ public class RuleCodegenProject extends CanonicalModelCodeGenerationKieProject i
         if (hasRuleUnits) {
             trgMfs.write(
                     RULE_UNIT_REGISTER_SOURCE,
-                    log( new RuleUnitsRegisterClass(unitsMap).generate() ).getBytes() );
+                    log( new RuleUnitsRegisterClass(unitsMap).generate() ).getBytes( StandardCharsets.UTF_8 ) );
 
             for (RuleUnitSourceClass ruleUnit : moduleGenerator.getRuleUnits()) {
                 trgMfs.write(
                         ruleUnit.generatedFilePath(),
-                        log( ruleUnit.generate() ).getBytes() );
+                        log( ruleUnit.generate() ).getBytes( StandardCharsets.UTF_8 ) );
 
                 RuleUnitInstanceSourceClass ruleUnitInstance = ruleUnit.instance();
                 trgMfs.write(
                         ruleUnitInstance.generatedFilePath(),
-                        log( ruleUnitInstance.generate() ).getBytes() );
+                        log( ruleUnitInstance.generate() ).getBytes( StandardCharsets.UTF_8 ) );
             }
         } else if (hasCdi()) {
             for (KieBaseModel kBaseModel : kBaseModels.values()) {
@@ -109,7 +110,7 @@ public class RuleCodegenProject extends CanonicalModelCodeGenerationKieProject i
                     template.findAll( StringLiteralExpr.class ).forEach( s -> s.setString( s.getValue().replace( "$SessionName$", sessionName ) ) );
                     trgMfs.write(
                             "org/drools/project/model/SessionRuleUnit_" + sessionName + ".java",
-                            log( cu.toString() ).getBytes() );
+                            log( cu.toString() ).getBytes( StandardCharsets.UTF_8 ) );
                 }
             }
         }
