@@ -135,8 +135,9 @@ public class ApplicationGenerator {
                                                    .setInitializer(configGenerator.newInstance())));
 
         factoryMethods.forEach(cls::addMember);
-        
-        generators.forEach(gen -> gen.applicationBodyDeclaration().forEach(cls::addMember));
+
+        generators.stream().map(Generator::section).forEach(sect -> cls.addMember(sect.factoryMethod()));
+        generators.stream().map(Generator::section).forEach(sect -> cls.addMember(sect.classDeclaration()));
 
         return compilationUnit;
     }

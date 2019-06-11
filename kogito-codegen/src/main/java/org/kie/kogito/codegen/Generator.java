@@ -20,12 +20,11 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 
 public interface Generator {
 
-    Collection<BodyDeclaration<?>> factoryMethods();
-    
-    Collection<BodyDeclaration<?>> applicationBodyDeclaration();
+    ApplicationSection section();
 
     Collection<GeneratedFile> generate();
 

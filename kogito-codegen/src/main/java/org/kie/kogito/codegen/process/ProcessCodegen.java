@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.util.StringUtils;
@@ -44,6 +43,7 @@ import org.jbpm.compiler.xml.XmlProcessReader;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
+import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFile.Type;
@@ -156,11 +156,6 @@ public class ProcessCodegen implements Generator {
         return this;
     }
 
-
-    @Override
-    public Collection<BodyDeclaration<?>> factoryMethods() {
-        return moduleGenerator.factoryMethods();
-    }
 
     public List<GeneratedFile> generate() {
         if (processes.isEmpty()) {
@@ -324,8 +319,8 @@ public class ProcessCodegen implements Generator {
     }
 
     @Override
-    public Collection<BodyDeclaration<?>> applicationBodyDeclaration() {
-        return moduleGenerator.getApplicationBodyDeclaration();
+    public ApplicationSection section() {
+        return moduleGenerator;
     }
 
 }

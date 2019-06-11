@@ -18,7 +18,6 @@ package org.kie.kogito.codegen.process;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +25,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -40,21 +40,22 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.WildcardType;
 import org.kie.kogito.Model;
+import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
 import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 
-public class ProcessesContainerGenerator {
+public class ProcessesContainerGenerator implements ApplicationSection {
 
-//    private static final String RESOURCE = "/class-templates/ModuleTemplate.java";
+    //    private static final String RESOURCE = "/class-templates/ModuleTemplate.java";
     private final List<ProcessGenerator> processes;
     private final List<ProcessInstanceGenerator> processInstances;
     private final List<BodyDeclaration<?>> factoryMethods;
     private boolean hasCdi;
     private String workItemConfigClass = DefaultWorkItemHandlerConfig.class.getCanonicalName();
     private String processEventListenerConfigClass = DefaultProcessEventListenerConfig.class.getCanonicalName();
-    
-    private List<BodyDeclaration<?>> applicationDeclarations = new ArrayList<>();
+
+    private NodeList<BodyDeclaration<?>> applicationDeclarations;
     private MethodDeclaration byProcessIdMethodDeclaration;
     private MethodDeclaration processesMethodDeclaration;
 
@@ -62,23 +63,23 @@ public class ProcessesContainerGenerator {
         this.processes = new ArrayList<>();
         this.processInstances = new ArrayList<>();
         this.factoryMethods = new ArrayList<>();
-        this.applicationDeclarations = new ArrayList<>();
-        
+        this.applicationDeclarations = new NodeList<>();
+
         byProcessIdMethodDeclaration = new MethodDeclaration()
                 .addModifier(Modifier.Keyword.PUBLIC)
                 .setName("processById")
                 .setType(new ClassOrInterfaceType(null, org.kie.kogito.process.Process.class.getCanonicalName())
-                         .setTypeArguments(new WildcardType(new ClassOrInterfaceType(null, Model.class.getCanonicalName()))))
+                                 .setTypeArguments(new WildcardType(new ClassOrInterfaceType(null, Model.class.getCanonicalName()))))
                 .setBody(new BlockStmt())
                 .addParameter("String", "processId");
-        
+
         processesMethodDeclaration = new MethodDeclaration()
                 .addModifier(Modifier.Keyword.PUBLIC)
                 .setName("processIds")
                 .setType(new ClassOrInterfaceType(null, Collection.class.getCanonicalName())
-                         .setTypeArguments(new ClassOrInterfaceType(null, "String")))
+                                 .setTypeArguments(new ClassOrInterfaceType(null, "String")))
                 .setBody(new BlockStmt());
-        
+
         applicationDeclarations.add(byProcessIdMethodDeclaration);
         applicationDeclarations.add(processesMethodDeclaration);
     }
@@ -102,20 +103,20 @@ public class ProcessesContainerGenerator {
                 .setName("create" + r.targetTypeName())
                 .setType(r.targetCanonicalName())
                 .setBody(new BlockStmt().addStatement(new ReturnStmt(new MethodCallExpr(
-                                                                             newProcess,
-                                                                             "configure"))));
-        
+                        newProcess,
+                        "configure"))));
+
         this.factoryMethods.add(methodDeclaration);
         applicationDeclarations.add(methodDeclaration);
 
         return methodDeclaration;
     }
-    
+
     public void addProcessToApplication(ProcessGenerator r) {
-        IfStmt byProcessId = new IfStmt(new MethodCallExpr(new StringLiteralExpr(r.processId()), "equals", NodeList.nodeList(new NameExpr("processId"))), 
-                                                  new ReturnStmt(new MethodCallExpr(null, "create" + r.targetTypeName())), 
-                                                   null);
-        
+        IfStmt byProcessId = new IfStmt(new MethodCallExpr(new StringLiteralExpr(r.processId()), "equals", NodeList.nodeList(new NameExpr("processId"))),
+                                        new ReturnStmt(new MethodCallExpr(null, "create" + r.targetTypeName())),
+                                        null);
+
         byProcessIdMethodDeclaration.getBody().get().addStatement(byProcessId);
     }
 
@@ -139,25 +140,28 @@ public class ProcessesContainerGenerator {
     public String processEventListenerConfigClass() {
         return processEventListenerConfigClass;
     }
-    
-    public List<BodyDeclaration<?>> getApplicationBodyDeclaration() {
-        
+
+    public ClassOrInterfaceDeclaration classDeclaration() {
         byProcessIdMethodDeclaration.getBody().get().addStatement(new ReturnStmt(new NullLiteralExpr()));
-        
+
         NodeList<Expression> processIds = NodeList.nodeList(processes.stream().map(p -> new StringLiteralExpr(p.processId())).collect(Collectors.toList()));
-        processesMethodDeclaration.getBody().get().addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));        
-        
-        ObjectCreationExpr processesClazz = new ObjectCreationExpr(null, new ClassOrInterfaceType(null, Processes.class.getCanonicalName()), NodeList.nodeList())
-                .setAnonymousClassBody(NodeList.nodeList(applicationDeclarations));
-        
-        
+        processesMethodDeclaration.getBody().get().addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));
+
+
+        return new ClassOrInterfaceDeclaration()
+                .setModifiers(Keyword.PUBLIC)
+                .setName("Processes")
+                .addImplementedType(Processes.class.getCanonicalName())
+                .setMembers(applicationDeclarations);
+
+    }
+
+    public MethodDeclaration factoryMethod() {
         MethodDeclaration processesMethod = new MethodDeclaration()
                 .setName("processes")
                 .setModifiers(Keyword.PUBLIC)
                 .setType(Processes.class)
-                .setBody(new BlockStmt().addStatement(new ReturnStmt(processesClazz)));
-        
-        
-        return Collections.singletonList(processesMethod);
+                .setBody(new BlockStmt().addStatement(new ReturnStmt(new ObjectCreationExpr().setType("Processes"))));
+        return processesMethod;
     }
 }
