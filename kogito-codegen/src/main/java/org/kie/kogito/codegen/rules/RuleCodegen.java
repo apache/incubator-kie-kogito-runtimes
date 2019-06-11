@@ -41,7 +41,7 @@ import com.github.javaparser.ast.body.BodyDeclaration;
 public class RuleCodegen implements Generator {
 
     private String packageName;
-    private ModuleSourceClass moduleGenerator;
+    private RuleUnitContainerGenerator moduleGenerator;
 
     public static RuleCodegen ofPath(Path path) throws IOException {
         return ofPath( path, false );
@@ -90,7 +90,7 @@ public class RuleCodegen implements Generator {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
-        this.moduleGenerator = new ModuleSourceClass(packageName);
+        this.moduleGenerator = new RuleUnitContainerGenerator(packageName);
     }
 
     private MemoryFileSystem getMemoryFileSystem(InternalKieModule kieModule) {
@@ -141,7 +141,7 @@ public class RuleCodegen implements Generator {
         cfg.withRuleConfig(new RuleConfigGenerator().ruleEventListenersConfig(moduleGenerator.ruleEventListenersConfigClass()));
     }
 
-    public ModuleSourceClass moduleGenerator() {
+    public RuleUnitContainerGenerator moduleGenerator() {
         return moduleGenerator;
     }
     

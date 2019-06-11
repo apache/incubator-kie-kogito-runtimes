@@ -108,7 +108,7 @@ public class ProcessCodegen implements Generator {
     private String workItemHandlerConfigClass = null;
     private String processEventListenerConfigClass = null;
     private boolean dependencyInjection;
-    private ModuleGenerator moduleGenerator;
+    private ProcessesContainerGenerator moduleGenerator;
 
     private final Map<String, WorkflowProcess> processes;
     private final Map<String, String> labels = new HashMap<>();
@@ -133,19 +133,16 @@ public class ProcessCodegen implements Generator {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
-        this.moduleGenerator = new ModuleGenerator(packageName)
+        this.moduleGenerator = new ProcessesContainerGenerator(packageName)
                 .withCdi(dependencyInjection);
         this.applicationCanonicalName = packageName + ".Application";
     }
 
     public void setDependencyInjection(boolean di) {
         dependencyInjection = di;
-        if (moduleGenerator != null) {
-            moduleGenerator.withCdi(di);
-        }
     }
 
-    public ModuleGenerator moduleGenerator() {
+    public ProcessesContainerGenerator moduleGenerator() {
         return moduleGenerator;
     }
 

@@ -157,7 +157,6 @@ public class ApplicationGenerator {
                         .flatMap(gen -> gen.generate().stream())
                         .collect(Collectors.toList());
         generators.forEach(gen -> gen.updateConfig(configGenerator));
-        generators.forEach(gen -> factoryMethods.addAll(gen.factoryMethods()));        
         generators.forEach(gen -> writeLabelsImageMetadata(gen.getLabels()));
         generatedFiles.add(new GeneratedFile(GeneratedFile.Type.APPLICATION,
                                              generatedFilePath(),

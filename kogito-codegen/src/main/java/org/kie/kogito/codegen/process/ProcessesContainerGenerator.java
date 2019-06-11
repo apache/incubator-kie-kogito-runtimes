@@ -22,12 +22,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -46,19 +44,12 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
 import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 
-import static com.github.javaparser.StaticJavaParser.parse;
+public class ProcessesContainerGenerator {
 
-public class ModuleGenerator {
-
-    private static final String RESOURCE = "/class-templates/ModuleTemplate.java";
-    private final String packageName;
-    private final String sourceFilePath;
-    private final String completePath;
-    private final String targetCanonicalName;
+//    private static final String RESOURCE = "/class-templates/ModuleTemplate.java";
     private final List<ProcessGenerator> processes;
     private final List<ProcessInstanceGenerator> processInstances;
     private final List<BodyDeclaration<?>> factoryMethods;
-    private String targetTypeName;
     private boolean hasCdi;
     private String workItemConfigClass = DefaultWorkItemHandlerConfig.class.getCanonicalName();
     private String processEventListenerConfigClass = DefaultProcessEventListenerConfig.class.getCanonicalName();
@@ -67,12 +58,7 @@ public class ModuleGenerator {
     private MethodDeclaration byProcessIdMethodDeclaration;
     private MethodDeclaration processesMethodDeclaration;
 
-    public ModuleGenerator(String packageName) {
-        this.packageName = packageName;
-        this.targetTypeName = "Module";
-        this.targetCanonicalName = packageName + "." + targetTypeName;
-        this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
-        this.completePath = "src/main/java/" + sourceFilePath;
+    public ProcessesContainerGenerator(String packageName) {
         this.processes = new ArrayList<>();
         this.processInstances = new ArrayList<>();
         this.factoryMethods = new ArrayList<>();
@@ -101,52 +87,16 @@ public class ModuleGenerator {
         return factoryMethods;
     }
 
-    public String targetCanonicalName() {
-        return targetCanonicalName;
-    }
-
-    public String generatedFilePath() {
-        return sourceFilePath;
-    }
-
     public void addProcess(ProcessGenerator p) {
         processes.add(p);
         addProcessFactoryMethod(p);
         addProcessToApplication(p);
     }
 
-    public void addProcessInstance(ProcessInstanceGenerator pi) {
-        processInstances.add(pi);
-    }
-
-    public String generate() {
-        return compilationUnit().toString();
-    }
-
-    public CompilationUnit compilationUnit() {
-        CompilationUnit compilationUnit =
-                parse(this.getClass().getResourceAsStream(RESOURCE))
-                        .setPackageDeclaration(packageName);
-        ClassOrInterfaceDeclaration cls = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get();
-        if (hasCdi) {
-            cls.addAnnotation("javax.inject.Singleton");
-        }
-
-        factoryMethods.forEach(cls::addMember);
-
-        cls.findFirst(ObjectCreationExpr.class, p -> p.getType().getNameAsString().equals("$WorkItemHandlerConfig$"))
-                .ifPresent(o -> o.setType(workItemConfigClass));
-
-        cls.findFirst(ObjectCreationExpr.class, p -> p.getType().getNameAsString().equals("$ProcessEventListenerConfig$"))
-        .ifPresent(o -> o.setType(processEventListenerConfigClass));
-
-        return compilationUnit;
-    }
-
     public MethodDeclaration addProcessFactoryMethod(ProcessGenerator r) {
         ObjectCreationExpr newProcess = new ObjectCreationExpr()
                 .setType(r.targetCanonicalName())
-                .addArgument(new ThisExpr());
+                .addArgument(new ThisExpr(new NameExpr("Application")));
         MethodDeclaration methodDeclaration = new MethodDeclaration()
                 .addModifier(Modifier.Keyword.PUBLIC)
                 .setName("create" + r.targetTypeName())
@@ -156,7 +106,8 @@ public class ModuleGenerator {
                                                                              "configure"))));
         
         this.factoryMethods.add(methodDeclaration);
-        
+        applicationDeclarations.add(methodDeclaration);
+
         return methodDeclaration;
     }
     
@@ -168,7 +119,7 @@ public class ModuleGenerator {
         byProcessIdMethodDeclaration.getBody().get().addStatement(byProcessId);
     }
 
-    public ModuleGenerator withCdi(boolean hasCdi) {
+    public ProcessesContainerGenerator withCdi(boolean hasCdi) {
         this.hasCdi = hasCdi;
         return this;
     }
