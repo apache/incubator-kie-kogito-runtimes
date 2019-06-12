@@ -53,6 +53,9 @@ import org.xml.sax.SAXException;
 
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
+/**
+ * Entry point to process code generation
+ */
 public class ProcessCodegen implements Generator {
 
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();

@@ -56,6 +56,12 @@ import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.impl.AbstractProcess;
 
+/**
+ * Generates the Process&lt;T&gt; container
+ * for a process, which encapsulates its "executable model".
+ *
+ * @see org.kie.kogito.process.Process
+ */
 public class ProcessGenerator {
 
     private final String packageName;

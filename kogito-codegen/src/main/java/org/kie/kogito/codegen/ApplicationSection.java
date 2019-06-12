@@ -18,6 +18,17 @@ package org.kie.kogito.codegen;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+/**
+ * A descriptor for a "section" of the root Application class.
+ * It contains a factory method for the section (which is an object instance)
+ * and the corresponding class.
+ *
+ * This is to allow the pattern:
+ *    app.$sectionname().$method()
+ *
+ * e.g.:
+ *    app.processes().createMyProcess()
+ */
 public interface ApplicationSection {
 
     MethodDeclaration factoryMethod();
