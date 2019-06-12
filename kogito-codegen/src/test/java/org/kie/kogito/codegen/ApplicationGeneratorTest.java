@@ -116,17 +116,25 @@ public class ApplicationGeneratorTest {
     public void generateWithOtherGenerator() throws IOException {
         final Generator mockGenerator = Mockito.mock(Generator.class);
 
-        when(mockGenerator.section()).thenReturn(new ApplicationSection() {
+        ApplicationSection appSection = new ApplicationSection() {
+
+            private ClassOrInterfaceDeclaration classOrInterfaceDeclaration =
+                    new ClassOrInterfaceDeclaration().setName("Foo");
+            private MethodDeclaration methodDeclaration =
+                    new MethodDeclaration().setType("void");
+
             @Override
             public MethodDeclaration factoryMethod() {
-                return null;
+                return methodDeclaration;
             }
 
             @Override
             public ClassOrInterfaceDeclaration classDeclaration() {
-                return null;
+                return classOrInterfaceDeclaration;
             }
-        });
+        };
+
+        when(mockGenerator.section()).thenReturn(appSection);
 
         final GeneratedFile generatedFile = mock(GeneratedFile.class);
         when(generatedFile.getType()).thenReturn(GeneratedFile.Type.RULE);
@@ -144,9 +152,10 @@ public class ApplicationGeneratorTest {
         final CompilationUnit compilationUnit = appGenerator.compilationUnit();
         assertGeneratedFiles(generatedFiles, compilationUnit.toString().getBytes(StandardCharsets.UTF_8), 2);
 
-        assertCompilationUnit(compilationUnit, false, 1);
+        assertCompilationUnit(compilationUnit, false, 2);
         final TypeDeclaration mainAppClass = compilationUnit.getTypes().get(0);
-//        assertThat(mainAppClass.getMembers()).filteredOn(member -> member == mockMethod).hasSize(1);
+        assertThat(mainAppClass.getMembers()).filteredOn(member -> member == appSection.factoryMethod()).hasSize(1);
+        assertThat(mainAppClass.getMembers()).filteredOn(member -> member == appSection.classDeclaration()).hasSize(1);
 
         assertImageMetadata(Paths.get("target"), mockLabels);
     }
