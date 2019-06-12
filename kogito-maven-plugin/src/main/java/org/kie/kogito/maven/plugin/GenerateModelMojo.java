@@ -72,7 +72,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(defaultValue = "${project.build.directory}/generated-sources/kogito")
     private File generatedSources;
 
-    @Parameter(property = "generateModel", defaultValue = "no")
+    @Parameter(property = "generateModel", defaultValue = "yes")
     private String generateModel;
 
     @Parameter(property = "generateProcessModel", defaultValue = "yes")
