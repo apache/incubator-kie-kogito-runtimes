@@ -93,9 +93,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
     private void generateModel() throws MojoExecutionException, IOException {
         // these should be probably substituted by boolean params
         boolean generateRuleUnits =
-                ExecModelMode.shouldGenerateModel(generateModel);
+                ExecModelMode.shouldGenerateModel(generateModel) &&
+                        rulesExist();
         boolean generateProcesses =
-                BPMNModelMode.shouldGenerateBPMNModel(generateProcessModel);
+                BPMNModelMode.shouldGenerateBPMNModel(generateProcessModel) &&
+                        processesExist();
 
         project.addCompileSourceRoot(generatedSources.getPath());
 
@@ -120,6 +122,17 @@ public class GenerateModelMojo extends AbstractKieMojo {
         } finally {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
+    }
+
+    private boolean processesExist() throws IOException {
+        return Files.walk(projectDir.toPath())
+                .map(p -> p.toString().toLowerCase())
+                .anyMatch(p -> p.endsWith(".bpmn") || p.endsWith(".bpmn2"));
+    }
+
+    private boolean rulesExist() throws IOException {
+        return Files.walk(projectDir.toPath())
+                .anyMatch(p -> p.toString().toLowerCase().endsWith(".drl"));
     }
 
     private ApplicationGenerator createApplicationGenerator(boolean generateRuleUnits, boolean generateProcesses) throws IOException {
