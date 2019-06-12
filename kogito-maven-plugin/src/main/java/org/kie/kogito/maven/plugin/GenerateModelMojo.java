@@ -72,11 +72,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(defaultValue = "${project.build.directory}/generated-sources/kogito")
     private File generatedSources;
 
-    @Parameter(property = "kogito.compile.rules", defaultValue = "true")
-    private boolean generateRules;
+    @Parameter(property = "kogito.codegen.rules", defaultValue = "null")
+    private Boolean generateRules; // defaults to true iff there exist DRL files
 
-    @Parameter(property = "kogito.compile.processes", defaultValue = "true")
-    private boolean generateProcesses;
+    @Parameter(property = "kogito.codegen.processes", defaultValue = "null")
+    private Boolean generateProcesses; // defaults to true iff there exist BPMN files
 
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
@@ -95,6 +95,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     private void generateModel() throws MojoExecutionException, IOException {
 <<<<<<< HEAD
+<<<<<<< HEAD
         // these should be probably substituted by boolean params
         boolean generateRuleUnits =
                 ExecModelMode.shouldGenerateModel(generateModel) &&
@@ -105,6 +106,17 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
 =======
 >>>>>>> DROOLS-3924: Refactor Maven plugin to adopt best practices
+=======
+        // if unspecified, then default to checking for file type existence
+        // if not null, the property has been overridden, and we should use the specified value
+        if (generateRules == null) {
+            generateRules = rulesExist();
+        }
+        if (generateProcesses == null) {
+            generateProcesses = processesExist();
+        }
+
+>>>>>>> comments
         project.addCompileSourceRoot(generatedSources.getPath());
 
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
