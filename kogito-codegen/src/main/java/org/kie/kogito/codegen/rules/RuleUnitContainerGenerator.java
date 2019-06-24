@@ -33,6 +33,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.config.DefaultRuleEventListenerConfig;
+import org.drools.modelcompiler.builder.CanonicalModelKieProject;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.rules.KieRuntimeBuilder;
 import org.kie.kogito.rules.RuleUnit;
@@ -114,8 +115,10 @@ public class RuleUnitContainerGenerator implements ApplicationSection {
         FieldDeclaration kieRuntimeFieldDeclaration = new FieldDeclaration();
 
         if (hasCdi) {
-            kieRuntimeFieldDeclaration.addAnnotation("javax.inject.Inject")
-                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, KieRuntimeBuilder.class.getCanonicalName()), "ruleRuntimeBuilder"));
+            kieRuntimeFieldDeclaration
+                    .addVariable(
+                            new VariableDeclarator(new ClassOrInterfaceType(null, KieRuntimeBuilder.class.getCanonicalName()), "ruleRuntimeBuilder")
+                            .setInitializer(new ObjectCreationExpr().setType(CanonicalModelKieProject.PROJECT_RUNTIME_CLASS)));
         } else {
             kieRuntimeFieldDeclaration.addVariable(new VariableDeclarator(
                     new ClassOrInterfaceType(null, KieRuntimeBuilder.class.getCanonicalName()),
