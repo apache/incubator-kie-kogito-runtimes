@@ -15,6 +15,8 @@
 
 package org.kie.kogito.rules;
 
+import java.util.function.Consumer;
+
 import org.kie.api.runtime.rule.FactHandle;
 
 public interface DataSource<T> {
@@ -37,5 +39,7 @@ public interface DataSource<T> {
      * @param handle the handle whose fact is to be retracted.
      */
     void remove(FactHandle handle);
+
+    void subscribe(Consumer<T> subscriber);
 
 }

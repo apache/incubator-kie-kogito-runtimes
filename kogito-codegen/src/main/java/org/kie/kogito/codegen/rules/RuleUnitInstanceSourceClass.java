@@ -17,22 +17,21 @@ package org.kie.kogito.codegen.rules;
 
 import java.lang.reflect.Method;
 
-import org.kie.api.runtime.KieSession;
-import org.kie.kogito.rules.DataSource;
-import org.kie.kogito.rules.impl.AbstractRuleUnitInstance;
-import org.kie.kogito.rules.impl.ListDataSource;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.CastExpr;
-import com.github.javaparser.ast.expr.EnclosedExpr;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.MethodReferenceExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.kie.api.runtime.KieSession;
+import org.kie.kogito.rules.DataSource;
+import org.kie.kogito.rules.impl.AbstractRuleUnitInstance;
 
 public class RuleUnitInstanceSourceClass {
 
@@ -96,15 +95,19 @@ public class RuleUnitInstanceSourceClass {
             for (Method m : typeClass.getDeclaredMethods()) {
                 m.setAccessible(true);
                 if (m.getReturnType() == DataSource.class) {
-                    EnclosedExpr casted = new EnclosedExpr(
-                            //  ((ListDataSource) value.$method())
-                            new CastExpr()
-                                    .setType(ListDataSource.class.getCanonicalName())
-                                    .setExpression(new MethodCallExpr(new NameExpr("value"), m.getName())));
+                    //  value.$method())
+                    String methodName = m.getName();
+                    Expression fieldAccessor =
+                            new MethodCallExpr(new NameExpr("value"), methodName);
 
-                    // .drainInto(rt::insert)
-                    MethodCallExpr drainInto = new MethodCallExpr(casted, "drainInto").addArgument(
-                            new MethodReferenceExpr().setScope(new NameExpr("rt")).setIdentifier("insert"));
+                    // .subscribe(rt.getEntryPoint()::insert)
+                    MethodCallExpr drainInto = new MethodCallExpr(fieldAccessor, "subscribe").addArgument(
+                            new MethodReferenceExpr().setScope(
+                                    new MethodCallExpr(
+                                            new NameExpr("rt"), "getEntryPoint",
+                                            NodeList.nodeList(new StringLiteralExpr(methodName))))
+                                    .setIdentifier("insert"));
+//                            new MethodReferenceExpr().setScope(new NameExpr("rt")).setIdentifier("insert"));
 
                     methodBlock.addStatement(drainInto);
                 }

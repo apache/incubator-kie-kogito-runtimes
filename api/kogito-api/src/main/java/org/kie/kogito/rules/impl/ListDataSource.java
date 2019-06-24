@@ -17,6 +17,7 @@ package org.kie.kogito.rules.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.kie.api.runtime.rule.FactHandle;
@@ -24,9 +25,11 @@ import org.kie.kogito.rules.DataSource;
 
 public class ListDataSource<T> implements DataSource<T> {
     ArrayList<T> values = new ArrayList<>();
+    List<Consumer<T>> subscribers = new ArrayList<>();
 
     public FactHandle add(T t) {
         values.add(t);
+        subscribers.forEach(c -> c.accept(t));
         return null;
     }
 
@@ -40,12 +43,14 @@ public class ListDataSource<T> implements DataSource<T> {
 
     }
 
+    @Override
+    public void subscribe(Consumer<T> consumer) {
+        subscribers.add(consumer);
+        values.forEach(consumer);
+    }
+
     public void addAll(Collection<? extends T> ts) {
         values.addAll(ts);
     }
 
-    public void drainInto(Consumer<Object> sink) {
-        values.forEach( sink );
-        values.clear();
-    }
 }

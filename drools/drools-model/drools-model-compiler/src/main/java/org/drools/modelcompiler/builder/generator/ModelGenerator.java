@@ -84,6 +84,7 @@ import static org.drools.modelcompiler.builder.generator.DslMethodNames.ENTRY_PO
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.METADATA_CALL;
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.RULE_CALL;
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.SUPPLY_CALL;
+import static org.drools.modelcompiler.builder.generator.DslMethodNames.UNIT_CALL;
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.UNIT_DATA_CALL;
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.WINDOW_CALL;
 import static org.drools.modelcompiler.util.ClassUtil.asJavaSourceName;

@@ -18,6 +18,8 @@ package org.kie.kogito.rules.impl;
 import java.lang.reflect.Field;
 
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.EntryPoint;
+import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnitMemory;
@@ -32,10 +34,10 @@ public class AbstractRuleUnitInstance<T extends RuleUnitMemory> implements RuleU
         this.unit = unit;
         this.rt = rt;
         this.workingMemory = workingMemory;
+        bind(rt, workingMemory);
     }
 
     public int fire() {
-        bind(rt, workingMemory);
         return rt.fireAllRules();
     }
 
@@ -54,9 +56,11 @@ public class AbstractRuleUnitInstance<T extends RuleUnitMemory> implements RuleU
                 f.setAccessible(true);
                 Object v = null;
                 v = f.get(workingMemory);
-                if (v instanceof ListDataSource) {
-                    ListDataSource o = (ListDataSource) v;
-                    o.drainInto(rt::insert);
+                String dataSourceName = f.getName();
+                if (v instanceof DataSource) {
+                    DataSource<?> o = (DataSource<?>) v;
+                    EntryPoint ep = rt.getEntryPoint(dataSourceName);
+                    o.subscribe(ep::insert);
                 }
             }
         } catch (IllegalAccessException e) {

@@ -28,6 +28,6 @@ public class SessionRuleUnitInstance extends AbstractRuleUnitInstance<SessionMem
     }
 
     protected void bind( KieSession kieSession, SessionMemory memory ) {
-        memory.getDataSource().drainInto( kieSession::insert );
+        memory.getDataSource().subscribe(kieSession::insert);
     }
 }
