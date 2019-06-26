@@ -14,6 +14,7 @@ import com.github.javaparser.ast.expr.LiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithArguments;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import org.drools.compiler.lang.descr.FromDescr;
@@ -38,6 +39,7 @@ import static org.drools.core.rule.Pattern.isCompatibleWithFromReturnType;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.findViaScopeWithPredicate;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.generateLambdaWithoutParameters;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.sanitizeDrlNameExpr;
+import static org.drools.modelcompiler.builder.generator.DslMethodNames.ENTRY_POINT_CALL;
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.FROM_CALL;
 
 public class FromVisitor {
@@ -235,6 +237,7 @@ public class FromVisitor {
     }
 
     private Expression createUnitDataCall( String bindingId ) {
-        return parseExpression(DrlxParseUtil.toVar(bindingId));
+        MethodCallExpr entryPointCall = new MethodCallExpr(null, ENTRY_POINT_CALL);
+        return entryPointCall.addArgument( new StringLiteralExpr(bindingId) );
     }
 }

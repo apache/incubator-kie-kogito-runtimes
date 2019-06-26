@@ -29,6 +29,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.drools.core.util.ClassUtils;
 import org.kie.api.runtime.KieSession;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.impl.AbstractRuleUnitInstance;
@@ -92,11 +93,13 @@ public class RuleUnitInstanceSourceClass {
 
         try {
 
+
             for (Method m : typeClass.getDeclaredMethods()) {
                 m.setAccessible(true);
                 if (m.getReturnType() == DataSource.class) {
                     //  value.$method())
                     String methodName = m.getName();
+                    String propertyName = ClassUtils.getter2property(methodName);
                     Expression fieldAccessor =
                             new MethodCallExpr(new NameExpr("value"), methodName);
 
@@ -105,7 +108,7 @@ public class RuleUnitInstanceSourceClass {
                             new MethodReferenceExpr().setScope(
                                     new MethodCallExpr(
                                             new NameExpr("rt"), "getEntryPoint",
-                                            NodeList.nodeList(new StringLiteralExpr(methodName))))
+                                            NodeList.nodeList(new StringLiteralExpr(propertyName))))
                                     .setIdentifier("insert"));
 //                            new MethodReferenceExpr().setScope(new NameExpr("rt")).setIdentifier("insert"));
 
