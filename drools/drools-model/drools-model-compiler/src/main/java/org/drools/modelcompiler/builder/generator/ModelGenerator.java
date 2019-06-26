@@ -405,6 +405,7 @@ public class ModelGenerator {
     private static void addUnitData(RuleContext context, String unitVar, java.lang.reflect.Type type, BlockStmt ruleBlock) {
         Class<?> rawClass = toRawClass(type);
         Type declType = classToReferenceType( toRawClass(type) );
+        RuleUnitDescription ruleUnitDescr = context.getRuleUnitDescr();
 
         context.addRuleUnitVar( unitVar, getClassForUnitData( type, rawClass ) );
 
@@ -422,7 +423,9 @@ public class ModelGenerator {
     }
 
     private static Class<?> getClassForUnitData( java.lang.reflect.Type type, Class<?> rawClass ) {
-        if (Iterable.class.isAssignableFrom( rawClass ) && type instanceof ParameterizedType) {
+        if (( org.kie.kogito.rules.DataSource.class.isAssignableFrom(rawClass) ||
+                Iterable.class.isAssignableFrom( rawClass ) )
+            && type instanceof ParameterizedType) {
             return toRawClass( (( ParameterizedType ) type).getActualTypeArguments()[0] );
         }
         if (rawClass.isArray()) {

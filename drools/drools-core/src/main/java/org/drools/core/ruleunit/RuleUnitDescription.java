@@ -158,7 +158,9 @@ public class RuleUnitDescription {
                     Class<?> returnClass = m.getReturnType();
                     if (returnClass.isArray()) {
                         datasourceTypes.put( id, returnClass.getComponentType() );
-                    } else if (Iterable.class.isAssignableFrom( returnClass )) {
+                    } else if (
+                        org.kie.kogito.rules.DataSource.class.isAssignableFrom(returnClass ) ||
+                            Iterable.class.isAssignableFrom( returnClass )) {
                         Type returnType = m.getGenericReturnType();
                         Class<?> sourceType = returnType instanceof ParameterizedType ?
                                               (Class<?>) ( (ParameterizedType) returnType ).getActualTypeArguments()[0] :
