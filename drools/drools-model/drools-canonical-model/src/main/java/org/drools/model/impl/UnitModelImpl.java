@@ -33,7 +33,7 @@ public class UnitModelImpl implements Model {
     public UnitModelImpl(Model model, String unitClass) {
         this.model = model;
         this.rules = model.getRules().stream()
-                .filter(r -> r.getUnit().equals(unitClass)).collect(Collectors.toList());
+                .filter(r -> r.getName().startsWith(unitClass)).collect(Collectors.toList());
     }
 
     @Override
