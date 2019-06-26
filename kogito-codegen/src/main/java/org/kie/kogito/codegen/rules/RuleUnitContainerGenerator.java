@@ -27,7 +27,6 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -35,13 +34,12 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.config.DefaultRuleEventListenerConfig;
 import org.drools.modelcompiler.builder.CanonicalModelKieProject;
-import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.process.Processes;
+import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.rules.KieRuntimeBuilder;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnits;
 
-public class RuleUnitContainerGenerator implements ApplicationSection {
+public class RuleUnitContainerGenerator extends AbstractApplicationSection {
 
     private final String packageName;
     private final String generatedFilePath;
@@ -54,6 +52,7 @@ public class RuleUnitContainerGenerator implements ApplicationSection {
     private String ruleEventListenersConfigClass = DefaultRuleEventListenerConfig.class.getCanonicalName();
 
     public RuleUnitContainerGenerator(String packageName) {
+        super("RuleUnits", "ruleUnits", RuleUnits.class);
         this.packageName = packageName;
         this.targetTypeName = "Module";
         this.targetCanonicalName = packageName + "." + targetTypeName;
@@ -100,27 +99,6 @@ public class RuleUnitContainerGenerator implements ApplicationSection {
         return methodDeclaration;
     }
 
-    public MethodDeclaration factoryMethod() {
-        return new MethodDeclaration()
-                .setType(RuleUnits.class.getCanonicalName())
-                .setName("ruleUnits")
-                .setModifiers(Modifier.Keyword.PUBLIC)
-                .setBody(new BlockStmt().addStatement(new ReturnStmt().setExpression(
-                        new NameExpr("ruleUnits")
-                )));
-    }
-
-    @Override
-    public FieldDeclaration fieldDeclaration() {
-        return new FieldDeclaration()
-                .addVariable(new VariableDeclarator()
-                                     .setType(RuleUnits.class)
-                                     .setName("ruleUnits")
-                                     .setInitializer(new ObjectCreationExpr().setType("RuleUnits")))
-                .setModifiers(Modifier.Keyword.PUBLIC);
-    }
-
-
     @Override
     public ClassOrInterfaceDeclaration classDeclaration() {
 
@@ -147,10 +125,7 @@ public class RuleUnitContainerGenerator implements ApplicationSection {
 
         declarations.addAll(factoryMethods);
 
-        return new ClassOrInterfaceDeclaration()
-                .setModifiers(Modifier.Keyword.PUBLIC)
-                .setName("RuleUnits")
-                .addImplementedType(RuleUnits.class.getCanonicalName())
+        return super.classDeclaration()
                 .setMembers(declarations);
     }
 
