@@ -27,6 +27,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -35,6 +36,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.config.DefaultRuleEventListenerConfig;
 import org.drools.modelcompiler.builder.CanonicalModelKieProject;
 import org.kie.kogito.codegen.ApplicationSection;
+import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.KieRuntimeBuilder;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnits;
@@ -104,9 +106,20 @@ public class RuleUnitContainerGenerator implements ApplicationSection {
                 .setName("ruleUnits")
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .setBody(new BlockStmt().addStatement(new ReturnStmt().setExpression(
-                        new ObjectCreationExpr().setType("RuleUnits")
+                        new NameExpr("ruleUnits")
                 )));
     }
+
+    @Override
+    public FieldDeclaration fieldDeclaration() {
+        return new FieldDeclaration()
+                .addVariable(new VariableDeclarator()
+                                     .setType(RuleUnits.class)
+                                     .setName("ruleUnits")
+                                     .setInitializer(new ObjectCreationExpr().setType("RuleUnits")))
+                .setModifiers(Modifier.Keyword.PUBLIC);
+    }
+
 
     @Override
     public ClassOrInterfaceDeclaration classDeclaration() {
@@ -114,18 +127,16 @@ public class RuleUnitContainerGenerator implements ApplicationSection {
         NodeList<BodyDeclaration<?>> declarations = new NodeList<>();
         FieldDeclaration kieRuntimeFieldDeclaration = new FieldDeclaration();
 
-        if (hasCdi) {
-            kieRuntimeFieldDeclaration
-                    .addVariable(
-                            new VariableDeclarator(new ClassOrInterfaceType(null, KieRuntimeBuilder.class.getCanonicalName()), "ruleRuntimeBuilder")
-                            .setInitializer(new ObjectCreationExpr().setType(CanonicalModelKieProject.PROJECT_RUNTIME_CLASS)));
-        } else {
-            kieRuntimeFieldDeclaration.addVariable(new VariableDeclarator(
-                    new ClassOrInterfaceType(null, KieRuntimeBuilder.class.getCanonicalName()),
-                    "ruleRuntimeBuilder",
-                    new ObjectCreationExpr(null, new ClassOrInterfaceType(null, "org.drools.project.model.ProjectRuntime"), NodeList.nodeList())));
-        }
+        // declare field `ruleRuntimeBuilder`
+        kieRuntimeFieldDeclaration
+                .addVariable(new VariableDeclarator(
+                        new ClassOrInterfaceType(null, KieRuntimeBuilder.class.getCanonicalName()),
+                        "ruleRuntimeBuilder")
+                                     .setInitializer(new ObjectCreationExpr()
+                                                             .setType(CanonicalModelKieProject.PROJECT_RUNTIME_CLASS)));
         declarations.add(kieRuntimeFieldDeclaration);
+
+        // declare method ruleRuntimeBuilder()
         MethodDeclaration methodDeclaration = new MethodDeclaration()
                 .addModifier(Modifier.Keyword.PUBLIC)
                 .setName("ruleRuntimeBuilder")

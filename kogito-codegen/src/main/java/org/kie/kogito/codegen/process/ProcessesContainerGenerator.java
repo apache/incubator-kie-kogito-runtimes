@@ -26,7 +26,9 @@ import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -147,13 +149,21 @@ public class ProcessesContainerGenerator implements ApplicationSection {
         NodeList<Expression> processIds = NodeList.nodeList(processes.stream().map(p -> new StringLiteralExpr(p.processId())).collect(Collectors.toList()));
         processesMethodDeclaration.getBody().get().addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));
 
-
         return new ClassOrInterfaceDeclaration()
                 .setModifiers(Keyword.PUBLIC)
                 .setName("Processes")
                 .addImplementedType(Processes.class.getCanonicalName())
                 .setMembers(applicationDeclarations);
+    }
 
+    @Override
+    public FieldDeclaration fieldDeclaration() {
+        return new FieldDeclaration()
+                .addVariable(new VariableDeclarator()
+                                     .setType(Processes.class)
+                                     .setName("processes")
+                                     .setInitializer(new ObjectCreationExpr().setType("Processes")))
+                .setModifiers(Keyword.PUBLIC);
     }
 
     public MethodDeclaration factoryMethod() {
@@ -161,7 +171,7 @@ public class ProcessesContainerGenerator implements ApplicationSection {
                 .setName("processes")
                 .setModifiers(Keyword.PUBLIC)
                 .setType(Processes.class)
-                .setBody(new BlockStmt().addStatement(new ReturnStmt(new ObjectCreationExpr().setType("Processes"))));
+                .setBody(new BlockStmt().addStatement(new ReturnStmt(new NameExpr("processes"))));
         return processesMethod;
     }
 }

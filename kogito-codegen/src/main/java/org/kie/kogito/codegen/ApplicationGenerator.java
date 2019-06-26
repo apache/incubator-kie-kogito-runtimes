@@ -136,6 +136,7 @@ public class ApplicationGenerator {
 
         factoryMethods.forEach(cls::addMember);
 
+        generators.stream().map(Generator::section).forEach(sect -> cls.addMember(sect.fieldDeclaration()));
         generators.stream().map(Generator::section).forEach(sect -> cls.addMember(sect.factoryMethod()));
         generators.stream().map(Generator::section).forEach(sect -> cls.addMember(sect.classDeclaration()));
 
