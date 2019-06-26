@@ -184,7 +184,7 @@ public class ModelGenerator {
 
         RuleUnitDescription ruleUnitDescr = context.getRuleUnitDescr();
         BlockStmt ruleVariablesBlock = new BlockStmt();
-        createUnitData(context, ruleUnitDescr, ruleVariablesBlock );
+        if (ruleUnitDescr != null) createUnitData(context, ruleUnitDescr, ruleVariablesBlock );
 
         new ModelGeneratorVisitor(context, packageModel).visit(getExtendedLhs(packageDescr, ruleDescr));
         final String ruleMethodName = "rule_" + toId(ruleDescr.getName());
@@ -200,10 +200,10 @@ public class ModelGenerator {
         }
         ruleCall.addArgument( new StringLiteralExpr( ruleDescr.getName() ) );
 
-        MethodCallExpr buildCallScope = ruleCall;
-//        MethodCallExpr buildCallScope = ruleUnitDescr != null ?
-//                new MethodCallExpr(ruleCall, UNIT_CALL).addArgument( new ClassExpr( classToReferenceType(ruleUnitDescr.getRuleUnitClass()) ) ) :
-//                ruleCall;
+//        MethodCallExpr buildCallScope = ruleCall;
+        MethodCallExpr buildCallScope = ruleUnitDescr != null ?
+                new MethodCallExpr(ruleCall, UNIT_CALL).addArgument( new ClassExpr( classToReferenceType(ruleUnitDescr.getRuleUnitClass()) ) ) :
+                ruleCall;
 
         for (MethodCallExpr attributeExpr : ruleAttributes(context, ruleDescr)) {
             attributeExpr.setScope( buildCallScope );

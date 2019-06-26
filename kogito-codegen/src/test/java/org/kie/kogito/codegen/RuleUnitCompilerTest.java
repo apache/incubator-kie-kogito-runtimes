@@ -16,7 +16,10 @@
 
 package org.kie.kogito.codegen;
 
+import java.util.concurrent.Future;
+
 import org.junit.Test;
+import org.kie.kogito.Executor;
 import org.kie.kogito.codegen.data.AdultUnit;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.data.Results;
@@ -50,6 +53,30 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
 
         assertTrue( results.getResults().containsAll( asList("Mario", "Marilena") ) );
     }
+
+
+    @Test
+    public void testRuleUnitExecutor() throws Exception {
+        generateCodeRulesOnly("org/kie/kogito/codegen/data/RuleUnit.drl");
+
+        AdultUnit adults = new AdultUnit();
+
+        Results results = new Results();
+        adults.getResults().add( results );
+
+        adults.getPersons().add(new Person( "Mario", 45 ));
+        adults.getPersons().add(new Person( "Marilena", 47 ));
+        adults.getPersons().add(new Person( "Sofia", 7 ));
+
+        RuleUnitInstance<AdultUnit> instance = RuleUnitRegistry.instance(adults);
+        Executor executor = Executor.create();
+        Future<Integer> done = executor.submit(instance);
+
+        assertEquals(2, done.get().intValue() );
+
+        assertTrue( results.getResults().containsAll( asList("Mario", "Marilena") ) );
+    }
+
 
 //    @Test
 //    public void testRuleUnitWithOOPath() {
