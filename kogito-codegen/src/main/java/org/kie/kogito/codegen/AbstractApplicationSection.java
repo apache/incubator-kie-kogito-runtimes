@@ -50,7 +50,7 @@ public class AbstractApplicationSection implements ApplicationSection {
         return new FieldDeclaration()
                 .addVariable(
                         new VariableDeclarator()
-                                .setType(classType)
+                                .setType(innerClassName)
                                 .setName(methodName)
                                 .setInitializer(new ObjectCreationExpr().setType(innerClassName)));
     }
@@ -58,7 +58,7 @@ public class AbstractApplicationSection implements ApplicationSection {
     public MethodDeclaration factoryMethod() {
         return new MethodDeclaration()
                 .setModifiers(Modifier.Keyword.PUBLIC)
-                .setType(classType)
+                .setType(innerClassName)
                 .setName(methodName)
                 .setBody(new BlockStmt().addStatement(new ReturnStmt(new NameExpr(methodName))));
     }
