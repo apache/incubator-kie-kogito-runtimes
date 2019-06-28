@@ -16,12 +16,6 @@
 
 package org.jbpm.bpmn2.canonical;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
-
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -44,20 +38,26 @@ import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.bpmn2.BpmnProcess;
+import org.kie.kogito.process.bpmn2.BpmnVariables;
 import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
 import org.kie.kogito.process.impl.StaticProcessConfig;
-import org.kie.kogito.process.bpmn2.BpmnProcess;
-import org.kie.kogito.process.bpmn2.BpmnVariables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
+import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
 
 public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 

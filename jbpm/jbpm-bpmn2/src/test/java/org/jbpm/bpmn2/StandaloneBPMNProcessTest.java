@@ -16,8 +16,6 @@
 
 package org.jbpm.bpmn2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringReader;
@@ -27,7 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.drools.core.impl.InternalKnowledgeBase;
@@ -44,7 +41,8 @@ import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -64,6 +62,8 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+
+import static org.assertj.core.api.Assertions.*;
 
 @RunWith(Parameterized.class)
 public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
@@ -264,7 +264,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testExclusiveSplitXPath() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-ExclusiveSplitXPath.bpmn2");
         KieSession ksession = createKnowledgeSession(kbase);
