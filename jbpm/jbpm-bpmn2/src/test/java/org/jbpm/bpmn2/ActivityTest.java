@@ -43,7 +43,6 @@ import org.jbpm.workflow.instance.node.DynamicNodeInstance;
 import org.jbpm.workflow.instance.node.DynamicUtils;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -69,8 +68,6 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.api.runtime.rule.ConsequenceException;
 import org.kie.internal.command.RegistryContext;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,17 +78,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ActivityTest extends JbpmBpmn2TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ActivityTest.class);
-
-    private KieSession ksession;
     private KieSession ksession2;
 
     @AfterEach
-    public void dispose() {
-        if (ksession != null) {   
-            ksession.dispose();
-            ksession = null;
-        }
+    @Override
+    public void disposeSession() {
+        super.disposeSession();
         if (ksession2 != null) {
             ksession2.dispose();
             ksession2 = null;

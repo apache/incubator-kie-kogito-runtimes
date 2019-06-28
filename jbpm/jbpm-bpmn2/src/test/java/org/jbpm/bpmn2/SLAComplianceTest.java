@@ -43,16 +43,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
-    private KieSession ksession;
-
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            ksession.dispose();
-            ksession = null;
-        }
-    }
-
     @Test
     public void testSLAonProcessViolated() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);

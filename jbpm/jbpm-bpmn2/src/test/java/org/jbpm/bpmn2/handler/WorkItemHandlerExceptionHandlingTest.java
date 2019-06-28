@@ -40,8 +40,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class WorkItemHandlerExceptionHandlingTest extends JbpmBpmn2TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(WorkItemHandlerExceptionHandlingTest.class);
-
     private static Boolean strictVariableSetting = Boolean.parseBoolean(System.getProperty("org.jbpm.variable.strict", "false"));
     public WorkItemHandlerExceptionHandlingTest() {        
     }

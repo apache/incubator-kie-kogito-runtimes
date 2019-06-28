@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
@@ -33,26 +32,11 @@ import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EscalationEventTest extends JbpmBpmn2TestCase {
-
-    private Logger logger = LoggerFactory
-            .getLogger(EscalationEventTest.class);
-
-    private KieSession ksession;
-    
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            ksession.dispose();
-            ksession = null;
-        }
-    }
 
     private ProcessEventListener LOGGING_EVENT_LISTENER = new DefaultProcessEventListener() {
 

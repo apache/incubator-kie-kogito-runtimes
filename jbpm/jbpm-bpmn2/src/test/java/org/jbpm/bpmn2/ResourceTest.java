@@ -25,11 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ResourceTest extends JbpmBpmn2TestCase {
 
-    private StatefulKnowledgeSession ksession;
-
-    public ResourceTest() {
-    }
-
     @Test
     public void testResourceType() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-MinimalProcess.bpmn2");

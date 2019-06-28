@@ -25,7 +25,6 @@ import org.assertj.core.api.Assertions;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -36,15 +35,8 @@ import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CompensationTest extends JbpmBpmn2TestCase {
-
-    private KieSession ksession;
-
-    private Logger logger = LoggerFactory
-            .getLogger(CompensationTest.class);
 
     private ProcessEventListener LOGGING_EVENT_LISTENER = new DefaultProcessEventListener() {
 
@@ -73,14 +65,6 @@ public class CompensationTest extends JbpmBpmn2TestCase {
     @BeforeEach
     public void prepare() {
         clearHistory();
-    }
-
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            ksession.dispose();
-            ksession = null;
-        }
     }
 
     /**

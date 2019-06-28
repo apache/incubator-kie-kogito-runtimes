@@ -93,18 +93,31 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Timeout(value = 3000, unit = TimeUnit.SECONDS)
 public abstract class JbpmBpmn2TestCase {
 
-    final Logger log = LoggerFactory.getLogger(this.getClass());
-   
-    protected WorkingMemoryInMemoryLogger logger;
-    
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * Used by many subclasses. Instead of each test duplicating the cleanup code, we extract it here in
+     * the superclass.
+     */
+    protected KieSession ksession;
+
+    protected WorkingMemoryInMemoryLogger workingMemoryLogger;
+
+    @AfterEach
+    public void disposeSession() {
+        if (ksession != null) {
+            ksession.dispose();
+            ksession = null;
+        }
+    }
     @BeforeEach
     protected void logTestStart(TestInfo testInfo) {
-        log.info(" >>> {} <<<", testInfo.getDisplayName());
+        logger.info(" >>> {} <<<", testInfo.getDisplayName());
     }
 
-    @BeforeEach
+    @AfterEach
     protected void logTestEnd(TestInfo testInfo) {
-        log.info("Finished {}", testInfo.getDisplayName());
+        logger.info("Finished {}", testInfo.getDisplayName());
     }
 
     @AfterEach
@@ -265,7 +278,7 @@ public abstract class JbpmBpmn2TestCase {
         conf = SessionConfiguration.newInstance(defaultProps);
         conf.setOption(ForceEagerActivationOption.YES);
         result = (StatefulKnowledgeSession) kbase.newKieSession(conf, env);
-        logger = new WorkingMemoryInMemoryLogger(result);
+        workingMemoryLogger = new WorkingMemoryInMemoryLogger(result);
         
         return result;
     }
@@ -367,7 +380,7 @@ public abstract class JbpmBpmn2TestCase {
             String node) {
         int counter = 0;
         
-        for (LogEvent event : logger.getLogEvents()) {
+        for (LogEvent event : workingMemoryLogger.getLogEvents()) {
             if (event instanceof RuleFlowNodeLogEvent) {
                 String nodeName = ((RuleFlowNodeLogEvent) event).getNodeName();
                 if (node.equals(nodeName)) {
@@ -381,7 +394,7 @@ public abstract class JbpmBpmn2TestCase {
     
     public int getNumberOfProcessInstances(String processId) {
         int counter = 0;      
-        LogEvent [] events = logger.getLogEvents().toArray(new LogEvent[0]);
+        LogEvent [] events = workingMemoryLogger.getLogEvents().toArray(new LogEvent[0]);
         for (LogEvent event : events ) { 
             if (event.getType() == LogEvent.BEFORE_RULEFLOW_CREATED) {
                 if(((RuleFlowLogEvent) event).getProcessId().equals(processId)) {
@@ -405,7 +418,7 @@ public abstract class JbpmBpmn2TestCase {
             names.add(nodeName);
         }
         
-        for (LogEvent event : logger.getLogEvents()) {
+        for (LogEvent event : workingMemoryLogger.getLogEvents()) {
             if (event instanceof RuleFlowNodeLogEvent) {
                 String nodeName = ((RuleFlowNodeLogEvent) event)
                         .getNodeName();
@@ -421,7 +434,7 @@ public abstract class JbpmBpmn2TestCase {
     protected List<String> getCompletedNodes(long processInstanceId) { 
         List<String> names = new ArrayList<String>();
         
-        for (LogEvent event : logger.getLogEvents()) {
+        for (LogEvent event : workingMemoryLogger.getLogEvents()) {
             if (event instanceof RuleFlowNodeLogEvent) {
                 if( event.getType() == 27 ) { 
                     names.add(((RuleFlowNodeLogEvent) event).getNodeId());
@@ -434,8 +447,8 @@ public abstract class JbpmBpmn2TestCase {
 
     protected void clearHistory() {
         
-        if (logger != null) {
-            logger.clear();
+        if (workingMemoryLogger != null) {
+            workingMemoryLogger.clear();
         }
     
     }

@@ -48,9 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MultipleProcessesPerThreadTest {
     
     private static final int LOOPS = 1000;
-    
+
     private static final Logger logger = LoggerFactory.getLogger(MultipleProcessesPerThreadTest.class);
-    
+
     protected static KieSession createStatefulKnowledgeSession(KieBase kbase) {
         return kbase.newKieSession();
     }

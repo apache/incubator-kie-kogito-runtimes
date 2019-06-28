@@ -74,11 +74,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
-    private Logger logger = LoggerFactory
-            .getLogger(IntermediateEventTest.class);
-
-    private KieSession ksession;
-
     private ProcessEventListener LOGGING_EVENT_LISTENER = new DefaultProcessEventListener() {
 
         @Override
@@ -102,14 +97,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         }
 
     };
-
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            ksession.dispose();
-            ksession = null;
-        }
-    }
 
     /*
      * helper methods

@@ -38,16 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EndEventTest extends JbpmBpmn2TestCase {
 
-    private StatefulKnowledgeSession ksession;
-    
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            ksession.dispose();
-            ksession = null;
-        }
-    }
-
     @Test
     public void testImplicitEndParallel() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-ParallelSplit.bpmn2");

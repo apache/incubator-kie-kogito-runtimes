@@ -22,9 +22,6 @@ import static org.assertj.core.api.Assertions.*;
 
 public class ImportClassTest extends JbpmBpmn2TestCase {
     
-    public ImportClassTest() {
-    }
-
     @Test
     public void testResourceType() {
         assertThatExceptionOfType(RuntimeException.class)

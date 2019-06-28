@@ -52,19 +52,6 @@ import static org.assertj.core.api.Assertions.*;
 
 public class StartEventTest extends JbpmBpmn2TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(StartEventTest.class);
-
-    private KieSession ksession;
-
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            clearHistory();
-            ksession.dispose();
-            ksession = null;
-        }
-    }
-
     @Test
     public void testConditionalStart() throws Exception {
         KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-ConditionalStart.bpmn2");

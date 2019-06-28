@@ -26,22 +26,11 @@ import org.jbpm.bpmn2.handler.LoggingTaskHandlerDecorator.InputParameter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LoggingTaskHandlerWrapperTest extends JbpmBpmn2TestCase {
     
-    private StatefulKnowledgeSession ksession;
-    
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            ksession.dispose();
-            ksession = null;
-        }
-    }
-
     @Test
     public void testLimitExceptionInfoList() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-ExceptionThrowingServiceProcess.bpmn2");

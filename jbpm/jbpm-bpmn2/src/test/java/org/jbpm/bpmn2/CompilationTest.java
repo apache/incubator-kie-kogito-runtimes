@@ -43,11 +43,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CompilationTest extends JbpmBpmn2TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(CompilationTest.class);
-
-    public CompilationTest() {        
-    }
-
     @Test
     public void testReturnValueDescrCreation() throws Exception {
         TestJavaProcessDialect javaProcessDialect = new TestJavaProcessDialect();

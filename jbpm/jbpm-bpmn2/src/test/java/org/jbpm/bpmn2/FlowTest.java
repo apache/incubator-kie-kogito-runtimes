@@ -67,23 +67,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class FlowTest extends JbpmBpmn2TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(FlowTest.class);
-
-    private KieSession ksession;
-
     @BeforeAll
     public static void setup() throws Exception {
         VariableScope.setVariableStrictOption(true);
     }
 
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            ksession.dispose();
-            ksession = null;
-        }
-    }
-    
     @AfterEach
     public void clearProperties() {
         System.clearProperty("jbpm.enable.multi.con");

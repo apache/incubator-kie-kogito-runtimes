@@ -54,19 +54,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class ErrorEventTest extends JbpmBpmn2TestCase {
 
-    private Logger logger = LoggerFactory
-            .getLogger(ErrorEventTest.class);
-
-    private KieSession ksession;
-    
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            ksession.dispose();
-            ksession = null;
-        }
-    }
-
     private ProcessEventListener LOGGING_EVENT_LISTENER = new DefaultProcessEventListener() {
 
         @Override

@@ -29,8 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,8 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class StructureRefTest extends JbpmBpmn2TestCase {
-
-    private static final Logger logger = LoggerFactory.getLogger(StartEventTest.class);
 
     @Test
     public void testStringStructureRef() throws Exception {

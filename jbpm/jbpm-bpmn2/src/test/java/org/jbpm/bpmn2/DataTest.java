@@ -39,8 +39,6 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -49,18 +47,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataTest extends JbpmBpmn2TestCase {
-
-    private static final Logger logger = LoggerFactory.getLogger(DataTest.class);
-
-    private StatefulKnowledgeSession ksession;
-    
-    @AfterEach
-    public void dispose() {
-        if (ksession != null) {
-            ksession.dispose();
-            ksession = null;
-        }
-    }
 
     @Test
     public void testImport() throws Exception {
