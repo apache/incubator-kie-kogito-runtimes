@@ -35,9 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProcessFactoryTest extends JbpmBpmn2TestCase {
 
-    public ProcessFactoryTest() {        
-    }
-
     @Test
     public void testProcessFactory() throws Exception {
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("org.jbpm.process");

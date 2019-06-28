@@ -18,7 +18,6 @@ package org.jbpm.bpmn2;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,15 +41,10 @@ import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventLister;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.kie.api.KieBase;
 import org.kie.api.command.ExecutableCommand;
 import org.kie.api.event.process.DefaultProcessEventListener;
@@ -75,27 +69,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-@RunWith(Parameterized.class)
 public class IntermediateEventTest extends JbpmBpmn2TestCase {
-
-    @Parameters
-    public static Collection<Object[]> persistence() {
-        Object[][] data = new Object[][] {
-                { false}
-        };
-        return Arrays.asList(data);
-    };
 
     private Logger logger = LoggerFactory
             .getLogger(IntermediateEventTest.class);
 
     private KieSession ksession;
-
-    public IntermediateEventTest(boolean persistence) {        
-    }
 
     private ProcessEventListener LOGGING_EVENT_LISTENER = new DefaultProcessEventListener() {
 
@@ -2691,7 +2673,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, ksession);
         
         for (Long id : instances) {
-            assertNotNull(ksession.getProcessInstance(id), "Child process instance has not been finished.");
+            assertNull(ksession.getProcessInstance(id), "Child process instance has not been finished.");
         }
     }
 
@@ -2742,7 +2724,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, ksession);
         
         for (Long id : instances) {
-            assertNotNull(ksession.getProcessInstance(id), "Child process instance has not been finished.");
+            assertNull(ksession.getProcessInstance(id), "Child process instance has not been finished.");
         }
         
         ProcessInstance updatedChild = ksession.getProcessInstance(changeProcessInstanceId);
@@ -2800,7 +2782,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, ksession);
         
         for (Long id : instances) {
-            assertNotNull(ksession.getProcessInstance(id), "Child process instance has not been finished.");
+            assertNull(ksession.getProcessInstance(id), "Child process instance has not been finished.");
         }
         
         ProcessInstance updatedChild = ksession.getProcessInstance(changeProcessInstanceId);

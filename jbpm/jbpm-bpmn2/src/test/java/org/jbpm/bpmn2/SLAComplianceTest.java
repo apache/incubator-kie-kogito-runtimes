@@ -16,7 +16,6 @@
 
 package org.jbpm.bpmn2;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,11 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.kie.api.KieBase;
 import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessEventListener;
@@ -41,24 +36,14 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(Parameterized.class)
 public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
-    @Parameters
-    public static Collection<Object[]> persistence() {
-        Object[][] data = new Object[][] { { false } };
-        return Arrays.asList(data);
-    };
-    
-
-    private KieSession ksession;    
-
-    public SLAComplianceTest(boolean persistence) throws Exception {
-    }
+    private KieSession ksession;
 
     @AfterEach
     public void dispose() {

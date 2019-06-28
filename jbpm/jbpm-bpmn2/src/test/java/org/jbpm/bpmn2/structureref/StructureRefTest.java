@@ -15,8 +15,6 @@
  */
 package org.jbpm.bpmn2.structureref;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,34 +25,21 @@ import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.coverter.TypeConverterRegistry;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@RunWith(Parameterized.class)
 public class StructureRefTest extends JbpmBpmn2TestCase {
 
-    @Parameters
-    public static Collection<Object[]> persistence() {
-        Object[][] data = new Object[][] { { false } };
-        return Arrays.asList(data);
-    };
-
     private static final Logger logger = LoggerFactory.getLogger(StartEventTest.class);
-
-    public StructureRefTest(boolean persistence) {        
-    }
 
     @Test
     public void testStringStructureRef() throws Exception {

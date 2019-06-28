@@ -92,14 +92,11 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 @Timeout(value = 3000, unit = TimeUnit.SECONDS)
 public abstract class JbpmBpmn2TestCase {
-    private static final Logger log = LoggerFactory.getLogger(JbpmBpmn2TestCase.class);
+
+    final Logger log = LoggerFactory.getLogger(this.getClass());
    
     protected WorkingMemoryInMemoryLogger logger;
     
-    public JbpmBpmn2TestCase() {
-        
-    }
-
     @BeforeEach
     protected void logTestStart(TestInfo testInfo) {
         log.info(" >>> {} <<<", testInfo.getDisplayName());

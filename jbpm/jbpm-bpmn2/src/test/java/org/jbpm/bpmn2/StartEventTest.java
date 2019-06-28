@@ -19,8 +19,6 @@ package org.jbpm.bpmn2;
 import java.io.StringReader;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,9 +34,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieRepository;
@@ -55,21 +50,11 @@ import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.*;
 
-@RunWith(Parameterized.class)
 public class StartEventTest extends JbpmBpmn2TestCase {
-
-    @Parameters
-    public static Collection<Object[]> persistence() {
-        Object[][] data = new Object[][] { { false } };
-        return Arrays.asList(data);
-    };
 
     private static final Logger logger = LoggerFactory.getLogger(StartEventTest.class);
 
     private KieSession ksession;
-
-    public StartEventTest(boolean persistence) {
-    }
 
     @AfterEach
     public void dispose() {

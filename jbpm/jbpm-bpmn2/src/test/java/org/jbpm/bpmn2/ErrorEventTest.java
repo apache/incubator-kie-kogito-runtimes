@@ -17,8 +17,6 @@
 package org.jbpm.bpmn2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +34,6 @@ import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.kie.api.KieBase;
 import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessEventListener;
@@ -52,29 +47,18 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@RunWith(Parameterized.class)
 public class ErrorEventTest extends JbpmBpmn2TestCase {
-
-    @Parameters
-    public static Collection<Object[]> persistence() {
-        Object[][] data = new Object[][] { { false } };
-        return Arrays.asList(data);
-    };
 
     private Logger logger = LoggerFactory
             .getLogger(ErrorEventTest.class);
 
     private KieSession ksession;
     
-    public ErrorEventTest(boolean persistence) {
-    }
-
     @AfterEach
     public void dispose() {
         if (ksession != null) {

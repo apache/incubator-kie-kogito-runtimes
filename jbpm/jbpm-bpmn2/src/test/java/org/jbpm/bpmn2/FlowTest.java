@@ -40,9 +40,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.kie.api.KieBase;
 import org.kie.api.command.ExecutableCommand;
 import org.kie.api.event.process.DefaultProcessEventListener;
@@ -62,29 +59,18 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@RunWith(Parameterized.class)
 public class FlowTest extends JbpmBpmn2TestCase {
-
-    @Parameters
-    public static Collection<Object[]> persistence() {
-        Object[][] data = new Object[][] { { false } };
-        return Arrays.asList(data);
-    };
 
     private static final Logger logger = LoggerFactory.getLogger(FlowTest.class);
 
     private KieSession ksession;
 
-    public FlowTest(boolean persistence) {
-    }
-    
     @BeforeAll
     public static void setup() throws Exception {
         VariableScope.setVariableStrictOption(true);
