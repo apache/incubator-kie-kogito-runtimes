@@ -1,0 +1,8 @@
+package org.kie.kogito.codegen.tests.basic
+
+rule example
+when
+    $p : Person()
+then
+    insert(new Result());
+end
