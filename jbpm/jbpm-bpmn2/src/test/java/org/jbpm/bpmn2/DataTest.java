@@ -16,17 +16,12 @@
 
 package org.jbpm.bpmn2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,9 +32,10 @@ import org.jbpm.bpmn2.core.Definitions;
 import org.jbpm.bpmn2.xml.ProcessHandler;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
-import org.junit.After;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -53,6 +49,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(Parameterized.class)
 public class DataTest extends JbpmBpmn2TestCase {
@@ -70,7 +71,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     public DataTest(boolean persistence) {        
     }
     
-    @After
+    @AfterEach
     public void dispose() {
         if (ksession != null) {
             ksession.dispose();
@@ -253,7 +254,7 @@ public class DataTest extends JbpmBpmn2TestCase {
      * TODO testDataInputAssociationsWithLazyLoading
      */
     @Test
-    @Ignore
+    @Disabled
     public void testDataInputAssociationsWithLazyLoading()
             throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-DataInputAssociations-lazy-creating.bpmn2");
@@ -373,7 +374,7 @@ public class DataTest extends JbpmBpmn2TestCase {
      * TODO testDataInputAssociationsWithTwoAssigns
      */
     @Test
-    @Ignore
+    @Disabled
     public void testDataInputAssociationsWithTwoAssigns() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-DataInputAssociations-two-assigns.bpmn2");
         ksession = createKnowledgeSession(kbase);

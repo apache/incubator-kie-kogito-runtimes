@@ -16,11 +16,6 @@
 
 package org.jbpm.bpmn2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,8 +34,8 @@ import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -56,6 +51,12 @@ import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @RunWith(Parameterized.class)
 public class ErrorEventTest extends JbpmBpmn2TestCase {
@@ -74,7 +75,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
     public ErrorEventTest(boolean persistence) {
     }
 
-    @After
+    @AfterEach
     public void dispose() {
         if (ksession != null) {
             ksession.dispose();
@@ -455,7 +456,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 					.startProcess("com.sample.bpmn.hello");
 			fail("This is not a default handler. So WorkflowRuntimeException must be thrown");
 		} catch (WorkflowRuntimeException e) {
-			assertTrue(true);
+			// all is fine
 		}
     }
 

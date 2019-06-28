@@ -15,22 +15,20 @@
  */
 package org.jbpm.bpmn2.structureref;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.thoughtworks.xstream.XStream;
 import org.jbpm.bpmn2.JbpmBpmn2TestCase;
 import org.jbpm.bpmn2.StartEventTest;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.coverter.TypeConverterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -40,7 +38,9 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.thoughtworks.xstream.XStream;
+import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(Parameterized.class)
 public class StructureRefTest extends JbpmBpmn2TestCase {
@@ -193,7 +193,7 @@ public class StructureRefTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance.getId(), ksession);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void testNotExistingVarBooleanStructureRefOnStart() throws Exception {
         KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-BooleanStructureRef.bpmn2");
         KieSession ksession = createKnowledgeSession(kbase);
@@ -203,11 +203,11 @@ public class StructureRefTest extends JbpmBpmn2TestCase {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("not existing", "invalid boolean");
-        ksession.startProcess("StructureRef", params);
+        assertThrows(IllegalArgumentException.class, () -> ksession.startProcess("StructureRef", params));
 
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void testInvalidBooleanStructureRefOnStart() throws Exception {
         KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-BooleanStructureRef.bpmn2");
         KieSession ksession = createKnowledgeSession(kbase);
@@ -217,8 +217,7 @@ public class StructureRefTest extends JbpmBpmn2TestCase {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("test", "invalid boolean");
-        ksession.startProcess("StructureRef", params);
-
+        assertThrows(IllegalArgumentException.class, () -> ksession.startProcess("StructureRef", params));
     }
 
     @Test

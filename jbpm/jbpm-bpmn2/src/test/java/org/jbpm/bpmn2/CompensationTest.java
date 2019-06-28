@@ -27,10 +27,10 @@ import org.assertj.core.api.Assertions;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -86,12 +86,12 @@ public class CompensationTest extends JbpmBpmn2TestCase {
 
     };
 
-    @Before
+    @BeforeEach
     public void prepare() {
         clearHistory();
     }
 
-    @After
+    @AfterEach
     public void dispose() {
         if (ksession != null) {
             ksession.dispose();
@@ -254,7 +254,7 @@ public class CompensationTest extends JbpmBpmn2TestCase {
     }
     
     @Test
-    @Ignore
+    @Disabled
     public void compensationViaCancellation() throws Exception {
         KieSession ksession = createKnowledgeSession("compensation/BPMN2-Compensation-IntermediateThrowEvent.bpmn2");
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();

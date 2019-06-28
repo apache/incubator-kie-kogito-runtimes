@@ -16,8 +16,6 @@
 
 package org.jbpm.bpmn2.handler;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,13 +25,16 @@ import java.util.Map;
 
 import org.jbpm.bpmn2.JbpmBpmn2TestCase;
 import org.jbpm.bpmn2.handler.LoggingTaskHandlerDecorator.InputParameter;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.kie.api.KieBase;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
+
+import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(Parameterized.class)
 public class LoggingTaskHandlerWrapperTest extends JbpmBpmn2TestCase {
@@ -49,7 +50,7 @@ public class LoggingTaskHandlerWrapperTest extends JbpmBpmn2TestCase {
     public LoggingTaskHandlerWrapperTest(boolean persistence) {
     }
 
-    @After
+    @AfterEach
     public void dispose() {
         if (ksession != null) {
             ksession.dispose();
@@ -73,7 +74,7 @@ public class LoggingTaskHandlerWrapperTest extends JbpmBpmn2TestCase {
         ksession.startProcess("ServiceProcess", params);
 
         int size = loggingTaskHandlerWrapper.getWorkItemExceptionInfoList().size(); 
-        assertTrue( "WorkItemExceptionInfoList is too large: " + size, size == 2 );
+        assertTrue( size == 2, "WorkItemExceptionInfoList is too large: " + size);
     }
     
     @Test

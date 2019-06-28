@@ -16,9 +16,6 @@
 
 package org.jbpm.bpmn2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-
 import java.io.StringReader;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -35,9 +32,10 @@ import org.jbpm.bpmn2.objects.NotAvailableGoodsReport;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -55,6 +53,8 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.assertj.core.api.Assertions.*;
+
 @RunWith(Parameterized.class)
 public class StartEventTest extends JbpmBpmn2TestCase {
 
@@ -70,7 +70,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     public StartEventTest(boolean persistence) {
     }
-    @After
+
+    @AfterEach
     public void dispose() {
         if (ksession != null) {
             clearHistory();
@@ -105,7 +106,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         assertNodeTriggered(startedInstances.get(0), "StartProcess", "Hello", "EndProcess");
     }
 
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testTimerStartCycleLegacy() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 2);
         KieBase kbase = createKnowledgeBase("BPMN2-TimerStartCycleLegacy.bpmn2");
@@ -127,7 +129,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     }
 
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testTimerStart() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 5);
         KieBase kbase = createKnowledgeBase("BPMN2-TimerStart.bpmn2");
@@ -145,7 +148,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     }
 
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testTimerStartDateISO() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 1);
         byte[] content = IoUtils.readBytesFromInputStream(this.getClass().getResourceAsStream("/BPMN2-TimerStartDate.bpmn2"));
@@ -173,7 +177,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     }
 
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testTimerStartCycleISO() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 6);
         KieBase kbase = createKnowledgeBase("BPMN2-TimerStartISO.bpmn2");
@@ -191,7 +196,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     }
 
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testTimerStartDuration() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 1);
         KieBase kbase = createKnowledgeBase("BPMN2-TimerStartDuration.bpmn2");
@@ -212,7 +218,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     }
 
-    @Test(timeout=15000)
+    @Test
+    @Timeout(10)
     public void testTimerStartCron() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 5);
         KieBase kbase = createKnowledgeBase("BPMN2-TimerStartCron.bpmn2");
@@ -329,7 +336,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     }
 
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testMultipleStartEventsStartOnTimer() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartTimer", 2);
         KieBase kbase = createKnowledgeBase("BPMN2-MultipleStartEventProcess.bpmn2");
@@ -418,7 +426,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         assertNodeTriggered(processInstanceId, "Start", "Script 1", "User task", "End");
     }
 
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testMultipleEventBasedStartEventsTimerDifferentPaths() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartTimer", 2);
         KieBase kbase = createKnowledgeBase("BPMN2-MultipleStartEventProcessDifferentPaths.bpmn2");
@@ -489,7 +498,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         assertNodeTriggered(processInstanceId, "StartSignal", "Script 3", "User task", "End");
     }
 
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testMultipleEventBasedStartEventsStartOnTimer()
             throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartTimer", 2);
@@ -512,7 +522,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     }
 
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testTimerCycle() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("start", 5);
         KieBase kbase = createKnowledgeBase("timer/BPMN2-StartTimerCycle.bpmn2");
@@ -526,7 +537,9 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         assertThat(listener.getCount("start.cycle")).isEqualTo(5);
     }
 
-    @Test(timeout=10000) @Ignore("Transfomer has been disabled")
+    @Test
+    @Timeout(10)
+    @Disabled("Transfomer has been disabled")
     public void testSignalStartWithTransformation() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 1);
         KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-SignalStartWithTransformation.bpmn2");
@@ -550,7 +563,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
     /**
      * This is how I would expect the start event to work (same as the recurring event)
      */
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10)
     public void testTimerDelay() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("start", 1);
         KieBase kbase = createKnowledgeBase("timer/BPMN2-StartTimerDuration.bpmn2");
