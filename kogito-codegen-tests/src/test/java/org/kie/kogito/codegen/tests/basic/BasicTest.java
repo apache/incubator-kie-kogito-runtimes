@@ -17,19 +17,18 @@ package org.kie.kogito.codegen.tests.basic;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
-import org.kie.kogito.app.Application;
+import org.kie.kogito.rules.KieRuntimeBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BasicTest {
 
-    Application app = new Application();
+    KieRuntimeBuilder kieRuntimeBuilder = new org.drools.project.model.ProjectRuntime();
 
     @Test
     public void fireRuleTest() {
         KieSession kieSession =
-                app.ruleUnits()
-                        .ruleRuntimeBuilder()
+                kieRuntimeBuilder
                         .newKieSession();
 
         kieSession.insert(new Person());

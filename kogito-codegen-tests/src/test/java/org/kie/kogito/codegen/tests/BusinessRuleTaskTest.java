@@ -21,11 +21,15 @@ import defaultPackage.BusinessRuleTaskModel;
 import defaultPackage.BusinessRuleTaskProcess;
 import defaultPackage.BusinessRuleTaskProcessInstance;
 import org.drools.core.config.DefaultRuleEventListenerConfig;
+import org.drools.core.config.StaticRuleConfig;
 import org.drools.core.event.DefaultAgendaEventListener;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
+import org.kie.kogito.Config;
+import org.kie.kogito.StaticConfig;
 import org.kie.kogito.app.Application;
 import org.kie.kogito.codegen.data.Person;
+import org.kie.kogito.process.impl.StaticProcessConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,18 +59,26 @@ public class BusinessRuleTaskTest {
 
     @Test
     public void testBasicBusinessRuleTaskWithAgendaListener() throws Exception {
-        Application app = new Application();
-
-        assertThat(app).isNotNull();
         final AtomicInteger counter = new AtomicInteger();
-        ((DefaultRuleEventListenerConfig)app.config().rule().ruleEventListeners()).register(new DefaultAgendaEventListener() {
 
+        // extends the App class and override the configuration
+        Application app = new Application() {
             @Override
-            public void afterMatchFired(AfterMatchFiredEvent event) {
-                counter.incrementAndGet();
+            public Config config() {
+                return new StaticConfig(
+                        StaticProcessConfig.Default(),
+                        new StaticRuleConfig(
+                                new DefaultRuleEventListenerConfig(
+                                        new DefaultAgendaEventListener() {
+                                            @Override
+                                            public void afterMatchFired(AfterMatchFiredEvent event) {
+                                                counter.incrementAndGet();
+                                            }
+                                        }
+                                )));
             }
+        };
 
-        });
         BusinessRuleTaskProcess p = app.processes().createBusinessRuleTaskProcess();
 
         BusinessRuleTaskModel businessRuleTaskModel = new BusinessRuleTaskModel();

@@ -19,6 +19,11 @@ import org.kie.kogito.rules.RuleConfig;
 import org.kie.kogito.rules.RuleEventListenerConfig;
 
 public class StaticRuleConfig implements RuleConfig {
+
+    public static StaticRuleConfig Default() {
+        return new StaticRuleConfig(
+                new DefaultRuleEventListenerConfig());
+    }
     
     private final RuleEventListenerConfig ruleEventListenerConfig; 
 

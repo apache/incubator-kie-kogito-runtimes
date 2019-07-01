@@ -15,6 +15,7 @@
 
 package org.kie.kogito.process.impl;
 
+import org.kie.kogito.Application;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessEventListenerConfig;
 import org.kie.kogito.process.WorkItemHandlerConfig;
@@ -22,7 +23,16 @@ import org.kie.kogito.signal.SignalManagerHub;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.services.signal.DefaultSignalManagerHub;
 
+/**
+ * Utility class that is used in {@link Application} code generated entry point
+ */
 public class StaticProcessConfig implements ProcessConfig {
+
+    public static StaticProcessConfig Default() {
+        return new StaticProcessConfig(
+                new DefaultWorkItemHandlerConfig(),
+                new DefaultProcessEventListenerConfig());
+    }
 
     private final WorkItemHandlerConfig workItemHandlerConfig;
     private final ProcessEventListenerConfig processEventListenerConfig;
