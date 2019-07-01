@@ -15,9 +15,6 @@
 
 package org.kie.kogito.codegen.tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import defaultPackage.BusinessRuleTaskModel;
@@ -27,11 +24,11 @@ import org.drools.core.config.DefaultRuleEventListenerConfig;
 import org.drools.core.event.DefaultAgendaEventListener;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
-import org.kie.kogito.Model;
 import org.kie.kogito.app.Application;
 import org.kie.kogito.codegen.data.Person;
-import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessInstance;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class BusinessRuleTaskTest {
@@ -52,9 +49,8 @@ public class BusinessRuleTaskTest {
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKey("person");
-        assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
+        BusinessRuleTaskModel result = processInstance.variables();
+        assertTrue(result.getPerson().isAdult());
     }
 
     @Test
@@ -71,18 +67,18 @@ public class BusinessRuleTaskTest {
             }
 
         });
-        Process<? extends Model> p = app.processes().processById("BusinessRuleTask");
+        BusinessRuleTaskProcess p = app.processes().createBusinessRuleTaskProcess();
 
-        Model m = p.createModel();
-        m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
+        BusinessRuleTaskModel businessRuleTaskModel = new BusinessRuleTaskModel();
+        businessRuleTaskModel.setPerson(new Person("john", 25));
 
-        ProcessInstance<?> processInstance = p.createInstance(m);
+        BusinessRuleTaskProcessInstance processInstance = p.createInstance(businessRuleTaskModel);
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKey("person");
-        assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
+
+        BusinessRuleTaskModel result = processInstance.variables();
+        assertTrue(result.getPerson().isAdult());
 
         assertThat(counter.get()).isEqualTo(1);
     }
