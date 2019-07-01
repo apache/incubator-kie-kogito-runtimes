@@ -85,8 +85,9 @@ public class RuleUnitInstanceSourceClass {
 
         BlockStmt methodBlock = new BlockStmt();
         methodDeclaration.setName("bind")
+                .addAnnotation( "Override" )
                 .addModifier(Modifier.Keyword.PROTECTED)
-                .addParameter(KieSession.class.getCanonicalName(), "rt")
+                .addParameter(KieSession.class.getCanonicalName(), "runtime")
                 .addParameter(typeName, "value")
                 .setType(void.class)
                 .setBody(methodBlock);
@@ -96,10 +97,11 @@ public class RuleUnitInstanceSourceClass {
 
             for (Method m : typeClass.getDeclaredMethods()) {
                 m.setAccessible(true);
-                if (m.getReturnType() == DataSource.class) {
+                String methodName = m.getName();
+                String propertyName = ClassUtils.getter2property(methodName);
+
+                if ( DataSource.class.isAssignableFrom( m.getReturnType() ) ) {
                     //  value.$method())
-                    String methodName = m.getName();
-                    String propertyName = ClassUtils.getter2property(methodName);
                     Expression fieldAccessor =
                             new MethodCallExpr(new NameExpr("value"), methodName);
 
@@ -107,14 +109,20 @@ public class RuleUnitInstanceSourceClass {
                     MethodCallExpr drainInto = new MethodCallExpr(fieldAccessor, "subscribe").addArgument(
                             new MethodReferenceExpr().setScope(
                                     new MethodCallExpr(
-                                            new NameExpr("rt"), "getEntryPoint",
+                                            new NameExpr("runtime"), "getEntryPoint",
                                             NodeList.nodeList(new StringLiteralExpr(propertyName))))
                                     .setIdentifier("insert"));
-//                            new MethodReferenceExpr().setScope(new NameExpr("rt")).setIdentifier("insert"));
+//                            new MethodReferenceExpr().setScope(new NameExpr("runtime")).setIdentifier("insert"));
 
                     methodBlock.addStatement(drainInto);
                 }
+
+                MethodCallExpr setGlobalCall = new MethodCallExpr( new NameExpr("runtime"), "setGlobal" );
+                setGlobalCall.addArgument( new StringLiteralExpr( propertyName ) );
+                setGlobalCall.addArgument( new MethodCallExpr(new NameExpr("value"), methodName) );
+                methodBlock.addStatement(setGlobalCall);
             }
+
         } catch (Exception e) {
             throw new Error(e);
         }

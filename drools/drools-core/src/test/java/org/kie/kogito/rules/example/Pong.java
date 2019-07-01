@@ -15,9 +15,9 @@
 
 package org.kie.kogito.rules.example;
 
-import org.kie.kogito.rules.DataSource;
+import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.impl.ListDataSource;
 
 public class Pong {
-    DataSource<String> pongs = new ListDataSource<>();
+    DataStore<String> pongs = new ListDataSource<>();
 }

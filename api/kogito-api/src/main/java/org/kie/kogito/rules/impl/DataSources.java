@@ -15,10 +15,10 @@
 
 package org.kie.kogito.rules.impl;
 
-import org.kie.kogito.rules.DataSource;
+import org.kie.kogito.rules.DataStore;
 
 public class DataSources {
-    public static <T> DataSource<T> create() {
+    public static <T> DataStore<T> create() {
         return new ListDataSource<>();
     }
 }

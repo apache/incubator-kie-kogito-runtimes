@@ -33,8 +33,8 @@ import org.drools.modelcompiler.builder.generator.drlxparse.DrlxParseResult;
 import org.drools.modelcompiler.builder.generator.drlxparse.SingleDrlxParseSuccess;
 import org.drools.modelcompiler.builder.generator.expressiontyper.ExpressionTyper;
 
-import static com.github.javaparser.StaticJavaParser.parseExpression;
 import static java.util.Optional.of;
+
 import static org.drools.core.rule.Pattern.isCompatibleWithFromReturnType;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.findViaScopeWithPredicate;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.generateLambdaWithoutParameters;
@@ -146,7 +146,10 @@ public class FromVisitor {
         if (staticField.isPresent()) {
             return of( createSupplier(parsedExpression) );
         }
-        if (contextHasDeclaration(bindingId)) {
+        if ( packageModel.hasEntryPoint( bindingId ) ) {
+            return of( createEntryPointCall(bindingId) );
+        }
+        if ( contextHasDeclaration( bindingId ) ) {
             return of( createFromCall(expression, bindingId, optContainsBinding.isPresent()) );
         }
         return of(createUnitDataCall(bindingId));
@@ -195,6 +198,12 @@ public class FromVisitor {
         return context.hasDeclaration(name) || packageModel.hasDeclaration(name);
     }
 
+    private Expression createEntryPointCall( String bindingId ) {
+        MethodCallExpr entryPointCall = new MethodCallExpr(null, ENTRY_POINT_CALL);
+        entryPointCall.addArgument( new StringLiteralExpr( bindingId ) );
+        return entryPointCall;
+
+    }
     private Expression createFromCall( String expression, String bindingId, boolean hasBinding ) {
         MethodCallExpr fromCall = new MethodCallExpr(null, FROM_CALL);
         fromCall.addArgument( context.getVarExpr(bindingId));

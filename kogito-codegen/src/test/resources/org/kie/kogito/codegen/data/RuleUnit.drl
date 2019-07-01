@@ -5,9 +5,8 @@ import org.kie.kogito.codegen.data.Person
 import org.kie.kogito.codegen.data.Results
 
 rule Adult when
-    $r: /results
     $p: /persons[ age >= 18, $name : name ]
 then
-    $r.add($name);
+    results.add($name);
 end
 
