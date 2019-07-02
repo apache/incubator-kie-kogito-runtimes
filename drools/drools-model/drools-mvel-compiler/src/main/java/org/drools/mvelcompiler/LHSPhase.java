@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.drools.mvel.parser.printer.PrintUtil.printConstraint;
-import static org.drools.core.util.ClassUtils.getSetter;
+import static org.mvel2.util.PropertyTools.getSetter;
 
 /**
  * This phase processes the left hand side of a MVEL target expression, if present, such as

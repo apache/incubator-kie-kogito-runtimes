@@ -3,12 +3,9 @@ package org.drools.mvelcompiler;
 import java.util.Map;
 
 import org.drools.Person;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class MvelCompilerTest implements CompilerTest {
 
@@ -152,7 +149,7 @@ public class MvelCompilerTest implements CompilerTest {
         test(ctx -> ctx.addDeclaration("$p", Person.class),
              "{ modify ( $p )  { name = \"Luca\", age = 35 }; }",
              "{ $p.setName(\"Luca\"); $p.setAge(35); }",
-             result -> assertThat(allUsedBindings(result), containsInAnyOrder("$p")));
+             result -> assertThat(allUsedBindings(result)).containsExactlyInAnyOrder("$p"));
     }
 
     @Test
@@ -160,7 +157,7 @@ public class MvelCompilerTest implements CompilerTest {
         test(ctx -> ctx.addDeclaration("$p", Person.class),
              "{ modify($p) { setAge(1); }; }",
              "{ $p.setAge(1); }",
-             result -> assertThat(allUsedBindings(result), containsInAnyOrder("$p")));
+             result -> assertThat(allUsedBindings(result)).containsExactlyInAnyOrder("$p"));
     }
 
     @Test
@@ -168,14 +165,14 @@ public class MvelCompilerTest implements CompilerTest {
         test(ctx -> ctx.addDeclaration("$p", Person.class),
              "{ modify($p) { age = $p.age+1 }; }",
              "{ $p.setAge($p.getAge() + 1); }",
-             result -> assertThat(allUsedBindings(result), containsInAnyOrder("$p")));
+             result -> assertThat(allUsedBindings(result)).containsExactlyInAnyOrder("$p"));
     }
 
     @Test
     public void testWithSemiColon() {
         test("{ with( $l = new ArrayList()) { $l.add(2); }; }",
              "{ java.util.ArrayList $l = new ArrayList(); $l.add(2); }",
-             result -> assertThat(allUsedBindings(result), is(empty())));
+             result -> assertThat(allUsedBindings(result)).isEmpty());
     }
 
     @Test
@@ -183,7 +180,7 @@ public class MvelCompilerTest implements CompilerTest {
         test(ctx -> ctx.addDeclaration("$p", Person.class),
              "{ with($p = new Person()) { age = $p.age+1 }; }",
              "{ org.drools.Person $p = new Person(); $p.setAge($p.getAge() + 1); }",
-             result -> assertThat(allUsedBindings(result), is(empty())));
+             result -> assertThat(allUsedBindings(result).isEmpty()));
     }
 
     @Test
@@ -218,7 +215,7 @@ public class MvelCompilerTest implements CompilerTest {
                      "      $p.setName(\"without_parent\"); " +
                      "  } " +
                      "}",
-             result -> assertThat(allUsedBindings(result), containsInAnyOrder("$p")));
+             result -> assertThat(allUsedBindings(result)).containsExactlyInAnyOrder("$p"));
     }
 
     @Test

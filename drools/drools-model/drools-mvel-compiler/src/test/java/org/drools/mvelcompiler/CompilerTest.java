@@ -7,12 +7,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.drools.Person;
+import org.drools.core.addon.ClassTypeResolver;
+import org.drools.core.addon.TypeResolver;
 import org.drools.mvelcompiler.context.MvelCompilerContext;
-import org.kie.soup.project.datamodel.commons.types.ClassTypeResolver;
-import org.kie.soup.project.datamodel.commons.types.TypeResolver;
 
-import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 interface CompilerTest {
 
@@ -31,7 +30,7 @@ interface CompilerTest {
         MvelCompilerContext mvelCompilerContext = new MvelCompilerContext(typeResolver);
         testFunction.accept(mvelCompilerContext);
         ParsingResult compiled = new MvelCompiler(mvelCompilerContext).compile(actualExpression);
-        assertThat(compiled.resultAsString(), equalToIgnoringWhiteSpace(expectedResult));
+        assertThat(compiled.resultAsString()).isEqualToIgnoringWhitespace(expectedResult);
         resultAssert.accept(compiled);
     }
 

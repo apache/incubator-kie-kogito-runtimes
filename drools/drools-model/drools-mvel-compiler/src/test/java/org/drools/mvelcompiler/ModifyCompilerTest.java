@@ -3,13 +3,9 @@ package org.drools.mvelcompiler;
 import java.util.function.Consumer;
 
 import org.drools.mvelcompiler.context.MvelCompilerContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class ModifyCompilerTest implements CompilerTest {
 
@@ -17,7 +13,7 @@ public class ModifyCompilerTest implements CompilerTest {
     public void testUncompiledMethod() {
         test("{modify( (List)$toEdit.get(0) ){ setEnabled( true ) }}",
              "{ ((List) $toEdit.get(0)).setEnabled(true); }",
-             result -> assertThat(allUsedBindings(result), is(empty())));
+             result -> assertThat(allUsedBindings(result)).isEmpty());
     }
 
     @Test
@@ -37,7 +33,7 @@ public class ModifyCompilerTest implements CompilerTest {
                          "update($fact); " +
                      "} " +
                      "} ",
-             result -> assertThat(allUsedBindings(result), containsInAnyOrder("$fact")));
+             result -> assertThat(allUsedBindings(result)).containsExactlyInAnyOrder("$fact"));
     }
 
     @Override
@@ -46,7 +42,7 @@ public class ModifyCompilerTest implements CompilerTest {
                       String expectedResult,
                       Consumer<ParsingResult> resultAssert) {
         ParsingResult compiled = new ModifyCompiler().compile(actualExpression);
-        assertThat(compiled.resultAsString(), equalToIgnoringWhiteSpace(expectedResult));
+        assertThat(compiled.resultAsString()).isEqualToIgnoringWhitespace(expectedResult);
         resultAssert.accept(compiled);
     }
 }
