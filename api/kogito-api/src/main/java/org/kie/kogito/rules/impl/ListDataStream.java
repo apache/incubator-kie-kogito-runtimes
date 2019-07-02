@@ -17,7 +17,6 @@
 package org.kie.kogito.rules.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -25,21 +24,18 @@ import java.util.function.Consumer;
 import org.kie.kogito.rules.DataStream;
 
 public class ListDataStream<T> implements DataStream<T> {
-    ArrayList<T> values = new ArrayList<>();
-    List<Consumer<T>> subscribers = new ArrayList<>();
+    private final ArrayList<T> values = new ArrayList<>();
+    private final List<Consumer<T>> subscribers = new ArrayList<>();
 
     public ListDataStream( T... ts ) {
         append( ts );
-    }
-
-    public void addAll( Collection<? extends T> ts) {
-        values.addAll(ts);
     }
 
     @Override
     public void append( T... ts ) {
         for (T t : ts) {
             values.add( t );
+            subscribers.forEach(c -> c.accept(t));
         }
     }
 

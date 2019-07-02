@@ -25,8 +25,8 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.rules.DataStore;
 
 public class ListDataSource<T> implements DataStore<T> {
-    ArrayList<T> values = new ArrayList<>();
-    List<Consumer<T>> subscribers = new ArrayList<>();
+    private final ArrayList<T> values = new ArrayList<>();
+    private final List<Consumer<T>> subscribers = new ArrayList<>();
 
     public FactHandle add(T t) {
         values.add(t);
