@@ -14,20 +14,35 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.rules.impl;
+package org.kie.kogito.codegen.data;
 
+import org.drools.core.ruleunit.impl.ListDataStore;
 import org.kie.kogito.rules.DataSource;
-import org.kie.kogito.rules.DataStream;
+import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitMemory;
 
-public class SessionMemory implements RuleUnitMemory {
-    private final DataStream<Object> dataSource = DataSource.createStream();
+public class AdultUnitModify implements RuleUnitMemory {
+    private int adultAge = 18;
+    private DataStore<Person> persons = DataSource.createStore();
+    private Results results = new Results();
 
-    public DataSource<Object> getDataSource() {
-        return dataSource;
+    public AdultUnitModify( ) {
+        this( new ListDataStore<>() );
     }
 
-    public void add(Object obj) {
-        dataSource.append( obj );
+    public AdultUnitModify( DataStore<Person> persons ) {
+        this.persons = persons;
+    }
+
+    public DataStore<Person> getPersons() {
+        return persons;
+    }
+
+    public int getAdultAge() {
+        return adultAge;
+    }
+
+    public Results getResults() {
+        return results;
     }
 }

@@ -16,17 +16,18 @@
 
 package org.kie.kogito.codegen.data;
 
+import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitMemory;
-import org.kie.kogito.rules.impl.ListDataSource;
+import org.drools.core.ruleunit.impl.ListDataStore;
 
 public class AdultUnit implements RuleUnitMemory {
     private int adultAge = 18;
-    private DataStore<Person> persons = new ListDataSource<>();
+    private DataStore<Person> persons = DataSource.createStore();
     private Results results = new Results();
 
     public AdultUnit( ) {
-        this( new ListDataSource<>() );
+        this( new ListDataStore<>() );
     }
 
     public AdultUnit( DataStore<Person> persons ) {
