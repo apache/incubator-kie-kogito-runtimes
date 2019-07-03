@@ -94,7 +94,7 @@ public class JavaParserCompiler {
         MemoryFileSystem trgMfs = new MemoryFileSystem();
 
         String[] resources = writeModel(classes, srcMfs);
-        CompilationResult resultCompilation = getCompiler().compile(resources, srcMfs, trgMfs, classLoader);
+        CompilationResult resultCompilation = createEclipseCompiler().compile(resources, srcMfs, trgMfs, classLoader);
         CompilationProblem[] errors = resultCompilation.getErrors();
         if(errors.length != 0) {
             classes.forEach(c -> logger.error(c.toString()));
