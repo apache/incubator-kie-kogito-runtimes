@@ -1,5 +1,6 @@
 package org.kie.kogito.maven.plugin;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -11,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -18,12 +20,15 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.drools.compiler.kproject.models.KieModuleModelImpl;
+import org.kie.api.builder.model.KieModuleModel;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.di.SpringDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.ProcessCodegen;
+import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.kie.kogito.codegen.rules.RuleCodegen;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
 
@@ -75,6 +80,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     @Parameter(property = "kogito.di.enabled", defaultValue = "true")
     private boolean dependencyInjection;
+
+    @Parameter(required = true, defaultValue = "${project.basedir}/src/main/resources")
+    private File kieSourcesDirectory;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -136,8 +144,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
         String appPackageName = project.getGroupId();
         Path projectPath = projectDir.toPath();
         // safe guard to not generate application classes that would clash with interfaces
-        if (appPackageName.equals("org.kie.kogito")) {
-            appPackageName = "org.kie.kogito.app";
+        if (appPackageName.equals(ApplicationGenerator.DEFAULT_GROUP_ID)) {
+            appPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
         }
 
         ApplicationGenerator appGen =
@@ -145,12 +153,13 @@ public class GenerateModelMojo extends AbstractKieMojo {
                         .withDependencyInjection(discoverDependencyInjectionAnnotator());
 
         if (generateRuleUnits) {
-            appGen.withGenerator(RuleCodegen.ofPath(projectPath, false))
+            appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
+                    .withKModule(getKModuleModel())
                     .withRuleEventListenersConfig(customRuleEventListenerConfigExists(appPackageName));
         }
 
         if (generateProcesses) {
-            appGen.withGenerator(ProcessCodegen.ofPath(projectPath))
+            appGen.withGenerator(ProcessCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withWorkItemHandlerConfig(
                             customWorkItemConfigExists(appPackageName))
                     .withProcessEventListenerConfig(
@@ -158,6 +167,17 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
 
         return appGen;
+    }
+
+
+    private KieModuleModel getKModuleModel() throws IOException {
+        for (Resource resource : project.getResources()) {
+            Path moduleXmlPath = Paths.get(resource.getDirectory()).resolve(KieModuleModelImpl.KMODULE_JAR_PATH);
+            return KieModuleModelImpl.fromXML(
+                    new ByteArrayInputStream(
+                            Files.readAllBytes(moduleXmlPath)));
+        }
+        return new KieModuleModelImpl();
     }
 
     private String customWorkItemConfigExists(String appPackageName) {
