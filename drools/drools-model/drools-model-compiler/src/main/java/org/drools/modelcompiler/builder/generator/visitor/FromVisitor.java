@@ -33,6 +33,7 @@ import org.drools.modelcompiler.builder.generator.drlxparse.DrlxParseResult;
 import org.drools.modelcompiler.builder.generator.drlxparse.SingleDrlxParseSuccess;
 import org.drools.modelcompiler.builder.generator.expressiontyper.ExpressionTyper;
 
+import static com.github.javaparser.StaticJavaParser.parseExpression;
 import static java.util.Optional.of;
 
 import static org.drools.core.rule.Pattern.isCompatibleWithFromReturnType;

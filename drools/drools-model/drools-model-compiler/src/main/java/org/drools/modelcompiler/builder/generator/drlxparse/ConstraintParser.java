@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.drools.mvel.parser.ast.expr.DrlNameExpr;
-import org.drools.mvel.parser.printer.PrintUtil;
 import org.drools.core.util.DateUtils;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;

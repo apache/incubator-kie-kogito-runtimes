@@ -39,7 +39,9 @@ import org.drools.core.util.StringUtils;
 import org.drools.model.BitMask;
 import org.drools.model.bitmask.AllSetButLastBitMask;
 import org.drools.modelcompiler.builder.PackageModel;
+import org.drools.modelcompiler.builder.errors.CompilationProblemErrorResult;
 import org.drools.modelcompiler.builder.errors.InvalidExpressionErrorResult;
+import org.drools.modelcompiler.builder.errors.MvelCompilationError;
 import org.drools.modelcompiler.consequence.DroolsImpl;
 import org.drools.mvelcompiler.ModifyCompiler;
 import org.drools.mvelcompiler.MvelCompiler;
@@ -47,9 +49,12 @@ import org.drools.mvelcompiler.MvelCompilerException;
 import org.drools.mvelcompiler.ParsingResult;
 import org.drools.mvelcompiler.context.MvelCompilerContext;
 
+import static com.github.javaparser.ast.NodeList.nodeList;
 import static com.github.javaparser.StaticJavaParser.parseExpression;
 import static java.util.stream.Collectors.toSet;
 
+import static org.drools.modelcompiler.builder.PackageModel.DOMAIN_CLASS_METADATA_INSTANCE;
+import static org.drools.mvel.parser.printer.PrintUtil.printConstraint;
 import static org.drools.core.util.ClassUtils.getter2property;
 import static org.drools.core.util.ClassUtils.setter2property;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.addCurlyBracesToBlock;
@@ -65,6 +70,8 @@ import static org.drools.modelcompiler.builder.generator.DslMethodNames.EXECUTE_
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.ON_CALL;
 import static org.drools.modelcompiler.util.ClassUtil.asJavaSourceName;
 import static org.drools.mvel.parser.printer.PrintUtil.printConstraint;
+import static org.drools.modelcompiler.builder.PackageModel.DOMAIN_CLASSESS_METADATA_FILE_NAME;
+
 
 public class Consequence {
 
@@ -179,13 +186,10 @@ public class Consequence {
 
         if (context.getRuleDialect() == RuleContext.RuleDialect.MVEL) {
             return existingDecls.stream().filter(d -> containsWord(d, consequenceString)).collect(toSet());
-        } else if (context.getRuleDialect() == RuleContext.RuleDialect.JAVA) {
+        }
 
         Set<String> declUsedInRHS = ruleConsequence.findAll(NameExpr.class).stream().map(NameExpr::getNameAsString).collect(toSet());
         return existingDecls.stream().filter(declUsedInRHS::contains).collect(toSet());
-        } else {
-            throw new IllegalArgumentException("Unknown rule dialect " + context.getRuleDialect() + "!");
-        }
     }
 
     public static boolean containsWord(String word, String body) {
@@ -218,40 +222,6 @@ public class Consequence {
         verifiedDeclUsedInRHS.stream().map(x -> new Parameter(new UnknownType(), x)).forEach(executeLambda::addParameter);
         executeLambda.setBody(ruleConsequence);
         return executeCall;
-    }
-
-    private MethodCallExpr executeScriptCall(RuleDescr ruleDescr, MethodCallExpr onCall) {
-        MethodCallExpr executeCall = new MethodCallExpr(onCall, onCall == null ? "D." + EXECUTESCRIPT_CALL : EXECUTESCRIPT_CALL);
-        executeCall.addArgument(new StringLiteralExpr("mvel"));
-        executeCall.addArgument(packageModel.getName() + "." + packageModel.getRulesFileName() + ".class");
-
-        ObjectCreationExpr objectCreationExpr = new ObjectCreationExpr();
-        objectCreationExpr.setType(StringBuilder.class.getCanonicalName());
-        Expression mvelSB = objectCreationExpr;
-
-        for (String i : packageModel.getImports()) {
-            if (i.equals(packageModel.getName() + ".*")) {
-                continue; // skip same-package star import.
-            }
-            mvelSB = appendImport( mvelSB, i );
-        }
-
-        StringLiteralExpr mvelScriptBodyStringLiteral = new StringLiteralExpr();
-        mvelScriptBodyStringLiteral.setString(ruleDescr.getConsequence().toString()); // use the setter method in order for the string literal be properly escaped.
-
-        MethodCallExpr appendCall = new MethodCallExpr(mvelSB, "append");
-        appendCall.addArgument(mvelScriptBodyStringLiteral);
-
-        executeCall.addArgument(new MethodCallExpr(appendCall, "toString"));
-        return executeCall;
-    }
-
-    private MethodCallExpr appendImport( Expression mvelSB, String i ) {
-        MethodCallExpr appendCall = new MethodCallExpr(mvelSB, "append");
-        StringLiteralExpr importAsStringLiteral = new StringLiteralExpr();
-        importAsStringLiteral.setString("import " + i + ";\n"); // use the setter method in order for the string literal be properly escaped.
-        appendCall.addArgument(importAsStringLiteral);
-        return appendCall;
     }
 
     private MethodCallExpr onCall(Collection<String> usedArguments) {
@@ -338,7 +308,7 @@ public class Consequence {
     private Set<String> findModifiedProperties( List<MethodCallExpr> methodCallExprs, MethodCallExpr updateExpr, String updatedVar ) {
         Set<String> modifiedProps = new HashSet<>();
         for (MethodCallExpr methodCall : methodCallExprs.subList(0, methodCallExprs.indexOf(updateExpr))) {
-            if (methodCall.getScope().isPresent() && hasScope(methodCall, updatedVar)) {
+            if (methodCall.getScope().isPresent() && hasScopeWithName(methodCall, updatedVar)) {
                 String propName = methodToProperty(methodCall);
                 if (propName != null) {
                     modifiedProps.add(propName);
@@ -364,7 +334,7 @@ public class Consequence {
     }
 
     private static boolean isDroolsMethod(MethodCallExpr mce) {
-        final boolean hasDroolsScope = hasScope(mce, "drools");
+        final boolean hasDroolsScope = hasScopeWithName(mce, "drools");
         final boolean isImplicitDroolsMethod = !mce.getScope().isPresent() && implicitDroolsMethods.contains(mce.getNameAsString());
         final boolean hasDroolsAsParameter = findAllChildrenRecursive(mce).stream().anyMatch(a -> isNameExprWithName(a, "drools"));
         return hasDroolsScope || isImplicitDroolsMethod || hasDroolsAsParameter;

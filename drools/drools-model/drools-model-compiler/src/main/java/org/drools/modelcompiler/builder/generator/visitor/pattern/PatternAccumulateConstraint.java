@@ -9,7 +9,6 @@ import java.util.Set;
 import org.drools.compiler.lang.descr.AccumulateDescr;
 import org.drools.compiler.lang.descr.BaseDescr;
 import org.drools.compiler.lang.descr.PatternDescr;
-import com.github.javaparser.ast.expr.NameExpr;
 import org.drools.mvel.parser.ast.expr.DrlNameExpr;
 import org.drools.mvel.parser.printer.PrintUtil;
 import org.drools.modelcompiler.builder.PackageModel;
