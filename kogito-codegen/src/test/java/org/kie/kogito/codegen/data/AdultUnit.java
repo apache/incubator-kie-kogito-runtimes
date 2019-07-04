@@ -19,7 +19,6 @@ package org.kie.kogito.codegen.data;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitMemory;
-import org.drools.core.ruleunit.impl.ListDataStore;
 
 public class AdultUnit implements RuleUnitMemory {
     private int adultAge = 18;
@@ -27,7 +26,7 @@ public class AdultUnit implements RuleUnitMemory {
     private Results results = new Results();
 
     public AdultUnit( ) {
-        this( new ListDataStore<>() );
+        this( DataSource.createStore() );
     }
 
     public AdultUnit( DataStore<Person> persons ) {

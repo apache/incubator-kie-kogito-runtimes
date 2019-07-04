@@ -16,7 +16,6 @@
 
 package org.kie.kogito.codegen.data;
 
-import org.drools.core.ruleunit.impl.ListDataStore;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitMemory;
@@ -27,7 +26,7 @@ public class AdultUnitModify implements RuleUnitMemory {
     private Results results = new Results();
 
     public AdultUnitModify( ) {
-        this( new ListDataStore<>() );
+        this( DataSource.createStore() );
     }
 
     public AdultUnitModify( DataStore<Person> persons ) {
