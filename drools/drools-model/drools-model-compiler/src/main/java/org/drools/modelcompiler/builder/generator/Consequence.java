@@ -107,8 +107,9 @@ public class Consequence {
         this.packageModel = context.getPackageModel();
     }
 
-    public MethodCallExpr createCall( RuleDescr ruleDescr, String consequenceString, BlockStmt ruleVariablesBlock, boolean isBreaking) {
+    public MethodCallExpr createCall(RuleDescr ruleDescr, String consequenceString, BlockStmt ruleVariablesBlock, boolean isBreaking) {
         BlockStmt ruleConsequence = null;
+
         if (context.getRuleDialect() == RuleContext.RuleDialect.JAVA) {
             ruleConsequence = rewriteConsequence( consequenceString );
             if ( ruleConsequence != null ) {
@@ -140,6 +141,7 @@ public class Consequence {
         } else if (context.getRuleDialect() == RuleContext.RuleDialect.MVEL) {
             executeCall = createExecuteCallMvel(ruleDescr, ruleVariablesBlock, usedDeclarationInRHS, onCall);
         }
+
         return executeCall;
     }
 
@@ -211,6 +213,8 @@ public class Consequence {
                                                        arguments);
             ruleConsequence.getStatements().add(new ExpressionStmt(update));
         }
+
+
         boolean requireDrools = rewriteRHS(ruleVariablesBlock, ruleConsequence);
         MethodCallExpr executeCall = new MethodCallExpr(onCall, onCall == null ? "D." + EXECUTE_CALL : EXECUTE_CALL);
         LambdaExpr executeLambda = new LambdaExpr();
@@ -234,7 +238,7 @@ public class Consequence {
         return onCall;
     }
 
-   private String rewriteModifyBlock(String consequence) {
+    private String rewriteModifyBlock(String consequence) {
         int modifyPos = StringUtils.indexOfOutOfQuotes(consequence, "modify");
         if (modifyPos < 0) {
             return consequence;

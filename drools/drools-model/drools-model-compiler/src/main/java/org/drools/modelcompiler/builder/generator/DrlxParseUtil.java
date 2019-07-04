@@ -80,12 +80,10 @@ import org.drools.core.util.index.IndexUtil;
 import org.drools.core.util.index.IndexUtil.ConstraintType;
 import org.drools.modelcompiler.builder.errors.InvalidExpressionErrorResult;
 import org.drools.modelcompiler.util.ClassUtil;
-import org.kie.soup.project.datamodel.commons.types.TypeResolver;
 
 import static com.github.javaparser.StaticJavaParser.parseType;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
-
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.PATTERN_CALL;
 import static org.drools.modelcompiler.builder.generator.expressiontyper.ExpressionTyper.findLeftLeafOfNameExpr;
 import static org.drools.modelcompiler.util.ClassUtil.findMethod;
@@ -131,7 +129,7 @@ public class DrlxParseUtil {
         }
     }
 
-    private static Operator toBinaryExprOperator( HalfBinaryExpr.Operator operator) {
+    private static Operator toBinaryExprOperator(HalfBinaryExpr.Operator operator) {
         return Operator.valueOf(operator.name());
     }
 

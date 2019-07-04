@@ -37,6 +37,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
+import org.drools.core.addon.TypeResolver;
 import org.drools.mvel.parser.ast.expr.DrlNameExpr;
 import org.drools.mvel.parser.ast.expr.HalfBinaryExpr;
 import org.drools.mvel.parser.ast.expr.HalfPointFreeExpr;
@@ -60,7 +61,6 @@ import org.drools.modelcompiler.builder.generator.operatorspec.NativeOperatorSpe
 import org.drools.modelcompiler.builder.generator.operatorspec.OperatorSpec;
 import org.drools.modelcompiler.builder.generator.operatorspec.TemporalOperatorSpec;
 import org.drools.modelcompiler.util.ClassUtil;
-import org.kie.soup.project.datamodel.commons.types.TypeResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
