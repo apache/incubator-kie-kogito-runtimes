@@ -20,8 +20,6 @@ import org.kie.api.runtime.rule.FactHandle;
 
 public interface DataProcessor {
 
-    String getId();
-
     default void insert(Object object) {
         insert( null, object );
     }

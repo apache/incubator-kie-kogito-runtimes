@@ -36,7 +36,6 @@ public class EntryPointDataProcessor implements DataProcessor {
         this.entryPoint = entryPoint;
     }
 
-    @Override
     public String getId() {
         return entryPoint.getEntryPointId();
     }

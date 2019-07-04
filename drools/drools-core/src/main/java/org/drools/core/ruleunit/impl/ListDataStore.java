@@ -31,7 +31,7 @@ import org.kie.kogito.rules.impl.DataHandleImpl;
 public class ListDataStore<T> implements InternalDataStore<T> {
     private final Map<DataHandle, T> store = new HashMap<>();
 
-    private final Map<String, DataProcessor> subscribers = new HashMap<>();
+    private final Map<String, EntryPointDataProcessor> subscribers = new HashMap<>();
 
     public DataHandle add(T t) {
         DataHandle dh = new DataHandleImpl();
@@ -53,25 +53,22 @@ public class ListDataStore<T> implements InternalDataStore<T> {
 
     @Override
     public void subscribe(DataProcessor subscriber) {
-        subscribers.put(subscriber.getId(), subscriber);
+        EntryPointDataProcessor processor = (( EntryPointDataProcessor ) subscriber);
+        subscribers.put(processor.getId(), processor);
         store.forEach( (dh, t) -> internalInsert( dh, subscriber, t ) );
     }
 
     @Override
     public void update( FactHandle fh, Object obj, BitMask mask, Class<?> modifiedClass, Activation activation) {
-        DataProcessor fhProcessor = subscribers.get( (( InternalFactHandle ) fh).getEntryPoint().getEntryPointId() );
-        if (fhProcessor instanceof EntryPointDataProcessor) {
-            DataHandle dh = (( InternalFactHandle ) fh).getDataHandle();
-            subscribers.values().forEach( s -> {
-                if ( s == fhProcessor ) {
-                    ((EntryPointDataProcessor) s).update( fh, obj, mask, modifiedClass, activation );
-                } else {
-                    ((EntryPointDataProcessor) s).update( dh, obj, mask, modifiedClass, activation );
-                }
-            } );
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        EntryPointDataProcessor fhProcessor = subscribers.get( (( InternalFactHandle ) fh).getEntryPoint().getEntryPointId() );
+        DataHandle dh = (( InternalFactHandle ) fh).getDataHandle();
+        subscribers.values().forEach( s -> {
+            if ( s == fhProcessor ) {
+                s.update( fh, obj, mask, modifiedClass, activation );
+            } else {
+                s.update( dh, obj, mask, modifiedClass, activation );
+            }
+        } );
     }
 
     @Override
