@@ -373,7 +373,7 @@ public class DrlxParseUtil {
                 Expression sanitizedExpr = DrlxParseUtil.transformDrlNameExprToNameExpr(expr);
                 acc.addLast(sanitizedExpr.clone());
                 return findRootNodeViaScopeRec(scope, acc);
-            }).orElse(new RemoveRootNodeResult(Optional.of(expr), expr));
+            }).orElse(new RemoveRootNodeResult(Optional.of(expr), expr, acc.isEmpty() ? expr : acc.getLast()));
         } else if (expr instanceof NameExpr || expr instanceof DrlNameExpr) {
             if(acc.size() > 0 && acc.getLast() instanceof NodeWithOptionalScope) {
                 ((NodeWithOptionalScope) acc.getLast()).setScope(null);
@@ -386,23 +386,25 @@ public class DrlxParseUtil {
                     }
                 }
 
-                return new RemoveRootNodeResult(Optional.of(expr), acc.getFirst());
+                return new RemoveRootNodeResult(Optional.of(expr), acc.getFirst(), acc.getLast());
             } else {
-                return new RemoveRootNodeResult(Optional.of(expr), expr);
+                return new RemoveRootNodeResult(Optional.of(expr), expr, expr);
             }
 
         }
 
-        return new RemoveRootNodeResult(Optional.empty(), expr);
+        return new RemoveRootNodeResult(Optional.empty(), expr, expr);
     }
 
     public static class RemoveRootNodeResult {
         private Optional<Expression> rootNode;
         private Expression withoutRootNode;
+        private Expression firstChild;
 
-        public RemoveRootNodeResult(Optional<Expression> rootNode, Expression withoutRootNode) {
+        public RemoveRootNodeResult(Optional<Expression> rootNode, Expression withoutRootNode, Expression firstChild) {
             this.rootNode = rootNode;
             this.withoutRootNode = withoutRootNode;
+            this.firstChild = firstChild;
         }
 
         public Optional<Expression> getRootNode() {
@@ -413,11 +415,15 @@ public class DrlxParseUtil {
             return withoutRootNode;
         }
 
+        public Expression getFirstChild() {
+            return firstChild;
+        }
         @Override
         public String toString() {
             return "RemoveRootNodeResult{" +
                     "rootNode=" + rootNode.map(PrintUtil::printConstraint) +
                     ", withoutRootNode=" + PrintUtil.printConstraint(withoutRootNode) +
+                    ", firstChild=" + PrintUtil.printConstraint(firstChild) +
                     '}';
         }
 
@@ -431,12 +437,13 @@ public class DrlxParseUtil {
             }
             RemoveRootNodeResult that = (RemoveRootNodeResult) o;
             return Objects.equals(rootNode.map(PrintUtil::printConstraint), that.rootNode.map(PrintUtil::printConstraint)) &&
-                    Objects.equals(PrintUtil.printConstraint(withoutRootNode), PrintUtil.printConstraint(that.withoutRootNode));
+                    Objects.equals(PrintUtil.printConstraint(withoutRootNode), PrintUtil.printConstraint(that.withoutRootNode)) &&
+                    Objects.equals(PrintUtil.printConstraint(firstChild), PrintUtil.printConstraint(that.firstChild));
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(rootNode, withoutRootNode);
+            return Objects.hash(rootNode, withoutRootNode, firstChild);
         }
     }
 
