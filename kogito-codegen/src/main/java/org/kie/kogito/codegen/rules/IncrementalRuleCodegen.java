@@ -126,7 +126,10 @@ public class IncrementalRuleCodegen implements Generator {
 
     private boolean dependencyInjection;
     private DependencyInjectionAnnotator annotator;
-    private ClassLoader projectClassLoader;
+    /**
+     * used for type-resolving during codegen/type-checking
+     */
+    private ClassLoader contextClassLoader;
 
     private KieModuleModel kieModuleModel;
 
@@ -139,6 +142,7 @@ public class IncrementalRuleCodegen implements Generator {
         this.resources = resources;
         this.kieModuleModel = new KieModuleModelImpl();
         setDefaultsforEmptyKieModule(kieModuleModel);
+        this.contextClassLoader = getClass().getClassLoader();
     }
 
     @Override
@@ -171,7 +175,7 @@ public class IncrementalRuleCodegen implements Generator {
         PrettyPrinter prettyPrinter = getPrettyPrinter();
 
         KnowledgeBuilderConfigurationImpl configuration =
-                new KnowledgeBuilderConfigurationImpl(projectClassLoader);
+                new KnowledgeBuilderConfigurationImpl(contextClassLoader);
 
         ModelBuilderImpl modelBuilder = new ModelBuilderImpl(
                 configuration, dummyReleaseId, true);
@@ -270,7 +274,7 @@ public class IncrementalRuleCodegen implements Generator {
                                                      ruleUnit.generatedFilePath(),
                                                      log(ruleUnit.generate()).getBytes(StandardCharsets.UTF_8)));
 
-                RuleUnitInstanceSourceClass ruleUnitInstance = ruleUnit.instance(projectClassLoader);
+                RuleUnitInstanceSourceClass ruleUnitInstance = ruleUnit.instance(contextClassLoader);
                 generatedFiles.add(new GeneratedFile(GeneratedFile.Type.RULE,
                                                      ruleUnitInstance.generatedFilePath(),
                                                      log(ruleUnitInstance.generate()).getBytes(StandardCharsets.UTF_8)));
@@ -334,7 +338,7 @@ public class IncrementalRuleCodegen implements Generator {
     }
 
     public IncrementalRuleCodegen withClassLoader(ClassLoader projectClassLoader) {
-        this.projectClassLoader = projectClassLoader;
+        this.contextClassLoader = projectClassLoader;
         return this;
     }
 }
