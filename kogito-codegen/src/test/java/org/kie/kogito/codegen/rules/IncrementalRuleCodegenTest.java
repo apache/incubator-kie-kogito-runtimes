@@ -17,6 +17,7 @@ package org.kie.kogito.codegen.rules;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,8 +44,8 @@ public class IncrementalRuleCodegenTest {
     @Test
     public void generateSinglePackage() {
         IncrementalRuleCodegen incrementalRuleCodegen =
-                IncrementalRuleCodegen.ofPath(
-                        Paths.get("src/test/resources/org/kie/kogito/codegen/rules/pkg1"),
+                IncrementalRuleCodegen.ofFiles(
+                        Arrays.asList(new File("src/test/resources/org/kie/kogito/codegen/rules/pkg1").listFiles()),
                         ResourceType.DRL);
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.generate();
@@ -54,7 +55,7 @@ public class IncrementalRuleCodegenTest {
     @Test
     public void generateDirectoryRecursively() {
         IncrementalRuleCodegen incrementalRuleCodegen =
-                IncrementalRuleCodegen.ofPathRecursively(
+                IncrementalRuleCodegen.ofPath(
                         Paths.get("src/test/resources/org/kie/kogito/codegen/rules"),
                         ResourceType.DRL);
 

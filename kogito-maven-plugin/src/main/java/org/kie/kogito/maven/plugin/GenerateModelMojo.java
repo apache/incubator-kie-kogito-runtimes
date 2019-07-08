@@ -75,11 +75,15 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(property = "kogito.codegen.processes", defaultValue = "")
     private String generateProcesses; // defaults to true iff there exist BPMN files
 
+    @Parameter(property = "kogito.codegen.path")
+    private File limitToPath;
+
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
 
     @Parameter(property = "kogito.di.enabled", defaultValue = "true")
     private boolean dependencyInjection;
+
 
     @Parameter(required = true, defaultValue = "${project.basedir}/src/main/resources")
     private File kieSourcesDirectory;
@@ -153,7 +157,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
                         .withDependencyInjection(discoverDependencyInjectionAnnotator());
 
         if (generateRuleUnits) {
-            appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
+            appGen.withGenerator(IncrementalRuleCodegen.ofPathRecursively(kieSourcesDirectory.toPath()))
                     .withKModule(getKModuleModel())
                     .withRuleEventListenersConfig(customRuleEventListenerConfigExists(appPackageName));
         }

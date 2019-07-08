@@ -21,9 +21,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.printer.PrettyPrinter;
@@ -73,22 +70,16 @@ import static org.kie.kogito.codegen.rules.RuleUnitsRegisterClass.RULE_UNIT_REGI
 public class IncrementalRuleCodegen implements Generator {
 
     public static IncrementalRuleCodegen ofPath(Path basePath) {
-        File[] files = basePath.toFile().listFiles();
-        if (files == null) {
-            throw new IllegalArgumentException("Invalid path " + basePath);
+        try {
+            Stream<File> files = Files.walk(basePath).map(Path::toFile);
+            Set<Resource> resources = toResources(files);
+            return new IncrementalRuleCodegen(resources);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
-        return IncrementalRuleCodegen.ofFiles(Arrays.asList(files));
     }
 
     public static IncrementalRuleCodegen ofPath(Path basePath, ResourceType resourceType) {
-        File[] files = basePath.toFile().listFiles();
-        if (files == null) {
-            throw new IllegalArgumentException("Invalid path " + basePath);
-        }
-        return new IncrementalRuleCodegen(toResources(Arrays.stream(files), resourceType));
-    }
-
-    public static IncrementalRuleCodegen ofPathRecursively(Path basePath, ResourceType resourceType) {
         try {
             Stream<File> files = Files.walk(basePath).map(Path::toFile);
             Set<Resource> resources = toResources(files, resourceType);
@@ -250,24 +241,21 @@ public class IncrementalRuleCodegen implements Generator {
                 }
             }
 
-
-            String sourceName = pojoName(folderName , DOMAIN_CLASSESS_METADATA_FILE_NAME + pkgModel.getPackageUUID());
+            String sourceName = pojoName(folderName, DOMAIN_CLASSESS_METADATA_FILE_NAME + pkgModel.getPackageUUID());
             generatedFiles.add(new GeneratedFile(GeneratedFile.Type.RULE, sourceName, pkgModel.getDomainClassesMetadataSource()));
-
 
             Collection<Class<?>> ruleUnits = pkgModel.getRuleUnits();
             if (!ruleUnits.isEmpty()) {
                 hasRuleUnits = true;
                 for (Class<?> ruleUnit : ruleUnits) {
-                    RuleUnitSourceClass ruSource = new RuleUnitSourceClass( ruleUnit.getPackage().getName(),
-                                                                            ruleUnit.getSimpleName(),
-                                                                            pkgModel.getRulesFileName() )
-                            .withDependencyInjection( annotator );
-                    moduleGenerator.addRuleUnit( ruSource );
+                    RuleUnitSourceClass ruSource = new RuleUnitSourceClass(ruleUnit.getPackage().getName(),
+                                                                           ruleUnit.getSimpleName(),
+                                                                           pkgModel.getRulesFileName())
+                            .withDependencyInjection(annotator);
+                    moduleGenerator.addRuleUnit(ruSource);
                     unitsMap.put(ruleUnit, ruSource.targetCanonicalName());
                 }
             }
-
         }
 
         if (hasRuleUnits) {
@@ -285,14 +273,13 @@ public class IncrementalRuleCodegen implements Generator {
                                                      ruleUnitInstance.generatedFilePath(),
                                                      log(ruleUnitInstance.generate()).getBytes(StandardCharsets.UTF_8)));
             }
-        }
-        else if (annotator != null) {
+        } else if (annotator != null) {
             for (KieBaseModel kBaseModel : kBaseModels) {
                 for (String sessionName : kBaseModel.getKieSessionModels().keySet()) {
-                    CompilationUnit cu = parse( getClass().getResourceAsStream( "/class-templates/SessionRuleUnitTemplate.java" ) );
-                    ClassOrInterfaceDeclaration template = cu.findFirst( ClassOrInterfaceDeclaration.class ).get();
-                    template.setName( "SessionRuleUnit_" + sessionName );
-                    template.findAll( StringLiteralExpr.class ).forEach(s -> s.setString(s.getValue().replace("$SessionName$", sessionName ) ) );
+                    CompilationUnit cu = parse(getClass().getResourceAsStream("/class-templates/SessionRuleUnitTemplate.java"));
+                    ClassOrInterfaceDeclaration template = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
+                    template.setName("SessionRuleUnit_" + sessionName);
+                    template.findAll(StringLiteralExpr.class).forEach(s -> s.setString(s.getValue().replace("$SessionName$", sessionName)));
                     generatedFiles.add(new GeneratedFile(
                             GeneratedFile.Type.RULE,
                             "org/drools/project/model/SessionRuleUnit_" + sessionName + ".java",
@@ -321,7 +308,6 @@ public class IncrementalRuleCodegen implements Generator {
         return generatedFiles;
     }
 
-
     private String pojoName(String folderName, String nameAsString) {
         return folderName + "/" + nameAsString + ".java";
     }
@@ -344,5 +330,4 @@ public class IncrementalRuleCodegen implements Generator {
         kieModuleModel = model;
         return this;
     }
-
 }
