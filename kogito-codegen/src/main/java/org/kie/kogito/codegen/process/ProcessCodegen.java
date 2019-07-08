@@ -71,7 +71,7 @@ public class ProcessCodegen implements Generator {
     }
 
     public static ProcessCodegen ofPath(Path path) throws IOException {
-        Path srcPath = Paths.get(path.toString(), "src");
+        Path srcPath = Paths.get(path.toString());
         List<File> files = Files.walk(srcPath)
                 .filter(p -> p.toString().endsWith(".bpmn") || p.toString().endsWith(".bpmn2"))
                 .map(Path::toFile)
