@@ -31,6 +31,7 @@ import org.kie.kogito.codegen.di.SpringDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.kie.kogito.codegen.rules.RuleCodegen;
+import org.kie.kogito.maven.plugin.util.MojoUtil;
 
 @Mojo(name = "generateModel",
         requiresDependencyResolution = ResolutionScope.NONE,
@@ -112,24 +113,33 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 
-        setSystemProperties(properties);
+        try {
+            setSystemProperties(properties);
+            ClassLoader projectClassLoader = MojoUtil.createProjectClassLoader(this.getClass().getClassLoader(),
+                                                                               project,
+                                                                               outputDirectory,
+                                                                               null);
+            Thread.currentThread().setContextClassLoader(projectClassLoader);
 
-        ApplicationGenerator appGen = createApplicationGenerator(
-                genRules, genProcesses);
+            ApplicationGenerator appGen = createApplicationGenerator(
+                    genRules, genProcesses);
 
-        Collection<GeneratedFile> generatedFiles;
-        if (generatePartial) {
-            generatedFiles = appGen.generateComponents();
-        } else {
-            generatedFiles = appGen.generate();
-        }
+            Collection<GeneratedFile> generatedFiles;
+            if (generatePartial) {
+                generatedFiles = appGen.generateComponents();
+            } else {
+                generatedFiles = appGen.generate();
+            }
 
-        for (GeneratedFile generatedFile : generatedFiles) {
-            writeGeneratedFile(generatedFile);
-        }
+            for (GeneratedFile generatedFile : generatedFiles) {
+                writeGeneratedFile(generatedFile);
+            }
 
-        if (!keepSources) {
-            deleteDrlFiles();
+            if (!keepSources) {
+                deleteDrlFiles();
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
     }
 

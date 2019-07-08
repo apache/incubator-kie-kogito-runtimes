@@ -127,7 +127,6 @@ public class IncrementalRuleCodegen implements Generator {
     private DependencyInjectionAnnotator annotator;
 
     private KieModuleModel kieModuleModel;
-    private Collection<KieBaseModel> kBaseModels;
 
     @Deprecated
     public IncrementalRuleCodegen(Path basePath, Collection<File> files, ResourceType resourceType) {
@@ -274,7 +273,7 @@ public class IncrementalRuleCodegen implements Generator {
                                                      log(ruleUnitInstance.generate()).getBytes(StandardCharsets.UTF_8)));
             }
         } else if (annotator != null) {
-            for (KieBaseModel kBaseModel : kBaseModels) {
+            for (KieBaseModel kBaseModel : kieModuleModel.getKieBaseModels().values()) {
                 for (String sessionName : kBaseModel.getKieSessionModels().keySet()) {
                     CompilationUnit cu = parse(getClass().getResourceAsStream("/class-templates/SessionRuleUnitTemplate.java"));
                     ClassOrInterfaceDeclaration template = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
