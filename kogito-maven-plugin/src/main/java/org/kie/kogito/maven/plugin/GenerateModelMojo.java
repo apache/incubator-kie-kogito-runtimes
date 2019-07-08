@@ -111,35 +111,24 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
         project.addCompileSourceRoot(generatedSources.getPath());
 
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        setSystemProperties(properties);
 
-        try {
-            setSystemProperties(properties);
-            ClassLoader projectClassLoader = MojoUtil.createProjectClassLoader(this.getClass().getClassLoader(),
-                                                                               project,
-                                                                               outputDirectory,
-                                                                               null);
-            Thread.currentThread().setContextClassLoader(projectClassLoader);
+        ApplicationGenerator appGen = createApplicationGenerator(
+                genRules, genProcesses);
 
-            ApplicationGenerator appGen = createApplicationGenerator(
-                    genRules, genProcesses);
+        Collection<GeneratedFile> generatedFiles;
+        if (generatePartial) {
+            generatedFiles = appGen.generateComponents();
+        } else {
+            generatedFiles = appGen.generate();
+        }
 
-            Collection<GeneratedFile> generatedFiles;
-            if (generatePartial) {
-                generatedFiles = appGen.generateComponents();
-            } else {
-                generatedFiles = appGen.generate();
-            }
+        for (GeneratedFile generatedFile : generatedFiles) {
+            writeGeneratedFile(generatedFile);
+        }
 
-            for (GeneratedFile generatedFile : generatedFiles) {
-                writeGeneratedFile(generatedFile);
-            }
-
-            if (!keepSources) {
-                deleteDrlFiles();
-            }
-        } finally {
-            Thread.currentThread().setContextClassLoader(contextClassLoader);
+        if (!keepSources) {
+            deleteDrlFiles();
         }
     }
 
@@ -156,7 +145,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
     }
 
-    private ApplicationGenerator createApplicationGenerator(boolean generateRuleUnits, boolean generateProcesses) throws IOException {
+    private ApplicationGenerator createApplicationGenerator(boolean generateRuleUnits, boolean generateProcesses) throws IOException, MojoExecutionException {
         String appPackageName = project.getGroupId();
         Path projectPath = projectDir.toPath();
         // safe guard to not generate application classes that would clash with interfaces
@@ -171,6 +160,10 @@ public class GenerateModelMojo extends AbstractKieMojo {
         if (generateRuleUnits) {
             appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withKModule(getKModuleModel())
+                    .withClassLoader(MojoUtil.createProjectClassLoader(this.getClass().getClassLoader(),
+                                                                       project,
+                                                                       outputDirectory,
+                                                                       null))
                     .withRuleEventListenersConfig(customRuleEventListenerConfigExists(appPackageName));
         }
 
