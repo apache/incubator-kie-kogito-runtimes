@@ -152,6 +152,7 @@ public class IncrementalRuleCodegen implements Generator {
     @Override
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+        this.moduleGenerator = new RuleUnitContainerGenerator(packageName);
     }
 
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
