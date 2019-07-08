@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -68,22 +69,27 @@ public class GenerateModelMojo extends AbstractKieMojo {
     // otherwise we cannot get the default value to null
     // when the value is null, the semantics is to enable the corresponding
     // codegen backend only if at least one file of the given type exist
-    
+
     @Parameter(property = "kogito.codegen.rules", defaultValue = "")
     private String generateRules; // defaults to true iff there exist DRL files
 
     @Parameter(property = "kogito.codegen.processes", defaultValue = "")
     private String generateProcesses; // defaults to true iff there exist BPMN files
 
-    @Parameter(property = "kogito.codegen.path")
-    private File limitToPath;
+    /**
+     * Partial generation can be used when reprocessing a pre-compiled project
+     * for faster code-generation. It only generates code for rules and processes,
+     * and does not generate extra meta-classes (etc. Application).
+     * Use only when doing recompilation and for development purposes
+     */
+    @Parameter(property = "kogito.codegen.partial", defaultValue = "false")
+    private boolean generatePartial;
 
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
 
     @Parameter(property = "kogito.di.enabled", defaultValue = "true")
     private boolean dependencyInjection;
-
 
     @Parameter(required = true, defaultValue = "${project.basedir}/src/main/resources")
     private File kieSourcesDirectory;
@@ -119,7 +125,14 @@ public class GenerateModelMojo extends AbstractKieMojo {
             ApplicationGenerator appGen = createApplicationGenerator(
                     genRules, genProcesses);
 
-            for (GeneratedFile generatedFile : appGen.generate()) {
+            Collection<GeneratedFile> generatedFiles;
+            if (generatePartial) {
+                generatedFiles = appGen.generateComponents();
+            } else {
+                generatedFiles = appGen.generate();
+            }
+
+            for (GeneratedFile generatedFile : generatedFiles) {
                 writeGeneratedFile(generatedFile);
             }
 
@@ -157,7 +170,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
                         .withDependencyInjection(discoverDependencyInjectionAnnotator());
 
         if (generateRuleUnits) {
-            appGen.withGenerator(IncrementalRuleCodegen.ofPathRecursively(kieSourcesDirectory.toPath()))
+            appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withKModule(getKModuleModel())
                     .withRuleEventListenersConfig(customRuleEventListenerConfigExists(appPackageName));
         }
@@ -172,7 +185,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
         return appGen;
     }
-
 
     private KieModuleModel getKModuleModel() throws IOException {
         for (Resource resource : project.getResources()) {
@@ -237,22 +249,22 @@ public class GenerateModelMojo extends AbstractKieMojo {
             throw new MojoExecutionException("Unable to find .drl files");
         }
     }
-    
+
     protected DependencyInjectionAnnotator discoverDependencyInjectionAnnotator() {
         if (!dependencyInjection) {
             return null;
         }
-        
+
         boolean hasSpring = project.getDependencies().stream().anyMatch(d -> d.getArtifactId().contains("spring"));
         if (hasSpring) {
             return new SpringDependencyInjectionAnnotator();
         }
-        
+
         boolean hasQuarkus = project.getDependencies().stream().anyMatch(d -> d.getArtifactId().contains("quarkus"));
         if (hasQuarkus) {
             return new CDIDependencyInjectionAnnotator();
         }
-        
+
         throw new IllegalStateException("Unable to find dependency injection annotator");
     }
 }

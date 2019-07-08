@@ -176,15 +176,23 @@ public class ApplicationGenerator {
 
     public Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles =
-                generators.stream()
-                        .flatMap(gen -> gen.generate().stream())
-                        .collect(Collectors.toList());
+                generateComponents();
         generators.forEach(gen -> gen.updateConfig(configGenerator));
         generators.forEach(gen -> writeLabelsImageMetadata(gen.getLabels()));
-        generatedFiles.add(new GeneratedFile(GeneratedFile.Type.APPLICATION,
-                                             generatedFilePath(),
-                                             log( compilationUnit().toString() ).getBytes(StandardCharsets.UTF_8)));
+        generatedFiles.add(generateApplicationDescriptor());
         return generatedFiles;
+    }
+
+    public List<GeneratedFile> generateComponents() {
+        return generators.stream()
+                .flatMap(gen -> gen.generate().stream())
+                .collect(Collectors.toList());
+    }
+
+    public GeneratedFile generateApplicationDescriptor() {
+        return new GeneratedFile(GeneratedFile.Type.APPLICATION,
+                                 generatedFilePath(),
+                                 log( compilationUnit().toString() ).getBytes(StandardCharsets.UTF_8));
     }
 
     public <G extends Generator> G withGenerator(G generator) {
