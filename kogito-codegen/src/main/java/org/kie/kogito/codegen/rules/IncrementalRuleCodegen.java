@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.printer.PrettyPrinter;
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
@@ -281,14 +282,18 @@ public class IncrementalRuleCodegen implements Generator {
         } else if (annotator != null) {
             for (KieBaseModel kBaseModel : kieModuleModel.getKieBaseModels().values()) {
                 for (String sessionName : kBaseModel.getKieSessionModels().keySet()) {
-                    CompilationUnit cu = parse(getClass().getResourceAsStream("/class-templates/SessionRuleUnitTemplate.java"));
-                    ClassOrInterfaceDeclaration template = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
-                    template.setName("SessionRuleUnit_" + sessionName);
-                    template.findAll(StringLiteralExpr.class).forEach(s -> s.setString(s.getValue().replace("$SessionName$", sessionName)));
+                    CompilationUnit cu = parse( getClass().getResourceAsStream( "/class-templates/SessionRuleUnitTemplate.java" ) );
+                    ClassOrInterfaceDeclaration template = cu.findFirst( ClassOrInterfaceDeclaration.class ).get();
+                    annotator.withNamedSingletonComponent(template, "$SessionName$");
+                    template.setName( "SessionRuleUnit_" + sessionName );
+
+                    template.findAll(FieldDeclaration.class).stream().filter(fd -> fd.getVariable(0).getNameAsString().equals("runtimeBuilder")).forEach(fd -> annotator.withInjection(fd));;
+
+                    template.findAll( StringLiteralExpr.class ).forEach( s -> s.setString( s.getValue().replace( "$SessionName$", sessionName ) ) );
                     generatedFiles.add(new GeneratedFile(
                             GeneratedFile.Type.RULE,
                             "org/drools/project/model/SessionRuleUnit_" + sessionName + ".java",
-                            log(cu.toString()).getBytes(StandardCharsets.UTF_8)));
+                            log( cu.toString() ).getBytes( StandardCharsets.UTF_8 ) ));
                 }
             }
         }
