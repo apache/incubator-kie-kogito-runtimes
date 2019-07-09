@@ -334,6 +334,7 @@ public class IncrementalRuleCodegen implements Generator {
 
     public IncrementalRuleCodegen withKModule(KieModuleModel model) {
         kieModuleModel = model;
+        setDefaultsforEmptyKieModule(kieModuleModel);
         return this;
     }
 
