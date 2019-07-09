@@ -24,4 +24,5 @@ public class MyUnit implements RuleUnitMemory {
     public DataSource<Object> getValues() {
         return values;
     }
+    private DataSource<Object> thisMethodIsHidden() { return null; }
 }

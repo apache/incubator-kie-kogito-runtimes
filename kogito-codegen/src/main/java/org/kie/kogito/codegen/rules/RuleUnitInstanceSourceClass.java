@@ -105,9 +105,11 @@ public class RuleUnitInstanceSourceClass {
 
 
             for (Method m : typeClass.getDeclaredMethods()) {
-                m.setAccessible(true);
                 String methodName = m.getName();
                 String propertyName = ClassUtils.getter2property(methodName);
+                if (propertyName == null) {
+                    continue;
+                }
 
                 if ( DataSource.class.isAssignableFrom( m.getReturnType() ) ) {
                     //  value.$method())
