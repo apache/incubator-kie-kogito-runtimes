@@ -114,7 +114,6 @@ public class IncrementalRuleCodegen implements Generator {
         return null;
     }
 
-
     private static final ResourceType[] resourceTypes = {
             ResourceType.DRL,
             ResourceType.DTABLE
@@ -306,6 +305,10 @@ public class IncrementalRuleCodegen implements Generator {
                 modelSourceClass.generate()));
 
         ProjectSourceClass projectSourceClass = new ProjectSourceClass(modelMethod);
+        if (annotator != null) {
+            projectSourceClass.withDependencyInjection("@" + annotator.applicationComponentType());
+        }
+
         generatedFiles.add(new GeneratedFile(
                 GeneratedFile.Type.RULE,
                 projectSourceClass.getName(),
