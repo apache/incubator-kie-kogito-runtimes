@@ -115,6 +115,7 @@ public class IncrementalRuleCodegen implements Generator {
         return null;
     }
 
+
     private static final ResourceType[] resourceTypes = {
             ResourceType.DRL,
             ResourceType.DTABLE
@@ -132,6 +133,7 @@ public class IncrementalRuleCodegen implements Generator {
     private ClassLoader contextClassLoader;
 
     private KieModuleModel kieModuleModel;
+    private boolean hotReloadMode = false;
 
     @Deprecated
     public IncrementalRuleCodegen(Path basePath, Collection<File> files, ResourceType resourceType) {
@@ -279,7 +281,7 @@ public class IncrementalRuleCodegen implements Generator {
                                                      ruleUnitInstance.generatedFilePath(),
                                                      log(ruleUnitInstance.generate()).getBytes(StandardCharsets.UTF_8)));
             }
-        } else if (annotator != null) {
+        } else if (annotator != null && !hotReloadMode) {
             for (KieBaseModel kBaseModel : kieModuleModel.getKieBaseModels().values()) {
                 for (String sessionName : kBaseModel.getKieSessionModels().keySet()) {
                     CompilationUnit cu = parse( getClass().getResourceAsStream( "/class-templates/SessionRuleUnitTemplate.java" ) );
@@ -298,26 +300,28 @@ public class IncrementalRuleCodegen implements Generator {
             }
         }
 
-        KieModuleModelMethod modelMethod = new KieModuleModelMethod(kieModuleModel.getKieBaseModels());
-        ModelSourceClass modelSourceClass = new ModelSourceClass(
-                dummyReleaseId,
-                modelMethod,
-                fqn);
+        if (!hotReloadMode) {
+            KieModuleModelMethod modelMethod = new KieModuleModelMethod(kieModuleModel.getKieBaseModels());
+            ModelSourceClass modelSourceClass = new ModelSourceClass(
+                    dummyReleaseId,
+                    modelMethod,
+                    fqn);
 
-        generatedFiles.add(new GeneratedFile(
-                GeneratedFile.Type.RULE,
-                modelSourceClass.getName(),
-                modelSourceClass.generate()));
+            generatedFiles.add(new GeneratedFile(
+                    GeneratedFile.Type.RULE,
+                    modelSourceClass.getName(),
+                    modelSourceClass.generate()));
 
-        ProjectSourceClass projectSourceClass = new ProjectSourceClass(modelMethod);
-        if (annotator != null) {
-            projectSourceClass.withDependencyInjection("@" + annotator.applicationComponentType());
+            ProjectSourceClass projectSourceClass = new ProjectSourceClass(modelMethod);
+            if (annotator != null) {
+                projectSourceClass.withDependencyInjection("@" + annotator.applicationComponentType());
+            }
+
+            generatedFiles.add(new GeneratedFile(
+                    GeneratedFile.Type.RULE,
+                    projectSourceClass.getName(),
+                    projectSourceClass.generate()));
         }
-
-        generatedFiles.add(new GeneratedFile(
-                GeneratedFile.Type.RULE,
-                projectSourceClass.getName(),
-                projectSourceClass.generate()));
 
         return generatedFiles;
     }
@@ -350,4 +354,10 @@ public class IncrementalRuleCodegen implements Generator {
         this.contextClassLoader = projectClassLoader;
         return this;
     }
+
+    public IncrementalRuleCodegen withHotReloadMode() {
+        this.hotReloadMode = true;
+        return this;
+    }
+
 }
