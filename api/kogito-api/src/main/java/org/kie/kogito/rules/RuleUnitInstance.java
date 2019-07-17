@@ -15,7 +15,11 @@
 
 package org.kie.kogito.rules;
 
+import java.util.List;
+import java.util.Map;
+
 public interface RuleUnitInstance<T extends RuleUnitMemory> {
     RuleUnit<T> unit();
     int fire();
+    List<Map<String, Object>> executeQuery( String query, Object... arguments);
 }

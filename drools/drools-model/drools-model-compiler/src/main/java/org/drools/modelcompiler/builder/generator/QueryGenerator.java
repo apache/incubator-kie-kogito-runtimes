@@ -80,8 +80,14 @@ public class QueryGenerator {
     public static void processQuery(KnowledgeBuilderImpl kbuilder, PackageModel packageModel, QueryDescr queryDescr) {
         String queryDefVariableName = toQueryDef(queryDescr.getName());
         RuleContext context = packageModel.getQueryDefWithType().get(queryDefVariableName).getContext();
+
+        context.setDescr(queryDescr);
         context.addGlobalDeclarations(packageModel.getGlobals());
         context.setDialectFromAttributes(queryDescr.getAttributes().values());
+
+        if (context.getRuleUnitDescr() != null) {
+            packageModel.addQueryInRuleUnit( context.getRuleUnitDescr().getRuleUnitClass(), queryDescr );
+        }
 
         new ModelGeneratorVisitor(context, packageModel).visit(queryDescr.getLhs());
         final Type queryType = parseType(Query.class.getCanonicalName());

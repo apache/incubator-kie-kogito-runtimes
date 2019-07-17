@@ -52,6 +52,7 @@ import com.github.javaparser.ast.type.Type;
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.compiler.DialectCompiletimeRegistry;
 import org.drools.compiler.lang.descr.EntryPointDeclarationDescr;
+import org.drools.compiler.lang.descr.QueryDescr;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.model.DomainClassMetadata;
 import org.drools.model.Global;
@@ -60,7 +61,6 @@ import org.drools.model.Rule;
 import org.drools.model.WindowReference;
 import org.drools.modelcompiler.builder.generator.DRLIdGenerator;
 import org.drools.modelcompiler.builder.generator.DrlxParseUtil;
-import org.drools.modelcompiler.builder.generator.ModuleSourceClass;
 import org.drools.modelcompiler.builder.generator.QueryGenerator;
 import org.drools.modelcompiler.builder.generator.QueryParameter;
 import org.kie.api.runtime.rule.AccumulateFunction;
@@ -134,6 +134,7 @@ public class PackageModel {
 
     private final String pkgUUID;
     private Set<Class<?>> ruleUnits = new HashSet<>();
+    private Map<Class<?>, List<QueryDescr>> queriesByRuleUnit = new HashMap<>();
 
     public PackageModel(String name, KnowledgeBuilderConfigurationImpl configuration, boolean isPattern, DialectCompiletimeRegistry dialectCompiletimeRegistry, DRLIdGenerator exprIdGenerator) {
         this("", name, configuration, isPattern, dialectCompiletimeRegistry, exprIdGenerator);
@@ -347,6 +348,15 @@ public class PackageModel {
 
     public Collection<Class<?>> getRuleUnits() {
         return ruleUnits;
+    }
+
+    public void addQueryInRuleUnit(Class<?> ruleUnitType, QueryDescr query) {
+        addRuleUnit(ruleUnitType);
+        queriesByRuleUnit.computeIfAbsent( ruleUnitType, k -> new ArrayList<>() ).add(query);
+    }
+
+    public List<QueryDescr> getQueriesInRuleUnit(Class<?> ruleUnitType) {
+        return queriesByRuleUnit.getOrDefault( ruleUnitType, Collections.emptyList() );
     }
 
     public static class RuleSourceResult {
