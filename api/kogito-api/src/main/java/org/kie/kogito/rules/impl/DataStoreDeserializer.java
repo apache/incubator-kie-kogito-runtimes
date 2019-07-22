@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.rules;
+package org.kie.kogito.rules.impl;
 
-import javax.json.bind.annotation.JsonbTypeDeserializer;
-import org.kie.kogito.rules.impl.DataStreamDeserializer;
+import java.util.List;
 
-@JsonbTypeDeserializer(DataStreamDeserializer.class)
-public interface DataStream<T> extends DataSource<T> {
-    void append( T... ts );
+import org.kie.kogito.rules.DataSource;
+import org.kie.kogito.rules.DataStore;
+
+public class DataStoreDeserializer extends AbstractDataSourceDeserializer<DataStore> {
+
+    @Override
+    protected DataStore toDataSource( List deserialized ) {
+        DataStore ds = DataSource.createStore();
+        deserialized.forEach( ds::add );
+        return ds;
+    }
 }
