@@ -29,7 +29,7 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.drools.compiler.lang.descr.QueryDescr;
+import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.rules.RuleUnit;
@@ -50,7 +50,7 @@ public class RuleUnitSourceClass implements FileGenerator {
     private final String targetCanonicalName;
     private String targetTypeName;
     private DependencyInjectionAnnotator annotator;
-    private List<QueryDescr> queries;
+    private List<QueryModel> queries;
 
     public RuleUnitSourceClass(Class<?> ruleUnit, String generatedSourceFile) {
         this.ruleUnit = ruleUnit;
@@ -163,7 +163,7 @@ public class RuleUnitSourceClass implements FileGenerator {
         return this;
     }
 
-    public RuleUnitSourceClass withQueries( List<QueryDescr> queries ) {
+    public RuleUnitSourceClass withQueries( List<QueryModel> queries ) {
         this.queries = queries;
         return this;
     }

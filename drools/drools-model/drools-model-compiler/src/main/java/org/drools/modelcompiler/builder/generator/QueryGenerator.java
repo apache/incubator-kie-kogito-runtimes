@@ -1,6 +1,8 @@
 package org.drools.modelcompiler.builder.generator;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.github.javaparser.ast.Modifier;
@@ -21,6 +23,7 @@ import org.drools.compiler.lang.descr.QueryDescr;
 import org.drools.model.Query;
 import org.drools.model.QueryDef;
 import org.drools.modelcompiler.builder.PackageModel;
+import org.drools.modelcompiler.builder.QueryModel;
 import org.drools.modelcompiler.builder.generator.visitor.ModelGeneratorVisitor;
 
 import static com.github.javaparser.StaticJavaParser.parseType;
@@ -28,6 +31,7 @@ import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.getClassF
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.toClassOrInterfaceType;
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.BUILD_CALL;
 import static org.drools.modelcompiler.builder.generator.DslMethodNames.QUERY_CALL;
+import static org.drools.modelcompiler.builder.generator.visitor.pattern.PatternDSL.GENERATED_PATTERN_PREFIX;
 import static org.drools.modelcompiler.util.StringUtil.toId;
 
 public class QueryGenerator {
@@ -85,13 +89,18 @@ public class QueryGenerator {
         context.addGlobalDeclarations(packageModel.getGlobals());
         context.setDialectFromAttributes(queryDescr.getAttributes().values());
 
+        new ModelGeneratorVisitor(context, packageModel).visit(queryDescr.getLhs());
         if (context.getRuleUnitDescr() != null) {
-            packageModel.addQueryInRuleUnit( context.getRuleUnitDescr().getRuleUnitClass(), queryDescr );
+            Map<String, Class<?>> queryParams = new HashMap<>();
+            for (DeclarationSpec declr : context.getAllDeclarations()) {
+                if (!declr.isGlobal() && !declr.getBindingId().startsWith( GENERATED_PATTERN_PREFIX )) {
+                    queryParams.put(declr.getBindingId(), declr.getDeclarationClass());
+                }
+            }
+            packageModel.addQueryInRuleUnit( context.getRuleUnitDescr().getRuleUnitClass(), new QueryModel( queryDescr.getName(), queryDescr.getNamespace(), queryParams ) );
         }
 
-        new ModelGeneratorVisitor(context, packageModel).visit(queryDescr.getLhs());
         final Type queryType = parseType(Query.class.getCanonicalName());
-
         MethodDeclaration queryMethod = new MethodDeclaration(NodeList.nodeList(Modifier.privateModifier()), queryType, "query_" + toId(queryDescr.getName()));
 
         BlockStmt queryBody = new BlockStmt();

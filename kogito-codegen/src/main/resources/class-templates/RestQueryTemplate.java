@@ -12,6 +12,8 @@ import javax.ws.rs.core.MediaType;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitInstance;
 
+import static java.util.stream.Collectors.toList;
+
 @Path("/$name$")
 public class $unit$Query$name$Endpoint {
 
@@ -26,8 +28,12 @@ public class $unit$Query$name$Endpoint {
     @POST()
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Map<String, Object>> executeQuery($UnitType$ unit) {
+    public List<$ReturnType$> executeQuery($UnitType$ unit) {
         RuleUnitInstance<$UnitType$> instance = ruleUnit.createInstance(unit);
-        return instance.executeQuery( "$queryName$" );
+        return instance.executeQuery( "$queryName$" ).stream().map( this::toResult ).collect( toList() );
+    }
+
+    private $ReturnType$ toResult(Map<String, Object> tuple) {
+        return ($ReturnType$) tuple.values().iterator().next();
     }
 }

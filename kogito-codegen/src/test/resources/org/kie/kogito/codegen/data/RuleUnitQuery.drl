@@ -16,6 +16,6 @@ then
 end
 
 query FindAdults
-    $p: /persons[ adult ]
+    /persons[ adult, $name : name ]
 end
 

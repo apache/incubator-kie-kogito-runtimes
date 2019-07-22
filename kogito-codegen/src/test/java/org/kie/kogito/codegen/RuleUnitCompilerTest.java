@@ -92,9 +92,8 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
 
         List<String> results = instance.executeQuery( "FindAdults" )
                 .stream()
-                .map( m -> m.get("$p") )
-                .map( Person.class::cast )
-                .map( Person::getName )
+                .map( m -> m.get("$name") )
+                .map( String.class::cast )
                 .collect( toList() );
 
         assertEquals( 2, results.size() );
