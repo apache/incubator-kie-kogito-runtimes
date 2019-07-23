@@ -20,13 +20,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.CastExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.Type;
 import org.drools.modelcompiler.builder.QueryModel;
@@ -34,6 +42,8 @@ import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import static com.github.javaparser.StaticJavaParser.parse;
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static org.drools.core.util.StringUtils.ucFirst;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
 
 public class QueryEndpointSourceClass implements FileGenerator {
@@ -67,11 +77,7 @@ public class QueryEndpointSourceClass implements FileGenerator {
                 this.getClass().getResourceAsStream("/class-templates/RestQueryTemplate.java"));
         cu.setPackageDeclaration(query.getNamespace());
 
-        Class<?> returnType = findReturnType();
-
-        ClassOrInterfaceDeclaration clazz =
-                cu.findFirst(ClassOrInterfaceDeclaration.class).get();
-
+        ClassOrInterfaceDeclaration clazz = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
         clazz.setName( targetCanonicalName );
 
         cu.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
@@ -82,9 +88,9 @@ public class QueryEndpointSourceClass implements FileGenerator {
             annotator.withInjection( ruleUnitDeclaration );
         }
 
+        String returnType = getReturnType(clazz);
         generateConstructors( clazz );
         generateQueryMethod( clazz, returnType );
-        generateToResultMethod( clazz, returnType );
 
         return cu.toString();
     }
@@ -98,7 +104,7 @@ public class QueryEndpointSourceClass implements FileGenerator {
         }
     }
 
-    private void generateQueryMethod( ClassOrInterfaceDeclaration clazz, Class<?> returnType ) {
+    private void generateQueryMethod( ClassOrInterfaceDeclaration clazz, String returnType ) {
         MethodDeclaration queryMethod = clazz.getMethodsByName( "executeQuery" ).get(0);
         queryMethod.getParameter( 0 ).setType(ruleUnit);
 
@@ -108,19 +114,49 @@ public class QueryEndpointSourceClass implements FileGenerator {
         statement.findAll( VariableDeclarator.class ).forEach( decl -> setUnitGeneric( decl.getType() ) );
     }
 
-    private void generateToResultMethod( ClassOrInterfaceDeclaration clazz, Class<?> returnType ) {
+    private String getReturnType( ClassOrInterfaceDeclaration clazz ) {
         MethodDeclaration toResultMethod = clazz.getMethodsByName( "toResult" ).get(0);
-        toResultMethod.setType( classToReferenceType( returnType ) );
+        String returnType;
+        if (query.getBindings().size() == 1) {
+            returnType = query.getBindings().values().iterator().next().getCanonicalName();
+            Statement statement = toResultMethod.getBody().get().getStatement( 0 );
+            statement.findAll( CastExpr.class ).get(0).setType( returnType );
+        } else {
+            returnType = "Result";
+            generateResultClass(clazz, toResultMethod);
+        }
 
-        Statement statement = toResultMethod.getBody().get().getStatement( 0 );
-        statement.findAll( CastExpr.class ).get(0).setType( classToReferenceType( returnType ) );
+        toResultMethod.setType( returnType );
+        return returnType;
     }
 
-    private Class<?> findReturnType() {
-        if (query.getParameters().size() == 1) {
-            return query.getParameters().values().iterator().next();
-        }
-        throw new UnsupportedOperationException("Too many parameters: " + query.getParameters().keySet());
+    private void generateResultClass( ClassOrInterfaceDeclaration clazz, MethodDeclaration toResultMethod ) {
+        ClassOrInterfaceDeclaration resultClass = new ClassOrInterfaceDeclaration( new NodeList<Modifier>(Modifier.publicModifier(), Modifier.staticModifier()), false, "Result" );
+        clazz.addMember( resultClass );
+
+        ConstructorDeclaration constructor = resultClass.addConstructor( Modifier.Keyword.PUBLIC );
+        BlockStmt constructorBody = constructor.createBody();
+
+        ObjectCreationExpr resultCreation = new ObjectCreationExpr();
+        resultCreation.setType( "Result" );
+        BlockStmt resultMethodBody = toResultMethod.createBody();
+        resultMethodBody.addStatement( new ReturnStmt( resultCreation ) );
+
+        query.getBindings().forEach( ( name, type) -> {
+            resultClass.addField( type, name, Modifier.Keyword.PRIVATE, Modifier.Keyword.FINAL );
+
+            MethodDeclaration getterMethod = resultClass.addMethod( "get" + ucFirst(name), Modifier.Keyword.PUBLIC );
+            getterMethod.setType( type );
+            BlockStmt body = getterMethod.createBody();
+            body.addStatement( new ReturnStmt( new NameExpr( name ) ) );
+
+            constructor.addAndGetParameter( type, name );
+            constructorBody.addStatement( new AssignExpr( new NameExpr( "this." + name ), new NameExpr( name ), AssignExpr.Operator.ASSIGN ) );
+
+            MethodCallExpr callExpr = new MethodCallExpr( new NameExpr( "tuple" ), "get" );
+            callExpr.addArgument( new StringLiteralExpr( name ) );
+            resultCreation.addArgument( new CastExpr( classToReferenceType( type ), callExpr ) );
+        } );
     }
 
     private void setUnitGeneric(Type type) {
@@ -129,6 +165,10 @@ public class QueryEndpointSourceClass implements FileGenerator {
 
     private void setGeneric(Type type, Class<?> typeArgument) {
         type.asClassOrInterfaceType().setTypeArguments( classToReferenceType( typeArgument ) );
+    }
+
+    private void setGeneric(Type type, String typeArgument) {
+        type.asClassOrInterfaceType().setTypeArguments( parseClassOrInterfaceType( typeArgument ) );
     }
 
     private void interpolateStrings(StringLiteralExpr vv) {

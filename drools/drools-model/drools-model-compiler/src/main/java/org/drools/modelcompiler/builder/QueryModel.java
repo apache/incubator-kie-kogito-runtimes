@@ -21,12 +21,14 @@ import java.util.Map;
 public class QueryModel {
     private final String name;
     private final String namespace;
-    private final Map<String, Class<?>> parameters;
+    private final String[] parameters;
+    private final Map<String, Class<?>> bindings;
 
-    public QueryModel( String name, String namespace, Map<String, Class<?>> parameters ) {
+    public QueryModel( String name, String namespace, String[] parameters, Map<String, Class<?>> bindings ) {
         this.name = name;
         this.namespace = namespace;
         this.parameters = parameters;
+        this.bindings = bindings;
     }
 
     public String getName() {
@@ -37,7 +39,15 @@ public class QueryModel {
         return namespace;
     }
 
-    public Map<String, Class<?>> getParameters() {
+    public Map<String, Class<?>> getBindings() {
+        return bindings;
+    }
+
+    public String[] getParameters() {
         return parameters;
+    }
+
+    public boolean hasParameters() {
+        return parameters != null && parameters.length > 0;
     }
 }

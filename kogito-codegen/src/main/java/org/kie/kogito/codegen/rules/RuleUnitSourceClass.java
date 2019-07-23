@@ -68,7 +68,10 @@ public class RuleUnitSourceClass implements FileGenerator {
     }
 
     public List<QueryEndpointSourceClass> queries() {
-        return queries.stream().map( query -> new QueryEndpointSourceClass( ruleUnit, query, annotator ) ).collect( toList() );
+        return queries.stream()
+                .filter( query -> !query.hasParameters() )
+                .map( query -> new QueryEndpointSourceClass( ruleUnit, query, annotator ) )
+                .collect( toList() );
     }
 
     @Override

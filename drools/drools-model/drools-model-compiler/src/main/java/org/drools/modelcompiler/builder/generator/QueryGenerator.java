@@ -91,13 +91,14 @@ public class QueryGenerator {
 
         new ModelGeneratorVisitor(context, packageModel).visit(queryDescr.getLhs());
         if (context.getRuleUnitDescr() != null) {
-            Map<String, Class<?>> queryParams = new HashMap<>();
+            Map<String, Class<?>> queryBindings = new HashMap<>();
             for (DeclarationSpec declr : context.getAllDeclarations()) {
                 if (!declr.isGlobal() && !declr.getBindingId().startsWith( GENERATED_PATTERN_PREFIX )) {
-                    queryParams.put(declr.getBindingId(), declr.getDeclarationClass());
+                    queryBindings.put(declr.getBindingId(), declr.getDeclarationClass());
                 }
             }
-            packageModel.addQueryInRuleUnit( context.getRuleUnitDescr().getRuleUnitClass(), new QueryModel( queryDescr.getName(), queryDescr.getNamespace(), queryParams ) );
+            QueryModel queryModel = new QueryModel( queryDescr.getName(), queryDescr.getNamespace(), queryDescr.getParameters(), queryBindings );
+            packageModel.addQueryInRuleUnit( context.getRuleUnitDescr().getRuleUnitClass(), queryModel );
         }
 
         final Type queryType = parseType(Query.class.getCanonicalName());
