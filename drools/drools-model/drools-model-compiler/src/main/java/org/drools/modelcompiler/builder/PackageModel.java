@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -239,18 +238,7 @@ public class PackageModel {
     }
 
     public void addGlobals(InternalKnowledgePackage pkg) {
-        Map<String, Class<?>> transformed;
-        transformed = pkg.getGlobals()
-                .entrySet()
-                .stream()
-                .collect(Collectors.toMap( Entry::getKey, e -> {
-                    try {
-                        return pkg.getTypeResolver().resolveType(e.getValue());
-                    } catch (ClassNotFoundException e1) {
-                        throw new UnsupportedOperationException("Class not found", e1);
-                    }
-                }));
-        globals.putAll(transformed);
+        globals.putAll( pkg.getGlobals() );
     }
 
     public void addGlobal(String name, Class<?> type) {
