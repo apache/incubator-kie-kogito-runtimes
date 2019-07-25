@@ -19,7 +19,6 @@ package org.drools.core.common;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.drools.core.WorkingMemoryEntryPoint;
@@ -79,16 +78,6 @@ public abstract class AbstractFactHandleFactory
                               workingMemory,
                               wmEntryPoint );
     }
-
-    /* (non-Javadoc)
-     * @see org.kie.reteoo.FactHandleFactory#newFactHandle(long)
-     */
-    public abstract InternalFactHandle newFactHandle(long id,
-                                                     Object object,
-                                                     long recency,
-                                                     ObjectTypeConf conf,
-                                                     InternalWorkingMemory workingMemory,
-                                                     WorkingMemoryEntryPoint wmEntryPoint );
 
     public final void increaseFactHandleRecency(final InternalFactHandle factHandle) {
         factHandle.setRecency( getNextRecency() );
