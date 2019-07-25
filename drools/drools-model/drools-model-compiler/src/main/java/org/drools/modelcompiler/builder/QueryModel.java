@@ -16,7 +16,9 @@
 
 package org.drools.modelcompiler.builder;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 public class QueryModel {
     private final String name;
@@ -49,5 +51,30 @@ public class QueryModel {
 
     public boolean hasParameters() {
         return parameters != null && parameters.length > 0;
+    }
+
+    @Override
+    public String toString() {
+        return "QueryModel{" +
+                "name='" + name + '\'' +
+                ", namespace='" + namespace + '\'' +
+                ", parameters=" + Arrays.toString( parameters ) +
+                ", bindings=" + bindings +
+                '}';
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( o == null || getClass() != o.getClass() ) return false;
+        QueryModel that = ( QueryModel ) o;
+        return name.equals( that.name ) &&
+                namespace.equals( that.namespace ) &&
+                parameters.length == that.parameters.length;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( name, namespace, parameters.length );
     }
 }

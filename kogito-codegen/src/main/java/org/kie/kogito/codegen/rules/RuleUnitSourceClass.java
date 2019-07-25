@@ -15,6 +15,7 @@
 
 package org.kie.kogito.codegen.rules;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -50,7 +51,7 @@ public class RuleUnitSourceClass implements FileGenerator {
     private final String targetCanonicalName;
     private String targetTypeName;
     private DependencyInjectionAnnotator annotator;
-    private List<QueryModel> queries;
+    private Collection<QueryModel> queries;
 
     public RuleUnitSourceClass(Class<?> ruleUnit, String generatedSourceFile) {
         this.ruleUnit = ruleUnit;
@@ -166,7 +167,7 @@ public class RuleUnitSourceClass implements FileGenerator {
         return this;
     }
 
-    public RuleUnitSourceClass withQueries( List<QueryModel> queries ) {
+    public RuleUnitSourceClass withQueries( Collection<QueryModel> queries ) {
         this.queries = queries;
         return this;
     }

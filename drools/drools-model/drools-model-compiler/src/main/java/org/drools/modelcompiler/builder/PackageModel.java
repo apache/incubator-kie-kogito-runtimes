@@ -132,7 +132,7 @@ public class PackageModel {
 
     private final String pkgUUID;
     private Set<Class<?>> ruleUnits = new HashSet<>();
-    private Map<Class<?>, List<QueryModel>> queriesByRuleUnit = new HashMap<>();
+    private Map<Class<?>, Set<QueryModel>> queriesByRuleUnit = new HashMap<>();
 
     public PackageModel(String name, KnowledgeBuilderConfigurationImpl configuration, boolean isPattern, DialectCompiletimeRegistry dialectCompiletimeRegistry, DRLIdGenerator exprIdGenerator) {
         this("", name, configuration, isPattern, dialectCompiletimeRegistry, exprIdGenerator);
@@ -339,11 +339,11 @@ public class PackageModel {
 
     public void addQueryInRuleUnit(Class<?> ruleUnitType, QueryModel query) {
         addRuleUnit(ruleUnitType);
-        queriesByRuleUnit.computeIfAbsent( ruleUnitType, k -> new ArrayList<>() ).add(query);
+        queriesByRuleUnit.computeIfAbsent( ruleUnitType, k -> new HashSet<>() ).add(query);
     }
 
-    public List<QueryModel> getQueriesInRuleUnit(Class<?> ruleUnitType) {
-        return queriesByRuleUnit.getOrDefault( ruleUnitType, Collections.emptyList() );
+    public Collection<QueryModel> getQueriesInRuleUnit(Class<?> ruleUnitType) {
+        return queriesByRuleUnit.getOrDefault( ruleUnitType, Collections.emptySet() );
     }
 
     public static class RuleSourceResult {
