@@ -33,12 +33,12 @@ import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.reteoo.LeftTuple;
 import org.drools.core.reteoo.ObjectTypeNode;
 import org.drools.core.reteoo.RightTuple;
-import org.drools.core.ruleunit.InternalDataStore;
 import org.drools.core.spi.Tuple;
 import org.drools.core.util.AbstractBaseLinkedListNode;
 import org.drools.core.util.StringUtils;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.rules.DataHandle;
+import org.kie.kogito.rules.DataProcessor;
 
 /**
  * Implementation of <code>FactHandle</code>.
@@ -79,7 +79,8 @@ public class DefaultFactHandle extends AbstractBaseLinkedListNode<DefaultFactHan
 
     protected LinkedTuples          linkedTuples;
 
-    private InternalDataStore<?>    dataStore;
+    private DataProcessor<Object>   dataProcessor;
+
     private DataHandle              dataHandle;
 
     // ----------------------------------------------------------------------
@@ -945,13 +946,13 @@ public class DefaultFactHandle extends AbstractBaseLinkedListNode<DefaultFactHan
     }
 
     @Override
-    public InternalDataStore<?> getDataStore() {
-        return dataStore;
+    public DataProcessor<Object> getDataProcessor() {
+        return dataProcessor;
     }
 
     @Override
-    public void setDataStore( InternalDataStore<?> dataStore ) {
-        this.dataStore = dataStore;
+    public void setDataProcessor( DataProcessor<?> dataProcessor ) {
+        this.dataProcessor = (DataProcessor<Object>) dataProcessor;
     }
 
     @Override

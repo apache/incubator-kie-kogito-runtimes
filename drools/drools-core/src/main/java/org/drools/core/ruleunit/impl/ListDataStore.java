@@ -15,60 +15,46 @@
 
 package org.drools.core.ruleunit.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.drools.core.common.InternalFactHandle;
-import org.drools.core.ruleunit.InternalDataStore;
-import org.drools.core.spi.Activation;
-import org.drools.core.util.bitmask.BitMask;
-import org.kie.api.runtime.rule.FactHandle;
+import org.kie.kogito.rules.DataEvent;
 import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataProcessor;
+import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.impl.DataHandleImpl;
 
-public class ListDataStore<T> implements InternalDataStore<T> {
+public class ListDataStore<T> implements DataStore<T>, DataProcessor<T> {
+
     private final Map<DataHandle, T> store = new HashMap<>();
 
-    private final Map<String, EntryPointDataProcessor> subscribers = new HashMap<>();
+    private final Collection<DataProcessor<T>> subscribers = new ArrayList<>();
 
     public DataHandle add(T t) {
         DataHandle dh = new DataHandleImpl();
         store.put(dh, t);
-        subscribers.values().forEach( s -> internalInsert( dh, s, t ) );
+        subscribers.forEach( s -> s.process(new DataEvent.Insert<>(dh, t, this)) );
         return dh;
     }
 
     @Override
     public void update(DataHandle handle, T object) {
-        subscribers.values().forEach( s -> s.update( handle, object ) );
+        subscribers.forEach( s -> s.process(new DataEvent.Update<>(handle, object) ));
     }
 
     @Override
     public void remove(DataHandle handle) {
-        subscribers.values().forEach( s -> s.delete( handle ) );
+        subscribers.forEach( s -> s.process(new DataEvent.Delete<>(handle) ));
         store.remove( handle );
     }
 
     @Override
-    public void subscribe(DataProcessor subscriber) {
-        EntryPointDataProcessor processor = (( EntryPointDataProcessor ) subscriber);
-        subscribers.put(processor.getId(), processor);
-        store.forEach( (dh, t) -> internalInsert( dh, subscriber, t ) );
-    }
-
-    @Override
-    public void update( FactHandle fh, Object obj, BitMask mask, Class<?> modifiedClass, Activation activation) {
-        EntryPointDataProcessor fhProcessor = subscribers.get( (( InternalFactHandle ) fh).getEntryPoint().getEntryPointId() );
-        DataHandle dh = (( InternalFactHandle ) fh).getDataHandle();
-        subscribers.values().forEach( s -> {
-            if ( s == fhProcessor ) {
-                s.update( fh, obj, mask, modifiedClass, activation );
-            } else {
-                s.update( dh, obj, mask, modifiedClass, activation );
-            }
-        } );
+    public void subscribe(DataProcessor<T> subscriber) {
+        subscribers.add(subscriber);
+        store.forEach( (dh, t) -> subscriber.process(new DataEvent.Insert<>(dh, t, this)) );
     }
 
     @Override
@@ -76,9 +62,10 @@ public class ListDataStore<T> implements InternalDataStore<T> {
         return store.values().iterator();
     }
 
-    private void internalInsert( DataHandle dh, DataProcessor s, T t ) {
-        FactHandle fh = s.insert( dh, t );
-        (( InternalFactHandle ) fh).setDataStore( this );
-        (( InternalFactHandle ) fh).setDataHandle( dh );
+    @Override
+    public void process(DataEvent<T> m) {
+        if (m instanceof EntryPointUpdate) {
+            subscribers.forEach(s -> s.process(m));
+        }
     }
 }

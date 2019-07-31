@@ -19,20 +19,26 @@ package org.drools.core.ruleunit.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.InternalWorkingMemoryEntryPoint;
 import org.drools.core.spi.Activation;
 import org.drools.core.util.bitmask.BitMask;
 import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.kogito.rules.DataEvent;
+import org.kie.kogito.rules.DataEvent.Delete;
+import org.kie.kogito.rules.DataEvent.Insert;
+import org.kie.kogito.rules.DataEvent.Update;
 import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataProcessor;
 
-public class EntryPointDataProcessor implements DataProcessor {
+public class EntryPointDataProcessor<T> implements DataProcessor<T> {
+
     private final EntryPoint entryPoint;
 
     private final Map<DataHandle, FactHandle> handles = new HashMap<>();
 
-    public EntryPointDataProcessor( EntryPoint entryPoint ) {
+    public EntryPointDataProcessor(EntryPoint entryPoint) {
         this.entryPoint = entryPoint;
     }
 
@@ -40,30 +46,40 @@ public class EntryPointDataProcessor implements DataProcessor {
         return entryPoint.getEntryPointId();
     }
 
-    @Override
-    public FactHandle insert(DataHandle handle, Object object) {
-        FactHandle fh = entryPoint.insert( object );
-        if (handle != null) {
-            handles.put( handle, fh );
+    public void process(DataEvent<T> m) {
+        if (m instanceof Insert) {
+            Insert<T> ins = (Insert<T>) m;
+            insert(ins.handle(), ins.value(), ins.sender());
+        } else if (m instanceof EntryPointUpdate) {
+            EntryPointUpdate<T> upd = (EntryPointUpdate<T>) m;
+            entryPointUpdate(upd.handle(), upd.value(), upd.mask(), upd.modifiedClass(), upd.activation());
+        } else if (m instanceof Update) {
+            Update<T> upd = (Update<T>) m;
+            update(upd.handle(), upd.value());
+        } else if (m instanceof Delete) {
+            delete(((Delete<T>) m).handle());
         }
-        return fh;
     }
 
-    public void update( DataHandle dh, Object obj, BitMask mask, Class<?> modifiedClass, Activation activation) {
-        update( handles.get(dh), obj, mask, modifiedClass, activation );
+    private void insert(DataHandle handle, Object object, DataProcessor<T> sender) {
+        FactHandle fh = entryPoint.insert(object);
+        if (handle != null) {
+            handles.put(handle, fh);
+        }
+        InternalFactHandle ifh = (InternalFactHandle) fh;
+        ifh.setDataHandle(handle);
+        ifh.setDataProcessor(sender);
     }
 
-    public void update( FactHandle fh, Object obj, BitMask mask, Class<?> modifiedClass, Activation activation) {
-        (( InternalWorkingMemoryEntryPoint ) entryPoint).update( fh, obj, mask, modifiedClass, activation );
+    private void update(DataHandle handle, Object object) {
+        entryPoint.update(handles.get(handle), object);
     }
 
-    @Override
-    public void update(DataHandle handle, Object object) {
-        entryPoint.update( handles.get(handle), object );
+    private void delete(DataHandle handle) {
+        entryPoint.delete(handles.remove(handle));
     }
 
-    @Override
-    public void delete(DataHandle handle) {
-        entryPoint.delete( handles.remove(handle) );
+    private void entryPointUpdate(DataHandle dh, Object obj, BitMask mask, Class<?> modifiedClass, Activation activation) {
+        ((InternalWorkingMemoryEntryPoint) entryPoint).update(handles.get(dh), obj, mask, modifiedClass, activation);
     }
 }

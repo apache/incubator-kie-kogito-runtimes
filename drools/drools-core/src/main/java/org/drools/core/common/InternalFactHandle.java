@@ -23,10 +23,10 @@ import org.drools.core.WorkingMemoryEntryPoint;
 import org.drools.core.factmodel.traits.TraitTypeEnum;
 import org.drools.core.reteoo.LeftTuple;
 import org.drools.core.reteoo.RightTuple;
-import org.drools.core.ruleunit.InternalDataStore;
 import org.drools.core.spi.Tuple;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.rules.DataHandle;
+import org.kie.kogito.rules.DataProcessor;
 
 public interface InternalFactHandle
     extends
@@ -167,10 +167,10 @@ public interface InternalFactHandle
         }
     }
 
-    default InternalDataStore<?> getDataStore() {
+    default DataProcessor<Object> getDataProcessor() {
         return null;
     }
-    default void setDataStore( InternalDataStore<?> dataStore ) { }
+    default void setDataProcessor( DataProcessor<?> dataStore ) { }
 
     default DataHandle getDataHandle() {
         return null;

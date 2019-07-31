@@ -65,7 +65,7 @@ public class RuleUnitExecModelTest {
         Model model = new ModelImpl().addRule( rule ).addGlobal( var_results );
         KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model );
 
-        DataSource<Person> persons = new ListDataStream<>(
+        DataSource<Person> persons = ListDataStream.create(
                 new Person( "Mario", 43 ),
                 new Person( "Marilena", 44 ),
                 new Person( "Sofia", 5 ) );

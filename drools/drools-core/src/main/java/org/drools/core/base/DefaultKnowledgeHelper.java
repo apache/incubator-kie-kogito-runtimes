@@ -51,6 +51,7 @@ import org.drools.core.reteoo.ObjectTypeConf;
 import org.drools.core.reteoo.RuleTerminalNode;
 import org.drools.core.rule.Declaration;
 import org.drools.core.rule.EntryPointId;
+import org.drools.core.ruleunit.impl.EntryPointUpdate;
 import org.drools.core.spi.Activation;
 import org.drools.core.spi.KnowledgeHelper;
 import org.drools.core.spi.Tuple;
@@ -68,6 +69,7 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
+import org.kie.kogito.rules.DataHandle;
 
 import static org.drools.core.reteoo.PropertySpecificUtil.allSetButTraitBitMask;
 import static org.drools.core.reteoo.PropertySpecificUtil.onlyTraitBitSetMask;
@@ -397,13 +399,16 @@ public class DefaultKnowledgeHelper<T extends ModedAssertion<T>>
     public void update( final FactHandle handle, BitMask mask, Class<?> modifiedClass ) {
         InternalFactHandle h = (InternalFactHandle) handle;
 
-        if (h.getDataStore() != null) {
+        DataHandle dh = h.getDataHandle();
+        if (dh != null) {
             // This handle has been insert from a datasource, so update it
-            h.getDataStore().update( h,
-                                      ((InternalFactHandle)handle).getObject(),
-                                      mask,
-                                      modifiedClass,
-                                      this.activation );
+            h.getDataProcessor().process(new EntryPointUpdate<>(
+                    dh,
+                    h.getObject(),
+                    mask,
+                    modifiedClass,
+                    this.activation ));
+
             return;
         }
 

@@ -45,7 +45,7 @@ public class RuleUnitTest extends BaseModelTest {
             "    results.add($p.getName());" +
             "end ";
 
-        DataSource<Person> persons = new ListDataStream<>(
+        DataSource<Person> persons = ListDataStream.create(
                 new Person( "Mario", 45 ),
                 new Person( "Marilena", 47 ),
                 new Person( "Sofia", 7 ) );

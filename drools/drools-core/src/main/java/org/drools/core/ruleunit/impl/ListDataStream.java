@@ -20,29 +20,32 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kie.kogito.rules.DataEvent;
 import org.kie.kogito.rules.DataProcessor;
 import org.kie.kogito.rules.DataStream;
 
 public class ListDataStream<T> implements DataStream<T> {
     private final ArrayList<T> values = new ArrayList<>();
-    private final List<DataProcessor> subscribers = new ArrayList<>();
+    private final List<DataProcessor<T>> subscribers = new ArrayList<>();
 
-    public ListDataStream( T... ts ) {
-        append( ts );
-    }
-
-    @Override
-    public void append( T... ts ) {
+    @SafeVarargs
+    public final static <T> ListDataStream<T> create(T... ts) {
+        ListDataStream<T> stream = new ListDataStream<>();
         for (T t : ts) {
-            values.add( t );
-            subscribers.forEach(s -> s.insert(t));
+            stream.append(t);
         }
+        return stream;
+    }
+
+    public void append( T t ) {
+        values.add( t );
+        subscribers.forEach(s -> s.process(new DataEvent.Insert<>(t)));
     }
 
     @Override
-    public void subscribe( DataProcessor subscriber) {
+    public void subscribe( DataProcessor<T> subscriber) {
         subscribers.add(subscriber);
-        values.forEach(subscriber::insert);
+        values.forEach(t -> subscriber.process(new DataEvent.Insert<>(t)));
     }
 
     @Override
