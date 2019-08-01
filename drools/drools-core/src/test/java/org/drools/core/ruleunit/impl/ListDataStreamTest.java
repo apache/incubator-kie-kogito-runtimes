@@ -13,7 +13,7 @@ public class ListDataStreamTest {
     public void testCreate() {
         Counter counter = new Counter();
         ListDataStream<Integer> integers = ListDataStream.create(1, 2, 3);
-        integers.subscribe(new Counter<>());
+        integers.subscribe(counter);
         assertEquals(3, counter.count);
     }
 
@@ -21,7 +21,7 @@ public class ListDataStreamTest {
     public void testAppend() {
         Counter counter = new Counter();
         ListDataStream<Integer> integers = ListDataStream.create();
-        integers.subscribe(new Counter<>());
+        integers.subscribe(counter);
         assertEquals(0, counter.count);
         integers.append(10);
         assertEquals(1, counter.count);
