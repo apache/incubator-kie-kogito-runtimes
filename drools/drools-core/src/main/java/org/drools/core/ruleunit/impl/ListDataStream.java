@@ -29,7 +29,7 @@ public class ListDataStream<T> implements DataStream<T> {
     private final List<DataProcessor> subscribers = new ArrayList<>();
 
     @SafeVarargs
-    public final static <T> ListDataStream<T> create(T... ts) {
+    public static <T> ListDataStream<T> create(T... ts) {
         ListDataStream<T> stream = new ListDataStream<>();
         for (T t : ts) {
             stream.append(t);
