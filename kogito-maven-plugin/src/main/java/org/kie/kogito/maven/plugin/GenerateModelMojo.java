@@ -149,10 +149,10 @@ public class GenerateModelMojo extends AbstractKieMojo {
         try (final Stream<Path> paths = Files.walk(projectDir.toPath())) {
             return paths.map(p -> p.toString().toLowerCase())
                     .map(p -> {
-                        int dot = p.lastIndexOf( '.' );
-                        return dot > 0 ? p.substring( dot ) : "";
+                        int dot = p.lastIndexOf('.');
+                        return dot > 0 ? p.substring(dot) : "";
                     })
-                    .anyMatch( DROOLS_EXTENSIONS::contains );
+                    .anyMatch(DROOLS_EXTENSIONS::contains);
         }
     }
 
@@ -191,9 +191,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
     private KieModuleModel getKModuleModel() throws IOException {
         for (Resource resource : project.getResources()) {
             Path moduleXmlPath = Paths.get(resource.getDirectory()).resolve(KieModuleModelImpl.KMODULE_JAR_PATH);
-            return KieModuleModelImpl.fromXML(
-                    new ByteArrayInputStream(
-                            Files.readAllBytes(moduleXmlPath)));
+            if (Files.exists(moduleXmlPath)) {
+                return KieModuleModelImpl.fromXML(
+                        new ByteArrayInputStream(
+                                Files.readAllBytes(moduleXmlPath)));
+            }
         }
         return new KieModuleModelImpl();
     }

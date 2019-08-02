@@ -43,6 +43,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-bom</artifactId>
+        <version>${version.org.kie.kogito}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -52,6 +59,7 @@
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-maven-plugin</artifactId>
         <extensions>true</extensions>
+        <version>${version.org.kie.kogito}</version>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -140,33 +148,5 @@
     </dependency>
 
   </dependencies>
-
-  <profiles>
-    <profile>
-      <id>native</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>native-image</goal>
-                </goals>
-                <configuration>
-                  <additionalBuildArgs>--allow-incomplete-classpath</additionalBuildArgs>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
 </project>

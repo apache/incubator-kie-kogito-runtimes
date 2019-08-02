@@ -50,6 +50,11 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         if (hasQuarkus) {
             return new CDIDependencyInjectionAnnotator();
         }
+        
+        boolean hasCdi = project.getDependencies().stream().anyMatch(d -> d.getArtifactId().contains("cdi-api"));
+        if (hasCdi) {
+            return new CDIDependencyInjectionAnnotator();
+        }
 
         throw new IllegalStateException("Unable to find dependency injection annotator");
     }
