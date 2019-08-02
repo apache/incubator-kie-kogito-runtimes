@@ -36,7 +36,6 @@ import org.kie.kogito.process.impl.AbstractProcessInstance;
 public class ProcessInstanceGenerator {
 
     private final String packageName;
-    private final String typeName;
     private final ModelMetaData model;
     private final String canonicalName;
     private final String targetTypeName;
@@ -50,7 +49,6 @@ public class ProcessInstanceGenerator {
 
     public ProcessInstanceGenerator(String packageName, String typeName, ModelMetaData model) {
         this.packageName = packageName;
-        this.typeName = typeName;
         this.model = model;
         this.canonicalName = packageName + "." + typeName;
         this.targetTypeName = typeName + "ProcessInstance";

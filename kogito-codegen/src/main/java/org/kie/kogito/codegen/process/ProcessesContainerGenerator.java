@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.kie.kogito.Model;
@@ -48,9 +49,7 @@ import com.github.javaparser.ast.type.WildcardType;
 
 public class ProcessesContainerGenerator extends AbstractApplicationSection {
 
-    //    private static final String RESOURCE = "/class-templates/ModuleTemplate.java";
     private final List<ProcessGenerator> processes;
-    private final List<ProcessInstanceGenerator> processInstances;
     private final List<BodyDeclaration<?>> factoryMethods;
 
     private DependencyInjectionAnnotator annotator;
@@ -61,11 +60,10 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
     private MethodDeclaration byProcessIdMethodDeclaration;
     private MethodDeclaration processesMethodDeclaration;
 
-    public ProcessesContainerGenerator(String packageName) {
+    public ProcessesContainerGenerator() {
         super("Processes", "processes", Processes.class);
 
         this.processes = new ArrayList<>();
-        this.processInstances = new ArrayList<>();
         this.factoryMethods = new ArrayList<>();
         this.applicationDeclarations = new NodeList<>();
 
@@ -121,7 +119,9 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
                                         new ReturnStmt(new MethodCallExpr(null, "create" + r.targetTypeName())),
                                         null);
 
-        byProcessIdMethodDeclaration.getBody().get().addStatement(byProcessId);
+        byProcessIdMethodDeclaration.getBody()
+                .orElseThrow(() -> new NoSuchElementException("Method declaration doesn't contain body! (" + byProcessIdMethodDeclaration.getNameAsString() + ")"))
+                .addStatement(byProcessId);
     }
 
     public ProcessesContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
@@ -145,11 +145,18 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
         return processEventListenerConfigClass;
     }
 
+    @Override
     public ClassOrInterfaceDeclaration classDeclaration() {
-        byProcessIdMethodDeclaration.getBody().get().addStatement(new ReturnStmt(new NullLiteralExpr()));
+        byProcessIdMethodDeclaration
+                .getBody()
+                .orElseThrow(() -> new NoSuchElementException("Method declaration doesn't contain body! (" + byProcessIdMethodDeclaration.getNameAsString() + ")"))
+                .addStatement(new ReturnStmt(new NullLiteralExpr()));
 
         NodeList<Expression> processIds = NodeList.nodeList(processes.stream().map(p -> new StringLiteralExpr(p.processId())).collect(Collectors.toList()));
-        processesMethodDeclaration.getBody().get().addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));
+        processesMethodDeclaration
+                .getBody()
+                .orElseThrow(() -> new NoSuchElementException("Method declaration doesn't contain body! (" + processesMethodDeclaration.getNameAsString() + ")"))
+                .addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));
 
         return super.classDeclaration().setMembers(applicationDeclarations);
     }

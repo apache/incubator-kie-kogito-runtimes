@@ -15,7 +15,6 @@
 
 package org.kie.kogito.codegen.process;
 
-import java.nio.file.Path;
 import java.util.Optional;
 
 import org.jbpm.compiler.canonical.ProcessMetaData;
@@ -24,7 +23,7 @@ import org.kie.api.definition.process.WorkflowProcess;
 
 public class ProcessExecutableModelGenerator {
 
-    protected final static String LABEL_PREFIX = "org.kie/";
+    protected static final String LABEL_PREFIX = "org.kie/";
 
     private final WorkflowProcess workFlowProcess;
     private final ProcessToExecModelGenerator execModelGenerator;
@@ -68,14 +67,8 @@ public class ProcessExecutableModelGenerator {
         return processFilePath;
     }
 
-    private String getCompiledClassName(Path fileNameRelative) {
-        return fileNameRelative.toString()
-                .replace("/", ".")
-                .replace(".java", "");
-    }
-
     public String extractedProcessId() {
-        return execModelGenerator.extractProcessId(workFlowProcess.getId());
+        return ProcessToExecModelGenerator.extractProcessId(workFlowProcess.getId());
     }
 
     public String getProcessId() {

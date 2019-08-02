@@ -22,7 +22,6 @@ import org.drools.compiler.commons.jci.readers.DiskResourceReader;
 import org.drools.compiler.commons.jci.readers.ResourceReader;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
-import org.drools.compiler.kie.builder.impl.KieMetaInfoBuilder;
 import org.drools.compiler.kie.builder.impl.KieModuleKieProject;
 import org.drools.compiler.kie.builder.impl.MemoryKieModule;
 import org.drools.compiler.kie.builder.impl.ResultsImpl;
@@ -30,16 +29,12 @@ import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.kie.api.builder.Message.Level;
 import org.kie.api.builder.Results;
 import org.kie.api.builder.model.KieModuleModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 /**
  *  A severely limited version of {@link org.drools.compiler.kie.builder.impl.KieBuilderImpl}
  */
 public class KogitoBuilder {
-
-    private static final Logger log = LoggerFactory.getLogger(KogitoBuilder.class);
 
     private ResultsImpl results;
     private final ResourceReader srcMfs;
@@ -76,23 +71,21 @@ public class KogitoBuilder {
             copySourceToTarget(fileName, srcMfs, trgMfs);
         }
 
-        MemoryKieModule memoryKieModule = new MemoryKieModule(
+        MemoryKieModule newMemoryKieModule = new MemoryKieModule(
                 new ReleaseIdImpl("org.kie.kogito", "noname", "0.0.0"),
                 kieModule, trgMfs);
 
-        KieModuleKieProject kProject = kprojectSupplier.apply(memoryKieModule, classLoader);
+        KieModuleKieProject kProject = kprojectSupplier.apply(newMemoryKieModule, classLoader);
 
         kProject.init();
         kProject.verify(results); // starts the compilation process
         kProject.writeProjectOutput(trgMfs, results);
 
-        //new KieMetaInfoBuilder(memoryKieModule).writeKieModuleMetaInfo(trgMfs);
-
         if (getResults().hasMessages(Level.ERROR)) {
             throw new RuntimeException("Unable to get KieModule, Errors Existed: " + getResults());
         }
 
-        this.memoryKieModule = memoryKieModule;
+        this.memoryKieModule = newMemoryKieModule;
     }
 
     private String copySourceToTarget(String fileName, ResourceReader srcMfs, MemoryFileSystem trgMfs) {

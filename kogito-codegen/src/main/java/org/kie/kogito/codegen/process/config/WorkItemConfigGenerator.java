@@ -17,9 +17,9 @@ package org.kie.kogito.codegen.process.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
@@ -48,7 +48,8 @@ public class WorkItemConfigGenerator {
 
     public ClassOrInterfaceDeclaration generate() {
         ClassOrInterfaceDeclaration cls = parse(this.getClass().getResourceAsStream(RESOURCE))
-                .findFirst(ClassOrInterfaceDeclaration.class).get();
+                .findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new NoSuchElementException("Cannot find a class definition in file " + RESOURCE + "!"));
 
         cls.findFirst(VariableDeclarator.class).ifPresent(this::handlerList);
         cls.findFirst(SwitchStmt.class).ifPresent(this::generateSwitch);

@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen.process;
 
-import static org.kie.kogito.codegen.ApplicationGenerator.log;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.util.StringUtils;
 import org.drools.core.xml.SemanticModules;
@@ -51,12 +51,12 @@ import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFile.Type;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.Generator;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.xml.sax.SAXException;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 /**
  * Entry point to process code generation
@@ -71,13 +71,15 @@ public class ProcessCodegen implements Generator {
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNDISemanticModule());
     }
 
-    public static ProcessCodegen ofPath(Path path) throws IOException {
-        Path srcPath = Paths.get(path.toString());
-        List<File> files = Files.walk(srcPath)
-                .filter(p -> p.toString().endsWith(".bpmn") || p.toString().endsWith(".bpmn2"))
-                .map(Path::toFile)
-                .collect(Collectors.toList());
-        return ofFiles(files);
+    public static ProcessCodegen ofPath(final Path path) throws IOException {
+        final Path srcPath = Paths.get(path.toString());
+        try (final Stream<Path> filesStream = Files.walk(srcPath)) {
+            final List<File> files = filesStream
+                    .filter(p -> p.toString().endsWith(".bpmn") || p.toString().endsWith(".bpmn2"))
+                    .map(Path::toFile)
+                    .collect(Collectors.toList());
+            return ofFiles(files);
+        }
     }
 
     public static ProcessCodegen ofFiles(Collection<File> processFiles) throws IOException {
@@ -110,8 +112,6 @@ public class ProcessCodegen implements Generator {
         }
     }
 
-
-    private String packageName;
     private String applicationCanonicalName;
     private String workItemHandlerConfigClass = null;
     private String processEventListenerConfigClass = null;    
@@ -144,9 +144,7 @@ public class ProcessCodegen implements Generator {
     }
 
     public void setPackageName(String packageName) {
-        this.packageName = packageName;
-        this.moduleGenerator = new ProcessesContainerGenerator(packageName)
-                .withDependencyInjection(annotator);
+        this.moduleGenerator = new ProcessesContainerGenerator().withDependencyInjection(annotator);
         this.applicationCanonicalName = packageName + ".Application";
     }
 
@@ -176,46 +174,23 @@ public class ProcessCodegen implements Generator {
 
         List<ProcessGenerator> ps = new ArrayList<>();
         List<ProcessInstanceGenerator> pis = new ArrayList<>();
-        List<ProcessExecutableModelGenerator> processExecutableModelGenerators = new ArrayList<>();
         List<ResourceGenerator> rgs = new ArrayList<>(); // REST resources
         List<MessageConsumerGenerator> megs = new ArrayList<>(); // message endpoints/consumers
         List<MessageProducerGenerator> mpgs = new ArrayList<>(); // message producers
 
         List<String> publicProcesses = new ArrayList<>();
 
-        Map<String, ModelMetaData> processIdToModel = new HashMap<>();
         Map<String, ModelClassGenerator> processIdToModelGenerator = new HashMap<>();
-        
-        Map<String, List<UserTaskModelMetaData>> processIdToUserTaskModel = new HashMap<>();
-        Map<String, ProcessMetaData> processIdToMetadata = new HashMap<>();
-
-        // first we generate all the data classes from variable declarations
-        for (WorkflowProcess workFlowProcess : processes.values()) {
-            ModelClassGenerator mcg = new ModelClassGenerator(workFlowProcess);
-            processIdToModelGenerator.put(workFlowProcess.getId(), mcg);
-            processIdToModel.put(workFlowProcess.getId(), mcg.generate());
-        }
-        
-        // then we generate user task inputs and outputs if any
-        for (WorkflowProcess workFlowProcess : processes.values()) {
-            UserTasksModelClassGenerator utcg = new UserTasksModelClassGenerator(workFlowProcess);
-            processIdToUserTaskModel.put(workFlowProcess.getId(), utcg.generate());
-        }
+        Map<String, ModelMetaData> processIdToModel = generateModelClasses(processIdToModelGenerator);
+        Map<String, List<UserTaskModelMetaData>> processIdToUserTaskModel = generateUserTasks();
 
         // then we can instantiate the exec model generator
         // with the data classes that we have already resolved
-        ProcessToExecModelGenerator execModelGenerator =
-                new ProcessToExecModelGenerator(processIdToModel);
+        ProcessToExecModelGenerator execModelGenerator = new ProcessToExecModelGenerator(processIdToModel);
 
-        // collect all process descriptors (exec model)
-        for (WorkflowProcess workFlowProcess : processes.values()) {
-            ProcessExecutableModelGenerator execModelGen =
-                    new ProcessExecutableModelGenerator(workFlowProcess, execModelGenerator);
-            processIdToMetadata.put(workFlowProcess.getId(), execModelGen.generate());
-            processExecutableModelGenerators.add(execModelGen);
-        }
-        
-        
+        Map<String, ProcessMetaData> processIdToMetadata = new HashMap<>();
+        List<ProcessExecutableModelGenerator> processExecutableModelGenerators =
+                createProcessExecModelGenerators(execModelGenerator, processIdToMetadata);
 
         // generate Process, ProcessInstance classes and the REST resource
         for (ProcessExecutableModelGenerator execModelGen : processExecutableModelGenerators) {
@@ -227,7 +202,6 @@ public class ProcessCodegen implements Generator {
             ProcessGenerator p = new ProcessGenerator(
                     workFlowProcess,
                     execModelGen,
-                    processes,
                     classPrefix,
                     modelClassGenerator.className(),
                     applicationCanonicalName)
@@ -268,12 +242,7 @@ public class ProcessCodegen implements Generator {
                                     trigger)
                                         .withDependencyInjection(annotator));
                     } else if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
-                        mpgs.add(new MessageProducerGenerator(
-                                                              workFlowProcess,
-                                                              modelClassGenerator.className(),
-                                                              execModelGen.className(),
-                                                              trigger)
-                                                                  .withDependencyInjection(annotator));
+                        mpgs.add(new MessageProducerGenerator(workFlowProcess, trigger).withDependencyInjection(annotator));
                     }
                 }
             }
@@ -347,6 +316,38 @@ public class ProcessCodegen implements Generator {
         return generatedFiles;
     }
 
+    private Map<String, ModelMetaData> generateModelClasses(final Map<String, ModelClassGenerator> processIdToModelGenerator) {
+        final Map<String, ModelMetaData> processIdToModel = new HashMap<>();
+        for (final WorkflowProcess workFlowProcess : processes.values()) {
+            final ModelClassGenerator mcg = new ModelClassGenerator(workFlowProcess);
+            processIdToModelGenerator.put(workFlowProcess.getId(), mcg);
+            processIdToModel.put(workFlowProcess.getId(), mcg.generate());
+        }
+        return processIdToModel;
+    }
+
+    private Map<String, List<UserTaskModelMetaData>> generateUserTasks() {
+        final Map<String, List<UserTaskModelMetaData>> processIdToUserTaskModel = new HashMap<>();
+        for (final WorkflowProcess workFlowProcess : processes.values()) {
+            final UserTasksModelClassGenerator utcg = new UserTasksModelClassGenerator(workFlowProcess);
+            processIdToUserTaskModel.put(workFlowProcess.getId(), utcg.generate());
+        }
+        return processIdToUserTaskModel;
+    }
+
+    private List<ProcessExecutableModelGenerator> createProcessExecModelGenerators(
+            final ProcessToExecModelGenerator execModelGenerator,
+            final Map<String, ProcessMetaData> processIdToMetadata) {
+        final List<ProcessExecutableModelGenerator> processExecutableModelGenerators = new ArrayList<>();
+        for (final WorkflowProcess workFlowProcess : processes.values()) {
+            final ProcessExecutableModelGenerator execModelGen =
+                    new ProcessExecutableModelGenerator(workFlowProcess, execModelGenerator);
+            processIdToMetadata.put(workFlowProcess.getId(), execModelGen.generate());
+            processExecutableModelGenerators.add(execModelGen);
+        }
+        return processExecutableModelGenerators;
+    }
+
     @Override
     public void updateConfig(ConfigGenerator cfg) {
         // fixme: we need to pass on whether this is a drools-only project
@@ -366,6 +367,7 @@ public class ProcessCodegen implements Generator {
         return generatedFiles;
     }
 
+    @Override
     public Map<String, String> getLabels() {
         return labels;
     }

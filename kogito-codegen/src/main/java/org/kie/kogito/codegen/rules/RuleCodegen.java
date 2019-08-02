@@ -16,7 +16,6 @@
 package org.kie.kogito.codegen.rules;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,19 +39,18 @@ import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 
 public class RuleCodegen implements Generator {
 
-    private String packageName;
     private RuleUnitContainerGenerator moduleGenerator;
 
-    public static RuleCodegen ofPath(Path path) throws IOException {
+    public static RuleCodegen ofPath(Path path) {
         return ofPath( path, false );
     }
 
-    public static RuleCodegen ofPath(Path path, boolean oneClassPerRule) throws IOException {
+    public static RuleCodegen ofPath(Path path, boolean oneClassPerRule) {
         KieServices ks = KieServices.Factory.get();
         return new RuleCodegen((KieBuilderImpl) ks.newKieBuilder(path.toFile()), oneClassPerRule, Collections.emptyList());
     }
 
-    public static RuleCodegen ofFiles(Path basePath, Collection<File> files) throws IOException {
+    public static RuleCodegen ofFiles(Path basePath, Collection<File> files) {
         KieServices ks = KieServices.Factory.get();
         KieBuilderImpl kieBuilder = (KieBuilderImpl) ks.newKieBuilder(basePath.toFile());
         kieBuilder.setEnforceResourceLocation(false);
@@ -75,11 +73,13 @@ public class RuleCodegen implements Generator {
         this.kieBuilder = kieBuilder;
         this.oneClassPerRule = oneClassPerRule;
         if (files.isEmpty()) {
-            this.fileFilter = f -> true;
+            this.fileFilter = f -> !f.contains("src" + File.separator + "test" + File.separator + "java")
+                    && !f.endsWith("bpmn")
+                    && !f.endsWith("bpmn2");
         } else {
             this.fileFilter = fname ->
                     files.stream()
-                            .map(f -> f.getPath())
+                            .map(File::getPath)
                             .anyMatch(f -> f.contains(fname));
         }
     }
@@ -89,7 +89,6 @@ public class RuleCodegen implements Generator {
     }
 
     public void setPackageName(String packageName) {
-        this.packageName = packageName;
         this.moduleGenerator = new RuleUnitContainerGenerator(packageName);
     }
 
@@ -109,11 +108,7 @@ public class RuleCodegen implements Generator {
                         new RuleCodegenProject(km, cl, annotator)                                
                                 .withModuleGenerator(moduleGenerator)
                                 .withOneClassPerRule(oneClassPerRule),
-                s -> {
-                    return !s.contains("src" + File.separator + "test" + File.separator + "java")
-                            && !s.endsWith("bpmn")
-                            && !s.endsWith("bpmn2");
-                }
+                fileFilter
         );
 
         InternalKieModule kieModule = (InternalKieModule) kieBuilder.getKieModule();

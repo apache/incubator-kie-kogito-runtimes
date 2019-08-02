@@ -1,14 +1,6 @@
 package org.kie.kogito.codegen.process;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-import static org.kie.kogito.codegen.process.CodegenUtils.interpolateArguments;
-import static org.kie.kogito.codegen.process.CodegenUtils.interpolateTypes;
-import static org.kie.kogito.codegen.process.CodegenUtils.isProcessField;
-
-import org.drools.core.util.StringUtils;
-import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import java.util.NoSuchElementException;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -22,6 +14,14 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.drools.core.util.StringUtils;
+import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.kie.kogito.codegen.process.CodegenUtils.interpolateArguments;
+import static org.kie.kogito.codegen.process.CodegenUtils.interpolateTypes;
 
 public class MessageConsumerGenerator {
     private final String relativePath;
@@ -74,12 +74,15 @@ public class MessageConsumerGenerator {
     }
     
     public String generate() {
+        String messageConsumerTemplatePath = "/class-templates/MessageConsumerTemplate.java";
         CompilationUnit clazz = parse(
-                this.getClass().getResourceAsStream("/class-templates/MessageConsumerTemplate.java"));
+                this.getClass().getResourceAsStream(messageConsumerTemplatePath));
         clazz.setPackageDeclaration(process.getPackageName());
         clazz.addImport(modelfqcn);
 
-        ClassOrInterfaceDeclaration template = clazz.findFirst(ClassOrInterfaceDeclaration.class).get();
+        ClassOrInterfaceDeclaration template = clazz
+                .findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new NoSuchElementException("Cannot find class in template " + messageConsumerTemplatePath + "!"));
         template.setName(resourceClazzName);        
         
         template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, dataClazzName));
@@ -89,19 +92,17 @@ public class MessageConsumerGenerator {
         if (useInjection()) {
             annotator.withApplicationComponent(template);
             
-            template.findAll(FieldDeclaration.class,
-                             fd -> isProcessField(fd)).forEach(this::annotateFields);
+            template.findAll(FieldDeclaration.class, CodegenUtils::isProcessField).forEach(this::annotateFields);
             
             template.findAll(MethodDeclaration.class).stream().filter(md -> md.getNameAsString().equals("consume")).forEach(md -> annotator.withIncomingMessage(md, trigger.getName()));
         } else {
-            template.findAll(FieldDeclaration.class,
-                             fd -> isProcessField(fd)).forEach(fd -> initializeField(fd, template));
+            initializeField(template);
         }
         
         return clazz.toString();
     }
     
-    private void initializeField(FieldDeclaration fd, ClassOrInterfaceDeclaration template) {
+    private void initializeField(ClassOrInterfaceDeclaration template) {
         BlockStmt body = new BlockStmt();
         AssignExpr assignExpr = new AssignExpr(
                                                new FieldAccessExpr(new ThisExpr(), "process"),

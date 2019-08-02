@@ -2,6 +2,7 @@ package org.kie.kogito.codegen.rules;
 
 import java.util.Map;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier;
@@ -11,7 +12,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.MethodReferenceExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.rules.impl.RuleUnitRegistry;
 
@@ -44,9 +44,11 @@ public class RuleUnitsRegisterClass implements FileGenerator {
 
         ClassOrInterfaceDeclaration clazz = cu.addClass( RULE_UNIT_REGISTER_CLASS, Modifier.Keyword.PUBLIC );
         BlockStmt staticBlock = clazz.addStaticInitializer();
-        unitsMap.forEach( (k, v) -> staticBlock.addStatement( new MethodCallExpr( "register",
-                new ClassExpr( new ClassOrInterfaceType( k.getCanonicalName() ) ),
-                new MethodReferenceExpr( new NameExpr( v ), null, "new" ) ) ) );
+        for (Map.Entry<Class<?>, String> unitEntry : unitsMap.entrySet()) {
+            staticBlock.addStatement( new MethodCallExpr( "register",
+                                                          new ClassExpr( StaticJavaParser.parseClassOrInterfaceType( unitEntry.getKey().getCanonicalName() ) ),
+                                                          new MethodReferenceExpr( new NameExpr( unitEntry.getValue() ), null, "new" ) ) );
+        }
 
         return log( cu.toString() );
     }

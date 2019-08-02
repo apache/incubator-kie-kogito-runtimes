@@ -7,8 +7,7 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 
-public class CodegenUtils {
-
+public final class CodegenUtils {
     
     public static void interpolateArguments(MethodDeclaration md, String dataType) {
         md.getParameters().forEach(p -> p.setType(dataType));
@@ -32,5 +31,9 @@ public class CodegenUtils {
     
     public static boolean isProcessField(FieldDeclaration fd) {
         return fd.getElementType().asClassOrInterfaceType().getNameAsString().equals("Process");
+    }
+
+    private CodegenUtils() {
+        // It forbidden to create instances of util classes.
     }
 }

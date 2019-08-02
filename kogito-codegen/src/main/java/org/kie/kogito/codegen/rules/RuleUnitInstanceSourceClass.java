@@ -125,7 +125,6 @@ public class RuleUnitInstanceSourceClass implements FileGenerator {
                                     new MethodCallExpr(
                                     new NameExpr("runtime"), "getEntryPoint",
                                     NodeList.nodeList(new StringLiteralExpr(propertyName))))));
-//                            new MethodReferenceExpr().setScope(new NameExpr("runtime")).setIdentifier("insert"));
 
                     methodBlock.addStatement(drainInto);
                 }

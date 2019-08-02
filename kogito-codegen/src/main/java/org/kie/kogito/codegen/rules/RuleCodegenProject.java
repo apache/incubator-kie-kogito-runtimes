@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -42,7 +43,7 @@ import static org.kie.kogito.codegen.rules.RuleUnitsRegisterClass.RULE_UNIT_REGI
 public class RuleCodegenProject extends CanonicalModelCodeGenerationKieProject implements KieBuilder.ProjectType {
 
     private RuleUnitContainerGenerator moduleGenerator;
-    private DependencyInjectionAnnotator annotator;    
+    private DependencyInjectionAnnotator annotator;
 
     public RuleCodegenProject(InternalKieModule kieModule, ClassLoader classLoader, DependencyInjectionAnnotator annotator) {
         super(kieModule, classLoader);
@@ -65,56 +66,67 @@ public class RuleCodegenProject extends CanonicalModelCodeGenerationKieProject i
             moduleGenerator.withDependencyInjection(annotator);
         }
 
-        boolean hasRuleUnits = false;
         Map<Class<?>, String> unitsMap = new HashMap<>();
-
         for (ModelBuilderImpl modelBuilder : modelBuilders) {
             List<PackageModel> packageModels = modelBuilder.getPackageModels();
             for (PackageModel packageModel : packageModels) {
-                Collection<Class<?>> ruleUnits = packageModel.getRuleUnits();
-
-                if (!ruleUnits.isEmpty()) {
-                    hasRuleUnits = true;
-                    for (Class<?> ruleUnit : ruleUnits) {
-                        RuleUnitSourceClass ruSource = new RuleUnitSourceClass( ruleUnit, packageModel.getRulesFileName() )
-                                .withDependencyInjection(annotator );
-                        moduleGenerator.addRuleUnit( ruSource );
-                        unitsMap.put(ruleUnit, ruSource.targetCanonicalName());
-                    }
-                }
+                prepareRuleUnitsForPackage(packageModel, unitsMap);
             }
         }
 
-        if (hasRuleUnits) {
-            trgMfs.write(
-                    RULE_UNIT_REGISTER_SOURCE,
-                    log( new RuleUnitsRegisterClass(unitsMap).generate() ).getBytes( StandardCharsets.UTF_8 ) );
-
-            for (RuleUnitSourceClass ruleUnit : moduleGenerator.getRuleUnits()) {
-                trgMfs.write(
-                        ruleUnit.generatedFilePath(),
-                        log( ruleUnit.generate() ).getBytes( StandardCharsets.UTF_8 ) );
-
-                RuleUnitInstanceSourceClass ruleUnitInstance = ruleUnit.instance(Thread.currentThread().getContextClassLoader());
-                trgMfs.write(
-                        ruleUnitInstance.generatedFilePath(),
-                        log( ruleUnitInstance.generate() ).getBytes( StandardCharsets.UTF_8 ) );
-            }
+        if (!unitsMap.isEmpty()) {
+            generateRuleUnits(trgMfs, unitsMap);
         } else if (annotator != null) {
-            for (KieBaseModel kBaseModel : kBaseModels.values()) {
-                for (String sessionName : kBaseModel.getKieSessionModels().keySet()) {
-                    CompilationUnit cu = parse( getClass().getResourceAsStream( "/class-templates/SessionRuleUnitTemplate.java" ) );
-                    ClassOrInterfaceDeclaration template = cu.findFirst( ClassOrInterfaceDeclaration.class ).get();
-                    annotator.withNamedSingletonComponent(template, "$SessionName$");                                        
-                    template.setName( "SessionRuleUnit_" + sessionName );
-                    
-                    template.findAll(FieldDeclaration.class).stream().filter(fd -> fd.getVariable(0).getNameAsString().equals("runtimeBuilder")).forEach(fd -> annotator.withInjection(fd));;
-                    
-                    template.findAll( StringLiteralExpr.class ).forEach( s -> s.setString( s.getValue().replace( "$SessionName$", sessionName ) ) );
-                    trgMfs.write(
-                            "org/drools/project/model/SessionRuleUnit_" + sessionName + ".java",
-                            log( cu.toString() ).getBytes( StandardCharsets.UTF_8 ) );
-                }
+            generateSessionClasses(trgMfs);
+        }
+    }
+
+    private void prepareRuleUnitsForPackage(final PackageModel packageModel, final Map<Class<?>, String> unitsMap) {
+        final Collection<Class<?>> ruleUnits = packageModel.getRuleUnits();
+        if (!ruleUnits.isEmpty()) {
+            for (final Class<?> ruleUnit : ruleUnits) {
+                final RuleUnitSourceClass ruSource = new RuleUnitSourceClass(ruleUnit, packageModel.getRulesFileName())
+                        .withDependencyInjection(annotator);
+                moduleGenerator.addRuleUnit(ruSource);
+                unitsMap.put(ruleUnit, ruSource.targetCanonicalName());
+            }
+        }
+    }
+
+    private void generateRuleUnits(final MemoryFileSystem targetMemoryFileSystem, final Map<Class<?>, String> ruleUnits) {
+        targetMemoryFileSystem.write(
+                RULE_UNIT_REGISTER_SOURCE,
+                log(new RuleUnitsRegisterClass(ruleUnits).generate()).getBytes(StandardCharsets.UTF_8));
+
+        for (final RuleUnitSourceClass ruleUnit : moduleGenerator.getRuleUnits()) {
+            targetMemoryFileSystem.write(
+                    ruleUnit.generatedFilePath(),
+                    log(ruleUnit.generate()).getBytes(StandardCharsets.UTF_8));
+
+            final RuleUnitInstanceSourceClass ruleUnitInstance = ruleUnit.instance(Thread.currentThread().getContextClassLoader());
+            targetMemoryFileSystem.write(
+                    ruleUnitInstance.generatedFilePath(),
+                    log(ruleUnitInstance.generate()).getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    private void generateSessionClasses(final MemoryFileSystem targetMemoryFileSystem) {
+        for (final KieBaseModel kBaseModel : kBaseModels.values()) {
+            for (final String sessionName : kBaseModel.getKieSessionModels().keySet()) {
+                final String sessionRuleUnitTemplatePath = "/class-templates/SessionRuleUnitTemplate.java";
+                final CompilationUnit cu = parse(getClass().getResourceAsStream(sessionRuleUnitTemplatePath));
+                final ClassOrInterfaceDeclaration template =
+                        cu.findFirst(ClassOrInterfaceDeclaration.class)
+                                .orElseThrow(() -> new NoSuchElementException("Cannot find class in file " + sessionRuleUnitTemplatePath + "!"));
+                annotator.withNamedSingletonComponent(template, "$SessionName$");
+                template.setName("SessionRuleUnit_" + sessionName);
+
+                template.findAll(FieldDeclaration.class).stream().filter(fd -> fd.getVariable(0).getNameAsString().equals("runtimeBuilder")).forEach(fd -> annotator.withInjection(fd));
+
+                template.findAll(StringLiteralExpr.class).forEach(s -> s.setString(s.getValue().replace("$SessionName$", sessionName)));
+                targetMemoryFileSystem.write(
+                        "org/drools/project/model/SessionRuleUnit_" + sessionName + ".java",
+                        log(cu.toString()).getBytes(StandardCharsets.UTF_8));
             }
         }
     }

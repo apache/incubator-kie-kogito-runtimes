@@ -1,5 +1,7 @@
 package org.kie.kogito.codegen.process;
 
+import java.util.NoSuchElementException;
+
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.kie.kogito.codegen.process.CodegenUtils.interpolateArguments;
 import static org.kie.kogito.codegen.process.CodegenUtils.interpolateTypes;
@@ -30,11 +32,7 @@ public class MessageProducerGenerator {
     
     private TriggerMetaData trigger;
     
-    public MessageProducerGenerator(
-            WorkflowProcess process,
-            String modelfqcn,
-            String processfqcn,
-            TriggerMetaData trigger) {
+    public MessageProducerGenerator(WorkflowProcess process, TriggerMetaData trigger) {
         this.process = process;
         this.trigger = trigger;
         this.packageName = process.getPackageName();
@@ -63,11 +61,14 @@ public class MessageProducerGenerator {
     }
     
     public String generate() {
+        String messageProducerTemplatePath = "/class-templates/MessageProducerTemplate.java";
         CompilationUnit clazz = parse(
-                this.getClass().getResourceAsStream("/class-templates/MessageProducerTemplate.java"));
+                this.getClass().getResourceAsStream(messageProducerTemplatePath));
         clazz.setPackageDeclaration(process.getPackageName());
 
-        ClassOrInterfaceDeclaration template = clazz.findFirst(ClassOrInterfaceDeclaration.class).get();
+        ClassOrInterfaceDeclaration template = clazz
+                .findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new NoSuchElementException("Cannot find class in template " + messageProducerTemplatePath + "!"));
         template.setName(resourceClazzName);        
         
         template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, trigger.getDataType()));
@@ -76,12 +77,18 @@ public class MessageProducerGenerator {
         if (useInjection()) {
             annotator.withApplicationComponent(template);
             
-            FieldDeclaration emitterField = template.findFirst(FieldDeclaration.class).filter(fd -> fd.getVariable(0).getNameAsString().equals("emitter")).get();
+            final FieldDeclaration emitterField = template
+                    .findFirst(FieldDeclaration.class)
+                    .filter(fd -> fd.getVariable(0).getNameAsString().equals("emitter"))
+                    .orElseThrow(() -> new NoSuchElementException("Cannot find field emitter in " + messageProducerTemplatePath + "!"));
             annotator.withInjection(emitterField);
             annotator.withOutgoingMessage(emitterField, trigger.getName());
             emitterField.getVariable(0).setType(annotator.emitterType(trigger.getDataType()));
             
-            MethodDeclaration produceMethod = template.findFirst(MethodDeclaration.class).filter(md -> md.getNameAsString().equals("produce")).get();
+            MethodDeclaration produceMethod = template
+                    .findFirst(MethodDeclaration.class)
+                    .filter(md -> md.getNameAsString().equals("produce"))
+                    .orElseThrow(() -> new NoSuchElementException("Cannot find method produce in " + messageProducerTemplatePath + "!"));
             BlockStmt body = new BlockStmt();
             MethodCallExpr sendMethodCall = new MethodCallExpr(new NameExpr("emitter"), "send");
             annotator.withMessageProducer(sendMethodCall, trigger.getName(), "eventData");

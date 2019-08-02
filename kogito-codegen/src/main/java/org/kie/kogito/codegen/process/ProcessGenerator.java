@@ -18,18 +18,7 @@ package org.kie.kogito.codegen.process;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
-import org.drools.core.util.StringUtils;
-import org.jbpm.compiler.canonical.ProcessMetaData;
-import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.kie.api.definition.process.Process;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.kogito.Model;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.process.impl.AbstractProcess;
+import java.util.NoSuchElementException;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -56,6 +45,16 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
+import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
+import org.drools.core.util.StringUtils;
+import org.jbpm.compiler.canonical.ProcessMetaData;
+import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.kie.api.definition.process.Process;
+import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.api.runtime.process.WorkItemHandler;
+import org.kie.kogito.Model;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.process.impl.AbstractProcess;
 
 /**
  * Generates the Process&lt;T&gt; container
@@ -68,12 +67,10 @@ public class ProcessGenerator {
     private final String packageName;
     private final WorkflowProcess process;
     private final ProcessExecutableModelGenerator legacyProcessGenerator;
-    private final Map<String, WorkflowProcess> processMapping;
     private final String typeName;
     private final String modelTypeName;
     private final String generatedFilePath;
     private final String completePath;
-    private final String canonicalName;
     private final String targetCanonicalName;
     private final String appCanonicalName;
     private String targetTypeName;
@@ -84,7 +81,6 @@ public class ProcessGenerator {
     public ProcessGenerator(
             WorkflowProcess process,
             ProcessExecutableModelGenerator legacyProcessGenerator,
-            Map<String, WorkflowProcess> processMapping,
             String typeName,
             String modelTypeName,
             String appCanonicalName) {
@@ -94,10 +90,8 @@ public class ProcessGenerator {
         this.packageName = process.getPackageName();
         this.process = process;
         this.legacyProcessGenerator = legacyProcessGenerator;
-        this.processMapping = processMapping;
         this.typeName = typeName;
         this.modelTypeName = modelTypeName;
-        this.canonicalName = packageName + "." + typeName;
         this.targetTypeName = typeName + "Process";
         this.targetCanonicalName = packageName + "." + targetTypeName;
         this.generatedFilePath = targetCanonicalName.replace('.', '/') + ".java";
@@ -164,13 +158,13 @@ public class ProcessGenerator {
         return methodDeclaration;
     }
 
-    private MethodDeclaration legacyProcess(ProcessMetaData processMetaDate) {
-        MethodDeclaration legacyProcess = processMetaDate.getGeneratedClassModel()
-                .findFirst(MethodDeclaration.class).get()
+    private MethodDeclaration legacyProcess(ProcessMetaData processMetaData) {
+        return processMetaData.getGeneratedClassModel()
+                .findFirst(MethodDeclaration.class)
+                .orElseThrow(() -> new NoSuchElementException("Cannot find a method in generated class from process metadata!"))
                 .setModifiers(Modifier.Keyword.PROTECTED)
                 .setType(Process.class.getCanonicalName())
                 .setName("legacyProcess");
-        return legacyProcess;
     }
 
     private MethodCallExpr createProcessRuntime() {
@@ -190,7 +184,9 @@ public class ProcessGenerator {
         if (!processMetaData.getGeneratedHandlers().isEmpty()) {
             
             processMetaData.getGeneratedHandlers().forEach((name, handler) -> {
-                ClassOrInterfaceDeclaration clazz = handler.findFirst(ClassOrInterfaceDeclaration.class).get();
+                ClassOrInterfaceDeclaration clazz =
+                        handler.findFirst(ClassOrInterfaceDeclaration.class)
+                                .orElseThrow(() -> new NoSuchElementException("Cannot find class in compilation unit!"));
                 if (useInjection()) {
                                        
                     annotator.withApplicationComponent(clazz);
@@ -206,12 +202,12 @@ public class ProcessGenerator {
                     
                     body.addStatement(forachHandler);
                 } else {
-                
-                    String packageName = handler.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
+                    MethodCallExpr workItemManager = new MethodCallExpr(new NameExpr("services"), "getWorkItemManager");
+                    String workItemHandlerPackageName = handler.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
                     String clazzName = clazz.getName().toString();
-                    
-                    MethodCallExpr workItemManager = new MethodCallExpr(new NameExpr("services"), "getWorkItemManager");            
-                    MethodCallExpr registerHandler = new MethodCallExpr(workItemManager, "registerWorkItemHandler").addArgument(new StringLiteralExpr(name)).addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, packageName + "." + clazzName), NodeList.nodeList()));
+                    MethodCallExpr registerHandler = new MethodCallExpr(workItemManager, "registerWorkItemHandler")
+                            .addArgument(new StringLiteralExpr(name))
+                            .addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, workItemHandlerPackageName + "." + clazzName), NodeList.nodeList()));
                     
                     body.addStatement(registerHandler);
                 }
@@ -240,11 +236,12 @@ public class ProcessGenerator {
             processMetaData.getGeneratedListeners().forEach(listener -> {
                 
                 ClassOrInterfaceDeclaration clazz = listener.findFirst(ClassOrInterfaceDeclaration.class).get();
-                String packageName = listener.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
+                String eventListenerPackagename = listener.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
                 String clazzName = clazz.getName().toString();
                 
                 MethodCallExpr eventSupport = new MethodCallExpr(new NameExpr("services"), "getEventSupport");            
-                MethodCallExpr registerListener = new MethodCallExpr(eventSupport, "addEventListener").addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, packageName + "." + clazzName), NodeList.nodeList()));
+                MethodCallExpr registerListener = new MethodCallExpr(eventSupport, "addEventListener")
+                        .addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, eventListenerPackagename + "." + clazzName), NodeList.nodeList()));
                 
                 body.addStatement(registerListener);
                 
@@ -342,60 +339,11 @@ public class ProcessGenerator {
         
         
         if (!processMetaData.getSubProcesses().isEmpty()) {
-            
-            for (String subProcessId : processMetaData.getSubProcesses()) {
-                FieldDeclaration subprocessFieldDeclaration = new FieldDeclaration();                    
-
-                String fieldName = "process" + subProcessId;
-                if (useInjection()) {
-                    subprocessFieldDeclaration
-                        .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, StringUtils.capitalize(subProcessId+"Model")))), fieldName));
-                    annotator.withInjection(subprocessFieldDeclaration);
-                } else {
-                    // app.processes().create$Subprocess()
-                    MethodCallExpr initSubProcessField = new MethodCallExpr(
-                            new MethodCallExpr(new NameExpr("app"), "processes"),
-                            "create" + StringUtils.capitalize(subProcessId) + "Process");
-                    
-                    subprocessFieldDeclaration
-                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, StringUtils.capitalize(subProcessId+"Model")))), fieldName));
-                
-                    constructorDeclaration.getBody().addStatement(new AssignExpr(new FieldAccessExpr(new ThisExpr(), fieldName), initSubProcessField, Operator.ASSIGN));
-                    
-                }
-                
-                cls.addMember(subprocessFieldDeclaration);
-                                
-            }
+            generateSubprocesses(processMetaData, constructorDeclaration, cls);
         }
         
         if (!processMetaData.getTriggers().isEmpty()) {
-            
-            for (TriggerMetaData trigger : processMetaData.getTriggers()) {
-                // add message produces as field
-                if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
-                    String producerFieldType = packageName + "." + typeName + "MessageProducer_" + trigger.getOwnerId();
-                    String producerFielName = "producer_" + trigger.getOwnerId();
-                    
-                    FieldDeclaration producerFieldieldDeclaration = new FieldDeclaration()
-                            .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, producerFieldType), producerFielName));
-                    cls.addMember(producerFieldieldDeclaration);
-                    
-                    if (useInjection()) {
-                        annotator.withInjection(producerFieldieldDeclaration);
-                    } else {
-                        
-                        AssignExpr assignExpr = new AssignExpr(
-                                                               new FieldAccessExpr(new ThisExpr(), producerFielName),
-                                                               new ObjectCreationExpr().setType(producerFieldType),
-                                                               AssignExpr.Operator.ASSIGN);
-                        
-                        
-                        cls.getConstructors().forEach(c -> c.getBody().addStatement(assignExpr));
-                        
-                    }
-                }
-            }
+            generateTriggers(processMetaData, cls);
         }
         
         return cls;
@@ -424,5 +372,56 @@ public class ProcessGenerator {
     
     protected boolean useInjection() {
         return this.annotator != null;
+    }
+
+    private void generateSubprocesses(final ProcessMetaData processMetaData,
+                                      final ConstructorDeclaration constructorDeclaration,
+                                      final ClassOrInterfaceDeclaration mainClass) {
+        for (final String subProcessId : processMetaData.getSubProcesses()) {
+            final FieldDeclaration subprocessFieldDeclaration = new FieldDeclaration();
+
+            final String fieldName = "process" + subProcessId;
+            if (useInjection()) {
+                subprocessFieldDeclaration
+                        .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, StringUtils.capitalize(subProcessId+"Model")))), fieldName));
+                annotator.withInjection(subprocessFieldDeclaration);
+            } else {
+                final MethodCallExpr initSubProcessField = new MethodCallExpr(
+                        new MethodCallExpr(new NameExpr("app"), "processes"),
+                        "create" + StringUtils.capitalize(subProcessId) + "Process");
+
+                subprocessFieldDeclaration
+                        .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, StringUtils.capitalize(subProcessId+"Model")))), fieldName));
+
+                constructorDeclaration.getBody().addStatement(new AssignExpr(new FieldAccessExpr(new ThisExpr(), fieldName), initSubProcessField, Operator.ASSIGN));
+
+            }
+
+            mainClass.addMember(subprocessFieldDeclaration);
+        }
+    }
+
+    private void generateTriggers(final ProcessMetaData processMetaData, final ClassOrInterfaceDeclaration mainClass) {
+        for (final TriggerMetaData trigger : processMetaData.getTriggers()) {
+            // add message produces as field
+            if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
+                final String producerFieldType = packageName + "." + typeName + "MessageProducer_" + trigger.getOwnerId();
+                final String producerFieldName = "producer_" + trigger.getOwnerId();
+
+                final FieldDeclaration producerFieldDeclaration = new FieldDeclaration()
+                        .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, producerFieldType), producerFieldName));
+                mainClass.addMember(producerFieldDeclaration);
+
+                if (useInjection()) {
+                    annotator.withInjection(producerFieldDeclaration);
+                } else {
+                    final AssignExpr assignExpr = new AssignExpr(
+                            new FieldAccessExpr(new ThisExpr(), producerFieldName),
+                            new ObjectCreationExpr().setType(producerFieldType),
+                            AssignExpr.Operator.ASSIGN);
+                    mainClass.getConstructors().forEach(c -> c.getBody().addStatement(assignExpr));
+                }
+            }
+        }
     }
 }

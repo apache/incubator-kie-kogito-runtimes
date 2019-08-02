@@ -15,11 +15,9 @@
 
 package org.kie.kogito.codegen;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-import static org.kie.kogito.codegen.rules.RuleUnitsRegisterClass.RULE_UNIT_REGISTER_FQN;
-
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,17 +26,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.kie.kogito.Config;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.codegen.metadata.ImageMetaData;
-import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
-import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
@@ -57,13 +49,22 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.kie.kogito.Config;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.metadata.ImageMetaData;
+import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
+import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.kie.kogito.codegen.rules.RuleUnitsRegisterClass.RULE_UNIT_REGISTER_FQN;
 
 public class ApplicationGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationGenerator.class);
 
     private static final String RESOURCE = "/class-templates/ApplicationTemplate.java";
-    private final static String LABEL_PREFIX = "org.kie/";
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
     public static final String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
@@ -72,7 +73,6 @@ public class ApplicationGenerator {
     
     private final String packageName;
     private final String sourceFilePath;
-    private final String completePath;
     private final String targetCanonicalName;
     private final File targetDirectory;
 
@@ -94,7 +94,6 @@ public class ApplicationGenerator {
         this.targetTypeName = "Application";
         this.targetCanonicalName = this.packageName + "." + targetTypeName;
         this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
-        this.completePath = "src/main/java/" + sourceFilePath;
         this.factoryMethods = new ArrayList<>();
     }
 
@@ -114,9 +113,15 @@ public class ApplicationGenerator {
         CompilationUnit compilationUnit =
                 parse(this.getClass().getResourceAsStream(RESOURCE))
                         .setPackageDeclaration(packageName);
-        ClassOrInterfaceDeclaration cls = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get();
-        
-        FieldDeclaration unitOfWorkManagerField = cls.findFirst(FieldDeclaration.class).filter(fd -> fd.getVariable(0).getNameAsString().equals("unitOfWorkManager")).get();
+        ClassOrInterfaceDeclaration cls =
+                compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
+                        .orElseThrow(() -> new NoSuchElementException("Cannot find class in compilation unit!"));
+
+        final String unitOfWorkManagerFieldName = "unitOfWorkManager";
+        FieldDeclaration unitOfWorkManagerField = cls
+                .findFirst(FieldDeclaration.class)
+                .filter(fd -> fd.getVariable(0).getNameAsString().equals(unitOfWorkManagerFieldName))
+                .orElseThrow(() -> new NoSuchElementException("Cannot find field " + unitOfWorkManagerFieldName + " in class " + cls.getNameAsString() + "!"));
         // unit of work manager setup
         unitOfWorkManagerField.getVariable(0).setInitializer(new ObjectCreationExpr(null, 
                                                                                     new ClassOrInterfaceType(null, DefaultUnitOfWorkManager.class.getCanonicalName()), 
@@ -128,12 +133,6 @@ public class ApplicationGenerator {
         }
 
         if (hasRuleUnits) {
-            // static {
-            //    try {
-            //        Class.forName( RULE_UNIT_REGISTER_FQN );
-            //    } catch (ClassNotFoundException e) { }
-            // }
-
             BlockStmt blockStmt = cls.addStaticInitializer();
             TryStmt tryStmt = new TryStmt();
             blockStmt.addStatement( tryStmt );
@@ -142,7 +141,7 @@ public class ApplicationGenerator {
                     .addArgument( new StringLiteralExpr( RULE_UNIT_REGISTER_FQN ) ) );
 
             tryStmt.getCatchClauses().add( new CatchClause()
-                    .setParameter( new Parameter( new ClassOrInterfaceType("ClassNotFoundException"), new SimpleName( "e" ) ) ) );
+                    .setParameter( new Parameter(StaticJavaParser.parseClassOrInterfaceType("ClassNotFoundException"), new SimpleName("e" ) ) ) );
         }
 
         cls.addMember(new FieldDeclaration()
@@ -206,7 +205,7 @@ public class ApplicationGenerator {
         try {
             Path imageMetaDataFile = Paths.get(targetDirectory.getAbsolutePath(), "image_metadata.json");
             ImageMetaData imageMetadata;
-            if (Files.exists(imageMetaDataFile)) {
+            if (imageMetaDataFile.toFile().exists()) {
                 // read the file to merge the content
                 imageMetadata =  mapper.readValue(imageMetaDataFile.toFile(), ImageMetaData.class);
             } else {
@@ -218,7 +217,7 @@ public class ApplicationGenerator {
             Files.write(imageMetaDataFile,
                         mapper.writerWithDefaultPrettyPrinter().writeValueAsString(imageMetadata).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

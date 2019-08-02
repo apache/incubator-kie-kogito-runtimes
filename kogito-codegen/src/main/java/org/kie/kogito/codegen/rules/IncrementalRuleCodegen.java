@@ -52,7 +52,6 @@ import org.kie.api.builder.model.KieModuleModel;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
-import org.kie.internal.builder.KnowledgeBuilderResults;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
@@ -98,11 +97,11 @@ public class IncrementalRuleCodegen implements Generator {
     }
 
     private static Set<Resource> toResources(Stream<File> files, ResourceType resourceType) {
-        return files.filter(f -> resourceType.matchesExtension(f.getName())).map(FileSystemResource::new).peek(r -> r.setResourceType(resourceType)).collect(Collectors.toSet());
+        return files.filter(f -> resourceType.matchesExtension(f.getName())).map(FileSystemResource::new).map(r -> r.setResourceType(resourceType)).collect(Collectors.toSet());
     }
 
     private static Set<Resource> toResources(Stream<File> files) {
-        return files.map(FileSystemResource::new).peek(r -> r.setResourceType(typeOf(r))).filter(r -> r.getResourceType() != null).collect(Collectors.toSet());
+        return files.map(FileSystemResource::new).map(r -> r.setResourceType(typeOf(r))).filter(r -> r.getResourceType() != null).collect(Collectors.toSet());
     }
 
     private static ResourceType typeOf(FileSystemResource r) {
@@ -124,7 +123,6 @@ public class IncrementalRuleCodegen implements Generator {
     private String ruleEventListenersConfigClass;
     private RuleUnitContainerGenerator moduleGenerator;
 
-    private boolean dependencyInjection;
     private DependencyInjectionAnnotator annotator;
     /**
      * used for type-resolving during codegen/type-checking
@@ -168,7 +166,7 @@ public class IncrementalRuleCodegen implements Generator {
 
         ReleaseIdImpl dummyReleaseId = new ReleaseIdImpl("dummy:dummy:0.0.0");
 
-        RuleUnitContainerGenerator moduleGenerator =
+        RuleUnitContainerGenerator ruleUnitContainerGenerator =
                 new RuleUnitContainerGenerator(packageName)
                         .withDependencyInjection(annotator);
 
@@ -185,7 +183,6 @@ public class IncrementalRuleCodegen implements Generator {
 
         CompositeKnowledgeBuilder batch = modelBuilder.batch();
         batch.build();
-        KnowledgeBuilderResults results = modelBuilder.getResults();
         boolean hasRuleUnits = false;
         Map<Class<?>, String> unitsMap = new HashMap<>();
 
@@ -258,7 +255,7 @@ public class IncrementalRuleCodegen implements Generator {
                     RuleUnitSourceClass ruSource = new RuleUnitSourceClass(ruleUnit, pkgModel.getRulesFileName())
                             .withDependencyInjection(annotator)
                             .withQueries( pkgModel.getQueriesInRuleUnit( ruleUnit ) );
-                    moduleGenerator.addRuleUnit(ruSource);
+                    ruleUnitContainerGenerator.addRuleUnit(ruSource);
                     unitsMap.put(ruleUnit, ruSource.targetCanonicalName());
                 }
             }
@@ -267,7 +264,7 @@ public class IncrementalRuleCodegen implements Generator {
         if (hasRuleUnits) {
             generatedFiles.add( new RuleUnitsRegisterClass(unitsMap).generateFile(GeneratedFile.Type.RULE) );
 
-            for (RuleUnitSourceClass ruleUnit : moduleGenerator.getRuleUnits()) {
+            for (RuleUnitSourceClass ruleUnit : ruleUnitContainerGenerator.getRuleUnits()) {
                 generatedFiles.add( ruleUnit.generateFile(GeneratedFile.Type.RULE) );
 
                 RuleUnitInstanceSourceClass ruleUnitInstance = ruleUnit.instance(contextClassLoader);
@@ -285,7 +282,7 @@ public class IncrementalRuleCodegen implements Generator {
                     annotator.withNamedSingletonComponent(template, "$SessionName$");
                     template.setName( "SessionRuleUnit_" + sessionName );
 
-                    template.findAll(FieldDeclaration.class).stream().filter(fd -> fd.getVariable(0).getNameAsString().equals("runtimeBuilder")).forEach(fd -> annotator.withInjection(fd));;
+                    template.findAll(FieldDeclaration.class).stream().filter(fd -> fd.getVariable(0).getNameAsString().equals("runtimeBuilder")).forEach(fd -> annotator.withInjection(fd));
 
                     template.findAll( StringLiteralExpr.class ).forEach( s -> s.setString( s.getValue().replace( "$SessionName$", sessionName ) ) );
                     generatedFiles.add(new GeneratedFile(
@@ -329,10 +326,6 @@ public class IncrementalRuleCodegen implements Generator {
     @Override
     public void updateConfig(ConfigGenerator cfg) {
         cfg.withRuleConfig(new RuleConfigGenerator().ruleEventListenersConfig(moduleGenerator.ruleEventListenersConfigClass()));
-    }
-
-    public void setDependencyInjection(boolean di) {
-        this.dependencyInjection = di;
     }
 
     public IncrementalRuleCodegen withRuleEventListenersConfig(String ruleEventListenersConfigClass) {

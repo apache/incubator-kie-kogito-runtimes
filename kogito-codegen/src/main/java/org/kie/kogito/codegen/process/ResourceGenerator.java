@@ -15,21 +15,11 @@
 
 package org.kie.kogito.codegen.process;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-import static org.kie.kogito.codegen.process.CodegenUtils.*;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import org.drools.core.util.StringUtils;
-import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.jbpm.compiler.canonical.UserTaskModelMetaData;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.impl.Sig;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -55,6 +45,16 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
+import org.drools.core.util.StringUtils;
+import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.jbpm.compiler.canonical.UserTaskModelMetaData;
+import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.impl.Sig;
+
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.kie.kogito.codegen.process.CodegenUtils.interpolateTypes;
 
 public class ResourceGenerator {
 
@@ -115,91 +115,23 @@ public class ResourceGenerator {
     }
 
     public String generate() {
-        CompilationUnit clazz = parse(
-                this.getClass().getResourceAsStream("/class-templates/RestResourceTemplate.java"));
+        final String restResourceTemplatePath = "/class-templates/RestResourceTemplate.java";
+        CompilationUnit clazz = parse(this.getClass().getResourceAsStream(restResourceTemplatePath));
         clazz.setPackageDeclaration(process.getPackageName());
         clazz.addImport(modelfqcn);
 
         ClassOrInterfaceDeclaration template =
-                clazz.findFirst(ClassOrInterfaceDeclaration.class).get();
+                clazz.findFirst(ClassOrInterfaceDeclaration.class)
+                        .orElseThrow(() -> new NoSuchElementException("Cannot find class in file " + restResourceTemplatePath + "!"));
 
         template.setName(resourceClazzName);
         
         if (userTasks != null) {
-
-            CompilationUnit userTaskClazz = parse(
-                                                     this.getClass().getResourceAsStream("/class-templates/RestResourceUserTaskTemplate.java"));
-            
-            
-            ClassOrInterfaceDeclaration userTaskTemplate =
-                    userTaskClazz.findFirst(ClassOrInterfaceDeclaration.class).get();
-            for (UserTaskModelMetaData userTask : userTasks) {
-       
-                userTaskTemplate.findAll(MethodDeclaration.class).forEach(md -> {                    
-                    
-                    MethodDeclaration cloned = md.clone();
-                    template.addMethod(cloned.getName() + "_" + userTask.getId(), Keyword.PUBLIC)
-                    .setType(cloned.getType())
-                    .setParameters(cloned.getParameters())
-                    .setBody(cloned.getBody().get())
-                    .setAnnotations(cloned.getAnnotations());
-                    
-                });
-                
-                template.findAll(StringLiteralExpr.class).forEach(s -> interpolateUserTaskStrings(s, userTask));
-                
-                template.findAll(ClassOrInterfaceType.class).forEach(c -> interpolateUserTaskTypes(c, userTask.getInputMoodelClassSimpleName(), userTask.getOutputMoodelClassSimpleName()));
-                template.findAll(NameExpr.class).forEach(c -> interpolateUserTaskNameExp(c, userTask));
-                
-            }
+            generateUserTaskMethods(template);
         }
         
         if (signals != null) {
-            
-            int index = 0;
-            for (Entry<String, String> entry : signals.entrySet()) {
-                MethodDeclaration signalMethod = new MethodDeclaration()
-                        .setName("signal_" + index)
-                        .setType(modelfqcn)
-                        .setModifiers(Keyword.PUBLIC)
-                        .addAnnotation("POST")
-                        .addSingleMemberAnnotation("Path", new StringLiteralExpr("/{id}/" + entry.getKey()))
-                        .addSingleMemberAnnotation("Produces", "MediaType.APPLICATION_JSON");
-                
-                signalMethod.addAndGetParameter("Long", "id").addSingleMemberAnnotation("PathParam", new StringLiteralExpr("id"));
-                
-                if (entry.getValue() != null) {
-                    signalMethod.addSingleMemberAnnotation("Consumes", "MediaType.APPLICATION_JSON");                    
-                    signalMethod.addAndGetParameter(entry.getValue(), "data");
-                }
-                
-                // method body to signal process instance                
-                MethodCallExpr newSignal = new MethodCallExpr(new NameExpr(Sig.class.getCanonicalName()), "of")
-                        .addArgument(new StringLiteralExpr(entry.getKey()))
-                        .addArgument(entry.getValue() != null ? new NameExpr("data") : new NullLiteralExpr());
-                MethodCallExpr instances = new MethodCallExpr(new NameExpr("process"), "instances");
-                MethodCallExpr findById = new MethodCallExpr(instances, "findById").addArgument(new NameExpr("id"));
-                MethodCallExpr getOptional = new MethodCallExpr(findById, "orElse").addArgument(new NullLiteralExpr());
-                
-                VariableDeclarator processInstance = new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(ProcessInstance.class.getCanonicalName()), 
-                                                                                                     NodeList.nodeList(new ClassOrInterfaceType(null, modelfqcn))),
-                                                                                                     "pi",
-                                                                                                     getOptional);
-                // local variable for process instance
-                VariableDeclarationExpr processInstanceField = new VariableDeclarationExpr(processInstance);
-                // signal only when there is non null process instance
-                IfStmt processInstanceExists = new IfStmt(new BinaryExpr(new NameExpr("pi"), new NullLiteralExpr(), Operator.EQUALS), 
-                                                new ReturnStmt(new NullLiteralExpr()), 
-                                                 null);
-                
-                MethodCallExpr send = new MethodCallExpr(new NameExpr("pi"), "send").addArgument(newSignal);
-                // return current state of variables after the signal
-                MethodCallExpr variables = new MethodCallExpr(new NameExpr("pi"), "variables");
-                signalMethod.createBody().addStatement(processInstanceField).addStatement(processInstanceExists).addStatement(send).addStatement(new ReturnStmt(variables));  
-                
-                
-                template.addMember(signalMethod);
-            }
+            generateSignalMethods(template);
         }
         
         template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
@@ -208,27 +140,99 @@ public class ResourceGenerator {
 
         if (useInjection()) {
             template.findAll(FieldDeclaration.class,
-                             fd -> isProcessField(fd)).forEach(this::annotateFields);
+                             CodegenUtils::isProcessField).forEach(this::annotateFields);
         } else {
-            template.findAll(FieldDeclaration.class,
-                             fd -> isProcessField(fd)).forEach(fd -> initializeField(fd, template));
+            initializeField(template);
         }
         
         // if triggers are not empty remove createResource method as there is another trigger to start process instances
         if (triggers != null && !triggers.isEmpty()) {
             Optional<MethodDeclaration> createResourceMethod = template.findFirst(MethodDeclaration.class).filter(md -> md.getNameAsString().equals("createResource_" + processName));
-            if (createResourceMethod.isPresent()) {
-                template.remove(createResourceMethod.get());
-            }
+            createResourceMethod.ifPresent(template::remove);
         }
 
         return clazz.toString();
     }
+
+    private void generateUserTaskMethods(ClassOrInterfaceDeclaration template) {
+        final String userTaskTemplatePath = "/class-templates/RestResourceUserTaskTemplate.java";
+        CompilationUnit userTaskClazz = parse(this.getClass().getResourceAsStream(userTaskTemplatePath));
+        ClassOrInterfaceDeclaration userTaskTemplate =
+                userTaskClazz.findFirst(ClassOrInterfaceDeclaration.class)
+                        .orElseThrow(() -> new NoSuchElementException("Cannot find class in file " + userTaskTemplatePath + "!"));
+        for (UserTaskModelMetaData userTask : userTasks) {
+
+            userTaskTemplate.findAll(MethodDeclaration.class).forEach(md -> {
+
+                MethodDeclaration cloned = md.clone();
+                template.addMethod(cloned.getName() + "_" + userTask.getId(), Keyword.PUBLIC)
+                        .setType(cloned.getType())
+                        .setParameters(cloned.getParameters())
+                        .setBody(cloned.getBody().get())
+                        .setAnnotations(cloned.getAnnotations());
+
+            });
+
+            template.findAll(StringLiteralExpr.class).forEach(s -> interpolateUserTaskStrings(s, userTask));
+
+            template.findAll(ClassOrInterfaceType.class).forEach(c -> interpolateUserTaskTypes(c, userTask.getInputMoodelClassSimpleName(), userTask.getOutputMoodelClassSimpleName()));
+            template.findAll(NameExpr.class).forEach(c -> interpolateUserTaskNameExp(c, userTask));
+
+        }
+    }
+
+    private void generateSignalMethods(ClassOrInterfaceDeclaration template) {
+        int index = 0;
+        for (Entry<String, String> entry : signals.entrySet()) {
+            MethodDeclaration signalMethod = new MethodDeclaration()
+                    .setName("signal_" + index)
+                    .setType(modelfqcn)
+                    .setModifiers(Keyword.PUBLIC)
+                    .addAnnotation("POST")
+                    .addSingleMemberAnnotation("Path", new StringLiteralExpr("/{id}/" + entry.getKey()))
+                    .addSingleMemberAnnotation("Produces", "MediaType.APPLICATION_JSON");
+
+            signalMethod.addAndGetParameter("Long", "id").addSingleMemberAnnotation("PathParam", new StringLiteralExpr("id"));
+
+            if (entry.getValue() != null) {
+                signalMethod.addSingleMemberAnnotation("Consumes", "MediaType.APPLICATION_JSON");
+                signalMethod.addAndGetParameter(entry.getValue(), "data");
+            }
+
+            // method body to signal process instance
+            MethodCallExpr newSignal = new MethodCallExpr(new NameExpr(Sig.class.getCanonicalName()), "of")
+                    .addArgument(new StringLiteralExpr(entry.getKey()))
+                    .addArgument(entry.getValue() != null ? new NameExpr("data") : new NullLiteralExpr());
+            MethodCallExpr instances = new MethodCallExpr(new NameExpr("process"), "instances");
+            MethodCallExpr findById = new MethodCallExpr(instances, "findById").addArgument(new NameExpr("id"));
+            MethodCallExpr getOptional = new MethodCallExpr(findById, "orElse").addArgument(new NullLiteralExpr());
+
+            VariableDeclarator processInstance = new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(ProcessInstance.class.getCanonicalName()),
+                                                                                                 NodeList.nodeList(new ClassOrInterfaceType(null, modelfqcn))),
+                                                                        "pi",
+                                                                        getOptional);
+            // local variable for process instance
+            VariableDeclarationExpr processInstanceField = new VariableDeclarationExpr(processInstance);
+            // signal only when there is non null process instance
+            IfStmt processInstanceExists = new IfStmt(new BinaryExpr(new NameExpr("pi"), new NullLiteralExpr(), Operator.EQUALS),
+                                                      new ReturnStmt(new NullLiteralExpr()),
+                                                      null);
+
+            MethodCallExpr send = new MethodCallExpr(new NameExpr("pi"), "send").addArgument(newSignal);
+            // return current state of variables after the signal
+            MethodCallExpr variables = new MethodCallExpr(new NameExpr("pi"), "variables");
+            signalMethod.createBody().addStatement(processInstanceField).addStatement(processInstanceExists).addStatement(send).addStatement(new ReturnStmt(variables));
+
+
+            template.addMember(signalMethod);
+        }
+    }
+
     private void annotateFields(FieldDeclaration fd) {       
         annotator.withNamedInjection(fd, processId);
     }
     
-    private void initializeField(FieldDeclaration fd, ClassOrInterfaceDeclaration template) {
+    private void initializeField(ClassOrInterfaceDeclaration template) {
         BlockStmt body = new BlockStmt();
         AssignExpr assignExpr = new AssignExpr(
                                                new FieldAccessExpr(new ThisExpr(), "process"),
