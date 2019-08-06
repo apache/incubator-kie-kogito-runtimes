@@ -68,7 +68,7 @@
   </build>
 
   <dependencies>
-   <dependency>
+    <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>drools-core-static</artifactId>
     </dependency>

@@ -223,7 +223,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
                 }
             });
         } catch (IOException e) {
-            throw new MojoExecutionException("Unable to find .drl files");
+            getLog().warn("Error cleaning up .drl files", e);
         }
     }
 
