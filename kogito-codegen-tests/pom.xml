@@ -53,39 +53,6 @@
     </dependencies>
   </dependencyManagement>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-maven-plugin</artifactId>
-        <version>${version.org.kie.kogito}</version>
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>generateModel</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>second-pass</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-    </plugins>
-  </build>
-
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -164,6 +131,10 @@
       <artifactId>javax.ws.rs-api</artifactId>
       <version>2.1.1</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-codegen</artifactId>
     </dependency>
 
   </dependencies>

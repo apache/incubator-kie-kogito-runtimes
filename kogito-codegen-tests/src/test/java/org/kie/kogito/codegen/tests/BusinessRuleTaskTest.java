@@ -28,13 +28,14 @@ import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.kogito.Config;
 import org.kie.kogito.StaticConfig;
 import org.kie.kogito.app.Application;
+import org.kie.kogito.codegen.annotations.KogitoTest;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
+@KogitoTest
 public class BusinessRuleTaskTest {
 
     @Test
