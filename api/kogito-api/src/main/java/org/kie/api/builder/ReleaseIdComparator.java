@@ -308,7 +308,7 @@ public class ReleaseIdComparator implements Comparator<ReleaseId> {
                                 if (r == null) {
                                     result = 0;
                                 } else {
-                                    result = r.compareTo(l);
+                                    result = -1 * r.compareTo(l);
                                 }
                             } else {
                                 result = l.compareTo(r);
