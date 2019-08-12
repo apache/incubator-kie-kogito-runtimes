@@ -36,6 +36,7 @@ import org.drools.compiler.kie.builder.impl.KieModuleCache.CompDataEntry;
 import org.drools.compiler.kie.builder.impl.KieModuleCache.CompilationData;
 import org.drools.compiler.kie.builder.impl.KieModuleCache.Header;
 import org.drools.compiler.kie.builder.impl.KieModuleCache.KModuleCache;
+import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.kproject.models.KieBaseModelImpl;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.core.RuleBaseConfiguration;
@@ -400,7 +401,7 @@ public abstract class AbstractKieModule
     }
 
     private byte[] getPomXml() {
-        return null;//getBytes(((ReleaseIdImpl)releaseId).getPomXmlPath());
+        return null; //getBytes(((ReleaseIdImpl)releaseId).getPomXmlPath());
     }
 
     public InputStream getPomAsStream() {
