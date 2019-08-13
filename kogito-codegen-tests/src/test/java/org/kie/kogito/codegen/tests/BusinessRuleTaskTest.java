@@ -17,6 +17,8 @@ package org.kie.kogito.codegen.tests;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
+
 import defaultPackage.BusinessRuleTaskModel;
 import defaultPackage.BusinessRuleTaskProcess;
 import defaultPackage.BusinessRuleTaskProcessInstance;
@@ -24,6 +26,7 @@ import org.drools.core.config.DefaultRuleEventListenerConfig;
 import org.drools.core.config.StaticRuleConfig;
 import org.drools.core.event.DefaultAgendaEventListener;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.kogito.Config;
 import org.kie.kogito.StaticConfig;
@@ -36,17 +39,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @KogitoTest
+@ExtendWith(InjectionExtension.class)
 public class BusinessRuleTaskTest {
 
     @Test
-    public void testBasicBusinessRuleTask() throws Exception {
-
-        Application app = new Application();
-        assertThat(app).isNotNull();
-
-        BusinessRuleTaskProcess p = app.processes().createBusinessRuleTaskProcess();
-
-
+    public void testBasicBusinessRuleTask(BusinessRuleTaskProcess p) throws Exception {
         BusinessRuleTaskModel businessRuleTaskModel = new BusinessRuleTaskModel();
         businessRuleTaskModel.setPerson(new Person("john", 25));
 
