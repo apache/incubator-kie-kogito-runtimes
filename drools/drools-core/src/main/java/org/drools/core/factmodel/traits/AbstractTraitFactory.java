@@ -247,6 +247,7 @@ public abstract class AbstractTraitFactory<T extends Thing<K>, K extends Traitab
         }
 
         try {
+            getTraitRegistry().getFieldMask(trait.getName(), cdef.getDefinedClass().getName());
             getRootClassLoader().loadClass(wrapperName);
             return (Class<T>) getRootClassLoader().loadClass(proxyName);
         } catch (ClassNotFoundException e) {
