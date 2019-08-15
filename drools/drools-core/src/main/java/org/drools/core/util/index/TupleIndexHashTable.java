@@ -303,6 +303,7 @@ public class TupleIndexHashTable extends AbstractHashTable implements TupleMemor
         }
     }
 
+    @Override
     public Tuple[] toArray() {
         Tuple[] result = new Tuple[this.factSize];
         int index = 0;

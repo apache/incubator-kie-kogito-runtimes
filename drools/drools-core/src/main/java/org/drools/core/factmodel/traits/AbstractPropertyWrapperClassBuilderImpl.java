@@ -75,7 +75,7 @@ public abstract class AbstractPropertyWrapperClassBuilderImpl implements TraitPr
 		Label l1 = new Label();
 		mv.visitJumpInsn( IFEQ, l1 );
 
-		TraitFactory.invokeExtractor( mv, wrapperName, trait, core, field );
+		TraitFactory.invokeExtractor(mv, wrapperName, core, field );
 
 		if ( BuildUtils.isPrimitive( field.getTypeName() ) ) {
 			TraitFactory.valueOf( mv, field.getTypeName() );
@@ -141,7 +141,7 @@ public abstract class AbstractPropertyWrapperClassBuilderImpl implements TraitPr
 		mv.visitVarInsn( ALOAD, 1 );
 		mv.visitLdcInsn( field.getName() );
 
-		TraitFactory.invokeExtractor( mv, wrapperName, trait, core, field );
+		TraitFactory.invokeExtractor(mv, wrapperName, core, field );
 
 		if ( BuildUtils.isPrimitive( field.getTypeName() ) ) {
 			TraitFactory.valueOf( mv, field.getTypeName() );
@@ -163,7 +163,7 @@ public abstract class AbstractPropertyWrapperClassBuilderImpl implements TraitPr
 	protected void extractAndCollect( MethodVisitor mv, String wrapperName, FieldDefinition field, ClassDefinition core ) {
 		mv.visitVarInsn( ALOAD, 1 );
 
-		TraitFactory.invokeExtractor( mv, wrapperName, trait, core, field );
+		TraitFactory.invokeExtractor(mv, wrapperName, core, field );
 
 		if ( BuildUtils.isPrimitive( field.getTypeName() ) ) {
 			TraitFactory.valueOf( mv, field.getTypeName() );
@@ -179,7 +179,7 @@ public abstract class AbstractPropertyWrapperClassBuilderImpl implements TraitPr
 	}
 
 	protected void extractAndTestNotNull( MethodVisitor mv, String wrapperName, ClassDefinition core, FieldDefinition field ) {
-		TraitFactory.invokeExtractor( mv, wrapperName, trait, core, field );
+		TraitFactory.invokeExtractor(mv, wrapperName, core, field );
 		Label l1 = new Label();
 		mv.visitJumpInsn( IFNONNULL, l1 );
 		mv.visitInsn( ICONST_1 );

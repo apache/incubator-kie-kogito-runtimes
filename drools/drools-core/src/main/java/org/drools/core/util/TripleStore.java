@@ -100,8 +100,8 @@ public class TripleStore extends AbstractHashTable implements Externalizable {
             ((TripleImpl) triple).setValue( Variable.v );
             TripleImpl current = (TripleImpl) this.table[index];
             while ( current != null ) {
-                if ( hashCode == this.comparator.hashCodeOf( current ) && this.comparator.equal( triple,
-                        current ) ) {
+                if ( hashCode == this.comparator.hashCodeOf( current ) && this.comparator.areEqual(triple,
+                                                                                                   current ) ) {
                     current.setValue( val );
                     return true;
                 }
@@ -129,8 +129,8 @@ public class TripleStore extends AbstractHashTable implements Externalizable {
         // scan the linked entries to see if it exists
         TripleImpl current = (TripleImpl) this.table[index];
         while ( current != null ) {
-            if ( hashCode == this.comparator.hashCodeOf( current ) && this.comparator.equal( triple,
-                                                                                             current ) ) {
+            if ( hashCode == this.comparator.hashCodeOf( current ) && this.comparator.areEqual(triple,
+                                                                                               current ) ) {
                 return current;
             }
             current = (TripleImpl) current.getNext();
@@ -148,7 +148,7 @@ public class TripleStore extends AbstractHashTable implements Externalizable {
 
                 Triple current = t;
                 while ( current != null ) {
-                    if ( this.comparator.equal( triple,current ) ) {
+                    if ( this.comparator.areEqual(triple, current ) ) {
                         list.add( current );
                     }
                     current = (Triple) current.getNext();
@@ -164,7 +164,7 @@ public class TripleStore extends AbstractHashTable implements Externalizable {
 //            while ( tx != null ) {
 //                Triple current = tx;
 //                while ( current != null ) {
-                    if ( this.comparator.equal( triple, tx ) ) {
+                    if ( this.comparator.areEqual(triple, tx ) ) {
                         list.add( tx );
                     }
 //                    current = (Triple) current.remove();
@@ -202,7 +202,7 @@ public class TripleStore extends AbstractHashTable implements Externalizable {
 
         while ( current != null ) {
             final TripleImpl next = (TripleImpl) current.getNext();
-            if ( hashCode == this.comparator.hashCodeOf( current ) && this.comparator.equal( key, current ) ) {
+            if ( hashCode == this.comparator.hashCodeOf( current ) && this.comparator.areEqual(key, current ) ) {
 
                 if ( ( current.getValue() == null && triple.getValue() == null )
                        || ( current.getValue() != null && current.getValue().equals( triple.getValue() ) ) ) {
@@ -233,7 +233,7 @@ public class TripleStore extends AbstractHashTable implements Externalizable {
         TripleImpl current = (TripleImpl) this.table[index];
         while ( current != null ) {
             if ( hashCode == this.comparator.hashCodeOf( current ) ) {
-                if ( this.comparator.equal( triple, current ) ) {
+                if ( this.comparator.areEqual(triple, current ) ) {
                     return true;
                 }
             }
@@ -250,16 +250,19 @@ public class TripleStore extends AbstractHashTable implements Externalizable {
 
     public static class TripleKeyComparator implements ObjectComparator {
 
+        @Override
         public void writeExternal(ObjectOutput out) throws IOException {
 //            throw new UnsupportedOperationException();
 
         }
 
+        @Override
         public void readExternal(ObjectInput in) throws IOException,
                 ClassNotFoundException {
 //            throw new UnsupportedOperationException();
         }
 
+        @Override
         public int hashCodeOf(Object object) {
             Triple t = ( Triple ) object;
             final int prime = 31;
@@ -273,8 +276,9 @@ public class TripleStore extends AbstractHashTable implements Externalizable {
             throw new UnsupportedOperationException();
         }
 
-        public boolean equal(Object object1,
-                             Object object2) {
+        @Override
+        public boolean areEqual(Object object1,
+                                Object object2) {
             Triple t1 = ( Triple ) object1;
             Triple t2 = ( Triple ) object2;
 
