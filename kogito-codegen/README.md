@@ -75,8 +75,8 @@ public class Application implements org.kie.kogito.Application {
 }
 ```
 
-This Application API is currently not supposed for direct user-level code
-consumption, but it is expected to be a future possibility.
+This Application API is currently not meant for direct user-level code
+consumption, but this is expected to be a future possibility.
 
 # Additionally-generated files
 
