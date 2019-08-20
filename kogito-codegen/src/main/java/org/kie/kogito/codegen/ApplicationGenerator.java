@@ -172,8 +172,9 @@ public class ApplicationGenerator {
             ApplicationSection section = generator.section();
             cls.addMember(section.fieldDeclaration());
             cls.addMember(section.factoryMethod());
-            if (section.classDeclaration() != null) {
-                cls.addMember(section.classDeclaration());
+            ClassOrInterfaceDeclaration classDeclaration = section.classDeclaration(); // re-use as RuleUnitContainerGenerator#classDeclaration() is not idem-potent.
+            if (classDeclaration != null) {
+                cls.addMember(classDeclaration);
             }
         }
         cls.getMembers().sort(new BodyDeclarationComparator());
