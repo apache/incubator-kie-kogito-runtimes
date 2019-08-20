@@ -15,9 +15,6 @@
 
 package org.kie.kogito.codegen;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-import static org.kie.kogito.codegen.rules.RuleUnitsRegisterClass.RULE_UNIT_REGISTER_FQN;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,13 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.kie.kogito.Config;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.codegen.metadata.ImageMetaData;
-import org.kie.kogito.event.EventPublisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.CompilationUnit;
@@ -55,6 +45,15 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.kie.kogito.Config;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.metadata.ImageMetaData;
+import org.kie.kogito.event.EventPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.kie.kogito.codegen.rules.RuleUnitsRegisterClass.RULE_UNIT_REGISTER_FQN;
 
 public class ApplicationGenerator {
 
@@ -83,6 +82,8 @@ public class ApplicationGenerator {
     private ConfigGenerator configGenerator;
     private List<Generator> generators = new ArrayList<>();
     
+    private boolean hasDecisions;
+
     private GeneratorContext context = new GeneratorContext();
     private boolean persistence; 
 
@@ -150,6 +151,19 @@ public class ApplicationGenerator {
                     .setParameter( new Parameter( new ClassOrInterfaceType(null, "ClassNotFoundException"), new SimpleName( "e" ) ) ) );
         }
         
+        //        if (hasDecisions) {
+        //            FieldDeclaration dmnRuntimeField = new FieldDeclaration().addModifier(Modifier.Keyword.STATIC)
+        //                                                                     .addVariable(new VariableDeclarator().setType(DMNRuntime.class.getCanonicalName())
+        //                                                                                                          .setName("dmnRuntime")
+        //                                                                                                          .setInitializer(new MethodCallExpr("org.kie.dmn.kogito.rest.quarkus.DMNKogitoQuarkus.createGenericDMNRuntime")));
+        //            cls.addMember(dmnRuntimeField);
+        //            MethodDeclaration dmnRuntimeMethod = new MethodDeclaration().addModifier(Modifier.Keyword.PUBLIC)
+        //                                                                        .setName("decisions")
+        //                                                                        .setType(DMNRuntime.class.getCanonicalName())
+        //                                                                        .setBody(new BlockStmt().addStatement(new ReturnStmt(new NameExpr("dmnRuntime"))));
+        //            cls.addMember(dmnRuntimeMethod);
+        //        }
+
         FieldDeclaration configField = null;
         if (useInjection()) {
             configField = new FieldDeclaration()                    
@@ -172,8 +186,10 @@ public class ApplicationGenerator {
         for (Generator generator : generators) {
             ApplicationSection section = generator.section();
             cls.addMember(section.fieldDeclaration());
-            cls.addMember(section.factoryMethod());  
-            cls.addMember(section.classDeclaration());
+            cls.addMember(section.factoryMethod());
+            if (section.classDeclaration() != null) {
+                cls.addMember(section.classDeclaration());
+            }
         }
         cls.getMembers().sort(new BodyDeclarationComparator());
         return compilationUnit;
@@ -194,6 +210,11 @@ public class ApplicationGenerator {
        this.persistence = persistence;
        return this;
    }
+
+    public ApplicationGenerator withDecisions(boolean hasDecisions) {
+        this.hasDecisions = hasDecisions;
+        return this;
+    }
 
     public Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = generateComponents();

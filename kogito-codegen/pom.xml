@@ -67,6 +67,11 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>jbpm-bpmn2</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-dmn-core</artifactId>
+      <version>${version.org.kie7}</version>
+    </dependency>
 
     <!-- image metadata handling -->
     <dependency>
