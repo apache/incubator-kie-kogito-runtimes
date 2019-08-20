@@ -198,7 +198,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
         if (generateDecisions) {
             appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()));
         }
-        // appGen.withDecisions(generateDecisions);
 
         return appGen;
     }

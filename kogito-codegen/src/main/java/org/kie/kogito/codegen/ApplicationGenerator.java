@@ -82,8 +82,6 @@ public class ApplicationGenerator {
     private ConfigGenerator configGenerator;
     private List<Generator> generators = new ArrayList<>();
     
-    private boolean hasDecisions;
-
     private GeneratorContext context = new GeneratorContext();
     private boolean persistence; 
 
@@ -150,19 +148,6 @@ public class ApplicationGenerator {
             tryStmt.getCatchClauses().add( new CatchClause()
                     .setParameter( new Parameter( new ClassOrInterfaceType(null, "ClassNotFoundException"), new SimpleName( "e" ) ) ) );
         }
-        
-        //        if (hasDecisions) {
-        //            FieldDeclaration dmnRuntimeField = new FieldDeclaration().addModifier(Modifier.Keyword.STATIC)
-        //                                                                     .addVariable(new VariableDeclarator().setType(DMNRuntime.class.getCanonicalName())
-        //                                                                                                          .setName("dmnRuntime")
-        //                                                                                                          .setInitializer(new MethodCallExpr("org.kie.dmn.kogito.rest.quarkus.DMNKogitoQuarkus.createGenericDMNRuntime")));
-        //            cls.addMember(dmnRuntimeField);
-        //            MethodDeclaration dmnRuntimeMethod = new MethodDeclaration().addModifier(Modifier.Keyword.PUBLIC)
-        //                                                                        .setName("decisions")
-        //                                                                        .setType(DMNRuntime.class.getCanonicalName())
-        //                                                                        .setBody(new BlockStmt().addStatement(new ReturnStmt(new NameExpr("dmnRuntime"))));
-        //            cls.addMember(dmnRuntimeMethod);
-        //        }
 
         FieldDeclaration configField = null;
         if (useInjection()) {
@@ -210,11 +195,6 @@ public class ApplicationGenerator {
        this.persistence = persistence;
        return this;
    }
-
-    public ApplicationGenerator withDecisions(boolean hasDecisions) {
-        this.hasDecisions = hasDecisions;
-        return this;
-    }
 
     public Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = generateComponents();
