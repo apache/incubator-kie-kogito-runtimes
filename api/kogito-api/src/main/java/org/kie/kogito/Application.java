@@ -15,6 +15,7 @@
 
 package org.kie.kogito;
 
+import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.RuleUnits;
 import org.kie.kogito.uow.UnitOfWorkManager;
@@ -50,6 +51,14 @@ public interface Application {
         return null;
     }
     
+    /**
+     * Returns DMNRuntime support found in the application otherwise null
+     * @return DMNRuntime support or null if not found
+     */
+    default DMNRuntime decisions() {
+        return null;
+    }
+
     /**
      * Returns unit of work manager that allows to control execution within the application
      * @return non null unit of work manager
