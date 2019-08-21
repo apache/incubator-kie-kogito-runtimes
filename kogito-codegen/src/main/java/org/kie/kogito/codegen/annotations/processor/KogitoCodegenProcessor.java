@@ -44,7 +44,7 @@ public class KogitoCodegenProcessor extends AbstractProcessor {
 
             ApplicationGenerator appGen =
                     new ApplicationGenerator(ApplicationGenerator.DEFAULT_PACKAGE_NAME, projectPath.toFile())
-                            .withDependencyInjection(new CDIDependencyInjectionAnnotator());
+                            .withDependencyInjection(null);
 
             Path resources = projectPath.resolve("src/main/resources");
 

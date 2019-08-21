@@ -39,11 +39,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @KogitoTest
-@ExtendWith(InjectionExtension.class)
 public class BusinessRuleTaskTest {
 
     @Test
-    public void testBasicBusinessRuleTask(BusinessRuleTaskProcess p) throws Exception {
+    public void testBasicBusinessRuleTask() throws Exception {
+        Application app = new Application();
+        BusinessRuleTaskProcess p = app.processes().createBusinessRuleTaskProcess();
+
         BusinessRuleTaskModel businessRuleTaskModel = new BusinessRuleTaskModel();
         businessRuleTaskModel.setPerson(new Person("john", 25));
 
