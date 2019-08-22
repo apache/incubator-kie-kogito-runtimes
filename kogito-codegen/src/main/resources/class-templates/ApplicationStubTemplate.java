@@ -2,7 +2,7 @@ package org.kie.kogito;
 
 import org.kie.kogito.Application;
 
-public class $ApplicationStub$ {
+class $ApplicationStub$ {
     public static final Application create() {
         return new $App$();
     }
