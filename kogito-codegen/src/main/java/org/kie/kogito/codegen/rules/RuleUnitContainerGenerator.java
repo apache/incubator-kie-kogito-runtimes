@@ -79,7 +79,7 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
 
     private MethodDeclaration genericFactoryById() {
         ClassOrInterfaceType returnType = new ClassOrInterfaceType(null, RuleUnit.class.getCanonicalName())
-                .setTypeArguments(new ClassOrInterfaceType(null, "T"));
+                .setTypeArguments(new WildcardType());
 
         SwitchStmt switchStmt = new SwitchStmt();
         switchStmt.setSelector(new NameExpr("fqcn"));
@@ -105,10 +105,8 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
     }
 
     private MethodDeclaration genericFactoryByClass() {
-
-        ClassOrInterfaceType RuleUnitMemoryT = new ClassOrInterfaceType(null, RuleUnitMemory.class.getCanonicalName());
         ClassOrInterfaceType returnType = new ClassOrInterfaceType(null, RuleUnit.class.getCanonicalName())
-                .setTypeArguments(RuleUnitMemoryT);
+                .setTypeArguments(new ClassOrInterfaceType(null, "T"));
 
         return new MethodDeclaration()
                 .addModifier(Modifier.Keyword.PUBLIC)

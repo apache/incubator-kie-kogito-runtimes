@@ -16,6 +16,7 @@
 package org.kie.kogito;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.RuleUnits;
@@ -33,8 +34,8 @@ public interface Application {
     static Application create() {
         try {
             Class<Application> appClass = (Class<Application>) Class.forName("org.kie.kogito.$ApplicationStub$");
-            Constructor<Application> constructor = appClass.getConstructor();
-            return constructor.newInstance();
+            Method create = appClass.getMethod("create");
+            return (Application) create.invoke(null);
         } catch (Exception e) {
             throw new Error(e);
         }

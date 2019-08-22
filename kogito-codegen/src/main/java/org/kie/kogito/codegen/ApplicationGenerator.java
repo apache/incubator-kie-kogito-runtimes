@@ -224,8 +224,8 @@ public class ApplicationGenerator {
         compilationUnit.findFirst(ObjectCreationExpr.class).map(oce -> oce.setType(targetCanonicalName));
 
         return new GeneratedFile(GeneratedFile.Type.CLASS,
-                                 "org/kie/kogito/$ApplicationStub$",
-                                 log( compilationUnit().toString() ).getBytes(StandardCharsets.UTF_8));
+                                 "org/kie/kogito/$ApplicationStub$.java",
+                                 log( compilationUnit.toString() ).getBytes(StandardCharsets.UTF_8));
     }
 
 
