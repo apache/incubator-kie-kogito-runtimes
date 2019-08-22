@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.kie.kogito.Config;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.ImageMetaData;
@@ -61,6 +63,7 @@ public class ApplicationGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationGenerator.class);
 
     private static final String RESOURCE = "/class-templates/ApplicationTemplate.java";
+    private static final String RESOURCE_STUB = "/class-templates/ApplicationStubTemplate.java";
     private final static String LABEL_PREFIX = "org.kie/";
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
@@ -204,6 +207,7 @@ public class ApplicationGenerator {
         if (useInjection()) {
             generators.forEach(gen -> generateSectionClass(gen.section(), generatedFiles));
         }
+        generatedFiles.add(generateApplicationStub());
         return generatedFiles;
     }
 
@@ -212,6 +216,18 @@ public class ApplicationGenerator {
                 .flatMap(gen -> gen.generate().stream())
                 .collect(Collectors.toList());
     }
+
+    public GeneratedFile generateApplicationStub() {
+        CompilationUnit compilationUnit =
+                parse(this.getClass().getResourceAsStream(RESOURCE_STUB));
+
+        compilationUnit.findFirst(ObjectCreationExpr.class).map(oce -> oce.setType(targetCanonicalName));
+
+        return new GeneratedFile(GeneratedFile.Type.CLASS,
+                                 "org/kie/kogito/$ApplicationStub$",
+                                 log( compilationUnit().toString() ).getBytes(StandardCharsets.UTF_8));
+    }
+
 
     public GeneratedFile generateApplicationDescriptor() {
         return new GeneratedFile(GeneratedFile.Type.APPLICATION,

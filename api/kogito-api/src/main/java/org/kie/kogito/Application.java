@@ -15,6 +15,8 @@
 
 package org.kie.kogito;
 
+import java.lang.reflect.Constructor;
+
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.RuleUnits;
 import org.kie.kogito.uow.UnitOfWorkManager;
@@ -27,6 +29,16 @@ import org.kie.kogito.uow.UnitOfWorkManager;
  * used across entire application.
  */
 public interface Application {
+
+    static Application create() {
+        try {
+            Class<Application> appClass = (Class<Application>) Class.forName("org.kie.kogito.$ApplicationStub$");
+            Constructor<Application> constructor = appClass.getConstructor();
+            return constructor.newInstance();
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
 
     /**
      * Returns configuration of the application

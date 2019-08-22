@@ -18,7 +18,6 @@ package org.kie.kogito.codegen.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
@@ -40,6 +39,7 @@ import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.TypeParameter;
+import com.github.javaparser.ast.type.WildcardType;
 import org.drools.modelcompiler.builder.CanonicalModelKieProject;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
@@ -77,18 +77,18 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
         addRuleUnitFactoryMethod(rusc);
     }
 
-    private MethodDeclaration genericFactory() {
+    private MethodDeclaration genericFactoryById() {
         ClassOrInterfaceType returnType = new ClassOrInterfaceType(null, RuleUnit.class.getCanonicalName())
                 .setTypeArguments(new ClassOrInterfaceType(null, "T"));
 
         SwitchStmt switchStmt = new SwitchStmt();
-        switchStmt.setSelector(new MethodCallExpr(new NameExpr("clazz"), "getCanonicalName"));
+        switchStmt.setSelector(new NameExpr("fqcn"));
 
         for (RuleUnitSourceClass ruleUnit : ruleUnits) {
             SwitchEntry switchEntry = new SwitchEntry();
             switchEntry.getLabels().add(new StringLiteralExpr(ruleUnit.getRuleUnitClass().getCanonicalName()));
-            switchEntry.getStatements().add(new ReturnStmt(new CastExpr(returnType, new ObjectCreationExpr()
-                                                                                .setType(ruleUnit.targetCanonicalName()))));
+            switchEntry.getStatements().add(new ReturnStmt(new ObjectCreationExpr()
+                                                                   .setType(ruleUnit.targetCanonicalName())));
             switchStmt.getEntries().add(switchEntry);
         }
 
@@ -98,12 +98,28 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
 
         return new MethodDeclaration()
                 .addModifier(Modifier.Keyword.PUBLIC)
-                .addTypeParameter(new TypeParameter("T").setTypeBound(NodeList.nodeList(new ClassOrInterfaceType(null, RuleUnitMemory.class.getCanonicalName()))))
                 .setType(returnType)
+                .setName("findById")
+                .addParameter(String.class, "fqcn")
+                .setBody(new BlockStmt().addStatement(switchStmt));
+    }
+
+    private MethodDeclaration genericFactoryByClass() {
+
+        ClassOrInterfaceType RuleUnitMemoryT = new ClassOrInterfaceType(null, RuleUnitMemory.class.getCanonicalName());
+        ClassOrInterfaceType returnType = new ClassOrInterfaceType(null, RuleUnit.class.getCanonicalName())
+                .setTypeArguments(RuleUnitMemoryT);
+
+        return new MethodDeclaration()
+                .addModifier(Modifier.Keyword.PUBLIC)
+                .setType(returnType)
+                .addTypeParameter(new TypeParameter("T").setTypeBound(NodeList.nodeList(new ClassOrInterfaceType(null, RuleUnitMemory.class.getCanonicalName()))))
                 .setName("create")
                 .addParameter(new ClassOrInterfaceType(null, "Class")
                                       .setTypeArguments(new ClassOrInterfaceType(null, "T")), "clazz")
-                .setBody(new BlockStmt().addStatement(switchStmt));
+                .setBody(new BlockStmt().addStatement(
+                        new ReturnStmt(new CastExpr(returnType, new MethodCallExpr().setName("findById").addArgument(
+                                new MethodCallExpr().setScope(new NameExpr("clazz")).setName("getCanonicalName"))))));
     }
 
     private MethodDeclaration addRuleUnitFactoryMethod(RuleUnitSourceClass r) {
@@ -143,7 +159,8 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
         declarations.add(methodDeclaration);
 
         declarations.addAll(factoryMethods);
-        declarations.add(genericFactory());
+        declarations.add(genericFactoryByClass());
+        declarations.add(genericFactoryById());
 
         ClassOrInterfaceDeclaration cls = super.classDeclaration()
                 .setMembers(declarations);
