@@ -1,9 +1,9 @@
-package org.kie.kogito;
+package org.kie.kogito.application.stubs;
 
 import org.kie.kogito.Application;
 
-class $ApplicationStub$ {
-    public static final Application create() {
+public class ApplicationStub {
+    public Object create() {
         return new $App$();
     }
 }
