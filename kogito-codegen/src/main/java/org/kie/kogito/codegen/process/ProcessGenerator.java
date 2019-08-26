@@ -414,9 +414,10 @@ public class ProcessGenerator {
                 FieldDeclaration subprocessFieldDeclaration = new FieldDeclaration();                    
 
                 String fieldName = "process" + subProcess.getKey();
+                ClassOrInterfaceType modelType = new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, StringUtils.capitalize(subProcess.getKey() + "Model"))));
                 if (useInjection()) {
                     subprocessFieldDeclaration
-                        .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, StringUtils.capitalize(subProcess.getKey()+"Model")))), fieldName));
+                        .addVariable(new VariableDeclarator(modelType, fieldName));
                     annotator.withInjection(subprocessFieldDeclaration);
                 } else {
                     // app.processes().processById()
@@ -425,9 +426,9 @@ public class ProcessGenerator {
                             "processById").addArgument(new StringLiteralExpr(subProcess.getKey()));
                     
                     subprocessFieldDeclaration
-                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, StringUtils.capitalize(subProcess.getKey()+"Model")))), fieldName));
-                
-                    constructorDeclaration.getBody().addStatement(new AssignExpr(new FieldAccessExpr(new ThisExpr(), fieldName), initSubProcessField, Operator.ASSIGN));
+                    .addVariable(new VariableDeclarator(modelType, fieldName));
+
+                    constructorDeclaration.getBody().addStatement(new AssignExpr(new FieldAccessExpr(new ThisExpr(), fieldName), new CastExpr(modelType, initSubProcessField), Operator.ASSIGN));
                     
                 }
                 

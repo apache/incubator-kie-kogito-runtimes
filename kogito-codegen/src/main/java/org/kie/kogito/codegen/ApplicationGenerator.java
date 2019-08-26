@@ -207,7 +207,6 @@ public class ApplicationGenerator {
         if (useInjection()) {
             generators.forEach(gen -> generateSectionClass(gen.section(), generatedFiles));
         }
-        generatedFiles.add(generateApplicationStub());
         return generatedFiles;
     }
 
@@ -215,17 +214,6 @@ public class ApplicationGenerator {
         return generators.stream()
                 .flatMap(gen -> gen.generate().stream())
                 .collect(Collectors.toList());
-    }
-
-    public GeneratedFile generateApplicationStub() {
-        CompilationUnit compilationUnit =
-                parse(this.getClass().getResourceAsStream(RESOURCE_STUB));
-
-        compilationUnit.findFirst(ObjectCreationExpr.class).map(oce -> oce.setType(targetCanonicalName));
-
-        return new GeneratedFile(GeneratedFile.Type.CLASS,
-                                 "org/kie/kogito/application/stubs/ApplicationStub.java",
-                                 log( compilationUnit.toString() ).getBytes(StandardCharsets.UTF_8));
     }
 
 
