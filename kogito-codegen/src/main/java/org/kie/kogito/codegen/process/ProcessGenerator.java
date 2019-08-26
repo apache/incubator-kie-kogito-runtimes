@@ -419,10 +419,10 @@ public class ProcessGenerator {
                         .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, StringUtils.capitalize(subProcess.getKey()+"Model")))), fieldName));
                     annotator.withInjection(subprocessFieldDeclaration);
                 } else {
-                    // app.processes().create$Subprocess()
+                    // app.processes().processById()
                     MethodCallExpr initSubProcessField = new MethodCallExpr(
                             new MethodCallExpr(new NameExpr("app"), "processes"),
-                            "create" + StringUtils.capitalize(subProcess.getKey()) + "Process");
+                            "processById").addArgument(new StringLiteralExpr(subProcess.getKey()));
                     
                     subprocessFieldDeclaration
                     .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, StringUtils.capitalize(subProcess.getKey()+"Model")))), fieldName));

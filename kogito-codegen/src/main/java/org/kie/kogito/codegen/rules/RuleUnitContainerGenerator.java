@@ -74,7 +74,6 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
 
     void addRuleUnit(RuleUnitSourceClass rusc) {
         ruleUnits.add(rusc);
-        addRuleUnitFactoryMethod(rusc);
     }
 
     private MethodDeclaration genericFactoryById() {
@@ -120,18 +119,6 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
                                 new MethodCallExpr().setScope(new NameExpr("clazz")).setName("getCanonicalName"))))));
     }
 
-    private MethodDeclaration addRuleUnitFactoryMethod(RuleUnitSourceClass r) {
-        MethodDeclaration methodDeclaration = new MethodDeclaration()
-                .addModifier(Modifier.Keyword.PUBLIC)
-                .setName("create" + r.targetTypeName())
-                .setType(r.targetCanonicalName())
-                .setBody(new BlockStmt().addStatement(new ReturnStmt(
-                        new ObjectCreationExpr()
-                                .setType(r.targetCanonicalName()))));
-        this.factoryMethods.add(methodDeclaration);
-        return methodDeclaration;
-    }
-
     @Override
     public ClassOrInterfaceDeclaration classDeclaration() {
 
@@ -166,11 +153,6 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
         cls.getMembers().sort(new BodyDeclarationComparator());
 
         return cls;
-    }
-
-    public static ClassOrInterfaceType ruleUnitType(String canonicalName) {
-        return new ClassOrInterfaceType(null, RuleUnit.class.getCanonicalName())
-                .setTypeArguments(new ClassOrInterfaceType(null, canonicalName));
     }
 
     public RuleUnitContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
