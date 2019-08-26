@@ -15,7 +15,6 @@
 
 package org.kie.kogito;
 
-import org.kie.kogito.application.stubs.ApplicationStub;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.RuleUnits;
 import org.kie.kogito.uow.UnitOfWorkManager;
@@ -28,10 +27,6 @@ import org.kie.kogito.uow.UnitOfWorkManager;
  * used across entire application.
  */
 public interface Application {
-
-    static Application create() {
-        return (Application) new ApplicationStub().create();
-    }
 
     /**
      * Returns configuration of the application

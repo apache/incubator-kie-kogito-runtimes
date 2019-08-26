@@ -40,7 +40,6 @@
 
   <modules>
     <module>kogito-api</module>
-    <module>kogito-stubs</module>
     <module>kogito-internal</module>
     <module>kogito-services</module>
   </modules>
