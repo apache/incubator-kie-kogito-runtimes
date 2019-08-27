@@ -15,6 +15,9 @@
 
 package org.kie.kogito.codegen;
 
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.kie.kogito.codegen.rules.RuleUnitsRegisterClass.RULE_UNIT_REGISTER_FQN;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +29,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.kie.kogito.Config;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.metadata.ImageMetaData;
+import org.kie.kogito.event.EventPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.CompilationUnit;
@@ -45,15 +55,6 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.kie.kogito.Config;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.codegen.metadata.ImageMetaData;
-import org.kie.kogito.event.EventPublisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.github.javaparser.StaticJavaParser.parse;
-import static org.kie.kogito.codegen.rules.RuleUnitsRegisterClass.RULE_UNIT_REGISTER_FQN;
 
 public class ApplicationGenerator {
 
@@ -148,7 +149,7 @@ public class ApplicationGenerator {
             tryStmt.getCatchClauses().add( new CatchClause()
                     .setParameter( new Parameter( new ClassOrInterfaceType(null, "ClassNotFoundException"), new SimpleName( "e" ) ) ) );
         }
-
+        
         FieldDeclaration configField = null;
         if (useInjection()) {
             configField = new FieldDeclaration()                    
@@ -171,11 +172,8 @@ public class ApplicationGenerator {
         for (Generator generator : generators) {
             ApplicationSection section = generator.section();
             cls.addMember(section.fieldDeclaration());
-            cls.addMember(section.factoryMethod());
-            ClassOrInterfaceDeclaration classDeclaration = section.classDeclaration(); // re-use as RuleUnitContainerGenerator#classDeclaration() is not idem-potent.
-            if (classDeclaration != null) {
-                cls.addMember(classDeclaration);
-            }
+            cls.addMember(section.factoryMethod());  
+            cls.addMember(section.classDeclaration());
         }
         cls.getMembers().sort(new BodyDeclarationComparator());
         return compilationUnit;

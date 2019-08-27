@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+  * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,45 +15,39 @@
 
 package org.kie.kogito.codegen.decision;
 
-import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.codegen.AbstractApplicationSection;
+import org.kie.kogito.decision.DecisionModels;
 
 public class DecisionContainerGenerator extends AbstractApplicationSection {
 
     public DecisionContainerGenerator() {
-        super(null, null, Void.class);
+        super("DecisionModels", "decisionModels", DecisionModels.class);
     }
 
     @Override
     public ClassOrInterfaceDeclaration classDeclaration() {
-        return null;
-    }
-
-    @Override
-    public FieldDeclaration fieldDeclaration() {
-        FieldDeclaration dmnRuntimeField = new FieldDeclaration().addModifier(Modifier.Keyword.STATIC)
-                                                                 .addVariable(new VariableDeclarator().setType(DMNRuntime.class.getCanonicalName())
-                                                                                                      .setName("dmnRuntime")
-                                                                                                      .setInitializer(new MethodCallExpr("org.kie.dmn.kogito.rest.quarkus.DMNKogitoQuarkus.createGenericDMNRuntime")));
-        return dmnRuntimeField;
-    }
-
-    @Override
-    public MethodDeclaration factoryMethod() {
-        MethodDeclaration dmnRuntimeMethod = new MethodDeclaration().addModifier(Modifier.Keyword.PUBLIC)
-                                                                    .setName("decisions")
-                                                                    .setType(DMNRuntime.class.getCanonicalName())
-                                                                    .setBody(new BlockStmt().addStatement(new ReturnStmt(new NameExpr("dmnRuntime"))));
-        return dmnRuntimeMethod;
+        //        FieldDeclaration dmnRuntimeField = new FieldDeclaration().addModifier(Modifier.Keyword.STATIC)
+        //                                                                 .addVariable(new VariableDeclarator().setType(DMNRuntime.class.getCanonicalName())
+        //                                                                                                      .setName("dmnRuntime")
+        //                                                                                                      .setInitializer(new MethodCallExpr("org.kie.dmn.kogito.rest.quarkus.DMNKogitoQuarkus.createGenericDMNRuntime")));
+        //        ClassOrInterfaceDeclaration cls = super.classDeclaration();
+        //        cls.addModifier(Modifier.Keyword.STATIC);
+        //        cls.addMember(dmnRuntimeField);
+        //
+        //        MethodDeclaration getDecisionMethod = new MethodDeclaration().setName("getDecision")
+        //                                                                     .setType(Decision.class.getCanonicalName())
+        //                                                                     .addParameter(new Parameter(StaticJavaParser.parseType(String.class.getCanonicalName()), "namespace"))
+        //                                                                     .addParameter(new Parameter(StaticJavaParser.parseType(String.class.getCanonicalName()), "name"))
+        //        ;
+        //        cls.addMember(getDecisionMethod);
+        CompilationUnit clazz = StaticJavaParser.parse(this.getClass().getResourceAsStream("/class-templates/DMNApplicationClassDeclTemplate.java"));
+        ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
+        typeDeclaration.addModifier(Keyword.STATIC);
+        return typeDeclaration;
     }
 
 }
