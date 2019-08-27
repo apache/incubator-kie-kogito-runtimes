@@ -64,4 +64,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jboss.jandex</groupId>
+        <artifactId>jandex-maven-plugin</artifactId> <!-- Place org.kie.api.builder.Message$Level in Jandex -->
+      </plugin>
+    </plugins>
+  </build>
 </project>
