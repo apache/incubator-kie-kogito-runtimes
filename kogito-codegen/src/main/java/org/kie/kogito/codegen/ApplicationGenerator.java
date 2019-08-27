@@ -63,7 +63,6 @@ public class ApplicationGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationGenerator.class);
 
     private static final String RESOURCE = "/class-templates/ApplicationTemplate.java";
-    private static final String RESOURCE_STUB = "/class-templates/ApplicationStubTemplate.java";
     private final static String LABEL_PREFIX = "org.kie/";
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
