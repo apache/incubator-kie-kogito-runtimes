@@ -35,7 +35,7 @@ public class RuleSetNodeHandler extends AbstractNodeHandler {
         RuleSetNode ruleSetNode = (RuleSetNode) node;
         String ruleFlowGroup = element.getAttribute("ruleFlowGroup");
         if (ruleFlowGroup != null && ruleFlowGroup.length() > 0) {
-        	ruleSetNode.setRuleFlowGroup(ruleFlowGroup);
+            ruleSetNode.setRuleType(RuleSetNode.RuleType.parse(ruleFlowGroup));
         }
     }
 
@@ -47,9 +47,13 @@ public class RuleSetNodeHandler extends AbstractNodeHandler {
 	public void writeNode(Node node, StringBuilder xmlDump, boolean includeMeta) {
 		RuleSetNode ruleSetNode = (RuleSetNode) node;
 		writeNode("ruleSet", ruleSetNode, xmlDump, includeMeta);
-        String ruleFlowGroup = ruleSetNode.getRuleFlowGroup();
-        if (ruleFlowGroup != null) {
-            xmlDump.append("ruleFlowGroup=\"" + ruleFlowGroup + "\" ");
+        RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
+        if (ruleType != null) {
+            if (ruleType.isRuleFlowGroup()) {
+                xmlDump.append("ruleFlowGroup=\"" + ruleType.getName() + "\" ");
+            } else if (ruleType.isRuleUnit()) {
+                xmlDump.append("ruleFlowGroup=\"" + RuleSetNode.RuleType.UNIT_PREFIX + ruleType.getName() + "\" ");
+            }
         }
         if (ruleSetNode.getTimers() != null || (includeMeta && containsMetaData(ruleSetNode))) {
             xmlDump.append(">\n");

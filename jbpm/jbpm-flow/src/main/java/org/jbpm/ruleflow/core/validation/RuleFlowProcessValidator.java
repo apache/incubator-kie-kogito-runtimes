@@ -187,8 +187,9 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 }
                 final String language = ruleSetNode.getLanguage();
 
+                RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
                 if (RuleSetNode.DRL_LANG.equals(language)) {
-                    final String ruleFlowGroup = ruleSetNode.getRuleFlowGroup();
+                    final String ruleFlowGroup = ruleType.getName();
                     if (ruleFlowGroup == null || "".equals(ruleFlowGroup)) {
                         addErrorMessage(process,
                                         node,
@@ -196,14 +197,15 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                                         "RuleSet (DRL) has no ruleflow-group.");
                     }
                 } else if (RuleSetNode.DMN_LANG.equals(language)) {
-                    final String namespace = ruleSetNode.getNamespace();
+                    RuleSetNode.RuleType.Decision decision = (RuleSetNode.RuleType.Decision) ruleType;
+                    final String namespace = decision.getNamespace();
                     if (namespace == null || "".equals(namespace)) {
                         addErrorMessage(process,
                                         node,
                                         errors,
                                         "RuleSet (DMN) has no namespace.");
                     }
-                    final String model = ruleSetNode.getModel();
+                    final String model = decision.getModel();
                     if (model == null || "".equals(model)) {
                         addErrorMessage(process,
                                         node,

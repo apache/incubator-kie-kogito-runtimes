@@ -56,8 +56,19 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
     	super.handleNode(node, element, uri, localName, parser);
         RuleSetNode ruleSetNode = (RuleSetNode) node;
 		String ruleFlowGroup = element.getAttribute("ruleFlowGroup");
-		if (ruleFlowGroup != null) {
-			ruleSetNode.setRuleFlowGroup(ruleFlowGroup);
+        if (ruleFlowGroup == null) {
+            String namespace = (String) ruleSetNode.removeParameter(NAMESPACE_PROP);
+            String model = (String) ruleSetNode.removeParameter(MODEL_PROP);
+            String decision = (String) ruleSetNode.removeParameter(DECISION_PROP);
+
+            if (namespace != null && model != null && decision != null) {
+                ruleSetNode.setRuleType(RuleSetNode.RuleType.decision(
+                        namespace,
+                        model,
+                        decision));
+            }
+        } else {
+			ruleSetNode.setRuleType(RuleSetNode.RuleType.parse(ruleFlowGroup));
 		}
 		String language = element.getAttribute("implementation");
 		if (language == null || language.equalsIgnoreCase("##unspecified") || language.isEmpty()) {
@@ -77,10 +88,7 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
             }
             xmlNode = xmlNode.getNextSibling();
         }
-		ruleSetNode.setNamespace((String) ruleSetNode.removeParameter(NAMESPACE_PROP));
-		ruleSetNode.setModel((String) ruleSetNode.removeParameter(MODEL_PROP));
-		ruleSetNode.setDecision((String) ruleSetNode.removeParameter(DECISION_PROP));
-		
+
         handleScript(ruleSetNode, element, "onEntry");
         handleScript(ruleSetNode, element, "onExit");
 	}
@@ -88,8 +96,14 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
 	public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
 		RuleSetNode ruleSetNode = (RuleSetNode) node;
 		writeNode("businessRuleTask", ruleSetNode, xmlDump, metaDataType);
-		if (ruleSetNode.getRuleFlowGroup() != null) {
-			xmlDump.append("g:ruleFlowGroup=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleSetNode.getRuleFlowGroup()) + "\" " + EOL);
+        RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
+        if (ruleType != null) {
+            if (ruleType.isRuleFlowGroup()) {
+                xmlDump.append("g:ruleFlowGroup=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleType.getName()) + "\" " + EOL);
+            } else if (ruleType.isRuleUnit()) {
+                xmlDump.append("g:ruleFlowGroup=\"" + RuleSetNode.RuleType.UNIT_PREFIX + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleType.getName()) + "\" " + EOL);
+            }
+            // else DMN
 		}
 		
         xmlDump.append(" implementation=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleSetNode.getLanguage()) + "\" >" + EOL);        

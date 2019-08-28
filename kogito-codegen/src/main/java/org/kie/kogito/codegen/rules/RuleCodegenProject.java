@@ -87,9 +87,9 @@ public class RuleCodegenProject extends CanonicalModelCodeGenerationKieProject i
         }
 
         if (hasRuleUnits) {
-            trgMfs.write(
-                    RULE_UNIT_REGISTER_SOURCE,
-                    log( new RuleUnitsRegisterClass(unitsMap).generate() ).getBytes( StandardCharsets.UTF_8 ) );
+//            trgMfs.write(
+//                    RULE_UNIT_REGISTER_SOURCE,
+//                    log( new RuleUnitsRegisterClass(unitsMap).generate() ).getBytes( StandardCharsets.UTF_8 ) );
 
             for (RuleUnitSourceClass ruleUnit : moduleGenerator.getRuleUnits()) {
                 trgMfs.write(
