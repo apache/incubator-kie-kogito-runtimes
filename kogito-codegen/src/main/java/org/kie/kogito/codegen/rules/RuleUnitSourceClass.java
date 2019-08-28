@@ -164,12 +164,12 @@ public class RuleUnitSourceClass implements FileGenerator {
 
         if (annotator != null) {
             annotator.withSingletonComponent(cls);
+            cls.findFirst(ConstructorDeclaration.class, c -> !c.getParameters().isEmpty()) // non-empty constructor
+                    .ifPresent(annotator::withInjection);
         }
 
         String ruleUnitInstanceFQCN = RuleUnitInstanceSourceClass.qualifiedName(packageName, typeName);
         cls.findAll(ConstructorDeclaration.class).forEach(this::setClassName);
-        cls.findFirst(ConstructorDeclaration.class, c -> !c.getParameters().isEmpty()) // non-empty constructor
-                .ifPresent(annotator::withInjection);
         cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$InstanceName$"))
                 .forEach(o -> o.setType(ruleUnitInstanceFQCN));
         cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$Application$"))
