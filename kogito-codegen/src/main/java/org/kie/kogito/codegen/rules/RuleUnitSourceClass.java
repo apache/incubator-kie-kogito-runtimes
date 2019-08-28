@@ -32,6 +32,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.TypeParameter;
 import org.drools.modelcompiler.builder.QueryModel;
+import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.rules.RuleUnit;
@@ -54,6 +55,7 @@ public class RuleUnitSourceClass implements FileGenerator {
     private String targetTypeName;
     private DependencyInjectionAnnotator annotator;
     private Collection<QueryModel> queries;
+    private String applicationPackageName;
 
     public RuleUnitSourceClass(Class<?> ruleUnit, String generatedSourceFile) {
         this.ruleUnit = ruleUnit;
@@ -64,6 +66,7 @@ public class RuleUnitSourceClass implements FileGenerator {
         this.targetTypeName = typeName + "RuleUnit";
         this.targetCanonicalName = packageName + "." + targetTypeName;
         this.generatedFilePath = targetCanonicalName.replace('.', '/') + ".java";
+        this.applicationPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
     }
 
     public RuleUnitInstanceSourceClass instance(ClassLoader classLoader) {
@@ -171,6 +174,10 @@ public class RuleUnitSourceClass implements FileGenerator {
                 .forEach(o -> o.setType(ruleUnitInstanceFQCN));
         cls.findAll(ObjectCreationExpr.class)
                 .stream()
+                .filter(o -> o.getType().getNameAsString().equals("$Application$"))
+                .forEach(o -> o.setType(applicationPackageName + ".Application"));
+        cls.findAll(ObjectCreationExpr.class)
+                .stream()
                 .filter(o -> o.getType().getNameAsString().equals("$RuleModelName$"))
                 .forEach(o -> o.setType(packageName + "." + generatedSourceFile + "_" + typeName));
         cls.findAll(MethodDeclaration.class)
@@ -200,5 +207,9 @@ public class RuleUnitSourceClass implements FileGenerator {
 
     public Class<?> getRuleUnitClass() {
         return ruleUnit;
+    }
+
+    public void setApplicationPackageName(String packageName) {
+        this.applicationPackageName = packageName;
     }
 }

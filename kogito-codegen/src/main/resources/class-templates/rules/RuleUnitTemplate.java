@@ -6,6 +6,10 @@ import org.kie.kogito.rules.RuleEventListenerConfig;
 public class $Name$ extends org.kie.kogito.rules.impl.AbstractRuleUnit<$ModelName$> {
 
 
+    public $Name$() {
+        this(new $Application$());
+    }
+
     public $Name$(org.kie.kogito.Application app) {
         super(app);
     }
