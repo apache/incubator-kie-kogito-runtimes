@@ -26,9 +26,12 @@ public class $Name$ extends org.kie.kogito.rules.impl.AbstractRuleUnit<$ModelNam
                 org.drools.modelcompiler.builder.KieBaseBuilder.createKieBaseFromModel(
                         new $RuleModelName$());
         KieSession ks = kb.newKieSession();
-        RuleEventListenerConfig ruleEventListenerConfig = app.config().rule().ruleEventListeners();
-        ruleEventListenerConfig.agendaListeners().forEach(ks::addEventListener);
-        ruleEventListenerConfig.ruleRuntimeListeners().forEach(ks::addEventListener);
+        org.kie.kogito.Config cfg = app.config();
+        if (cfg != null) {
+            RuleEventListenerConfig ruleEventListenerConfig = cfg.rule().ruleEventListeners();
+            ruleEventListenerConfig.agendaListeners().forEach(ks::addEventListener);
+            ruleEventListenerConfig.ruleRuntimeListeners().forEach(ks::addEventListener);
+        }
         return ks;
     }
 }

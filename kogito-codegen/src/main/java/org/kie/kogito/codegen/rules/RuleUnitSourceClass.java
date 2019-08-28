@@ -168,21 +168,16 @@ public class RuleUnitSourceClass implements FileGenerator {
 
         String ruleUnitInstanceFQCN = RuleUnitInstanceSourceClass.qualifiedName(packageName, typeName);
         cls.findAll(ConstructorDeclaration.class).forEach(this::setClassName);
-        cls.findAll(ObjectCreationExpr.class)
-                .stream()
-                .filter(o -> o.getType().getNameAsString().equals("$InstanceName$"))
+        cls.findFirst(ConstructorDeclaration.class, c -> !c.getParameters().isEmpty()) // non-empty constructor
+                .ifPresent(annotator::withInjection);
+        cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$InstanceName$"))
                 .forEach(o -> o.setType(ruleUnitInstanceFQCN));
-        cls.findAll(ObjectCreationExpr.class)
-                .stream()
-                .filter(o -> o.getType().getNameAsString().equals("$Application$"))
+        cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$Application$"))
                 .forEach(o -> o.setType(applicationPackageName + ".Application"));
-        cls.findAll(ObjectCreationExpr.class)
-                .stream()
-                .filter(o -> o.getType().getNameAsString().equals("$RuleModelName$"))
+        cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$RuleModelName$"))
                 .forEach(o -> o.setType(packageName + "." + generatedSourceFile + "_" + typeName));
-        cls.findAll(MethodDeclaration.class)
+        cls.findAll(MethodDeclaration.class, m -> m.getType().asString().equals("$InstanceName$"))
                 .stream()
-                .filter(m -> m.getType().asString().equals("$InstanceName$"))
                 .map(m -> m.setType(ruleUnitInstanceFQCN))
                 .flatMap(m -> m.getParameters().stream())
                 .filter(p -> p.getType().asString().equals("$ModelName$"))
