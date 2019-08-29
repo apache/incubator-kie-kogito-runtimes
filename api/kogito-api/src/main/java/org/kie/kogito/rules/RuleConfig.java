@@ -15,8 +15,30 @@
 
 package org.kie.kogito.rules;
 
-
 public interface RuleConfig {
 
     RuleEventListenerConfig ruleEventListeners();
+
+    EventProcessing eventProcessingMode();
+
+    ClockType clockType();
+
+    enum EventProcessing {
+        Stream, Cloud
+    }
+
+    enum ClockType {
+        RealTime("realtime"), Pseudo("pseudo");
+
+        private final String type;
+
+        ClockType(String type) {
+            this.type = type;
+        }
+
+        public String getType() {
+            return type;
+        }
+    }
+
 }

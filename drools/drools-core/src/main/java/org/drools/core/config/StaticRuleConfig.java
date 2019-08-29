@@ -20,10 +20,18 @@ import org.kie.kogito.rules.RuleEventListenerConfig;
 
 public class StaticRuleConfig implements RuleConfig {
     
-    private final RuleEventListenerConfig ruleEventListenerConfig; 
+    private final RuleEventListenerConfig ruleEventListenerConfig;
+    private final EventProcessing eventProcessing;
+    private final ClockType clockType;
+
+    public StaticRuleConfig(RuleEventListenerConfig ruleEventListenerConfig, EventProcessing eventProcessing, ClockType clockType) {
+        this.ruleEventListenerConfig = ruleEventListenerConfig;
+        this.eventProcessing = eventProcessing;
+        this.clockType = clockType;
+    }
 
     public StaticRuleConfig(RuleEventListenerConfig ruleEventListenerConfig) {
-        this.ruleEventListenerConfig = ruleEventListenerConfig;
+        this(ruleEventListenerConfig, EventProcessing.Cloud, ClockType.RealTime);
     }
 
     @Override
@@ -31,4 +39,13 @@ public class StaticRuleConfig implements RuleConfig {
         return ruleEventListenerConfig;
     }
 
+    @Override
+    public EventProcessing eventProcessingMode() {
+        return eventProcessing;
+    }
+
+    @Override
+    public ClockType clockType() {
+        return clockType;
+    }
 }
