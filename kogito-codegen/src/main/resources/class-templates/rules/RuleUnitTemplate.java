@@ -44,7 +44,7 @@ public class $Name$ extends org.kie.kogito.rules.impl.AbstractRuleUnit<$ModelNam
                     RuleUnitConfigParser.parseClockType(ruleCfg.clockType());
 
             SessionConfigurationImpl sessionConfiguration = new SessionConfigurationImpl();
-            sessionConfiguration.setClockType(clockType);
+            sessionConfiguration.setOption(clockType);
 
             KieSession ks = kb.newKieSession(sessionConfiguration, new EnvironmentImpl());
 
