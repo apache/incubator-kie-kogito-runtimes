@@ -24,7 +24,7 @@
       <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
     </bpmn2:endEvent>
     <bpmn2:sequenceFlow id="SequenceFlow_2" tns:priority="1" name="" sourceRef="StartEvent_1" targetRef="BusinessRuleTask_2"/>
-    <bpmn2:businessRuleTask id="BusinessRuleTask_2" tns:ruleFlowGroup="unit:org.kie.kogito.codegen.tests.BusinessRuleUnit" name="Business Rule Task" implementation="##unspecified">
+    <bpmn2:businessRuleTask id="BusinessRuleTask_2" tns:ruleFlowGroup="org.kie.kogito.codegen.tests.BusinessRuleUnit" name="Business Rule Task" implementation="http://www.jboss.org/drools/rule-unit">
       <bpmn2:extensionElements>
         <tns:metaData name="elementname">
           <tns:metaValue><![CDATA[Business Rule Task]]></tns:metaValue>

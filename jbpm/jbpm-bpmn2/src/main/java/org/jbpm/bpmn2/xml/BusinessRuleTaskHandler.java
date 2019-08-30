@@ -55,6 +55,13 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
             final String localName, final ExtensibleXmlParser parser) throws SAXException {
     	super.handleNode(node, element, uri, localName, parser);
         RuleSetNode ruleSetNode = (RuleSetNode) node;
+
+        String language = element.getAttribute("implementation");
+        if (language == null || language.equalsIgnoreCase("##unspecified") || language.isEmpty()) {
+            language = RuleSetNode.DRL_LANG;
+        }
+        ruleSetNode.setLanguage(language);
+
 		String ruleFlowGroup = element.getAttribute("ruleFlowGroup");
         if (ruleFlowGroup == null) {
             String namespace = (String) ruleSetNode.removeParameter(NAMESPACE_PROP);
@@ -68,14 +75,9 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
                         decision));
             }
         } else {
-			ruleSetNode.setRuleType(RuleSetNode.RuleType.parse(ruleFlowGroup));
+			ruleSetNode.setRuleType(RuleSetNode.RuleType.of(ruleFlowGroup, language));
 		}
-		String language = element.getAttribute("implementation");
-		if (language == null || language.equalsIgnoreCase("##unspecified") || language.isEmpty()) {
-		    language = RuleSetNode.DRL_LANG;
-		}
-		ruleSetNode.setLanguage(language);
-		
+
 		org.w3c.dom.Node xmlNode = element.getFirstChild();
 		while (xmlNode != null) {
             String nodeName = xmlNode.getNodeName();
@@ -98,11 +100,7 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
 		writeNode("businessRuleTask", ruleSetNode, xmlDump, metaDataType);
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
         if (ruleType != null) {
-            if (ruleType.isRuleFlowGroup()) {
-                xmlDump.append("g:ruleFlowGroup=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleType.getName()) + "\" " + EOL);
-            } else if (ruleType.isRuleUnit()) {
-                xmlDump.append("g:ruleFlowGroup=\"" + RuleSetNode.RuleType.UNIT_PREFIX + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleType.getName()) + "\" " + EOL);
-            }
+            xmlDump.append("g:ruleFlowGroup=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleType.getName()) + "\" " + EOL);
             // else DMN
 		}
 		

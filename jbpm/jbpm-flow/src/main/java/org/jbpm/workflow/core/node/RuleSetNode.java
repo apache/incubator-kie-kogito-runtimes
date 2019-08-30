@@ -41,13 +41,13 @@ public class RuleSetNode extends StateBasedNode implements ContextContainer {
 
     public static abstract class RuleType implements Serializable {
 
-        public static final String UNIT_PREFIX = "unit:";
-
-        public static RuleType parse(String name) {
-            if (name.startsWith(UNIT_PREFIX)) {
-                return ruleUnit(name.substring(UNIT_PREFIX.length()));
-            } else {
+        public static RuleType of(String name, String language) {
+            if (language.equals(DRL_LANG)) {
                 return ruleFlowGroup(name);
+            } else if (language.equals(RULE_UNIT_LANG)){
+                return ruleUnit(name);
+            } else {
+                throw new IllegalArgumentException("Unsupported language " + language);
             }
         }
 
@@ -143,6 +143,7 @@ public class RuleSetNode extends StateBasedNode implements ContextContainer {
     private static final long serialVersionUID = 510l;
 
     public static final String DRL_LANG = "http://www.jboss.org/drools/rule";
+    public static final String RULE_UNIT_LANG = "http://www.jboss.org/drools/rule-unit";
     public static final String DMN_LANG = "http://www.jboss.org/drools/dmn";
 
     private String language = DRL_LANG;

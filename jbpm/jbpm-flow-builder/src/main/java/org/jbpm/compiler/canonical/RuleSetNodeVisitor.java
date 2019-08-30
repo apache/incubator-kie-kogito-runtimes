@@ -81,35 +81,31 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
 
         if (ruleSetNode.getLanguage().equals(RuleSetNode.DRL_LANG)) {
-            if (ruleType.isRuleFlowGroup()) {
-                MethodCallExpr ruleRuntimeBuilder = new MethodCallExpr(
-                        new MethodCallExpr(new NameExpr("app"), "ruleUnits"), "ruleRuntimeBuilder");
-                MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(ruleRuntimeBuilder, "newKieSession", NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"), new NameExpr("app.config().rule()")));
-                actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
-                addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleFlowGroup", new StringLiteralExpr(ruleType.getName()), lambda);
-            } else if (ruleType.isRuleUnit()) {
+            MethodCallExpr ruleRuntimeBuilder = new MethodCallExpr(
+                    new MethodCallExpr(new NameExpr("app"), "ruleUnits"), "ruleRuntimeBuilder");
+            MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(ruleRuntimeBuilder, "newKieSession", NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"), new NameExpr("app.config().rule()")));
+            actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
+            addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleFlowGroup", new StringLiteralExpr(ruleType.getName()), lambda);
+        } else if (ruleSetNode.getLanguage().equals(RuleSetNode.RULE_UNIT_LANG)) {
+            InputStream resourceAsStream = this.getClass().getResourceAsStream("/class-templates/RuleUnitFactoryTemplate.java");
+            Expression ruleUnitFactory = parse(resourceAsStream).findFirst(Expression.class).get();
 
-                InputStream resourceAsStream = this.getClass().getResourceAsStream("/class-templates/RuleUnitFactoryTemplate.java");
-                Expression ruleUnitFactory = parse(resourceAsStream).findFirst(Expression.class).get();
+            String unitName = ruleType.getName();
+            Class<?> unitClass = loadUnitClass(unitName);
 
-                String unitName = ruleType.getName();
-                Class<?> unitClass = loadUnitClass(unitName);
+            ruleUnitFactory.findAll(ClassOrInterfaceType.class)
+                    .stream()
+                    .filter(t -> t.getNameAsString().equals("$Type$"))
+                    .forEach(t -> t.setName(unitName));
 
-                ruleUnitFactory.findAll(ClassOrInterfaceType.class)
-                        .stream()
-                        .filter(t -> t.getNameAsString().equals("$Type$"))
-                        .forEach(t -> t.setName(unitName));
+            ruleUnitFactory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("bind"))
+                    .ifPresent(m -> m.setBody(bind(variableScope, ruleSetNode, unitClass)));
+            ruleUnitFactory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unit"))
+                    .ifPresent(m -> m.setBody(unit(unitName)));
+            ruleUnitFactory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unbind"))
+                    .ifPresent(m -> m.setBody(unbind(variableScope, ruleSetNode, unitClass)));
 
-                ruleUnitFactory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("bind"))
-                        .ifPresent(m -> m.setBody(bind(variableScope, ruleSetNode, unitClass)));
-                ruleUnitFactory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unit"))
-                        .ifPresent(m -> m.setBody(unit(unitName)));
-                ruleUnitFactory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unbind"))
-                        .ifPresent(m -> m.setBody(unbind(variableScope, ruleSetNode, unitClass)));
-
-                addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleUnit", new StringLiteralExpr(ruleType.getName()), ruleUnitFactory);
-            }
-
+            addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleUnit", new StringLiteralExpr(ruleType.getName()), ruleUnitFactory);
         } else if (ruleSetNode.getLanguage().equals(RuleSetNode.DMN_LANG)) {
             RuleSetNode.RuleType.Decision decisionModel = (RuleSetNode.RuleType.Decision) ruleType;
             MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(new NameExpr("app"), "dmnRuntimeBuilder");
@@ -119,7 +115,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                                      decisionModel.getDecision() == null ? new NullLiteralExpr() : new StringLiteralExpr(decisionModel.getDecision()),
                                      lambda);
         } else {
-            throw new IllegalArgumentException("Unsupported rule language use " + ruleSetNode.getLanguage());
+            throw new IllegalArgumentException("Unsupported rule language " + ruleSetNode.getLanguage());
         }
 
         for (Entry<String, String> entry : ruleSetNode.getInMappings().entrySet()) {

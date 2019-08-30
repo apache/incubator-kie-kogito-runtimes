@@ -53,7 +53,7 @@ public class RuleSetNodeFactory extends NodeFactory {
 
     public RuleSetNodeFactory ruleUnit(String unit, RuleUnitFactory<?> ruleUnit) {
         getRuleSetNode().setRuleType(RuleSetNode.RuleType.ruleUnit(unit));
-        getRuleSetNode().setLanguage(RuleSetNode.DRL_LANG);
+        getRuleSetNode().setLanguage(RuleSetNode.RULE_UNIT_LANG);
         getRuleSetNode().setRuleUnitFactory(ruleUnit);
         return this;
     }

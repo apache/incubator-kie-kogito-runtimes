@@ -34,8 +34,12 @@ public class RuleSetNodeHandler extends AbstractNodeHandler {
         super.handleNode(node, element, uri, localName, parser);
         RuleSetNode ruleSetNode = (RuleSetNode) node;
         String ruleFlowGroup = element.getAttribute("ruleFlowGroup");
+        String language = element.getAttribute("implementation");
+        if (language == null || language.equalsIgnoreCase("##unspecified") || language.isEmpty()) {
+            language = RuleSetNode.DRL_LANG;
+        }
         if (ruleFlowGroup != null && ruleFlowGroup.length() > 0) {
-            ruleSetNode.setRuleType(RuleSetNode.RuleType.parse(ruleFlowGroup));
+            ruleSetNode.setRuleType(RuleSetNode.RuleType.of(ruleFlowGroup, language));
         }
     }
 
@@ -49,12 +53,11 @@ public class RuleSetNodeHandler extends AbstractNodeHandler {
 		writeNode("ruleSet", ruleSetNode, xmlDump, includeMeta);
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
         if (ruleType != null) {
-            if (ruleType.isRuleFlowGroup()) {
+            if (!ruleType.isDecision()) {
                 xmlDump.append("ruleFlowGroup=\"" + ruleType.getName() + "\" ");
-            } else if (ruleType.isRuleUnit()) {
-                xmlDump.append("ruleFlowGroup=\"" + RuleSetNode.RuleType.UNIT_PREFIX + ruleType.getName() + "\" ");
             }
         }
+        xmlDump.append(" implementation=\"" + ruleSetNode.getLanguage() + "\" ");
         if (ruleSetNode.getTimers() != null || (includeMeta && containsMetaData(ruleSetNode))) {
             xmlDump.append(">\n");
             if (ruleSetNode.getTimers() != null) {
