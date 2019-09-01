@@ -3,7 +3,6 @@ package $Package$;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.SessionConfigurationImpl;
 import org.drools.core.impl.EnvironmentImpl;
-import org.drools.core.ruleunit.impl.RuleUnitConfigParser;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.runtime.KieSession;
 
@@ -31,20 +30,14 @@ public class $Name$ extends org.kie.kogito.rules.impl.AbstractRuleUnit<$ModelNam
             KieBaseConfiguration kieBaseConfiguration =
                     new RuleBaseConfiguration();
 
-            org.kie.api.conf.EventProcessingOption eventProcessingOption =
-                    RuleUnitConfigParser.parseEventProcessing(ruleCfg.eventProcessingMode());
-
-            kieBaseConfiguration.setOption(eventProcessingOption);
+            kieBaseConfiguration.setOption(ruleCfg.eventProcessingMode());
 
             org.drools.core.impl.InternalKnowledgeBase kb =
                     org.drools.modelcompiler.builder.KieBaseBuilder.createKieBaseFromModel(
                             new $RuleModelName$(), kieBaseConfiguration);
 
-            org.drools.core.ClockType clockType =
-                    RuleUnitConfigParser.parseClockType(ruleCfg.clockType());
-
             SessionConfigurationImpl sessionConfiguration = new SessionConfigurationImpl();
-            sessionConfiguration.setOption(clockType);
+            sessionConfiguration.setOption(ruleCfg.clockType());
 
             KieSession ks = kb.newKieSession(sessionConfiguration, new EnvironmentImpl());
 
