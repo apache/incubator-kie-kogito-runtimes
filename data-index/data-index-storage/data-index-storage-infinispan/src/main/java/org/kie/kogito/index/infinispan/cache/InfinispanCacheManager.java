@@ -55,7 +55,6 @@ public class InfinispanCacheManager implements CacheService {
     @PostConstruct
     public void init() {
         manager.start();
-        this.initializeCacheManager(PROCESS_INSTANCES_CACHE, domainCacheTemplate);
     }
 
     @PreDestroy
@@ -69,38 +68,41 @@ public class InfinispanCacheManager implements CacheService {
     }
 
     /**
-     * Initializes the CacheManager if not exists based first on the given template. 
-     * If the template does not exist on the server, uses the default cache configuration.
+     * Gets the cache if exists, otherwise tries to create one with the given template.
+     * If the template does not exist on the server, creates the cache based on a default configuration.
      * 
      * @param name the cache manager name
      * @param template the template that must exists on the server
+     * @see KogitoCacheDefaultConfiguration
      */
-    private void initializeCacheManager(String name, String template) {
+    protected <K, V> RemoteCache<K, V> getOrCreateCache(final String name, final String template) {
         try {
-            // verifies if the cache exists
             LOGGER.debug("Trying to get cache {} from the server", name);
-            RemoteCache<Object, Object> remoteCache = manager.getCache(name);
+            RemoteCache<K, V> remoteCache = manager.getCache(name);
             if (remoteCache == null) {
-                // create a cache using the given template
                 LOGGER.debug("Cache {} not found, trying to create a new one based on template {}", name, template);
-                manager.administration().createCache(name, template);
+                return manager.administration().createCache(name, template);
             }
+            return remoteCache;
         } catch (HotRodClientException e) {
-            //template doesn't exist, create the cache with default configurations
-            LOGGER.debug("Creating a default cache '{}' configuration", name);
-            RemoteCache<Object, Object> cache = manager.administration().createCache(name, new KogitoCacheDefaultConfiguration());
-            LOGGER.debug("Cache created {}", cache.getName());
+            if (e.isServerError()) {
+                LOGGER.info("Creating a cache for '{}' based on the default configuration", name);
+                RemoteCache<K, V> cache = manager.administration().createCache(name, new KogitoCacheDefaultConfiguration(name));
+                LOGGER.debug("Default cache created {}", cache.getName());
+                return cache;
+            }
+            throw e;
         }
     }
 
     @Override
     public Map<String, ProcessInstance> getProcessInstancesCache() {
-        return manager.getCache(PROCESS_INSTANCES_CACHE);
+        return this.getOrCreateCache(PROCESS_INSTANCES_CACHE, domainCacheTemplate);
     }
 
     @Override
     public Map<String, JsonObject> getProcessInstancesCacheAsJson() {
-        return manager.getCache(PROCESS_INSTANCES_CACHE).withDataFormat(jsonDataFormat);
+        return this.getOrCreateCache(PROCESS_INSTANCES_CACHE, domainCacheTemplate).withDataFormat(jsonDataFormat);
     }
 
     @Override
@@ -115,8 +117,7 @@ public class InfinispanCacheManager implements CacheService {
 
     @Override
     public Map<String, JsonObject> getDomainModelCache(String processId) {
-        initializeCacheManager(processId + "_domain", domainCacheTemplate);
-        return manager.getCache(processId + "_domain").withDataFormat(jsonDataFormat);
+        return this.getOrCreateCache(processId + "_domain", domainCacheTemplate).withDataFormat(jsonDataFormat);
     }
 
 }
