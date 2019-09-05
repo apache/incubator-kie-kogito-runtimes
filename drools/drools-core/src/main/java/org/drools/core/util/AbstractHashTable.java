@@ -371,11 +371,11 @@ public abstract class AbstractHashTable
 
         int hashCodeOf(Tuple tuple, boolean left);
 
-        boolean equal(Object object, Tuple tuple);
+        boolean areEqual(Object object, Tuple tuple);
 
-        boolean equal(TupleList list, Tuple tuple2);
+        boolean areEqual(TupleList list, Tuple tuple2);
 
-        boolean equal(TupleList list, Object object2);
+        boolean areEqual(TupleList list, Object object2);
 
         TupleList createEntry(Tuple tuple, int hashCode, boolean left);
     }
@@ -427,8 +427,8 @@ public abstract class AbstractHashTable
         }
 
         @Override
-        public boolean equal(final Object right,
-                             final Tuple tuple) {
+        public boolean areEqual(final Object right,
+                                final Tuple tuple) {
             return this.index.evaluator.evaluate( null,
                                                   this.index.declaration.getExtractor(),
                                                   tuple.getObject( this.index.declaration ),
@@ -437,16 +437,16 @@ public abstract class AbstractHashTable
         }
 
         @Override
-        public boolean equal(final TupleList list,
-                             final Object object2) {
+        public boolean areEqual(final TupleList list,
+                                final Object object2) {
             return this.index.evaluator.evaluate( null,
                                                   ( (SingleIndexTupleList) list ).indexKey,
                                                   this.index.extractor,
                                                   object2 );
         }
 
-        public boolean equal(final Tuple tuple1,
-                             final Tuple tuple2) {
+        public boolean areEqual(final Tuple tuple1,
+                                final Tuple tuple2) {
             return this.index.evaluator.evaluate( null,
                                                   this.index.declaration.getExtractor(),
                                                   tuple1.getObject( this.index.declaration ),
@@ -455,8 +455,8 @@ public abstract class AbstractHashTable
         }
 
         @Override
-        public boolean equal(final TupleList list,
-                             final Tuple tuple2) {
+        public boolean areEqual(final TupleList list,
+                                final Tuple tuple2) {
             return this.index.evaluator.evaluate( null,
                                                   ( (SingleIndexTupleList) list ).indexKey,
                                                   this.index.declaration.getExtractor(),
@@ -480,7 +480,7 @@ public abstract class AbstractHashTable
 
         @Override
         public boolean equals(final Object object) {
-            if (object == null) {
+            if (!(object instanceof AbstractIndexTupleList)) {
                 return false;
             }
             final AbstractIndexTupleList other = (AbstractIndexTupleList) object;
@@ -574,8 +574,8 @@ public abstract class AbstractHashTable
         }
 
         @Override
-        public boolean equal(final Object right,
-                             final Tuple tuple) {
+        public boolean areEqual(final Object right,
+                                final Tuple tuple) {
             return this.index0.evaluator.evaluate( null,
                                                    this.index0.declaration.getExtractor(),
                                                    tuple.getObject( this.index0.declaration ),
@@ -590,8 +590,8 @@ public abstract class AbstractHashTable
         }
 
         @Override
-        public boolean equal(final TupleList list,
-                             final Tuple tuple2) {
+        public boolean areEqual(final TupleList list,
+                                final Tuple tuple2) {
             return this.index0.evaluator.evaluate( null,
                                                   ( (DoubleIndexTupleList) list ).indexKey0,
                                                   this.index0.declaration.getExtractor(),
@@ -604,8 +604,8 @@ public abstract class AbstractHashTable
         }
 
         @Override
-        public boolean equal(final TupleList list,
-                             final Object object2) {
+        public boolean areEqual(final TupleList list,
+                                final Object object2) {
             return this.index0.evaluator.evaluate( null,
                                                   ( (DoubleIndexTupleList) list ).indexKey0,
                                                   this.index0.extractor,
@@ -707,8 +707,8 @@ public abstract class AbstractHashTable
         }
 
         @Override
-        public boolean equal(final Object right,
-                             final Tuple tuple) {
+        public boolean areEqual(final Object right,
+                                final Tuple tuple) {
             return this.index0.evaluator.evaluate( null,
                                                    this.index0.declaration.getExtractor(),
                                                    tuple.getObject( this.index0.declaration ),
@@ -728,8 +728,8 @@ public abstract class AbstractHashTable
         }
 
         @Override
-        public boolean equal(final TupleList list,
-                             final Tuple tuple2) {
+        public boolean areEqual(final TupleList list,
+                                final Tuple tuple2) {
             return this.index0.evaluator.evaluate( null,
                                                    ( (TripleIndexTupleList) list ).indexKey0,
                                                    this.index0.declaration.getExtractor(),
@@ -747,8 +747,8 @@ public abstract class AbstractHashTable
         }
 
         @Override
-        public boolean equal(final TupleList list,
-                             final Object object2) {
+        public boolean areEqual(final TupleList list,
+                                final Object object2) {
             return this.index0.evaluator.evaluate( null,
                                                    ( (TripleIndexTupleList) list ).indexKey0,
                                                    this.index0.extractor,

@@ -439,8 +439,8 @@ public class TupleIndexHashTable extends AbstractHashTable implements TupleMemor
         }
 
         return left ?
-               this.index.equal( list, tuple.getFactHandle().getObject() ) :
-               this.index.equal( list, tuple );
+               this.index.areEqual(list, tuple.getFactHandle().getObject() ) :
+               this.index.areEqual(list, tuple );
     }
 
     public int size() {
@@ -498,11 +498,11 @@ public class TupleIndexHashTable extends AbstractHashTable implements TupleMemor
         if ( tupleList.getFirst().getFactHandle() == factHandle ) {
             Tuple rightTuple = tupleList.getFirst().getNext();
             if ( rightTuple != null ) {
-                return this.index.equal( rightTuple.getFactHandle().getObject(),
-                                         tuple );
+                return this.index.areEqual(rightTuple.getFactHandle().getObject(),
+                                           tuple );
             }
         }
 
-        return this.index.equal( tupleList, tuple );
+        return this.index.areEqual(tupleList, tuple );
     }
 }
