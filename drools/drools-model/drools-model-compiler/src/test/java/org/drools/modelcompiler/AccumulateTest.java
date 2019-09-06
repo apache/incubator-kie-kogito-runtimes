@@ -1254,6 +1254,41 @@ public class AccumulateTest extends BaseModelTest {
 
 
     @Test
+    public void testFromAccumulateBigDecimalMvel() {
+        String str = "import " + Person.class.getCanonicalName() + ";\n" +
+                "import " + BigDecimal.class.getCanonicalName() + ";\n" +
+                "global java.util.List list;\n" +
+                "dialect \"mvel\"\n" +
+                "rule R when\n" +
+                "  $b : BigDecimal() from accumulate (\n" +
+                "            Person( $money : money ),\n" +
+                "                init( BigDecimal sum = 0; ),\n" +
+                "                action( sum += $money; ),\n" +
+                "                reverse( sum -= $money; ),\n" +
+                "                result( sum )\n" +
+                "         )\n" +
+                "then\n" +
+                "  list.add($b);\n" +
+                "end";
+
+        KieSession ksession = getKieSession(str);
+        final List<Number> list = new ArrayList<>();
+        ksession.setGlobal("list", list);
+
+        Person john = new Person("John");
+        john.setMoney(new BigDecimal(100));
+        ksession.insert(john);
+        Person paul = new Person("Paul");
+        paul.setMoney(new BigDecimal(200));
+        ksession.insert(paul);
+
+        ksession.fireAllRules();
+
+        assertEquals(new BigDecimal(300), list.get(0));
+    }
+
+
+    @Test
     public void testSemicolonMissingInInit() {
         String str = "import " + Person.class.getCanonicalName() + ";\n" +
                 "import " + BigDecimal.class.getCanonicalName() + ";\n" +
