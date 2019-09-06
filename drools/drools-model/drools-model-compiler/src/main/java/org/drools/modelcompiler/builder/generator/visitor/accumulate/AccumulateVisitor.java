@@ -71,6 +71,7 @@ import static java.util.stream.Collectors.toList;
 
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.addCurlyBracesToBlock;
+import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.addSemicolon;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.forceCastForName;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.getLiteralExpressionType;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.rescopeNamesToNewScope;
@@ -575,8 +576,7 @@ public abstract class AccumulateVisitor {
     }
 
     private BlockStmt parseBlockAddSemicolon(String block) {
-        final String withTerminator = block.endsWith(";") ? block : block + ";";
-        return StaticJavaParser.parseBlock("{" + withTerminator + "}");
+        return StaticJavaParser.parseBlock(String.format("{%s}", addSemicolon(block)));
     }
 
     private Optional<Statement> createInitializer(String variableName, Optional<Expression> optInitializer) {
