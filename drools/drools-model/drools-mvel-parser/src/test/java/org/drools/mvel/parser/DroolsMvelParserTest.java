@@ -37,7 +37,6 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import org.apache.commons.lang3.SystemUtils;
 import org.drools.mvel.parser.ast.expr.DrlNameExpr;
 import org.drools.mvel.parser.ast.expr.DrlxExpression;
 import org.drools.mvel.parser.ast.expr.HalfBinaryExpr;
@@ -756,7 +755,7 @@ public class DroolsMvelParserTest {
 
     @Test
     public void testWithoutSemicolonMethodCommentOppositeOSLineEndings() {
-        final String oppositeLineEnding = SystemUtils.IS_OS_WINDOWS ? "\n" : "\r\n";
+        final String oppositeLineEnding = isOsWindows() ? "\n" : "\r\n";
         String expr = "{             " +
                 "delete($person) // comment" + oppositeLineEnding +
                 "delete($pet) // comment" + oppositeLineEnding +
@@ -907,5 +906,10 @@ public class DroolsMvelParserTest {
 
     private String toString(Node n) {
         return PrintUtil.printConstraint(n);
+    }
+
+    private boolean isOsWindows() {
+        final String osName = System.getProperty("os.name");
+        return osName != null && osName.trim().toLowerCase().contains("windows");
     }
 }
