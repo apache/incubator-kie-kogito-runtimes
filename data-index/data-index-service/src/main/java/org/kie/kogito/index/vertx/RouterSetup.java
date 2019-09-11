@@ -26,6 +26,8 @@ import io.vertx.ext.web.handler.FaviconHandler;
 import io.vertx.ext.web.handler.LoggerHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.graphql.GraphQLHandler;
+import io.vertx.ext.web.handler.graphql.GraphiQLHandler;
+import io.vertx.ext.web.handler.graphql.GraphiQLHandlerOptions;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 public class RouterSetup {
@@ -40,7 +42,8 @@ public class RouterSetup {
     void setupRouter(@Observes Router router) {
         router.route("/graphql").handler(CorsHandler.create(allowedOriginPattern).allowedMethod(HttpMethod.POST).allowedHeader("content-type"));
         router.route("/graphql").handler(graphQLHandler);
-        router.route("/").handler(ctx -> ctx.reroute("/graphql"));
+        router.route("/graphiql/*").handler(GraphiQLHandler.create(new GraphiQLHandlerOptions().setEnabled(true)));
+        router.route("/").handler(ctx -> ctx.reroute("/graphiql"));
         router.route().handler(LoggerHandler.create());
         router.route().handler(StaticHandler.create());
         router.route().handler(FaviconHandler.create());
