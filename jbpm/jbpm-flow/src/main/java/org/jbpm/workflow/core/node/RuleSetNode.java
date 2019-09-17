@@ -41,14 +41,24 @@ public class RuleSetNode extends StateBasedNode implements ContextContainer {
 
     public static abstract class RuleType implements Serializable {
 
+        public static final String UNIT_RULEFLOW_PREFIX = "unit:";
+
         public static RuleType of(String name, String language) {
             if (language.equals(DRL_LANG)) {
-                return ruleFlowGroup(name);
+                return parseRuleFlowGroup(name);
             } else if (language.equals(RULE_UNIT_LANG)){
                 return ruleUnit(name);
             } else {
                 throw new IllegalArgumentException("Unsupported language " + language);
             }
+        }
+
+        public static RuleType parseRuleFlowGroup(String name) {
+            if (name.startsWith("unit:")) {
+                String unitId = name.substring(UNIT_RULEFLOW_PREFIX.length());
+                return ruleUnit(unitId);
+            }
+            return ruleFlowGroup(name);
         }
 
         public static RuleFlowGroup ruleFlowGroup(String name) {
