@@ -54,6 +54,8 @@ import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.api.definition.process.Node;
 import org.kie.kogito.rules.DataObserver;
 import org.kie.kogito.rules.DataSource;
+import org.kie.kogito.rules.DataStore;
+import org.kie.kogito.rules.DataStream;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
@@ -175,11 +177,13 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         Method m;
         try {
             m = unitClass.getMethod(methodName);
-            if ( DataSource.class.isAssignableFrom( m.getReturnType() ) ) {
-                Expression fieldAccessor =
-                        new MethodCallExpr(new NameExpr("model"), methodName);
-
+            Expression fieldAccessor =
+                    new MethodCallExpr(new NameExpr("model"), methodName);
+            if ( DataStore.class.isAssignableFrom(m.getReturnType() ) ) {
                 return new MethodCallExpr(fieldAccessor, "add")
+                        .addArgument(value);
+            } else if ( DataStream.class.isAssignableFrom(m.getReturnType() ) ) {
+                return new MethodCallExpr(fieldAccessor, "append")
                         .addArgument(value);
             } // else fallback to the following
         } catch (NoSuchMethodException e) {
