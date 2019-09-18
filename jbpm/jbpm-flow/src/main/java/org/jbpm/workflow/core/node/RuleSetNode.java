@@ -41,7 +41,7 @@ public class RuleSetNode extends StateBasedNode implements ContextContainer {
 
     public static abstract class RuleType implements Serializable {
 
-        public static final String UNIT_RULEFLOW_PREFIX = "unit:";
+        private static final String UNIT_RULEFLOW_PREFIX = "unit:";
 
         public static RuleType of(String name, String language) {
             if (language.equals(DRL_LANG)) {
@@ -53,8 +53,8 @@ public class RuleSetNode extends StateBasedNode implements ContextContainer {
             }
         }
 
-        public static RuleType parseRuleFlowGroup(String name) {
-            if (name.startsWith("unit:")) {
+        private static RuleType parseRuleFlowGroup(String name) {
+            if (name.startsWith(UNIT_RULEFLOW_PREFIX)) {
                 String unitId = name.substring(UNIT_RULEFLOW_PREFIX.length());
                 return ruleUnit(unitId);
             }
