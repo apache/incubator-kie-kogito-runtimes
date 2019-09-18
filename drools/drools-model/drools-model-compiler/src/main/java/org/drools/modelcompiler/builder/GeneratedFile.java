@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.codegen;
+package org.drools.modelcompiler.builder;
 
 import java.nio.charset.StandardCharsets;
 
@@ -37,11 +37,8 @@ public class GeneratedFile {
     private final Type type;
 
     public GeneratedFile(Type type, String relativePath, String contents) {
-        this.type = type;
-        this.relativePath = relativePath;
-        this.contents = contents.getBytes(StandardCharsets.UTF_8);
+        this(type, relativePath, contents.getBytes(StandardCharsets.UTF_8));
     }
-
 
     public GeneratedFile(Type type, String relativePath, byte[] contents) {
         this.type = type;

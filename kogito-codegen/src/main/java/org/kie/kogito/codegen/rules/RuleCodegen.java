@@ -34,7 +34,7 @@ import org.kie.api.KieServices;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
-import org.kie.kogito.codegen.GeneratedFile;
+import org.drools.modelcompiler.builder.GeneratedFile;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 
@@ -92,7 +92,7 @@ public class RuleCodegen extends AbstractGenerator {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
-        this.moduleGenerator = new RuleUnitContainerGenerator(packageName);
+        this.moduleGenerator = new RuleUnitContainerGenerator();
     }
 
     private MemoryFileSystem getMemoryFileSystem(InternalKieModule kieModule) {

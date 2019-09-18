@@ -17,6 +17,7 @@ package org.kie.kogito.codegen;
 
 import java.nio.charset.StandardCharsets;
 
+import org.drools.modelcompiler.builder.GeneratedFile;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

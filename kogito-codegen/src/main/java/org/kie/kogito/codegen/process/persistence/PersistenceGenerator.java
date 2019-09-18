@@ -11,9 +11,9 @@ import java.util.List;
 
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.BodyDeclarationComparator;
+import org.drools.modelcompiler.builder.BodyDeclarationComparator;
 import org.kie.kogito.codegen.ConfigGenerator;
-import org.kie.kogito.codegen.GeneratedFile;
+import org.drools.modelcompiler.builder.GeneratedFile;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;

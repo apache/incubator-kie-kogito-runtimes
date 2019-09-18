@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -34,11 +32,14 @@ import org.drools.compiler.commons.jci.compilers.JavaCompiler;
 import org.drools.compiler.commons.jci.compilers.JavaCompilerFactory;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.compiler.rule.builder.dialect.java.JavaDialectConfiguration;
+import org.drools.modelcompiler.builder.GeneratedFile;
 import org.kie.kogito.Application;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractCodegenTest {
     
