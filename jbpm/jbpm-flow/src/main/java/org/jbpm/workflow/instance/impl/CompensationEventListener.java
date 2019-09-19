@@ -16,11 +16,10 @@
 
 package org.jbpm.workflow.instance.impl;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.exception.CompensationScope;
@@ -114,7 +113,7 @@ class CompensationEventListener implements EventListener {
                 scopeInstance = (CompensationScopeInstance) instance.getContextInstance(compensationScope);
             } else { 
                 // nested compensation
-                Deque<NodeInstance> generatedInstances;
+                Stack<NodeInstance> generatedInstances;
                 if( toCompensateNode == null ) { 
                     // logic is the same if it's specific or general
                     generatedInstances = createNodeInstanceContainers((Node) compensationScopeContainer, true);
@@ -149,9 +148,9 @@ class CompensationEventListener implements EventListener {
         return found;
     }
 
-    private Deque<NodeInstance> createNodeInstanceContainers(Node toCompensateNode, boolean generalCompensation) {
-       Deque<NodeContainer> nestedNodes = new ArrayDeque<>();
-       Deque<NodeInstance> generatedInstances = new ArrayDeque<>();
+    private Stack<NodeInstance> createNodeInstanceContainers(Node toCompensateNode, boolean generalCompensation) {
+       Stack<NodeContainer> nestedNodes = new Stack<NodeContainer>();
+       Stack<NodeInstance> generatedInstances = new Stack<NodeInstance>();
        
        NodeContainer parentContainer = toCompensateNode.getNodeContainer();
        while( !(parentContainer instanceof RuleFlowProcess) ) { 
