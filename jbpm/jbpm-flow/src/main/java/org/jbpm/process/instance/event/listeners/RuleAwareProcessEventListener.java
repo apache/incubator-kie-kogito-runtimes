@@ -35,7 +35,7 @@ import org.kie.api.runtime.rule.FactHandle;
  * whenever process variable is updated.
  *
  */
-public class RuleAwareProcessEventLister implements ProcessEventListener {
+public class RuleAwareProcessEventListener implements ProcessEventListener {
     
     private ConcurrentHashMap<String, FactHandle> store = new ConcurrentHashMap<>();
 
