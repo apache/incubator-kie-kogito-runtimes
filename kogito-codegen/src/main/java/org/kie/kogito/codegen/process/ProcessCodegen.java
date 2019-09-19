@@ -208,7 +208,7 @@ public class ProcessCodegen extends AbstractGenerator {
         // then we can instantiate the exec model generator
         // with the data classes that we have already resolved
         ProcessToExecModelGenerator execModelGenerator =
-                new ProcessToExecModelGenerator(processIdToModel, contextClassLoader);
+                new ProcessToExecModelGenerator(contextClassLoader);
 
         // collect all process descriptors (exec model)
         for (WorkflowProcess workFlowProcess : processes.values()) {

@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -255,7 +256,8 @@ public class DrlxParseUtil {
         if (usedDeclarations != null) {
             usedDeclarations.add(name);
         }
-        return context.getDeclarationById( name ).map(DeclarationSpec::getDeclarationClass ).get();
+        return context.getDeclarationById( name )
+                .map(DeclarationSpec::getDeclarationClass ).get();
     }
 
     public static boolean canCoerceLiteralNumberExpr(Class<?> type) {
@@ -312,14 +314,11 @@ public class DrlxParseUtil {
 
         if (!rootNode.isPresent()) {
             throw new UnsupportedOperationException("No root found");
-        }
-
-        rootNode.map(f -> {
-            if (f instanceof NodeWithOptionalScope<?>) {
-                ((NodeWithOptionalScope) f).setScope(scope);
+        } else {
+            if (rootNode.get() instanceof NodeWithOptionalScope<?>) {
+                ((NodeWithOptionalScope) rootNode.get()).setScope(scope);
             }
-            return f;
-        });
+        }
 
         return expr;
     }
@@ -500,7 +499,7 @@ public class DrlxParseUtil {
         Expression previousScope = null;
 
         for (ParsedMethod e : callStackLeftToRight) {
-            if (e.expression instanceof DrlNameExpr || e.expression instanceof NameExpr || e.expression instanceof FieldAccessExpr || e.expression instanceof NullSafeFieldAccessExpr) {
+            if (e.expression instanceof NameExpr || e.expression instanceof FieldAccessExpr || e.expression instanceof NullSafeFieldAccessExpr) {
                 if (e.fieldToResolve.equals( bindingId )) {
                     continue;
                 }
@@ -547,8 +546,7 @@ public class DrlxParseUtil {
 
         if (expr instanceof NodeWithOptionalScope) {
             final NodeWithOptionalScope<?> exprWithScope = (NodeWithOptionalScope) expr;
-
-            exprWithScope.getScope().map((Expression scope) -> createExpressionCall(scope, expressions));
+            exprWithScope.getScope().ifPresent((Expression scope) -> createExpressionCall(scope, expressions));
         } else if (expr instanceof FieldAccessExpr) {
             // Cannot recurse over getScope() as FieldAccessExpr doesn't support the NodeWithOptionalScope,
             // it will support a new interface to traverse among scopes called NodeWithTraversableScope so
@@ -607,8 +605,7 @@ public class DrlxParseUtil {
     public static Optional<Expression> findViaScopeWithPredicate(Expression expr, Predicate<Expression> predicate) {
 
         final Boolean result = predicate.test(expr);
-
-        if(result) {
+        if(Boolean.TRUE.equals(result)) {
             return Optional.of(expr);
         } else if (expr instanceof NodeWithTraversableScope) {
             final NodeWithTraversableScope exprWithScope = (NodeWithTraversableScope) expr;
@@ -652,7 +649,9 @@ public class DrlxParseUtil {
     public static void forceCastForName(String nameRef, Type type, Expression expression) {
         List<NameExpr> allNameExprForName = expression.findAll(NameExpr.class, n -> n.getNameAsString().equals(nameRef));
         for (NameExpr n : allNameExprForName) {
-            n.getParentNode().get().replace(n, new EnclosedExpr(new CastExpr(type, n)));
+            n.getParentNode()
+                    .orElseThrow(() -> new NoSuchElementException("NameExpr doesn't have a parent node!"))
+                    .replace(n, new EnclosedExpr(new CastExpr(type, n)));
         }
     }
 
@@ -688,7 +687,9 @@ public class DrlxParseUtil {
                 if (names.contains(nameExpr.getNameAsString())) {
                     Expression prepend = new FieldAccessExpr(newScope, nameExpr.getNameAsString());
                     if (e instanceof NameExpr) {
-                        e.getParentNode().get().replace(nameExpr, prepend); // actually `e` was not composite, it was already the NameExpr node I was looking to replace.
+                        e.getParentNode()
+                                .orElseThrow(() -> new NoSuchElementException("NameExpr doesn't have a parent node!"))
+                                .replace(nameExpr, prepend); // actually `e` was not composite, it was already the NameExpr node I was looking to replace.
                     } else {
                         e.replace(nameExpr, prepend);
                     }
@@ -773,7 +774,7 @@ public class DrlxParseUtil {
         final Set<String> duplicates = new HashSet<>();
         for(String b : allBindings) {
             Boolean notExisting = duplicates.add(b);
-            if(!notExisting) {
+            if(Boolean.FALSE.equals(notExisting)) {
                 return Optional.of(new InvalidExpressionErrorResult(String.format("Duplicate declaration for variable '%s' in the rule '%s'", b, ruleName)));
             }
         }
