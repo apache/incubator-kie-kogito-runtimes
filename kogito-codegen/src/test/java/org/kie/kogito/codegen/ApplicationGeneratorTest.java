@@ -37,7 +37,6 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import org.drools.modelcompiler.builder.GeneratedFile;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Config;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;

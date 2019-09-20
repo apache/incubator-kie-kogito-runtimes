@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
-import org.drools.modelcompiler.builder.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

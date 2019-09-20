@@ -39,7 +39,7 @@ import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.core.io.impl.FileSystemResource;
-import org.drools.modelcompiler.builder.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFile;
 import org.drools.modelcompiler.builder.KieModuleModelMethod;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.drools.modelcompiler.builder.ModelSourceClass;
@@ -274,13 +274,13 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private void addGeneratedFiles( List<GeneratedFile> generatedFiles, List<GeneratedFile> source ) {
+    private void addGeneratedFiles( List<GeneratedFile> generatedFiles, List<org.drools.modelcompiler.builder.GeneratedFile> source ) {
         source.forEach( s -> addGeneratedFile( generatedFiles, s ) );
     }
 
-    private void addGeneratedFile( List<GeneratedFile> generatedFiles, GeneratedFile source ) {
-        ApplicationGenerator.log( source.contents() );
-        generatedFiles.add( source );
+    private void addGeneratedFile( List<GeneratedFile> generatedFiles, org.drools.modelcompiler.builder.GeneratedFile source ) {
+        ApplicationGenerator.log( source.getData() );
+        generatedFiles.add( new GeneratedFile(GeneratedFile.Type.RULE, source.getPath(), source.getData()) );
     }
 
     @Override

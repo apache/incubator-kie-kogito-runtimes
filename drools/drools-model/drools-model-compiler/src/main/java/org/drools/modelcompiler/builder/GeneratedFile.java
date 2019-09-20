@@ -1,8 +1,9 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2005 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,51 +19,32 @@ package org.drools.modelcompiler.builder;
 import java.nio.charset.StandardCharsets;
 
 public class GeneratedFile {
-    
-    public enum Type {
-        APPLICATION,
-        PROCESS,
-        PROCESS_INSTANCE,
-        REST,
-        RULE,
-        QUERY,
-        MODEL,
-        CLASS,
-        MESSAGE_CONSUMER,
-        MESSAGE_PRODUCER;
-    }
-    
-    private final String relativePath;
-    private final byte[] contents;
-    private final Type type;
 
-    public GeneratedFile(Type type, String relativePath, String contents) {
-        this(type, relativePath, contents.getBytes(StandardCharsets.UTF_8));
+    final String path;
+    final byte[] data;
+
+    public GeneratedFile(String path, String data) {
+        this.path = path;
+        this.data = data.getBytes( StandardCharsets.UTF_8);
     }
 
-    public GeneratedFile(Type type, String relativePath, byte[] contents) {
-        this.type = type;
-        this.relativePath = relativePath;
-        this.contents = contents;
+    private GeneratedFile(String path, byte[] data) {
+        this.path = path;
+        this.data = data;
     }
 
-    public String relativePath() {
-        return relativePath;
+    public byte[] getData() {
+        return data;
     }
 
-    public byte[] contents() {
-        return contents;
-    }
-    
-    public Type getType() {
-        return type;
+    public String getPath() {
+        return path;
     }
 
     @Override
     public String toString() {
         return "GeneratedFile{" +
-                "type=" + type +
-                ", relativePath='" + relativePath + '\'' +
+                "path='" + path + '\'' +
                 '}';
     }
 }

@@ -38,8 +38,8 @@ import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
-import org.drools.modelcompiler.builder.GeneratedFile;
-import org.drools.modelcompiler.builder.GeneratedFile.Type;
+import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import static org.kie.kogito.codegen.ApplicationGenerator.log;

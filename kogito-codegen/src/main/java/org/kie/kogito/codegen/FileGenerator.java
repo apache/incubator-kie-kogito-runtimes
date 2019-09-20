@@ -18,8 +18,6 @@ package org.kie.kogito.codegen;
 
 import java.nio.charset.StandardCharsets;
 
-import org.drools.modelcompiler.builder.GeneratedFile;
-
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public interface FileGenerator {

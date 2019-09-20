@@ -41,9 +41,9 @@ public class ModelWriter {
 
         List<String> sourceFiles = new ArrayList<>();
         for (GeneratedFile generatedFile : generatedFiles) {
-            String path = basePath + "/" + generatedFile.relativePath();
+            String path = basePath + "/" + generatedFile.getPath();
             sourceFiles.add(path);
-            srcMfs.write(path, generatedFile.contents());
+            srcMfs.write(path, generatedFile.getData());
         }
 
         return new Result(sourceFiles, modelFiles);

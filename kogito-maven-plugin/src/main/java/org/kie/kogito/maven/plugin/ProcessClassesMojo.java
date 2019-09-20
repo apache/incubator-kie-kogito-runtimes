@@ -45,7 +45,7 @@ import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.compiler.rule.builder.dialect.java.JavaDialectConfiguration;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.ApplicationGenerator;
-import org.drools.modelcompiler.builder.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
 import org.kie.kogito.process.ProcessInstancesFactory;

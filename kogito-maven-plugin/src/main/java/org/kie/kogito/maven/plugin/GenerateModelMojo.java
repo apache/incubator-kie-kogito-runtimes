@@ -31,7 +31,7 @@ import org.apache.maven.project.MavenProject;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.kie.api.builder.model.KieModuleModel;
 import org.kie.kogito.codegen.ApplicationGenerator;
-import org.drools.modelcompiler.builder.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
