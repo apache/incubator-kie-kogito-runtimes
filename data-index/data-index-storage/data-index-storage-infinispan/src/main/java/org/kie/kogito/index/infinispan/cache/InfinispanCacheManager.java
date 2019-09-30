@@ -16,8 +16,12 @@
 
 package org.kie.kogito.index.infinispan.cache;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,6 +33,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.infinispan.client.hotrod.DataFormat;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.exceptions.HotRodClientException;
 import org.infinispan.commons.dataconversion.MediaType;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
@@ -45,18 +50,24 @@ public class InfinispanCacheManager implements CacheService {
     private static final String PROCESS_INSTANCES_CACHE = "processinstances";
     private static final String USER_TASK_INSTANCES_CACHE = "usertaskinstances";
     private static final String PROCESS_ID_MODEL_CACHE = "processidmodel";
+    private static final String HOTROD_CLIENT_PROPS_FILE = "hotrod-client.properties";
 
     private DataFormat jsonDataFormat = DataFormat.builder().valueType(MediaType.APPLICATION_JSON).valueMarshaller(new JsonDataFormatMarshaller()).build();
 
     @Inject
     @ConfigProperty(name = "kogito.cache.domain.template", defaultValue = "kogito-template")
     String cacheTemplateName;
+    
+    @Inject
+    @ConfigProperty(name = "kogito.cache.hotrod.property.path", defaultValue = "")
+    String hotRodPropertiesFilePath;
 
     @Inject
     RemoteCacheManager manager;
 
     @PostConstruct
-    public void init() {
+    public void init() throws IOException {
+        this.configure();
         manager.start();
     }
 
@@ -68,6 +79,39 @@ public class InfinispanCacheManager implements CacheService {
         } catch (IOException ex) {
             LOGGER.warn("Error trying to close Infinispan remote cache manager", ex);
         }
+    }
+
+    /**
+     * Configures the {@link RemoteCacheManager} with a custom {@value #HOTROD_CLIENT_PROPS_FILE} file that will be read 
+     * locally from the value of <code>kogito.cache.hotrod.property.path</code> property.
+     * 
+     * @throws IOException
+     */
+    protected void configure() throws IOException {
+        if (hotRodPropertiesFilePath == null || hotRodPropertiesFilePath.isEmpty()) {
+            LOGGER.info("External hotrod-client.properties file not set, skipping custom configuration");
+            return;
+        }
+        ConfigurationBuilder b = new ConfigurationBuilder();
+        Properties p = new Properties();
+        try (Reader r = new FileReader(String.format("%s/%s", hotRodPropertiesFilePath, HOTROD_CLIENT_PROPS_FILE))) {
+            p.load(r);
+            if (manager == null) {
+                LOGGER.debug("Creating new configuration using hotrod-client properties: {}", p);
+                b.withProperties(p);
+            } else {
+                LOGGER.debug("Merging already existed configuration from {} using hotrod-client properties: {}", manager.getConfiguration(), p);
+                b.read(manager.getConfiguration()).withProperties(p);            
+            }
+        } catch (FileNotFoundException e) {
+            LOGGER.info("No {} found in the path {}, using default values", HOTROD_CLIENT_PROPS_FILE, hotRodPropertiesFilePath);
+            return;
+        }
+        LOGGER.info("Building new RemoteCacheManager with configuration from custom hotrod-client properties file in the path {}", hotRodPropertiesFilePath);
+        if (manager != null && manager.isStarted()) {
+            manager.stop();
+        }
+        manager = new RemoteCacheManager(b.build());
     }
 
     /**
