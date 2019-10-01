@@ -26,6 +26,8 @@ public class ProcessInstance extends ProcessInstanceMeta {
     private JsonNode variables;
     @JsonProperty("nodeInstances")
     private List<NodeInstance> nodes;
+    
+    private ProcessInstanceError error;
 
     public JsonNode getVariables() {
         return variables;
@@ -41,6 +43,14 @@ public class ProcessInstance extends ProcessInstanceMeta {
 
     public void setNodes(List<NodeInstance> nodes) {
         this.nodes = nodes;
+    }
+
+    public ProcessInstanceError getError() {
+        return error;
+    }
+
+    public void setError(ProcessInstanceError error) {
+        this.error = error;
     }
 
     @Override
