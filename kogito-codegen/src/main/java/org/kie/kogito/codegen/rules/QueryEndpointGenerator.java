@@ -49,7 +49,7 @@ import static org.drools.core.util.StringUtils.ucFirst;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
 import static org.drools.modelcompiler.util.ClassUtil.toNonPrimitiveType;
 
-public class QueryEndpointSourceClass implements FileGenerator {
+public class QueryEndpointGenerator implements FileGenerator {
 
     private final Class<?> ruleUnit;
     private final QueryModel query;
@@ -59,10 +59,10 @@ public class QueryEndpointSourceClass implements FileGenerator {
     private final String targetCanonicalName;
     private final String generatedFilePath;
 
-    public QueryEndpointSourceClass( Class<?> ruleUnit, QueryModel query, DependencyInjectionAnnotator annotator ) {
+    public QueryEndpointGenerator(Class<?> ruleUnit, QueryModel query, DependencyInjectionAnnotator annotator ) {
         this.ruleUnit = ruleUnit;
         this.query = query;
-        this.name = toCamelCase(query.getName());
+        this.name = normalize(query.getName());
         this.annotator = annotator;
 
         this.targetCanonicalName = ruleUnit.getSimpleName() + "Query" + name + "Endpoint";
@@ -191,9 +191,9 @@ public class QueryEndpointSourceClass implements FileGenerator {
         vv.setString(interpolated);
     }
 
-    private static String toCamelCase(String inputString) {
+    private static String normalize(String inputString) {
         return Stream.of(inputString.split(" "))
-                .map( s -> s.length() > 1 ? s.substring( 0, 1 ).toUpperCase() + s.substring( 1 ) : s.substring( 0, 1 ).toUpperCase() )
-                .collect( Collectors.joining() );
+                .map( String::toLowerCase )
+                .collect( Collectors.joining("-") );
     }
 }
