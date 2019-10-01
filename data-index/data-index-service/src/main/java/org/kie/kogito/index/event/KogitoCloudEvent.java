@@ -19,12 +19,12 @@ package org.kie.kogito.index.event;
 import java.net.URI;
 import java.time.ZonedDateTime;
 
-import javax.json.bind.annotation.JsonbProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class KogitoCloudEvent<T> {
 
     //Cloud Event attributes
-    @JsonbProperty("specversion")
+    @JsonProperty("specversion")
     private String specVersion = "0.3";
     private String type;
     private URI source;
@@ -35,13 +35,13 @@ public abstract class KogitoCloudEvent<T> {
     private T data;
 
     //Extensions
-    @JsonbProperty("kogitoProcessinstanceId")
+    @JsonProperty("kogitoProcessinstanceId")
     private String processInstanceId;
-    @JsonbProperty("kogitoProcessId")
+    @JsonProperty("kogitoProcessId")
     private String processId;
-    @JsonbProperty("kogitoRootProcessinstanceId")
+    @JsonProperty("kogitoRootProcessinstanceId")
     private String rootProcessInstanceId;
-    @JsonbProperty("kogitoRootProcessId")
+    @JsonProperty("kogitoRootProcessId")
     private String rootProcessId;
 
     public String getSpecVersion() {

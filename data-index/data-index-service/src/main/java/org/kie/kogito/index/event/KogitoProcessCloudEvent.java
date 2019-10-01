@@ -19,15 +19,14 @@ package org.kie.kogito.index.event;
 import java.net.URI;
 import java.time.ZonedDateTime;
 
-import javax.json.bind.annotation.JsonbProperty;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kie.kogito.index.model.ProcessInstance;
 
 public class KogitoProcessCloudEvent extends KogitoCloudEvent<ProcessInstance> {
 
-    @JsonbProperty("kogitoProcessinstanceState")
+    @JsonProperty("kogitoProcessinstanceState")
     private Integer state;
-    @JsonbProperty("kogitoParentProcessinstanceId")
+    @JsonProperty("kogitoParentProcessinstanceId")
     private String parentProcessInstanceId;
 
     public static Builder builder() {
