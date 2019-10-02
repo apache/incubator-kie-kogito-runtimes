@@ -64,7 +64,7 @@ public class DMNKogito {
                 DMNPackageImpl dmnpkg = rpkg.computeIfAbsent(ResourceType.DMN, rtp -> new DMNPackageImpl(m.getNamespace()));
                 dmnpkg.addModel(m.getName(), m);// TODO add profiles? and check dups over namespace/name
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("Failed on DMN resource", e);
             }
         }
         return new DMNRuntimeImpl(knowledgeBase);

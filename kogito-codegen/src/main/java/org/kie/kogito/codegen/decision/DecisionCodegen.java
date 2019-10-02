@@ -111,6 +111,10 @@ public class DecisionCodegen extends AbstractGenerator {
         this.applicationCanonicalName = packageName + ".Application";
     }
 
+    public Path getBasePath() {
+        return this.basePath;
+    }
+
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
     }
