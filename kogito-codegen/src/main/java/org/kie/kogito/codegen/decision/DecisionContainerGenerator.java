@@ -15,17 +15,35 @@
 
 package org.kie.kogito.codegen.decision;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
+
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.kie.dmn.core.assembler.DMNResource;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.decision.DecisionModels;
 
 public class DecisionContainerGenerator extends AbstractApplicationSection {
 
-    public DecisionContainerGenerator() {
+    private String applicationCanonicalName;
+    private final Path basePath;
+    private final Collection<? extends DMNResource> models;
+
+    public DecisionContainerGenerator(String applicationCanonicalName, Path basePath, Collection<? extends DMNResource> models) {
         super("DecisionModels", "decisionModels", DecisionModels.class);
+        this.applicationCanonicalName = applicationCanonicalName;
+        this.basePath = basePath;
+        this.models = models;
     }
 
     @Override
@@ -47,6 +65,17 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         CompilationUnit clazz = StaticJavaParser.parse(this.getClass().getResourceAsStream("/class-templates/DMNApplicationClassDeclTemplate.java"));
         ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
         typeDeclaration.addModifier(Keyword.STATIC);
+        ClassOrInterfaceType applicationClass = StaticJavaParser.parseClassOrInterfaceType(applicationCanonicalName);
+        ClassOrInterfaceType inputStreamReaderClass = StaticJavaParser.parseClassOrInterfaceType(java.io.InputStreamReader.class.getCanonicalName());
+        for (DMNResource model : models) {
+            Path sourcePath = Paths.get(model.getResAndConfig().getResource().getSourcePath());
+            Path relativizedPath = basePath.relativize(sourcePath);
+            String resourcePath = "/" + relativizedPath;
+            MethodCallExpr getResAsStream = new MethodCallExpr(new FieldAccessExpr(applicationClass.getNameAsExpression(), "class"), "getResourceAsStream").addArgument(new StringLiteralExpr(resourcePath));
+            ObjectCreationExpr isr = new ObjectCreationExpr().setType(inputStreamReaderClass).addArgument(getResAsStream);
+            FieldDeclaration dmnRuntimeField = typeDeclaration.getFieldByName("dmnRuntime").get();
+            dmnRuntimeField.getVariable(0).getInitializer().get().asMethodCallExpr().addArgument(isr);
+        }
         return typeDeclaration;
     }
 
