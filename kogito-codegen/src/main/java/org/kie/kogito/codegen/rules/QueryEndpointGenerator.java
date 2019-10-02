@@ -56,13 +56,15 @@ public class QueryEndpointGenerator implements FileGenerator {
     private final DependencyInjectionAnnotator annotator;
 
     private final String name;
+    private final String endpointName;
     private final String targetCanonicalName;
     private final String generatedFilePath;
 
     public QueryEndpointGenerator(Class<?> ruleUnit, QueryModel query, DependencyInjectionAnnotator annotator ) {
         this.ruleUnit = ruleUnit;
         this.query = query;
-        this.name = normalize(query.getName());
+        this.name = toCamelCase(query.getName());
+        this.endpointName = toKebabCase(name);
         this.annotator = annotator;
 
         this.targetCanonicalName = ruleUnit.getSimpleName() + "Query" + name + "Endpoint";
@@ -77,7 +79,7 @@ public class QueryEndpointGenerator implements FileGenerator {
     @Override
     public String generate() {
         CompilationUnit cu = parse(
-                this.getClass().getResourceAsStream("/class-templates/RestQueryTemplate.java"));
+                this.getClass().getResourceAsStream("/class-templates/rules/RestQueryTemplate.java"));
         cu.setPackageDeclaration(query.getNamespace());
 
         ClassOrInterfaceDeclaration clazz = cu
@@ -187,13 +189,18 @@ public class QueryEndpointGenerator implements FileGenerator {
     private void interpolateStrings(StringLiteralExpr vv) {
         String interpolated = vv.getValue()
                 .replace("$name$", name)
+                .replace("$endpointName$", endpointName)
                 .replace("$queryName$", query.getName());
         vv.setString(interpolated);
     }
 
-    private static String normalize(String inputString) {
+    private static String toCamelCase(String inputString) {
         return Stream.of(inputString.split(" "))
-                .map( String::toLowerCase )
-                .collect( Collectors.joining("-") );
+                .map( s -> s.length() > 1 ? s.substring( 0, 1 ).toUpperCase() + s.substring( 1 ) : s.substring( 0, 1 ).toUpperCase() )
+                .collect( Collectors.joining() );
+    }
+
+    private static String toKebabCase(String inputString) {
+        return inputString.replaceAll("(.)(\\p{Upper})", "$1-$2").toLowerCase();
     }
 }
