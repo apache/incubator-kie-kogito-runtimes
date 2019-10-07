@@ -13,13 +13,20 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.codegen.process;
+package org.kie.kogito.codegen.tests;
 
-import java.text.MessageFormat;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.AbstractCodegenTest;
+import org.kie.kogito.codegen.process.ProcessCodegenException;
 
-public class ProcessCodegenException extends RuntimeException {
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-    public ProcessCodegenException(String path, Throwable cause) {
-        super(MessageFormat.format("Could not process file \"{0}\": {1}", path, cause.getMessage()), cause);
+public class MalformedProcessTest extends AbstractCodegenTest {
+
+    @Test
+    public void shouldThrowException() throws Exception {
+        assertThrows(ProcessCodegenException.class, () -> {
+            generateCodeProcessesOnly("org/kie/kogito/codegen/tests/MalformedProcess.bpmn2");
+        });
     }
 }
