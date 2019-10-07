@@ -219,8 +219,15 @@ public class ProcessCodegen extends AbstractGenerator {
         for (WorkflowProcess workFlowProcess : processes.values()) {
             ProcessExecutableModelGenerator execModelGen =
                     new ProcessExecutableModelGenerator(workFlowProcess, execModelGenerator);
-            processIdToMetadata.put(workFlowProcess.getId(), execModelGen.generate());
-            processExecutableModelGenerators.add(execModelGen);
+                String packageName = workFlowProcess.getPackageName();
+                String id = workFlowProcess.getId();
+            try {
+                ProcessMetaData generate = execModelGen.generate();
+                processIdToMetadata.put(id, generate);
+                processExecutableModelGenerators.add(execModelGen);
+            } catch (RuntimeException e) {
+                throw new ProcessCodegenException(id, packageName, e);
+            }
         }
         
         
