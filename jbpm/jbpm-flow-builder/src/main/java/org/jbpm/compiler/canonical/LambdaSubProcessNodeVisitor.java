@@ -57,7 +57,6 @@ public class LambdaSubProcessNodeVisitor extends AbstractVisitor {
 
         NodeValidator.of("subProcessNode", name)
                 .notEmpty("subProcessId", subProcessId)
-                .notEmpty("processName", processName)
                 .validate();
 
 
