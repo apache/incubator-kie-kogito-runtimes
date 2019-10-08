@@ -70,27 +70,37 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         RuleSetNode ruleSetNode = (RuleSetNode) node;
+        String nodeName = ruleSetNode.getName();
 
         addFactoryMethodWithArgsWithAssignment(factoryField, body, RuleSetNodeFactory.class, "ruleSetNode" + node.getId(), "ruleSetNode", new LongLiteralExpr(ruleSetNode.getId()));
-        addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(ruleSetNode.getName(), "Rule")));
+        addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(nodeName, "Rule")));
         // build supplier for either KieRuntime or DMNRuntime
         BlockStmt actionBody = new BlockStmt();
         LambdaExpr lambda = new LambdaExpr(new Parameter(new UnknownType(), "()"), actionBody);
 
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
-
         if (ruleType.isRuleFlowGroup()) {
+            if (ruleType.getName().isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Rule task " + nodeName + " is invalid: empty rule flow group.");
+            }
+
             MethodCallExpr ruleRuntimeBuilder = new MethodCallExpr(
                     new MethodCallExpr(new NameExpr("app"), "ruleUnits"), "ruleRuntimeBuilder");
             MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(ruleRuntimeBuilder, "newKieSession", NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"), new NameExpr("app.config().rule()")));
             actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
             addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleFlowGroup", new StringLiteralExpr(ruleType.getName()), lambda);
         } else if (ruleType.isRuleUnit()) {
+            if (ruleType.getName().isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Rule task " + nodeName + " is invalid: empty unit identifier.");
+            }
+
             InputStream resourceAsStream = this.getClass().getResourceAsStream("/class-templates/RuleUnitFactoryTemplate.java");
             Optional<Expression> ruleUnitFactory = parse(resourceAsStream).findFirst(Expression.class);
 
             String unitName = ruleType.getName();
-            Class<?> unitClass = loadUnitClass(unitName);
+            Class<?> unitClass = loadUnitClass(nodeName, unitName, metadata.getPackageName());
 
             ruleUnitFactory.ifPresent(factory -> {
                 factory.findAll(ClassOrInterfaceType.class)
@@ -112,6 +122,11 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                 addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleUnit", new StringLiteralExpr(ruleType.getName()));
             }
         } else if (ruleType.isDecision()) {
+            if (ruleType.getName().isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Rule task " + nodeName + " is invalid: empty unit identifier.");
+            }
+
             RuleSetNode.RuleType.Decision decisionModel = (RuleSetNode.RuleType.Decision) ruleType;
             MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(new NameExpr("app"), "dmnRuntimeBuilder");
             actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
@@ -120,7 +135,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                                      decisionModel.getDecision() == null ? new NullLiteralExpr() : new StringLiteralExpr(decisionModel.getDecision()),
                                      lambda);
         } else {
-            throw new IllegalArgumentException("Unsupported rule language " + ruleSetNode.getLanguage());
+            throw new IllegalArgumentException("Rule task " + nodeName + "is invalid: unsupported rule language " + ruleSetNode.getLanguage());
         }
 
         for (Entry<String, String> entry : ruleSetNode.getInMappings().entrySet()) {
@@ -136,12 +151,21 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
 
     }
 
-    private Class<?> loadUnitClass(String unitName)  {
+    private Class<?> loadUnitClass(String nodeName, String unitName, String packageName) {
+        IllegalArgumentException ex;
         try {
-        return contextClassLoader.loadClass(unitName);
-    } catch (ClassNotFoundException e) {
-        throw new RuntimeException(e);
-    }
+            return contextClassLoader.loadClass(unitName);
+        } catch (ClassNotFoundException e) {
+            ex = new IllegalArgumentException(
+                    "Rule task " + nodeName + " is invalid: empty unit identifier.", e);
+        }
+        // maybe the name is not qualified. Let's try with tacking the packageName at the front
+        try {
+            return contextClassLoader.loadClass(packageName + "." + unitName);
+        } catch (ClassNotFoundException e) {
+            // throw the original error
+            throw ex;
+        }
     }
 
     private BlockStmt bind(VariableScope variableScope, RuleSetNode node, Class<?> unitClass) {
