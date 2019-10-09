@@ -79,23 +79,18 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         LambdaExpr lambda = new LambdaExpr(new Parameter(new UnknownType(), "()"), actionBody);
 
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
-        if (ruleType.isRuleFlowGroup()) {
-            if (ruleType.getName().isEmpty()) {
-                throw new IllegalArgumentException(
-                        "Rule task " + nodeName + " is invalid: empty rule flow group.");
-            }
+        if (ruleType.getName().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Rule task " + nodeName + " is invalid: you did not set a unit name, a rule flow group or a decision model.");
+        }
 
+        if (ruleType.isRuleFlowGroup()) {
             MethodCallExpr ruleRuntimeBuilder = new MethodCallExpr(
                     new MethodCallExpr(new NameExpr("app"), "ruleUnits"), "ruleRuntimeBuilder");
             MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(ruleRuntimeBuilder, "newKieSession", NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"), new NameExpr("app.config().rule()")));
             actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
             addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleFlowGroup", new StringLiteralExpr(ruleType.getName()), lambda);
         } else if (ruleType.isRuleUnit()) {
-            if (ruleType.getName().isEmpty()) {
-                throw new IllegalArgumentException(
-                        "Rule task " + nodeName + " is invalid: empty unit identifier.");
-            }
-
             InputStream resourceAsStream = this.getClass().getResourceAsStream("/class-templates/RuleUnitFactoryTemplate.java");
             Optional<Expression> ruleUnitFactory = parse(resourceAsStream).findFirst(Expression.class);
 
@@ -122,11 +117,6 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                 addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleUnit", new StringLiteralExpr(ruleType.getName()));
             }
         } else if (ruleType.isDecision()) {
-            if (ruleType.getName().isEmpty()) {
-                throw new IllegalArgumentException(
-                        "Rule task " + nodeName + " is invalid: empty unit identifier.");
-            }
-
             RuleSetNode.RuleType.Decision decisionModel = (RuleSetNode.RuleType.Decision) ruleType;
             MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(new NameExpr("app"), "dmnRuntimeBuilder");
             actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
@@ -157,7 +147,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             return contextClassLoader.loadClass(unitName);
         } catch (ClassNotFoundException e) {
             ex = new IllegalArgumentException(
-                    "Rule task " + nodeName + " is invalid: empty unit identifier.", e);
+                    "Rule task " + nodeName + " is invalid: cannot load unit " + unitName, e);
         }
         // maybe the name is not qualified. Let's try with tacking the packageName at the front
         try {
