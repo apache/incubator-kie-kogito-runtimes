@@ -18,6 +18,7 @@ package org.jbpm.compiler.canonical;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -81,7 +82,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
         if (ruleType.getName().isEmpty()) {
             throw new IllegalArgumentException(
-                    "Rule task " + nodeName + " is invalid: you did not set a unit name, a rule flow group or a decision model.");
+                    MessageFormat.format("Rule task \"{0}\" is invalid: you did not set a unit name, a rule flow group or a decision model.", nodeName));
         }
 
         if (ruleType.isRuleFlowGroup()) {
@@ -147,7 +148,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             return contextClassLoader.loadClass(unitName);
         } catch (ClassNotFoundException e) {
             ex = new IllegalArgumentException(
-                    "Rule task " + nodeName + " is invalid: cannot load unit " + unitName, e);
+                    MessageFormat.format("Rule task \"{0}\" is invalid: cannot load unit {1}", nodeName, unitName), e);
         }
         // maybe the name is not qualified. Let's try with tacking the packageName at the front
         try {
