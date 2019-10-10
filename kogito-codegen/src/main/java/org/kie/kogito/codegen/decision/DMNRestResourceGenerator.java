@@ -98,6 +98,9 @@ public class DMNRestResourceGenerator {
         
         MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
         for (DecisionService ds : definitions.getDecisionService()) {
+            if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
+                continue;
+            }
             MethodDeclaration clonedMethod = dmnMethod.clone();
             String name = CodegenStringUtil.escapeIdentifier("decisionService_" + ds.getName());
             clonedMethod.setName(name);
