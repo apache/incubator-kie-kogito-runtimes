@@ -104,7 +104,7 @@ public class KieModuleModelMethod {
         );
 
         for (Map.Entry<String, String> entry : kSessionForkBase.entrySet()) {
-            sb.append( "            case \"" + entry.getKey() + "\": return kbases.get(\"" + entry.getValue() + "\");\n" );
+            sb.append( "            case \"" + entry.getKey() + "\": return getKieBase(\"" + entry.getValue() + "\");\n" );
         }
 
         sb.append(
