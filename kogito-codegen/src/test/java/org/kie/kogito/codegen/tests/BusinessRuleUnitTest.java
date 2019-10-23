@@ -16,8 +16,11 @@
 package org.kie.kogito.codegen.tests;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -39,7 +42,10 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
 import org.kie.kogito.uow.UnitOfWork;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BusinessRuleUnitTest extends AbstractCodegenTest {
@@ -140,6 +146,46 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
         uow.end();
         // after unit of work has been ended listeners are invoked
         assertThat(startedProcesses).hasSize(1);
+    }
+
+    @Test
+    public void ioMapping() throws Exception {
+        Application app = generateCode(Collections.singletonList("ruletask/ExampleP.bpmn"),
+                                       Collections.singletonList("ruletask/Example.drl"));
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleP");
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("singleString", "hello");
+        map.put("singlePerson", new Person("Yoko", 86));
+        map.put("manyPersons", asList(new Person("Paul", 77), new Person("Ringo", 79)));
+        map.put("emptyList", new ArrayList<>());
+
+        Model model = process.createModel();
+        model.fromMap(map);
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
+        Map<String, Object> result = variables.toMap();
+
+        assertNull(result.get("emptyString"));
+        assertNull(result.get("emptyPerson"));
+        assertThat((Collection) result.get("emptyList")).isEmpty();
+
+
+        instance.start();
+
+        result = instance.variables().toMap();
+        assertEquals("hello", result.get("emptyString"));
+
+        Person yoko = new Person("Yoko", 86);
+        yoko.setAdult(true);
+        assertEquals(yoko, result.get("emptyPerson"));
+
+        Person paul = new Person("Paul", 77);
+        paul.setAdult(true);
+        Person ringo = new Person("Ringo", 79);
+        ringo.setAdult(true);
+        assertEquals(asList(paul, ringo), result.get("emptyList"));
+
     }
 
     @Test
