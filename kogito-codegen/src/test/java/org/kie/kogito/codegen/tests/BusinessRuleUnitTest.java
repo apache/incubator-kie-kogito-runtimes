@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.drools.core.config.DefaultRuleEventListenerConfig;
 import org.drools.core.event.DefaultAgendaEventListener;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -170,7 +171,6 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
         assertNull(result.get("emptyPerson"));
         assertThat((Collection) result.get("emptyList")).isEmpty();
 
-
         instance.start();
 
         result = instance.variables().toMap();
@@ -186,6 +186,62 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
         ringo.setAdult(true);
         assertEquals(asList(paul, ringo), result.get("emptyList"));
 
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when a null collection variable is mapped as input of a datasource")
+    public void inputMappingNullCollection() throws Exception {
+        Application app = generateCode(Collections.singletonList("ruletask/ExampleP.bpmn"),
+                                       Collections.singletonList("ruletask/Example.drl"));
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleP");
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("singleString", "hello");
+        map.put("singlePerson", new Person("Yoko", 86));
+        map.put("manyPersons", null);
+
+        Model model = process.createModel();
+        model.fromMap(map);
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
+        Map<String, Object> result = variables.toMap();
+
+        assertNull(result.get("emptyString"));
+        assertNull(result.get("emptyPerson"));
+        assertNull(result.get("emptyList"));
+
+        instance.start();
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ERROR);
+        assertThat(instance.error().get().errorMessage()).contains("The input collection variable of a data source cannot be null");
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when a null collection variable is mapped as output of a datasource")
+    public void outputMappingNullCollection() throws Exception {
+        Application app = generateCode(Collections.singletonList("ruletask/ExampleP.bpmn"),
+                                       Collections.singletonList("ruletask/Example.drl"));
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleP");
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("singleString", "hello");
+        map.put("singlePerson", new Person("Yoko", 86));
+        map.put("manyPersons", asList(new Person("Paul", 77), new Person("Ringo", 79)));
+
+        Model model = process.createModel();
+        model.fromMap(map);
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
+        Map<String, Object> result = variables.toMap();
+
+        assertNull(result.get("emptyString"));
+        assertNull(result.get("emptyPerson"));
+        assertNull(result.get("emptyList"));
+
+        instance.start();
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ERROR);
+        assertThat(instance.error().get().errorMessage()).contains("Null collection variable used as an output variable");
     }
 
     @Test

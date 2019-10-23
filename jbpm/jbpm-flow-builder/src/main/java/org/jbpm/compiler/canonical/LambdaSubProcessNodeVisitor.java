@@ -38,6 +38,7 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.WorkflowProcess;
 
 import static com.github.javaparser.StaticJavaParser.parse;
+import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class LambdaSubProcessNodeVisitor extends AbstractVisitor {
 
