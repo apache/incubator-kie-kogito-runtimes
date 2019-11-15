@@ -16,13 +16,12 @@
 
 package org.kie.kogito.optaplanner.api.solver;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.core.api.solver.SolverFactoryTest;
 
 public class SolverFactoryWrapperTest {
 
-    @Test @Ignore("Possible DRL compatibility issue: Investigation with Mario ongoing")
+    @Test
     public void createFromXmlResource() {
         SolverFactoryTest.setup();
         SolverFactoryTest solverFactoryTest = new SolverFactoryTest();

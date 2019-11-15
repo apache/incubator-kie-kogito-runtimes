@@ -101,21 +101,11 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core-static</artifactId>
+      <artifactId>drools-core-dynamic</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>drools-model-compiler</artifactId>
-<!--      <exclusions>-->
-<!--        <exclusion>-->
-<!--          <groupId>org.kie.kogito</groupId>-->
-<!--          <artifactId>drools-core-dynamic</artifactId>-->
-<!--        </exclusion>-->
-<!--        <exclusion>-->
-<!--          <groupId>com.thoughtworks.xstream</groupId>-->
-<!--          <artifactId>xstream</artifactId>-->
-<!--        </exclusion>-->
-<!--      </exclusions>-->
     </dependency>
 
     <!-- test -->
