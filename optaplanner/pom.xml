@@ -9,7 +9,7 @@
     <version>8.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>kogito-optaplanner-wrapper</artifactId>
+  <artifactId>kogito-optaplanner</artifactId>
 
   <name>Kogito OptaPlanner integration (wrapper)</name>
   <description>
