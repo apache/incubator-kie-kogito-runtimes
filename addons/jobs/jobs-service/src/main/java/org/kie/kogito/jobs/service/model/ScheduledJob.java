@@ -107,7 +107,7 @@ public class ScheduledJob {
         private JobStatus status;
         private ZonedDateTime lastUpdate;
         private JobExecutionResponse executionResponse;
-        private Integer executionCounter = 0;
+        private Integer executionCounter = 1;
 
         public ScheduledJobBuilder job(Job job) {
             this.job = job;

@@ -95,7 +95,7 @@ public class HttpJobExecutor implements JobExecutor {
                 .orElse(null);
     }
 
-    private PublisherBuilder<JobExecutionResponse> handleResponse(JobExecutionResponse response) {
+    private <T extends JobExecutionResponse> PublisherBuilder<T> handleResponse(T response) {
         LOGGER.debug("handle response {}", response);
         return ReactiveStreams.of(response)
                 .map(JobExecutionResponse::getCode)
@@ -104,14 +104,14 @@ public class HttpJobExecutor implements JobExecutor {
                         : handleError(response));
     }
 
-    private PublisherBuilder<JobExecutionResponse> handleError(JobExecutionResponse response) {
+    private <T extends JobExecutionResponse> PublisherBuilder<T> handleError(T response) {
         LOGGER.info("handle error {}", response);
         return ReactiveStreams.of(response)
                 .peek(jobErrorEmitter::send)
                 .peek(r -> LOGGER.debug("Error executing job {}.", r));
     }
 
-    private PublisherBuilder<JobExecutionResponse> handleSuccess(JobExecutionResponse response) {
+    private <T extends JobExecutionResponse> PublisherBuilder<T> handleSuccess(T response) {
         LOGGER.info("handle success {}", response);
         return ReactiveStreams.of(response)
                 .peek(jobSuccessEmitter::send)
@@ -144,7 +144,7 @@ public class HttpJobExecutor implements JobExecutor {
                             .flatMap(this::handleResponse)
                             .findFirst()
                             .run()
-                            .thenApply(response -> job)
+                            .thenApply(response -> response.map(r -> job).orElse(null))
                             .exceptionally(ex -> {
                                 LOGGER.error("Generic error executing job {}", job, ex);
                                 jobErrorEmitter.send(JobExecutionResponse.builder()
