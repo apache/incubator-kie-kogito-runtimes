@@ -32,6 +32,7 @@ import org.drools.modelcompiler.builder.BodyDeclarationComparator;
 import org.kie.kogito.Config;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.Labeler;
+import org.kie.kogito.codegen.metadata.MessagingLabeler;
 import org.kie.kogito.codegen.metadata.MetaDataWriter;
 import org.kie.kogito.codegen.metadata.PrometheusLabeler;
 import org.kie.kogito.event.EventPublisher;
@@ -92,6 +93,7 @@ public class ApplicationGenerator {
         this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
         this.factoryMethods = new ArrayList<>();
         this.configGenerator = new ConfigGenerator(packageName);
+        this.labelers.add(new MessagingLabeler(targetDirectory));
     }
 
     public String targetCanonicalName() {
