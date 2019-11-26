@@ -21,11 +21,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.drools.compiler.compiler.DecisionTableFactory;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.GeneratedFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class IncrementalRuleCodegenTest {
 
@@ -101,6 +103,19 @@ public class IncrementalRuleCodegenTest {
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         assertRules(1, 1, generatedFiles.size());
     }
+
+    @Test
+    public void throwWhenDtableDependencyMissing() {
+        DecisionTableFactory.setDecisionTableProvider(null);
+        IncrementalRuleCodegen incrementalRuleCodegen =
+                IncrementalRuleCodegen.ofFiles(
+                        Collections.singleton(
+                                new File("src/test/resources/org/drools/simple/candrink/CanDrink.xls")));
+        incrementalRuleCodegen.setPackageName("com.acme");
+
+        assertThrows(RuleCodegenError.class, incrementalRuleCodegen.withHotReloadMode()::generate);
+    }
+
 
     private static void assertRules(int expectedRules, int expectedPackages, int expectedUnits, int actualGeneratedFiles) {
         assertEquals(expectedRules +
