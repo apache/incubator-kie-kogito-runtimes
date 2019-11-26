@@ -22,7 +22,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.drools.compiler.compiler.DecisionTableFactory;
+import org.drools.compiler.compiler.DecisionTableProvider;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.api.internal.utils.ServiceRegistry;
 import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.GeneratedFile;
 
@@ -30,6 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class IncrementalRuleCodegenTest {
+
+    @BeforeEach
+    public void blah() {
+        DecisionTableFactory.setDecisionTableProvider(ServiceRegistry.getInstance().get(DecisionTableProvider.class));
+    }
+
 
     @Test
     public void generateSingleFile() {
