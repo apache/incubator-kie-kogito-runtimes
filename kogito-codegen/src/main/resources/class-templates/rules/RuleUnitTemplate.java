@@ -1,12 +1,6 @@
 package $Package$;
 
-import org.drools.core.RuleBaseConfiguration;
-import org.drools.core.SessionConfigurationImpl;
-import org.drools.core.impl.EnvironmentImpl;
-import org.drools.modelcompiler.builder.KieBaseBuilder;
-import org.kie.api.KieBaseConfiguration;
 import org.kie.api.runtime.KieSession;
-import org.kie.kogito.Application;
 import org.kie.kogito.rules.RuleEventListenerConfig;
 
 public class $Name$ extends org.kie.kogito.rules.impl.AbstractRuleUnit<$ModelName$> {

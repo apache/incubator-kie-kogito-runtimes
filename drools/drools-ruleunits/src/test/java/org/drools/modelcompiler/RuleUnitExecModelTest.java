@@ -18,6 +18,8 @@ package org.drools.modelcompiler;
 
 import java.util.List;
 
+import org.drools.core.ruleunit.impl.ListDataStream;
+import org.drools.model.DSL;
 import org.drools.model.Global;
 import org.drools.model.Model;
 import org.drools.model.Rule;
@@ -27,21 +29,18 @@ import org.drools.modelcompiler.builder.KieBaseBuilder;
 import org.drools.modelcompiler.domain.Person;
 import org.drools.modelcompiler.ruleunit.AdultUnit;
 import org.drools.modelcompiler.ruleunit.AdultUnitInstance;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.kogito.rules.DataSource;
-import org.drools.core.ruleunit.impl.ListDataStream;
-import org.kie.kogito.rules.DataStream;
 
 import static java.util.Arrays.asList;
-
 import static org.drools.model.DSL.globalOf;
 import static org.drools.model.FlowDSL.declarationOf;
 import static org.drools.model.FlowDSL.expr;
 import static org.drools.model.FlowDSL.on;
 import static org.drools.model.FlowDSL.rule;
 import static org.drools.model.FlowDSL.unitData;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RuleUnitExecModelTest {
 
@@ -52,12 +51,12 @@ public class RuleUnitExecModelTest {
                                             "org.drools.modelcompiler.ruleunit",
                                             "results");
 
-        Variable<Person> adult = declarationOf( Person.class, unitData( "persons" ) );
+        Variable<Person> adult = DSL.declarationOf(Person.class, DSL.unitData("persons" ) );
 
         Rule rule = rule( "org.drools.modelcompiler.ruleunit", "Adult" ).unit( AdultUnit.class )
                 .build(
-                        expr("$expr$1$", adult, p -> p.getAge() > 18),
-                        on(adult, var_results).execute((p, results) -> {
+                        DSL.expr("$expr$1$", adult, p -> p.getAge() > 18),
+                        DSL.on(adult, var_results).execute((p, results) -> {
                             System.out.println( p.getName() );
                             results.add( p.getName() );
                         })

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package org.drools.core.ruleunit.impl;
+package org.drools.modelcompiler;
 
 import org.kie.api.runtime.KieSession;
 import org.kie.kogito.rules.RuleUnit;
+import org.drools.core.ruleunit.impl.AbstractRuleUnitInstance;
+import org.drools.core.ruleunit.impl.EntryPointDataProcessor;
 import org.kie.kogito.rules.impl.SessionData;
 
 public class SessionRuleUnitInstance extends AbstractRuleUnitInstance<SessionData> {

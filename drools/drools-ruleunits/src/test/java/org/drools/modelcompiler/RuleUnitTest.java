@@ -19,20 +19,21 @@ package org.drools.modelcompiler;
 import org.drools.modelcompiler.domain.Person;
 import org.drools.modelcompiler.ruleunit.AdultUnit;
 import org.drools.modelcompiler.ruleunit.AdultUnitInstance;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.kie.api.runtime.KieSession;
 import org.kie.kogito.rules.DataSource;
 import org.drools.core.ruleunit.impl.ListDataStream;
 import org.kie.kogito.rules.DataStream;
 
 import static java.util.Arrays.asList;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RuleUnitTest extends BaseModelTest {
+public class RuleUnitTest {
 
-    public RuleUnitTest( RUN_TYPE testRunType ) {
-        super( testRunType );
-    }
+//    public RuleUnitTest( RUN_TYPE testRunType ) {
+//        super( testRunType );
+//    }
 
     @Test
     public void testRuleUnit() {
@@ -56,7 +57,10 @@ public class RuleUnitTest extends BaseModelTest {
 
         unitInstance.fire();
 
-        assertTrue( unit.getResults().containsAll( asList("Mario", "Marilena") ) );
+        assertTrue(unit.getResults().containsAll(asList("Mario", "Marilena") ) );
     }
 
+    private KieSession getKieSession(String str) {
+        return null;
+    }
 }
