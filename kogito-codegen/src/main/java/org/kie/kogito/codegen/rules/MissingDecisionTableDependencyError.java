@@ -15,24 +15,15 @@
 
 package org.kie.kogito.codegen.rules;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+public class MissingDecisionTableDependencyError extends Error {
 
-import org.drools.compiler.compiler.DroolsError;
-
-public class RuleCodegenError extends Error {
-
-    private final DroolsError[] errors;
-
-    public RuleCodegenError(DroolsError... errors) {
-        super("Errors were generated during the code-generation process:\n" +
-                      Arrays.stream(errors)
-                              .map(DroolsError::toString)
-                              .collect(Collectors.joining("\n")));
-        this.errors = errors;
-    }
-
-    public DroolsError[] getErrors() {
-        return errors;
+    public MissingDecisionTableDependencyError() {
+        super("A Decision Table resource was found, but a necessary dependency is missing. \n" +
+                      "Verify you have added decision table support to your project dependencies: \n" +
+                      "\n" +
+                      "<dependency>\n" +
+                      "      <groupId>org.kie.kogito</groupId>\n" +
+                      "      <artifactId>drools-decisiontables</artifactId>\n" +
+                      "</dependency>");
     }
 }

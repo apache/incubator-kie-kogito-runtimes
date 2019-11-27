@@ -173,15 +173,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         ReleaseIdImpl dummyReleaseId = new ReleaseIdImpl("dummy:dummy:0.0.0");
         if (!decisionTableSupported &&
                 resources.stream().anyMatch(r -> r.getResourceType() == ResourceType.DTABLE)) {
-            ApplicationGenerator.logger.error(
-                    "A Decision Table resource was found, but a necessary dependency is missing. \n" +
-                    "Verify you have added decision table support to your project dependencies: \n" +
-                    "\n" +
-                    "<dependency>\n" +
-                    "      <groupId>org.kie.kogito</groupId>\n" +
-                    "      <artifactId>drools-decisiontables</artifactId>\n" +
-                    "</dependency>");
-            throw new RuleCodegenError();
+            throw new MissingDecisionTableDependencyError();
         }
 
         moduleGenerator = new RuleUnitContainerGenerator();
@@ -197,8 +189,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         batch.build();
 
         if (modelBuilder.hasErrors()) {
-            ApplicationGenerator.logger.error( modelBuilder.getErrors().toString() );
-            throw new RuleCodegenError();
+            throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
         }
 
         boolean hasRuleUnits = false;

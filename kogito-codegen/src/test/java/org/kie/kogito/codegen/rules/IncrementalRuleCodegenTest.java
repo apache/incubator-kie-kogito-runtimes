@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class IncrementalRuleCodegenTest {
 
     @BeforeEach
-    public void blah() {
+    public void setup() {
         DecisionTableFactory.setDecisionTableProvider(ServiceRegistry.getInstance().get(DecisionTableProvider.class));
     }
 
@@ -115,6 +115,16 @@ public class IncrementalRuleCodegenTest {
     }
 
     @Test
+    public void raiseErrorOnSyntaxError() {
+        IncrementalRuleCodegen incrementalRuleCodegen =
+                IncrementalRuleCodegen.ofFiles(
+                        Collections.singleton(
+                                new File("src/test/resources/org/drools/simple/broken.drl")));
+        incrementalRuleCodegen.setPackageName("com.acme");
+        assertThrows(RuleCodegenError.class, incrementalRuleCodegen.withHotReloadMode()::generate);
+    }
+
+    @Test
     public void throwWhenDtableDependencyMissing() {
         DecisionTableFactory.setDecisionTableProvider(null);
         IncrementalRuleCodegen incrementalRuleCodegen =
@@ -122,8 +132,7 @@ public class IncrementalRuleCodegenTest {
                         Collections.singleton(
                                 new File("src/test/resources/org/drools/simple/candrink/CanDrink.xls")));
         incrementalRuleCodegen.setPackageName("com.acme");
-
-        assertThrows(RuleCodegenError.class, incrementalRuleCodegen.withHotReloadMode()::generate);
+        assertThrows(MissingDecisionTableDependencyError.class, incrementalRuleCodegen.withHotReloadMode()::generate);
     }
 
 
