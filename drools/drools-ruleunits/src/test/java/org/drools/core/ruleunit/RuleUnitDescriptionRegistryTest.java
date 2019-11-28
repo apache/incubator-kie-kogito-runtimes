@@ -22,7 +22,9 @@ import java.util.Optional;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.RuleUnitData;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -62,8 +64,8 @@ public class RuleUnitDescriptionRegistryTest {
 
     @Test
     public void getDescriptionForRuleImpl() {
-        final RuleImpl ruleImpl = mock(RuleImpl.class);
-        when(ruleImpl.getRuleUnitClassName()).thenReturn(TestRuleUnit.class.getName());
+        final RuleImpl ruleImpl = Mockito.mock(RuleImpl.class);
+        Mockito.when(ruleImpl.getRuleUnitClassName()).thenReturn(TestRuleUnit.class.getName());
 
         Optional<RuleUnitDescription> description = registry.getDescription(ruleImpl);
         assertThat(description).isNotPresent();

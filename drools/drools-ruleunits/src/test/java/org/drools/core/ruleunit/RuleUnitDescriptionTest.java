@@ -26,19 +26,19 @@ import java.util.Optional;
 import org.drools.core.rule.EntryPointId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.rules.impl.RuleUnitDescriptionImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.drools.core.ruleunit.RuleUnitTestUtil.createPackage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RuleUnitDescriptionTest {
 
-    private RuleUnitDescription ruleUnitDescr;
+    private RuleUnitDescriptionImpl ruleUnitDescr;
 
     @BeforeEach
     public void prepareRuleUnitDescr() {
-        ruleUnitDescr = new RuleUnitDescription(createPackage("test"), TestRuleUnit.class);
+        ruleUnitDescr = new RuleUnitDescriptionImpl(RuleUnitTestUtil.createPackage("test"), TestRuleUnit.class);
     }
 
     @Test

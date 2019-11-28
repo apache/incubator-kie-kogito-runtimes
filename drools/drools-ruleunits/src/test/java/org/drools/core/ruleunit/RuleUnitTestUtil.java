@@ -22,6 +22,7 @@ import org.drools.core.addon.ClassTypeResolver;
 import org.drools.core.addon.TypeResolver;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.definitions.impl.KnowledgePackageImpl;
+import org.kie.internal.ruleunit.RuleUnitDescription;
 
 public final class RuleUnitTestUtil {
 

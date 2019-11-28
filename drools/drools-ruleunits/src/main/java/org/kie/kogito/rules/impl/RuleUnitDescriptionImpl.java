@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.core.ruleunit;
+package org.kie.kogito.rules.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.rule.EntryPointId;
+import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
@@ -34,7 +35,7 @@ import org.kie.kogito.rules.RuleUnitData;
 import static org.drools.reflective.util.ClassUtils.convertFromPrimitiveType;
 import static org.drools.reflective.util.ClassUtils.getter2property;
 
-public class RuleUnitDescription {
+public class RuleUnitDescriptionImpl implements RuleUnitDescription {
     private final Class<? extends RuleUnitData> ruleUnitClass;
 
     private final Map<String, String> datasources = new HashMap<>();
@@ -42,7 +43,7 @@ public class RuleUnitDescription {
 
     private final Map<String, Method> varAccessors = new HashMap<>();
 
-    public RuleUnitDescription( InternalKnowledgePackage pkg, Class<? extends RuleUnitData> ruleUnitClass ) {
+    public RuleUnitDescriptionImpl( InternalKnowledgePackage pkg, Class<? extends RuleUnitData> ruleUnitClass ) {
         this.ruleUnitClass = ruleUnitClass;
         indexUnitVars(pkg);
     }

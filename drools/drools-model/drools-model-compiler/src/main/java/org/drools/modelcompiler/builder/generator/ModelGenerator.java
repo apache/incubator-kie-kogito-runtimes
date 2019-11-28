@@ -52,7 +52,6 @@ import org.drools.core.addon.TypeResolver;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.factmodel.AnnotationDefinition;
 import org.drools.core.rule.Behavior;
-import org.drools.core.ruleunit.RuleUnitDescription;
 import org.drools.core.time.TimeUtils;
 import org.drools.core.util.MVELSafeHelper;
 import org.drools.model.Rule;
@@ -63,7 +62,7 @@ import org.drools.modelcompiler.builder.errors.UnknownDeclarationError;
 import org.drools.modelcompiler.builder.generator.expressiontyper.ExpressionTyper;
 import org.drools.modelcompiler.builder.generator.expressiontyper.ExpressionTyperContext;
 import org.drools.modelcompiler.builder.generator.visitor.ModelGeneratorVisitor;
-import org.kie.kogito.rules.RuleUnitData;
+import org.kie.internal.ruleunit.RuleUnitDescription;
 
 import static java.util.stream.Collectors.toList;
 
@@ -160,7 +159,7 @@ public class ModelGenerator {
         }
 
         for (RuleUnitDescription rud : ruleUnitDescriptions) {
-            Class<? extends RuleUnitData> ruc = rud.getRuleUnitClass();
+            Class<?> ruc = rud.getRuleUnitClass();
             packageModel.addRuleUnit(ruc);
         }
     }

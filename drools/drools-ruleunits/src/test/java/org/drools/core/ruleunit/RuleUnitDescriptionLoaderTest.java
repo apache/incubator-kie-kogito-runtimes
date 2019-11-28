@@ -19,11 +19,14 @@ package org.drools.core.ruleunit;
 import java.util.Optional;
 
 import org.drools.core.definitions.rule.impl.RuleImpl;
+import org.drools.core.ruleunit.RuleUnitDescriptionRegistry.State;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.mockito.Mockito;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class RuleUnitDescriptionLoaderTest {
 
@@ -66,8 +69,8 @@ public class RuleUnitDescriptionLoaderTest {
 
     @Test
     public void getDescriptionFromRuleImpl() {
-        final RuleImpl ruleImpl = mock(RuleImpl.class);
-        when(ruleImpl.getRuleUnitClassName()).thenReturn(TestRuleUnit.class.getName());
+        final RuleImpl ruleImpl = Mockito.mock(RuleImpl.class);
+        Mockito.when(ruleImpl.getRuleUnitClassName()).thenReturn(TestRuleUnit.class.getName());
 
         final Optional<RuleUnitDescription> description = loader.getDescription(ruleImpl);
         assertThat(description).isPresent();
