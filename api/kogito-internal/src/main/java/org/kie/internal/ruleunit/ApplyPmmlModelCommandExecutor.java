@@ -23,5 +23,5 @@ import org.kie.api.pmml.PMMLRequestData;
 import org.kie.api.runtime.Context;
 
 public interface ApplyPmmlModelCommandExecutor {
-    PMML4Result execute(Context context, PMMLRequestData requestData, List<Object> complexInputObjects, String packageName, boolean isMining);
+    PMML4Result execute( Context context, PMMLRequestData requestData, List<Object> complexInputObjects, String packageName, boolean isMining );
 }

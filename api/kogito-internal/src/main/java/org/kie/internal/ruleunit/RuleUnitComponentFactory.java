@@ -28,10 +28,12 @@ public interface RuleUnitComponentFactory {
         return FactoryHolder.factory;
     }
 
-    RuleUnitDescription createRuleUnitDescription(KiePackage pkg, Class<?> ruleUnitClass);
+    RuleUnitDescription createRuleUnitDescription( KiePackage pkg, Class<?> ruleUnitClass );
 
     ApplyPmmlModelCommandExecutor newApplyPmmlModelCommandExecutor();
 
-    boolean isRuleUnitClass(Class<?> ruleUnitClass);
-    boolean isDataSourceClass(Class<?> ruleUnitClass);
+    boolean isRuleUnitClass( Class<?> ruleUnitClass );
+    boolean isDataSourceClass( Class<?> ruleUnitClass );
+
+    boolean isLegacyRuleUnit();
 }

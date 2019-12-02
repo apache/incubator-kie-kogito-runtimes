@@ -32,16 +32,16 @@ public interface RuleUnitDescription {
         return getRuleUnitName() + "." + name;
     }
 
-    Optional<Class<?>> getDatasourceType(String name);
+    Optional<Class<?>> getDatasourceType( String name );
 
-    Optional<Class<?>> getVarType(String name);
+    Optional<Class<?>> getVarType( String name );
 
-    boolean hasVar(String name);
+    boolean hasVar( String name );
 
     Collection<String> getUnitVars();
 
     Map<String, Method> getUnitVarAccessors();
 
-    boolean hasDataSource(String name);
+    boolean hasDataSource( String name );
 
 }
