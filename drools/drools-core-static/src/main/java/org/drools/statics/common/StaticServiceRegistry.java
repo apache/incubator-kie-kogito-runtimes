@@ -55,8 +55,8 @@ public class StaticServiceRegistry implements ServiceRegistry {
         serviceMap.put(org.kie.api.concurrent.KieExecutors.class, instance("org.drools.core.concurrent.ExecutorProviderImpl"));
         serviceMap.put(org.kie.api.KieServices.class, instance("org.drools.compiler.kie.builder.impl.KieServicesImpl"));
         serviceMap.put(org.kie.internal.builder.KnowledgeBuilderFactoryService.class, instance("org.drools.compiler.builder.impl.KnowledgeBuilderFactoryServiceImpl"));
-        serviceMap.put(org.kie.kogito.rules.DataSource.Factory.class, instance("org.drools.core.ruleunit.impl.DataSourceFactoryImpl"));
-        serviceMap.put(org.kie.internal.ruleunit.RuleUnitComponentFactory.class, instance("org.drools.core.ruleunit.impl.RuleUnitComponentFactoryImpl"));
+        serviceMap.put(org.kie.kogito.rules.DataSource.Factory.class, instance("org.kie.kogito.rules.units.impl.DataSourceFactoryImpl"));
+        serviceMap.put(org.kie.internal.ruleunit.RuleUnitComponentFactory.class, instance("org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl"));
         serviceMap.put(KieAssemblers.class, new StaticKieAssemblers());
 
         registerService("org.drools.compiler.kie.builder.impl.InternalKieModuleProvider", "org.drools.modelcompiler.CanonicalKieModuleProvider", true);

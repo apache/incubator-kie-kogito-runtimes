@@ -1,8 +1,8 @@
 package org.drools.project.model;
 
 import org.kie.kogito.rules.KieRuntimeBuilder;
-import org.kie.kogito.rules.impl.SessionData;
-import org.kie.kogito.rules.impl.SessionUnit;
+import org.kie.kogito.rules.units.SessionData;
+import org.kie.kogito.rules.units.SessionUnit;
 import org.drools.core.ruleunit.impl.SessionRuleUnitInstance;
 
 public class SessionRuleUnit extends SessionUnit {

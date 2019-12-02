@@ -2,8 +2,9 @@ package $Package$;
 
 import org.kie.api.runtime.KieSession;
 import org.kie.kogito.rules.RuleEventListenerConfig;
+import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
 
-public class $Name$ extends org.kie.kogito.rules.impl.AbstractRuleUnit<$ModelName$> {
+public class $Name$ extends AbstractRuleUnit<$ModelName$> {
 
     public $Name$() {
         this(new $Application$());

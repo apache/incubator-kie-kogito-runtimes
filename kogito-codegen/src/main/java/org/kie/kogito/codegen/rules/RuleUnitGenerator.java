@@ -33,7 +33,7 @@ import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.impl.AbstractRuleUnit;
+import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
 
 import static java.util.stream.Collectors.toList;
 
