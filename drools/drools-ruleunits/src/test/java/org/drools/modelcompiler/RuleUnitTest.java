@@ -16,19 +16,19 @@
 
 package org.drools.modelcompiler;
 
+import org.drools.core.ruleunit.impl.ListDataStream;
 import org.drools.modelcompiler.domain.Person;
 import org.drools.modelcompiler.ruleunit.AdultUnit;
 import org.drools.modelcompiler.ruleunit.AdultUnitInstance;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
 import org.kie.kogito.rules.DataSource;
-import org.drools.core.ruleunit.impl.ListDataStream;
-import org.kie.kogito.rules.DataStream;
 
 import static java.util.Arrays.asList;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled
 public class RuleUnitTest {
 
 //    public RuleUnitTest( RUN_TYPE testRunType ) {

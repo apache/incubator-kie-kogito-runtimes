@@ -69,7 +69,8 @@ public class AbstractRuleUnitInstance<T extends RuleUnitData> implements RuleUni
                 f.setAccessible(true);
                 Object v = null;
                 v = f.get(workingMemory);
-                String dataSourceName = f.getName();
+                String dataSourceName = String.format(
+                        "%s.%s", workingMemory.getClass().getCanonicalName(), f.getName());
                 if ( v instanceof DataSource ) {
                     DataSource<?> o = ( DataSource<?> ) v;
                     EntryPoint ep = runtime.getEntryPoint(dataSourceName);

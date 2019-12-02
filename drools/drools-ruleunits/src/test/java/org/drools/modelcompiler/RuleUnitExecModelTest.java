@@ -29,6 +29,7 @@ import org.drools.modelcompiler.builder.KieBaseBuilder;
 import org.drools.modelcompiler.domain.Person;
 import org.drools.modelcompiler.ruleunit.AdultUnit;
 import org.drools.modelcompiler.ruleunit.AdultUnitInstance;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.kogito.rules.DataSource;
@@ -42,6 +43,7 @@ import static org.drools.model.FlowDSL.rule;
 import static org.drools.model.FlowDSL.unitData;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled
 public class RuleUnitExecModelTest {
 
     @Test
