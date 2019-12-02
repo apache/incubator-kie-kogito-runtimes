@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.rules.units;
+package org.kie.kogito.rules.units.impl;
 
 import org.kie.kogito.rules.RuleUnit;
 
