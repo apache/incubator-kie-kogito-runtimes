@@ -841,11 +841,13 @@ public class KnowledgeBuilderImpl implements KnowledgeBuilder,
                 f.setResource(res);
             }
         }
-        for (org.kie.api.definition.process.Process p : pkg.getRuleFlows().values()) {
-            if (isSwappable(p.getResource(), res)) {
-                p.setResource(res);
-            }
-        }
+
+        // deprecated
+//        for (org.kie.api.definition.process.Process p : pkg.getRuleFlows().values()) {
+//            if (isSwappable(p.getResource(), res)) {
+//                p.setResource(res);
+//            }
+//        }
     }
 
     private boolean isSwappable(Resource original,

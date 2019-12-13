@@ -18,15 +18,12 @@ package org.kie.api.event.process;
 
 import java.util.Date;
 
-import org.kie.api.event.KieRuntimeEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 
 /**
  * A runtime event related to the execution of process instances.
  */
-public interface ProcessEvent
-    extends
-    KieRuntimeEvent {
+public interface ProcessEvent {
 
     /**
      * The ProcessInstance this event relates to.
@@ -34,7 +31,7 @@ public interface ProcessEvent
      * @return the process instance
      */
     ProcessInstance getProcessInstance();
-    
+
     /**
      * Returns exact date when the event was created
      * @return time when event was created

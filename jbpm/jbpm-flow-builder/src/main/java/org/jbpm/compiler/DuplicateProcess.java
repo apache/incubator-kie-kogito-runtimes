@@ -14,8 +14,10 @@
 * limitations under the License.
 */
 
-package org.drools.compiler.compiler;
+package org.jbpm.compiler;
 
+import org.drools.compiler.compiler.ConfigurableSeverityResult;
+import org.jbpm.process.core.impl.ProcessImpl;
 import org.kie.api.definition.process.Process;
 import org.kie.internal.builder.KnowledgeBuilderConfiguration;
 
@@ -27,7 +29,7 @@ public class DuplicateProcess extends ConfigurableSeverityResult {
     private String processId;
     
     public DuplicateProcess(Process process, KnowledgeBuilderConfiguration config) {
-        super(process.getResource(), config);
+        super(((ProcessImpl)process).getResource(), config);
         processId = process.getId();
     }
 
@@ -42,7 +44,7 @@ public class DuplicateProcess extends ConfigurableSeverityResult {
 	}
 
     @Override
-    String getOptionKey() {
+    public String getOptionKey() {
         return KEY;
     }
 

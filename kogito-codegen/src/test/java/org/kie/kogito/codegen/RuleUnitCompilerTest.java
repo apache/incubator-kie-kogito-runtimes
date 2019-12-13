@@ -29,6 +29,8 @@ import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitInstance;
+import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
+import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -53,7 +55,7 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
         RuleUnit<AdultUnit> unit = application.ruleUnits().create(AdultUnit.class);
         RuleUnitInstance<AdultUnit> instance = unit.createInstance(adults);
 
-        assertTrue( instance.getClock() instanceof SessionPseudoClock );
+        assertTrue( ((AbstractRuleUnitInstance) instance).getClock() instanceof SessionPseudoClock );
 
         assertEquals(2, instance.fire() );
         assertTrue( adults.getResults().getResults().containsAll( asList("Mario", "Marilena") ) );

@@ -24,7 +24,7 @@ import org.kie.api.runtime.process.NodeInstance;
 public interface SLAViolatedEvent
     extends
     ProcessEvent {
-    
+
     /**
      * The node instance this event is related to.
      *

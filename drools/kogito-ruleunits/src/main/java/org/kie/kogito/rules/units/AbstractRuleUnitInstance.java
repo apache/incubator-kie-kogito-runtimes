@@ -54,7 +54,6 @@ public class AbstractRuleUnitInstance<T extends RuleUnitData> implements RuleUni
         return unit;
     }
 
-    @Override
     public <C extends SessionClock> C getClock() {
         return runtime.getSessionClock();
     }

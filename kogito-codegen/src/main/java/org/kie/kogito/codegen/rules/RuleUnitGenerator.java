@@ -140,6 +140,8 @@ public class RuleUnitGenerator implements FileGenerator {
                 .forEach(o -> o.setType(ruleUnitInstanceFQCN));
         cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$Application$"))
                 .forEach(o -> o.setType(applicationPackageName + ".Application"));
+        cls.findAll(ClassOrInterfaceType.class, o -> o.getNameAsString().equals("$Package$"))
+                .forEach(o -> o.setName(applicationPackageName));
         cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$RuleModelName$"))
                 .forEach(o -> o.setType(packageName + "." + generatedSourceFile + "_" + typeName));
         cls.findAll(MethodDeclaration.class, m -> m.getType().asString().equals("$InstanceName$"))

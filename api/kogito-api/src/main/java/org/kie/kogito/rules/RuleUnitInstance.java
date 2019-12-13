@@ -18,8 +18,6 @@ package org.kie.kogito.rules;
 import java.util.List;
 import java.util.Map;
 
-import org.kie.api.time.SessionClock;
-
 public interface RuleUnitInstance<T extends RuleUnitData> {
 
     RuleUnit<T> unit();
@@ -28,5 +26,4 @@ public interface RuleUnitInstance<T extends RuleUnitData> {
 
     List<Map<String, Object>> executeQuery(String query, Object... arguments);
 
-    <T extends SessionClock> T getClock();
 }

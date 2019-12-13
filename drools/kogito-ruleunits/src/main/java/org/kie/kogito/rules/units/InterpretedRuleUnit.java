@@ -74,10 +74,6 @@ public class InterpretedRuleUnit<T extends RuleUnitData> extends AbstractRuleUni
                 throw new UnsupportedOperationException();
             }
 
-            @Override
-            public KieRuntimeBuilder ruleRuntimeBuilder() {
-                throw new UnsupportedOperationException();
-            }
         }
     }
 }

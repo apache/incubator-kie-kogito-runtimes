@@ -1,7 +1,6 @@
 package $Package$;
 
 import org.kie.api.runtime.KieSession;
-import org.kie.kogito.rules.RuleEventListenerConfig;
 import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
 
 public class $Name$ extends AbstractRuleUnit<$ModelName$> {
@@ -19,12 +18,17 @@ public class $Name$ extends AbstractRuleUnit<$ModelName$> {
     }
 
     private KieSession createLegacySession() {
-        KieSession ks = app.ruleUnits().ruleRuntimeBuilder().newKieSession( $ModelClass$ );
+        $Package$.Application.RuleUnits ruleUnits = ($Package$.Application.RuleUnits) app.ruleUnits();
+        KieSession ks = ruleUnits.ruleRuntimeBuilder().newKieSession( $ModelClass$ );
         ((org.drools.core.impl.StatefulKnowledgeSessionImpl)ks).setApplication( app );
         if (app.config() != null && app.config().rule() != null) {
-            RuleEventListenerConfig ruleEventListenerConfig = app.config().rule().ruleEventListeners();
-            ruleEventListenerConfig.agendaListeners().forEach(ks::addEventListener);
-            ruleEventListenerConfig.ruleRuntimeListeners().forEach(ks::addEventListener);
+            org.kie.kogito.rules.RuleEventListenerConfig ruleEventListenerConfig = app.config().rule().ruleEventListeners();
+            if (ruleEventListenerConfig.agendaListener() != null) {
+                ks.addEventListener(new org.kie.kogito.internal.rules.AgendaEventListenerAdapter(ruleEventListenerConfig.agendaListener()));
+            }
+            if (ruleEventListenerConfig.dataSourceListener() != null) {
+                ks.addEventListener(new org.kie.kogito.internal.rules.RuleRuntimeEventListenerAdapter(ruleEventListenerConfig.dataSourceListener()));
+            }
         }
         return ks;
     }

@@ -37,7 +37,6 @@ import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.test.RequirePersistence;
-import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
@@ -2216,96 +2215,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             assertThat(e.getMessage().contains("Could not parse delay 'abcdef'")).isTrue();
         }
     }
-
-    @Test
-    public void testIntermediateCatchEventConditionSetVariableAfter() throws Exception {
-        KieBase kbase = createKnowledgeBase("BPMN2-IntermediateCatchEventConditionSetVariableAfter.bpmn2");
-        ksession = createKnowledgeSession(kbase);
-        ksession.addEventListener(new RuleAwareProcessEventListener());
-        ProcessInstance processInstance = ksession
-                .startProcess("IntermediateCatchEvent");
-        assertProcessInstanceActive(processInstance);
-        ksession = restoreSession(ksession, true);
-        ksession.addEventListener(new RuleAwareProcessEventListener());
-
-        Collection<? extends Object> processInstances = ksession.getObjects(new ObjectFilter() {
-
-            @Override
-            public boolean accept(Object object) {
-                if (object instanceof ProcessInstance) {
-                    return true;
-                }
-                return false;
-            }
-        });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(1);
-
-        // now activate condition
-        Person person = new Person();
-        person.setName("Jack");
-        ksession.insert(person);
-        assertProcessInstanceFinished(processInstance, ksession);
-
-        processInstances = ksession.getObjects(new ObjectFilter() {
-
-            @Override
-            public boolean accept(Object object) {
-                if (object instanceof ProcessInstance) {
-                    return true;
-                }
-                return false;
-            }
-        });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(0);
-    }
-
-    @Test
-    public void testIntermediateCatchEventConditionRemovePIAfter() throws Exception {
-        KieBase kbase = createKnowledgeBase("BPMN2-IntermediateCatchEventCondition.bpmn2");
-        ksession = createKnowledgeSession(kbase);
-        ksession.addEventListener(new RuleAwareProcessEventListener());
-        ProcessInstance processInstance = ksession
-                .startProcess("IntermediateCatchEvent");
-        assertProcessInstanceActive(processInstance);
-        ksession = restoreSession(ksession, true);
-        ksession.addEventListener(new RuleAwareProcessEventListener());
-
-        Collection<? extends Object> processInstances = ksession.getObjects(new ObjectFilter() {
-
-            @Override
-            public boolean accept(Object object) {
-                if (object instanceof ProcessInstance) {
-                    return true;
-                }
-                return false;
-            }
-        });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(1);
-
-        // now activate condition
-        Person person = new Person();
-        person.setName("Jack");
-        ksession.insert(person);
-        assertProcessInstanceFinished(processInstance, ksession);
-
-        processInstances = ksession.getObjects(new ObjectFilter() {
-
-            @Override
-            public boolean accept(Object object) {
-                if (object instanceof ProcessInstance) {
-                    return true;
-                }
-                return false;
-            }
-        });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(0);
-    }
-
-    
 
     @Test
     @Timeout(10)

@@ -41,6 +41,7 @@ import org.kie.kogito.codegen.process.ProcessCodegenException;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
+import org.kie.kogito.rules.listeners.AgendaListener;
 import org.kie.kogito.uow.UnitOfWork;
 
 import static java.util.Arrays.asList;
@@ -86,13 +87,11 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
         Application app = generateCode(Collections.singletonList(bpmnPath), Collections.singletonList("org/kie/kogito/codegen/tests/BusinessRuleUnit.drl"));
         assertThat(app).isNotNull();
         final AtomicInteger counter = new AtomicInteger();
-        ((DefaultRuleEventListenerConfig)app.config().rule().ruleEventListeners()).register(new DefaultAgendaEventListener() {
-
+        ((DefaultRuleEventListenerConfig)app.config().rule().ruleEventListeners()).register(new AgendaListener() {
             @Override
-            public void afterMatchFired(AfterMatchFiredEvent event) {
+            public void afterMatchFired() {
                 counter.incrementAndGet();
             }
-
         });
         Process<? extends Model> p = app.processes().processById("BusinessRuleUnit");
 

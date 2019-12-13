@@ -89,9 +89,15 @@ public class KieModuleModelMethod {
                 "\n" +
                 "    @Override\n" +
                 "    public KieSession newKieSession(String sessionName, org.kie.kogito.rules.RuleConfig ruleConfig) {\n" +
-                "        return java.util.Optional.ofNullable(getKieBaseForSession(sessionName).newKieSession(getConfForSession(sessionName), null)).map(k -> {\n" +
-                "            ruleConfig.ruleEventListeners().agendaListeners().forEach( k::addEventListener );\n" +
-                "            ruleConfig.ruleEventListeners().ruleRuntimeListeners().forEach( k::addEventListener );\n" +
+                        "        return java.util.Optional.ofNullable(getKieBaseForSession(sessionName).newKieSession(getConfForSession(sessionName), null)).map(k -> {\n" +
+                        "            org.kie.kogito.rules.RuleEventListenerConfig ruleEventListenerConfig = ruleConfig.ruleEventListeners();\n" +
+                        "            if (ruleEventListenerConfig.agendaListener() != null) {\n" +
+                        "               k.addEventListener(new org.kie.kogito.internal.rules.AgendaEventListenerAdapter(ruleEventListenerConfig.agendaListener()));\n" +
+                        "            }\n" +
+                        "            if (ruleEventListenerConfig.dataSourceListener() != null) {\n" +
+                        "              k.addEventListener(new org.kie.kogito.internal.rules.RuleRuntimeEventListenerAdapter(ruleEventListenerConfig.dataSourceListener()));\n" +
+                        "            }\n" +
+                        "\n" +
                 "            return k;\n" +
                 "        }).get();\n" +
                 "    }\n";

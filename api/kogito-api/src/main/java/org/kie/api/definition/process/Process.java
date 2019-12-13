@@ -19,7 +19,6 @@ package org.kie.api.definition.process;
 import java.util.Map;
 
 import org.kie.api.definition.KieDefinition;
-import org.kie.api.io.Resource;
 
 /**
  * A Process represents one modular piece of business logic that can be executed by
@@ -74,7 +73,4 @@ public interface Process
      */
     Map<String, Object> getMetaData();
 
-    Resource getResource();
-
-    void setResource( Resource res );
 }

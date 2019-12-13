@@ -53,7 +53,7 @@ public class DuplicateFunction extends ConfigurableSeverityResult {
     }
 
     @Override
-    String getOptionKey() {
+    public String getOptionKey() {
         return KEY;
     }
 

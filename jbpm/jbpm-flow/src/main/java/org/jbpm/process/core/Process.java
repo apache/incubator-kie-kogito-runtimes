@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.kie.api.io.Resource;
+
 public interface Process extends org.kie.api.definition.process.Process, ContextContainer {
 
     /**
@@ -108,5 +110,9 @@ public interface Process extends org.kie.api.definition.process.Process, Context
      * @return	the names of the globals of this RuleFlow process
      */
     String[] getGlobalNames();
+
+    Resource getResource();
+
+    void setResource( Resource res );
     
 }

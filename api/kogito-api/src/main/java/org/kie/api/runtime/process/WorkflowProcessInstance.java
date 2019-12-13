@@ -18,6 +18,8 @@ package org.kie.api.runtime.process;
 
 import java.util.Date;
 
+import org.kie.api.definition.process.Process;
+
 /**
  * A workflow process instance represents one specific instance of a
  * workflow process that is currently executing.  It is an extension
@@ -30,6 +32,8 @@ public interface WorkflowProcessInstance
     extends
     ProcessInstance,
     NodeInstanceContainer {
+
+    Process getProcess();
 
     /**
      * Returns the value of the variable with the given name.  Note

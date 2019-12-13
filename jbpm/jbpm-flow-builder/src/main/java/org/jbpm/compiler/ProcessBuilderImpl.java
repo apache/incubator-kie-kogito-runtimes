@@ -31,7 +31,6 @@ import org.drools.compiler.compiler.BaseKnowledgeBuilderResultImpl;
 import org.drools.compiler.compiler.Dialect;
 import org.drools.compiler.compiler.DialectCompiletimeRegistry;
 import org.drools.compiler.compiler.DroolsParserException;
-import org.drools.compiler.compiler.DuplicateProcess;
 import org.drools.compiler.compiler.PackageRegistry;
 import org.drools.compiler.compiler.ParserError;
 import org.drools.compiler.compiler.ProcessLoadError;
@@ -180,7 +179,7 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
                             buildNodes( (WorkflowProcess) process, buildContext );
                         }
                     }
-                    Process duplicateProcess = rpkg.getRuleFlows().get(process.getId());
+                    ProcessImpl duplicateProcess = (ProcessImpl) rpkg.getRuleFlows().get(process.getId());
                     if (duplicateProcess != null) {
                         Resource duplicatedResource = duplicateProcess.getResource();
                         if (resource == null || duplicatedResource == null || duplicatedResource.getSourcePath() == null ||

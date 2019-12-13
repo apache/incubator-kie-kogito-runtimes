@@ -15,36 +15,30 @@
 
 package org.drools.core.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.kie.api.event.rule.AgendaEventListener;
-import org.kie.api.event.rule.RuleRuntimeEventListener;
 import org.kie.kogito.rules.RuleEventListenerConfig;
+import org.kie.kogito.rules.listeners.AgendaListener;
+import org.kie.kogito.rules.listeners.DataSourceListener;
 
 public class CachedRuleEventListenerConfig implements RuleEventListenerConfig {
 
-    private final List<AgendaEventListener> agendaEventListeners = new ArrayList<>();
-    private final List<RuleRuntimeEventListener> ruleRuntimeListeners = new ArrayList<>();
+    private AgendaListener agendaListener;
+    private DataSourceListener dataSourceListener;
 
-    public CachedRuleEventListenerConfig register(AgendaEventListener listener) {
-        agendaEventListeners.add(listener);
+    public CachedRuleEventListenerConfig register(AgendaListener listener) {
+        agendaListener = listener;
         return this;
     }
-    
-    public CachedRuleEventListenerConfig register(RuleRuntimeEventListener listener) {
-        ruleRuntimeListeners.add(listener);
+
+    public CachedRuleEventListenerConfig register(DataSourceListener listener) {
+        dataSourceListener = listener;
         return this;
     }
-    
-    @Override
-    public List<AgendaEventListener> agendaListeners() {
-        return agendaEventListeners;
+
+    public AgendaListener agendaListener() {
+        return agendaListener;
     }
 
-    @Override
-    public List<RuleRuntimeEventListener> ruleRuntimeListeners() {        
-        return ruleRuntimeListeners;
+    public DataSourceListener dataSourceListener() {
+        return dataSourceListener;
     }
-
 }

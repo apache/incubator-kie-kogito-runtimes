@@ -16,14 +16,6 @@
 
 package org.jbpm.bpmn2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,15 +26,12 @@ import java.util.Map;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.handler.ServiceTaskHandler;
-import org.jbpm.bpmn2.objects.Address;
 import org.jbpm.bpmn2.objects.HelloService;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.test.RequirePersistence;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.impl.DataTransformerRegistry;
-import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
-import org.jbpm.process.instance.event.listeners.TriggerRulesEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
@@ -76,6 +65,14 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.command.RegistryContext;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ActivityTest extends JbpmBpmn2TestCase {
 
@@ -1094,51 +1091,6 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @RequirePersistence(false)
-    public void testBusinessRuleTask() throws Exception {
-        KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-BusinessRuleTask.bpmn2",
-                "BPMN2-BusinessRuleTask.drl");
-        ksession = createKnowledgeSession(kbase);
-        ksession.addEventListener(new RuleAwareProcessEventListener());
-        ProcessInstance processInstance = ksession
-                .startProcess("BPMN2-BusinessRuleTask");
-        assertProcessInstanceFinished(processInstance, ksession);
-    }
-
-    @Test
-    @RequirePersistence(true)
-    public void testBusinessRuleTaskWithPersistence() throws Exception {
-        KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-BusinessRuleTask.bpmn2",
-                "BPMN2-BusinessRuleTask.drl");
-        ksession = createKnowledgeSession(kbase);
-        ksession.addEventListener(new RuleAwareProcessEventListener());
-        ProcessInstance processInstance = ksession
-                .startProcess("BPMN2-BusinessRuleTask");
-
-        ksession = restoreSession(ksession, true);
-        ksession.addEventListener(new RuleAwareProcessEventListener());
-
-        assertProcessInstanceFinished(processInstance, ksession);
-
-    }
-
-    @Test
-    public void testBusinessRuleTaskDynamic() throws Exception {
-        KieBase kbase = createKnowledgeBaseWithoutDumper(
-                "BPMN2-BusinessRuleTaskDynamic.bpmn2",
-                "BPMN2-BusinessRuleTask.drl");
-        ksession = createKnowledgeSession(kbase);
-        ksession.addEventListener(new RuleAwareProcessEventListener());
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("dynamicrule", "MyRuleFlow");
-        ProcessInstance processInstance = ksession.startProcess(
-                "BPMN2-BusinessRuleTask", params);
-
-        assertProcessInstanceFinished(processInstance, ksession);
-    }
-
-    @Test
     public void testBusinessRuleTaskWithDataInputsWithPersistence()
             throws Exception {
         KieBase kbase = createKnowledgeBaseWithoutDumper(
@@ -1548,38 +1500,6 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         ksession.getWorkItemManager().completeWorkItem(workItem.getId(), null);
         assertProcessInstanceFinished(processInstance, ksession);
         ksession.dispose();
-    }
-
-    @Test
-    public void testMultipleBusinessRuleTaskWithDataInputsWithPersistence()
-            throws Exception {
-        KieBase kbase = createKnowledgeBaseWithoutDumper(
-                "BPMN2-MultipleRuleTasksWithDataInput.bpmn2",
-                "BPMN2-MultipleRuleTasks.drl");
-        ksession = createKnowledgeSession(kbase);
-
-        ksession.addEventListener(new TriggerRulesEventListener(ksession));
-
-        List<String> listPerson = new ArrayList<String>();
-        List<String> listAddress = new ArrayList<String>();
-
-        ksession.setGlobal("listPerson", listPerson);
-        ksession.setGlobal("listAddress", listAddress);
-
-        Person person = new Person();
-        person.setName("john");
-
-        Address address = new Address();
-        address.setStreet("5th avenue");
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("person", person);
-        params.put("address", address);
-        ProcessInstance processInstance = ksession.startProcess("multiple-rule-tasks", params);
-
-        assertEquals(1, listPerson.size());
-        assertEquals(1, listAddress.size());
-        assertProcessInstanceFinished(processInstance, ksession);
     }
 
     @Test
