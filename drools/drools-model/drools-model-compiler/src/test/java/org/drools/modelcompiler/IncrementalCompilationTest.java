@@ -100,7 +100,6 @@ public class IncrementalCompilationTest extends BaseModelTest {
         assertEquals( 2, ksession2.fireAllRules() );
     }
 
-    @Ignore("we don't support incremental compilation in kogito")
     @Test
     public void testKJarUpgradeWithDeclaredType() throws Exception {
         String drl1 = "package org.drools.incremental\n" +
