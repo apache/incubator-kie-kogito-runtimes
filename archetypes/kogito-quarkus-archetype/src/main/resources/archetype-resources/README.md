@@ -5,7 +5,7 @@
 - Compile and Run
 
     ```
-     mvn clean package quarkus:dev    
+     mvn clean compile quarkus:dev
     ```
 
 - Native Image (requires JAVA_HOME to point to a valid GraalVM)
@@ -21,7 +21,7 @@
 Generated application comes with sample test process that allows you to verify if the application is working as expected. Simply execute following command to try it out
 
 ```sh
-curl -d '{}' -H "Content-Type: application/json" -X POST http://localhost:8080/tests                                                                                                    
+curl -d '{}' -H "Content-Type: application/json" -X POST http://localhost:8080/test
 ```
 
 Once successfully invoked you should see "Hello World" in the console of the running application.

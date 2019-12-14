@@ -1,53 +1,109 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<definitions id="Definition"
-             targetNamespace="http://www.example.org/MinimalExample"
-             typeLanguage="http://www.java.com/javaTypes"
-             expressionLanguage="http://www.mvel.org/2.0"
-             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
-             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
-             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
-             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
-             xmlns:tns="http://www.jboss.org/drools">
-
-  <process processType="Public" isExecutable="true" id="tests" name="ScriptTask Process" tns:packageName="${groupId}" >
-
-    <!-- nodes -->
-    <startEvent id="_1" name="StartProcess" />
-    <scriptTask id="_2" name="Hello" scriptFormat="http://www.java.com/java" >
-      <script>System.out.println("Hello World");</script>
-    </scriptTask>
-    <endEvent id="_3" name="EndProcess" >
-        <terminateEventDefinition/>
-    </endEvent>
-
-    <!-- connections -->
-    <sequenceFlow id="_1-_2" sourceRef="_1" targetRef="_2" />
-    <sequenceFlow id="_2-_3" sourceRef="_2" targetRef="_3" />
-
-  </process>
-
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_CBC221BA-78FF-4CDE-A313-2C26FB412E89" exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_266F337B-938D-45E4-A386-626549631E6C_InMessageType" structureRef=""/>
+  <bpmn2:itemDefinition id="_266F337B-938D-45E4-A386-626549631E6C_OutMessageType" structureRef=""/>
+  <bpmn2:message id="_266F337B-938D-45E4-A386-626549631E6C_InMessage" itemRef="_266F337B-938D-45E4-A386-626549631E6C_InMessageType"/>
+  <bpmn2:message id="_266F337B-938D-45E4-A386-626549631E6C_OutMessage" itemRef="_266F337B-938D-45E4-A386-626549631E6C_OutMessageType"/>
+  <bpmn2:interface id="_266F337B-938D-45E4-A386-626549631E6C_ServiceInterface" name="com.redhat.HelloWorldService" implementationRef="${package}.HelloWorldService">
+    <bpmn2:operation id="_266F337B-938D-45E4-A386-626549631E6C_ServiceOperation" name="helloWorld" implementationRef="helloWorld">
+      <bpmn2:inMessageRef>_266F337B-938D-45E4-A386-626549631E6C_InMessage</bpmn2:inMessageRef>
+      <bpmn2:outMessageRef>_266F337B-938D-45E4-A386-626549631E6C_OutMessage</bpmn2:outMessageRef>
+    </bpmn2:operation>
+  </bpmn2:interface>
+  <bpmn2:process id="test" drools:version="1.0" drools:adHoc="false" name="test" isExecutable="true" processType="Public">
+    <bpmn2:sequenceFlow id="_B7DFD678-9F6B-49AE-8003-9D6F56396247" sourceRef="_266F337B-938D-45E4-A386-626549631E6C" targetRef="_D768DE3E-D00A-465E-B113-E6ADF2EE7F67">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.source">
+          <drools:metaValue>true</drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue>true</drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_AC813C73-3A28-4FC1-BC9A-27AFB7862535" sourceRef="_5CECCE0D-48A0-466F-89F3-682872FAA83C" targetRef="_266F337B-938D-45E4-A386-626549631E6C">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.source">
+          <drools:metaValue>true</drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue>true</drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:endEvent id="_D768DE3E-D00A-465E-B113-E6ADF2EE7F67">
+      <bpmn2:incoming>_B7DFD678-9F6B-49AE-8003-9D6F56396247</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:serviceTask id="_266F337B-938D-45E4-A386-626549631E6C" drools:serviceimplementation="Java" drools:serviceinterface="com.redhat.HelloWorldService" drools:serviceoperation="helloWorld" name="Hello World" implementation="Java" operationRef="_266F337B-938D-45E4-A386-626549631E6C_ServiceOperation">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue>Hello World</drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_AC813C73-3A28-4FC1-BC9A-27AFB7862535</bpmn2:incoming>
+      <bpmn2:outgoing>_B7DFD678-9F6B-49AE-8003-9D6F56396247</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_7JkZwAA1EDiSdcGrhkajoA"/>
+    </bpmn2:serviceTask>
+    <bpmn2:startEvent id="_5CECCE0D-48A0-466F-89F3-682872FAA83C">
+      <bpmn2:outgoing>_AC813C73-3A28-4FC1-BC9A-27AFB7862535</bpmn2:outgoing>
+    </bpmn2:startEvent>
+  </bpmn2:process>
   <bpmndi:BPMNDiagram>
-    <bpmndi:BPMNPlane bpmnElement="ScriptTask" >
-      <bpmndi:BPMNShape bpmnElement="_1" >
-        <dc:Bounds x="16" y="16" width="48" height="48" />
+    <bpmndi:BPMNPlane bpmnElement="test">
+      <bpmndi:BPMNShape id="shape__5CECCE0D-48A0-466F-89F3-682872FAA83C" bpmnElement="_5CECCE0D-48A0-466F-89F3-682872FAA83C">
+        <dc:Bounds height="56" width="56" x="100" y="100"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_2" >
-        <dc:Bounds x="96" y="16" width="80" height="48" />
+      <bpmndi:BPMNShape id="shape__266F337B-938D-45E4-A386-626549631E6C" bpmnElement="_266F337B-938D-45E4-A386-626549631E6C">
+        <dc:Bounds height="102" width="154" x="236" y="77"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_3" >
-        <dc:Bounds x="208" y="16" width="48" height="48" />
+      <bpmndi:BPMNShape id="shape__D768DE3E-D00A-465E-B113-E6ADF2EE7F67" bpmnElement="_D768DE3E-D00A-465E-B113-E6ADF2EE7F67">
+        <dc:Bounds height="56" width="56" x="470" y="100"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="_1-_2" >
-        <di:waypoint x="40" y="40" />
-        <di:waypoint x="136" y="40" />
+      <bpmndi:BPMNEdge id="edge_shape__5CECCE0D-48A0-466F-89F3-682872FAA83C_to_shape__266F337B-938D-45E4-A386-626549631E6C" bpmnElement="_AC813C73-3A28-4FC1-BC9A-27AFB7862535">
+        <di:waypoint x="156" y="128"/>
+        <di:waypoint x="236" y="128"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_2-_3" >
-        <di:waypoint x="136" y="40" />
-        <di:waypoint x="232" y="40" />
+      <bpmndi:BPMNEdge id="edge_shape__266F337B-938D-45E4-A386-626549631E6C_to_shape__D768DE3E-D00A-465E-B113-E6ADF2EE7F67" bpmnElement="_B7DFD678-9F6B-49AE-8003-9D6F56396247">
+        <di:waypoint x="390" y="128"/>
+        <di:waypoint x="470" y="128"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-
-</definitions>
+  <bpmn2:relationship id="_7JmO8AA1EDiSdcGrhkajoA" type="BPSimData">
+    <bpmn2:extensionElements>
+      <bpsim:BPSimData>
+        <bpsim:Scenario id="default" name="Simulationscenario">
+          <bpsim:ScenarioParameters/>
+          <bpsim:ElementParameters elementRef="_5CECCE0D-48A0-466F-89F3-682872FAA83C">
+            <bpsim:TimeParameters>
+              <bpsim:ProcessingTime>
+                <bpsim:NormalDistribution mean="0" standardDeviation="0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
+          </bpsim:ElementParameters>
+          <bpsim:ElementParameters elementRef="_266F337B-938D-45E4-A386-626549631E6C">
+            <bpsim:TimeParameters>
+              <bpsim:ProcessingTime>
+                <bpsim:NormalDistribution mean="0" standardDeviation="0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
+            <bpsim:ResourceParameters>
+              <bpsim:Availability>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Availability>
+              <bpsim:Quantity>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Quantity>
+            </bpsim:ResourceParameters>
+            <bpsim:CostParameters>
+              <bpsim:UnitCost>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:UnitCost>
+            </bpsim:CostParameters>
+          </bpsim:ElementParameters>
+        </bpsim:Scenario>
+      </bpsim:BPSimData>
+    </bpmn2:extensionElements>
+    <bpmn2:source>_CBC221BA-78FF-4CDE-A313-2C26FB412E89</bpmn2:source>
+    <bpmn2:target>_CBC221BA-78FF-4CDE-A313-2C26FB412E89</bpmn2:target>
+  </bpmn2:relationship>
+</bpmn2:definitions>
