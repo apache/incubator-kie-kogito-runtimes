@@ -18,27 +18,27 @@
 
 # Test your application
 
-Generated application comes with sample test process that allows you to verify if the application is working as expected. Simply execute following command to try it out
+The generated application comes with a sample test process that allows you to verify if the application is working as expected. Simply execute following command to try it out:
 
 ```sh
 curl -d '{}' -H "Content-Type: application/json" -X POST http://localhost:8080/test
 ```
 
-Once successfully invoked you should see "Hello World" in the console of the running application.
+Once successfully invoked, you should see "Hello World" printed in the console of the running application.
 
 # Developing
 
-Add your business assets resources (process definition, rules, decisions) into src/main/resources.
+Add your business assets resources (process definition, rules, decisions) into `src/main/resources`.
 
-Add your java classes (data model, utilities, services) into src/main/java.
+Add your java classes (data model, utilities, services) into `src/main/java`.
 
 Then just build the project and run.
 
 
 # Swagger documentation
 
-Point to [swagger docs](http://localhost:8080/docs/swagger.json) to retrieve swagger definition of the exposed service
+The OpenAPI specification of the application can be visualized and explored in the [Swagger-UI](http://localhost:8080/swagger-ui).
 
-You can visualize that JSON file at [swagger editor](https://editor.swagger.io)
+The application's OpenAPI YAML file can be downloaded from [this](http://localhost:8080/openapi) location.
 
-In addition client application can be easily generated from the swagger definition to interact with this service.
+Client applications can be easily generated from this OpenAPI YAML file.
