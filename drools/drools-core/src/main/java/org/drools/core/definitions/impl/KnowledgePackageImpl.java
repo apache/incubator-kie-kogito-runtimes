@@ -782,19 +782,9 @@ public class KnowledgePackageImpl
         if (rtp != null) rtp.remove(process.getId());
     }
 
+    @Deprecated
     private List<Process> getProcessesGeneratedFromResource(Resource resource) {
-        throw new UnsupportedOperationException("processes not supported in kogito");
-//        ProcessPackage rtp = (ProcessPackage) getResourceTypePackages().get(ResourceType.BPMN2);
-//        if (rtp == null) {
-//            return Collections.emptyList();
-//        }
-//        List<Process> processesFromResource = new ArrayList<>();
-//        for (Process process : rtp) {
-//            if (resource.equals(process.getResource())) {
-//                processesFromResource.add(process);
-//            }
-//        }
-//        return processesFromResource;
+        return Collections.emptyList();
     }
 
     public boolean needsStreamMode() {
