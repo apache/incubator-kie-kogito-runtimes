@@ -47,7 +47,7 @@ public class KogitoPackageSources extends PackageSources {
 
     private String rulesFileName;
 
-    private Map<Class<?>, Collection<QueryModel>> queries;
+    private Map<String, Collection<QueryModel>> queries;
 
     public static KogitoPackageSources dumpSources( PackageModel pkgModel) {
         KogitoPackageSources sources = new KogitoPackageSources();
@@ -70,12 +70,8 @@ public class KogitoPackageSources extends PackageSources {
         if (!sources.ruleUnits.isEmpty()) {
             sources.queries = new HashMap<>();
             for (RuleUnitDescription ruleUnit : sources.ruleUnits) {
-                Class<?> ruleUnitClass = ruleUnit.getRuleUnitClass();
-                if (ruleUnitClass == null) {
-                    logger.warn("Query Lookup: Generated rule units are not supported yet {}", ruleUnit.getRuleUnitName());
-                    continue;
-                }
-                sources.queries.put(ruleUnitClass, pkgModel.getQueriesInRuleUnit(ruleUnitClass) );
+                String ruleUnitCanonicalName = ruleUnit.getCanonicalName();
+                sources.queries.put(ruleUnitCanonicalName, pkgModel.getQueriesInRuleUnit(ruleUnit));
             }
         }
 
