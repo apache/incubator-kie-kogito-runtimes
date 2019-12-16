@@ -31,7 +31,6 @@ import org.drools.modelcompiler.builder.PackageSources;
 import org.drools.modelcompiler.builder.QueryModel;
 import org.drools.modelcompiler.builder.RuleWriter;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,8 +90,8 @@ public class KogitoPackageSources extends PackageSources {
         return rulesFileName;
     }
 
-    public Collection<QueryModel> getQueriesInRuleUnit( Class<?> ruleUnit ) {
-        return queries.get( ruleUnit );
+    public Collection<QueryModel> getQueriesInRuleUnit( String ruleUnitCanonicalName ) {
+        return queries.get( ruleUnitCanonicalName );
     }
 
     public GeneratedFile getReflectConfigSource() {
