@@ -15,40 +15,41 @@
 
 package org.kie.addons.monitoring.rule;
 
-import static org.kie.addons.monitoring.rule.PrometheusMetrics.getDroolsEvaluationTimeHistogram;
+import java.util.HashMap;
 
 import org.drools.core.event.rule.impl.AfterActivationFiredEventImpl;
 import org.drools.core.event.rule.impl.BeforeActivationFiredEventImpl;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.api.event.rule.BeforeMatchFiredEvent;
-import org.kie.api.event.rule.DefaultAgendaEventListener;
+import org.kie.kogito.rules.Match;
+import org.kie.kogito.rules.listeners.AgendaListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PrometheusMetricsDroolsListener extends DefaultAgendaEventListener {
+import static org.kie.addons.monitoring.rule.PrometheusMetrics.getDroolsEvaluationTimeHistogram;
+
+public class PrometheusMetricsDroolsListener implements AgendaListener {
 
     private static final Logger logger = LoggerFactory.getLogger(PrometheusMetricsDroolsListener.class);
     private final String identifier;
 
-    public PrometheusMetricsDroolsListener(String identifier) {        
+    final HashMap<Match, Long> map = new HashMap<>();
+
+    public PrometheusMetricsDroolsListener(String identifier) {
         this.identifier = identifier;
     }
 
-
     @Override
-    public void beforeMatchFired(BeforeMatchFiredEvent event) {
+    public void beforeMatchFired(Match match) {
         long nanoTime = System.nanoTime();
-        BeforeActivationFiredEventImpl impl = getBeforeImpl(event);
-        impl.setTimestamp(nanoTime);
+        map.put(match, nanoTime);
     }
 
     @Override
-    public void afterMatchFired(AfterMatchFiredEvent event) {
-        AfterActivationFiredEventImpl afterImpl = getAfterImpl(event);
-        BeforeActivationFiredEventImpl beforeImpl = getBeforeImpl(afterImpl.getBeforeMatchFiredEvent());
-        long startTime = beforeImpl.getTimestamp();
+    public void afterMatchFired(Match match) {
+        long startTime = map.getOrDefault(match, 0l);
         long elapsed = System.nanoTime() - startTime;
-        String ruleName = event.getMatch().getRule().getName();
+        String ruleName = match.getRule().getName();
 
         getDroolsEvaluationTimeHistogram()
                 .labels(identifier, ruleName)

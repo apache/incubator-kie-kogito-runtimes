@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package org.kie.api.runtime.rule;
+package org.kie.kogito.rules;
 
 import java.util.List;
 
 import org.kie.api.definition.rule.Rule;
 
-@Deprecated
-public interface Match extends org.kie.kogito.rules.Match {
+public interface Match {
 
     /**
      * @return rule that was activated.
      */
     Rule getRule();
-
-    /**
-     *
-     * @return matched FactHandles for this Match
-     */
-    List< ? extends FactHandle> getFactHandles();
 
     /**
      * @return the list of objects that make the tuple that created
