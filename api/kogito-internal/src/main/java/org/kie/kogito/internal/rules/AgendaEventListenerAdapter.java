@@ -9,6 +9,7 @@ import org.kie.api.event.rule.MatchCancelledEvent;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.event.rule.RuleFlowGroupActivatedEvent;
 import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
+import org.kie.api.runtime.rule.Match;
 import org.kie.kogito.rules.listeners.AgendaListener;
 
 public final class AgendaEventListenerAdapter implements AgendaEventListener {
@@ -31,12 +32,16 @@ public final class AgendaEventListenerAdapter implements AgendaEventListener {
 
     @Override
     public void beforeMatchFired(BeforeMatchFiredEvent event) {
-        agendaListener.beforeMatchFired();
+        Match match = event.getMatch();
+        MatchImpl m = new MatchImpl(match.getRule(), match.getObjects());
+        agendaListener.beforeMatchFired(m);
     }
 
     @Override
     public void afterMatchFired(AfterMatchFiredEvent event) {
-        agendaListener.afterMatchFired();
+        Match match = event.getMatch();
+        MatchImpl m = new MatchImpl(match.getRule(), match.getObjects());
+        agendaListener.afterMatchFired(m);
     }
 
     @Override

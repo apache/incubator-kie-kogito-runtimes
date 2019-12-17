@@ -20,8 +20,7 @@ import java.util.List;
 
 import org.kie.api.definition.rule.Rule;
 
-@Deprecated
-public interface Match extends org.kie.kogito.rules.Match {
+public interface Match {
 
     /**
      * @return rule that was activated.

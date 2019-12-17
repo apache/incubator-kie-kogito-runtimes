@@ -47,7 +47,10 @@ public class PrometheusMetricsDroolsListener implements AgendaListener {
 
     @Override
     public void afterMatchFired(Match match) {
-        long startTime = map.getOrDefault(match, 0l);
+        Long startTime = map.remove(match);
+        if (startTime == null) {
+            return; // drop unknown event
+        }
         long elapsed = System.nanoTime() - startTime;
         String ruleName = match.getRule().getName();
 
