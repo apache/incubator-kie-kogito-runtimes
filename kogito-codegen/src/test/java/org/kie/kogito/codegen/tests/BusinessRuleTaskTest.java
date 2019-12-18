@@ -35,6 +35,7 @@ import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
+import org.kie.kogito.rules.Match;
 import org.kie.kogito.rules.listeners.AgendaListener;
 import org.kie.kogito.uow.UnitOfWork;
 
@@ -69,7 +70,7 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         final AtomicInteger counter = new AtomicInteger();
         ((DefaultRuleEventListenerConfig)app.config().rule().ruleEventListeners()).register(new AgendaListener() {
             @Override
-            public void afterMatchFired() {
+            public void afterMatchFired(Match m) {
                 counter.incrementAndGet();
             }
         });
