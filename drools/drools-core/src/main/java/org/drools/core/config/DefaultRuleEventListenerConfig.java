@@ -15,6 +15,24 @@
 
 package org.drools.core.config;
 
+import org.kie.kogito.rules.listeners.AgendaListener;
+import org.kie.kogito.rules.listeners.DataSourceListener;
+
 public class DefaultRuleEventListenerConfig extends CachedRuleEventListenerConfig {
+    public DefaultRuleEventListenerConfig() {
+
+    }
+
+    public DefaultRuleEventListenerConfig(AgendaListener...listeners) {
+        for (AgendaListener listener : listeners) {
+            register(listener);
+        }
+    }
+
+    public DefaultRuleEventListenerConfig(DataSourceListener...listeners) {
+        for (DataSourceListener listener : listeners) {
+            register(listener);
+        }
+    }
 
 }

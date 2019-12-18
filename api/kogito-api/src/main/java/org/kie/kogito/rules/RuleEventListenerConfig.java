@@ -15,13 +15,15 @@
 
 package org.kie.kogito.rules;
 
+import java.util.Collection;
+
 import org.kie.kogito.rules.listeners.AgendaListener;
 import org.kie.kogito.rules.listeners.DataSourceListener;
 
 public interface RuleEventListenerConfig {
 
-    AgendaListener agendaListener();
+    Collection<AgendaListener> agendaListener();
     
-    DataSourceListener dataSourceListener();
+    Collection<DataSourceListener> dataSourceListener();
         
 }
