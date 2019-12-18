@@ -23,12 +23,8 @@ public class $Name$ extends AbstractRuleUnit<$ModelName$> {
         ((org.drools.core.impl.StatefulKnowledgeSessionImpl)ks).setApplication( app );
         if (app.config() != null && app.config().rule() != null) {
             org.kie.kogito.rules.RuleEventListenerConfig ruleEventListenerConfig = app.config().rule().ruleEventListeners();
-            if (ruleEventListenerConfig.agendaListener() != null) {
-                ks.addEventListener(new org.kie.kogito.internal.rules.AgendaEventListenerAdapter(ruleEventListenerConfig.agendaListener()));
-            }
-            if (ruleEventListenerConfig.dataSourceListener() != null) {
-                ks.addEventListener(new org.kie.kogito.internal.rules.RuleRuntimeEventListenerAdapter(ruleEventListenerConfig.dataSourceListener()));
-            }
+            ruleEventListenerConfig.agendaListeners().forEach(l -> ks.addEventListener(new org.kie.kogito.internal.rules.AgendaEventListenerAdapter(l)));
+            ruleEventListenerConfig.dataSourceListeners().forEach(l -> ks.addEventListener(new org.kie.kogito.internal.rules.RuleRuntimeEventListenerAdapter(l)));
         }
         return ks;
     }

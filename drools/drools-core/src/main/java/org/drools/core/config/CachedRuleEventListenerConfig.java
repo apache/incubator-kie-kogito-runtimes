@@ -37,11 +37,11 @@ public class CachedRuleEventListenerConfig implements RuleEventListenerConfig {
         return this;
     }
 
-    public Collection<AgendaListener> agendaListener() {
+    public Collection<AgendaListener> agendaListeners() {
         return agendaListener;
     }
 
-    public Collection<DataSourceListener> dataSourceListener() {
+    public Collection<DataSourceListener> dataSourceListeners() {
         return dataSourceListener;
     }
 }

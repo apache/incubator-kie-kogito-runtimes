@@ -22,8 +22,8 @@ import org.kie.kogito.rules.listeners.DataSourceListener;
 
 public interface RuleEventListenerConfig {
 
-    Collection<AgendaListener> agendaListener();
+    Collection<AgendaListener> agendaListeners();
     
-    Collection<DataSourceListener> dataSourceListener();
+    Collection<DataSourceListener> dataSourceListeners();
         
 }

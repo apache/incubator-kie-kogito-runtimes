@@ -91,16 +91,11 @@ public class KieModuleModelMethod {
                 "    public KieSession newKieSession(String sessionName, org.kie.kogito.rules.RuleConfig ruleConfig) {\n" +
                         "        return java.util.Optional.ofNullable(getKieBaseForSession(sessionName).newKieSession(getConfForSession(sessionName), null)).map(k -> {\n" +
                         "            org.kie.kogito.rules.RuleEventListenerConfig ruleEventListenerConfig = ruleConfig.ruleEventListeners();\n" +
-                        "            if (ruleEventListenerConfig.agendaListener() != null) {\n" +
-                        "               k.addEventListener(new org.kie.kogito.internal.rules.AgendaEventListenerAdapter(ruleEventListenerConfig.agendaListener()));\n" +
-                        "            }\n" +
-                        "            if (ruleEventListenerConfig.dataSourceListener() != null) {\n" +
-                        "              k.addEventListener(new org.kie.kogito.internal.rules.RuleRuntimeEventListenerAdapter(ruleEventListenerConfig.dataSourceListener()));\n" +
-                        "            }\n" +
-                        "\n" +
-                "            return k;\n" +
-                "        }).get();\n" +
-                "    }\n";
+                        "            ruleEventListenerConfig.agendaListeners().forEach(l -> k.addEventListener(new org.kie.kogito.internal.rules.AgendaEventListenerAdapter(l)));\n" +
+                        "            ruleEventListenerConfig.dataSourceListeners().forEach(l -> k.addEventListener(new org.kie.kogito.internal.rules.RuleRuntimeEventListenerAdapter(l)));\n" +
+                        "            return k;\n" +
+                        "        }).get();\n" +
+                        "    }\n";
     }
 
     public String toGetKieBaseForSessionMethod() {
