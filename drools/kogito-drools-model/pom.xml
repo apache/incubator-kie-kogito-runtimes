@@ -49,6 +49,10 @@
           <groupId>org.drools</groupId>
           <artifactId>drools-compiler</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-core-reflective</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
