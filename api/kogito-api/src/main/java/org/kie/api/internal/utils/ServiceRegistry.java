@@ -20,7 +20,7 @@ package org.kie.api.internal.utils;
  * Internal Interface
  *
  */
-public interface ServiceRegistry /*extends Service*/ {
+public interface ServiceRegistry {
 
     static ServiceRegistry getInstance() {
         return ServiceRegistryImpl.getServiceRegistry();

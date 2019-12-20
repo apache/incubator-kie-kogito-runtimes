@@ -19,15 +19,9 @@ public interface RuleConfig {
 
     RuleEventListenerConfig ruleEventListeners();
 
-    EventProcessing eventProcessingMode();
+    EventProcessingMode eventProcessingMode();
 
     ClockType clockType();
 
-    enum EventProcessing {
-        Cloud, Stream;
-    }
 
-    enum ClockType {
-        RealTime, Pseudo;
-    }
 }

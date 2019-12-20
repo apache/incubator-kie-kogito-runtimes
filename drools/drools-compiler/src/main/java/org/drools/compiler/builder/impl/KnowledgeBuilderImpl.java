@@ -842,12 +842,6 @@ public class KnowledgeBuilderImpl implements KnowledgeBuilder,
             }
         }
 
-        // deprecated
-//        for (org.kie.api.definition.process.Process p : pkg.getRuleFlows().values()) {
-//            if (isSwappable(p.getResource(), res)) {
-//                p.setResource(res);
-//            }
-//        }
     }
 
     private boolean isSwappable(Resource original,

@@ -15,23 +15,25 @@
 
 package org.drools.core.config;
 
+import org.kie.kogito.rules.ClockType;
+import org.kie.kogito.rules.EventProcessingMode;
 import org.kie.kogito.rules.RuleConfig;
 import org.kie.kogito.rules.RuleEventListenerConfig;
 
 public class StaticRuleConfig implements RuleConfig {
     
     private final RuleEventListenerConfig ruleEventListenerConfig;
-    private final EventProcessing eventProcessing;
+    private final EventProcessingMode eventProcessing;
     private final ClockType clockType;
 
-    public StaticRuleConfig(RuleEventListenerConfig ruleEventListenerConfig, EventProcessing eventProcessing, ClockType clockType) {
+    public StaticRuleConfig(RuleEventListenerConfig ruleEventListenerConfig, EventProcessingMode eventProcessing, ClockType clockType) {
         this.ruleEventListenerConfig = ruleEventListenerConfig;
         this.eventProcessing = eventProcessing;
         this.clockType = clockType;
     }
 
     public StaticRuleConfig(RuleEventListenerConfig ruleEventListenerConfig) {
-        this(ruleEventListenerConfig, EventProcessing.Cloud, ClockType.RealTime);
+        this(ruleEventListenerConfig, EventProcessingMode.Cloud, ClockType.RealTime);
     }
 
     @Override
@@ -40,7 +42,7 @@ public class StaticRuleConfig implements RuleConfig {
     }
 
     @Override
-    public EventProcessing eventProcessingMode() {
+    public EventProcessingMode eventProcessingMode() {
         return eventProcessing;
     }
 

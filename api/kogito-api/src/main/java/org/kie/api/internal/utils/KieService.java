@@ -15,5 +15,5 @@
 
 package org.kie.api.internal.utils;
 
-public interface KieService /*extends Service*/ {
+public interface KieService {
 }
