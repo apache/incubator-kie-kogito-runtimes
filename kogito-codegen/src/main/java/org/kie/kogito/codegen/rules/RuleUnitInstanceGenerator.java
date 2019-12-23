@@ -104,11 +104,13 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
                             new MethodCallExpr(new NameExpr("value"), methodName);
 
                     // .subscribe( new EntryPointDataProcessor(runtime.getEntryPoint()) )
+
+                    String entryPointName = getEntryPointName(ruleUnitDescription, propertyName);
                     MethodCallExpr drainInto = new MethodCallExpr(fieldAccessor, "subscribe")
                             .addArgument(new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType( EntryPointDataProcessor.class.getName() ), NodeList.nodeList(
                                     new MethodCallExpr(
                                             new NameExpr("runtime"), "getEntryPoint",
-                                            NodeList.nodeList(new StringLiteralExpr( propertyName /* fixme: lookup entry point config */ ))))));
+                                            NodeList.nodeList(new StringLiteralExpr( entryPointName ))))));
 //                            new MethodReferenceExpr().setScope(new NameExpr("runtime")).setIdentifier("insert"));
 
                     methodBlock.addStatement(drainInto);
@@ -127,9 +129,14 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
         return methodDeclaration;
     }
 
-    private String getEntryPointName( Class<?> typeClass, String propertyName ) {
+    private String getEntryPointName( RuleUnitDescription ruleUnitDescription, String propertyName ) {
+        Class<?> ruleUnitClass = ruleUnitDescription.getRuleUnitClass();
+        if (ruleUnitClass == null) {
+            return propertyName;
+        }
         try {
-            Field dataSourceField = typeClass.getDeclaredField( propertyName );
+            // fixme should transfer this config to RuleUnitVariable
+            Field dataSourceField = ruleUnitClass.getDeclaredField(propertyName );
             if (dataSourceField.getAnnotation( DefaultEntryPoint.class ) != null) {
                 return org.kie.api.runtime.rule.EntryPoint.DEFAULT_NAME;
             }
