@@ -60,6 +60,11 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
     }
 
     @Override
+    public String getCanonicalName() {
+        return getPackageName() + '.' + getSimpleName();
+    }
+
+    @Override
     public String getSimpleName() {
         return simpleName;
     }

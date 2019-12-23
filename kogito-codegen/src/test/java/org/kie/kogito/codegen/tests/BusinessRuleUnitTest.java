@@ -188,6 +188,46 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
 
     }
 
+
+    @Test
+    public void ioMappingGenerated() throws Exception {
+        Application app = generateCode(Collections.singletonList("ruletask/ExampleGenerated.bpmn"),
+                                       Collections.singletonList("ruletask/Generated.drl"));
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleGenerated");
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("singleString", "hello");
+        map.put("singlePerson", new Person("Yoko", 86));
+        map.put("manyPersons", asList(new Person("Paul", 77), new Person("Ringo", 79)));
+        map.put("emptyList", new ArrayList<>());
+
+        Model model = process.createModel();
+        model.fromMap(map);
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
+        Map<String, Object> result = variables.toMap();
+
+        assertNull(result.get("emptyString"));
+        assertNull(result.get("emptyPerson"));
+//        assertThat((Collection) result.get("emptyList")).isEmpty();
+
+        instance.start();
+
+        result = instance.variables().toMap();
+//        assertEquals("hello", result.get("emptyString"));
+
+        Person yoko = new Person("Yoko", 86);
+        yoko.setAdult(true);
+        assertEquals(yoko, result.get("singlePerson"));
+//
+//        Person paul = new Person("Paul", 77);
+//        paul.setAdult(true);
+//        Person ringo = new Person("Ringo", 79);
+//        ringo.setAdult(true);
+//        assertEquals(asList(paul, ringo), result.get("emptyList"));
+
+    }
+
     @Test
     @DisplayName("Should throw an exception when a null collection variable is mapped as input of a datasource")
     public void inputMappingNullCollection() throws Exception {

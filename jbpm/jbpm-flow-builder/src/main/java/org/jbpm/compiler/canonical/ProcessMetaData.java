@@ -17,7 +17,6 @@
 package org.jbpm.compiler.canonical;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.javaparser.ast.CompilationUnit;
-import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 
 public class ProcessMetaData {
 
@@ -54,7 +52,6 @@ public class ProcessMetaData {
  
     private Map<String, CompilationUnit> generatedHandlers = new HashMap<>();
     private Set<CompilationUnit> generatedListeners = new HashSet<>();
-    private final List<GeneratedRuleUnitDescription> ruleUnitDescriptions = new ArrayList<>();
 
     public ProcessMetaData(String processId, String extractedProcessId, String processName, String processVersion, String processPackageName, String processClassName) {
         super();
@@ -179,10 +176,6 @@ public class ProcessMetaData {
     
     public void setStartable(boolean startable) {
         this.startable = startable;
-    }
-
-    public Collection<GeneratedRuleUnitDescription> getRuleUnitDescriptions() {
-        return ruleUnitDescriptions;
     }
 
     @Override

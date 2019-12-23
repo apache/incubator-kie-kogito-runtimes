@@ -53,12 +53,15 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
 import org.jbpm.workflow.core.node.RuleSetNode;
+import org.jbpm.workflow.core.node.RuleUnitFactory;
 import org.kie.api.definition.process.Node;
+import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.kogito.rules.DataObserver;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
+import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +137,8 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                 for (Variable v : variableScope.getVariables()) {
                     generatedRuleUnitDescription.putDatasourceVar(v.getName(), DataStore.class.getCanonicalName(), v.getType().getStringType());
                 }
-                metadata.getRuleUnitDescriptions().add(generatedRuleUnitDescription);
+                RuleUnitComponentFactoryImpl impl = (RuleUnitComponentFactoryImpl) RuleUnitComponentFactory.get();
+                impl.registerRuleUnitDescription(generatedRuleUnitDescription);
             }
         }
 

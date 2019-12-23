@@ -68,8 +68,8 @@ public class RuleUnitGenerator implements FileGenerator {
         this.applicationPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
     }
 
-    public RuleUnitInstanceGenerator instance(ClassLoader classLoader) {
-        return new RuleUnitInstanceGenerator(packageName, typeName, classLoader);
+    public RuleUnitInstanceGenerator instance() {
+        return new RuleUnitInstanceGenerator(ruleUnit);
     }
 
     public List<QueryEndpointGenerator> queries() {
@@ -180,8 +180,8 @@ public class RuleUnitGenerator implements FileGenerator {
         return this;
     }
 
-    public Class<?> getRuleUnitClass() {
-        return ruleUnit.getRuleUnitClass();
+    public RuleUnitDescription getRuleUnitDescription() {
+        return ruleUnit;
     }
 
     public void setApplicationPackageName(String packageName) {

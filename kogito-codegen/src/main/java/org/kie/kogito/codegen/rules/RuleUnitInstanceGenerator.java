@@ -31,6 +31,8 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
 import org.kie.kogito.rules.units.EntryPointDataProcessor;
 import org.drools.core.util.ClassUtils;
@@ -44,30 +46,19 @@ import static org.kie.internal.ruleunit.RuleUnitUtil.isDataSource;
 
 public class RuleUnitInstanceGenerator implements FileGenerator {
 
-    private final String packageName;
-    private final String typeName;
-    /**
-     * class loader is currently used to resolve type declarations
-     * in the rule unit
-     *
-     */
-    private final ClassLoader classLoader;
-    private final String canonicalName;
     private final String targetTypeName;
     private final String targetCanonicalName;
     private final String generatedFilePath;
+    private final RuleUnitDescription ruleUnitDescription;
 
     public static String qualifiedName(String packageName, String typeName) {
         return packageName + "." + typeName + "RuleUnitInstance";
     }
 
-    public RuleUnitInstanceGenerator(String packageName, String typeName, ClassLoader classLoader) {
-        this.packageName = packageName;
-        this.typeName = typeName;
-        this.classLoader = classLoader;
-        this.canonicalName = packageName + "." + typeName;
-        this.targetTypeName = typeName + "RuleUnitInstance";
-        this.targetCanonicalName = packageName + "." + targetTypeName;
+    public RuleUnitInstanceGenerator(RuleUnitDescription ruleUnitDescription) {
+        this.ruleUnitDescription = ruleUnitDescription;
+        this.targetTypeName = ruleUnitDescription.getSimpleName() + "RuleUnitInstance";
+        this.targetCanonicalName = ruleUnitDescription.getPackageName() + "." + targetTypeName;
         this.generatedFilePath = targetCanonicalName.replace('.', '/') + ".java";
     }
 
@@ -82,22 +73,12 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
     }
 
     public CompilationUnit compilationUnit() {
-        CompilationUnit compilationUnit = new CompilationUnit(packageName);
+        CompilationUnit compilationUnit = new CompilationUnit(ruleUnitDescription.getPackageName());
         compilationUnit.getTypes().add(classDeclaration());
         return compilationUnit;
     }
 
     private MethodDeclaration bindMethod() {
-        // we are currently relying on reflection, but proper way to do this
-        // would be to use JavaParser on the src class AND fallback
-        // on reflection if the class is not available.
-        Class<?> typeClass;
-        try {
-            typeClass = classLoader.loadClass(canonicalName);
-        } catch (ClassNotFoundException e) {
-            throw new Error(e);
-        }
-
         MethodDeclaration methodDeclaration = new MethodDeclaration();
 
         BlockStmt methodBlock = new BlockStmt();
@@ -105,21 +86,18 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
                 .addAnnotation( "Override" )
                 .addModifier(Modifier.Keyword.PROTECTED)
                 .addParameter(KieSession.class.getCanonicalName(), "runtime")
-                .addParameter(typeName, "value")
+                .addParameter(ruleUnitDescription.getRuleUnitName(), "value")
                 .setType(void.class)
                 .setBody(methodBlock);
 
         try {
 
 
-            for (Method m : typeClass.getMethods()) {
-                String methodName = m.getName();
-                String propertyName = ClassUtils.getter2property(methodName);
-                if (propertyName == null || propertyName.equals( "class" )) {
-                    continue;
-                }
+            for (RuleUnitVariable m : ruleUnitDescription.getUnitVarDeclarations()) {
+                String methodName = m.getter();
+                String propertyName = m.getName();
 
-                if ( isDataSource( m.getReturnType() ) ) {
+                if ( m.isDataSource() ) {
 
                     //  value.$method())
                     Expression fieldAccessor =
@@ -129,8 +107,8 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
                     MethodCallExpr drainInto = new MethodCallExpr(fieldAccessor, "subscribe")
                             .addArgument(new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType( EntryPointDataProcessor.class.getName() ), NodeList.nodeList(
                                     new MethodCallExpr(
-                                    new NameExpr("runtime"), "getEntryPoint",
-                                    NodeList.nodeList(new StringLiteralExpr( getEntryPointName( typeClass, propertyName ) ))))));
+                                            new NameExpr("runtime"), "getEntryPoint",
+                                            NodeList.nodeList(new StringLiteralExpr( propertyName /* fixme: lookup entry point config */ ))))));
 //                            new MethodReferenceExpr().setScope(new NameExpr("runtime")).setIdentifier("insert"));
 
                     methodBlock.addStatement(drainInto);
@@ -164,6 +142,7 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
     }
 
     public ClassOrInterfaceDeclaration classDeclaration() {
+        String canonicalName = ruleUnitDescription.getRuleUnitName();
         ClassOrInterfaceDeclaration classDecl = new ClassOrInterfaceDeclaration()
                 .setName(targetTypeName)
                 .addModifier(Modifier.Keyword.PUBLIC);

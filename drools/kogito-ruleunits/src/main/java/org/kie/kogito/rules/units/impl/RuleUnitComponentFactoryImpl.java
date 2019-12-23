@@ -43,8 +43,8 @@ public class RuleUnitComponentFactoryImpl implements RuleUnitComponentFactory {
     }
 
     @Override
-    public RuleUnitDescription createRuleUnitDescription(KiePackage pkg, String ruleUnitCanonicalName ) {
-        return generatedRuleUnitDescriptions.get(ruleUnitCanonicalName);
+    public RuleUnitDescription createRuleUnitDescription(KiePackage pkg, String ruleUnitSimpleName ) {
+        return generatedRuleUnitDescriptions.get(pkg.getName() + '.' + ruleUnitSimpleName);
     }
 
     @Override
