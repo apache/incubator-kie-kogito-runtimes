@@ -18,6 +18,7 @@ package org.kie.kogito.codegen.rules;
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -34,6 +35,7 @@ import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.rules.RuleUnit;
+import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
 
 import static java.util.stream.Collectors.toList;
@@ -101,6 +103,14 @@ public class RuleUnitGenerator implements FileGenerator {
     @Override
     public String generate() {
         return compilationUnit().toString();
+    }
+
+    public Optional<RuleUnitPojoGenerator> pojo() {
+        if (ruleUnit instanceof GeneratedRuleUnitDescription) {
+            return Optional.of(new RuleUnitPojoGenerator((GeneratedRuleUnitDescription) ruleUnit));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public CompilationUnit compilationUnit() {

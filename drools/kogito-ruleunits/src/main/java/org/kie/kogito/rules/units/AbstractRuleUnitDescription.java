@@ -29,13 +29,6 @@ public abstract class AbstractRuleUnitDescription implements RuleUnitDescription
 
     private final Map<String, RuleUnitVariable> varDeclarations = new HashMap<>();
 
-//    @Override
-//    public Optional<EntryPointId> getEntryPointId(String name) {
-//        return Optional.ofNullable(varDeclarations.get(name))
-//                .filter(RuleUnitVariable::isDataSource)
-//                .map(ds -> new EntryPointId(name));
-//    }
-
     @Override
     public Optional<Class<?>> getDatasourceType(String name) {
         return Optional.ofNullable(varDeclarations.get(name))

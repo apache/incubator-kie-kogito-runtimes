@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.core.ruleunit;
+package org.kie.kogito.rules.units;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;

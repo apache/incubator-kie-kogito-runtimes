@@ -236,6 +236,8 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 RuleUnitInstanceGenerator ruleUnitInstance = ruleUnit.instance(contextClassLoader);
                 generatedFiles.add( ruleUnitInstance.generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
 
+                ruleUnit.pojo().ifPresent(p -> generatedFiles.add(p.generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE)));
+
                 List<QueryEndpointGenerator> queries = ruleUnit.queries();
                 if (!queries.isEmpty()) {
                     generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitClass() ).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
