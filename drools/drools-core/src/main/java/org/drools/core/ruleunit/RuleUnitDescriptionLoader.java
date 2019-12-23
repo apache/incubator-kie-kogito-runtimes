@@ -63,6 +63,10 @@ public class RuleUnitDescriptionLoader {
             return null;
         }
         RuleUnitComponentFactory ruleUnitComponentFactory = RuleUnitComponentFactory.get();
+        // short-circuit if there is no support for units
+        if (ruleUnitComponentFactory == null) {
+            return null;
+        }
         try {
             return ruleUnitComponentFactory.createRuleUnitDescription(pkg, pkg.getTypeResolver().resolveType(ruleUnit) );
         } catch (final ClassNotFoundException e) {
