@@ -1,3 +1,18 @@
+/*
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.kie.kogito.codegen.rules;
 
 import java.io.IOException;
@@ -6,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,6 +30,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import org.drools.core.io.impl.ByteArrayResource;
@@ -83,7 +100,9 @@ public class AnnotatedClassPostProcessor {
                             (i.isStatic() ? "static" : ""),
                             i.getName()))
                     .collect(joining("\n"));
-            String rules = unitClass.getPrimaryType().get().getMethods().stream()
+            TypeDeclaration<?> typeDeclaration = unitClass.getPrimaryType()
+                    .orElseThrow(() -> new IllegalArgumentException("Java class should have a primary type"));
+            String rules = typeDeclaration.getMethods().stream()
                     .filter(m -> m.getParameters().stream().flatMap(p -> p.getAnnotations().stream()).anyMatch(a -> a.getNameAsString().endsWith("When")))
                     .map(this::generateRule).collect(joining());
             String drl = String.format(
@@ -94,7 +113,7 @@ public class AnnotatedClassPostProcessor {
                             "%s\n",
 
                     packageName(), // package
-                    unitClass.getPrimaryTypeName().get(),
+                    typeDeclaration.getName(),
                     imports,
                     rules);
             return drl;
@@ -123,7 +142,8 @@ public class AnnotatedClassPostProcessor {
         }
 
         private String formatPattern(Parameter el) {
-            AnnotationExpr when = el.getAnnotationByName("When").get();
+            Optional<AnnotationExpr> w = el.getAnnotationByName("When");
+            AnnotationExpr when = w.orElseThrow(() -> new IllegalArgumentException("No When annotation"));
             return String.format(
                     "  %s : %s\n",
                     el.getNameAsString(),
