@@ -56,14 +56,22 @@ public class AbstractCodegenTest {
     }
 
     protected Application generateCodeRulesOnly(String... rules) throws Exception {
-        return generateCode( Collections.emptyList(), Arrays.asList(rules), true );
+        return generateCode( Collections.emptyList(), Arrays.asList(rules), Collections.emptyList(), true );
     }
 
-    protected Application generateCode(List<String> processResources, List<String> rulesResources) throws Exception {
-        return generateCode( processResources, rulesResources, false );
+    protected Application generateRulesFromJava(String... javaSourceCode) throws Exception {
+        return generateCode(Collections.emptyList(), Collections.emptyList(), Arrays.asList(javaSourceCode), true);
     }
 
-    protected Application generateCode(List<String> processResources, List<String> rulesResources, boolean hasRuleUnit) throws Exception {
+    protected Application generateCode(List<String> processResources, List<String> rulesResources ) throws Exception {
+        return generateCode( processResources, rulesResources, Collections.emptyList(), false );
+    }
+
+    protected Application generateCode(
+            List<String> processResources,
+            List<String> rulesResources,
+            List<String> javaRulesResources,
+            boolean hasRuleUnit) throws Exception {
         GeneratorContext context = GeneratorContext.ofResourcePath(new File("src/test/resources"));
         ApplicationGenerator appGen =
                 new ApplicationGenerator(this.getClass().getPackage().getName(), new File("target/codegen-tests"))
@@ -83,6 +91,13 @@ public class AbstractCodegenTest {
                                                                    .stream()
                                                                    .map(resource -> new File("src/test/resources", resource))
                                                                    .collect(Collectors.toList())));
+        }
+
+        if (!javaRulesResources.isEmpty()) {
+            appGen.withGenerator(IncrementalRuleCodegen.ofJavaFiles(javaRulesResources
+                                                                            .stream()
+                                                                            .map(resource -> new File("src/test/java/", resource))
+                                                                            .collect(Collectors.toList())));
         }
 
         Collection<GeneratedFile> generatedFiles = appGen.generate();
