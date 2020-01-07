@@ -100,7 +100,7 @@ public abstract class BaseTimerJobSchedulerTest {
     public abstract BaseTimerJobScheduler tested();
 
     @Test
-    void scheduleNotExistingJob() {
+    void testScheduleNotExistingJob() {
         when(jobRepository.exists(JOB_ID)).thenReturn(CompletableFuture.completedFuture(false));
         Publisher<ScheduledJob> schedule = tested().schedule(job);
         verify(tested(), never()).doSchedule(delayCaptor.capture(), eq(job));
@@ -114,12 +114,12 @@ public abstract class BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void scheduleExistingJob() {
+    void testScheduleExistingJob() {
         testExistingJob(false, JobStatus.SCHEDULED);
     }
 
     @Test
-    void scheduleExistingJobExpired() {
+    void testScheduleExistingJobExpired() {
         testExistingJob(true, JobStatus.SCHEDULED);
     }
 
@@ -162,23 +162,23 @@ public abstract class BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void scheduleExistingJobRetryExpired() {
+    void testScheduleExistingJobRetryExpired() {
         testExistingJob(true, JobStatus.RETRY);
     }
 
     @Test
-    void scheduleExistingJobRetry() {
+    void testScheduleExistingJobRetry() {
         testExistingJob(false, JobStatus.RETRY);
     }
 
     @Test
-    void scheduleExistingJobPeriodic() {
+    void testScheduleExistingJobPeriodic() {
         job = createPeriodicJob();
         testExistingJob(false, JobStatus.SCHEDULED);
     }
 
     @Test
-    void handleJobExecutionSuccess() {
+    void testHandleJobExecutionSuccess() {
         PublisherBuilder<ScheduledJob> executionSuccess = tested().handleJobExecutionSuccess(scheduledJob);
         verify(tested(), never()).cancel(scheduleCaptorFuture.capture());
 
@@ -187,7 +187,7 @@ public abstract class BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void handleJobExecutionSuccessPeriodicFirstExecution() {
+    void testHandleJobExecutionSuccessPeriodicFirstExecution() {
         job = createPeriodicJob();
 
         scheduledJob = ScheduledJob.builder().job(job).status(JobStatus.SCHEDULED).build();
@@ -209,7 +209,7 @@ public abstract class BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void handleJobExecutionSuccessPeriodic() {
+    void testHandleJobExecutionSuccessPeriodic() {
         job = createPeriodicJob();
 
         scheduledJob = ScheduledJob.builder().job(job).status(JobStatus.PERIODIC_SCHEDULED).build();
@@ -225,7 +225,7 @@ public abstract class BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void handleJobExecutionErrorWithRetry() {
+    void testHandleJobExecutionErrorWithRetry() {
         PublisherBuilder<ScheduledJob> scheduledJobPublisher = tested().handleJobExecutionError(errorResponse);
 
         verify(tested(), never()).doSchedule(delayCaptor.capture(), eq(scheduledJob));
@@ -238,7 +238,7 @@ public abstract class BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void handleJobExecutionErrorFinal() {
+    void testHandleJobExecutionErrorFinal() {
         scheduledJob = ScheduledJob.builder().of(scheduledJob).status(JobStatus.ERROR).build();
         when(jobRepository.get(JOB_ID)).thenReturn(CompletableFuture.completedFuture(scheduledJob));
 
@@ -256,21 +256,21 @@ public abstract class BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void execute() {
+    void testExecute() {
         tested().execute(job);
         verify(jobRepository).get(JOB_ID);
         verify(jobExecutor).execute(scheduled);
     }
 
     @Test
-    void cancel() {
+    void testCancel() {
         tested().cancel(JOB_ID);
         verify(jobRepository).get(JOB_ID);
         verify(tested()).cancel(scheduled);
     }
 
     @Test
-    void cancelScheduledJob() {
+    void testCancelScheduledJob() {
         when(tested().doCancel(scheduledJob)).thenReturn(ReactiveStreams.of(true).buildRs());
 
         tested().cancel(scheduled);

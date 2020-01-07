@@ -57,29 +57,29 @@ class HttpJobExecutorTest {
     private HttpJobExecutor tested;
 
     @Mock
-    Vertx vertx;
+    private Vertx vertx;
 
     @Mock
-    Emitter<JobExecutionResponse> jobErrorEmitter;
+    private Emitter<JobExecutionResponse> jobErrorEmitter;
 
     @Mock
-    Emitter<JobExecutionResponse> jobSuccessEmitter;
+    private Emitter<JobExecutionResponse> jobSuccessEmitter;
 
     @Spy
-    HttpConverters httpConverters = new HttpConverters();
+    private HttpConverters httpConverters = new HttpConverters();
 
     @Mock
-    WebClient webClient;
+    private WebClient webClient;
 
     @Test
-    void initialize(@Mock io.vertx.core.Vertx vertxCore) {
+    void testInitialize(@Mock io.vertx.core.Vertx vertxCore) {
         when(vertx.getDelegate()).thenReturn(vertxCore);
         tested.initialize();
         assertNotNull(tested.getClient());
     }
 
     @Test
-    void executePeriodic(@Mock HttpRequest<Buffer> request, @Mock MultiMap params) {
+    void testExecutePeriodic(@Mock HttpRequest<Buffer> request, @Mock MultiMap params) {
         Job job = JobBuilder.builder().repeatInterval(1l).repeatLimit(10).callbackEndpoint(ENDPOINT).id(JOB_ID).
                 build();
         ScheduledJob scheduledJob = ScheduledJob.builder().job(job).executionCounter(2).build();
@@ -113,7 +113,7 @@ class HttpJobExecutorTest {
     }
 
     @Test
-    void execute(@Mock HttpRequest<Buffer> request, @Mock MultiMap params) {
+    void testExecute(@Mock HttpRequest<Buffer> request, @Mock MultiMap params) {
         Job job = createSimpleJob();
         ScheduledJob scheduledJob = ScheduledJob.builder().job(job).build();
 
@@ -122,7 +122,7 @@ class HttpJobExecutorTest {
     }
 
     @Test
-    void executeWithError(@Mock HttpRequest<Buffer> request, @Mock MultiMap params) {
+    void testExecuteWithError(@Mock HttpRequest<Buffer> request, @Mock MultiMap params) {
         Job job = createSimpleJob();
         ScheduledJob scheduledJob = ScheduledJob.builder().job(job).build();
 

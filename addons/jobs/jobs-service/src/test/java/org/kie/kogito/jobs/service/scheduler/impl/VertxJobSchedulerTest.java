@@ -82,7 +82,7 @@ class VertxJobSchedulerTest extends BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void doSchedule() {
+    void testDoSchedule() {
         PublisherBuilder<String> schedule = tested.doSchedule(Duration.ofMillis(1), job);
         verify(vertx, never()).setTimer(timeCaptor.capture(), handlerCaptor.capture());
         Flowable.fromPublisher(schedule.buildRs()).subscribe();
@@ -98,7 +98,7 @@ class VertxJobSchedulerTest extends BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void doPeriodicSchedule() {
+    void testDoPeriodicSchedule() {
         PublisherBuilder<String> periodicSchedule = tested.doPeriodicSchedule(Duration.ofMillis(1), job);
         verify(vertx, never()).setPeriodic(timeCaptor.capture(), handlerCaptor.capture());
         Flowable.fromPublisher(periodicSchedule.buildRs()).subscribe();
@@ -107,7 +107,7 @@ class VertxJobSchedulerTest extends BaseTimerJobSchedulerTest {
     }
 
     @Test
-    void doCancel() {
+    void testDoCancel() {
         Publisher<Boolean> cancel = tested.doCancel(ScheduledJob.builder().job(job).scheduledId(SCHEDULED_ID).build());
         verify(vertx, never()).cancelTimer(Long.valueOf(SCHEDULED_ID));
         Flowable.fromPublisher(cancel).subscribe();
