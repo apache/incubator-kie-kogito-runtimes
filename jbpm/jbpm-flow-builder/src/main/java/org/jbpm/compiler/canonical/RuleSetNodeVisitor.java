@@ -53,7 +53,6 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
 import org.jbpm.workflow.core.node.RuleSetNode;
-import org.jbpm.workflow.core.node.RuleUnitFactory;
 import org.kie.api.definition.process.Node;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.kogito.rules.DataObserver;
@@ -191,8 +190,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                         .ifPresent(m -> m.setBody(bind(variableScope, ruleSetNode, unitName)));
                 factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unit"))
                         .ifPresent(m -> m.setBody(unit(unitName)));
-//                factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unbind"))
-//                        .ifPresent(m -> m.setBody());
+                // unbinding not necessary for generated code
             });
 
         }

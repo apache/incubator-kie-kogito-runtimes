@@ -16,7 +16,6 @@
 package org.kie.kogito.codegen.rules;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -31,18 +30,15 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.kie.api.runtime.KieSession;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
-import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
-import org.kie.kogito.rules.units.EntryPointDataProcessor;
-import org.drools.core.util.ClassUtils;
-import org.kie.api.runtime.KieSession;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.conf.DefaultEntryPoint;
 import org.kie.kogito.conf.EntryPoint;
-
-import static org.kie.internal.ruleunit.RuleUnitUtil.isDataSource;
+import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
+import org.kie.kogito.rules.units.EntryPointDataProcessor;
 
 public class RuleUnitInstanceGenerator implements FileGenerator {
 

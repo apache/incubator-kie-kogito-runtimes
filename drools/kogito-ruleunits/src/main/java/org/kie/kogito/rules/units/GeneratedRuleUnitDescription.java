@@ -19,17 +19,10 @@ package org.kie.kogito.rules.units;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.drools.core.addon.TypeResolver;
 import org.kie.kogito.rules.DataSource;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.units.AbstractRuleUnitDescription;
-import org.kie.kogito.rules.units.SimpleRuleUnitVariable;
 
 public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
 
