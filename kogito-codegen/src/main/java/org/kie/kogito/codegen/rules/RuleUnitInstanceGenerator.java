@@ -87,8 +87,6 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
                 .setBody(methodBlock);
 
         try {
-
-
             for (RuleUnitVariable m : ruleUnitDescription.getUnitVarDeclarations()) {
                 String methodName = m.getter();
                 String propertyName = m.getName();

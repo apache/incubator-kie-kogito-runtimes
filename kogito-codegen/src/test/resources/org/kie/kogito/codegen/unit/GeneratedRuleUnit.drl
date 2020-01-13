@@ -1,0 +1,21 @@
+package org.kie.kogito.codegen.unit;
+unit GeneratedUnit;
+
+import org.kie.kogito.codegen.data.Person;
+import org.kie.kogito.codegen.data.Results;
+
+global Integer adultAge;
+global @datasource Person persons;
+global Results results;
+
+rule Adult when
+    $p: /persons[ age >= adultAge, $name : name ]
+then
+    results.add($name);
+    modify($p) { $p.setAdult(true) };
+end
+
+query FindAdults
+    /persons[ adult, $name : name ]
+end
+

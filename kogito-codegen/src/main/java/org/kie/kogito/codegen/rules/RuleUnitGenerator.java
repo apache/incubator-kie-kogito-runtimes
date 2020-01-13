@@ -15,6 +15,7 @@
 
 package org.kie.kogito.codegen.rules;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -33,6 +34,7 @@ import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.FileGenerator;
+import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
@@ -68,8 +70,16 @@ public class RuleUnitGenerator implements FileGenerator {
         this.applicationPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
     }
 
-    public RuleUnitInstanceGenerator instance() {
-        return new RuleUnitInstanceGenerator(ruleUnit);
+    public List<GeneratedFile> generateFiles() {
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
+        generatedFiles.add( generateFile(GeneratedFile.Type.RULE) );
+        generatedFiles.add( new RuleUnitInstanceGenerator(ruleUnit)
+                .generateFile(GeneratedFile.Type.RULE) );
+        if ( ruleUnit.getRuleUnitClass() == null ) {
+            generatedFiles.add( new RuleUnitDataGenerator(ruleUnit)
+                    .generateFile(GeneratedFile.Type.RULE) );
+        }
+        return generatedFiles;
     }
 
     public List<QueryEndpointGenerator> queries() {
@@ -77,6 +87,10 @@ public class RuleUnitGenerator implements FileGenerator {
                 .filter(query -> !query.hasParameters())
                 .map(query -> new QueryEndpointGenerator(ruleUnit, query, annotator))
                 .collect(toList());
+    }
+
+    public RuleUnitDTOSourceClass createDTOGenerator() {
+        return new RuleUnitDTOSourceClass( ruleUnit );
     }
 
     @Override
@@ -103,14 +117,6 @@ public class RuleUnitGenerator implements FileGenerator {
     @Override
     public String generate() {
         return compilationUnit().toString();
-    }
-
-    public Optional<RuleUnitPojoGenerator> pojo() {
-        if (ruleUnit instanceof GeneratedRuleUnitDescription) {
-            return Optional.of(new RuleUnitPojoGenerator((GeneratedRuleUnitDescription) ruleUnit));
-        } else {
-            return Optional.empty();
-        }
     }
 
     public CompilationUnit compilationUnit() {
@@ -182,6 +188,10 @@ public class RuleUnitGenerator implements FileGenerator {
 
     public RuleUnitDescription getRuleUnitDescription() {
         return ruleUnit;
+    }
+
+    public String getRuleUnitClassName() {
+        return ruleUnit.getRuleUnitName();
     }
 
     public void setApplicationPackageName(String packageName) {

@@ -61,7 +61,7 @@ public abstract class AbstractRuleUnitDescription implements RuleUnitDescription
         return ruleUnitVariable != null && ruleUnitVariable.isDataSource();
     }
 
-    protected void putRuleUnitVariable(RuleUnitVariable varDeclaration) {
+    public void putRuleUnitVariable(RuleUnitVariable varDeclaration) {
         varDeclarations.put(varDeclaration.getName(), varDeclaration);
     }
 
