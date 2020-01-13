@@ -16,20 +16,31 @@
 
 package org.kie.kogito.rules.units.impl;
 
+import java.util.List;
+
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.kie.api.definition.KiePackage;
 import org.kie.internal.ruleunit.ApplyPmmlModelCommandExecutor;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
+import org.kie.kogito.rules.units.SimpleRuleUnitDescription;
 
 public class RuleUnitComponentFactoryImpl implements RuleUnitComponentFactory {
 
     @Override
     public RuleUnitDescription createRuleUnitDescription(KiePackage pkg, Class<?> ruleUnitClass ) {
         return new ReflectiveRuleUnitDescription((InternalKnowledgePackage) pkg, (Class<? extends RuleUnitData>) ruleUnitClass );
+    }
+
+    @Override
+    public RuleUnitDescription createRuleUnitDescription( String unitName, List<RuleUnitVariable> unitVariables ) {
+        SimpleRuleUnitDescription descr = new SimpleRuleUnitDescription(unitName);
+        unitVariables.stream().forEach( descr::putRuleUnitVariable );
+        return descr;
     }
 
     @Override

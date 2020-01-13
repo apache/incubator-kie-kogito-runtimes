@@ -21,20 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.drools.core.rule.EntryPointId;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 
 public abstract class AbstractRuleUnitDescription implements RuleUnitDescription {
 
     private final Map<String, RuleUnitVariable> varDeclarations = new HashMap<>();
-
-//    @Override
-//    public Optional<EntryPointId> getEntryPointId(String name) {
-//        return Optional.ofNullable(varDeclarations.get(name))
-//                .filter(RuleUnitVariable::isDataSource)
-//                .map(ds -> new EntryPointId(name));
-//    }
 
     @Override
     public Optional<Class<?>> getDatasourceType(String name) {
@@ -69,7 +61,7 @@ public abstract class AbstractRuleUnitDescription implements RuleUnitDescription
         return ruleUnitVariable != null && ruleUnitVariable.isDataSource();
     }
 
-    protected void putRuleUnitVariable(RuleUnitVariable varDeclaration) {
+    public void putRuleUnitVariable(RuleUnitVariable varDeclaration) {
         varDeclarations.put(varDeclaration.getName(), varDeclaration);
     }
 

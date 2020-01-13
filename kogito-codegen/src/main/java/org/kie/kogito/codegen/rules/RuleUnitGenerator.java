@@ -15,6 +15,7 @@
 
 package org.kie.kogito.codegen.rules;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -32,6 +33,7 @@ import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.FileGenerator;
+import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
@@ -66,8 +68,16 @@ public class RuleUnitGenerator implements FileGenerator {
         this.applicationPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
     }
 
-    public RuleUnitInstanceGenerator instance(ClassLoader classLoader) {
-        return new RuleUnitInstanceGenerator(packageName, typeName, classLoader);
+    public List<GeneratedFile> generateFiles(ClassLoader classLoader) {
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
+        generatedFiles.add( generateFile(GeneratedFile.Type.RULE) );
+        generatedFiles.add( new RuleUnitInstanceGenerator(ruleUnit, packageName, typeName, classLoader)
+                .generateFile(GeneratedFile.Type.RULE) );
+        if ( ruleUnit.getRuleUnitClass() == null ) {
+            generatedFiles.add( new RuleUnitDataGenerator(ruleUnit)
+                    .generateFile(GeneratedFile.Type.RULE) );
+        }
+        return generatedFiles;
     }
 
     public List<QueryEndpointGenerator> queries() {
@@ -75,6 +85,10 @@ public class RuleUnitGenerator implements FileGenerator {
                 .filter(query -> !query.hasParameters())
                 .map(query -> new QueryEndpointGenerator(ruleUnit, query, annotator))
                 .collect(toList());
+    }
+
+    public RuleUnitDTOSourceClass createDTOGenerator() {
+        return new RuleUnitDTOSourceClass( ruleUnit );
     }
 
     @Override
@@ -172,6 +186,10 @@ public class RuleUnitGenerator implements FileGenerator {
 
     public Class<?> getRuleUnitClass() {
         return ruleUnit.getRuleUnitClass();
+    }
+
+    public String getRuleUnitClassName() {
+        return ruleUnit.getRuleUnitName();
     }
 
     public void setApplicationPackageName(String packageName) {

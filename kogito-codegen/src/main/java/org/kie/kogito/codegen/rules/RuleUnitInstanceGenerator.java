@@ -31,19 +31,22 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
-import org.kie.kogito.rules.units.EntryPointDataProcessor;
 import org.drools.core.util.ClassUtils;
 import org.kie.api.runtime.KieSession;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.conf.DefaultEntryPoint;
 import org.kie.kogito.conf.EntryPoint;
+import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
+import org.kie.kogito.rules.units.EntryPointDataProcessor;
 
 import static org.kie.internal.ruleunit.RuleUnitUtil.isDataSource;
 
 public class RuleUnitInstanceGenerator implements FileGenerator {
 
+    private final RuleUnitDescription ruleUnit;
     private final String packageName;
     private final String typeName;
     /**
@@ -61,7 +64,8 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
         return packageName + "." + typeName + "RuleUnitInstance";
     }
 
-    public RuleUnitInstanceGenerator(String packageName, String typeName, ClassLoader classLoader) {
+    public RuleUnitInstanceGenerator( RuleUnitDescription ruleUnit, String packageName, String typeName, ClassLoader classLoader) {
+        this.ruleUnit = ruleUnit;
         this.packageName = packageName;
         this.typeName = typeName;
         this.classLoader = classLoader;
@@ -88,18 +92,7 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
     }
 
     private MethodDeclaration bindMethod() {
-        // we are currently relying on reflection, but proper way to do this
-        // would be to use JavaParser on the src class AND fallback
-        // on reflection if the class is not available.
-        Class<?> typeClass;
-        try {
-            typeClass = classLoader.loadClass(canonicalName);
-        } catch (ClassNotFoundException e) {
-            throw new Error(e);
-        }
-
         MethodDeclaration methodDeclaration = new MethodDeclaration();
-
         BlockStmt methodBlock = new BlockStmt();
         methodDeclaration.setName("bind")
                 .addAnnotation( "Override" )
@@ -109,44 +102,69 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
                 .setType(void.class)
                 .setBody(methodBlock);
 
+        // we are currently relying on reflection, but proper way to do this
+        // would be to use JavaParser on the src class AND fallback
+        // on reflection if the class is not available.
+        Class<?> typeClass;
         try {
+            typeClass = classLoader.loadClass(canonicalName);
+        } catch (ClassNotFoundException e) {
+            return createBindingsFromUnitVars( methodDeclaration, methodBlock );
+        }
 
-
+        try {
             for (Method m : typeClass.getMethods()) {
                 String methodName = m.getName();
                 String propertyName = ClassUtils.getter2property(methodName);
                 if (propertyName == null || propertyName.equals( "class" )) {
                     continue;
                 }
+                boolean isDataSource = isDataSource( m.getReturnType() );
+                String entryPointName = isDataSource ? getEntryPointName( typeClass, propertyName ) : null;
 
-                if ( isDataSource( m.getReturnType() ) ) {
-
-                    //  value.$method())
-                    Expression fieldAccessor =
-                            new MethodCallExpr(new NameExpr("value"), methodName);
-
-                    // .subscribe( new EntryPointDataProcessor(runtime.getEntryPoint()) )
-                    MethodCallExpr drainInto = new MethodCallExpr(fieldAccessor, "subscribe")
-                            .addArgument(new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType( EntryPointDataProcessor.class.getName() ), NodeList.nodeList(
-                                    new MethodCallExpr(
-                                    new NameExpr("runtime"), "getEntryPoint",
-                                    NodeList.nodeList(new StringLiteralExpr( getEntryPointName( typeClass, propertyName ) ))))));
-//                            new MethodReferenceExpr().setScope(new NameExpr("runtime")).setIdentifier("insert"));
-
-                    methodBlock.addStatement(drainInto);
-                }
-
-                MethodCallExpr setGlobalCall = new MethodCallExpr( new NameExpr("runtime"), "setGlobal" );
-                setGlobalCall.addArgument( new StringLiteralExpr( propertyName ) );
-                setGlobalCall.addArgument( new MethodCallExpr(new NameExpr("value"), methodName) );
-                methodBlock.addStatement(setGlobalCall);
+                addBinding( methodBlock, methodName, propertyName, isDataSource, entryPointName );
             }
-
         } catch (Exception e) {
-            throw new Error(e);
+            throw new RuntimeException(e);
         }
 
         return methodDeclaration;
+    }
+
+    private MethodDeclaration createBindingsFromUnitVars( MethodDeclaration methodDeclaration, BlockStmt methodBlock ) {
+        for (RuleUnitVariable unitVar : ruleUnit.getUnitVarDeclarations()) {
+            boolean isDataSource = unitVar.isDataSource();
+            String methodName = unitVar.getter();
+            String propertyName = unitVar.getName();
+            String entryPointName = isDataSource ? propertyName : null;
+
+            addBinding( methodBlock, methodName, propertyName, isDataSource, entryPointName );
+        }
+
+        return methodDeclaration;
+    }
+
+    private void addBinding( BlockStmt methodBlock, String methodName, String propertyName, boolean isDataSource, String entryPointName ) {
+        if ( isDataSource ) {
+
+            //  value.$method())
+            Expression fieldAccessor =
+                    new MethodCallExpr(new NameExpr("value"), methodName);
+
+            // .subscribe( new EntryPointDataProcessor(runtime.getEntryPoint()) )
+            MethodCallExpr drainInto = new MethodCallExpr(fieldAccessor, "subscribe")
+                    .addArgument(new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType( EntryPointDataProcessor.class.getName() ), NodeList.nodeList(
+                            new MethodCallExpr(
+                            new NameExpr("runtime"), "getEntryPoint",
+                            NodeList.nodeList(new StringLiteralExpr( entryPointName ))))));
+
+            methodBlock.addStatement(drainInto);
+        }
+
+        MethodCallExpr setGlobalCall = new MethodCallExpr( new NameExpr("runtime"), "setGlobal" );
+        setGlobalCall.addArgument( new StringLiteralExpr( propertyName ) );
+        setGlobalCall.addArgument( new MethodCallExpr(new NameExpr("value"), methodName) );
+        methodBlock.addStatement(setGlobalCall);
     }
 
     private String getEntryPointName( Class<?> typeClass, String propertyName ) {

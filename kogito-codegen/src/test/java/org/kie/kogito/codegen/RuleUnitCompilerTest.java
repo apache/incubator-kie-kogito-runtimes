@@ -174,4 +174,30 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
         assertEquals( 1, adultData21.getResults().getResults().size() );
         assertTrue( adultData21.getResults().getResults().containsAll( asList("Mario") ) );
     }
+
+    @Test
+    public void testGeneratedRuleUnit() throws Exception {
+        Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/GeneratedRuleUnit.drl");
+
+//        AdultUnit adults = new AdultUnit();
+//
+//        adults.getPersons().add(new Person( "Mario", 45 ));
+//        adults.getPersons().add(new Person( "Marilena", 47 ));
+//
+//        Person sofia = new Person( "Sofia", 7 );
+//        DataHandle dhSofia = adults.getPersons().add(sofia);
+//
+//        RuleUnit<AdultUnit> unit = application.ruleUnits().create(AdultUnit.class);
+//        RuleUnitInstance<AdultUnit> instance = unit.createInstance(adults);
+//
+//        assertTrue( instance.getClock() instanceof SessionPseudoClock );
+//
+//        assertEquals(2, instance.fire() );
+//        assertTrue( adults.getResults().getResults().containsAll( asList("Mario", "Marilena") ) );
+//
+//        sofia.setAge( 22 );
+//        adults.getPersons().update( dhSofia, sofia );
+//        assertEquals( 1, instance.fire() );
+//        assertTrue( adults.getResults().getResults().containsAll( asList("Mario", "Marilena", "Sofia") ) );
+    }
 }

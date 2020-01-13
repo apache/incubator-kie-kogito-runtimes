@@ -14,35 +14,23 @@
  * limitations under the License.
  */
 
-package org.drools.core.ruleunit;
+package org.kie.kogito.rules.units;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.drools.core.addon.TypeResolver;
 import org.kie.kogito.rules.DataSource;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.units.AbstractRuleUnitDescription;
-import org.kie.kogito.rules.units.SimpleRuleUnitVariable;
 
-public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
+public class GeneratedRuleUnitDescription extends SimpleRuleUnitDescription {
 
     private final Function<String, Class<?>> typeResolver;
-    private final String name;
-    private final String packageName;
-    private final String simpleName;
 
     public GeneratedRuleUnitDescription(String name, Function<String, Class<?>> typeResolver) {
+        super(name);
         this.typeResolver = typeResolver;
-        this.name = name;
-        this.simpleName = name.substring(name.lastIndexOf('.') + 1);
-        this.packageName = name.substring(0, name.lastIndexOf('.'));
     }
 
     public GeneratedRuleUnitDescription(String name, TypeResolver typeResolver) {
@@ -51,27 +39,6 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
 
     public GeneratedRuleUnitDescription(String name, ClassLoader contextClassLoader) {
         this(name, fqcn -> uncheckedLoadClass(contextClassLoader, fqcn));
-    }
-
-    @Override
-    @Deprecated
-    public Class<?> getRuleUnitClass() {
-        return null;
-    }
-
-    @Override
-    public String getSimpleName() {
-        return simpleName;
-    }
-
-    @Override
-    public String getPackageName() {
-        return packageName;
-    }
-
-    @Override
-    public String getRuleUnitName() {
-        return name;
     }
 
     public void putSimpleVar(String name, String varTypeFQCN) {
@@ -88,10 +55,6 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
 
     public void putSimpleVar(String name, Class<?> varType) {
         putRuleUnitVariable(new SimpleRuleUnitVariable(name, varType));
-    }
-
-    public void putDatasourceVar(String name, Class<?> datasourceType, Class<?> datasourceParameterType) {
-        putRuleUnitVariable(new SimpleRuleUnitVariable(name, datasourceType, datasourceParameterType));
     }
 
     private static Class<?> uncheckedLoadClass(TypeResolver typeResolver, String fqcn) {
