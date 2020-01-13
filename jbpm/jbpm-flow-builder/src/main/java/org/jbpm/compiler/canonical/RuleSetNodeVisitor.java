@@ -190,7 +190,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                         .ifPresent(m -> m.setBody(bind(variableScope, ruleSetNode, unitName)));
                 factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unit"))
                         .ifPresent(m -> m.setBody(unit(unitName)));
-                // unbinding not necessary for generated code
+                
             });
 
         }
@@ -228,16 +228,31 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
 
 
     private BlockStmt bind(VariableScope variableScope, RuleSetNode node, String unitName) {
-        // we need an empty constructor for now
+     // we need an empty constructor for now
         AssignExpr assignExpr = new AssignExpr(
                 new VariableDeclarationExpr(new ClassOrInterfaceType(null, unitName), "model"),
                 new ObjectCreationExpr().setType(unitName),
                 AssignExpr.Operator.ASSIGN);
-
+               
         BlockStmt actionBody = new BlockStmt();
         actionBody.addStatement(assignExpr);
+        
+        Set<Entry<String, String>> entries = node.getOutMappings().entrySet();
+        if (entries.isEmpty()) {
+            // no explicit i/o mappings, use process variables instead
+            for (Variable variable : variableScope.getVariables()) {
+                
+                injectDataFromModel(actionBody, variable.getName());                
+            }
+        } else {
+            for (Map.Entry<String, String> e : node.getOutMappings().entrySet()) {
+                
+                injectDataFromModel(actionBody, e.getValue());                
+            }
+        }
+        
 
-        Set<Entry<String, String>> entries = node.getInMappings().entrySet();
+        entries = node.getInMappings().entrySet();
         if (entries.isEmpty()) {
             // no explicit i/o mappings, use process variables instead
             for (Variable variable : variableScope.getVariables()) {
@@ -252,8 +267,38 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             }
         }
 
+       
         actionBody.addStatement(new ReturnStmt(new NameExpr("model")));
+        
         return actionBody;
+    }
+    
+    private BlockStmt unbind(VariableScope variableScope, RuleSetNode node, String unitName) {
+        BlockStmt stmts = new BlockStmt();
+        Set<Entry<String, String>> entries = node.getOutMappings().entrySet();
+        if (entries.isEmpty()) {
+            // no explicit i/o mappings, use process variables instead
+            for (Variable variable : variableScope.getVariables()) {
+                
+                injectDataFromModel(stmts, variable.getName());                
+            }
+        } else {
+            for (Map.Entry<String, String> e : node.getOutMappings().entrySet()) {
+                
+                injectDataFromModel(stmts, e.getValue());                
+            }
+        }
+        return stmts;
+    }
+    
+    private void injectDataFromModel(BlockStmt stmts, String name) {
+        stmts.addStatement(new ExpressionStmt(
+                                              new MethodCallExpr(new MethodCallExpr(
+                                                                                    new NameExpr("model"),
+                                                                                    "get" + StringUtils.capitalize(name)), "subscribe")
+                                                      .addArgument(new MethodCallExpr(
+                                                              new NameExpr(DataObserver.class.getCanonicalName()), "of")
+                                                                           .addArgument(parseExpression("o -> kcontext.setVariable(\"" + name + "\", o)")))));              
     }
 
     private void injectDataFromVariable(BlockStmt actionBody, Variable v) {
