@@ -17,8 +17,8 @@
 package org.kie.kogito.rules.units.impl;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.kie.api.definition.KiePackage;
@@ -28,15 +28,14 @@ import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 import org.kie.kogito.rules.units.SimpleRuleUnitDescription;
 
 public class RuleUnitComponentFactoryImpl implements RuleUnitComponentFactory {
 
-    private final Map<String, GeneratedRuleUnitDescription> generatedRuleUnitDescriptions = new HashMap<>();
+    private final Map<String, RuleUnitDescription> generatedRuleUnitDescriptions = new HashMap<>();
 
-    public void registerRuleUnitDescription(GeneratedRuleUnitDescription ruleUnitDescription) {
+    public void registerRuleUnitDescription(RuleUnitDescription ruleUnitDescription) {
         generatedRuleUnitDescriptions.put(ruleUnitDescription.getCanonicalName(), ruleUnitDescription);
     }
 

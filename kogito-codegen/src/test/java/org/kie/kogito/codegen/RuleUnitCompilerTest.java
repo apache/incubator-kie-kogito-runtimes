@@ -16,18 +16,21 @@
 
 package org.kie.kogito.codegen;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.time.SessionPseudoClock;
 import org.kie.kogito.Application;
 import org.kie.kogito.codegen.data.Person;
+import org.kie.kogito.codegen.data.Results;
 import org.kie.kogito.codegen.unit.AdultUnit;
 import org.kie.kogito.codegen.unit.PersonsUnit;
 import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnit;
+import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
 
 import static java.util.Arrays.asList;
@@ -179,25 +182,36 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
     public void testGeneratedRuleUnit() throws Exception {
         Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/GeneratedRuleUnit.drl");
 
-//        AdultUnit adults = new AdultUnit();
-//
-//        adults.getPersons().add(new Person( "Mario", 45 ));
-//        adults.getPersons().add(new Person( "Marilena", 47 ));
-//
-//        Person sofia = new Person( "Sofia", 7 );
-//        DataHandle dhSofia = adults.getPersons().add(sofia);
-//
-//        RuleUnit<AdultUnit> unit = application.ruleUnits().create(AdultUnit.class);
-//        RuleUnitInstance<AdultUnit> instance = unit.createInstance(adults);
-//
-//        assertTrue( instance.getClock() instanceof SessionPseudoClock );
-//
-//        assertEquals(2, instance.fire() );
-//        assertTrue( adults.getResults().getResults().containsAll( asList("Mario", "Marilena") ) );
-//
-//        sofia.setAge( 22 );
-//        adults.getPersons().update( dhSofia, sofia );
-//        assertEquals( 1, instance.fire() );
-//        assertTrue( adults.getResults().getResults().containsAll( asList("Mario", "Marilena", "Sofia") ) );
+        Class<RuleUnitData> unitDataClass = (Class<RuleUnitData>) Class.forName( "org.kie.kogito.codegen.unit.GeneratedUnit", true, application.getClass().getClassLoader() );
+        RuleUnitData unitData = unitDataClass.getConstructor().newInstance();
+
+        Method setAdultAgeMethod = unitDataClass.getMethod( "setAdultAge", Integer.class );
+        setAdultAgeMethod.invoke( unitData, 18 );
+
+        Method setResults = unitDataClass.getMethod( "setResults", Results.class );
+        setResults.invoke( unitData, new Results() );
+
+        Method getPersonsMethod = unitDataClass.getMethod( "getPersons" );
+        DataStore<Person> persons = (DataStore<Person>) getPersonsMethod.invoke( unitData );
+
+        persons.add(new Person( "Mario", 45 ));
+        persons.add(new Person( "Marilena", 47 ));
+
+        Person sofia = new Person( "Sofia", 7 );
+        DataHandle dhSofia = persons.add(sofia);
+
+        RuleUnit<RuleUnitData> unit = application.ruleUnits().create(unitDataClass);
+        RuleUnitInstance<RuleUnitData> instance = unit.createInstance(unitData);
+
+        Method getResultsMethod = unitDataClass.getMethod( "getResults" );
+        Results results = (Results) getResultsMethod.invoke( unitData );
+
+        assertEquals(2, instance.fire() );
+        assertTrue( results.getResults().containsAll( asList("Mario", "Marilena") ) );
+
+        sofia.setAge( 22 );
+        persons.update( dhSofia, sofia );
+        assertEquals( 1, instance.fire() );
+        assertTrue( results.getResults().containsAll( asList("Mario", "Marilena", "Sofia") ) );
     }
 }

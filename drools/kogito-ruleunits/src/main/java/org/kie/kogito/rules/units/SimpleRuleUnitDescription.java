@@ -52,9 +52,4 @@ public class SimpleRuleUnitDescription extends AbstractRuleUnitDescription {
     public String getRuleUnitName() {
         return name;
     }
-
-    public void putDatasourceVar(String name, Class<?> datasourceType, Class<?> datasourceParameterType) {
-        putRuleUnitVariable(new SimpleRuleUnitVariable(name, datasourceType, datasourceParameterType));
-    }
-
 }

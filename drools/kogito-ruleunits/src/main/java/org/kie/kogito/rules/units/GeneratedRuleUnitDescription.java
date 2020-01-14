@@ -53,6 +53,10 @@ public class GeneratedRuleUnitDescription extends SimpleRuleUnitDescription {
                 typeResolver.apply(datasourceParameterTypeFQCN));
     }
 
+    public void putDatasourceVar(String name, Class<?> datasourceType, Class<?> datasourceParameterType) {
+        putRuleUnitVariable(new SimpleRuleUnitVariable(name, datasourceType, datasourceParameterType));
+    }
+
     public void putSimpleVar(String name, Class<?> varType) {
         putRuleUnitVariable(new SimpleRuleUnitVariable(name, varType));
     }
