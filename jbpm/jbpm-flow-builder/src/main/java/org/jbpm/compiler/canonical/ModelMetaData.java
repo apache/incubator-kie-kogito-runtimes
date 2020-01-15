@@ -44,7 +44,9 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.util.StringUtils;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -120,6 +122,16 @@ public class ModelMetaData {
                 new CastExpr(
                         new ClassOrInterfaceType(null, type),
                         new EnclosedExpr(value)));
+    }
+
+    public Statement getterVar(String assignee, String modelVar, String field) {
+        String getter = "get" + StringUtils.capitalize(field);
+        MethodCallExpr getterCall = callGetter(modelVar, field);
+        String type = variableScope.getType(field);
+        return new ExpressionStmt(new AssignExpr(
+                new VariableDeclarationExpr(new ClassOrInterfaceType(null, type), assignee),
+                new ObjectCreationExpr().setType(type),
+                AssignExpr.Operator.ASSIGN));
     }
 
     public MethodCallExpr callGetter(String targetVar, String field) {        

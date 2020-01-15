@@ -55,11 +55,14 @@ import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.api.definition.process.Node;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
+import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.DataObserver;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;
+import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
+import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,51 +158,35 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
 
     private void handleRuleUnit(Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata, RuleSetNode ruleSetNode, String nodeName, RuleSetNode.RuleType ruleType) {
         InputStream resourceAsStream = this.getClass().getResourceAsStream("/class-templates/RuleUnitFactoryTemplate.java");
-        Optional<Expression> ruleUnitFactory = parse(resourceAsStream).findFirst(Expression.class);
 
         String unitName = ruleType.getName();
-        Class<?> unitClass;
+        RuleUnitDescription description;
 
         try {
-            unitClass = loadUnitClass(nodeName, unitName, metadata.getPackageName());
-
-            ruleUnitFactory.ifPresent(factory -> {
-                factory.findAll(ClassOrInterfaceType.class)
-                        .stream()
-                        .filter(t -> t.getNameAsString().equals("$Type$"))
-                        .forEach(t -> t.setName(unitName));
-
-                factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("bind"))
-                        .ifPresent(m -> m.setBody(bind(variableScope, ruleSetNode, unitClass)));
-                factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unit"))
-                        .ifPresent(m -> m.setBody(unit(unitName)));
-                factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unbind"))
-                        .ifPresent(m -> m.setBody(unbind(variableScope, ruleSetNode, unitClass)));
-            });
+            Class<?> unitClass = loadUnitClass(nodeName, unitName, metadata.getPackageName());
+            description = new ReflectiveRuleUnitDescription(null, (Class<? extends RuleUnitData>) unitClass);
         } catch (ClassNotFoundException e) {
             logger.warn("Rule task \"{}\": cannot load class {}. " +
                                 "The unit data object will be generated.", nodeName, unitName);
 
-            ruleUnitFactory.ifPresent(factory -> {
-                factory.findAll(ClassOrInterfaceType.class)
-                        .stream()
-                        .filter(t -> t.getNameAsString().equals("$Type$"))
-                        .forEach(t -> t.setName(unitName));
+            GeneratedRuleUnitDescription d = new GeneratedRuleUnitDescription(unitName, contextClassLoader);
+            for (Variable variable : variableScope.getVariables()) {
+                if (isCollectionType(variable))
+                d.putDatasourceVar(variable.getName(), DataStore.class.getCanonicalName(), variable.getType().getStringType());
+                else d.putDatasourceVar(variable.getName(), DataStore.class.getCanonicalName(), variable.getType().getStringType());
+            }
 
-                factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("bind"))
-                        .ifPresent(m -> m.setBody(bind(variableScope, ruleSetNode, unitName)));
-                factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unit"))
-                        .ifPresent(m -> m.setBody(unit(unitName)));
-                
-            });
-
+            description = d;
         }
 
-        if (ruleUnitFactory.isPresent()) {
+        RuleUnitHandler handler = new RuleUnitHandler(contextClassLoader, description, variableScope, ruleSetNode);
+        Optional<Expression> ruleUnitFactory = handler.invoke();
+
+//        if (ruleUnitFactory.isPresent()) {
             addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleUnit", new StringLiteralExpr(ruleType.getName()), ruleUnitFactory.get());
-        } else {
-            addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleUnit", new StringLiteralExpr(ruleType.getName()));
-        }
+//        } else {
+//            addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleUnit", new StringLiteralExpr(ruleType.getName()));
+//        }
     }
 
     private void handleRuleFlowGroup(Node node, BlockStmt body, BlockStmt actionBody, LambdaExpr lambda, RuleSetNode.RuleType ruleType) {
@@ -297,7 +284,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                                                                                     new NameExpr("model"),
                                                                                     "get" + StringUtils.capitalize(name)), "subscribe")
                                                       .addArgument(new MethodCallExpr(
-                                                              new NameExpr(DataObserver.class.getCanonicalName()), "of")
+                                                              new NameExpr(DataObserver.class.getCanonicalName()), "ofUpdatable")
                                                                            .addArgument(parseExpression("o -> kcontext.setVariable(\"" + name + "\", o)")))));              
     }
 
