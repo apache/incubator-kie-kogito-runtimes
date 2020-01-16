@@ -11,12 +11,17 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForEachStmt;
-import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.util.StringUtils;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
+import org.kie.kogito.rules.DataObserver;
+import org.kie.kogito.rules.DataStore;
+import org.kie.kogito.rules.DataStream;
+
+import static com.github.javaparser.StaticJavaParser.parseExpression;
+import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class RuleUnitDescriptionCodeHelper {
 
@@ -84,6 +89,7 @@ public class RuleUnitDescriptionCodeHelper {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(targetUnitVar);
         if (v.isDataSource()) {
+            String appendMethod = appendMethodOf(v.getType());
             blockStmt.addStatement(assignVar(v));
             blockStmt.addStatement(
                     iterate(new VariableDeclarator()
@@ -92,7 +98,7 @@ public class RuleUnitDescriptionCodeHelper {
                             .setBody(new ExpressionStmt(
                                     new MethodCallExpr()
                                             .setScope(new NameExpr(localVarName(v)))
-                                            .setName("add")
+                                            .setName(appendMethod)
                                             .addArgument(new NameExpr("it")))));
         } else {
             blockStmt.addStatement(set(v, sourceExpression));
@@ -110,15 +116,71 @@ public class RuleUnitDescriptionCodeHelper {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(targetUnitVar);
         if (v.isDataSource()) {
+            String appendMethod = appendMethodOf(v.getType());
             blockStmt.addStatement(assignVar(v));
             blockStmt.addStatement(
                     new MethodCallExpr()
                             .setScope(new NameExpr(localVarName(v)))
-                            .setName("add")
+                            .setName(appendMethod)
                             .addArgument(sourceExpression));
         } else {
             blockStmt.addStatement(set(v, sourceExpression));
         }
+        return blockStmt;
+    }
+
+    private String appendMethodOf(Class<?> type) {
+        String appendMethod;
+        if (type.isAssignableFrom(DataStream.class)) {
+            appendMethod = "append";
+        } else if (type.isAssignableFrom(DataStore.class)) {
+            appendMethod = "add";
+        } else {
+            throw new IllegalArgumentException("Unknown data source type " + type.getCanonicalName());
+        }
+        return appendMethod;
+    }
+
+    public Statement extractIntoCollection(String sourceUnitVar, String targetProcessVar) {
+        BlockStmt blockStmt = new BlockStmt();
+        RuleUnitVariable v = ruleUnitDescription.getVar(sourceUnitVar);
+        if (v.isDataSource()) {
+            String localVarName = localVarName(v);
+            blockStmt.addStatement(assignVar(v))
+                    .addStatement(parseStatement("java.util.Objects.requireNonNull(" + localVarName + ", \"Null collection variable used as an output variable: "
+                                                         + sourceUnitVar + ". Initialize this variable to get the contents or the data source, " +
+                                                         "or use a non-collection data type to extract one value.\");"))
+
+                    .addStatement(new ExpressionStmt(
+                            new MethodCallExpr(new NameExpr(localVarName), "subscribe")
+                                    .addArgument(new MethodCallExpr(
+                                            new NameExpr(DataObserver.class.getCanonicalName()), "of")
+                                                         .addArgument(parseExpression(targetProcessVar + "::add")))));
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        return blockStmt;
+    }
+
+    public Statement extractIntoScalar(String sourceUnitVar, String targetProcessVar) {
+        BlockStmt blockStmt = new BlockStmt();
+        RuleUnitVariable v = ruleUnitDescription.getVar(sourceUnitVar);
+        if (v.isDataSource()) {
+            String localVarName = localVarName(v);
+            blockStmt.addStatement(assignVar(v))
+                    .addStatement(parseStatement("java.util.Objects.requireNonNull(" + localVarName + ", \"Null collection variable used as an output variable: "
+                                                         + sourceUnitVar + ". Initialize this variable to get the contents or the data source, " +
+                                                         "or use a non-collection data type to extract one value.\");"))
+
+                    .addStatement(new ExpressionStmt(
+                            new MethodCallExpr(new NameExpr(localVarName), "subscribe")
+                                    .addArgument(new MethodCallExpr(
+                                            new NameExpr(DataObserver.class.getCanonicalName()), "ofUpdatable")
+                                                         .addArgument(parseExpression("o -> kcontext.setVariable(\"" + targetProcessVar + "\", o)")))));
+        } else {
+            return parseStatement("kcontext.setVariable(\"" + targetProcessVar + "\", \"" + sourceUnitVar + "\");");
+        }
+
         return blockStmt;
     }
 }

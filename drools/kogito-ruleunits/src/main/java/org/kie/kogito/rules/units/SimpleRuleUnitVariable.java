@@ -40,7 +40,7 @@ public final class SimpleRuleUnitVariable implements RuleUnitVariable {
     }
 
     public String setter() {
-        return getter;
+        return setter;
     }
 
     public Class<?> getType() {

@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -179,7 +178,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             description = d;
         }
 
-        RuleUnitHandler handler = new RuleUnitHandler(contextClassLoader, description, variableScope, ruleSetNode);
+        RuleUnitHandler handler = new RuleUnitHandler(contextClassLoader, description, new ProcessContextMetaModel(variableScope, contextClassLoader), ruleSetNode);
         Optional<Expression> ruleUnitFactory = handler.invoke();
 
 //        if (ruleUnitFactory.isPresent()) {

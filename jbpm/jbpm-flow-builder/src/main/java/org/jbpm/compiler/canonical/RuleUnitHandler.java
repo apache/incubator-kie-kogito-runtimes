@@ -22,12 +22,10 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.drools.core.rule.Collect;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.node.RuleSetNode;
-import org.kie.api.definition.process.Node;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.DataObserver;
 import org.kie.kogito.rules.DataStream;
@@ -38,7 +36,6 @@ import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static com.github.javaparser.StaticJavaParser.parseExpression;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
-import static org.jbpm.compiler.canonical.AbstractVisitor.makeAssignment;
 
 public class RuleUnitHandler {
 
@@ -46,10 +43,10 @@ public class RuleUnitHandler {
     private ClassLoader contextClassLoader;
 
     RuleUnitDescription ruleUnit;
-    VariableScope variableScope;
+    ProcessContextMetaModel variableScope;
     RuleSetNode ruleSetNode;
 
-    public RuleUnitHandler(ClassLoader contextClassLoader, RuleUnitDescription ruleUnit, VariableScope variableScope, RuleSetNode ruleSetNode) {
+    public RuleUnitHandler(ClassLoader contextClassLoader, RuleUnitDescription ruleUnit, ProcessContextMetaModel variableScope, RuleSetNode ruleSetNode) {
         this.contextClassLoader = contextClassLoader;
         this.ruleUnit = ruleUnit;
         this.variableScope = variableScope;
@@ -89,36 +86,28 @@ public class RuleUnitHandler {
     /*
      * bind data to the rule unit POJO
      */
-    private BlockStmt bind(VariableScope variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
+    private BlockStmt bind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
         RuleUnitDescriptionCodeHelper unit =
                 new RuleUnitDescriptionCodeHelper(unitDescription, "unit");
 
         BlockStmt actionBody = new BlockStmt();
+
         // create the RuleUnitData instance
         actionBody.addStatement(unit.newInstance());
 
-        Map<String, String> mappings = getInputMappings(variableScope, node);
+        for (Map.Entry<String, String> e : getInputMappings(variableScope, node).entrySet()) {
+            String srcProcessVar = e.getValue();
+            String targetUnitVar = e.getKey();
 
-        for (Map.Entry<String, String> e : mappings.entrySet()) {
-            Variable v = variableScope.findVariable(/*extractVariableFromExpression*/(e.getValue()));
-            if (v != null) {
-                String targetUnitVar = e.getKey();
-                String srcProcessVar = e.getValue();
-                Expression expression =
-                        new MethodCallExpr().setScope(new NameExpr("kcontext"))
-                                .setName("getVariable")
-                                .addArgument(new StringLiteralExpr(srcProcessVar));
-                if (isCollectionType(v)) {
-                    Statement stmt = unit.injectCollection(targetUnitVar, "Object",
-                                                             new CastExpr()
-                                                                     .setType(Collection.class.getCanonicalName())
-                                                                     .setExpression(expression));
+            variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
+                if (variableScope.isCollectionType(srcProcessVar)) {
+                    Statement stmt = unit.injectCollection(targetUnitVar, "Object", expression);
                     actionBody.addStatement(stmt);
                 } else {
                     Statement stmt = unit.injectScalar(targetUnitVar, expression);
                     actionBody.addStatement(stmt);
                 }
-            }
+            });
         }
 
         actionBody.addStatement(new ReturnStmt(new NameExpr(unit.instanceVarName())));
@@ -126,29 +115,18 @@ public class RuleUnitHandler {
         return actionBody;
     }
 
-    private Map<String, String> getInputMappings(VariableScope variableScope, RuleSetNode node) {
+    private Map<String, String> getInputMappings(ProcessContextMetaModel variableScope, RuleSetNode node) {
         Map<String, String> entries = node.getInMappings();
         if (entries.isEmpty()) {
             entries = new HashMap<>();
-            for (Variable variable : variableScope.getVariables()) {
-                entries.put(variable.getName(), variable.getName());
+            for (String varName : variableScope.getVariableNames()) {
+                entries.put(varName, varName);
             }
         }
         return entries;
     }
 
-    private Map<String, String> getOutputMappings(VariableScope variableScope, RuleSetNode node) {
-        Map<String, String> entries = node.getOutMappings();
-        if (entries.isEmpty()) {
-            entries = new HashMap<>();
-            for (Variable variable : variableScope.getVariables()) {
-                entries.put(variable.getName(), variable.getName());
-            }
-        }
-        return entries;
-    }
-
-    private BlockStmt unbind(VariableScope variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
+    private BlockStmt unbind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
         RuleUnitDescriptionCodeHelper unit =
                 new RuleUnitDescriptionCodeHelper(unitDescription, "unit");
 
@@ -156,15 +134,46 @@ public class RuleUnitHandler {
 
         Map<String, String> mappings = getOutputMappings(variableScope, node);
         for (Map.Entry<String, String> e : mappings.entrySet()) {
+            String targetUnitVar = e.getKey();
+            String srcProcessVar = e.getValue();
+            if (variableScope.isCollectionType(srcProcessVar)) {
+                variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
+                    if (unitDescription.hasDataSource(targetUnitVar)) {
+                        actionBody.addStatement(assignExpr);
+                        actionBody.addStatement(unit.extractIntoCollection(targetUnitVar, srcProcessVar));
+                    } else {
+                        actionBody.addStatement(assignExpr);
+                        actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
+                    }
+                });
+            } else {
+                if (unitDescription.hasDataSource(targetUnitVar)) {
+                    variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
+                        actionBody.addStatement(assignExpr);
+                        actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
+                    });
+                } else {
+                    variableScope.setVariable(srcProcessVar).ifPresent(setterCall -> {
+                        actionBody.addStatement(
+                                setterCall.addArgument(unit.get(targetUnitVar)));
+                    });
+                }
+            }
 
-            injectDataFromModel(actionBody, e.getKey(), e.getValue());
-        }
-
-        for (Map.Entry<String, String> e : mappings.entrySet()) {
-            actionBody.addStatement(makeAssignmentFromModel(variableScope.findVariable(e.getValue()), e.getKey(), unitDescription));
         }
 
         return actionBody;
+    }
+
+    private Map<String, String> getOutputMappings(ProcessContextMetaModel variableScope, RuleSetNode node) {
+        Map<String, String> entries = node.getOutMappings();
+        if (entries.isEmpty()) {
+            entries = new HashMap<>();
+            for (String varName : variableScope.getVariableNames()) {
+                entries.put(varName, varName);
+            }
+        }
+        return entries;
     }
 
     private void injectDataFromModel(BlockStmt stmts, String target, String source) {
