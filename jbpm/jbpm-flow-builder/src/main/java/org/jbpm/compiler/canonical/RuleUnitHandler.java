@@ -99,15 +99,35 @@ public class RuleUnitHandler {
             String srcProcessVar = e.getValue();
             String targetUnitVar = e.getKey();
 
-            variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
-                if (variableScope.isCollectionType(srcProcessVar)) {
+            boolean procVarIsCollection = variableScope.isCollectionType(srcProcessVar);
+            boolean unitVarIsDataSource = unitDescription.hasDataSource(targetUnitVar);
+            if (procVarIsCollection && unitVarIsDataSource) {
+                variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
                     Statement stmt = unit.injectCollection(targetUnitVar, "Object", expression);
                     actionBody.addStatement(stmt);
-                } else {
+                });
+            } else if (procVarIsCollection /* && !unitVarIsDataSource */) {
+                variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
+                    Statement stmt = unit.injectCollection(targetUnitVar, "Object", expression);
+                    actionBody.addStatement(stmt);
+                });
+            } else if (/* !procVarIsCollection && */ unitVarIsDataSource) {
+                // set data source to variable
+                variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
                     Statement stmt = unit.injectScalar(targetUnitVar, expression);
                     actionBody.addStatement(stmt);
-                }
-            });
+                });
+                // subscribe to updates to that data source
+                variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
+                    actionBody.addStatement(assignExpr);
+                    actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
+                });
+            } else {
+                variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
+                    Statement stmt = unit.injectScalar(targetUnitVar, expression);
+                    actionBody.addStatement(stmt);
+                });
+            }
         }
 
         actionBody.addStatement(new ReturnStmt(new NameExpr(unit.instanceVarName())));
@@ -136,30 +156,29 @@ public class RuleUnitHandler {
         for (Map.Entry<String, String> e : mappings.entrySet()) {
             String targetUnitVar = e.getKey();
             String srcProcessVar = e.getValue();
-            if (variableScope.isCollectionType(srcProcessVar)) {
+            boolean procVarIsCollection = variableScope.isCollectionType(srcProcessVar);
+            boolean unitVarIsDataSource = unitDescription.hasDataSource(targetUnitVar);
+            if (procVarIsCollection && unitVarIsDataSource) {
                 variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
-                    if (unitDescription.hasDataSource(targetUnitVar)) {
-                        actionBody.addStatement(assignExpr);
-                        actionBody.addStatement(unit.extractIntoCollection(targetUnitVar, srcProcessVar));
-                    } else {
-                        actionBody.addStatement(assignExpr);
-                        actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
-                    }
+                    actionBody.addStatement(assignExpr);
+                    actionBody.addStatement(unit.extractIntoCollection(targetUnitVar, srcProcessVar));
                 });
-            } else {
-                if (unitDescription.hasDataSource(targetUnitVar)) {
-                    variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
-                        actionBody.addStatement(assignExpr);
-                        actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
-                    });
-                } else {
-                    variableScope.setVariable(srcProcessVar).ifPresent(setterCall -> {
-                        actionBody.addStatement(
-                                setterCall.addArgument(unit.get(targetUnitVar)));
-                    });
-                }
+            } else if (procVarIsCollection /* && !unitVarIsDataSource */) {
+                variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
+                    actionBody.addStatement(assignExpr);
+                    actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
+                });
+            } else if (/* !procVarIsCollection && */ unitVarIsDataSource) {
+                variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
+                    actionBody.addStatement(assignExpr);
+                    actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
+                });
+            } else /* !procVarIsCollection && !unitVarIsDataSource */ {
+                variableScope.setVariable(srcProcessVar).ifPresent(setterCall -> {
+                    actionBody.addStatement(
+                            setterCall.addArgument(unit.get(targetUnitVar)));
+                });
             }
-
         }
 
         return actionBody;

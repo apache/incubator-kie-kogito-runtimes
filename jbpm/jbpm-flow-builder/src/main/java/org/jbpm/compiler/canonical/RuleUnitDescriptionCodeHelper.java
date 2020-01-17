@@ -168,10 +168,6 @@ public class RuleUnitDescriptionCodeHelper {
         if (v.isDataSource()) {
             String localVarName = localVarName(v);
             blockStmt.addStatement(assignVar(v))
-                    .addStatement(parseStatement("java.util.Objects.requireNonNull(" + localVarName + ", \"Null collection variable used as an output variable: "
-                                                         + sourceUnitVar + ". Initialize this variable to get the contents or the data source, " +
-                                                         "or use a non-collection data type to extract one value.\");"))
-
                     .addStatement(new ExpressionStmt(
                             new MethodCallExpr(new NameExpr(localVarName), "subscribe")
                                     .addArgument(new MethodCallExpr(
