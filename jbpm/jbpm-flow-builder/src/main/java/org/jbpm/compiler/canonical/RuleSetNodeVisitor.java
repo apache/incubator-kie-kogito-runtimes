@@ -186,15 +186,4 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             throw ex;
         }
     }
-
-    private boolean isCollectionType(Variable v) {
-        String stringType = v.getType().getStringType();
-        Class<?> type;
-        try {
-            type = contextClassLoader.loadClass(stringType);
-            return Collection.class.isAssignableFrom(type);
-        } catch (ClassNotFoundException ex) {
-            return false;
-        }
-    }
 }

@@ -124,17 +124,7 @@ public class ModelMetaData {
                         new EnclosedExpr(value)));
     }
 
-    public Statement getterVar(String assignee, String modelVar, String field) {
-        String getter = "get" + StringUtils.capitalize(field);
-        MethodCallExpr getterCall = callGetter(modelVar, field);
-        String type = variableScope.getType(field);
-        return new ExpressionStmt(new AssignExpr(
-                new VariableDeclarationExpr(new ClassOrInterfaceType(null, type), assignee),
-                new ObjectCreationExpr().setType(type),
-                AssignExpr.Operator.ASSIGN));
-    }
-
-    public MethodCallExpr callGetter(String targetVar, String field) {        
+    public MethodCallExpr callGetter(String targetVar, String field) {
         String getter = "get" + StringUtils.capitalize(field); // todo cache FieldDeclarations in compilationUnit()
         return new MethodCallExpr(new NameExpr(targetVar), getter);
     }
