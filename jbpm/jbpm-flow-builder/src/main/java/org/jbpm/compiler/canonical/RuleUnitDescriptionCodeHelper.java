@@ -13,7 +13,6 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.drools.core.util.StringUtils;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataObserver;
@@ -21,7 +20,6 @@ import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;
 
 import static com.github.javaparser.StaticJavaParser.parseExpression;
-import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class RuleUnitDescriptionCodeHelper {
 
@@ -89,15 +87,15 @@ public class RuleUnitDescriptionCodeHelper {
     }
 
     public Statement injectCollection(
-            String targetUnitVar, String collectionTypeVar, Expression sourceExpression) {
+            String targetUnitVar, String sourceProcVar) {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(targetUnitVar);
         String appendMethod = appendMethodOf(v.getType());
         blockStmt.addStatement(assignVar(v));
         blockStmt.addStatement(
                 iterate(new VariableDeclarator()
-                                .setType(collectionTypeVar).setName("it"),
-                        sourceExpression)
+                                .setType("Object").setName("it"),
+                        new NameExpr(sourceProcVar))
                         .setBody(new ExpressionStmt(
                                 new MethodCallExpr()
                                         .setScope(new NameExpr(localVarName(v)))
@@ -140,30 +138,26 @@ public class RuleUnitDescriptionCodeHelper {
     public Statement extractIntoCollection(String sourceUnitVar, String targetProcessVar) {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(sourceUnitVar);
-            String localVarName = localVarName(v);
-            blockStmt.addStatement(assignVar(v))
-                    .addStatement(parseStatement("java.util.Objects.requireNonNull(" + localVarName + ", \"Null collection variable used as an output variable: "
-                                                         + sourceUnitVar + ". Initialize this variable to get the contents or the data source, " +
-                                                         "or use a non-collection data type to extract one value.\");"))
-
-                    .addStatement(new ExpressionStmt(
-                            new MethodCallExpr(new NameExpr(localVarName), "subscribe")
-                                    .addArgument(new MethodCallExpr(
-                                            new NameExpr(DataObserver.class.getCanonicalName()), "of")
-                                                         .addArgument(parseExpression(targetProcessVar + "::add")))));
+        String localVarName = localVarName(v);
+        blockStmt.addStatement(assignVar(v))
+                .addStatement(new ExpressionStmt(
+                        new MethodCallExpr(new NameExpr(localVarName), "subscribe")
+                                .addArgument(new MethodCallExpr(
+                                        new NameExpr(DataObserver.class.getCanonicalName()), "of")
+                                                     .addArgument(parseExpression(targetProcessVar + "::add")))));
         return blockStmt;
     }
 
     public Statement extractIntoScalar(String sourceUnitVar, String targetProcessVar) {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(sourceUnitVar);
-            String localVarName = localVarName(v);
-            blockStmt.addStatement(assignVar(v))
-                    .addStatement(new ExpressionStmt(
-                            new MethodCallExpr(new NameExpr(localVarName), "subscribe")
-                                    .addArgument(new MethodCallExpr(
-                                            new NameExpr(DataObserver.class.getCanonicalName()), "ofUpdatable")
-                                                         .addArgument(parseExpression("o -> kcontext.setVariable(\"" + targetProcessVar + "\", o)")))));
+        String localVarName = localVarName(v);
+        blockStmt.addStatement(assignVar(v))
+                .addStatement(new ExpressionStmt(
+                        new MethodCallExpr(new NameExpr(localVarName), "subscribe")
+                                .addArgument(new MethodCallExpr(
+                                        new NameExpr(DataObserver.class.getCanonicalName()), "ofUpdatable")
+                                                     .addArgument(parseExpression("o -> kcontext.setVariable(\"" + targetProcessVar + "\", o)")))));
 
         return blockStmt;
     }

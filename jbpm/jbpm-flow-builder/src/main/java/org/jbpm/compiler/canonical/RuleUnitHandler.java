@@ -109,9 +109,12 @@ public class RuleUnitHandler {
             // we assign procVars to unitVars, and subscribe unitVars for changes
             // subscription forward changes directly to the procVars
             if (procVarIsCollection && unitVarIsDataSource) {
-                Expression expression = variableScope.getVariable(procVar);
+                actionBody.addStatement(variableScope.assignVariable(procVar));
                 actionBody.addStatement(
-                        unit.injectCollection(unitVar, "Object", expression));
+                        requireNonNull(procVar,
+                                       "The input collection variable of a data source cannot be null:" + procVar));
+                actionBody.addStatement(
+                        unit.injectCollection(unitVar, procVar));
             } else if (procVarIsCollection /* && !unitVarIsDataSource */) {
                 Expression expression = variableScope.getVariable(procVar);
                 actionBody.addStatement(unit.set(unitVar, expression));
@@ -155,25 +158,29 @@ public class RuleUnitHandler {
 
         Map<String, String> mappings = getOutputMappings(variableScope, node);
         for (Map.Entry<String, String> e : mappings.entrySet()) {
-            String targetUnitVar = e.getKey();
-            String srcProcessVar = e.getValue();
-            boolean procVarIsCollection = variableScope.isCollectionType(srcProcessVar);
-            boolean unitVarIsDataSource = unitDescription.hasDataSource(targetUnitVar);
+            String unitVar = e.getKey();
+            String procVar = e.getValue();
+            boolean procVarIsCollection = variableScope.isCollectionType(procVar);
+            boolean unitVarIsDataSource = unitDescription.hasDataSource(unitVar);
             if (procVarIsCollection && unitVarIsDataSource) {
-                actionBody.addStatement(variableScope.assignVariable(srcProcessVar));
-                actionBody.addStatement(unit.extractIntoCollection(targetUnitVar, srcProcessVar));
-            } else if (procVarIsCollection /* && !unitVarIsDataSource */) {
-                actionBody.addStatement(variableScope.assignVariable(srcProcessVar));
-                actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
-            } else if (/* !procVarIsCollection && */ unitVarIsDataSource) {
-                actionBody.addStatement(variableScope.assignVariable(srcProcessVar));
-                actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
-
-            } else /* !procVarIsCollection && !unitVarIsDataSource */ {
-                MethodCallExpr setterCall = variableScope.setVariable(srcProcessVar);
+                actionBody.addStatement(variableScope.assignVariable(procVar));
                 actionBody.addStatement(
-                        setterCall.addArgument(unit.get(targetUnitVar)));
-
+                        requireNonNull(procVar,
+                                       String.format(
+                                               "Null collection variable used as an output variable: %s. " +
+                                                       "Initialize this variable to get the contents or the data source, " +
+                                                       "or use a non-collection data type to extract one value.", procVar)));
+                actionBody.addStatement(unit.extractIntoCollection(unitVar, procVar));
+            } else if (procVarIsCollection /* && !unitVarIsDataSource */) {
+                actionBody.addStatement(variableScope.assignVariable(procVar));
+                actionBody.addStatement(unit.extractIntoScalar(unitVar, procVar));
+            } else if (/* !procVarIsCollection && */ unitVarIsDataSource) {
+                actionBody.addStatement(variableScope.assignVariable(procVar));
+                actionBody.addStatement(unit.extractIntoScalar(unitVar, procVar));
+            } else /* !procVarIsCollection && !unitVarIsDataSource */ {
+                MethodCallExpr setterCall = variableScope.setVariable(procVar);
+                actionBody.addStatement(
+                        setterCall.addArgument(unit.get(unitVar)));
             }
         }
 
@@ -191,4 +198,8 @@ public class RuleUnitHandler {
         return entries;
     }
 
+    public static MethodCallExpr requireNonNull(String targetProcessVar, String message) {
+        return new MethodCallExpr().setScope(new NameExpr("java.util.Objects"))
+                .setName("requireNonNull").addArgument(new NameExpr(targetProcessVar)).addArgument(new StringLiteralExpr(message));
+    }
 }
