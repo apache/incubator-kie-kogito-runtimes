@@ -50,25 +50,24 @@ public class RuleUnitHandler {
         this.ruleSetNode = ruleSetNode;
     }
 
-    public Optional<Expression> invoke() {
+    public Expression invoke() {
         InputStream resourceAsStream = this.getClass().getResourceAsStream("/class-templates/RuleUnitFactoryTemplate.java");
-        Optional<Expression> ruleUnitFactory = parse(resourceAsStream).findFirst(Expression.class);
+        Expression ruleUnitFactory = parse(resourceAsStream).findFirst(Expression.class)
+                .orElseThrow(() -> new IllegalArgumentException("Template does not contain an Expression"));
 
         String unitName = ruleUnit.getCanonicalName();
 
-        ruleUnitFactory.ifPresent(factory -> {
-            factory.findAll(ClassOrInterfaceType.class)
-                    .stream()
-                    .filter(t -> t.getNameAsString().equals("$Type$"))
-                    .forEach(t -> t.setName(unitName));
+        ruleUnitFactory.findAll(ClassOrInterfaceType.class)
+                .stream()
+                .filter(t -> t.getNameAsString().equals("$Type$"))
+                .forEach(t -> t.setName(unitName));
 
-            factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("bind"))
-                    .ifPresent(m -> m.setBody(bind(variableScope, ruleSetNode, ruleUnit)));
-            factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unit"))
-                    .ifPresent(m -> m.setBody(unit(unitName)));
-            factory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unbind"))
-                    .ifPresent(m -> m.setBody(unbind(variableScope, ruleSetNode, ruleUnit)));
-        });
+        ruleUnitFactory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("bind"))
+                .ifPresent(m -> m.setBody(bind(variableScope, ruleSetNode, ruleUnit)));
+        ruleUnitFactory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unit"))
+                .ifPresent(m -> m.setBody(unit(unitName)));
+        ruleUnitFactory.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unbind"))
+                .ifPresent(m -> m.setBody(unbind(variableScope, ruleSetNode, ruleUnit)));
 
         return ruleUnitFactory;
     }

@@ -170,9 +170,9 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         }
 
         RuleUnitHandler handler = new RuleUnitHandler(description, processContext, ruleSetNode);
-        Optional<Expression> ruleUnitFactory = handler.invoke();
+        Expression ruleUnitFactory = handler.invoke();
 
-        addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleUnit", new StringLiteralExpr(ruleType.getName()), ruleUnitFactory.get());
+        addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "ruleUnit", new StringLiteralExpr(ruleType.getName()), ruleUnitFactory);
     }
 
     private GeneratedRuleUnitDescription generateRuleUnitDescription(String unitName, ProcessContextMetaModel processContext) {
