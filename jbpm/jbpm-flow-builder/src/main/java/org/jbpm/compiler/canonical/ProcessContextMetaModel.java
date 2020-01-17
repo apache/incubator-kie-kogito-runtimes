@@ -35,11 +35,15 @@ public class ProcessContextMetaModel {
         this.contextClassLoader = contextClassLoader;
     }
 
-    public Optional<Expression> getVariable(String procVar) {
+    public boolean hasVariable(String srcProcessVar) {
+        return variableScope.findVariable(srcProcessVar) != null;
+    }
+
+    public Expression getVariable(String procVar) {
         String interpolatedVar = extractVariableFromExpression(procVar);
         Variable v = variableScope.findVariable(interpolatedVar);
         if (v == null) {
-            return Optional.empty();
+            throw new IllegalArgumentException("No such variable " + procVar);
         }
         MethodCallExpr getter = new MethodCallExpr().setScope(new NameExpr(kcontext))
                 .setName("getVariable")
@@ -47,28 +51,29 @@ public class ProcessContextMetaModel {
         CastExpr castExpr = new CastExpr()
                 .setExpression(new EnclosedExpr(getter))
                 .setType(v.getType().getStringType());
-        return Optional.of(castExpr);
+        return castExpr;
     }
 
-    public Optional<AssignExpr> assignVariable(String procVar) {
-        return getVariable(procVar).map(e -> new AssignExpr()
-                .setTarget(new VariableDeclarationExpr(new VariableDeclarator()
-                                                               .setType(variableScope.findVariable(procVar).getType().getStringType())
-                                                               .setName(procVar)))
+    public AssignExpr assignVariable(String procVar) {
+        Expression e = getVariable(procVar);
+        return new AssignExpr()
+                .setTarget(new VariableDeclarationExpr(
+                        new VariableDeclarator()
+                                .setType(variableScope.findVariable(procVar).getType().getStringType())
+                                .setName(procVar)))
                 .setOperator(AssignExpr.Operator.ASSIGN)
-                .setValue(e));
+                .setValue(e);
     }
 
-
-    public Optional<MethodCallExpr> setVariable(String procVar) {
+    public MethodCallExpr setVariable(String procVar) {
         Variable v = variableScope.findVariable(procVar);
         if (v == null) {
-            return Optional.empty();
+            throw new IllegalArgumentException("No such variable " + procVar);
         }
         MethodCallExpr setter = new MethodCallExpr().setScope(new NameExpr(kcontext))
                 .setName("setVariable")
                 .addArgument(new StringLiteralExpr(procVar));
-        return Optional.of(setter);
+        return setter;
     }
 
     public boolean isCollectionType(String procVar) {

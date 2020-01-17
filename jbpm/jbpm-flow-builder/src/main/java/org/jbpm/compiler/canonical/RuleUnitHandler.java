@@ -96,37 +96,38 @@ public class RuleUnitHandler {
         actionBody.addStatement(unit.newInstance());
 
         for (Map.Entry<String, String> e : getInputMappings(variableScope, node).entrySet()) {
-            String srcProcessVar = e.getValue();
-            String targetUnitVar = e.getKey();
+            String procVar = e.getValue();
+            String unitVar = e.getKey();
 
-            boolean procVarIsCollection = variableScope.isCollectionType(srcProcessVar);
-            boolean unitVarIsDataSource = unitDescription.hasDataSource(targetUnitVar);
+            if (!variableScope.hasVariable(procVar)) {
+                continue;
+            }
+
+            boolean procVarIsCollection = variableScope.isCollectionType(procVar);
+            boolean unitVarIsDataSource = unitDescription.hasDataSource(unitVar);
+
+            // we assign procVars to unitVars, and subscribe unitVars for changes
+            // subscription forward changes directly to the procVars
             if (procVarIsCollection && unitVarIsDataSource) {
-                variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
-                    Statement stmt = unit.injectCollection(targetUnitVar, "Object", expression);
-                    actionBody.addStatement(stmt);
-                });
+                Expression expression = variableScope.getVariable(procVar);
+                actionBody.addStatement(
+                        unit.injectCollection(unitVar, "Object", expression));
             } else if (procVarIsCollection /* && !unitVarIsDataSource */) {
-                variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
-                    Statement stmt = unit.injectCollection(targetUnitVar, "Object", expression);
-                    actionBody.addStatement(stmt);
-                });
+                Expression expression = variableScope.getVariable(procVar);
+                actionBody.addStatement(unit.set(unitVar, expression));
             } else if (/* !procVarIsCollection && */ unitVarIsDataSource) {
                 // set data source to variable
-                variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
-                    Statement stmt = unit.injectScalar(targetUnitVar, expression);
-                    actionBody.addStatement(stmt);
-                });
+                Expression expression = variableScope.getVariable(procVar);
+                actionBody.addStatement(
+                        unit.injectScalar(unitVar, expression));
                 // subscribe to updates to that data source
-                variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
-                    actionBody.addStatement(assignExpr);
-                    actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
-                });
+                actionBody.addStatement(
+                        variableScope.assignVariable(procVar));
+                actionBody.addStatement(
+                        unit.extractIntoScalar(unitVar, procVar));
             } else {
-                variableScope.getVariable(srcProcessVar).ifPresent(expression -> {
-                    Statement stmt = unit.injectScalar(targetUnitVar, expression);
-                    actionBody.addStatement(stmt);
-                });
+                Expression expression = variableScope.getVariable(procVar);
+                actionBody.addStatement(unit.set(unitVar, expression));
             }
         }
 
@@ -159,25 +160,20 @@ public class RuleUnitHandler {
             boolean procVarIsCollection = variableScope.isCollectionType(srcProcessVar);
             boolean unitVarIsDataSource = unitDescription.hasDataSource(targetUnitVar);
             if (procVarIsCollection && unitVarIsDataSource) {
-                variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
-                    actionBody.addStatement(assignExpr);
-                    actionBody.addStatement(unit.extractIntoCollection(targetUnitVar, srcProcessVar));
-                });
+                actionBody.addStatement(variableScope.assignVariable(srcProcessVar));
+                actionBody.addStatement(unit.extractIntoCollection(targetUnitVar, srcProcessVar));
             } else if (procVarIsCollection /* && !unitVarIsDataSource */) {
-                variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
-                    actionBody.addStatement(assignExpr);
-                    actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
-                });
+                actionBody.addStatement(variableScope.assignVariable(srcProcessVar));
+                actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
             } else if (/* !procVarIsCollection && */ unitVarIsDataSource) {
-                variableScope.assignVariable(srcProcessVar).ifPresent(assignExpr -> {
-                    actionBody.addStatement(assignExpr);
-                    actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
-                });
+                actionBody.addStatement(variableScope.assignVariable(srcProcessVar));
+                actionBody.addStatement(unit.extractIntoScalar(targetUnitVar, srcProcessVar));
+
             } else /* !procVarIsCollection && !unitVarIsDataSource */ {
-                variableScope.setVariable(srcProcessVar).ifPresent(setterCall -> {
-                    actionBody.addStatement(
-                            setterCall.addArgument(unit.get(targetUnitVar)));
-                });
+                MethodCallExpr setterCall = variableScope.setVariable(srcProcessVar);
+                actionBody.addStatement(
+                        setterCall.addArgument(unit.get(targetUnitVar)));
+
             }
         }
 
@@ -195,97 +191,4 @@ public class RuleUnitHandler {
         return entries;
     }
 
-    private void injectDataFromModel(BlockStmt stmts, String target, String source) {
-        stmts.addStatement(new ExpressionStmt(
-                new MethodCallExpr(new MethodCallExpr(
-                        new NameExpr("model"),
-                        "get" + StringUtils.capitalize(target)), "subscribe")
-                        .addArgument(new MethodCallExpr(
-                                new NameExpr(DataObserver.class.getCanonicalName()), "ofUpdatable")
-                                             .addArgument(parseExpression("o -> kcontext.setVariable(\"" + source + "\", o)")))));
-    }
-
-    protected Statement makeAssignmentFromModel(Variable v, String name, RuleUnitDescription unit) {
-        String vname = v.getName();
-        ClassOrInterfaceType type = parseClassOrInterfaceType(v.getType().getStringType());
-
-        if (unit.hasDataSource(name)) {
-            Expression fieldAccessor =
-                    new MethodCallExpr(new NameExpr("model"), unit.getVar(name).getter());
-
-            if (isCollectionType(v)) {
-                VariableDeclarationExpr varDecl = declareErasedDataSource(fieldAccessor);
-
-                return new BlockStmt()
-                        .addStatement(varDecl)
-                        .addStatement(parseStatement("java.util.Collection c = (java.util.Collection) kcontext.getVariable(\"" + vname + "\");"))
-                        .addStatement(parseStatement("java.util.Objects.requireNonNull(c, \"Null collection variable used as an output variable: "
-                                                             + vname + ". Initialize this variable to get the contents or the data source, " +
-                                                             "or use a non-collection data type to extract one value.\");"))
-                        .addStatement(new ExpressionStmt(
-                                new MethodCallExpr(new NameExpr("ds"), "subscribe")
-                                        .addArgument(new MethodCallExpr(
-                                                new NameExpr(DataObserver.class.getCanonicalName()), "of")
-                                                             .addArgument(parseExpression("c::add")))));
-            } else {
-                return new ExpressionStmt(
-                        new MethodCallExpr(fieldAccessor, "subscribe")
-                                .addArgument(new MethodCallExpr(
-                                        new NameExpr(DataObserver.class.getCanonicalName()), "of")
-                                                     .addArgument(parseExpression("o -> kcontext.setVariable(\"" + vname + "\", o)"))));
-            }
-        }
-
-        // `type` `name` = (`type`) `model.get<Name>
-        BlockStmt blockStmt = new BlockStmt();
-        blockStmt.addStatement(new AssignExpr(
-                new VariableDeclarationExpr(type, name),
-                new CastExpr(
-                        type,
-                        new MethodCallExpr(
-                                new NameExpr("model"),
-                                "get" + StringUtils.capitalize(name))),
-                AssignExpr.Operator.ASSIGN));
-        blockStmt.addStatement(new MethodCallExpr()
-                                       .setScope(new NameExpr("kcontext"))
-                                       .setName("setVariable")
-                                       .addArgument(new StringLiteralExpr(vname))
-                                       .addArgument(name));
-
-        return blockStmt;
-    }
-
-    private boolean isCollectionType(Variable v) {
-        String stringType = v.getType().getStringType();
-        Class<?> type;
-        try {
-            type = contextClassLoader.loadClass(stringType);
-            return Collection.class.isAssignableFrom(type);
-        } catch (ClassNotFoundException ex) {
-            return false;
-        }
-    }
-
-    private VariableDeclarationExpr declareErasedDataSource(Expression fieldAccessor) {
-        return new VariableDeclarationExpr(new VariableDeclarator()
-                                                   .setType(DataStream.class.getCanonicalName())
-                                                   .setName("ds")
-                                                   .setInitializer(fieldAccessor));
-    }
-
-    private Class<?> loadUnitClass(String nodeName, String unitName, String packageName) throws ClassNotFoundException {
-        ClassNotFoundException ex;
-        try {
-            return contextClassLoader.loadClass(unitName);
-        } catch (ClassNotFoundException e) {
-            ex = e;
-        }
-        // maybe the name is not qualified. Let's try with tacking the packageName at the front
-        try {
-            return contextClassLoader.loadClass(packageName + "." + unitName);
-        } catch (ClassNotFoundException e) {
-            // throw the original error
-            throw ex;
-        }
-    }
 }

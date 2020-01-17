@@ -66,6 +66,10 @@ public class RuleUnitDescriptionCodeHelper {
         return new MethodCallExpr(new NameExpr(instanceVarName), getter);
     }
 
+    public MethodCallExpr set(String unitVar, Expression sourceExpr) {
+        return set(ruleUnitDescription.getVar(unitVar), sourceExpr);
+    }
+
     private MethodCallExpr set(RuleUnitVariable targetUnitVar, Expression sourceExpr) {
         String setter = targetUnitVar.setter();
         return new MethodCallExpr(new NameExpr(instanceVarName), setter)
@@ -88,21 +92,17 @@ public class RuleUnitDescriptionCodeHelper {
             String targetUnitVar, String collectionTypeVar, Expression sourceExpression) {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(targetUnitVar);
-        if (v.isDataSource()) {
-            String appendMethod = appendMethodOf(v.getType());
-            blockStmt.addStatement(assignVar(v));
-            blockStmt.addStatement(
-                    iterate(new VariableDeclarator()
-                                    .setType(collectionTypeVar).setName("it"),
-                            sourceExpression)
-                            .setBody(new ExpressionStmt(
-                                    new MethodCallExpr()
-                                            .setScope(new NameExpr(localVarName(v)))
-                                            .setName(appendMethod)
-                                            .addArgument(new NameExpr("it")))));
-        } else {
-            blockStmt.addStatement(set(v, sourceExpression));
-        }
+        String appendMethod = appendMethodOf(v.getType());
+        blockStmt.addStatement(assignVar(v));
+        blockStmt.addStatement(
+                iterate(new VariableDeclarator()
+                                .setType(collectionTypeVar).setName("it"),
+                        sourceExpression)
+                        .setBody(new ExpressionStmt(
+                                new MethodCallExpr()
+                                        .setScope(new NameExpr(localVarName(v)))
+                                        .setName(appendMethod)
+                                        .addArgument(new NameExpr("it")))));
         return blockStmt;
     }
 
@@ -115,17 +115,13 @@ public class RuleUnitDescriptionCodeHelper {
     public Statement injectScalar(String targetUnitVar, Expression sourceExpression) {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(targetUnitVar);
-        if (v.isDataSource()) {
-            String appendMethod = appendMethodOf(v.getType());
-            blockStmt.addStatement(assignVar(v));
-            blockStmt.addStatement(
-                    new MethodCallExpr()
-                            .setScope(new NameExpr(localVarName(v)))
-                            .setName(appendMethod)
-                            .addArgument(sourceExpression));
-        } else {
-            blockStmt.addStatement(set(v, sourceExpression));
-        }
+        String appendMethod = appendMethodOf(v.getType());
+        blockStmt.addStatement(assignVar(v));
+        blockStmt.addStatement(
+                new MethodCallExpr()
+                        .setScope(new NameExpr(localVarName(v)))
+                        .setName(appendMethod)
+                        .addArgument(sourceExpression));
         return blockStmt;
     }
 
@@ -144,7 +140,6 @@ public class RuleUnitDescriptionCodeHelper {
     public Statement extractIntoCollection(String sourceUnitVar, String targetProcessVar) {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(sourceUnitVar);
-        if (v.isDataSource()) {
             String localVarName = localVarName(v);
             blockStmt.addStatement(assignVar(v))
                     .addStatement(parseStatement("java.util.Objects.requireNonNull(" + localVarName + ", \"Null collection variable used as an output variable: "
@@ -156,16 +151,12 @@ public class RuleUnitDescriptionCodeHelper {
                                     .addArgument(new MethodCallExpr(
                                             new NameExpr(DataObserver.class.getCanonicalName()), "of")
                                                          .addArgument(parseExpression(targetProcessVar + "::add")))));
-        } else {
-            throw new UnsupportedOperationException();
-        }
         return blockStmt;
     }
 
     public Statement extractIntoScalar(String sourceUnitVar, String targetProcessVar) {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(sourceUnitVar);
-        if (v.isDataSource()) {
             String localVarName = localVarName(v);
             blockStmt.addStatement(assignVar(v))
                     .addStatement(new ExpressionStmt(
@@ -173,9 +164,6 @@ public class RuleUnitDescriptionCodeHelper {
                                     .addArgument(new MethodCallExpr(
                                             new NameExpr(DataObserver.class.getCanonicalName()), "ofUpdatable")
                                                          .addArgument(parseExpression("o -> kcontext.setVariable(\"" + targetProcessVar + "\", o)")))));
-        } else {
-            return parseStatement("kcontext.setVariable(\"" + targetProcessVar + "\", \"" + sourceUnitVar + "\");");
-        }
 
         return blockStmt;
     }
