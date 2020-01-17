@@ -1,53 +1,35 @@
 package org.jbpm.compiler.canonical;
 
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.drools.core.util.StringUtils;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.rules.DataObserver;
-import org.kie.kogito.rules.DataStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parse;
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
-import static com.github.javaparser.StaticJavaParser.parseExpression;
-import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class RuleUnitHandler {
 
     public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
-    private ClassLoader contextClassLoader;
 
     RuleUnitDescription ruleUnit;
     ProcessContextMetaModel variableScope;
     RuleSetNode ruleSetNode;
 
-    public RuleUnitHandler(ClassLoader contextClassLoader, RuleUnitDescription ruleUnit, ProcessContextMetaModel variableScope, RuleSetNode ruleSetNode) {
-        this.contextClassLoader = contextClassLoader;
+    public RuleUnitHandler(RuleUnitDescription ruleUnit, ProcessContextMetaModel variableScope, RuleSetNode ruleSetNode) {
         this.ruleUnit = ruleUnit;
         this.variableScope = variableScope;
         this.ruleSetNode = ruleSetNode;
@@ -87,8 +69,8 @@ public class RuleUnitHandler {
      * bind data to the rule unit POJO
      */
     private BlockStmt bind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
-        RuleUnitDescriptionCodeHelper unit =
-                new RuleUnitDescriptionCodeHelper(unitDescription, "unit");
+        RuleUnitMetaModel unit =
+                new RuleUnitMetaModel(unitDescription, "unit");
 
         BlockStmt actionBody = new BlockStmt();
 
@@ -151,8 +133,8 @@ public class RuleUnitHandler {
     }
 
     private BlockStmt unbind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
-        RuleUnitDescriptionCodeHelper unit =
-                new RuleUnitDescriptionCodeHelper(unitDescription, "unit");
+        RuleUnitMetaModel unit =
+                new RuleUnitMetaModel(unitDescription, "unit");
 
         BlockStmt actionBody = new BlockStmt();
 

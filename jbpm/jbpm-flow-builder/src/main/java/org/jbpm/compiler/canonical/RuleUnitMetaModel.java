@@ -21,14 +21,14 @@ import org.kie.kogito.rules.DataStream;
 
 import static com.github.javaparser.StaticJavaParser.parseExpression;
 
-public class RuleUnitDescriptionCodeHelper {
+public class RuleUnitMetaModel {
 
     private final RuleUnitDescription ruleUnitDescription;
     private final String modelClassName;
 
     private final String instanceVarName;
 
-    public RuleUnitDescriptionCodeHelper(RuleUnitDescription ruleUnitDescription, String instanceVarName) {
+    public RuleUnitMetaModel(RuleUnitDescription ruleUnitDescription, String instanceVarName) {
         this.ruleUnitDescription = ruleUnitDescription;
         this.modelClassName = ruleUnitDescription.getCanonicalName();
         this.instanceVarName = instanceVarName;

@@ -98,6 +98,10 @@ public class ProcessContextMetaModel {
         return variableExpression;
     }
 
+    public List<Variable> getVariables() {
+        return variableScope.getVariables();
+    }
+
     public Collection<String> getVariableNames() {
         return asList(variableScope.getVariableNames());
     }
