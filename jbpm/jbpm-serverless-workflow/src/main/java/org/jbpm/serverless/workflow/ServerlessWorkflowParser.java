@@ -60,7 +60,6 @@ import org.jbpm.serverless.workflow.api.Workflow;
 import org.jbpm.serverless.workflow.api.actions.Action;
 import org.jbpm.serverless.workflow.api.states.DefaultState.Type;
 import org.jbpm.serverless.workflow.api.states.OperationState;
-import sun.font.Script;
 
 /**
  * Serverless Workflow specification parser
