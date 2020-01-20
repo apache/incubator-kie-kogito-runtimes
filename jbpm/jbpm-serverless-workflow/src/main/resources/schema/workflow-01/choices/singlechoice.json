@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "javaType": "org.jbpm.serverless.workflow.api.choices.SingleChoice",
+  "extendsJavaClass": "org.jbpm.serverless.workflow.api.choices.DefaultChoice",
+  "javaInterfaces": [
+    "org.jbpm.serverless.workflow.api.interfaces.Choice"
+  ],
+  "description": "Single Choice",
+  "properties": {
+    "transition": {
+      "$ref": "../transitions/transition.json"
+    },
+    "metadata": {
+      "$ref": "../metadata/metadata.json"
+    }
+  },
+  "required": [
+    "single",
+    "transition"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "javaType": "org.jbpm.serverless.workflow.api.actions.Retry",
+  "description": "Retry Definition",
+  "properties": {
+    "match": {
+      "type": "string",
+      "description": "Specifies the matching value for the result"
+    },
+    "retryInterval": {
+      "type": "string",
+      "description": "Specifies retry interval (ISO 8601 format)"
+    },
+    "maxRetry": {
+      "type": "integer",
+      "default": "0",
+      "minimum": 0,
+      "description": "Specifies the max retry"
+    },
+    "transition": {
+      "$ref": "../transitions/transition.json"
+    },
+    "metadata": {
+      "$ref": "../metadata/metadata.json"
+    }
+  },
+  "required": [
+    "match"
+  ]
+}

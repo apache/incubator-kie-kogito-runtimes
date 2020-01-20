@@ -1,0 +1,42 @@
+{
+  "type": "object",
+  "javaType": "org.jbpm.serverless.workflow.api.states.DefaultState",
+  "javaInterfaces": [
+    "org.jbpm.serverless.workflow.api.interfaces.State"
+  ],
+  "description": "Default State",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name of the state",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "EVENT",
+        "OPERATION",
+        "SWITCH",
+        "DELAY",
+        "PARALLEL",
+        "SUBFLOW"
+      ],
+      "description": "State type"
+    },
+    "end": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is this state an end state"
+    },
+    "filter": {
+      "$ref": "../filters/filter.json"
+    },
+    "metadata": {
+      "$ref": "../metadata/metadata.json"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ]
+}

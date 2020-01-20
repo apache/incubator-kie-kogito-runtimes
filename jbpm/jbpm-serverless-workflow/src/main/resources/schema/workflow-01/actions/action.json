@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "javaType": "org.jbpm.serverless.workflow.api.actions.Action",
+  "description": "Action Definition",
+  "properties": {
+    "functionref": {
+      "description": "References a reusable function definition to be invoked",
+      "$ref": "../functions/functionref.json"
+    },
+    "timeout": {
+      "type": "string",
+      "description": "Specifies the time period waiting for the events in the EVENTS-EXPRESSION (ISO 8601 format)"
+    },
+    "retry": {
+      "type": "object",
+      "$ref": "retry.json",
+      "description": "Specifies how the result from a function is to be handled"
+    },
+    "filter": {
+      "$ref": "../filters/filter.json"
+    },
+    "metadata": {
+      "$ref": "../metadata/metadata.json"
+    }
+  },
+  "required": [
+    "functionref"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "javaType": "org.jbpm.serverless.workflow.api.conditions.Condition",
+  "description": "Defines the expression language and body of condition.",
+  "properties": {
+    "expressionLanguage": {
+      "type": "string",
+      "description": "Expression language. For example 'spel', 'jexl', 'cel', etc"
+    },
+    "body": {
+      "type": "string",
+      "description": "The expression body."
+    }
+  },
+  "required": [
+    "body"
+  ]
+}

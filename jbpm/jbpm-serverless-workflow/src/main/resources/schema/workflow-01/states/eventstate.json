@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "javaType": "org.jbpm.serverless.workflow.api.states.EventState",
+  "javaInterfaces": [
+    "org.jbpm.serverless.workflow.api.interfaces.State"
+  ],
+  "description": "This state is used to wait for events from event sources and then to invoke one or more functions to run in sequence or in parallel.",
+  "extends": {
+    "$ref": "defaultstate.json"
+  },
+  "properties": {
+    "events": {
+      "type": "array",
+      "description": "Event State Definitions",
+      "items": {
+        "type": "object",
+        "$ref": "../events/event.json"
+      }
+    },
+    "metadata": {
+      "$ref": "../metadata/metadata.json"
+    }
+  },
+  "required": [
+    "name",
+    "type",
+    "events"
+  ]
+}

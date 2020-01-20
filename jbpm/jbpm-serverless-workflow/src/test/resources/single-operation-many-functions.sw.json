@@ -1,0 +1,41 @@
+{
+  "id": "function",
+  "name": "test-wf",
+  "startsAt": "HelloWorld",
+  "functions": [
+    {
+      "name": "helloWorld",
+      "type": "script"
+    },
+    {
+      "name": "goodbyeWorld",
+      "type": "script"
+    }
+  ],
+  "states":[
+    {
+      "name":"HelloWorld",
+      "type":"OPERATION",
+      "end":true,
+      "actionMode":"SEQUENTIAL",
+      "actions":[
+        {
+          "functionref": {
+            "refname": "helloWorld",
+            "parameters" : {
+              "script" : "System.out.println(\"Hello Serverless Workflow World\");"
+            }
+          }
+        },
+        {
+          "functionref": {
+            "refname": "goodbyeWorld",
+            "parameters" : {
+              "script" : "System.out.println(\"GoodBye Serverless Workflow World\");"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

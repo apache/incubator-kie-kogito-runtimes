@@ -49,6 +49,7 @@ import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
+import org.jbpm.serverless.workflow.ServerlessWorkflowParser;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
@@ -116,7 +117,7 @@ public class ProcessCodegen extends AbstractGenerator {
         Path srcPath = Paths.get(path.toString());
         try (Stream<Path> filesStream = Files.walk(srcPath)) {
             List<File> files = filesStream
-                    .filter(p -> p.toString().endsWith(".bpmn") || p.toString().endsWith(".bpmn2"))
+                    .filter(p -> p.toString().endsWith(".bpmn") || p.toString().endsWith(".bpmn2") || p.toString().endsWith(".sw.json"))
                     .map(Path::toFile)
                     .collect(Collectors.toList());
             return ofFiles(files);
@@ -134,16 +135,29 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private static List<Process> parseProcesses(Collection<File> processFiles) throws IOException {
         List<Process> processes = new ArrayList<>();
-        for (File bpmnFile : processFiles) {
+        for (File processSourceFile : processFiles) {
             try {
-                FileSystemResource r = new FileSystemResource(bpmnFile);
-                Collection<? extends Process> ps = parseProcessFile(r);
-                processes.addAll(ps);
+                FileSystemResource r = new FileSystemResource(processSourceFile);
+                if (processSourceFile.getPath().endsWith(".sw.json")) {
+                    Process process = parseWorkflowFile(r);
+                    processes.add(process);
+                } else {
+                    processes.addAll(parseProcessFile(r));
+                }
             } catch (RuntimeException e) {
-                throw new ProcessCodegenException(bpmnFile.getAbsolutePath(), e);
+                throw new ProcessCodegenException(processSourceFile.getAbsolutePath(), e);
             }
         }
         return processes;
+    }
+
+    private static Process parseWorkflowFile(Resource r) throws IOException {
+        try {
+            ServerlessWorkflowParser workflowParser = new ServerlessWorkflowParser();
+            return workflowParser.parseWorkFlow(r.getReader());
+        } catch (Exception e) {
+            throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
+        }
     }
 
     private static Collection<? extends Process> parseProcessFile(Resource r) throws IOException {
