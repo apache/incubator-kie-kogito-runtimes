@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "javaType": "org.jbpm.serverless.workflow.api.end.End",
+  "description": "Default State",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "TERMINATE",
+        "MESSAGE",
+        "SIGNAL",
+        "ERROR"
+      ],
+      "default": "TERMINATE",
+      "description": "Type of End definition"
+    },
+    "produce": {
+      "description": "Event we should produce.",
+      "$ref": "../produce/produce.json"
+    },
+    "metadata": {
+      "$ref": "../metadata/metadata.json"
+    }
+  },
+  "required": [
+    "type"
+  ]
+}

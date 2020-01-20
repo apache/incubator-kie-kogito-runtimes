@@ -18,12 +18,12 @@
 
 package org.jbpm.serverless.workflow.api;
 
-import org.jbpm.serverless.workflow.api.events.TriggerEvent;
+import org.jbpm.serverless.workflow.api.events.EventDefinition;
 
 public interface ExpressionEvaluator {
 
     String getName();
 
     boolean evaluate(String expression,
-                     TriggerEvent triggerEvent);
+                     EventDefinition eventDefinition);
 }

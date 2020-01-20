@@ -55,12 +55,12 @@
       "type": "string",
       "description": "Default expression language to be used throughout the workflow definition"
     },
-    "triggers": {
+    "events": {
       "type": "array",
-      "description": "Trigger Definitions",
+      "description": "Event Definitions",
       "items": {
         "type": "object",
-        "$ref": "events/triggerevent.json"
+        "$ref": "events/eventdef.json"
       }
     },
     "functions": {

@@ -9,12 +9,12 @@
     "$ref": "defaultstate.json"
   },
   "properties": {
-    "events": {
+    "onEvent": {
       "type": "array",
-      "description": "Event State Definitions",
+      "description": "Event Handler Definitions",
       "items": {
         "type": "object",
-        "$ref": "../events/event.json"
+        "$ref": "../events/onevent.json"
       }
     },
     "metadata": {

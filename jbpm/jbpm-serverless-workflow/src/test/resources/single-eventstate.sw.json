@@ -3,7 +3,7 @@
   "name": "test-wf",
   "version": "1.0",
   "startsAt": "WaitForGreeting",
-  "triggers": [{
+  "events": [{
     "name": "TestKafkaEvent",
     "source": "testtopic",
     "type": "kafka"
@@ -15,8 +15,7 @@
   "states": [{
     "name": "WaitForGreeting",
     "type": "EVENT",
-    "end": true,
-    "events": [{
+    "onEvent": [{
       "eventExpression": "TestKafkaEvent",
       "actionMode": "SEQUENTIAL",
       "actions": [{
@@ -27,6 +26,9 @@
           }
         }
       }]
-    }]
+    }],
+    "end": {
+      "type": "TERMINATE"
+    }
   }]
 }

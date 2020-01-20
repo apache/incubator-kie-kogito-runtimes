@@ -25,26 +25,26 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import org.jbpm.serverless.workflow.api.events.TriggerEvent;
+import org.jbpm.serverless.workflow.api.events.EventDefinition;
 
-public class TriggerEventSerializer extends StdSerializer<TriggerEvent> {
+public class EventDefinitionSerializer extends StdSerializer<EventDefinition> {
 
-    public TriggerEventSerializer() {
-        this(TriggerEvent.class);
+    public EventDefinitionSerializer() {
+        this(EventDefinition.class);
     }
 
-    protected TriggerEventSerializer(Class<TriggerEvent> t) {
+    protected EventDefinitionSerializer(Class<EventDefinition> t) {
         super(t);
     }
 
     @Override
-    public void serialize(TriggerEvent triggerEvent,
+    public void serialize(EventDefinition triggerEvent,
                           JsonGenerator gen,
                           SerializerProvider provider) throws IOException {
 
         // serialize after setting default bean values...
         BeanSerializerFactory.instance.createSerializer(provider,
-                                                        TypeFactory.defaultInstance().constructType(TriggerEvent.class)).serialize(triggerEvent,
+                                                        TypeFactory.defaultInstance().constructType(EventDefinition.class)).serialize(triggerEvent,
                                                                                                                                    gen,
                                                                                                                                    provider);
     }

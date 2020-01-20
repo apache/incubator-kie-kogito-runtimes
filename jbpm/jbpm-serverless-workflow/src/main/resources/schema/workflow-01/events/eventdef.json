@@ -1,10 +1,10 @@
 {
   "type": "object",
-  "javaType": "org.jbpm.serverless.workflow.api.events.TriggerEvent",
+  "javaType": "org.jbpm.serverless.workflow.api.events.EventDefinition",
   "properties": {
     "name": {
       "type": "string",
-      "description": "Trigger unique name",
+      "description": "Event Definition unique name",
       "minLength": 1
     },
     "source": {

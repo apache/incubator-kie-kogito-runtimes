@@ -24,9 +24,8 @@
       "description": "State type"
     },
     "end": {
-      "type": "boolean",
-      "default": false,
-      "description": "Is this state an end state"
+      "$ref": "../end/end.json",
+      "description": "Defines this states end"
     },
     "filter": {
       "$ref": "../filters/filter.json"

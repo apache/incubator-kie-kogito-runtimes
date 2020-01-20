@@ -36,13 +36,15 @@ import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
-import org.jbpm.serverless.workflow.api.events.Event;
-import org.jbpm.serverless.workflow.api.events.TriggerEvent;
+import org.jbpm.serverless.workflow.api.end.End;
+import org.jbpm.serverless.workflow.api.events.EventDefinition;
+import org.jbpm.serverless.workflow.api.events.OnEvent;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.interfaces.State;
 import org.jbpm.serverless.workflow.api.mapper.JsonObjectMapper;
 import org.jbpm.serverless.workflow.api.states.EventState;
 import org.jbpm.serverless.workflow.api.transitions.Transition;
+import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
@@ -58,11 +60,14 @@ import org.jbpm.serverless.workflow.api.Workflow;
 import org.jbpm.serverless.workflow.api.actions.Action;
 import org.jbpm.serverless.workflow.api.states.DefaultState.Type;
 import org.jbpm.serverless.workflow.api.states.OperationState;
+import sun.font.Script;
 
 /**
  * Serverless Workflow specification parser
  */
 public class ServerlessWorkflowParser {
+
+    protected final static String EOL = System.getProperty( "line.separator" );
 
     private AtomicLong idCounter = new AtomicLong(1);
 
@@ -88,10 +93,12 @@ public class ServerlessWorkflowParser {
         process.setVisibility(RuleFlowProcess.PUBLIC_VISIBILITY);
 
         StartNode startNode = startNode(process);
+        // add "workflowdata" process var
+        addJsonNodeVar(process, "workflowdata");
 
         List<State> workflowStates = workflow.getStates();
         List<Function> workflowFunctions = workflow.getFunctions();
-        List<TriggerEvent> workflowTriggers = workflow.getTriggers();
+        List<EventDefinition> workflowEventDefinitions = workflow.getEvents();
 
         for (State state : workflowStates) {
 
@@ -102,20 +109,20 @@ public class ServerlessWorkflowParser {
 
                 CompositeContextNode embedded = compositeContextNode(state.getName(), process);
 
-                List<Event> events = eventState.getEvents();
+                List<OnEvent> onEventHandlers = eventState.getOnEvent();
 
-                if(events != null && !events.isEmpty()) {
+                if(onEventHandlers != null && !onEventHandlers.isEmpty()) {
 
-                    Event event = events.get(0);
+                    OnEvent onEvent = onEventHandlers.get(0);
 
                     // add process var
-                    addJSONNodetVar(process, getTriggerEventForEvent(workflowTriggers, event));
+                    addJSONNodetVar(process, getWorkflowEventFor(workflowEventDefinitions, onEvent.getEventExpression()));
 
                     // remove original start node and replace with message start
                     process.removeNode(startNode);
-                    startNode = messageStartNode(process, getTriggerEventForEvent(workflowTriggers, event));
+                    startNode = messageStartNode(process, getWorkflowEventFor(workflowEventDefinitions, onEvent.getEventExpression()));
 
-                    List<Action> actions = event.getActions();
+                    List<Action> actions = onEvent.getActions();
 
                     if(actions != null && !actions.isEmpty()) {
                         StartNode embeddedStartNode = startNode(embedded);
@@ -129,7 +136,14 @@ public class ServerlessWorkflowParser {
                                     .get();
 
                             if ("script".equalsIgnoreCase(actionFunction.getType())) {
-                                current = scriptNode(action.getFunctionref().getRefname(), action.getFunctionref().getParameters().get("script"), embedded);
+                                String script = applySubstitutionsToScript(action.getFunctionref().getParameters().get("script"));
+                                current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
+
+                                connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
+                                start = current;
+                            } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
+                                String script = applySubstitutionsToScript("System.out.println(" + action.getFunctionref().getParameters().get("message") + ");");
+                                current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
 
                                 connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                                 start = current;
@@ -142,8 +156,14 @@ public class ServerlessWorkflowParser {
                         connection(startNode.getId(), embedded.getId(), startNode.getId() + "_" + embedded.getId(), process);
                     }
 
-                    if (state.isEnd()) {
-                        EndNode endNode = endNode(true, process);
+                    if (state.getEnd() != null) {
+
+                        EndNode endNode = null;
+                        if(state.getEnd().getType() == End.Type.TERMINATE) {
+                            endNode = endNode(true, process);
+                        } else { //TODO assume its otherwise message...need to fix
+                            endNode = messageEndNode(process, workflowEventDefinitions, state.getEnd());
+                        }
 
                         connection(embedded.getId(), endNode.getId(), embedded.getId() + "_" + endNode.getId(), process);
                     }
@@ -173,7 +193,14 @@ public class ServerlessWorkflowParser {
                                 .get();
 
                         if ("script".equalsIgnoreCase(actionFunction.getType())) {
-                            current = scriptNode(action.getFunctionref().getRefname(), action.getFunctionref().getParameters().get("script"), embedded);
+                            String script = applySubstitutionsToScript(action.getFunctionref().getParameters().get("script"));
+                            current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
+
+                            connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
+                            start = current;
+                        } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
+                            String script = applySubstitutionsToScript("System.out.println(" + action.getFunctionref().getParameters().get("message") + ");");
+                            current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
 
                             connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                             start = current;
@@ -188,7 +215,7 @@ public class ServerlessWorkflowParser {
                     connection(startNode.getId(), embedded.getId(), startNode.getId() + "_" + embedded.getId(), process);
                 }
 
-                if (state.isEnd()) {
+                if (state.getEnd() != null) {
                     EndNode endNode = endNode(true, process);
 
                     connection(embedded.getId(), endNode.getId(), embedded.getId() + "_" + endNode.getId(), process);
@@ -204,7 +231,7 @@ public class ServerlessWorkflowParser {
             if(state instanceof EventState) {
                 // TODO -- same thing here, assuming a single event
                 // TODO within event state
-                transition = ((EventState)state).getEvents().get(0).getTransition();
+                transition = ((EventState)state).getOnEvent().get(0).getTransition();
             } else if(state instanceof OperationState) {
                 transition = ((OperationState)state).getTransition();
             }
@@ -243,18 +270,18 @@ public class ServerlessWorkflowParser {
         return startNode;
     }
 
-    protected StartNode messageStartNode(NodeContainer nodeContainer, TriggerEvent triggerEvent) {
+    protected StartNode messageStartNode(NodeContainer nodeContainer, EventDefinition eventDefinition) {
 
         StartNode startNode = new StartNode();
         startNode.setId(idCounter.getAndIncrement());
-        startNode.setName(triggerEvent.getName());
-        startNode.setMetaData("TriggerMapping", triggerEvent.getSource() + "Var");
+        startNode.setName(eventDefinition.getName());
+        startNode.setMetaData("TriggerMapping", eventDefinition.getSource() + "Var");
         startNode.setMetaData("TriggerType", "ConsumeMessage");
-        startNode.setMetaData("TriggerRef", triggerEvent.getSource());
+        startNode.setMetaData("TriggerRef", eventDefinition.getSource());
         startNode.setMetaData("MessageType", "com.fasterxml.jackson.databind.JsonNode");
         addTriggerWithInMappings(startNode, "com.fasterxml.jackson.databind.JsonNode");
-        nodeContainer.addNode(startNode);
 
+        nodeContainer.addNode(startNode);
         return startNode;
     }
 
@@ -265,6 +292,24 @@ public class ServerlessWorkflowParser {
 
         nodeContainer.addNode(endNode);
 
+        return endNode;
+    }
+
+    protected EndNode messageEndNode(NodeContainer nodeContainer, List<EventDefinition> workflowEventDefinitions, End stateEnd) {
+        EndNode endNode = new EndNode();
+        endNode.setTerminate(false);
+        endNode.setId(idCounter.getAndIncrement());
+        endNode.setName("end node");
+
+        EventDefinition eventDef = getWorkflowEventFor(workflowEventDefinitions, stateEnd.getProduce().getEventName());
+
+        endNode.setMetaData("TriggerRef", eventDef.getSource());
+        endNode.setMetaData("TriggerType", "ProduceMessage");
+        endNode.setMetaData("MessageType", "com.fasterxml.jackson.databind.JsonNode");
+        endNode.setMetaData("MappingVariable", stateEnd.getProduce().getDataRef());
+        addMessageEndNodeAction(endNode, stateEnd.getProduce().getDataRef(), "com.fasterxml.jackson.databind.JsonNode");
+
+        nodeContainer.addNode(endNode);
         return endNode;
     }
 
@@ -331,19 +376,48 @@ public class ServerlessWorkflowParser {
         startNode.addTrigger(trigger);
     }
 
-    protected void addJSONNodetVar(RuleFlowProcess process, TriggerEvent triggerEvent) {
+    protected void addMessageEndNodeAction(EndNode endNode, String variable, String messageType){
+        List<DroolsAction> actions = new ArrayList<DroolsAction>();
+
+        actions.add(new DroolsConsequenceAction("java",
+                                                "org.drools.core.process.instance.impl.WorkItemImpl workItem = new org.drools.core.process.instance.impl.WorkItemImpl();" + EOL +
+                                                        "workItem.setName(\"Send Task\");" + EOL +
+                                                        "workItem.setNodeInstanceId(kcontext.getNodeInstance().getId());" + EOL +
+                                                        "workItem.setProcessInstanceId(kcontext.getProcessInstance().getId());" + EOL +
+                                                        "workItem.setNodeId(kcontext.getNodeInstance().getNodeId());" + EOL +
+                                                        "workItem.setParameter(\"MessageType\", \"" + messageType + "\");" + EOL +
+                                                        (variable == null ? "" : "workItem.setParameter(\"Message\", " + variable + ");" + EOL) +
+                                                        "workItem.setDeploymentId((String) kcontext.getKnowledgeRuntime().getEnvironment().get(\"deploymentId\"));" + EOL +
+                                                        "((org.drools.core.process.instance.WorkItemManager) kcontext.getKnowledgeRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);"));
+        endNode.setActions(EndNode.EVENT_NODE_ENTER, actions);
+    }
+
+    protected void addJSONNodetVar(RuleFlowProcess process, EventDefinition eventDefinition) {
+
+        addJsonNodeVar(process, eventDefinition.getSource() + "Var");
+    }
+
+    protected void addJsonNodeVar(RuleFlowProcess process, String varName) {
         List<Variable> variables = new ArrayList<Variable>();
         Variable variable = new Variable();
-        variable.setName(triggerEvent.getSource() + "Var");
+        variable.setName(varName);
         variable.setType( new ObjectDataType(JsonNode.class.getName()) );
         variables.add( variable );
         process.getVariableScope().setVariables( variables );
     }
 
-    protected TriggerEvent getTriggerEventForEvent(List<TriggerEvent> workflowTriggers, Event event) {
+    protected EventDefinition getWorkflowEventFor(List<EventDefinition> workflowEvents, String eventName) {
         // TODO we assume to get by name, need to plug in expression evaluator heres
-        return workflowTriggers.stream()
-                .filter(wt -> wt.getName().equals(event.getEventExpression()))
+        return workflowEvents.stream()
+                .filter(wt -> wt.getName().equals(eventName))
                 .findFirst().get();
+    }
+
+    protected String applySubstitutionsToScript(String script) {
+        script = script.replaceFirst("\\bworkflowdata.([a-z]*)\\b", "workflowdata.get(\"$1\")");
+        script = script.replaceAll("\\bworkflowdata\\b", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\\\"workflowdata\\\"))");
+        script = script.replaceFirst("\\bkcontext.([A-Za-z]+).([A-Za-z]+)\\b", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"$1\")).get(\"$2\")");
+
+        return script;
     }
 }

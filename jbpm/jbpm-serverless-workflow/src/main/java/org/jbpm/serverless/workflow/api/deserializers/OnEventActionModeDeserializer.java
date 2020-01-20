@@ -25,30 +25,30 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import org.jbpm.serverless.workflow.api.WorkflowPropertySource;
-import org.jbpm.serverless.workflow.api.events.Event;
+import org.jbpm.serverless.workflow.api.events.OnEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EventActionModeDeserializer extends StdDeserializer<Event.ActionMode> {
+public class OnEventActionModeDeserializer extends StdDeserializer<OnEvent.ActionMode> {
 
     private WorkflowPropertySource context;
-    private static Logger logger = LoggerFactory.getLogger(EventActionModeDeserializer.class);
+    private static Logger logger = LoggerFactory.getLogger(OnEventActionModeDeserializer.class);
 
-    public EventActionModeDeserializer() {
-        this(Event.ActionMode.class);
+    public OnEventActionModeDeserializer() {
+        this(OnEvent.ActionMode.class);
     }
 
-    public EventActionModeDeserializer(WorkflowPropertySource context) {
-        this(Event.ActionMode.class);
+    public OnEventActionModeDeserializer(WorkflowPropertySource context) {
+        this(OnEvent.ActionMode.class);
         this.context = context;
     }
 
-    public EventActionModeDeserializer(Class<?> vc) {
+    public OnEventActionModeDeserializer(Class<?> vc) {
         super(vc);
     }
 
     @Override
-    public Event.ActionMode deserialize(JsonParser jp,
+    public OnEvent.ActionMode deserialize(JsonParser jp,
                                         DeserializationContext ctxt) throws IOException {
 
         String value = jp.getText();
@@ -57,16 +57,16 @@ public class EventActionModeDeserializer extends StdDeserializer<Event.ActionMod
                 String result = context.getPropertySource().getProperty(value);
 
                 if (result != null) {
-                    return Event.ActionMode.fromValue(result);
+                    return OnEvent.ActionMode.fromValue(result);
                 } else {
-                    return Event.ActionMode.fromValue(jp.getText());
+                    return OnEvent.ActionMode.fromValue(jp.getText());
                 }
             } catch (Exception e) {
                 logger.info("Exception trying to evaluate property: " + e.getMessage());
-                return Event.ActionMode.fromValue(jp.getText());
+                return OnEvent.ActionMode.fromValue(jp.getText());
             }
         } else {
-            return Event.ActionMode.fromValue(jp.getText());
+            return OnEvent.ActionMode.fromValue(jp.getText());
         }
     }
 }

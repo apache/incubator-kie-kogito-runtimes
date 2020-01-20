@@ -1,7 +1,7 @@
 {
   "type": "object",
-  "javaType": "org.jbpm.serverless.workflow.api.events.Event",
-  "description": "Event associated with a State",
+  "javaType": "org.jbpm.serverless.workflow.api.events.OnEvent",
+  "description": "Actions to be performed on Events arrival",
   "properties": {
     "eventExpression": {
       "type": "string",

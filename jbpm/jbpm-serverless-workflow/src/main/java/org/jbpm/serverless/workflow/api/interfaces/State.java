@@ -20,6 +20,7 @@ package org.jbpm.serverless.workflow.api.interfaces;
 
 import java.util.Map;
 
+import org.jbpm.serverless.workflow.api.end.End;
 import org.jbpm.serverless.workflow.api.filters.Filter;
 import org.jbpm.serverless.workflow.api.states.DefaultState.Type;
 
@@ -29,7 +30,7 @@ public interface State {
 
     Type getType();
 
-    boolean isEnd();
+    End getEnd();
 
     Filter getFilter();
 

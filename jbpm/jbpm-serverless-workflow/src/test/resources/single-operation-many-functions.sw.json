@@ -16,7 +16,6 @@
     {
       "name":"HelloWorld",
       "type":"OPERATION",
-      "end":true,
       "actionMode":"SEQUENTIAL",
       "actions":[
         {
@@ -35,7 +34,10 @@
             }
           }
         }
-      ]
+      ],
+      "end": {
+        "type": "TERMINATE"
+      }
     }
   ]
 }

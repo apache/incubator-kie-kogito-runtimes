@@ -30,7 +30,7 @@ import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.interfaces.Extension;
 import org.jbpm.serverless.workflow.api.interfaces.State;
 import org.jbpm.serverless.workflow.api.Workflow;
-import org.jbpm.serverless.workflow.api.events.TriggerEvent;
+import org.jbpm.serverless.workflow.api.events.EventDefinition;
 
 public class WorkflowSerializer extends StdSerializer<Workflow> {
 
@@ -105,10 +105,10 @@ public class WorkflowSerializer extends StdSerializer<Workflow> {
                                  workflow.getExpressionLanguage());
         }
 
-        if (workflow.getTriggers() != null && !workflow.getTriggers().isEmpty()) {
-            gen.writeArrayFieldStart("triggers");
-            for (TriggerEvent triggerEvent : workflow.getTriggers()) {
-                gen.writeObject(triggerEvent);
+        if (workflow.getEvents() != null && !workflow.getEvents().isEmpty()) {
+            gen.writeArrayFieldStart("events");
+            for (EventDefinition eventDefinition : workflow.getEvents()) {
+                gen.writeObject(eventDefinition);
             }
             gen.writeEndArray();
         }
