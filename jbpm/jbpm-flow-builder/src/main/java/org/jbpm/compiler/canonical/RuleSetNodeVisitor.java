@@ -92,7 +92,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         } else if (ruleType.isRuleUnit()) {
             handleRuleUnit(node, body, variableScope, metadata, ruleSetNode, nodeName, ruleType);
         } else if (ruleType.isDecision()) {
-            handleDecision(node, body, actionBody, lambda, (RuleSetNode.RuleType.Decision) ruleType);
+            handleDecision(node, body, (RuleSetNode.RuleType.Decision) ruleType);
         } else {
             throw new IllegalArgumentException("Rule task " + nodeName + "is invalid: unsupported rule language " + ruleSetNode.getLanguage());
         }
@@ -120,14 +120,31 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         }
     }
 
-    private void handleDecision(Node node, BlockStmt body, BlockStmt actionBody, LambdaExpr lambda, RuleSetNode.RuleType.Decision ruleType) {
-        RuleSetNode.RuleType.Decision decisionModel = ruleType;
-        MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(new NameExpr("app"), "dmnRuntimeBuilder");
-        actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
-        addFactoryMethodWithArgs(body, "ruleSetNode" + node.getId(), "dmnGroup", new StringLiteralExpr(decisionModel.getNamespace()),
-                                 new StringLiteralExpr(decisionModel.getModel()),
-                                 decisionModel.getDecision() == null ? new NullLiteralExpr() : new StringLiteralExpr(decisionModel.getDecision()),
-                                 lambda);
+    private void handleDecision(Node node, BlockStmt body, RuleSetNode.RuleType.Decision ruleType) {
+        RuleSetNode.RuleType.Decision dmodel = ruleType;
+
+        StringLiteralExpr namespace = new StringLiteralExpr(dmodel.getNamespace());
+        StringLiteralExpr model = new StringLiteralExpr(dmodel.getModel());
+        Expression decision = dmodel.getDecision() == null ?
+                new NullLiteralExpr() : new StringLiteralExpr(dmodel.getDecision());
+
+        MethodCallExpr decisionModels =
+                new MethodCallExpr(new NameExpr("app"), "decisionModels");
+        MethodCallExpr decisionModel =
+                new MethodCallExpr(decisionModels, "getDecisionModel")
+                        .addArgument(namespace)
+                        .addArgument(model);
+
+        BlockStmt actionBody = new BlockStmt();
+        LambdaExpr lambda = new LambdaExpr(new Parameter(new UnknownType(), "()"), actionBody);
+        actionBody.addStatement(new ReturnStmt(decisionModel));
+
+        body.addStatement(
+                new MethodCallExpr(new NameExpr("ruleSetNode" + node.getId()), "decision")
+                        .addArgument(namespace)
+                        .addArgument(model)
+                        .addArgument(decision)
+                        .addArgument(lambda));
     }
 
     private void handleRuleUnit(Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata, RuleSetNode ruleSetNode, String nodeName, RuleSetNode.RuleType ruleType) {

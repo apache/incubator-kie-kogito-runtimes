@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,7 @@ import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnitData;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
@@ -115,28 +117,13 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 String model = resolveVariable(decisionModel.getModel());
                 String decision = resolveVariable(decisionModel.getDecision());
 
-                DMNRuntime runtime = Optional.ofNullable(getRuleSetNode().getDmnRuntime()).orElse(() -> ((KieSession) kruntime).getKieRuntime(DMNRuntime.class)).get();
-                DMNModel dmnModel = runtime.getModel(namespace, model);
-                if (dmnModel == null) {
-                    // if was not found by name try to look it up by id
-                    dmnModel = runtime.getModelById(namespace, model);
-                }
+                DecisionModel modelInstance =
+                        Optional.ofNullable(getRuleSetNode().getDecisionModel())
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                        String.format("Could not find a decision model for %s:%s:%s", namespace, model, decision))).get();
 
-                if (dmnModel == null) {
-                    throw new IllegalArgumentException("DMN model '" + model + "' not found with namespace '" + namespace + "'");
-                }
-                DMNResult dmnResult = null;
-                DMNContext context = runtime.newContext();
-
-                for (Entry<String, Object> entry : inputs.entrySet()) {
-                    context.set(entry.getKey(), entry.getValue());
-                }
-
-                if (decision != null && !decision.isEmpty()) {
-                    dmnResult = runtime.evaluateByName(dmnModel, context, decision);
-                } else {
-                    dmnResult = runtime.evaluateAll(dmnModel, context);
-                }
+                DMNContext context = modelInstance.newContext(inputs);
+                DMNResult dmnResult = modelInstance.evaluateAll(context);
 
                 if (dmnResult.hasErrors()) {
                     String errors = dmnResult.getMessages(Severity.ERROR).stream()
