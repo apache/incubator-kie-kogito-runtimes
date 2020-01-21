@@ -413,9 +413,11 @@ public class ServerlessWorkflowParser {
     }
 
     protected String applySubstitutionsToScript(String script) {
-        script = script.replaceFirst("\\bworkflowdata.([a-z]*)\\b", "workflowdata.get(\"$1\")");
-        script = script.replaceAll("\\bworkflowdata\\b", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\\\"workflowdata\\\"))");
-        script = script.replaceFirst("\\bkcontext.([A-Za-z]+).([A-Za-z]+)\\b", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"$1\")).get(\"$2\")");
+        if (script.indexOf("workflowdata") >= 0) {
+            script = script.replaceFirst("\\bworkflowdata.([A-Za-z]+)\\b", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\\\"workflowdata\\\")).get(\"$1\")");
+        } else if (script.indexOf("kcontext") >= 0) {
+            script = script.replaceFirst("\\bkcontext.([A-Za-z]+).([A-Za-z]+)\\b", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"$1\")).get(\"$2\")");
+        }
 
         return script;
     }
