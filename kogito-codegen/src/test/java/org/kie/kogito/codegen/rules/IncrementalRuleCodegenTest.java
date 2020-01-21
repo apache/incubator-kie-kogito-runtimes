@@ -88,7 +88,7 @@ public class IncrementalRuleCodegenTest {
         incrementalRuleCodegen.setPackageName("com.acme");
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
-        assertRules(7, 3, 1, generatedFiles.size());
+        assertRules(9, 4, 2, generatedFiles.size());
     }
 
     @Test
