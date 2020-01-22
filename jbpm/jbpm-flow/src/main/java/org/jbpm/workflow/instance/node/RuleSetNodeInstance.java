@@ -64,6 +64,7 @@ import org.kie.dmn.api.core.DMNResult;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.decision.DecisionModel;
+import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnitData;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
@@ -119,8 +120,10 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
 
                 DecisionModel modelInstance =
                         Optional.ofNullable(getRuleSetNode().getDecisionModel())
-                                .orElseThrow(() -> new IllegalArgumentException(
-                                        String.format("Could not find a decision model for %s:%s:%s", namespace, model, decision))).get();
+                                .orElse(() -> new DmnDecisionModel(
+                                        ((KieSession) kruntime).getKieRuntime(DMNRuntime.class),
+                                        namespace,
+                                        model)).get();
 
                 DMNContext context = modelInstance.newContext(inputs);
                 DMNResult dmnResult = modelInstance.evaluateAll(context);
