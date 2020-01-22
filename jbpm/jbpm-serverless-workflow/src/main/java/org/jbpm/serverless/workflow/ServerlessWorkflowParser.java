@@ -37,6 +37,7 @@ import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.serverless.workflow.api.end.End;
+import org.jbpm.serverless.workflow.api.events.Consume;
 import org.jbpm.serverless.workflow.api.events.EventDefinition;
 import org.jbpm.serverless.workflow.api.events.OnEvent;
 import org.jbpm.serverless.workflow.api.functions.Function;
@@ -124,20 +125,20 @@ public class ServerlessWorkflowParser {
 
                 CompositeContextNode embedded = compositeContextNode(state.getName(), process);
 
-                List<OnEvent> onEventHandlers = eventState.getOnEvent();
+                List<Consume> consumedEvents = eventState.getConsume();
 
-                if(onEventHandlers != null && !onEventHandlers.isEmpty()) {
+                if(consumedEvents != null && !consumedEvents.isEmpty()) {
 
-                    OnEvent onEvent = onEventHandlers.get(0);
+                    Consume consumedEvent = consumedEvents.get(0);
 
                     // add process var
-                    addJSONNodetVar(process, getWorkflowEventFor(workflowEventDefinitions, onEvent.getEventTrigger()));
+                    addJSONNodetVar(process, getWorkflowEventFor(workflowEventDefinitions, consumedEvent.getEventName()));
 
                     // remove original start node and replace with message start
                     process.removeNode(startNode);
-                    startNode = messageStartNode(process, getWorkflowEventFor(workflowEventDefinitions, onEvent.getEventTrigger()));
+                    startNode = messageStartNode(process, getWorkflowEventFor(workflowEventDefinitions, consumedEvent.getEventName()));
 
-                    List<Action> actions = onEvent.getActions();
+                    List<Action> actions = consumedEvent.getActions();
 
                     if(actions != null && !actions.isEmpty()) {
                         StartNode embeddedStartNode = startNode(embedded);
@@ -246,7 +247,7 @@ public class ServerlessWorkflowParser {
             if(state instanceof EventState) {
                 // TODO -- same thing here, assuming a single event
                 // TODO within event state
-                transition = ((EventState)state).getOnEvent().get(0).getTransition();
+                transition = ((EventState)state).getConsume().get(0).getTransition();
             } else if(state instanceof OperationState) {
                 transition = ((OperationState)state).getTransition();
             }

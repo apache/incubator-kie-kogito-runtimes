@@ -107,7 +107,7 @@ public class ServlerlessWorkflowParsingTest {
         RuleFlowProcess process = (RuleFlowProcess) parser.parseWorkFlow(classpathResourceReader("/single-operation-many-functions.sw.json"));
         assertEquals("function", process.getId());
         assertEquals("test-wf", process.getName());
-        assertNull(process.getVersion());
+        assertEquals("1.0", process.getVersion());
         assertEquals("org.kie.kogito", process.getPackageName());
         assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
 
@@ -143,7 +143,7 @@ public class ServlerlessWorkflowParsingTest {
         RuleFlowProcess process = (RuleFlowProcess) parser.parseWorkFlow(classpathResourceReader("/multiple-operations.sw.json"));
         assertEquals("function", process.getId());
         assertEquals("test-wf", process.getName());
-        assertNull(process.getVersion());
+        assertEquals("1.0", process.getVersion());
         assertEquals("org.kie.kogito", process.getPackageName());
         assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
 

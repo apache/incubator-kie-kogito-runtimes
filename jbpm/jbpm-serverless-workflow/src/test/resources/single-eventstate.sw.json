@@ -15,8 +15,8 @@
   "states": [{
     "name": "WaitForGreeting",
     "type": "EVENT",
-    "onEvent": [{
-      "eventTrigger": "TestKafkaEvent",
+    "consume": [{
+      "eventName": "TestKafkaEvent",
       "actionMode": "SEQUENTIAL",
       "actions": [{
         "functionref": {
