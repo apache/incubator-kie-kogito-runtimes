@@ -78,10 +78,26 @@ public class ServerlessWorkflowParser {
         Map<String, Long> nameToNodeId = new HashMap<>();
 
         RuleFlowProcess process = new RuleFlowProcess();
-        process.setId(workflow.getId());
-        process.setName(workflow.getName());
+
+        if(workflow.getId() != null && !workflow.getId().isEmpty()) {
+            process.setId(workflow.getId());
+        } else {
+            process.setId("serverless");
+        }
+
+        if(workflow.getName() != null && !workflow.getName().isEmpty()) {
+            process.setName(workflow.getName());
+        } else {
+            process.setId("workflow");
+        }
+
+        if(workflow.getVersion() != null && !workflow.getVersion().isEmpty()) {
+            process.setVersion(workflow.getVersion());
+        } else {
+            process.setVersion("1.0");
+        }
+
         process.setAutoComplete(true);
-        process.setVersion(workflow.getVersion());
 
         if(workflow.getMetadata() != null && workflow.getMetadata().containsKey("packagename")) {
             process.setPackageName(workflow.getMetadata().get("packagename"));
@@ -115,11 +131,11 @@ public class ServerlessWorkflowParser {
                     OnEvent onEvent = onEventHandlers.get(0);
 
                     // add process var
-                    addJSONNodetVar(process, getWorkflowEventFor(workflowEventDefinitions, onEvent.getEventExpression()));
+                    addJSONNodetVar(process, getWorkflowEventFor(workflowEventDefinitions, onEvent.getEventTrigger()));
 
                     // remove original start node and replace with message start
                     process.removeNode(startNode);
-                    startNode = messageStartNode(process, getWorkflowEventFor(workflowEventDefinitions, onEvent.getEventExpression()));
+                    startNode = messageStartNode(process, getWorkflowEventFor(workflowEventDefinitions, onEvent.getEventTrigger()));
 
                     List<Action> actions = onEvent.getActions();
 

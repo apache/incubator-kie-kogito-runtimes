@@ -16,7 +16,7 @@
     "name": "WaitForGreeting",
     "type": "EVENT",
     "onEvent": [{
-      "eventExpression": "TestKafkaEvent",
+      "eventTrigger": "TestKafkaEvent",
       "actionMode": "SEQUENTIAL",
       "actions": [{
         "functionref": {

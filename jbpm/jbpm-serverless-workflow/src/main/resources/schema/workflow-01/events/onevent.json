@@ -3,7 +3,7 @@
   "javaType": "org.jbpm.serverless.workflow.api.events.OnEvent",
   "description": "Actions to be performed on Events arrival",
   "properties": {
-    "eventExpression": {
+    "eventTrigger": {
       "type": "string",
       "description": "Boolean expression which consists of one or more Event operands and the Boolean operators"
     },
