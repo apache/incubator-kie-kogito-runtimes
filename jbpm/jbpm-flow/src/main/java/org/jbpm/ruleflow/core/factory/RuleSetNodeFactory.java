@@ -26,9 +26,7 @@ import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.RuleUnitFactory;
 import org.kie.api.runtime.KieRuntime;
-import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.decision.DecisionModel;
-import org.kie.kogito.rules.RuleUnit;
 
 /**
  *

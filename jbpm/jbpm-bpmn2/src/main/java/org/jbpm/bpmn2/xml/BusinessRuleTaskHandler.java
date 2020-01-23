@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.compiler.compiler.xml.XmlDumper;
-import org.drools.core.util.StringUtils;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.process.core.impl.DataTransformerRegistry;
 import org.jbpm.workflow.core.Node;

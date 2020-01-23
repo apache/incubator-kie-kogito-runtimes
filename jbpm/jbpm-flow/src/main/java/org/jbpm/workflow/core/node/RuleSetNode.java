@@ -31,7 +31,6 @@ import org.jbpm.process.core.context.AbstractContext;
 import org.jbpm.process.core.impl.ContextContainerImpl;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.runtime.KieRuntime;
-import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.rules.RuleUnitData;
 
