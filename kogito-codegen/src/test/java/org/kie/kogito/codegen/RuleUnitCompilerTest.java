@@ -24,6 +24,8 @@ import org.kie.api.time.SessionPseudoClock;
 import org.kie.kogito.Application;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.rules.multiunit.MultiUnit;
+import org.kie.kogito.codegen.rules.singleton.Datum;
+import org.kie.kogito.codegen.rules.singleton.Singleton;
 import org.kie.kogito.codegen.unit.AdultUnit;
 import org.kie.kogito.codegen.unit.PersonsUnit;
 import org.kie.kogito.rules.DataHandle;
@@ -193,6 +195,24 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
         instance.fire();
 
         assertEquals(asList("start", "middle", "done"), strings);
+
+    }
+
+    @Test
+    public void singletonStore() throws Exception {
+        Application application = generateCodeRulesOnly(
+                "org/kie/kogito/codegen/rules/singleton/Singleton.drl");
+
+        ArrayList<Datum> data = new ArrayList<>();
+
+        RuleUnit<Singleton> mu = application.ruleUnits().create(Singleton.class);
+        Singleton unitData = new Singleton();
+        RuleUnitInstance<Singleton> instance = mu.createInstance(unitData);
+        unitData.getOutput().subscribe(DataObserver.ofUpdatable(v -> { if (v!=null) data.add(v); }));
+        unitData.getInput().set(new Datum("start"));
+        instance.fire();
+
+        assertEquals(asList(new Datum("continue"), new Datum("done")), data);
 
     }
 }

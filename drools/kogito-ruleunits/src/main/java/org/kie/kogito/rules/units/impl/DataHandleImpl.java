@@ -25,7 +25,7 @@ public class DataHandleImpl implements DataHandle {
     private static final AtomicLong counter = new AtomicLong();
 
     private final long id = counter.incrementAndGet();
-    private final Object object;
+    private Object object;
 
     public DataHandleImpl( Object object ) {
         this.object = object;
@@ -42,6 +42,10 @@ public class DataHandleImpl implements DataHandle {
     @Override
     public Object getObject() {
         return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
     }
 
     public long getId() {
