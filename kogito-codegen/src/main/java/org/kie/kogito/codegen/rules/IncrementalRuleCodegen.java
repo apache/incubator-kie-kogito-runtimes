@@ -58,6 +58,7 @@ import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.kogito.conf.ClockType;
 import org.kie.kogito.conf.EventProcessingType;
@@ -70,7 +71,7 @@ import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public class IncrementalRuleCodegen extends AbstractGenerator {
 
-    public static IncrementalRuleCodegen ofPath( Path basePath) {
+    public static IncrementalRuleCodegen ofPath(Path basePath) {
         try {
             Stream<File> files = Files.walk(basePath).map(Path::toFile);
             Set<Resource> resources = toResources(files);
@@ -144,6 +145,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private boolean hotReloadMode = false;
     private String packageName;
     private final boolean decisionTableSupported;
+    private final Map<String, RuleUnitConfig> configs;
 
 
     @Deprecated
@@ -157,6 +159,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         setDefaultsforEmptyKieModule(kieModuleModel);
         this.contextClassLoader = getClass().getClassLoader();
         this.decisionTableSupported = DecisionTableFactory.getDecisionTableProvider() != null;
+        this.configs = new HashMap<>();
     }
 
     @Override
@@ -338,6 +341,14 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     public void setDependencyInjection(boolean di) {
         this.dependencyInjection = di;
+    }
+
+    public IncrementalRuleCodegen withRuleUnitConfigs(Collection<NamedRuleUnitConfig> configs) {
+        this.configs.clear();
+        for (NamedRuleUnitConfig cfg : configs) {
+            this.configs.put(cfg.getCanonicalName(), cfg.getConfig());
+        }
+        return this;
     }
 
     public IncrementalRuleCodegen withKModule(KieModuleModel model) {

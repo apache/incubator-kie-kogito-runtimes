@@ -31,14 +31,13 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
     private final String name;
     private final String packageName;
     private final String simpleName;
-    private RuleUnitConfig config;
 
     public GeneratedRuleUnitDescription(String name, Function<String, Class<?>> typeResolver) {
         this.typeResolver = typeResolver;
         this.name = name;
         this.simpleName = name.substring(name.lastIndexOf('.') + 1);
         this.packageName = name.substring(0, name.lastIndexOf('.'));
-        this.config = RuleUnitConfig.Default;
+        setConfig(RuleUnitConfig.Default);
     }
 
     public GeneratedRuleUnitDescription(String name, TypeResolver typeResolver) {
@@ -102,6 +101,7 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
             throw new IllegalArgumentException(e);
         }
     }
+
     private static Class<?> uncheckedLoadClass(ClassLoader classLoader, String fqcn) {
         try {
             return classLoader.loadClass(fqcn);
@@ -129,14 +129,5 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
         return returnType instanceof ParameterizedType ?
                 (Class<?>) ((ParameterizedType) returnType).getActualTypeArguments()[0] :
                 Object.class;
-    }
-
-    public void setConfig(RuleUnitConfig config) {
-        this.config = config;
-    }
-
-    @Override
-    public RuleUnitConfig getConfig() {
-        return this.config;
     }
 }

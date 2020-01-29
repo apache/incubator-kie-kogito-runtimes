@@ -41,13 +41,4 @@ public class StaticRuleConfig implements RuleConfig {
         return ruleEventListenerConfig;
     }
 
-    @Override
-    public EventProcessingOption eventProcessingMode() {
-        return eventProcessing;
-    }
-
-    @Override
-    public ClockTypeOption clockType() {
-        return clockType;
-    }
 }

@@ -41,6 +41,7 @@ public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
     public ReflectiveRuleUnitDescription(InternalKnowledgePackage pkg, Class<? extends RuleUnitData> ruleUnitClass) {
         this.ruleUnitClass = ruleUnitClass;
         indexUnitVars();
+        setConfig(loadConfig(ruleUnitClass));
     }
 
     @Override
@@ -108,8 +109,7 @@ public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
                 Object.class;
     }
 
-    @Override
-    public RuleUnitConfig getConfig() {
+    private static RuleUnitConfig loadConfig(Class<? extends RuleUnitData> ruleUnitClass) {
         Optional<EventProcessing> eventAnn = Optional.ofNullable(ruleUnitClass.getAnnotation(EventProcessing.class));
         Optional<Clock> clockAnn = Optional.ofNullable(ruleUnitClass.getAnnotation(Clock.class));
         Optional<SessionsPool> sessionsPoolAnn = Optional.ofNullable(ruleUnitClass.getAnnotation(SessionsPool.class));
