@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import org.drools.core.addon.TypeResolver;
 import org.kie.kogito.rules.DataSource;
+import org.kie.kogito.rules.RuleUnitConfig;
 
 public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
 
@@ -30,12 +31,14 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
     private final String name;
     private final String packageName;
     private final String simpleName;
+    private RuleUnitConfig config;
 
     public GeneratedRuleUnitDescription(String name, Function<String, Class<?>> typeResolver) {
         this.typeResolver = typeResolver;
         this.name = name;
         this.simpleName = name.substring(name.lastIndexOf('.') + 1);
         this.packageName = name.substring(0, name.lastIndexOf('.'));
+        this.config = RuleUnitConfig.Default;
     }
 
     public GeneratedRuleUnitDescription(String name, TypeResolver typeResolver) {
@@ -126,5 +129,14 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
         return returnType instanceof ParameterizedType ?
                 (Class<?>) ((ParameterizedType) returnType).getActualTypeArguments()[0] :
                 Object.class;
+    }
+
+    public void setConfig(RuleUnitConfig config) {
+        this.config = config;
+    }
+
+    @Override
+    public RuleUnitConfig getConfig() {
+        return this.config;
     }
 }

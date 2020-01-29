@@ -19,17 +19,18 @@ package org.kie.kogito.rules.units;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.drools.core.definitions.InternalKnowledgePackage;
-import org.drools.core.rule.EntryPointId;
+import org.kie.kogito.conf.Clock;
+import org.kie.kogito.conf.ClockType;
+import org.kie.kogito.conf.EventProcessing;
+import org.kie.kogito.conf.EventProcessingType;
+import org.kie.kogito.conf.SessionsPool;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnit;
+import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.units.AbstractRuleUnitDescription;
 
 import static org.drools.reflective.util.ClassUtils.getter2property;
 
@@ -105,5 +106,17 @@ public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
         return returnType instanceof ParameterizedType ?
                 (Class<?>) ((ParameterizedType) returnType).getActualTypeArguments()[0] :
                 Object.class;
+    }
+
+    @Override
+    public RuleUnitConfig getConfig() {
+        Optional<EventProcessing> eventAnn = Optional.ofNullable(ruleUnitClass.getAnnotation(EventProcessing.class));
+        Optional<Clock> clockAnn = Optional.ofNullable(ruleUnitClass.getAnnotation(Clock.class));
+        Optional<SessionsPool> sessionsPoolAnn = Optional.ofNullable(ruleUnitClass.getAnnotation(SessionsPool.class));
+
+        return new RuleUnitConfig(
+                eventAnn.map(EventProcessing::value).orElse(EventProcessingType.CLOUD),
+                clockAnn.map(Clock::value).orElse(ClockType.REALTIME),
+                sessionsPoolAnn.map(SessionsPool::value).orElse(null));
     }
 }

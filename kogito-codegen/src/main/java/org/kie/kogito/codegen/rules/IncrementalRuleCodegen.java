@@ -21,12 +21,12 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,9 +59,9 @@ import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
-import org.kie.kogito.conf.Clock;
-import org.kie.kogito.conf.EventProcessing;
-import org.kie.kogito.conf.SessionsPool;
+import org.kie.kogito.conf.ClockType;
+import org.kie.kogito.conf.EventProcessingType;
+import org.kie.kogito.rules.RuleUnitConfig;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static java.util.stream.Collectors.toList;
@@ -295,31 +295,26 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private void addUnitConfToKieModule( RuleUnitDescription ruleUnitDescription ) {
+    private void addUnitConfToKieModule(RuleUnitDescription ruleUnitDescription) {
         KieBaseModel unitKieBaseModel = kieModuleModel.newKieBaseModel(ruleUnit2KieBaseName(ruleUnitDescription.getCanonicalName()));
         unitKieBaseModel.setEventProcessingMode(org.kie.api.conf.EventProcessingOption.CLOUD);
         unitKieBaseModel.addPackage(ruleUnitDescription.getPackageName());
 
-        // fixme config should go in the description as well
-        Class<?> ruleUnit = ruleUnitDescription.getRuleUnitClass();
-        if (ruleUnit != null) {
-            SessionsPool sessionsPoolAnn = ruleUnit.getAnnotation(SessionsPool.class);
-            if (sessionsPoolAnn != null && sessionsPoolAnn.value() > 0) {
-                unitKieBaseModel.setSessionsPool(SessionsPoolOption.get(sessionsPoolAnn.value()));
-            }
-            EventProcessing eventAnn = ruleUnit.getAnnotation(EventProcessing.class);
-            if (eventAnn != null && eventAnn.value() == EventProcessing.Type.STREAM) {
-                unitKieBaseModel.setEventProcessingMode(EventProcessingOption.STREAM);
-            }
+        RuleUnitConfig config = ruleUnitDescription.getConfig();
+        OptionalInt sessionsPool = config.getSessionPool();
+        if (sessionsPool.isPresent()) {
+            unitKieBaseModel.setSessionsPool(SessionsPoolOption.get(sessionsPool.getAsInt()));
+        }
+        EventProcessingType eventProcessingType = config.getEventProcessingType();
+        if (eventProcessingType == EventProcessingType.STREAM) {
+            unitKieBaseModel.setEventProcessingMode(EventProcessingOption.STREAM);
         }
 
         KieSessionModel unitKieSessionModel = unitKieBaseModel.newKieSessionModel(ruleUnit2KieSessionName(ruleUnitDescription.getCanonicalName()));
         unitKieSessionModel.setType(KieSessionModel.KieSessionType.STATEFUL);
-        if (ruleUnit != null) {
-            Clock clockAnn = ruleUnit.getAnnotation(Clock.class);
-            if (clockAnn != null && clockAnn.value() == Clock.Type.PSEUDO) {
-                unitKieSessionModel.setClockType( ClockTypeOption.PSEUDO );
-            }
+        ClockType clockType = config.getClockType();
+        if (clockType == ClockType.PSEUDO) {
+            unitKieSessionModel.setClockType(ClockTypeOption.PSEUDO);
         }
     }
 
