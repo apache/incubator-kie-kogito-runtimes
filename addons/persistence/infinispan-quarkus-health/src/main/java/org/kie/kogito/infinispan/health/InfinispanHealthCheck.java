@@ -80,12 +80,12 @@ public class InfinispanHealthCheck implements HealthCheck {
                                            }
                                        })
                                        .allMatch(Boolean.FALSE::equals))
-                    .map(allDown -> buildDownResponse(channelFactory, !allDown))
-                    .orElse(buildDownResponse(channelFactory, false));
+                    .map(allDown -> buildResponse(channelFactory, !allDown))
+                    .orElse(buildResponse(channelFactory, false));
         }).orElse(null);
     }
 
-    private HealthCheckResponse buildDownResponse(ChannelFactory channelFactory, boolean state) {
+    private HealthCheckResponse buildResponse(ChannelFactory channelFactory, boolean state) {
         return HealthCheckResponse.builder()
                 .withData("nodes", Optional.ofNullable(channelFactory.getServers())
                         .orElse(Collections.emptyList())
