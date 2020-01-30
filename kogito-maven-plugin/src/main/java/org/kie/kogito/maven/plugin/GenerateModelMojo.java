@@ -203,8 +203,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
         if (generateRuleUnits) {
             appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withKModule(getKModuleModel())
-                    .withClassLoader(projectClassLoader)
-                    .withRuleUnitConfigs(getRuleUnitConfigs());
+                    .withClassLoader(projectClassLoader);
         }
 
         if (generateProcesses) {
@@ -235,24 +234,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
         } else {
             getLog().debug("kmodule.xml is missing. Returned the default value.");
             return new KieModuleModelImpl();
-        }
-    }
-
-    private List<NamedRuleUnitConfig> getRuleUnitConfigs() throws IOException {
-        if (!project.getResources().isEmpty()) {
-            Path filePath = Paths.get(project.getResources().get(0).getDirectory()).resolve("application.conf");
-            try {
-                FileReader fileReader = new FileReader(filePath.toFile());
-                Properties properties = new Properties();
-                properties.load(fileReader);
-                return NamedRuleUnitConfig.fromProperties(properties);
-            } catch (NoSuchFileException e) {
-                getLog().debug("application.conf is missing; ignoring.", e);
-                return Collections.emptyList();
-            }
-        } else {
-            getLog().debug("application.conf is missing; ignoring.");
-            return Collections.emptyList();
         }
     }
 

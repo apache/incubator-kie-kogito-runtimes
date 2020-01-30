@@ -56,6 +56,7 @@ import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
+import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
@@ -169,6 +170,15 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
+    }
+
+    @Override
+    public void setContext(GeneratorContext context) {
+        super.setContext(context);
+        this.configs.clear();
+        for (NamedRuleUnitConfig cfg : NamedRuleUnitConfig.fromContext(context)) {
+            this.configs.put(cfg.getCanonicalName(), cfg.getConfig());
+        }
     }
 
     @Override
@@ -341,14 +351,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     public void setDependencyInjection(boolean di) {
         this.dependencyInjection = di;
-    }
-
-    public IncrementalRuleCodegen withRuleUnitConfigs(Collection<NamedRuleUnitConfig> configs) {
-        this.configs.clear();
-        for (NamedRuleUnitConfig cfg : configs) {
-            this.configs.put(cfg.getCanonicalName(), cfg.getConfig());
-        }
-        return this;
     }
 
     public IncrementalRuleCodegen withKModule(KieModuleModel model) {

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.conf.ClockType;
 import org.kie.kogito.conf.EventProcessingType;
 import org.kie.kogito.rules.RuleUnitConfig;
@@ -33,9 +34,9 @@ public final class NamedRuleUnitConfig {
     private static String CONFIG_CLOCK_TYPE = CONFIG_PREFIX + "\"%s\".clock-type";
     private static String CONFIG_SESSIONS_POOL = CONFIG_PREFIX + "\"%s\".sessions-pool";
 
-    public static List<NamedRuleUnitConfig> fromProperties(Properties props) {
+    public static List<NamedRuleUnitConfig> fromContext(GeneratorContext context) {
         HashSet<String> canonicalNames = new HashSet<>();
-        for (String k : props.stringPropertyNames()) {
+        for (String k : context.getApplicationProperties()) {
             if (k.startsWith(CONFIG_PREFIX)) {
                 String rest = k.substring(CONFIG_PREFIX.length());
                 Optional<String> unitCanonicalName = parseQuotedIdentifier(rest);
@@ -45,19 +46,21 @@ public final class NamedRuleUnitConfig {
 
         ArrayList<NamedRuleUnitConfig> configs = new ArrayList<>();
         for (String canonicalName : canonicalNames) {
-            String ept = props.getOrDefault(
-                    String.format(CONFIG_EVENT_PROCESSING_TYPE, canonicalName), EventProcessingType.CLOUD.name())
-                    .toString().toUpperCase();
+            String ept = context.getApplicationProperty(
+                    String.format(CONFIG_EVENT_PROCESSING_TYPE, canonicalName))
+                    .orElse(EventProcessingType.CLOUD.name())
+                    .toUpperCase();
             EventProcessingType eventProcessingType = EventProcessingType.valueOf(ept);
 
-            String ct = props.getOrDefault(
-                    String.format(CONFIG_CLOCK_TYPE, canonicalName), ClockType.REALTIME.name())
-                    .toString().toUpperCase();
+            String ct = context.getApplicationProperty(
+                    String.format(CONFIG_CLOCK_TYPE, canonicalName))
+                    .orElse(ClockType.REALTIME.name())
+                    .toUpperCase();
             ClockType clockType = ClockType.valueOf(ct);
 
-            String sp = props.getProperty(
+            Optional<String> sp = context.getApplicationProperty(
                     String.format(CONFIG_SESSIONS_POOL, canonicalName));
-            Integer sessionPool = sp == null ? null : Integer.parseInt(sp);
+            Integer sessionPool = sp.map(Integer::parseInt).orElse(null);
 
             configs.add(new NamedRuleUnitConfig(
                     canonicalName,
