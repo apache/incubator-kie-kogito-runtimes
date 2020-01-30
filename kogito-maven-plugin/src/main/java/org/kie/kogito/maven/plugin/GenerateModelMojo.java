@@ -241,12 +241,19 @@ public class GenerateModelMojo extends AbstractKieMojo {
     private List<NamedRuleUnitConfig> getRuleUnitConfigs() throws IOException {
         if (!project.getResources().isEmpty()) {
             Path filePath = Paths.get(project.getResources().get(0).getDirectory()).resolve("application.conf");
-            FileReader fileReader = new FileReader(filePath.toFile());
-            Properties properties = new Properties();
-            properties.load(fileReader);
-            return NamedRuleUnitConfig.fromProperties(properties);
+            try {
+                FileReader fileReader = new FileReader(filePath.toFile());
+                Properties properties = new Properties();
+                properties.load(fileReader);
+                return NamedRuleUnitConfig.fromProperties(properties);
+            } catch (NoSuchFileException e) {
+                getLog().debug("application.conf is missing; ignoring.", e);
+                return Collections.emptyList();
+            }
+        } else {
+            getLog().debug("application.conf is missing; ignoring.");
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
 
     private void writeGeneratedFile(GeneratedFile f) throws IOException {
