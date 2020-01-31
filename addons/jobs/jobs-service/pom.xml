@@ -86,7 +86,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>infinispan-quarkus-health</artifactId>
+      <artifactId>infinispan-quarkus-health-addon</artifactId>
     </dependency>
 
     <!-- Testing -->
