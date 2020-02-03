@@ -18,8 +18,7 @@ public class MessageProducer {
     Optional<Boolean> useCloudEvents = Optional.of(true);
     private ObjectMapper json = new ObjectMapper();
     
-    
-    public void configure() {
+    {
         json.setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
     }
     
