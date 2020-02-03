@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.process.Process;
@@ -40,9 +40,9 @@ public class EmbeddedSubProcessTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("subprocess/EmbeddedSubProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("SubProcess");
+        Process<? extends ProcessData> p = app.processes().processById("SubProcess");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -59,9 +59,9 @@ public class EmbeddedSubProcessTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("subprocess/EmbeddedSubProcessWithUserTask.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("embeddedWithUserTask");
+        Process<? extends ProcessData> p = app.processes().processById("embeddedWithUserTask");
         Person person = new Person("john", 25);
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("person", person);
         m.fromMap(parameters);

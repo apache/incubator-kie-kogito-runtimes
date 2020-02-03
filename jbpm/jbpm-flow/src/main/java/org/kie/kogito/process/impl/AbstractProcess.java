@@ -23,7 +23,7 @@ import org.jbpm.process.instance.LightProcessRuntimeServiceProvider;
 import org.jbpm.process.instance.ProcessRuntimeServiceProvider;
 import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.ProcessRuntime;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
@@ -32,7 +32,7 @@ import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.Signal;
 
-public abstract class AbstractProcess<T extends Model> implements Process<T> {
+public abstract class AbstractProcess<T extends ProcessData> implements Process<T> {
 
     protected ProcessInstancesFactory processInstancesFactory;
 
@@ -68,7 +68,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T> {
     }
 
     @Override
-    public ProcessInstance<T> createInstance(Model m) {
+    public ProcessInstance<T> createInstance(ProcessData m) {
         return createInstance((T) m);
     }
 

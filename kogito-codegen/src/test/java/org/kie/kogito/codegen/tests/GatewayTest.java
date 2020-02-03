@@ -21,7 +21,7 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -35,9 +35,9 @@ public class GatewayTest extends AbstractCodegenTest {
         Application app = generateCode(Collections.singletonList("gateway/EventBasedSplit.bpmn2"), Collections.singletonList("ruletask/BusinessRuleTask.drl"));        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("EventBasedSplit");
+        Process<? extends ProcessData> p = app.processes().processById("EventBasedSplit");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
@@ -48,7 +48,7 @@ public class GatewayTest extends AbstractCodegenTest {
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("x");
         assertThat(result.toMap().get("x")).isEqualTo("test");
                 
@@ -64,7 +64,7 @@ public class GatewayTest extends AbstractCodegenTest {
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         
-        result = (Model)processInstance.variables();
+        result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("x");
         assertThat(result.toMap().get("x")).isEqualTo("value");
                 

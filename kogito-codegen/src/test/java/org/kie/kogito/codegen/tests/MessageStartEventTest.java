@@ -26,7 +26,7 @@ import java.util.Map;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -39,9 +39,9 @@ public class MessageStartEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("messagestartevent/MessageStartEvent.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("MessageStartEvent");
+        Process<? extends ProcessData> p = app.processes().processById("MessageStartEvent");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("customerId", "CUS-00998877");
         m.fromMap(parameters);
@@ -50,7 +50,7 @@ public class MessageStartEventTest extends AbstractCodegenTest {
         processInstance.start("customers", null);     
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("customerId");
         assertThat(result.toMap().get("customerId")).isNotNull().isEqualTo("CUS-00998877");
     }
@@ -61,9 +61,9 @@ public class MessageStartEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("messagestartevent/MessageStartAndEndEvent.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("MessageStartEvent");
+        Process<? extends ProcessData> p = app.processes().processById("MessageStartEvent");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("customerId", "CUS-00998877");
         m.fromMap(parameters);
@@ -72,7 +72,7 @@ public class MessageStartEventTest extends AbstractCodegenTest {
         processInstance.start("customers", null);     
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("customerId");
         assertThat(result.toMap().get("customerId")).isNotNull().isEqualTo("CUS-00998877");
     }
@@ -124,9 +124,9 @@ public class MessageStartEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("messagestartevent/NoneAndMessageStartEvent.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("MessageStartEvent");
+        Process<? extends ProcessData> p = app.processes().processById("MessageStartEvent");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("customerId", "CUS-00998877");
         m.fromMap(parameters);
@@ -135,7 +135,7 @@ public class MessageStartEventTest extends AbstractCodegenTest {
         processInstance.start();     
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("customerId", "path");
         assertThat(result.toMap().get("customerId")).isNotNull().isEqualTo("CUS-00998877");
         assertThat(result.toMap().get("path")).isNotNull().isEqualTo("none");
@@ -145,7 +145,7 @@ public class MessageStartEventTest extends AbstractCodegenTest {
         processInstance.start("customers", null);     
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        result = (Model)processInstance.variables();
+        result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("customerId", "path");
         assertThat(result.toMap().get("customerId")).isNotNull().isEqualTo("CUS-00998877");
         assertThat(result.toMap().get("path")).isNotNull().isEqualTo("message");

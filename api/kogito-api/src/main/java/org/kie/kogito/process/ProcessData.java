@@ -13,15 +13,17 @@
  * limitations under the License.
  */
 
-package org.kie.kogito;
+package org.kie.kogito.process;
 
 import java.util.Map;
+
+import org.kie.kogito.DataContext;
 
 /**
  * Represents data model type of objects that are usually descriptor of data holders.
  *
  */
-public interface Model {
+public interface ProcessData extends DataContext {
 
     /**
      * Returns model representation as map of members of this model type

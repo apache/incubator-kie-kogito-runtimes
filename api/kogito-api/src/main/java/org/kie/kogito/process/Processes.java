@@ -17,11 +17,9 @@ package org.kie.kogito.process;
 
 import java.util.Collection;
 
-import org.kie.kogito.Model;
-
 public interface Processes {
 
-    Process<? extends Model> processById(String processId);
+    Process<? extends ProcessData> processById(String processId);
     
     Collection<String> processIds();
 }

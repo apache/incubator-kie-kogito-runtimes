@@ -16,7 +16,9 @@
 
 package org.kie.kogito.rules;
 
-public interface RuleUnitData {
+import org.kie.kogito.DataContext;
+
+public interface RuleUnitData extends DataContext {
 
 
 }

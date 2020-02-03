@@ -26,7 +26,7 @@ import org.jbpm.bpmn2.xml.BPMNSemanticModule;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.kie.api.definition.process.Process;
 import org.kie.api.io.Resource;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcess;
@@ -54,7 +54,7 @@ public class BpmnProcess extends AbstractProcess<BpmnVariables> {
     }
     
     @Override
-    public ProcessInstance<BpmnVariables> createInstance(Model m) {
+    public ProcessInstance<BpmnVariables> createInstance(ProcessData m) {
         return new BpmnProcessInstance(this, BpmnVariables.create(m.toMap()), this.createLegacyProcessRuntime());
     }
 

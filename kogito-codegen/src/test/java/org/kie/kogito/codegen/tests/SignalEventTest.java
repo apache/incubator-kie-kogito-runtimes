@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -38,9 +38,9 @@ public class SignalEventTest extends AbstractCodegenTest {
         Application app = generateCode(Collections.singletonList("signalevent/IntermediateCatchEventSignal.bpmn2"), Collections.singletonList("ruletask/BusinessRuleTask.drl"));        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("IntermediateCatchEvent");
+        Process<? extends ProcessData> p = app.processes().processById("IntermediateCatchEvent");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
@@ -57,7 +57,7 @@ public class SignalEventTest extends AbstractCodegenTest {
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKey("x");
         assertThat(result.toMap().get("x")).isEqualTo("test");
                 
@@ -70,9 +70,9 @@ public class SignalEventTest extends AbstractCodegenTest {
         Application app = generateCode(Collections.singletonList("signalevent/BoundarySignalEventOnTask.bpmn2"), Collections.singletonList("ruletask/BusinessRuleTask.drl"));        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("BoundarySignalOnTask");
+        Process<? extends ProcessData> p = app.processes().processById("BoundarySignalOnTask");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
@@ -83,7 +83,7 @@ public class SignalEventTest extends AbstractCodegenTest {
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("x");
         assertThat(result.toMap().get("x")).isEqualTo("test");
         
@@ -96,9 +96,9 @@ public class SignalEventTest extends AbstractCodegenTest {
         Application app = generateCode(Collections.singletonList("signalevent/BoundaryInterruptingSignalEventOnTask.bpmn2"), Collections.singletonList("ruletask/BusinessRuleTask.drl"));        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("BoundarySignalOnTask");
+        Process<? extends ProcessData> p = app.processes().processById("BoundarySignalOnTask");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
@@ -109,7 +109,7 @@ public class SignalEventTest extends AbstractCodegenTest {
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("x");
         assertThat(result.toMap().get("x")).isEqualTo("test");
         
@@ -125,9 +125,9 @@ public class SignalEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
                 
-        Process<? extends Model> p = app.processes().processById("IntermediateCatchEvent");
+        Process<? extends ProcessData> p = app.processes().processById("IntermediateCatchEvent");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
@@ -156,7 +156,7 @@ public class SignalEventTest extends AbstractCodegenTest {
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKey("x");
         assertThat(result.toMap().get("x")).isEqualTo("test");
                 

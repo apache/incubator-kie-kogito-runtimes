@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
 
@@ -12,17 +12,17 @@ public class ApplicationProcesses implements Processes {
 
     Object processes;
         
-    private Map<String, Process<? extends Model>> mappedProcesses = new HashMap<>();
+    private Map<String, Process<? extends ProcessData>> mappedProcesses = new HashMap<>();
 
     @javax.annotation.PostConstruct
     public void setup() {
         
-        for (Process<? extends Model> process : processes) {
+        for (Process<? extends ProcessData> process : processes) {
             mappedProcesses.put(process.id(), process);
         }
     }
     
-    public Process<? extends Model> processById(String processId) {
+    public Process<? extends ProcessData> processById(String processId) {
         return mappedProcesses.get(processId);
     }
     

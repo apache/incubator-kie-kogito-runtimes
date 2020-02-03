@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -38,9 +38,9 @@ public class CallActivityTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("subprocess/CallActivity.bpmn2", "subprocess/CallActivitySubProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("ParentProcess");
+        Process<? extends ProcessData> p = app.processes().processById("ParentProcess");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("x", "a");
         parameters.put("y", "b");
@@ -50,7 +50,7 @@ public class CallActivityTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("x", "y");
         assertThat(result.toMap().get("y")).isNotNull().isEqualTo("new value");
         assertThat(result.toMap().get("x")).isNotNull().isEqualTo("a");
@@ -62,9 +62,9 @@ public class CallActivityTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("subprocess/CallActivityWithTypeInfo.bpmn2", "subprocess/CallActivitySubProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("ParentProcess");
+        Process<? extends ProcessData> p = app.processes().processById("ParentProcess");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("x", "a");
         parameters.put("y", "b");
@@ -74,7 +74,7 @@ public class CallActivityTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("x", "y");
         assertThat(result.toMap().get("y")).isNotNull().isEqualTo("new value");
         assertThat(result.toMap().get("x")).isNotNull().isEqualTo("a");
@@ -86,14 +86,14 @@ public class CallActivityTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("subprocess/CallActivityMI.bpmn2", "subprocess/CallActivitySubProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("ParentProcess");
+        Process<? extends ProcessData> p = app.processes().processById("ParentProcess");
         
         List<String> list = new ArrayList<String>();
         list.add("first");
         list.add("second");
         List<String> listOut = new ArrayList<String>();
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("list", list);
         parameters.put("listOut", listOut);
@@ -103,7 +103,7 @@ public class CallActivityTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(4).containsKeys("x", "y", "list", "listOut");
         assertThat((List<?>)result.toMap().get("listOut")).isNotNull().hasSize(2);
         

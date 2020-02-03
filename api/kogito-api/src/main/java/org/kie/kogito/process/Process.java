@@ -15,8 +15,6 @@
 
 package org.kie.kogito.process;
 
-import org.kie.kogito.Model;
-
 public interface Process<T> {
 
     ProcessInstance<T> createInstance(T workingMemory);
@@ -27,7 +25,7 @@ public interface Process<T> {
     
     T createModel();
 
-    ProcessInstance<? extends Model> createInstance(Model m);
+    ProcessInstance<? extends ProcessData> createInstance(ProcessData m);
     
     String id();
 }

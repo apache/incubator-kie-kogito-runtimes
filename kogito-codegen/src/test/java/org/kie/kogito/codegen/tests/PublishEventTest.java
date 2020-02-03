@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.data.Person;
@@ -60,16 +60,16 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
         
-        Process<? extends Model> p = app.processes().processById("BusinessRuleTask");
+        Process<? extends ProcessData> p = app.processes().processById("BusinessRuleTask");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
         
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("person");
         assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);        
         uow.end();
@@ -105,9 +105,9 @@ public class PublishEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
+        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -176,9 +176,9 @@ public class PublishEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcessWithSecurityRoles.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
+        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -210,9 +210,9 @@ public class PublishEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("subprocess/CallActivity.bpmn2", "subprocess/CallActivitySubProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("ParentProcess");
+        Process<? extends ProcessData> p = app.processes().processById("ParentProcess");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("x", "a");
         parameters.put("y", "b");
@@ -231,7 +231,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         uow.end();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("x", "y");
         assertThat(result.toMap().get("y")).isNotNull().isEqualTo("new value");
         assertThat(result.toMap().get("x")).isNotNull().isEqualTo("a");
@@ -285,16 +285,16 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
         
-        Process<? extends Model> p = app.processes().processById("BusinessRuleTask");
+        Process<? extends ProcessData> p = app.processes().processById("BusinessRuleTask");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
         
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("person");
         assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);        
         uow.abort();
@@ -315,19 +315,19 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
         
-        Process<? extends Model> p = app.processes().processById("ExclusiveSplit");
+        Process<? extends ProcessData> p = app.processes().processById("ExclusiveSplit");
         
         Map<String, Object> params = new HashMap<>();
         params.put("x", "First");
         params.put("y", "None");
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         m.fromMap(params);
         
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("x", "y");              
         uow.end();
 
@@ -364,9 +364,9 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
                 
-        Process<? extends Model> p = app.processes().processById("ServiceProcessDifferentOperations");
+        Process<? extends ProcessData> p = app.processes().processById("ServiceProcessDifferentOperations");
         
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -416,7 +416,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         assertThat(body.getError()).isNull();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("s");
         assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Goodbye Hello john!!");
     }

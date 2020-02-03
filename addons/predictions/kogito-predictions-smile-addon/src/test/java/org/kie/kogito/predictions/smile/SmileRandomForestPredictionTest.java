@@ -11,7 +11,7 @@ import org.drools.core.io.impl.ClassPathResource;
 import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.prediction.api.PredictionAwareHumanTaskLifeCycle;
 import org.kie.kogito.prediction.api.PredictionService;
 import org.kie.kogito.process.ProcessConfig;
@@ -69,7 +69,7 @@ public class SmileRandomForestPredictionTest {
         processInstance.start();
         assertEquals(STATE_COMPLETED, processInstance.status());
   
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertEquals(2, result.toMap().size());
         assertEquals("predicted value", result.toMap().get("s"));
         

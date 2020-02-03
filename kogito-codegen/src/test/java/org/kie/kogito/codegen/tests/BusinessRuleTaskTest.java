@@ -29,7 +29,7 @@ import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.kogito.Application;
-import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessData;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.process.Process;
@@ -48,16 +48,16 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         Application app = generateCode(Collections.singletonList("ruletask/BusinessRuleTask.bpmn2"), Collections.singletonList("ruletask/BusinessRuleTask.drl"));
         assertThat(app).isNotNull();
 
-        Process<? extends Model> p = app.processes().processById("BusinessRuleTask");
+        Process<? extends ProcessData> p = app.processes().processById("BusinessRuleTask");
 
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("person");
         assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
     }
@@ -76,16 +76,16 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
             }
 
         });
-        Process<? extends Model> p = app.processes().processById("BusinessRuleTask");
+        Process<? extends ProcessData> p = app.processes().processById("BusinessRuleTask");
 
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("person");
         assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
 
@@ -110,16 +110,16 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
         uow.start();
 
-        Process<? extends Model> p = app.processes().processById("BusinessRuleTask");
+        Process<? extends ProcessData> p = app.processes().processById("BusinessRuleTask");
 
-        Model m = p.createModel();
+        ProcessData m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model)processInstance.variables();
+        ProcessData result = (ProcessData)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("person");
         assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
 
@@ -139,23 +139,23 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
                 Collections.emptyList(),
                 false);
 
-        Process<? extends Model> p =
+        Process<? extends ProcessData> p =
                 app.processes()
                         .processById("DmnProcess");
 
         // first run 16, 1 and expected days is 27
         {
-            Model m = p.createModel();
+            ProcessData m = p.createModel();
             HashMap<String, Object> vars = new HashMap<>();
             vars.put("age", 16);
             vars.put("yearsOfService", 1);
             m.fromMap(vars);
 
-            ProcessInstance<? extends Model> processInstance = p.createInstance(m);
+            ProcessInstance<? extends ProcessData> processInstance = p.createInstance(m);
             processInstance.start();
 
             assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-            Model result = processInstance.variables();
+            ProcessData result = processInstance.variables();
 
             assertThat(result.toMap().get("vacationDays"))
                     .isNotNull()
@@ -164,17 +164,17 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
 
         // second run 44, 20 and expected days is 24
         {
-            Model m = p.createModel();
+            ProcessData m = p.createModel();
             HashMap<String, Object> vars = new HashMap<>();
             vars.put("age", 44);
             vars.put("yearsOfService", 20);
             m.fromMap(vars);
 
-            ProcessInstance<? extends Model> processInstance = p.createInstance(m);
+            ProcessInstance<? extends ProcessData> processInstance = p.createInstance(m);
             processInstance.start();
 
             assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-            Model result = processInstance.variables();
+            ProcessData result = processInstance.variables();
 
             assertThat(result.toMap().get("vacationDays"))
                     .isNotNull()
@@ -183,17 +183,17 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
 
         // second run 50, 30 and expected days is 30
         {
-            Model m = p.createModel();
+            ProcessData m = p.createModel();
             HashMap<String, Object> vars = new HashMap<>();
             vars.put("age", 50);
             vars.put("yearsOfService", 30);
             m.fromMap(vars);
 
-            ProcessInstance<? extends Model> processInstance = p.createInstance(m);
+            ProcessInstance<? extends ProcessData> processInstance = p.createInstance(m);
             processInstance.start();
 
             assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-            Model result = processInstance.variables();
+            ProcessData result = processInstance.variables();
 
             assertThat(result.toMap().get("vacationDays"))
                     .isNotNull()
