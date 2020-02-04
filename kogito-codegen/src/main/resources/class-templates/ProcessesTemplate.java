@@ -13,8 +13,9 @@ public class ApplicationProcesses implements Processes {
     Object processes;
         
     private Map<String, Process<? extends Model>> mappedProcesses = new HashMap<>();
-    
-    public ApplicationProcesses() {
+
+    @javax.annotation.PostConstruct
+    public void setup() {
         
         for (Process<? extends Model> process : processes) {
             mappedProcesses.put(process.id(), process);
