@@ -17,9 +17,13 @@ public class MessageProducer {
     
     Optional<Boolean> useCloudEvents = Optional.of(true);
     private ObjectMapper json = new ObjectMapper();
-    
-    {
-        json.setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
+
+	{
+		json.setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
+	}
+
+    public void configure() {
+		
     }
     
 	public void produce(ProcessInstance pi, $Type$ eventData) {

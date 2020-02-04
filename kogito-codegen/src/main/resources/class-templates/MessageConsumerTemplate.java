@@ -25,9 +25,13 @@ public class $Type$MessageConsumer {
     Optional<Boolean> useCloudEvents = Optional.of(true);
     
     private ObjectMapper json = new ObjectMapper();
-        
+
     {
         json.setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
+    }
+
+    public void configure() {
+
     }
     
 	public void consume(String payload) {
