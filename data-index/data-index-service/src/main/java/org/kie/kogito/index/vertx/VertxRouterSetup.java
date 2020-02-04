@@ -21,6 +21,10 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import graphql.GraphQL;
+import io.quarkus.oidc.AccessTokenCredential;
+import io.quarkus.vertx.http.runtime.security.QuarkusHttpUser;
+import io.vertx.core.MultiMap;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.FaviconHandler;
 import io.vertx.ext.web.handler.LoggerHandler;
@@ -43,13 +47,30 @@ public class VertxRouterSetup {
     GraphQL graphQL;
 
     void setupRouter(@Observes Router router) {
-        if (Boolean.FALSE.equals(authEnabled)) {
-            router.route("/graphiql/*").handler(GraphiQLHandler.create(new GraphiQLHandlerOptions().setEnabled(true)));
-            router.route().handler(LoggerHandler.create());
-            router.route().handler(StaticHandler.create());
-            router.route().handler(FaviconHandler.create());
-            router.route("/").handler(ctx -> ctx.response().putHeader("location", "/graphiql/").setStatusCode(302).end());
+        GraphiQLHandler graphiQLHandler = GraphiQLHandler.create(new GraphiQLHandlerOptions().setEnabled(true));
+        if (Boolean.TRUE.equals(authEnabled)) {
+            graphiQLHandler.graphiQLRequestHeaders(rc -> {
+
+                MultiMap multiMap = MultiMap.caseInsensitiveMultiMap();
+                String token = "";
+                if (rc.user() != null) {
+                    token = ((QuarkusHttpUser) rc.user()).getSecurityIdentity().getCredential(AccessTokenCredential.class).getToken();
+                } else {
+                    token =  rc.request().getHeader(HttpHeaders.AUTHORIZATION);
+                }
+                multiMap.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+                multiMap.add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+                multiMap.add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Authorization, Content-Type, Accept");
+                multiMap.add("Bearer-token",  "Bearer " + token);
+                rc.request().headers().addAll(multiMap);
+                return multiMap.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+            });
         }
+        router.route("/graphiql/*").handler(graphiQLHandler);
+        router.route().handler(LoggerHandler.create());
+        router.route().handler(StaticHandler.create());
+        router.route().handler(FaviconHandler.create());
+        router.route("/").handler(ctx -> ctx.response().putHeader("location", "/graphiql/").setStatusCode(302).end());
         router.route("/graphql").handler(ApolloWSHandler.create(graphQL));
         router.route("/graphql").handler(GraphQLHandler.create(graphQL, new GraphQLHandlerOptions()));
     }
