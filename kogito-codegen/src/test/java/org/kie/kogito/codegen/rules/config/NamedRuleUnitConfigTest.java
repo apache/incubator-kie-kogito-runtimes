@@ -44,8 +44,8 @@ public class NamedRuleUnitConfigTest {
         assertThat(namedRuleUnitConfigs).hasSize(1);
         NamedRuleUnitConfig namedRuleUnitConfig = namedRuleUnitConfigs.get(0);
         assertThat(namedRuleUnitConfig.getCanonicalName()).isEqualTo("my.rule.Unit");
-        assertThat(namedRuleUnitConfig.getConfig().getEventProcessingType()).isEqualTo(EventProcessingType.CLOUD);
-        assertThat(namedRuleUnitConfig.getConfig().getClockType()).isEqualTo(ClockType.REALTIME);
+        assertThat(namedRuleUnitConfig.getConfig().getDefaultedEventProcessingType()).isEqualTo(EventProcessingType.CLOUD);
+        assertThat(namedRuleUnitConfig.getConfig().getDefaultedClockType()).isEqualTo(ClockType.REALTIME);
         assertThat(namedRuleUnitConfig.getConfig().getSessionPool().getAsInt()).isEqualTo(10);
     }
 
@@ -71,15 +71,15 @@ public class NamedRuleUnitConfigTest {
 
         RuleUnitConfig myRuleUnitConfig = map.get("my.rule.Unit");
         assertThat(myRuleUnitConfig).isNotNull();
-        assertThat(myRuleUnitConfig.getEventProcessingType()).isEqualTo(EventProcessingType.CLOUD);
-        assertThat(myRuleUnitConfig.getClockType()).isEqualTo(ClockType.PSEUDO);
+        assertThat(myRuleUnitConfig.getDefaultedEventProcessingType()).isEqualTo(EventProcessingType.CLOUD);
+        assertThat(myRuleUnitConfig.getDefaultedClockType()).isEqualTo(ClockType.PSEUDO);
         assertThat(myRuleUnitConfig.getSessionPool().getAsInt()).isEqualTo(10);
 
         RuleUnitConfig myRuleUnit2Config = map.get("my.rule.Unit2");
         assertThat(myRuleUnit2Config).isNotNull();
 
-        assertThat(myRuleUnit2Config.getEventProcessingType()).isEqualTo(EventProcessingType.STREAM);
-        assertThat(myRuleUnit2Config.getClockType()).isEqualTo(ClockType.REALTIME);
+        assertThat(myRuleUnit2Config.getDefaultedEventProcessingType()).isEqualTo(EventProcessingType.STREAM);
+        assertThat(myRuleUnit2Config.getDefaultedClockType()).isEqualTo(ClockType.REALTIME);
         assertThat(myRuleUnit2Config.getSessionPool()).isEmpty();
     }
 

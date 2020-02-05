@@ -313,19 +313,24 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         unitKieBaseModel.setEventProcessingMode(org.kie.api.conf.EventProcessingOption.CLOUD);
         unitKieBaseModel.addPackage(ruleUnitDescription.getPackageName());
 
-        RuleUnitConfig config = ruleUnitDescription.getConfig();
+        // merge config from the descriptor with configs from application.conf
+        // application.conf overrides any other config
+        RuleUnitConfig config =
+                ruleUnitDescription.getConfig()
+                        .merged(configs.get(ruleUnitDescription.getCanonicalName()));
+
         OptionalInt sessionsPool = config.getSessionPool();
         if (sessionsPool.isPresent()) {
             unitKieBaseModel.setSessionsPool(SessionsPoolOption.get(sessionsPool.getAsInt()));
         }
-        EventProcessingType eventProcessingType = config.getEventProcessingType();
+        EventProcessingType eventProcessingType = config.getDefaultedEventProcessingType();
         if (eventProcessingType == EventProcessingType.STREAM) {
             unitKieBaseModel.setEventProcessingMode(EventProcessingOption.STREAM);
         }
 
         KieSessionModel unitKieSessionModel = unitKieBaseModel.newKieSessionModel(ruleUnit2KieSessionName(ruleUnitDescription.getCanonicalName()));
         unitKieSessionModel.setType(KieSessionModel.KieSessionType.STATEFUL);
-        ClockType clockType = config.getClockType();
+        ClockType clockType = config.getDefaultedClockType();
         if (clockType == ClockType.PSEUDO) {
             unitKieSessionModel.setClockType(ClockTypeOption.PSEUDO);
         }

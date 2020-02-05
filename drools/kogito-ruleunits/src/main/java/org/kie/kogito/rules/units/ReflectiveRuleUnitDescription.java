@@ -115,8 +115,8 @@ public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
         Optional<SessionsPool> sessionsPoolAnn = Optional.ofNullable(ruleUnitClass.getAnnotation(SessionsPool.class));
 
         return new RuleUnitConfig(
-                eventAnn.map(EventProcessing::value).orElse(EventProcessingType.CLOUD),
-                clockAnn.map(Clock::value).orElse(ClockType.REALTIME),
+                eventAnn.map(EventProcessing::value).orElse(null),
+                clockAnn.map(Clock::value).orElse(null),
                 sessionsPoolAnn.map(SessionsPool::value).orElse(null));
     }
 }

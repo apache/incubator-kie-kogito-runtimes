@@ -46,17 +46,17 @@ public final class NamedRuleUnitConfig {
 
         ArrayList<NamedRuleUnitConfig> configs = new ArrayList<>();
         for (String canonicalName : canonicalNames) {
-            String ept = context.getApplicationProperty(
+            EventProcessingType eventProcessingType = context.getApplicationProperty(
                     String.format(CONFIG_EVENT_PROCESSING_TYPE, canonicalName))
-                    .orElse(EventProcessingType.CLOUD.name())
-                    .toUpperCase();
-            EventProcessingType eventProcessingType = EventProcessingType.valueOf(ept);
+                    .map(String::toUpperCase)
+                    .map(EventProcessingType::valueOf)
+                    .orElse(null);
 
-            String ct = context.getApplicationProperty(
+            ClockType clockType = context.getApplicationProperty(
                     String.format(CONFIG_CLOCK_TYPE, canonicalName))
-                    .orElse(ClockType.REALTIME.name())
-                    .toUpperCase();
-            ClockType clockType = ClockType.valueOf(ct);
+                    .map(String::toUpperCase)
+                    .map(ClockType::valueOf)
+                    .orElse(null);
 
             Optional<String> sp = context.getApplicationProperty(
                     String.format(CONFIG_SESSIONS_POOL, canonicalName));
