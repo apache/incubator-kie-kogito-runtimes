@@ -12,6 +12,20 @@
   <name>Kogito Runtimes</name>
   <description>Kogito Runtimes</description>
 
+  <url>http://kogito.kie.org</url>
+  <inceptionYear>2019</inceptionYear>
+  <organization>
+    <name>JBoss by Red Hat</name>
+    <url>http://www.jboss.org/</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -20,67 +34,25 @@
     <checkstyle.header.template>.*</checkstyle.header.template>
     <checkstyle.header.extensions>java</checkstyle.header.extensions>
 
-    <!--
-      CONVENTIONS:
-      - A version property must be specified in the format "version.{groupId}", optionally with a suffix to make it unique.
-      - Version properties must be sorted alphabetically in blocks (other form of sorting were found to be unclear and ambiguous).
-    -->
-
-    <!-- dependencies versions -->
-    <version.com.fasterxml.jackson>2.9.10</version.com.fasterxml.jackson>
-    <version.com.github.haifengl.smile>1.5.2</version.com.github.haifengl.smile>
-    <version.com.github.javaparser>3.13.10</version.com.github.javaparser>
-    <version.com.google.protobuf>3.6.1</version.com.google.protobuf>
-    <version.com.oracle.substratevm>19.2.1</version.com.oracle.substratevm>
-    <version.com.squareup.okhttp3>3.12.6</version.com.squareup.okhttp3>
-    <version.com.sun.xml.bind>2.3.0</version.com.sun.xml.bind>
-    <version.com.thoughtworks.xstream>1.4.11.1</version.com.thoughtworks.xstream>
-
-    <version.javax.activation>1.2.0</version.javax.activation>
-    <version.javax.annotation-api>1.3.2</version.javax.annotation-api>
-    <version.javax.inject>1</version.javax.inject>
-    <version.javax.json>1.1.4</version.javax.json>
-    <version.javax.json.bind>1.0</version.javax.json.bind>
-    <version.javax.xml.bind>2.3.0</version.javax.xml.bind>
-
-    <version.io.fabric8.kubernetes-client>4.6.2</version.io.fabric8.kubernetes-client>
-    <version.io.prometheus>0.5.0</version.io.prometheus>
     <version.io.quarkus>1.1.0.Final</version.io.quarkus>
-    <version.io.restassured>4.1.2</version.io.restassured>
-    <version.io.smallrye.reactive>1.0.8</version.io.smallrye.reactive>
 
-    <version.org.antlr>3.5.2</version.org.antlr>
-    <version.org.antlr4>4.7.2</version.org.antlr4>
-    <version.org.assertj>3.13.2</version.org.assertj>
-    <version.org.eclipse.jdt>3.19.0</version.org.eclipse.jdt>
-    <version.org.hamcrest>1.3</version.org.hamcrest> <!-- else old version coming from Mockito wins and breaks tests -->
-    <version.org.infinispan>10.0.0.Final</version.org.infinispan>
-    <version.org.infinispan.image>10.0.0.Final-1</version.org.infinispan.image>
-    <version.org.infinispan.protostream>4.3.0.Final</version.org.infinispan.protostream>
-    <version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>1.0.1.Final</version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>
-    <version.org.junit.minor>5.0</version.org.junit.minor> <!-- so that org.junit.platform and org.junit can share the same minor version -->
-    <version.org.junit>5.${version.org.junit.minor}</version.org.junit>
-    <version.org.junit.jupiter>${version.org.junit}</version.org.junit.jupiter>
-    <version.org.junit.vintage>${version.org.junit}</version.org.junit.vintage>
-    <version.org.junit.platform>1.${version.org.junit.minor}</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
-    <version.org.keycloak.image>8.0.1</version.org.keycloak.image>
-    <version.org.mockito>3.0.0</version.org.mockito>
-    <version.org.mvel>2.4.4.Final</version.org.mvel>
-    <version.org.kie7>7.32.0.Final</version.org.kie7>
-    <version.org.reflections>0.9.11</version.org.reflections>
-    <version.org.slf4j>1.7.25</version.org.slf4j>
-    <version.org.springframework.kafka>2.2.2.RELEASE</version.org.springframework.kafka>
+    <!--
+      JaCoCo coverage data file location. Using a single file for appending in the project's root directory makes it
+      possible to measure cross-module test coverage -->
+    <!--suppress UnresolvedMavenProperty -->
+    <version.org.jacoco.agent>0.8.4</version.org.jacoco.agent>
+    <version.jacoco.plugin>${version.org.jacoco.agent}</version.jacoco.plugin>
+    <jacoco.exec.file>${maven.multiModuleProjectDirectory}/target/jacoco.exec</jacoco.exec.file>
 
+    <!-- plugin versions -->
     <version.antapacheregexp>1.8.2</version.antapacheregexp>
     <version.antrun.plugin>1.8</version.antrun.plugin>
     <version.asciidoctor.plugin>1.5.2.1</version.asciidoctor.plugin>
     <version.build.helper.plugin>3.0.0</version.build.helper.plugin>
-    <version.ch.obermuhlner>2.0.1</version.ch.obermuhlner>
     <version.ch.qos.logback>1.1.3</version.ch.qos.logback>
     <version.clean.plugin>3.1.0</version.clean.plugin>
     <version.compiler.plugin>3.8.0-jboss-1</version.compiler.plugin>
     <version.copyrename.plugin>1.0</version.copyrename.plugin>
-    <version.cz.xtf>0.14</version.cz.xtf>
     <version.dependency.plugin>2.8</version.dependency.plugin>
     <version.deploy.plugin>2.8.2</version.deploy.plugin>
     <version.exec.plugin>1.6.0</version.exec.plugin>
@@ -91,14 +63,11 @@
     <version.jar.plugin>3.1.0</version.jar.plugin>
     <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
     <version.javancss.plugin>2.0</version.javancss.plugin>
-    <version.javassist>3.20.0-GA</version.javassist>
     <version.jdocbook.plugin>2.3.9</version.jdocbook.plugin>
-    <version.json-unit-assertj>2.9.0</version.json-unit-assertj>
     <version.license.plugin>1.8.0</version.license.plugin>
     <version.maven>3.5.4</version.maven>
     <version.maven.plugin>3.4</version.maven.plugin>
     <version.native2ascii.plugin>1.0-beta-1</version.native2ascii.plugin>
-    <version.net.java.dev.glazedlists>1.8.0</version.net.java.dev.glazedlists>
     <version.plexus>1.6</version.plexus>
     <version.plexus.classworld>2.5.2</version.plexus.classworld>
     <version.plugin.plugin>3.5.2</version.plugin.plugin>
@@ -111,17 +80,7 @@
     <version.surefire.report.plugin>2.6</version.surefire.report.plugin>
     <version.swagger.plugin>2.1.0</version.swagger.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
-    <version.testcontainers>1.12.3</version.testcontainers>
     <version.versions.plugin>2.1</version.versions.plugin>
-    <version.xmlunit>2.2.1</version.xmlunit>
-
-    <!--
-      JaCoCo coverage data file location. Using a single file for appending in the project's root directory makes it
-      possible to measure cross-module test coverage -->
-    <!--suppress UnresolvedMavenProperty -->
-    <version.org.jacoco.agent>0.8.4</version.org.jacoco.agent>
-    <version.jacoco.plugin>${version.org.jacoco.agent}</version.jacoco.plugin>
-    <jacoco.exec.file>${maven.multiModuleProjectDirectory}/target/jacoco.exec</jacoco.exec.file>
   </properties>
 
   <repositories>
@@ -143,14 +102,49 @@
     </repository>
   </repositories>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <!-- Duplicating the Maven Central repository here (as it is already coming from Super POM) makes the build much faster,
+           as the Maven Central is now treated as the first (default) repository (because it is before the JBoss.org one).
+           Artifacts with release (fixed) versions are being downloaded primarily from there. Without the central being the
+           first repository the JBoss.org Nexus would be contacted first and since it is quite slow it slows down the build.
+           We use JBoss.org repo only to download our SNAPSHOTs. -->
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
   <scm>
     <connection>scm:git:https://github.com/kiegroup/kogito-runtimes.git</connection>
     <developerConnection>scm:git:git@github.com:kiegroup/kogito-runtimes.git</developerConnection>
     <url>https://github.com/kiegroup/kogito-runtimes</url>
   </scm>
 
+  <developers>
+    <developer>
+      <name>All developers are listed on the team website</name>
+      <url>http://kogito.kie.org/community/team.html</url>
+    </developer>
+  </developers>
+
   <modules>
-    <module>boms</module>
+    <module>bom</module>
     <module>api</module>
     <module>drools</module>
     <module>jbpm</module>
@@ -239,6 +233,7 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
       <activation>
         <property>
@@ -258,5 +253,537 @@
         <sonar.pullrequest.github.repository>${env.CHANGE_URL}</sonar.pullrequest.github.repository>
       </properties>
     </profile>
+
+    <profile>
+      <id>default-profile</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-failsafe-plugin</artifactId>
+              <version>${version.surefire}</version>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>integration-test</goal>
+                    <goal>verify</goal>
+                  </goals>
+                  <configuration>
+                    <includes>
+                      <include>**/*IntegrationTest.java</include>
+                      <include>**/*IT.java</include>
+                    </includes>
+                    <excludes>
+                      <exclude>**/Native*IntegrationTest.java</exclude>
+                      <exclude>**/Native*IT.java</exclude>
+                    </excludes>
+                    <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+
+    <profile>
+      <id>native</id>
+      <activation>
+        <property>
+          <name>native</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>io.quarkus</groupId>
+              <artifactId>quarkus-maven-plugin</artifactId>
+              <version>${version.io.quarkus}</version>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>native-image</goal>
+                  </goals>
+                  <configuration>
+                    <enableHttpUrlHandler>true</enableHttpUrlHandler>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+              <artifactId>maven-failsafe-plugin</artifactId>
+              <version>${version.surefire}</version>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>integration-test</goal>
+                    <goal>verify</goal>
+                  </goals>
+                  <configuration>
+                    <includes>
+                      <include>**/*IntegrationTest.java</include>
+                      <include>**/*IT.java</include>
+                    </includes>
+                    <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
+                    <systemProperties>
+                      <native.image.path>${project.build.directory}/${project.build.finalName}-runner
+                      </native.image.path>
+                    </systemProperties>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
   </profiles>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${version.clean.plugin}</version>
+          <executions>
+            <execution>
+              <id>default-clean</id>
+              <phase>clean</phase>
+              <goals>
+                <goal>clean</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${version.install.plugin}</version>
+          <executions>
+            <execution>
+              <id>default-install</id>
+              <phase>install</phase>
+              <goals>
+                <goal>install</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${version.site.plugin}</version>
+          <executions>
+            <execution>
+              <id>default-site</id>
+              <phase>site</phase>
+              <goals>
+                <goal>site</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${version.dependency.plugin}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${version.deploy.plugin}</version>
+          <configuration>
+            <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${version.compiler.plugin}</version>
+          <configuration>
+            <showDeprecation>true</showDeprecation>
+            <showWarnings>true</showWarnings>
+            <source>${maven.compiler.source}</source>
+            <target>${maven.compiler.target}</target>
+            <testSource>${maven.compiler.source}</testSource>
+            <testTarget>${maven.compiler.target}</testTarget>
+            <compilerArgs>
+              <arg>-Xlint:unchecked</arg>
+            </compilerArgs>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>${version.antrun.plugin}</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.ant</groupId>
+              <artifactId>ant-apache-regexp</artifactId>
+              <version>${version.antapacheregexp}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${version.resources.plugin}</version>
+          <configuration>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${version.surefire}</version>
+          <configuration>
+            <includes>
+              <include>**/*Test.java</include>
+            </includes>
+            <excludes>
+              <exclude>**/*IntegrationTest.java</exclude>
+            </excludes>
+            <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
+            <systemPropertyVariables>
+              <apple.awt.UIElement>true</apple.awt.UIElement>
+              <org.uberfire.nio.git.daemon.enabled>false</org.uberfire.nio.git.daemon.enabled>
+              <org.uberfire.nio.git.ssh.enabled>false</org.uberfire.nio.git.ssh.enabled>
+              <org.uberfire.sys.repo.monitor.disabled>true</org.uberfire.sys.repo.monitor.disabled>
+            </systemPropertyVariables>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${version.exec.plugin}</version>
+        </plugin>
+        <!-- Packaging -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${version.jar.plugin}</version>
+          <executions>
+            <execution>
+              <id>default-jar</id>
+              <configuration>
+                <archive>
+                  <manifestEntries combine.children="append">
+                    <Automatic-Module-Name>${java.module.name}</Automatic-Module-Name>
+                  </manifestEntries>
+                </archive>
+              </configuration>
+            </execution>
+            <!-- No OSGi manifestEntries for <goal>jar</goal>: if it supported, then felix has already added them -->
+            <execution>
+              <id>test-jar</id>
+              <goals>
+                <goal>test-jar</goal>
+              </goals>
+              <configuration>
+                <skipIfEmpty>true</skipIfEmpty>
+                <excludes>
+                  <exclude>**/logback-test.xml</exclude>
+                  <exclude>**/jndi.properties</exclude>
+                </excludes>
+                <archive>
+                  <manifestEntries>
+                    <Bundle-SymbolicName>${java.module.name}.tests</Bundle-SymbolicName>
+                    <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}</Bundle-Version>
+                    <Bundle-Name>${project.name}</Bundle-Name>
+                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                  </manifestEntries>
+                </archive>
+              </configuration>
+            </execution>
+          </executions>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${version.source.plugin}</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar-no-fork</goal>
+              </goals>
+              <configuration>
+                <archive>
+                  <manifestEntries>
+                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                    <Bundle-SymbolicName>${java.module.name}.source</Bundle-SymbolicName>
+                    <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}</Bundle-Version>
+                    <Bundle-Name>${project.name}</Bundle-Name>
+                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                    <Eclipse-SourceBundle>${java.module.name};version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}";roots:="."</Eclipse-SourceBundle>
+                  </manifestEntries>
+                </archive>
+              </configuration>
+            </execution>
+            <execution>
+              <id>attach-test-sources</id>
+              <goals>
+                <goal>test-jar-no-fork</goal>
+              </goals>
+              <configuration>
+                <archive>
+                  <manifestEntries>
+                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                    <Bundle-SymbolicName>${java.module.name}.tests.source</Bundle-SymbolicName>
+                    <Bundle-Version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}</Bundle-Version>
+                    <Bundle-Name>${project.name}</Bundle-Name>
+                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                    <Eclipse-SourceBundle>${java.module.name}.tests;version="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${osgi.snapshot.qualifier}";roots:="."</Eclipse-SourceBundle>
+                  </manifestEntries>
+                </archive>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.commonjava.maven.plugins</groupId>
+          <artifactId>project-sources-maven-plugin</artifactId>
+          <version>${version.project.sources.plugin}</version>
+          <executions>
+            <execution>
+              <id>project-sources-archive</id>
+              <phase>initialize</phase>
+              <goals>
+                <goal>archive</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>${version.build.helper.plugin}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>parse-version</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.asciidoctor</groupId>
+          <artifactId>asciidoctor-maven-plugin</artifactId>
+          <version>${version.asciidoctor.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>native2ascii-maven-plugin</artifactId>
+          <version>${version.native2ascii.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>com.coderplus.maven.plugins</groupId>
+          <artifactId>copy-rename-maven-plugin</artifactId>
+          <version>${version.copyrename.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <!-- Entry needed to enable jdocbook unzipping -->
+              <groupId>org.jboss.maven.plugins</groupId>
+              <artifactId>maven-jdocbook-plugin</artifactId>
+              <version>${version.jdocbook.plugin}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-invoker-plugin</artifactId>
+          <version>${version.invoker.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>${version.versions.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <configuration>
+            <!-- Manually push changes (including git tags) after nexus staged repo is successfully closed -->
+            <pushChanges>false</pushChanges>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>${version.shade.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>com.mycila.maven-license-plugin</groupId>
+          <artifactId>maven-license-plugin</artifactId>
+          <version>${version.license.plugin}</version>
+          <configuration>
+            <!-- TODO this is buggy as it only works for first level modules -->
+            <header>${basedir}/../LICENSE-ASL-2.0-HEADER.txt</header>
+            <includes>
+              <include>**/*.java</include>
+              <include>**/*.drl</include>
+            </includes>
+            <mapping>
+              <drl>JAVADOC_STYLE</drl>
+            </mapping>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${version.javadoc.plugin}</version>
+          <configuration>
+            <links>
+              <link>http://docs.oracle.com/javase/8/docs/api</link>
+            </links>
+            <minmemory>128m</minmemory>
+            <maxmemory>512m</maxmemory>
+            <author>false</author>
+            <breakiterator>true</breakiterator>
+            <quiet>true</quiet>
+            <additionalparam>${javadoc.additional.params}</additionalparam>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>${version.findbugs.plugin}</version>
+          <configuration>
+            <maxRank>6</maxRank>
+            <effort>Max</effort>
+            <xmlOutput>true</xmlOutput>
+            <failOnError>${findbugs.failOnViolation}</failOnError>
+            <excludeFilterFile>findbugs-excludes.xml</excludeFilterFile>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-maven-plugin</artifactId>
+          <version>${version.org.kie}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>${version.plugin.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-maven-plugin</artifactId>
+          <version>${version.io.quarkus}</version>
+        </plugin>
+        <plugin>
+          <groupId>io.openapitools.swagger</groupId>
+          <artifactId>swagger-maven-plugin</artifactId>
+          <version>${version.swagger.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${version.jacoco.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jboss.jandex</groupId>
+          <artifactId>jandex-maven-plugin</artifactId>
+          <version>${version.jandex.plugin}</version>
+          <executions>
+            <execution>
+              <id>make-index</id>
+              <goals>
+                <goal>jandex</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <!-- Entry needed to provide parsed version properties -->
+        <!-- also adds generated sources to -source artifact -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/generated-sources/annotations/</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!-- Entry needed to create test-jars even for packaging types war, bundle, ... -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- Entry needed to create, install and deploy sources jars -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <!-- Note: It's not possible to configure reporting plugins in pluginManagement in m2.0.4 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${version.surefire.report.plugin}</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>report-only</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javancss-maven-plugin</artifactId>
+        <version>${version.javancss.plugin}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <version>${version.taglist.plugin}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
