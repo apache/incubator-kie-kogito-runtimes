@@ -38,7 +38,7 @@ read ok
 
 startDateTime=`date +%s`
 
-$organizationDir/kogito-bom/scripts/mvn-all.sh -B -e -U clean deploy -DskipTests -Dmaven.repo.local=/tmp/kogito-release-repo -s $1
+$organizationDir/kogito-runtimes/scripts/mvn-all.sh -B -e -U clean deploy -DskipTests -Dmaven.repo.local=/tmp/kogito-release-repo -s $1
 
 rm -rf /tmp/kogito-release-repo
 

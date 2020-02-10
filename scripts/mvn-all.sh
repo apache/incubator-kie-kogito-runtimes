@@ -28,7 +28,7 @@ printUsage() {
     echo "  $0 --version"
     echo "  $0 -DskipTests clean install"
     echo "  $0 -Dfull clean install"
-    echo "  $0 clean test --repo-list=kogito-bom,kogito-runtimes"
+    echo "  $0 clean test --repo-list=kogito-runtimes"
     echo
 }
 

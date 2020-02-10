@@ -38,4 +38,4 @@ read ok
 
 nextDevelopmentVersion=$1
 
-$organizationDir/kogito-bom/scripts/release/02-update-version-all.sh $nextDevelopmentVersion community
+$organizationDir/kogito-runtimes/scripts/release/02-update-version-all.sh $nextDevelopmentVersion community

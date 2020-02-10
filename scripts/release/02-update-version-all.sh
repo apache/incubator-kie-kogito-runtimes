@@ -70,7 +70,7 @@ startDateTime=`date +%s`
 
 cd $organizationDir
 
-for repository in `cat kogito-bom/scripts/repository-list.txt` ; do
+for repository in `cat kogito-runtimes/scripts/repository-list.txt` ; do
     echo
 
     if [ ! -d $organizationDir/$repository ]; then
@@ -83,7 +83,7 @@ for repository in `cat kogito-bom/scripts/repository-list.txt` ; do
         echo "==============================================================================="
         cd $repository
 
-        if [ "$repository" == "kogito-bom" ]; then
+        if [ "$repository" == "kogito-runtimes" ]; then
             # first build&install the current version (usually SNAPSHOT) as it is needed later by other repos
             mvn -B -U -Dfull clean install
             mvnVersionsSet

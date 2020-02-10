@@ -37,7 +37,7 @@ startDateTime=`date +%s`
 
 cd $organizationDir
 
-for repository in `cat $organizationDir/kogito-bom/scripts/repository-list.txt` ; do
+for repository in `cat $organizationDir/kogito-runtimes/scripts/repository-list.txt` ; do
     echo
     if [ ! -d $organizationDir/$repository ]; then
         echo "==============================================================================="
