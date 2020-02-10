@@ -1,1 +1,0 @@
-# kogito-bom
