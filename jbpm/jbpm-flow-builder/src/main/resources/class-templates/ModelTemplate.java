@@ -2,9 +2,9 @@ package org.jbpm.process.codegen;
 
 import java.util.Map;
 
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 
-public class XXXModel implements ProcessData {
+public class XXXModel implements Model {
     
     private String id;
     

@@ -37,7 +37,7 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.ProcessRuntime;
 import org.kie.api.runtime.process.WorkItemNotFoundException;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
 import org.kie.kogito.process.NodeNotFoundException;
@@ -51,7 +51,7 @@ import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
 import org.kie.kogito.services.uow.ProcessInstanceWorkUnit;
 
-public abstract class AbstractProcessInstance<T extends ProcessData> implements ProcessInstance<T> {
+public abstract class AbstractProcessInstance<T extends Model> implements ProcessInstance<T> {
 
     private final T variables;
     private final AbstractProcess<T> process;

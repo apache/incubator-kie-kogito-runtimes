@@ -34,7 +34,7 @@ import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.EnvironmentName;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcess;
@@ -98,7 +98,7 @@ public class ProcessInstanceMarshaller {
     
     public ProcessInstance<?> unmarshallProcessInstance(byte[] data, Process<?> process) {
         
-        ProcessData m = (ProcessData) process.createModel();
+        Model m = (Model) process.createModel();
         AbstractProcessInstance<?> processInstance = (AbstractProcessInstance<?>) process.createInstance(m);
         
         return unmarshallProcessInstance(data, process, processInstance);

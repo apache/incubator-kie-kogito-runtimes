@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 
-public class BpmnVariables implements ProcessData {
+public class BpmnVariables implements Model {
 
     private final Map<String, Object> variables = new HashMap<>();
 

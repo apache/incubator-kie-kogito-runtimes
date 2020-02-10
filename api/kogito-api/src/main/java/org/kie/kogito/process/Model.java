@@ -23,7 +23,7 @@ import org.kie.kogito.DataContext;
  * Represents data model type of objects that are usually descriptor of data holders.
  *
  */
-public interface ProcessData extends DataContext {
+public interface Model extends DataContext {
 
     /**
      * Returns model representation as map of members of this model type

@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.process.ProcessCodegenException;
 import org.kie.kogito.process.Process;
@@ -38,9 +38,9 @@ public class MessageIntermediateEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("messageevent/IntermediateThrowEventMessage.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("MessageIntermediateEvent");
+        Process<? extends Model> p = app.processes().processById("MessageIntermediateEvent");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();        
         m.fromMap(parameters);
         
@@ -48,7 +48,7 @@ public class MessageIntermediateEventTest extends AbstractCodegenTest {
         processInstance.start();        
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("customerId");        
     }
     
@@ -58,9 +58,9 @@ public class MessageIntermediateEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("messageevent/IntermediateCatchEventMessage.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("IntermediateCatchEvent");
+        Process<? extends Model> p = app.processes().processById("IntermediateCatchEvent");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();        
         m.fromMap(parameters);
         
@@ -72,7 +72,7 @@ public class MessageIntermediateEventTest extends AbstractCodegenTest {
         processInstance.send(Sig.of("Message-customers", "CUS-00998877"));
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("customerId");
         assertThat(result.toMap().get("customerId")).isNotNull().isEqualTo("CUS-00998877");
     }
@@ -83,9 +83,9 @@ public class MessageIntermediateEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("messageevent/BoundaryMessageEventOnTask.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("BoundaryMessageOnTask");
+        Process<? extends Model> p = app.processes().processById("BoundaryMessageOnTask");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();        
         m.fromMap(parameters);
         
@@ -97,7 +97,7 @@ public class MessageIntermediateEventTest extends AbstractCodegenTest {
         processInstance.send(Sig.of("Message-customers", "CUS-00998877"));
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("customerId");
         assertThat(result.toMap().get("customerId")).isNotNull().isEqualTo("CUS-00998877");
     }

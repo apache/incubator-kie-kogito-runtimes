@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.process.ProcessCodegenException;
 import org.kie.kogito.process.Process;
@@ -39,9 +39,9 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("servicetask/ServiceProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("ServiceProcess");
+        Process<? extends Model> p = app.processes().processById("ServiceProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("s", "john");
         m.fromMap(parameters);
@@ -50,7 +50,7 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("s");
         assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Hello john!");
     }
@@ -61,9 +61,9 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("servicetask/ServiceProcessDifferentOperations.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("ServiceProcessDifferentOperations");
+        Process<? extends Model> p = app.processes().processById("ServiceProcessDifferentOperations");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("s", "john");
         m.fromMap(parameters);
@@ -72,7 +72,7 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("s");
         assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Goodbye Hello john!!");
     }
@@ -83,9 +83,9 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("servicetask/ServiceProcessDifferentOperations.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("ServiceProcessDifferentOperations");
+        Process<? extends Model> p = app.processes().processById("ServiceProcessDifferentOperations");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("s", "john");
         m.fromMap(parameters);
@@ -94,7 +94,7 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         processInstance.startFrom("_A1EE8114-BF7B-4DAF-ABD7-62EEDCFAEFD4");
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("s");
         assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Goodbye john!");
     }
@@ -105,9 +105,9 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("servicetask/ServiceProcessSameOperations.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("ServiceProcessSameOperations");
+        Process<? extends Model> p = app.processes().processById("ServiceProcessSameOperations");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("s", "john");
         m.fromMap(parameters);
@@ -116,7 +116,7 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("s");
         assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Hello Hello john!!");
     }
@@ -127,14 +127,14 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("servicetask/ServiceProcessMI.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("ServiceProcess");
+        Process<? extends Model> p = app.processes().processById("ServiceProcess");
         
         List<String> list = new ArrayList<String>();
         list.add("first");
         list.add("second");
         List<String> listOut = new ArrayList<String>();
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("list", list);
         parameters.put("listOut", listOut);
@@ -144,7 +144,7 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(3).containsKeys("list", "s", "listOut");
         assertThat((List<String>)result.toMap().get("listOut")).isNotNull().hasSize(2).contains("Hello first!", "Hello second!");
     }
@@ -168,9 +168,9 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("servicetask/MultiParamServiceProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("ServiceProcess");
+        Process<? extends Model> p = app.processes().processById("ServiceProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("s", "john");
         parameters.put("x", "doe");
@@ -180,7 +180,7 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("s", "x");
         assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Hello (first and lastname) john doe!");
     }
@@ -191,9 +191,9 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("servicetask/MultiParamServiceProcessConstant.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("ServiceProcess");
+        Process<? extends Model> p = app.processes().processById("ServiceProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("s", "john");
         parameters.put("x", "doe");
@@ -203,7 +203,7 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("s", "x");
         assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Hello (first and lastname) john Test!");
     }
@@ -214,9 +214,9 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("servicetask/MultiParamServiceProcessNoOutput.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("MultiParamServiceProcessNoOutput");
+        Process<? extends Model> p = app.processes().processById("MultiParamServiceProcessNoOutput");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", "john");
         parameters.put("age", 35);
@@ -226,7 +226,7 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("name", "age");
         
     }
@@ -237,9 +237,9 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("servicetask/MultiParamCustomResultServiceTask.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("services");
+        Process<? extends Model> p = app.processes().processById("services");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", "john");
         parameters.put("age", 35);
@@ -249,7 +249,7 @@ public class ServiceTaskTest extends AbstractCodegenTest {
         processInstance.start();
         
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED); 
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(3).containsKeys("name", "age");
         
         assertThat(result.toMap().get("result")).isNotNull().isEqualTo("Hello john 35!");

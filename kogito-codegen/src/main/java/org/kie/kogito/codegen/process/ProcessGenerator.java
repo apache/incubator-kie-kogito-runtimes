@@ -57,7 +57,7 @@ import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.impl.AbstractProcess;
@@ -163,7 +163,7 @@ public class ProcessGenerator {
 
         methodDeclaration.setName("createInstance")
                 .addModifier(Modifier.Keyword.PUBLIC)
-                .addParameter(ProcessData.class.getCanonicalName(), "value")
+                .addParameter(Model.class.getCanonicalName(), "value")
                 .setType(processInstanceFQCN)
                 .setBody(new BlockStmt()
                                  .addStatement(returnStmt));

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
@@ -75,7 +75,7 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
                 .addModifier(Modifier.Keyword.PUBLIC)
                 .setName("processById")
                 .setType(new ClassOrInterfaceType(null, org.kie.kogito.process.Process.class.getCanonicalName())
-                                 .setTypeArguments(new WildcardType(new ClassOrInterfaceType(null, ProcessData.class.getCanonicalName()))))
+                                 .setTypeArguments(new WildcardType(new ClassOrInterfaceType(null, Model.class.getCanonicalName()))))
                 .setBody(new BlockStmt())
                 .addParameter("String", "processId");
 
@@ -149,7 +149,7 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
         cls.findAll(FieldDeclaration.class, fd -> fd.getVariable(0).getNameAsString().equals("processes")).forEach(fd -> {
             annotator.withInjection(fd);
             fd.getVariable(0).setType(new ClassOrInterfaceType(null, new SimpleName(annotator.multiInstanceInjectionType()), 
-                                                               NodeList.nodeList(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new WildcardType(new ClassOrInterfaceType(null, ProcessData.class.getCanonicalName())))))));
+                                                               NodeList.nodeList(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new WildcardType(new ClassOrInterfaceType(null, Model.class.getCanonicalName())))))));
         });
         
         annotator.withApplicationComponent(cls);

@@ -19,7 +19,7 @@ import java.util.Collection;
 
 public interface Processes {
 
-    Process<? extends ProcessData> processById(String processId);
+    Process<? extends Model> processById(String processId);
     
     Collection<String> processIds();
 }

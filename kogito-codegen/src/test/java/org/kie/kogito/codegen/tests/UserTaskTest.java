@@ -41,7 +41,7 @@ import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessWorkItemTransitionEvent;
 import org.kie.api.runtime.process.WorkItemNotFoundException;
 import org.kie.kogito.Application;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.codegen.AbstractCodegenTest;
@@ -77,9 +77,9 @@ public class UserTaskTest extends AbstractCodegenTest {
             }
         });
                 
-        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -112,9 +112,9 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -150,9 +150,9 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -203,9 +203,9 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -271,9 +271,9 @@ public class UserTaskTest extends AbstractCodegenTest {
             }
         });
                 
-        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -327,9 +327,9 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -393,9 +393,9 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/approval.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("approvals");
+        Process<? extends Model> p = app.processes().processById("approvals");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -434,9 +434,9 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/approval.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("approvals");
+        Process<? extends Model> p = app.processes().processById("approvals");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -499,9 +499,9 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -552,9 +552,9 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -604,9 +604,9 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends ProcessData> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         

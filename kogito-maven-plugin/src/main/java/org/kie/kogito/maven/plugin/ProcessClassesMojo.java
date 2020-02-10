@@ -43,7 +43,7 @@ import org.drools.compiler.commons.jci.compilers.JavaCompilerFactory;
 import org.drools.compiler.commons.jci.compilers.JavaCompilerSettings;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.compiler.rule.builder.dialect.java.JavaDialectConfiguration;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
@@ -89,7 +89,7 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 builder.addClassLoader(cl);
 
                 Reflections reflections = new Reflections(builder);
-                Set<Class<? extends ProcessData>> modelClasses = reflections.getSubTypesOf(ProcessData.class);
+                Set<Class<? extends Model>> modelClasses = reflections.getSubTypesOf(Model.class);
 
                 String appPackageName = project.getGroupId();
 

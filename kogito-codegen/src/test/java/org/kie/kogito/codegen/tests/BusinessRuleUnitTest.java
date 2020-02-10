@@ -34,7 +34,7 @@ import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.kogito.Application;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.process.ProcessCodegenException;
@@ -65,16 +65,16 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
         Application app = generateCode(Collections.singletonList(bpmnPath), Collections.singletonList("org/kie/kogito/codegen/tests/BusinessRuleUnit.drl"));
         assertThat(app).isNotNull();
 
-        Process<? extends ProcessData> p = app.processes().processById("BusinessRuleUnit");
+        Process<? extends Model> p = app.processes().processById("BusinessRuleUnit");
 
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("person");
         assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
     }
@@ -94,16 +94,16 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
             }
 
         });
-        Process<? extends ProcessData> p = app.processes().processById("BusinessRuleUnit");
+        Process<? extends Model> p = app.processes().processById("BusinessRuleUnit");
 
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("person");
         assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
 
@@ -129,16 +129,16 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
         uow.start();
 
-        Process<? extends ProcessData> p = app.processes().processById("BusinessRuleUnit");
+        Process<? extends Model> p = app.processes().processById("BusinessRuleUnit");
 
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("person");
         assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
 
@@ -153,7 +153,7 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
     public void ioMapping() throws Exception {
         Application app = generateCode(Collections.singletonList("ruletask/ExampleP.bpmn"),
                                        Collections.singletonList("ruletask/Example.drl"));
-        Process<? extends ProcessData> process = app.processes().processById("ruletask.ExampleP");
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleP");
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("singleString", "hello");
@@ -161,10 +161,10 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
         map.put("manyPersons", asList(new Person("Paul", 77), new Person("Ringo", 79)));
         map.put("emptyList", new ArrayList<>());
 
-        ProcessData model = process.createModel();
+        Model model = process.createModel();
         model.fromMap(map);
-        ProcessInstance<? extends ProcessData> instance = process.createInstance(model);
-        ProcessData variables = instance.variables();
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
         assertNull(result.get("emptyString"));
@@ -193,7 +193,7 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
     public void ioMappingAutoGeneratedRuleUnit() throws Exception {
         Application app = generateCode(Collections.singletonList("ruletask/ExampleGenerated.bpmn"),
                                        Collections.singletonList("ruletask/Generated.drl"));
-        Process<? extends ProcessData> process = app.processes().processById("ruletask.ExampleGenerated");
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleGenerated");
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("singleString", "hello");
@@ -201,10 +201,10 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
         map.put("manyPersons", asList(new Person("Paul", 77), new Person("Ringo", 79)));
         map.put("emptyList", new ArrayList<>());
 
-        ProcessData model = process.createModel();
+        Model model = process.createModel();
         model.fromMap(map);
-        ProcessInstance<? extends ProcessData> instance = process.createInstance(model);
-        ProcessData variables = instance.variables();
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
         assertNull(result.get("emptyString"));
@@ -225,16 +225,16 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
     public void testSettingOtherVariableFromAutoGeneratedRuleUnit() throws Exception {
         Application app = generateCode(Collections.singletonList("ruletask/ExampleGenerated.bpmn"),
                                        Collections.singletonList("ruletask/Generated.drl"));
-        Process<? extends ProcessData> process = app.processes().processById("ruletask.ExampleGenerated");
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleGenerated");
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("singleString", "hello");
         map.put("singlePerson", new Person("John", 50));
 
-        ProcessData model = process.createModel();
+        Model model = process.createModel();
         model.fromMap(map);
-        ProcessInstance<? extends ProcessData> instance = process.createInstance(model);
-        ProcessData variables = instance.variables();
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
         assertNull(result.get("emptyString"));
@@ -255,16 +255,16 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
     public void testRemovingOtherVariableFromAutoGeneratedRuleUnit() throws Exception {
         Application app = generateCode(Collections.singletonList("ruletask/ExampleGenerated.bpmn"),
                                        Collections.singletonList("ruletask/Generated.drl"));
-        Process<? extends ProcessData> process = app.processes().processById("ruletask.ExampleGenerated");
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleGenerated");
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("singleString", "hello");
         map.put("singlePerson", new Person("John", 60));
 
-        ProcessData model = process.createModel();
+        Model model = process.createModel();
         model.fromMap(map);
-        ProcessInstance<? extends ProcessData> instance = process.createInstance(model);
-        ProcessData variables = instance.variables();
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
         assertNull(result.get("emptyString"));
@@ -286,17 +286,17 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
     public void inputMappingNullCollection() throws Exception {
         Application app = generateCode(Collections.singletonList("ruletask/ExampleP.bpmn"),
                                        Collections.singletonList("ruletask/Example.drl"));
-        Process<? extends ProcessData> process = app.processes().processById("ruletask.ExampleP");
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleP");
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("singleString", "hello");
         map.put("singlePerson", new Person("Yoko", 86));
         map.put("manyPersons", null);
 
-        ProcessData model = process.createModel();
+        Model model = process.createModel();
         model.fromMap(map);
-        ProcessInstance<? extends ProcessData> instance = process.createInstance(model);
-        ProcessData variables = instance.variables();
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
         assertNull(result.get("emptyString"));
@@ -314,17 +314,17 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
     public void outputMappingNullCollection() throws Exception {
         Application app = generateCode(Collections.singletonList("ruletask/ExampleP.bpmn"),
                                        Collections.singletonList("ruletask/Example.drl"));
-        Process<? extends ProcessData> process = app.processes().processById("ruletask.ExampleP");
+        Process<? extends Model> process = app.processes().processById("ruletask.ExampleP");
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("singleString", "hello");
         map.put("singlePerson", new Person("Yoko", 86));
         map.put("manyPersons", asList(new Person("Paul", 77), new Person("Ringo", 79)));
 
-        ProcessData model = process.createModel();
+        Model model = process.createModel();
         model.fromMap(map);
-        ProcessInstance<? extends ProcessData> instance = process.createInstance(model);
-        ProcessData variables = instance.variables();
+        ProcessInstance<? extends Model> instance = process.createInstance(model);
+        Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
         assertNull(result.get("emptyString"));

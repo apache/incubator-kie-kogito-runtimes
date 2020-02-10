@@ -24,7 +24,7 @@ import java.util.Map;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -43,9 +43,9 @@ public class TimerEventTest extends AbstractCodegenTest {
         NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("timer", 3);
         ((DefaultProcessEventListenerConfig)app.config().process().processEventListeners()).register(listener);
                 
-        Process<? extends ProcessData> p = app.processes().processById("IntermediateCatchEvent");
+        Process<? extends Model> p = app.processes().processById("IntermediateCatchEvent");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -70,9 +70,9 @@ public class TimerEventTest extends AbstractCodegenTest {
         NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("timer", 1);
         ((DefaultProcessEventListenerConfig)app.config().process().processEventListeners()).register(listener);
                 
-        Process<? extends ProcessData> p = app.processes().processById("IntermediateCatchEvent");
+        Process<? extends Model> p = app.processes().processById("IntermediateCatchEvent");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -94,9 +94,9 @@ public class TimerEventTest extends AbstractCodegenTest {
         NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("timer", 1);
         ((DefaultProcessEventListenerConfig)app.config().process().processEventListeners()).register(listener);
                 
-        Process<? extends ProcessData> p = app.processes().processById("IntermediateCatchEvent");
+        Process<? extends Model> p = app.processes().processById("IntermediateCatchEvent");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         OffsetDateTime plusTwoSeconds = OffsetDateTime.now().plusSeconds(2);
         parameters.put("date", plusTwoSeconds.toString());
@@ -120,9 +120,9 @@ public class TimerEventTest extends AbstractCodegenTest {
         NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("TimerEvent", 1);
         ((DefaultProcessEventListenerConfig)app.config().process().processEventListeners()).register(listener);
                 
-        Process<? extends ProcessData> p = app.processes().processById("TimerBoundaryEvent");
+        Process<? extends Model> p = app.processes().processById("TimerBoundaryEvent");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -144,9 +144,9 @@ public class TimerEventTest extends AbstractCodegenTest {
         NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("TimerEvent", 1);
         ((DefaultProcessEventListenerConfig)app.config().process().processEventListeners()).register(listener);
                 
-        Process<? extends ProcessData> p = app.processes().processById("TimerBoundaryEvent");
+        Process<? extends Model> p = app.processes().processById("TimerBoundaryEvent");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         
@@ -168,9 +168,9 @@ public class TimerEventTest extends AbstractCodegenTest {
         NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("TimerEvent", 1);
         ((DefaultProcessEventListenerConfig)app.config().process().processEventListeners()).register(listener);
                 
-        Process<? extends ProcessData> p = app.processes().processById("TimerBoundaryEvent");
+        Process<? extends Model> p = app.processes().processById("TimerBoundaryEvent");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         OffsetDateTime plusTwoSeconds = OffsetDateTime.now().plusSeconds(2);
         parameters.put("date", plusTwoSeconds.toString());
@@ -194,9 +194,9 @@ public class TimerEventTest extends AbstractCodegenTest {
         NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("TimerEvent", 1);
         ((DefaultProcessEventListenerConfig)app.config().process().processEventListeners()).register(listener);
                 
-        Process<? extends ProcessData> p = app.processes().processById("TimerBoundaryEvent");
+        Process<? extends Model> p = app.processes().processById("TimerBoundaryEvent");
         
-        ProcessData m = p.createModel();
+        Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
         m.fromMap(parameters);
         

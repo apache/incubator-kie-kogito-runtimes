@@ -25,7 +25,7 @@ public interface Process<T> {
     
     T createModel();
 
-    ProcessInstance<? extends ProcessData> createInstance(ProcessData m);
+    ProcessInstance<? extends Model> createInstance(Model m);
     
     String id();
 }

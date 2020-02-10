@@ -15,7 +15,7 @@ import org.drools.core.io.impl.ClassPathResource;
 import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.process.ProcessData;
+import org.kie.kogito.process.Model;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
@@ -86,7 +86,7 @@ public class PredictionAwareHumanTaskLifeCycleTest {
         processInstance.start();
         assertEquals(STATE_COMPLETED, processInstance.status());
   
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertEquals(2, result.toMap().size());
         assertEquals("predicted value", result.toMap().get("s"));
         
@@ -112,7 +112,7 @@ public class PredictionAwareHumanTaskLifeCycleTest {
         processInstance.completeWorkItem(workItem.getId(), Collections.singletonMap("output", "given value"), securityPolicy);
         assertEquals(STATE_COMPLETED, processInstance.status());
         
-        ProcessData result = (ProcessData)processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertEquals(2, result.toMap().size());
         assertEquals("given value", result.toMap().get("s"));
         
