@@ -60,7 +60,7 @@ pipeline {
         stage('Analyze kogito-runtimes') {
             steps {
                 script {
-                    maven.runMavenWithSubmarineSettings('-e -nsu generate-resources -Psonarcloud-analysis', false)
+                    maven.runMavenWithSubmarineSettings('-e -nsu validate -Psonarcloud-analysis', false)
                 }
             }
         }
