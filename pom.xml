@@ -74,6 +74,7 @@
     <version.resources.plugin>3.1.0</version.resources.plugin>
     <version.site.plugin>3.7.1</version.site.plugin>
     <version.shade.plugin>3.0.0</version.shade.plugin>
+    <version.sonar.plugin>3.6.1.1688</version.sonar.plugin>
     <version.source.plugin>3.0.1</version.source.plugin>
     <version.surefire>2.22.1</version.surefire> <!-- minimum required by JUnit 5 -->
     <version.surefire.report.plugin>2.6</version.surefire.report.plugin>
@@ -877,6 +878,11 @@
                   </configuration>
                 </execution>
               </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.sonarsource.scanner.maven</groupId>
+              <artifactId>sonar-maven-plugin</artifactId>
+              <version>${version.sonar.plugin}</version>
             </plugin>
           </plugins>
         </pluginManagement>
