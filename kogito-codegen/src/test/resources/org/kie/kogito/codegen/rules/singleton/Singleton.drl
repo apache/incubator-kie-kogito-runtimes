@@ -10,7 +10,16 @@ end
 
 rule contd
 when
-    /output[ value == "continue"]
+    datum: /output[ value == "continue"]
+then
+    modify(datum){
+        setValue("updated")
+    }
+end
+
+rule done
+when
+    /output[ value == "updated"]
 then
     output.set(new Datum("done"));
 end

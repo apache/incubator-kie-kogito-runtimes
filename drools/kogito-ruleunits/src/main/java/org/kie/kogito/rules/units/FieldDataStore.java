@@ -33,56 +33,49 @@ import org.kie.kogito.rules.units.impl.DataHandleImpl;
 public class FieldDataStore<T> implements SingletonStore<T>,
                                           InternalStoreCallback {
 
-    private enum State {
-        UNDEFINED,
-        EMPTY,
-        PRESENT;
-    }
-
-    private State state = State.UNDEFINED;
-    private T value = null;
     private DataHandleImpl handle = null;
 
     private final List<EntryPointDataProcessor> entryPointSubscribers = new ArrayList<>();
     private final List<DataProcessor<T>> subscribers = new ArrayList<>();
 
     public DataHandle set(T t) {
-        value = t;
-        if (state == State.UNDEFINED) {
-            state = State.PRESENT;
-            handle = new DataHandleImpl(t);
-            entryPointSubscribers.forEach(s -> internalInsert(handle, s));
-            subscribers.forEach(s -> internalInsert(handle, s));
+        if (handle == null) {
+            insert(t);
         } else {
             if (t == null) {
-                entryPointSubscribers.forEach(s -> s.delete(handle));
-                subscribers.forEach(s -> s.delete(handle));
-                state = State.EMPTY;
+                DataHandle dh = handle;
+                entryPointSubscribers.forEach(s -> s.delete(dh));
+                subscribers.forEach(s -> s.delete(dh));
             } else {
-                handle.setObject(t);
-                update(handle, t);
-                state = State.PRESENT;
+                clear();
+                insert(t);
             }
         }
 
         return handle;
     }
 
-    private void update(DataHandle handle, T object) {
-        entryPointSubscribers.forEach(s -> s.update(handle, object));
-        subscribers.forEach(s -> s.update(handle, object));
+    private void insert(T t) {
+        handle = new DataHandleImpl(t);
+        entryPointSubscribers.forEach(s -> internalInsert(handle, s));
+        subscribers.forEach(s -> internalInsert(handle, s));
+    }
+
+    public void update() {
+        if (handle == null) {
+            return;
+        }
+        DataHandle dh = handle;
+        entryPointSubscribers.forEach(s -> s.update(dh, dh.getObject()));
+        subscribers.forEach(s -> s.update(dh, (T) dh.getObject()));
     }
 
     @Override
     public void clear() {
         DataHandle dh = handle;
+        handle = null;
         entryPointSubscribers.forEach(s -> s.delete(dh));
         subscribers.forEach(s -> s.delete(dh));
-        handle = null;
-        value = null;
-        if (state != State.UNDEFINED) {
-            state = State.EMPTY;
-        }
     }
 
     @Override
@@ -93,7 +86,7 @@ public class FieldDataStore<T> implements SingletonStore<T>,
         } else {
             subscribers.add(processor);
         }
-        if (value != null) {
+        if (handle != null) {
             internalInsert(handle, processor);
         }
     }
@@ -114,8 +107,6 @@ public class FieldDataStore<T> implements SingletonStore<T>,
         entryPointSubscribers.forEach(s -> s.delete(dh, rule, terminalNode, fhState));
         subscribers.forEach(s -> s.delete(dh));
         handle = null;
-        value = null;
-        state = State.EMPTY;
     }
 
     private void internalInsert(DataHandle dh, DataProcessor processor) {

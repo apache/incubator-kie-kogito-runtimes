@@ -18,6 +18,7 @@ package org.kie.kogito.codegen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.time.SessionPseudoClock;
@@ -203,16 +204,26 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
         Application application = generateCodeRulesOnly(
                 "org/kie/kogito/codegen/rules/singleton/Singleton.drl");
 
-        ArrayList<Datum> data = new ArrayList<>();
+        ArrayList<String> data = new ArrayList<>();
+        AtomicReference<Datum> lastSeen = new AtomicReference<>();
 
         RuleUnit<Singleton> mu = application.ruleUnits().create(Singleton.class);
         Singleton unitData = new Singleton();
         RuleUnitInstance<Singleton> instance = mu.createInstance(unitData);
-        unitData.getOutput().subscribe(DataObserver.ofUpdatable(v -> { if (v!=null) data.add(v); }));
+        unitData.getOutput().subscribe(
+                DataObserver.ofUpdatable(v ->  data.add(v == null? null : v.getValue())));
+        unitData.getOutput().subscribe(
+                DataObserver.of(lastSeen::set));
+
         unitData.getInput().set(new Datum("start"));
         instance.fire();
+        assertEquals(asList("continue", "updated", null, "done"), data);
 
-        assertEquals(asList(new Datum("continue"), new Datum("done")), data);
+        lastSeen.get().setValue("updated");
+        unitData.getOutput().update();
+        instance.fire();
+
+        assertEquals(asList("continue", "updated", null, "done", "updated", null, "done"), data);
 
     }
 }

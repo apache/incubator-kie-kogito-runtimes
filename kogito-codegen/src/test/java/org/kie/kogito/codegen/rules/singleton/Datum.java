@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Datum {
 
-    private final String value;
+    private String value;
 
     public Datum(String value) {
         this.value = value;
@@ -12,6 +12,10 @@ public class Datum {
 
     public String getValue() {
         return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override

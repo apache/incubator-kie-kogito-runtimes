@@ -49,7 +49,7 @@ public class ListDataStore<T> implements DataStore<T>,
 
     @Override
     public void update(DataHandle handle, T object) {
-        entryPointSubscribers.forEach( s -> s.update( handle, object ) );
+        entryPointSubscribers.forEach( s -> s.update( handle, handle.getObject() ) );
         subscribers.forEach( s -> s.update( handle, object ) );
     }
 
