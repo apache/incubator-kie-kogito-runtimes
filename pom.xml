@@ -809,42 +809,6 @@
     </profile>
 
     <profile>
-      <id>default-profile</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <artifactId>maven-failsafe-plugin</artifactId>
-              <version>${version.surefire}</version>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>integration-test</goal>
-                    <goal>verify</goal>
-                  </goals>
-                  <configuration>
-                    <includes>
-                      <include>**/*IntegrationTest.java</include>
-                      <include>**/*IT.java</include>
-                    </includes>
-                    <excludes>
-                      <exclude>**/Native*IntegrationTest.java</exclude>
-                      <exclude>**/Native*IT.java</exclude>
-                    </excludes>
-                    <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-
-    <profile>
       <id>native</id>
       <activation>
         <property>
