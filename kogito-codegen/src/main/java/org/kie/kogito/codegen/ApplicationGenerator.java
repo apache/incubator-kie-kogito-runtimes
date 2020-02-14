@@ -215,7 +215,7 @@ public class ApplicationGenerator {
                     .forEach(gen -> generateSectionClass(gen.section(), generatedFiles));
         }
         this.labelers.forEach(l -> MetaDataWriter.writeLabelsImageMetadata(targetDirectory, l.generateLabels()));
-        
+
         return generatedFiles;
     }
 
