@@ -117,7 +117,7 @@ public class ProcessCodegen extends AbstractGenerator {
         Path srcPath = Paths.get(path.toString());
         try (Stream<Path> filesStream = Files.walk(srcPath)) {
             List<File> files = filesStream
-                    .filter(p -> p.toString().endsWith(".bpmn") || p.toString().endsWith(".bpmn2") || p.toString().endsWith(".sw.json"))
+                    .filter(p -> p.toString().endsWith(".bpmn") || p.toString().endsWith(".bpmn2") || p.toString().endsWith(".sw.json") || p.toString().endsWith(".sw.yml"))
                     .map(Path::toFile)
                     .collect(Collectors.toList());
             return ofFiles(files);
@@ -139,7 +139,10 @@ public class ProcessCodegen extends AbstractGenerator {
             try {
                 FileSystemResource r = new FileSystemResource(processSourceFile);
                 if (processSourceFile.getPath().endsWith(".sw.json")) {
-                    Process process = parseWorkflowFile(r);
+                    Process process = parseWorkflowFile(r, "json");
+                    processes.add(process);
+                } else if (processSourceFile.getPath().endsWith(".sw.yml")) {
+                    Process process = parseWorkflowFile(r, "yml");
                     processes.add(process);
                 } else {
                     processes.addAll(parseProcessFile(r));
@@ -151,9 +154,9 @@ public class ProcessCodegen extends AbstractGenerator {
         return processes;
     }
 
-    private static Process parseWorkflowFile(Resource r) throws IOException {
+    private static Process parseWorkflowFile(Resource r, String workflowType) throws IOException {
         try {
-            ServerlessWorkflowParser workflowParser = new ServerlessWorkflowParser();
+            ServerlessWorkflowParser workflowParser = new ServerlessWorkflowParser(workflowType);
             return workflowParser.parseWorkFlow(r.getReader());
         } catch (Exception e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);

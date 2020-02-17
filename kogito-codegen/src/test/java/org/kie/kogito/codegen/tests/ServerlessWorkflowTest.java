@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
@@ -29,10 +31,11 @@ import org.kie.kogito.process.ProcessInstance;
 
 public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
-    @Test
-    public void testSingleFunctionCallWorkflow() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"serverless/single-operation.sw.json", "serverless/single-operation.sw.yml"})
+    public void testSingleFunctionCallWorkflow(String processLocation) throws Exception {
 
-        Application app = generateCodeProcessesOnly("serverless/single-operation.sw.json");
+        Application app = generateCodeProcessesOnly(processLocation);
         assertThat(app).isNotNull();
 
         Process<? extends Model> p = app.processes().processById("function");
@@ -47,10 +50,11 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
-    @Test
-    public void testMultipleFunctionsCallWorkflow() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"serverless/single-operation-many-functions.sw.json", "serverless/single-operation-many-functions.sw.yml"})
+    public void testMultipleFunctionsCallWorkflow(String processLocation) throws Exception {
 
-        Application app = generateCodeProcessesOnly("serverless/single-operation-many-functions.sw.json");
+        Application app = generateCodeProcessesOnly(processLocation);
         assertThat(app).isNotNull();
 
         Process<? extends Model> p = app.processes().processById("function");
@@ -65,10 +69,11 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
-    @Test
-    public void testMultipleOperationsWorkflow() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"serverless/multiple-operations.sw.json", "serverless/multiple-operations.sw.json"})
+    public void testMultipleOperationsWorkflow(String processLocation) throws Exception {
 
-        Application app = generateCodeProcessesOnly("serverless/multiple-operations.sw.json");
+        Application app = generateCodeProcessesOnly(processLocation);
         assertThat(app).isNotNull();
 
         Process<? extends Model> p = app.processes().processById("function");

@@ -42,7 +42,9 @@ import org.jbpm.serverless.workflow.api.events.EventDefinition;
 import org.jbpm.serverless.workflow.api.events.OnEvent;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.interfaces.State;
+import org.jbpm.serverless.workflow.api.mapper.BaseObjectMapper;
 import org.jbpm.serverless.workflow.api.mapper.JsonObjectMapper;
+import org.jbpm.serverless.workflow.api.mapper.YamlObjectMapper;
 import org.jbpm.serverless.workflow.api.states.EventState;
 import org.jbpm.serverless.workflow.api.transitions.Transition;
 import org.jbpm.workflow.core.DroolsAction;
@@ -70,11 +72,22 @@ public class ServerlessWorkflowParser {
     protected final static String EOL = System.getProperty( "line.separator" );
 
     private AtomicLong idCounter = new AtomicLong(1);
+    private String workflowType = "json";
+    private BaseObjectMapper objectMapper = new JsonObjectMapper();
+
+    public ServerlessWorkflowParser() {
+
+    }
+
+    public ServerlessWorkflowParser(String workflowType) {
+        this.workflowType = workflowType;
+        if(this.workflowType.equals("yml")) {
+            this.objectMapper = new YamlObjectMapper();
+        }
+    }
 
     public Process parseWorkFlow(Reader workflowFile) throws Exception {
-        JsonObjectMapper mapper = new JsonObjectMapper();
-
-        Workflow workflow = mapper.readValue(readWorkflowSource(workflowFile), Workflow.class);
+        Workflow workflow = objectMapper.readValue(readWorkflowSource(workflowFile), Workflow.class);
 
         Map<String, Long> nameToNodeId = new HashMap<>();
 

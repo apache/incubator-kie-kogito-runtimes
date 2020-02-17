@@ -1,0 +1,46 @@
+---
+id: function
+name: test-wf
+startsAt: HelloWorld
+functions:
+- name: helloOne
+  type: script
+- name: helloTwo
+  type: script
+- name: helloThree
+  type: script
+states:
+- name: HelloWorld
+  type: OPERATION
+  actionMode: SEQUENTIAL
+  actions:
+  - functionref:
+      refname: helloOne
+      parameters:
+        script: System.out.println("First Serverless Workflow World");
+  transition:
+    nextState: UpdateArg
+- name: UpdateArg
+  type: OPERATION
+  actionMode: SEQUENTIAL
+  filter:
+    inputPath: "$.trace"
+    resultPath: "$.trace"
+    outputPath: "$.stateerror"
+  actions:
+  - functionref:
+      refname: helloTwo
+      parameters:
+        script: System.out.println("Second Serverless Workflow World");
+  transition:
+    nextState: SaveResult
+- name: SaveResult
+  type: OPERATION
+  actionMode: SEQUENTIAL
+  actions:
+  - functionref:
+      refname: helloThree
+      parameters:
+        script: System.out.println("Third Serverless Workflow World");
+  end:
+    type: TERMINATE

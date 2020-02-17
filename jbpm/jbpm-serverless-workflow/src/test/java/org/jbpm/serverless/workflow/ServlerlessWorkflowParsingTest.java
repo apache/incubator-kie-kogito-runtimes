@@ -29,15 +29,16 @@ import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.StartNode;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
 
 public class ServlerlessWorkflowParsingTest {
 
-    @Test
-    public void testSingleOperationWorkflow() throws Exception {
-
-        ServerlessWorkflowParser parser = new ServerlessWorkflowParser();
-        RuleFlowProcess process = (RuleFlowProcess) parser.parseWorkFlow(classpathResourceReader("/single-operation.sw.json"));
+    @ParameterizedTest
+    @ValueSource(strings = {"/single-operation.sw.json", "/single-operation.sw.yml"})
+    public void testSingleOperationWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
         assertEquals("test-wf", process.getName());
         assertEquals("1.0", process.getVersion());
@@ -66,10 +67,10 @@ public class ServlerlessWorkflowParsingTest {
         assertTrue(node instanceof EndNode);
     }
 
-    @Test
-    public void testSingleEventStateWorkflow() throws Exception {
-        ServerlessWorkflowParser parser = new ServerlessWorkflowParser();
-        RuleFlowProcess process = (RuleFlowProcess) parser.parseWorkFlow(classpathResourceReader("/single-eventstate.sw.json"));
+    @ParameterizedTest
+    @ValueSource(strings = {"/single-eventstate.sw.json", "/single-eventstate.sw.yml"})
+    public void testSingleEventStateWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
         assertEquals("test-wf", process.getName());
         assertEquals("1.0", process.getVersion());
@@ -99,12 +100,10 @@ public class ServlerlessWorkflowParsingTest {
 
     }
 
-    @Test
-    public void testSingleOperationWithManyFunctionsWorkflow() throws Exception {
-
-        ServerlessWorkflowParser parser = new ServerlessWorkflowParser();
-
-        RuleFlowProcess process = (RuleFlowProcess) parser.parseWorkFlow(classpathResourceReader("/single-operation-many-functions.sw.json"));
+    @ParameterizedTest
+    @ValueSource(strings = {"/single-operation-many-functions.sw.json", "/single-operation-many-functions.sw.yml"})
+    public void testSingleOperationWithManyFunctionsWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
         assertEquals("test-wf", process.getName());
         assertEquals("1.0", process.getVersion());
@@ -135,12 +134,10 @@ public class ServlerlessWorkflowParsingTest {
         assertTrue(node instanceof EndNode);
     }
 
-    @Test
-    public void testMultipleOperationWorkflow() throws Exception {
-
-        ServerlessWorkflowParser parser = new ServerlessWorkflowParser();
-
-        RuleFlowProcess process = (RuleFlowProcess) parser.parseWorkFlow(classpathResourceReader("/multiple-operations.sw.json"));
+    @ParameterizedTest
+    @ValueSource(strings = {"/multiple-operations.sw.json", "/multiple-operations.sw.yml"})
+    public void testMultipleOperationWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
         assertEquals("test-wf", process.getName());
         assertEquals("1.0", process.getVersion());
@@ -198,8 +195,17 @@ public class ServlerlessWorkflowParsingTest {
     /*
      * Helper methods
      */
-
     protected Reader classpathResourceReader(String location) {
         return new InputStreamReader(this.getClass().getResourceAsStream(location));
+    }
+
+    protected ServerlessWorkflowParser getWorkflowParser(String workflowLocation) {
+        ServerlessWorkflowParser parser;
+        if(workflowLocation.endsWith(".sw.json")) {
+            parser = new ServerlessWorkflowParser("json");
+        } else {
+            parser = new ServerlessWorkflowParser("yml");
+        }
+        return parser;
     }
 }
