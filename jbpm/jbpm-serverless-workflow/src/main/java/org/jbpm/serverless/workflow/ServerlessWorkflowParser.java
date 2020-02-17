@@ -171,7 +171,7 @@ public class ServerlessWorkflowParser {
                                 connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                                 start = current;
                             } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
-                                String script = applySubstitutionsToScript("System.out.println(" + action.getFunctionref().getParameters().get("message") + ");");
+                                String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionref().getParameters().get("prefix") + " \" + " + action.getFunctionref().getParameters().get("message") + ");");
                                 current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
 
                                 connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
@@ -228,7 +228,7 @@ public class ServerlessWorkflowParser {
                             connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                             start = current;
                         } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
-                            String script = applySubstitutionsToScript("System.out.println(" + action.getFunctionref().getParameters().get("message") + ");");
+                            String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionref().getParameters().get("prefix") + " \" + " + action.getFunctionref().getParameters().get("message") + ");");
                             current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
 
                             connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
@@ -443,12 +443,11 @@ public class ServerlessWorkflowParser {
     }
 
     protected String applySubstitutionsToScript(String script) {
-        if (script.indexOf("workflowdata") >= 0) {
-            script = script.replaceFirst("\\bworkflowdata.([A-Za-z]+)\\b", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\\\"workflowdata\\\")).get(\"$1\")");
-        } else if (script.indexOf("kcontext") >= 0) {
-            script = script.replaceFirst("\\bkcontext.([A-Za-z]+).([A-Za-z]+)\\b", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"$1\")).get(\"$2\")");
+        if (script.indexOf("$$") >= 0) {
+            script = script.replaceFirst("\\$\\$.([A-Za-z]+).([A-Za-z]+)", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"$1\")).get(\"$2\")");
+        } else if (script.indexOf("$") >= 0) {
+            script = script.replaceFirst("\\$.([A-Za-z]+)", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\\\"workflowdata\\\")).get(\"$1\")");
         }
-
         return script;
     }
 }
