@@ -70,7 +70,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/multiple-operations.sw.json", "serverless/multiple-operations.sw.json"})
+    @ValueSource(strings = {"serverless/multiple-operations.sw.json", "serverless/multiple-operations.sw.yml"})
     public void testMultipleOperationsWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
