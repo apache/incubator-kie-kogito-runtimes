@@ -16,6 +16,7 @@
 
 package org.jbpm.workflow.instance.node;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,6 +66,7 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
+import org.mvel2.MVEL;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -295,7 +297,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                         VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
                                 resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getTarget());
                         if (variableScopeInstance != null && parameterValue != null) {
-                            variableScopeInstance.setVariable(association.getTarget(), parameterValue);
+                            variableScopeInstance.setVariable(this, association.getTarget(), parameterValue);
                         } else {
                             logger.warn("Could not find variable scope for variable {}", association.getTarget());
                             logger.warn("Continuing without setting variable.");
@@ -319,9 +321,23 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                         if (!dataType.getStringType().endsWith("java.lang.Object") && value instanceof String) {
                             value = dataType.readValue((String) value);
                         }
-                        variableScopeInstance.setVariable(association.getTarget(), value);
+                        variableScopeInstance.setVariable(this, association.getTarget(), value);
                     } else {
-                        logger.warn("Could not find variable scope for variable {}", association.getTarget());
+                        String output = association.getSources().get(0);
+                        String target = association.getTarget();
+                                                
+                        Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(target);
+                        if (matcher.find()) {
+                            String paramName = matcher.group(1);
+                            
+                            String expression = paramName + " = " + output;
+                            NodeInstanceResolverFactory resolver = new NodeInstanceResolverFactory(this);
+                            resolver.addExtraParameters(objects);
+                            Serializable compiled = MVEL.compileExpression(expression);
+                            MVELSafeHelper.getEvaluator().executeExpression(compiled, resolver);
+                        } else { 
+                            logger.warn("Could not find variable scope for variable {}", association.getTarget());
+                        }
                     }
                 }
             }
