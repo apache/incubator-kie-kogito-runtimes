@@ -41,25 +41,14 @@ import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
+import org.kie.kogito.rules.SingletonStore;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- *
- * Input/Output mapping with Rule Units:
- *
- * | Mapping | Process Variable | Rule Unit field   | Action
- * | IN      | scalar           | scalar            | Assignment
- * | IN      | scalar           | data source 	    | Add to (i.e. insert into) data source
- * | IN      | collection       | data source 	    | Add all contents from data source
- * | OUT     | scalar           | scalar 	        | Assignment
- * | OUT     | scalar           | data source 	    | get 1 value off the data source
- * | OUT     | collection       | data source 	    | Add all contents to the data source
- *
- */
+
 public class RuleSetNodeVisitor extends AbstractVisitor {
 
     public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
@@ -111,16 +100,6 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
 
         addFactoryMethodWithArgs(body, callTargetName, "done");
 
-        if (ruleType.isRuleUnit()) {
-            if (ruleSetNode.getInMappings().isEmpty()) {
-                GeneratedRuleUnitDescription generatedRuleUnitDescription = new GeneratedRuleUnitDescription(ruleType.getName(), contextClassLoader);
-                for (Variable v : variableScope.getVariables()) {
-                    generatedRuleUnitDescription.putDatasourceVar(v.getName(), DataStore.class.getCanonicalName(), v.getType().getStringType());
-                }
-                RuleUnitComponentFactoryImpl impl = (RuleUnitComponentFactoryImpl) RuleUnitComponentFactory.get();
-                impl.registerRuleUnitDescription(generatedRuleUnitDescription);
-            }
-        }
     }
 
     private MethodCallExpr handleDecision(RuleSetNode.RuleType.Decision ruleType) {
@@ -175,10 +154,9 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
     private GeneratedRuleUnitDescription generateRuleUnitDescription(String unitName, ProcessContextMetaModel processContext) {
         GeneratedRuleUnitDescription d = new GeneratedRuleUnitDescription(unitName, contextClassLoader);
         for (Variable variable : processContext.getVariables()) {
-            // fixme: if var is scalar, we should use a different type of data source: KOGITO-892
             d.putDatasourceVar(
                     variable.getName(),
-                    DataStore.class.getCanonicalName(),
+                    SingletonStore.class.getCanonicalName(),
                     variable.getType().getStringType());
         }
         return d;
