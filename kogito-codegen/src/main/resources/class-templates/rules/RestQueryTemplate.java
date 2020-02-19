@@ -35,12 +35,10 @@ public class $unit$Query$name$Endpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<$ReturnType$> executeQuery($UnitTypeDTO$ unitDTO) {
-        LOGGER.info("in");
         double startTime = System.nanoTime();
         RuleUnitInstance<$UnitType$> instance = ruleUnit.createInstance(unitDTO.get());
         List<$ReturnType$> response = instance.executeQuery( "$queryName$" ).stream().map( this::toResult ).collect( toList() );
         double endTime = System.nanoTime();
-        PrometheusMetricsCollector.GetCounter("api_http_requests_total").labels("endpoint", "$prometheusName$").inc();
         PrometheusMetricsCollector.GetHistogram("api_execution_elapsed_nanosecond").labels("endpoint", "$prometheusName$").observe(endTime - startTime);
         return response;
     }
@@ -54,7 +52,6 @@ public class $unit$Query$name$Endpoint {
         List<$ReturnType$> results = executeQuery(unitDTO);
         $ReturnType$ response = results.isEmpty() ? null : results.get(0);
         double endTime = System.nanoTime();
-        PrometheusMetricsCollector.GetCounter("api_http_requests_total").labels("endpoint", "$prometheusName$").inc();
         PrometheusMetricsCollector.GetHistogram("api_execution_elapsed_nanosecond").labels("endpoint", "$prometheusName$").observe(endTime - startTime);
         return response;
     }

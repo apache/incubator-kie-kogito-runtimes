@@ -1,9 +1,11 @@
 package org.kie.addons.systemmonitoring.metrics;
 
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
 import io.prometheus.client.Counter;
+import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
 
 public class PrometheusMetricsCollector implements IMetricsCollector {
@@ -31,12 +33,14 @@ public class PrometheusMetricsCollector implements IMetricsCollector {
 
     private static final ConcurrentHashMap<String, Histogram> histograms = new ConcurrentHashMap<>();
 
+    private static final ConcurrentHashMap<String, Gauge> gauges = new ConcurrentHashMap<>();
+
     public static Histogram GetHistogram(String name){
         if (!histograms.containsKey(name)){
             Histogram tmp = Histogram.build()
                     .name(name)
                     .help("Api call elapsed execution time")
-                    .labelNames("identifier", "handler")
+                    .labelNames("value", "handler")
                     .buckets(RULE_TIME_BUCKETS)
                     .register();
             histograms.put(name, tmp);
@@ -50,5 +54,13 @@ public class PrometheusMetricsCollector implements IMetricsCollector {
             counters.put(name, tmp);
         }
         return counters.get(name);
+    }
+
+    public static Gauge GetGauge(String name){
+        if (!gauges.containsKey(name)){
+            Gauge tmp = Gauge.build().name(name).help("Total api request count").labelNames("identifier", "handler").register();
+            gauges.put(name, tmp);
+        }
+        return gauges.get(name);
     }
  }

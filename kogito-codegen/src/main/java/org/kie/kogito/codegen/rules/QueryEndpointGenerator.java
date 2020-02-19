@@ -127,14 +127,14 @@ public class QueryEndpointGenerator implements FileGenerator {
         Statement statement = queryMethod
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 2 );
+                .getStatement( 1 );
         statement.findAll( VariableDeclarator.class ).forEach( decl -> setUnitGeneric( decl.getType() ) );
         // TODO: remeve hardcoded statement line - as well as above
 
         Statement returnStatement = queryMethod
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 3 );
+                .getStatement( 2 );
         returnStatement.findAll( VariableDeclarator.class ).forEach( decl -> setGeneric( decl.getType(), returnType ) );
 
         MethodDeclaration queryMethodSingle = clazz.getMethodsByName( "executeQueryFirst" ).get(0);
