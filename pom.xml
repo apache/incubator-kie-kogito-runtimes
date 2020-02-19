@@ -576,6 +576,12 @@
       </dependency>
 
       <dependency>
+        <groupId>com.oracle.substratevm</groupId>
+        <artifactId>svm</artifactId>
+        <version>${version.com.oracle.substratevm}</version>
+      </dependency>
+
+      <dependency>
         <groupId>io.smallrye.reactive</groupId>
         <artifactId>smallrye-reactive-messaging-provider</artifactId>
         <version>${version.io.smallrye.reactive}</version>
