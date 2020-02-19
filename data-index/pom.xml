@@ -18,7 +18,6 @@
     <module>data-index-service</module>
   </modules>
 
-
   <dependencyManagement>
     <dependencies>
       <dependency>
