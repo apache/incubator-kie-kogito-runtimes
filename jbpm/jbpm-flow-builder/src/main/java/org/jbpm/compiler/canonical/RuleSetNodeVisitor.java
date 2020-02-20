@@ -17,8 +17,6 @@
 package org.jbpm.compiler.canonical;
 
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Map.Entry;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
@@ -39,7 +37,6 @@ import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.api.definition.process.Node;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.SingletonStore;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
@@ -75,6 +72,8 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                             "Rule task \"{0}\" is invalid: you did not set a unit name, a rule flow group or a decision model.", nodeName));
         }
 
+        addNodeMappings(ruleSetNode, body, callTargetName);
+
         NameExpr methodScope = new NameExpr(callTargetName);
         MethodCallExpr m;
         if (ruleType.isRuleFlowGroup()) {
@@ -88,13 +87,6 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         }
         m.setScope(methodScope);
         body.addStatement(m);
-
-        for (Entry<String, String> entry : ruleSetNode.getInMappings().entrySet()) {
-            addFactoryMethodWithArgs(body, callTargetName, "inMapping", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
-        }
-        for (Entry<String, String> entry : ruleSetNode.getOutMappings().entrySet()) {
-            addFactoryMethodWithArgs(body, callTargetName, "outMapping", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
-        }
 
         visitMetaData(ruleSetNode.getMetaData(), body, callTargetName);
 
@@ -139,7 +131,10 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             logger.warn("Rule task \"{}\": cannot load class {}. " +
                                 "The unit data object will be generated.", nodeName, unitName);
 
-            description = generateRuleUnitDescription(unitName, processContext);
+            GeneratedRuleUnitDescription d = generateRuleUnitDescription(unitName, processContext);
+            RuleUnitComponentFactoryImpl impl = (RuleUnitComponentFactoryImpl) RuleUnitComponentFactory.get();
+            impl.registerRuleUnitDescription(d);
+            description = d;
         }
 
         RuleUnitHandler handler = new RuleUnitHandler(description, processContext, ruleSetNode);

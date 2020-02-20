@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.Work;
+import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.node.WorkItemNode;
@@ -153,8 +154,7 @@ public abstract class AbstractVisitor {
         }
     }
 
-    protected void addWorkItemMappings(WorkItemNode workItemNode, BlockStmt body, String variableName) {
-
+    protected void addNodeMappings(Mappable workItemNode, BlockStmt body, String variableName) {
         for (Entry<String, String> entry : workItemNode.getInMappings().entrySet()) {
             addFactoryMethodWithArgs(body, variableName, "inMapping", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
         }
