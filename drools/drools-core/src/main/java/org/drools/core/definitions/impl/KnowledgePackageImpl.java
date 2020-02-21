@@ -338,7 +338,8 @@ public class KnowledgePackageImpl
     }
 
     public ClassLoader getPackageClassLoader() {
-        return typeResolver.getClassLoader();
+        JavaDialectRuntimeData javaRuntime = (JavaDialectRuntimeData) getDialectRuntimeRegistry().getDialectData("java");
+        return javaRuntime.getClassLoader();
     }
 
     public DialectRuntimeRegistry getDialectRuntimeRegistry() {

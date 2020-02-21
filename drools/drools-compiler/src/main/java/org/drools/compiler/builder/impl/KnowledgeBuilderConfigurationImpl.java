@@ -112,7 +112,7 @@ public class KnowledgeBuilderConfigurationImpl
 
     private final Map<String, DialectConfiguration> dialectConfigurations = new HashMap<>();
 
-    private final DefaultDialectOption              defaultDialect = DefaultDialectOption.get("java");
+    private DefaultDialectOption              defaultDialect = DefaultDialectOption.get("java");
 
     private ParallelRulesBuildThresholdOption parallelRulesBuildThreshold = ParallelRulesBuildThresholdOption.get(DEFAULT_PARALLEL_RULES_BUILD_THRESHOLD);
 
@@ -282,7 +282,9 @@ public class KnowledgeBuilderConfigurationImpl
             return;
         }
 
-        if (name.startsWith(AccumulateFunctionOption.PROPERTY_NAME)) {
+        if (name.equals(DefaultDialectOption.PROPERTY_NAME)) {
+            setDefaultDialect(value);
+        } else if (name.startsWith(AccumulateFunctionOption.PROPERTY_NAME)) {
             addAccumulateFunction(name.substring(AccumulateFunctionOption.PROPERTY_NAME.length()),
                     value);
         } else if (name.startsWith(EvaluatorOption.PROPERTY_NAME)) {
@@ -380,6 +382,10 @@ public class KnowledgeBuilderConfigurationImpl
         DialectConfiguration java = new JavaDialectConfiguration();
         java.init(this);
         dialectConfigurations.put("java", java);
+
+        Map<String, String> dialectProperties = new HashMap<String, String>();
+        this.chainedProperties.mapStartsWith(dialectProperties, "drools.dialect", false);
+        setDefaultDialect(dialectProperties.get(DefaultDialectOption.PROPERTY_NAME));
     }
 
     public DialectCompiletimeRegistry buildDialectRegistry(ClassLoader rootClassLoader,
@@ -396,6 +402,10 @@ public class KnowledgeBuilderConfigurationImpl
 
     public String getDefaultDialect() {
         return this.defaultDialect.getName();
+    }
+
+    public void setDefaultDialect(String defaultDialect) {
+        this.defaultDialect = DefaultDialectOption.get(defaultDialect);
     }
 
     public DialectConfiguration getDialectConfiguration(String name) {
@@ -768,7 +778,9 @@ public class KnowledgeBuilderConfigurationImpl
     }
 
     public <T extends KnowledgeBuilderOption> void setOption(T option) {
-        if (option instanceof AccumulateFunctionOption) {
+        if (option instanceof DefaultDialectOption) {
+            this.defaultDialect = (DefaultDialectOption) option;
+        } else if (option instanceof AccumulateFunctionOption) {
             this.accumulateFunctions.put(((AccumulateFunctionOption) option).getName(),
                     ((AccumulateFunctionOption) option).getFunction());
         } else if (option instanceof DumpDirOption) {
