@@ -189,7 +189,7 @@
       "targets": [
         {
           "expr": "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"$handlerName$\"}[1m])) by (le)",
-          "format": "time_series",
+          "format": "heatmap",
           "instant": false,
           "intervalFactor": 1,
           "refId": "A"
