@@ -154,11 +154,11 @@ public abstract class AbstractVisitor {
         }
     }
 
-    protected void addNodeMappings(Mappable workItemNode, BlockStmt body, String variableName) {
-        for (Entry<String, String> entry : workItemNode.getInMappings().entrySet()) {
+    protected void addNodeMappings(Mappable node, BlockStmt body, String variableName) {
+        for (Entry<String, String> entry : node.getInMappings().entrySet()) {
             addFactoryMethodWithArgs(body, variableName, "inMapping", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
         }
-        for (Entry<String, String> entry : workItemNode.getOutMappings().entrySet()) {
+        for (Entry<String, String> entry : node.getOutMappings().entrySet()) {
             addFactoryMethodWithArgs(body, variableName, "outMapping", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
         }
     }
