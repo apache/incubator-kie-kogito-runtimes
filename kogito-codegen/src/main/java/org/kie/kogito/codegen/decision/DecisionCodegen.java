@@ -35,7 +35,10 @@ import org.drools.core.io.impl.FileSystemResource;
 import org.kie.api.io.Resource;
 import org.kie.dmn.backend.marshalling.v1x.DMNMarshallerFactory;
 import org.kie.dmn.core.assembler.DMNResource;
+import org.kie.dmn.model.api.DMNModelInstrumentedBase;
+import org.kie.dmn.model.api.DRGElement;
 import org.kie.dmn.model.api.Definitions;
+import org.kie.dmn.model.v1_2.TDecision;
 import org.kie.internal.io.ResourceWithConfigurationImpl;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationGenerator;
@@ -43,6 +46,7 @@ import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.grafana.GrafanaConfigurationWriter;
 
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
@@ -132,8 +136,12 @@ public class DecisionCodegen extends AbstractGenerator {
             DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(dmnRes.getDefinitions(), applicationCanonicalName).withDependencyInjection(annotator);
             rgs.add(resourceGenerator);
         }
-        
+
+        int i = 0;
         for (DMNRestResourceGenerator resourceGenerator : rgs) {
+            Definitions definitions = resourceGenerator.getDefinitions();
+            List<String> decisionNames = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> x.getName()).collect(Collectors.toList());
+            GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), i++, decisionNames);
             storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
         }
 

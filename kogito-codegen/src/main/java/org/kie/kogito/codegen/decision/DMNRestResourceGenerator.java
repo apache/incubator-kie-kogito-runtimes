@@ -66,6 +66,14 @@ public class DMNRestResourceGenerator {
         this.relativePath = packageName.replace(".", "/") + "/" + resourceClazzName + ".java";
     }
 
+    public String getNameURL() {
+        return nameURL;
+    }
+
+    public Definitions getDefinitions(){
+        return this.definitions;
+    }
+
     public DMNRestResourceGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
         return this;
@@ -132,7 +140,9 @@ public class DMNRestResourceGenerator {
                                .replace("$id$", decisionId)
                                .replace("$modelName$", definitions.getName())
                                .replace("$modelNamespace$", definitions.getNamespace())
-                               .replace("$documentation$", documentation);
+                               .replace("$documentation$", documentation)
+                               .replace("$prometheusName$", nameURL);
+
         vv.setString(interpolated);
     }
     

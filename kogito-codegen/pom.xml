@@ -132,5 +132,12 @@
        <artifactId>javax.annotation-api</artifactId>
        <scope>test</scope>
      </dependency>
+    <dependency>
+        <groupId>com.redhat.developer</groupId>
+        <artifactId>jgrafana</artifactId>
+        <version>1.0-SNAPSHOT</version>
+
+    </dependency>
+
   </dependencies>
 </project>
