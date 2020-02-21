@@ -49,6 +49,7 @@ public class PrometheusMetricsCollector implements IMetricsCollector {
     }
 
     public static Counter GetCounter(String name){
+        // TODO: improve code placing the registration of the Counter in a @PostConstruct in the endpoint
         if (!counters.containsKey(name)){
             Counter tmp = Counter.build().name(name).help("Total api request count").labelNames("identifier", "handler").register();
             counters.put(name, tmp);
@@ -57,6 +58,7 @@ public class PrometheusMetricsCollector implements IMetricsCollector {
     }
 
     public static Gauge GetGauge(String name){
+        // TODO: improve code placing the registration of the Gauge in a @PostConstruct in the endpoint
         if (!gauges.containsKey(name)){
             Gauge tmp = Gauge.build().name(name).help("Total api request count").labelNames("identifier", "handler").register();
             gauges.put(name, tmp);

@@ -5,7 +5,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import org.kie.addons.systemmonitoring.metrics.PrometheusMetricsCollector;
 
-public class MyExceptionMapper implements ExceptionMapper<Exception> {
+public class PrometheusExceptionMapper implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(Exception e) {

@@ -139,9 +139,11 @@ public class DecisionCodegen extends AbstractGenerator {
 
         int i = 0;
         for (DMNRestResourceGenerator resourceGenerator : rgs) {
+            // Grafana dashboard generation
             Definitions definitions = resourceGenerator.getDefinitions();
             List<String> decisionNames = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> x.getName()).collect(Collectors.toList());
             GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), i++, decisionNames);
+
             storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
         }
 
