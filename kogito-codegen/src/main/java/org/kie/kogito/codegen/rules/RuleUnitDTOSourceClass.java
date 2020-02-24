@@ -101,9 +101,13 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
             String addMethod;
             if (DataStream.class.isAssignableFrom(ruleUnitVariable.getType())) {
                 addMethod = "append";
+                supplierBlock.addStatement( "org.kie.kogito.rules.DataStream<" + genericType + "> " + ruleUnitVariable.getName() + " = org.kie.kogito.rules.DataSource.createStream();" );
+                supplierBlock.addStatement("unit." + setter.getNameAsString() + "(" + ruleUnitVariable.getName() + ");");
                 supplierBlock.addStatement("this." + ruleUnitVariable.getName() + ".forEach( unit." + getter.getNameAsString() + "()::" + addMethod + " );");
             } else if (DataStore.class.isAssignableFrom(ruleUnitVariable.getType())) {
                 addMethod = "add";
+                supplierBlock.addStatement( "org.kie.kogito.rules.DataStore<" + genericType + "> " +getter.getNameAsString() + " = org.kie.kogito.rules.DataSource.createStore();" );
+                supplierBlock.addStatement("unit." + setter.getNameAsString() + "(" + ruleUnitVariable.getName() + ");");
                 supplierBlock.addStatement("this." + ruleUnitVariable.getName() + ".forEach( unit." + getter.getNameAsString() + "()::" + addMethod + " );");
             } else if (SingletonStore.class.isAssignableFrom(ruleUnitVariable.getType())) {
                 addMethod = "set";
