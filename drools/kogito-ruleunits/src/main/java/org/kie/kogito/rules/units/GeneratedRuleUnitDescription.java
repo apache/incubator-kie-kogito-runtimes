@@ -87,7 +87,6 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
     }
 
     public void putSimpleVar(String name, Class<?> varType) {
-        System.out.println("EEEE");
         putRuleUnitVariable(new SimpleRuleUnitVariable(name, varType));
     }
 
