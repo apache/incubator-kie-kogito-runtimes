@@ -72,15 +72,6 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
     @Parameter(property = "kogito.codegen.decisions", defaultValue = "")
     private String generateDecisions; // defaults to true iff there exist DMN files
 
-    /**
-     * Partial generation can be used when reprocessing a pre-compiled project
-     * for faster code-generation. It only generates code for rules and processes,
-     * and does not generate extra meta-classes (etc. Application).
-     * Use only when doing recompilation and for development purposes
-     */
-    @Parameter(property = "kogito.codegen.partial", defaultValue = "false")
-    private boolean generatePartial;
-
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
 
@@ -113,20 +104,12 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
 
         ApplicationGenerator appGen = createApplicationGenerator(genRules);
 
-        Collection<GeneratedFile> generatedFiles;
-        if (generatePartial) {
-            generatedFiles = appGen.generateComponents();
-        } else {
-            generatedFiles = appGen.generate();
-        }
+        Collection<GeneratedFile> generatedFiles = appGen.generateComponents();
 
         for (GeneratedFile generatedFile : generatedFiles) {
             writeGeneratedFile(generatedFile);
         }
 
-        if (!keepSources) {
-            deleteDrlFiles();
-        }
     }
 
     private boolean rulesExist() throws IOException {
@@ -182,21 +165,5 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
         path.getParent().toFile().mkdirs();
         return path;
     }
-
-    private void deleteDrlFiles() throws MojoExecutionException {
-        // Remove drl files
-        try (final Stream<Path> drlFiles = Files.find(outputDirectory.toPath(), Integer.MAX_VALUE, (p, f) -> drlFileMatcher.matches(p))) {
-            drlFiles.forEach(p -> {
-                try {
-                    Files.delete(p);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
-        } catch (IOException e) {
-            throw new MojoExecutionException("Unable to find .drl files");
-        }
-    }
-
     
 }
