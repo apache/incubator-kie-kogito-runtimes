@@ -26,9 +26,13 @@ import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import org.drools.core.util.ClassUtils;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStream;
@@ -40,17 +44,17 @@ import static org.drools.modelcompiler.util.ClassUtil.toRawClass;
 
 public class RuleUnitDTOSourceClass implements FileGenerator {
 
-    private final Class<?> ruleUnit;
+    private final RuleUnitDescription ruleUnit;
 
     private final String targetCanonicalName;
     private final String generatedFilePath;
     private final String packageName;
 
-    public RuleUnitDTOSourceClass( Class<?> ruleUnit ) {
+    public RuleUnitDTOSourceClass(RuleUnitDescription ruleUnit ) {
         this.ruleUnit = ruleUnit;
 
         this.targetCanonicalName = ruleUnit.getSimpleName() + "DTO";
-        this.packageName = new ReflectiveRuleUnitDescription(null,(Class<? extends RuleUnitData>) ruleUnit).getPackageName();
+        this.packageName = ruleUnit.getPackageName();
         this.generatedFilePath = (packageName + "." + targetCanonicalName).replace('.', '/') + ".java";
     }
 
@@ -73,24 +77,17 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
         BlockStmt supplierBlock = supplier.createBody();
         supplierBlock.addStatement( ruleUnit.getSimpleName() + " unit = new " + ruleUnit.getSimpleName() + "();" );
 
-        processUnitFields(field -> processField(dtoClass, supplierBlock, field));
+        ruleUnit.getUnitVarDeclarations().forEach(v -> processField(dtoClass, supplierBlock, v));
 
         supplierBlock.addStatement( "return unit;" );
 
         return cu.toString();
     }
 
-    private void processUnitFields(Consumer<FieldDescriptor> fieldProcessor) {
-        Stream.of( ruleUnit.getDeclaredFields() )
-                .map( this::introspectField )
-                .filter( Objects::nonNull )
-                .forEach( fieldProcessor );
-    }
 
-    private void processField(ClassOrInterfaceDeclaration dtoClass, BlockStmt supplierBlock, FieldDescriptor field) {
-        Class<?> rawType = toRawClass(field.type);
-        boolean isDataSource = DataSource.class.isAssignableFrom( rawType );
-        String typeName = field.type.toString();
+    private void processField(ClassOrInterfaceDeclaration dtoClass, BlockStmt supplierBlock, RuleUnitVariable ruleUnitVariable) {
+        boolean isDataSource = ruleUnitVariable.isDataSource();
+        String typeName = ruleUnitVariable.getType().getCanonicalName();
         String genericType = null;
 
         if ( isDataSource ) {
@@ -103,67 +100,37 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
                 typeName = "java.util.List";
             }
         }
-        dtoClass.addField( typeName, field.name, com.github.javaparser.ast.Modifier.Keyword.PRIVATE );
+        FieldDeclaration fieldDeclaration = dtoClass.addField(typeName, ruleUnitVariable.getName(), com.github.javaparser.ast.Modifier.Keyword.PRIVATE);
+        MethodDeclaration getter = fieldDeclaration.createGetter();
+        MethodDeclaration setter = fieldDeclaration.createSetter();
 
-        MethodDeclaration getter = dtoClass.addMethod( "get" + ucFirst(field.name), com.github.javaparser.ast.Modifier.Keyword.PUBLIC );
-        getter.setType( typeName );
-        getter.createBody().addStatement( "return this." + field.name + ";");
-
-        String setterName = "set" + ucFirst(field.name);
-        MethodDeclaration setter = dtoClass.addMethod( setterName, com.github.javaparser.ast.Modifier.Keyword.PUBLIC );
-        setter.addParameter( typeName, field.name );
-        setter.createBody().addStatement( "this." + field.name + " = " + field.name + ";");
-
+        String setterName = setter.getNameAsString();
         if (genericType != null) {
             String singleSetterName = setterName.endsWith( "s" ) ? setterName.substring( 0, setterName.length()-1 ) : setterName + "Single";
             MethodDeclaration singleValueSetter = dtoClass.addMethod( singleSetterName, com.github.javaparser.ast.Modifier.Keyword.PUBLIC );
-            singleValueSetter.addParameter( genericType, field.name );
+            singleValueSetter.addParameter( genericType, ruleUnitVariable.getName() );
             singleValueSetter.createBody()
-                    .addStatement( "this." + field.name + " = new java.util.ArrayList<>();")
-                    .addStatement( "this." + field.name + ".add(" + field.name + ");");
+                    .addStatement( "this." + ruleUnitVariable.getName() + " = new java.util.ArrayList<>();")
+                    .addStatement( "this." + ruleUnitVariable.getName() + ".add(" + ruleUnitVariable.getName() + ");");
         }
 
         if (isDataSource) {
-            boolean isDataStream = DataStream.class.isAssignableFrom( rawType );
+            fieldDeclaration.getVariables().forEach(v -> v.setInitializer("java.util.Collections.emptyList()"));
+
+            boolean isDataStream = DataStream.class.isAssignableFrom( ruleUnitVariable.getType() );
             String sourceType = isDataStream ? "Stream" : "Store";
             String addMethod = isDataStream ? "append" : "add";
 
-            if ( field.kind == FieldKind.GETTABLE ) {
-                supplierBlock.addStatement( "this." + field.name + ".forEach( unit." + field.getter + "()::" + addMethod + " );" );
-                return;
+            if ( ruleUnitVariable.isDataSource() ) {
+                supplierBlock.addStatement( "org.kie.kogito.rules.Data" + sourceType + "<" + genericType + "> " + ruleUnitVariable.getName() + " = org.kie.kogito.rules.DataSource.create" + sourceType + "();" );
+                supplierBlock.addStatement( "this." + ruleUnitVariable.getName() + ".forEach( " + ruleUnitVariable.getName() + "::" + addMethod + " );" );
             } else {
-                supplierBlock.addStatement( "org.kie.kogito.rules.Data" + sourceType + "<" + genericType + "> " + field.name + " = org.kie.kogito.rules.DataSource.create" + sourceType + "();" );
-                supplierBlock.addStatement( "this." + field.name + ".forEach( " + field.name + "::" + addMethod + " );" );
+                supplierBlock.addStatement( "this." + ruleUnitVariable.getName() + ".forEach( unit." + getter.getNameAsString() + "()::" + addMethod + " );" );
+                return;
             }
         }
 
-        if (field.kind == FieldKind.PUBLIC) {
-            supplierBlock.addStatement( "unit." + field.name + " = " + field.name + ";" );
-        } else {
-            supplierBlock.addStatement( "unit." + setterName + "( " + field.name + " );" );
-        }
-    }
-
-    private FieldDescriptor introspectField( Field field ) {
-        String name = field.getName();
-        if ( Modifier.isPublic( field.getModifiers() ) ) {
-            return new FieldDescriptor( field.getGenericType(), name, FieldKind.PUBLIC );
-        }
-
-        Method getter = ClassUtils.getAccessor(ruleUnit, name);
-        if (getter == null) {
-            return null;
-        }
-
-        try {
-            ruleUnit.getMethod( "set" + ucFirst(name), field.getType() );
-            return new FieldDescriptor( field.getGenericType(), name, getter.getName(), FieldKind.SETTABLE );
-        } catch (NoSuchMethodException e) {
-            if ( DataSource.class.isAssignableFrom( field.getType() ) ) {
-                return new FieldDescriptor( field.getGenericType(), name, getter.getName(), FieldKind.GETTABLE );
-            }
-        }
-        return null;
+        supplierBlock.addStatement( "unit." + setterName + "( " + ruleUnitVariable.getName() + " );" );
     }
 
     private static class FieldDescriptor {
