@@ -23,6 +23,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
@@ -30,6 +31,7 @@ import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;
 import org.kie.kogito.rules.SingletonStore;
+import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 
 public class RuleUnitDTOSourceClass implements FileGenerator {
 
@@ -45,6 +47,10 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
         this.targetCanonicalName = ruleUnit.getSimpleName() + "DTO";
         this.packageName = ruleUnit.getPackageName();
         this.generatedFilePath = (packageName + "." + targetCanonicalName).replace('.', '/') + ".java";
+    }
+
+    private boolean requiresDataSourceInit(RuleUnitDescription ruleUnit) {
+        return ruleUnit instanceof GeneratedRuleUnitDescription;
     }
 
     @Override
@@ -98,26 +104,23 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
                 fieldDeclaration.getVariables() // it's a foreach, but it contains only this variable
                         .forEach(v -> v.setInitializer("java.util.Collections.emptyList()"));
             }
-            String addMethod;
             if (DataStream.class.isAssignableFrom(ruleUnitVariable.getType())) {
-                addMethod = "append";
-                supplierBlock.addStatement( "org.kie.kogito.rules.DataStream<" + genericType + "> " + ruleUnitVariable.getName() + " = org.kie.kogito.rules.DataSource.createStream();" );
-                supplierBlock.addStatement("unit." + setter.getNameAsString() + "(" + ruleUnitVariable.getName() + ");");
-                supplierBlock.addStatement("this." + ruleUnitVariable.getName() + ".forEach( unit." + getter.getNameAsString() + "()::" + addMethod + " );");
+                if (ruleUnitVariable.setter() != null) {
+                    supplierBlock.addStatement("org.kie.kogito.rules.DataStream<" + genericType + "> " + ruleUnitVariable.getName() + " = org.kie.kogito.rules.DataSource.createStream();");
+                    supplierBlock.addStatement("unit." + ruleUnitVariable.setter() + "(" + ruleUnitVariable.getName() + ");");
+                }
+                supplierBlock.addStatement("this." + ruleUnitVariable.getName() + ".forEach( unit." + getter.getNameAsString() + "()::append);");
             } else if (DataStore.class.isAssignableFrom(ruleUnitVariable.getType())) {
-                addMethod = "add";
-                supplierBlock.addStatement( "org.kie.kogito.rules.DataStore<" + genericType + "> " +getter.getNameAsString() + " = org.kie.kogito.rules.DataSource.createStore();" );
-                supplierBlock.addStatement("unit." + setter.getNameAsString() + "(" + ruleUnitVariable.getName() + ");");
-                supplierBlock.addStatement("this." + ruleUnitVariable.getName() + ".forEach( unit." + getter.getNameAsString() + "()::" + addMethod + " );");
+                if (ruleUnitVariable.setter() != null) {
+                    supplierBlock.addStatement("org.kie.kogito.rules.DataStore<" + genericType + "> " + ruleUnitVariable.getName() + " = org.kie.kogito.rules.DataSource.createStore();");
+                    supplierBlock.addStatement("unit." + ruleUnitVariable.setter() + "(" + ruleUnitVariable.getName() + ");");
+                }
+                supplierBlock.addStatement("this." + ruleUnitVariable.getName() + ".forEach( unit." + getter.getNameAsString() + "()::add);");
             } else if (SingletonStore.class.isAssignableFrom(ruleUnitVariable.getType())) {
-                addMethod = "set";
                 supplierBlock.addStatement("unit." + getter.getNameAsString() + "().set(" + "this." + ruleUnitVariable.getName() + " );");
             } else {
                 throw new IllegalArgumentException("Unknown data source type " + ruleUnitVariable.getType());
             }
-
         }
-
     }
-
 }

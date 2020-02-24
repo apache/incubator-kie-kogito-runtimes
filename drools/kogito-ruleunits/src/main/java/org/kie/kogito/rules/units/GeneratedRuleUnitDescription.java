@@ -87,11 +87,12 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
     }
 
     public void putSimpleVar(String name, Class<?> varType) {
+        System.out.println("EEEE");
         putRuleUnitVariable(new SimpleRuleUnitVariable(name, varType));
     }
 
     public void putDatasourceVar(String name, Class<?> datasourceType, Class<?> datasourceParameterType) {
-        putRuleUnitVariable(new SimpleRuleUnitVariable(name, datasourceType, datasourceParameterType));
+        putRuleUnitVariable(new SimpleRuleUnitVariable(name, datasourceType, datasourceParameterType, true));
     }
 
     private static Class<?> uncheckedLoadClass(TypeResolver typeResolver, String fqcn) {
