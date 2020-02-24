@@ -56,7 +56,7 @@
       "pluginVersion": "6.6.1",
       "targets": [
         {
-          "expr": "api_http_requests_total{handler=\"$handlerName$\"}",
+          "expr": "sum(api_http_response_code{handler=\"$handlerName$\"})",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,

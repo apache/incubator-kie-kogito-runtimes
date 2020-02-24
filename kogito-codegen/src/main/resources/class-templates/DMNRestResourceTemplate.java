@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.DMNEvaluationErrorException;
-import org.kie.addons.systemmonitoring.metrics.PrometheusMetricsCollector;
+import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;
 import org.kie.addons.systemmonitoring.metrics.DMNResultMetricsBuilder;
 import org.kie.kogito.dmn.rest.DMNResult;
 
@@ -25,7 +25,7 @@ public class DMNRestResourceTemplate {
         org.kie.kogito.decision.DecisionModel decision = application.decisionModels().getDecisionModel("$modelNamespace$", "$modelName$");
         org.kie.kogito.dmn.rest.DMNResult result = new org.kie.kogito.dmn.rest.DMNResult(decision.evaluateAll(decision.newContext(variables)));
         double endTime = System.nanoTime();
-        PrometheusMetricsCollector.GetHistogram("api_execution_elapsed_nanosecond").labels("endpoint", "$prometheusName$").observe(endTime - startTime);
+        SystemMetricsCollector.RegisterElapsedTimeSampleMetrics("$prometheusName$", endTime - startTime);
         DMNResultMetricsBuilder.generateMetrics("$prometheusName$", result);
         if (!result.hasErrors()) {
             return result.getDmnContext();

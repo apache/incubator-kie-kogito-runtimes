@@ -14,7 +14,7 @@ import org.kie.kogito.rules.RuleUnitInstance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.kie.addons.systemmonitoring.metrics.PrometheusMetricsCollector;
+import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;
 
 import static java.util.stream.Collectors.toList;
 
@@ -39,7 +39,7 @@ public class $unit$Query$name$Endpoint {
         RuleUnitInstance<$UnitType$> instance = ruleUnit.createInstance(unitDTO.get());
         List<$ReturnType$> response = instance.executeQuery( "$queryName$" ).stream().map( this::toResult ).collect( toList() );
         double endTime = System.nanoTime();
-        PrometheusMetricsCollector.GetHistogram("api_execution_elapsed_nanosecond").labels("endpoint", "$prometheusName$").observe(endTime - startTime);
+        SystemMetricsCollector.RegisterElapsedTimeSampleMetrics("$prometheusName$", endTime - startTime);
         return response;
     }
 
@@ -52,7 +52,7 @@ public class $unit$Query$name$Endpoint {
         List<$ReturnType$> results = executeQuery(unitDTO);
         $ReturnType$ response = results.isEmpty() ? null : results.get(0);
         double endTime = System.nanoTime();
-        PrometheusMetricsCollector.GetHistogram("api_execution_elapsed_nanosecond").labels("endpoint", "$prometheusName$").observe(endTime - startTime);
+        SystemMetricsCollector.RegisterElapsedTimeSampleMetrics("$prometheusName$", endTime - startTime);
         return response;
     }
 

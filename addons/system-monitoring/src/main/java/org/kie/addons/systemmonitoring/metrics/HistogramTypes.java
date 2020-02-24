@@ -1,5 +1,5 @@
 package org.kie.addons.systemmonitoring.metrics;
 
-public interface IMetricsCollector {
-
+public enum HistogramTypes {
+    ELAPSED_TIME
 }

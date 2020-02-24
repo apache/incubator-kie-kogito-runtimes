@@ -1,17 +1,13 @@
 package org.kie.addons.systemmonitoring.interceptor;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.List;
 
-import javax.annotation.Priority;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 
-import org.kie.addons.systemmonitoring.metrics.PrometheusMetricsCollector;
+import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;
 
 public class MetricsInterceptor implements ContainerResponseFilter {
 
@@ -19,15 +15,16 @@ public class MetricsInterceptor implements ContainerResponseFilter {
     public void filter(ContainerRequestContext requestContext,
                        ContainerResponseContext responseContext) throws IOException {
         System.out.println("Logging status code " + responseContext.getStatusInfo().getStatusCode());
-        try{
-            PrometheusMetricsCollector.GetCounter("api_http_requests_total").labels("endpoint", requestContext.getUriInfo().getMatchedURIs().get(0)).inc();
-            PrometheusMetricsCollector.GetCounter("api_http_response_code").labels(String.valueOf(responseContext.getStatusInfo().getStatusCode()), requestContext.getUriInfo().getMatchedURIs().get(0)).inc();
+        List<String> matchedUris = requestContext.getUriInfo().getMatchedURIs();
+        if (matchedUris.size() != 0){
+            SystemMetricsCollector.RegisterStatusCodeRequest(matchedUris.get(0), String.valueOf(responseContext.getStatusInfo().getStatusCode()));
         }
-        catch(Throwable e){
-            e.printStackTrace();
+        else
+        {
+            SystemMetricsCollector.RegisterStatusCodeRequest("", String.valueOf(responseContext.getStatusInfo().getStatusCode()));
         }
-        PrometheusMetricsCollector.GetGauge("system_available_processors").labels("value", "totalProcessors").set(Runtime.getRuntime().availableProcessors());
-        PrometheusMetricsCollector.GetGauge("system_memory_usage").labels("value", "totalMemory").set(Runtime.getRuntime().totalMemory());
-        PrometheusMetricsCollector.GetGauge("system_memory_usage").labels("value", "freeMemory").set(Runtime.getRuntime().freeMemory());
+
+        SystemMetricsCollector.RegisterSystemMemorySample(Runtime.getRuntime().totalMemory(), Runtime.getRuntime().freeMemory());
+        SystemMetricsCollector.RegisterProcessorsSample(Runtime.getRuntime().availableProcessors());
     }
 }
