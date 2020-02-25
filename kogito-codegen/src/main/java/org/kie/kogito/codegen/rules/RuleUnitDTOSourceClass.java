@@ -135,7 +135,7 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
                     supplierBlock.addStatement(String.format("org.kie.kogito.rules.DataStream<%s> %s = org.kie.kogito.rules.DataSource.createStream();", genericType, ruleUnitVariable.getName()));
                     supplierBlock.addStatement(String.format("unit.%s(%s);", ruleUnitVariable.setter(), ruleUnitVariable.getName()));
                 }
-                supplierBlock.addStatement(String.format("this.%s.forEach( unit.get%s()::append);", ruleUnitVariable.getName(), ruleUnitVariable.getter()));
+                supplierBlock.addStatement(String.format("this.%s.forEach( unit.%s()::append);", ruleUnitVariable.getName(), ruleUnitVariable.getter()));
             } else if (DataStore.class.isAssignableFrom(ruleUnitVariable.getType())) {
                 if (ruleUnitVariable.setter() != null) {
                     supplierBlock.addStatement(String.format("org.kie.kogito.rules.DataStore<%s> %s = org.kie.kogito.rules.DataSource.createStore();", genericType, ruleUnitVariable.getName()));
