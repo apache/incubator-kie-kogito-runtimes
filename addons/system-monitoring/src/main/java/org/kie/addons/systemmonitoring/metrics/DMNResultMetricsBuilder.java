@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.prometheus.client.Counter;
-import jdk.internal.platform.Metrics;
 import org.kie.dmn.api.core.DMNDecisionResult;
 import org.kie.kogito.dmn.rest.DMNResult;
 
