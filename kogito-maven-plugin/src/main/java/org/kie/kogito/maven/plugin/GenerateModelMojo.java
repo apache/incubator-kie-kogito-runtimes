@@ -278,7 +278,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
             try {
                 urls.add(artifact.getFile().toURI().toURL());
             }
-            catch(MalformedURLException e){}
+            catch(MalformedURLException e){
+                getLog().debug("Artifact has malformed URL: skipping the artifact.", e);
+            }
         }
 
         try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]))) {
