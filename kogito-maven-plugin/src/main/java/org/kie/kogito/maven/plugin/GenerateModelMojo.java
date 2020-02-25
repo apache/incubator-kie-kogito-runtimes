@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
@@ -14,6 +15,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -267,26 +269,23 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
     }
 
-
     protected boolean hasClassOnClasspath(String className) {
-        try {
-            Set<Artifact> elements = project.getDependencyArtifacts();
-            URL[] urls = new URL[elements.size()];
+        Set<Artifact> elements = project.getArtifacts();
 
-            int i = 0;
-            Iterator<Artifact> it = elements.iterator();
-            while (it.hasNext()) {
-                Artifact artifact = it.next();
+        List<URL> urls = new ArrayList<>();
 
-                urls[i] = artifact.getFile().toURI().toURL();
-                i++;
+        for(Artifact artifact : elements){
+            try {
+                urls.add(artifact.getFile().toURI().toURL());
             }
-            try (URLClassLoader cl = new URLClassLoader(urls)) {
-                cl.loadClass(className);
-            }
-            return true;
+            catch(MalformedURLException e){}
+        }
+
+        try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]))) {
+            cl.loadClass(className);
         } catch (Exception e) {
             return false;
         }
+        return true;
     }
 }
