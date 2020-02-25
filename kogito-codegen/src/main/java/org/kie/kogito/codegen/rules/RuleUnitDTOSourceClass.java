@@ -16,22 +16,21 @@
 
 package org.kie.kogito.codegen.rules;
 
-import java.util.Optional;
-
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.Type;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;
 import org.kie.kogito.rules.SingletonStore;
-import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 
 public class RuleUnitDTOSourceClass implements FileGenerator {
 
@@ -49,10 +48,6 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
         this.generatedFilePath = (packageName + "." + targetCanonicalName).replace('.', '/') + ".java";
     }
 
-    private boolean requiresDataSourceInit(RuleUnitDescription ruleUnit) {
-        return ruleUnit instanceof GeneratedRuleUnitDescription;
-    }
-
     @Override
     public String generatedFilePath() {
         return generatedFilePath;
@@ -63,68 +58,97 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
         CompilationUnit cu = new CompilationUnit();
         cu.setPackageDeclaration(packageName);
 
-        ClassOrInterfaceDeclaration dtoClass = cu.addClass(targetCanonicalName, com.github.javaparser.ast.Modifier.Keyword.PUBLIC);
-        dtoClass.addImplementedType("java.util.function.Supplier<" + ruleUnit.getSimpleName() + ">");
+        ClassOrInterfaceDeclaration dtoClass = cu.addClass(targetCanonicalName, Modifier.Keyword.PUBLIC);
+        dtoClass.addImplementedType(String.format("java.util.function.Supplier<%s>", ruleUnit.getSimpleName()));
 
-        MethodDeclaration supplier = dtoClass.addMethod("get", com.github.javaparser.ast.Modifier.Keyword.PUBLIC);
+        MethodDeclaration supplier = dtoClass.addMethod("get", Modifier.Keyword.PUBLIC);
         supplier.addAnnotation(Override.class);
         supplier.setType(ruleUnit.getSimpleName());
         BlockStmt supplierBlock = supplier.createBody();
-        supplierBlock.addStatement(ruleUnit.getSimpleName() + " unit = new " + ruleUnit.getSimpleName() + "();");
+        supplierBlock.addStatement(String.format("%s unit = new %s();", ruleUnit.getSimpleName(), ruleUnit.getSimpleName()));
 
-        ruleUnit.getUnitVarDeclarations().forEach(v -> processField(dtoClass, supplierBlock, v));
+        for (RuleUnitVariable unitVarDeclaration : ruleUnit.getUnitVarDeclarations()) {
+            FieldProcessor fieldProcessor = new FieldProcessor(unitVarDeclaration);
+            FieldDeclaration field = fieldProcessor.createField();
+            supplierBlock.addStatement(fieldProcessor.fieldInitializer());
+            dtoClass.addMember(field);
+            field.createGetter();
+            field.createSetter();
+        }
 
         supplierBlock.addStatement("return unit;");
 
         return cu.toString();
     }
 
-    private void processField(ClassOrInterfaceDeclaration dtoClass, BlockStmt supplierBlock, RuleUnitVariable ruleUnitVariable) {
-        boolean isDataSource = ruleUnitVariable.isDataSource();
-        boolean isSingletonStore = SingletonStore.class.isAssignableFrom(ruleUnitVariable.getType());
-        String typeName = ruleUnitVariable.getType().getCanonicalName();
-        String genericType = Optional.ofNullable(ruleUnitVariable.getDataSourceParameterType()).map(Class::getCanonicalName).orElse("Object");
-        ClassOrInterfaceType type = new ClassOrInterfaceType(null, typeName);
+    private static class FieldProcessor {
 
-        if (isSingletonStore) {
-            type = new ClassOrInterfaceType(null, genericType);
-        } else if (isDataSource) {
-            typeName = "java.util.List";
-            genericType = ruleUnitVariable.getDataSourceParameterType().getCanonicalName();
-            type = new ClassOrInterfaceType(null, typeName).setTypeArguments(new ClassOrInterfaceType(null, genericType));
+        final RuleUnitVariable ruleUnitVariable;
+        final boolean isDataSource;
+        final boolean isSingletonStore;
+        private String genericType;
+
+        public FieldProcessor(RuleUnitVariable ruleUnitVariable) {
+            this.ruleUnitVariable = ruleUnitVariable;
+            this.isDataSource = ruleUnitVariable.isDataSource();
+            this.isSingletonStore = SingletonStore.class.isAssignableFrom(ruleUnitVariable.getType());
         }
 
-        FieldDeclaration fieldDeclaration = dtoClass.addField(
-                type, ruleUnitVariable.getName(), com.github.javaparser.ast.Modifier.Keyword.PRIVATE);
-        MethodDeclaration getter = fieldDeclaration.createGetter();
-        MethodDeclaration setter = fieldDeclaration.createSetter();
+        private FieldDeclaration createField() {
+            Type type = toQueryType();
 
-        if (isDataSource) {
-            if (!isSingletonStore) {
-                fieldDeclaration.getVariables() // it's a foreach, but it contains only this variable
-                        .forEach(v -> v.setInitializer("java.util.Collections.emptyList()"));
+            VariableDeclarator variableDeclarator = new VariableDeclarator(type, ruleUnitVariable.getName());
+            if (isDataSource && !isSingletonStore) {
+                variableDeclarator.setInitializer("java.util.Collections.emptyList()");
             }
-            if (DataStream.class.isAssignableFrom(ruleUnitVariable.getType())) {
+
+            return new FieldDeclaration()
+                    .setModifiers(Modifier.Keyword.PRIVATE)
+                    .addVariable(variableDeclarator);
+        }
+
+        // map non-singleton data sources (DataStore, DataStream) to List on the query DTO
+        // map SingletonStore to a simple field in the DTO
+        // leave simple fields (non-datasource) as they are
+        private Type toQueryType() {
+            if (isSingletonStore) {
+                genericType = ruleUnitVariable.getDataSourceParameterType().getCanonicalName();
+                return new ClassOrInterfaceType(null, genericType);
+            } else if (isDataSource) {
+                genericType = ruleUnitVariable.getDataSourceParameterType().getCanonicalName();
+                return new ClassOrInterfaceType(null, "java.util.List")
+                        .setTypeArguments(new ClassOrInterfaceType(null, genericType));
+            } else {
+                return new ClassOrInterfaceType(null, ruleUnitVariable.getType().getCanonicalName());
+            }
+        }
+
+        private BlockStmt fieldInitializer() {
+            BlockStmt supplierBlock = new BlockStmt();
+
+            if (!isDataSource) {
                 if (ruleUnitVariable.setter() != null) {
-                    supplierBlock.addStatement("org.kie.kogito.rules.DataStream<" + genericType + "> " + ruleUnitVariable.getName() + " = org.kie.kogito.rules.DataSource.createStream();");
-                    supplierBlock.addStatement("unit." + ruleUnitVariable.setter() + "(" + ruleUnitVariable.getName() + ");");
+                    supplierBlock.addStatement(String.format("unit.%s(%s);", ruleUnitVariable.setter(), ruleUnitVariable.getName()));
                 }
-                supplierBlock.addStatement("this." + ruleUnitVariable.getName() + ".forEach( unit." + getter.getNameAsString() + "()::append);");
+            } else if (DataStream.class.isAssignableFrom(ruleUnitVariable.getType())) {
+                if (ruleUnitVariable.setter() != null) {
+                    supplierBlock.addStatement(String.format("org.kie.kogito.rules.DataStream<%s> %s = org.kie.kogito.rules.DataSource.createStream();", genericType, ruleUnitVariable.getName()));
+                    supplierBlock.addStatement(String.format("unit.%s(%s);", ruleUnitVariable.setter(), ruleUnitVariable.getName()));
+                }
+                supplierBlock.addStatement(String.format("this.%s.forEach( unit.get%s()::append);", ruleUnitVariable.getName(), ruleUnitVariable.getter()));
             } else if (DataStore.class.isAssignableFrom(ruleUnitVariable.getType())) {
                 if (ruleUnitVariable.setter() != null) {
-                    supplierBlock.addStatement("org.kie.kogito.rules.DataStore<" + genericType + "> " + ruleUnitVariable.getName() + " = org.kie.kogito.rules.DataSource.createStore();");
-                    supplierBlock.addStatement("unit." + ruleUnitVariable.setter() + "(" + ruleUnitVariable.getName() + ");");
+                    supplierBlock.addStatement(String.format("org.kie.kogito.rules.DataStore<%s> %s = org.kie.kogito.rules.DataSource.createStore();", genericType, ruleUnitVariable.getName()));
+                    supplierBlock.addStatement(String.format("unit.%s(%s);", ruleUnitVariable.setter(), ruleUnitVariable.getName()));
                 }
-                supplierBlock.addStatement("this." + ruleUnitVariable.getName() + ".forEach( unit." + getter.getNameAsString() + "()::add);");
+                supplierBlock.addStatement(String.format("this.%s.forEach( unit.%s()::add);", ruleUnitVariable.getName(), ruleUnitVariable.getter()));
             } else if (SingletonStore.class.isAssignableFrom(ruleUnitVariable.getType())) {
-                supplierBlock.addStatement("unit." + getter.getNameAsString() + "().set(" + "this." + ruleUnitVariable.getName() + " );");
+                supplierBlock.addStatement(String.format("unit.%s().set(this.%s );", ruleUnitVariable.getter(), ruleUnitVariable.getName()));
             } else {
                 throw new IllegalArgumentException("Unknown data source type " + ruleUnitVariable.getType());
             }
-        } else {
-            if (ruleUnitVariable.setter() != null) {
-                supplierBlock.addStatement("unit." + ruleUnitVariable.setter() + "(" + ruleUnitVariable.getName() + ");");
-            }
+
+            return supplierBlock;
         }
     }
 }
