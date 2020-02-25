@@ -270,11 +270,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
     }
 
     protected boolean hasClassOnClasspath(String className) {
-        Set<Artifact> elements = project.getArtifacts();
+        Set<Artifact> artifacts = project.getArtifacts();
 
         List<URL> urls = new ArrayList<>();
 
-        for(Artifact artifact : elements){
+        for(Artifact artifact : artifacts){
             try {
                 urls.add(artifact.getFile().toURI().toURL());
             }
