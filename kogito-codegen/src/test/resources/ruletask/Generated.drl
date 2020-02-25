@@ -16,7 +16,6 @@ rule singlePerson_add_note when
     s: /singleString[ this == "hello" ]
 then
     p.setAdult(true);
-    singleString.clear();
 	singleString.set("Now the life starts again");
 end
 
