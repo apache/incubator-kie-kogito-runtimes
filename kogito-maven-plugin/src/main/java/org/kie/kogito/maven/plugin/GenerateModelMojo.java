@@ -47,7 +47,7 @@ import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
 
 @Mojo(name = "generateModel",
-        requiresDependencyResolution = ResolutionScope.NONE,
+        requiresDependencyResolution = ResolutionScope.COMPILE,
         requiresProject = true,
         defaultPhase = LifecyclePhase.COMPILE)
 public class GenerateModelMojo extends AbstractKieMojo {
