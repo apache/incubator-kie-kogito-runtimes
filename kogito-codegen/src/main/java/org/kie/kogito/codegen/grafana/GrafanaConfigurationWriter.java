@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,10 +25,10 @@ public class GrafanaConfigurationWriter {
         return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
     }
 
-    public static boolean generateDashboardForEndpoint(String handlerName, int id){
+    public static boolean generateDashboardForEndpoint(String handlerName){
         String template = readStandardDashboard();
         template = template.replaceAll("\\$handlerName\\$", handlerName);
-        template = template.replaceAll("\\$id\\$", String.valueOf(id));
+        template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
         template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
 
         try {
@@ -42,10 +43,10 @@ public class GrafanaConfigurationWriter {
         return true;
     }
 
-    public static boolean generateDashboardForDMNEndpoint(String handlerName, int id, List<String> decisionNames){
+    public static boolean generateDashboardForDMNEndpoint(String handlerName, List<String> decisionNames){
         String template = readStandardDashboard();
         template = template.replaceAll("\\$handlerName\\$", handlerName);
-        template = template.replaceAll("\\$id\\$", String.valueOf(id));
+        template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
         template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
 
         try{

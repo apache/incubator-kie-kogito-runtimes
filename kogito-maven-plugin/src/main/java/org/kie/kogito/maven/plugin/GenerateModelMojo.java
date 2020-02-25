@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
@@ -14,6 +15,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,9 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -108,6 +112,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(property = "kogito.persistence.enabled", defaultValue = "false")
     private boolean persistence;
 
+    @Parameter(property = "kogito.systemmonitoring.enabled", defaultValue = "false")
+    private boolean systemMonitoring;
+
     @Parameter(required = true, defaultValue = "${project.basedir}/src/main/resources")
     private File kieSourcesDirectory;
 
@@ -185,6 +192,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
         boolean usePersistence = persistence || hasClassOnClasspath("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
         boolean useMonitoring = hasClassOnClasspath("org.kie.addons.monitoring.rest.MetricsResource");
+        boolean useSystemMonitoring = systemMonitoring || hasClassOnClasspath("org.kie.addons.systemmonitoring.interceptor.MetricsInterceptor");
 
         ClassLoader projectClassLoader = MojoUtil.createProjectClassLoader(this.getClass().getClassLoader(),
                                                                            project,
@@ -208,14 +216,17 @@ public class GenerateModelMojo extends AbstractKieMojo {
                     .withClassLoader(projectClassLoader);
         }
 
+        System.out.println(String.valueOf(useMonitoring));
         if (generateRuleUnits) {
             appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withKModule(getKModuleModel())
-                    .withClassLoader(projectClassLoader);
+                    .withClassLoader(projectClassLoader)
+                    .withMonitoring(useSystemMonitoring);
         }
 
         if (generateDecisions) {
-            appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()));
+            appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()))
+            .withMonitoring(useSystemMonitoring);
         }
 
         return appGen;
@@ -265,26 +276,23 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
     }
 
-
     protected boolean hasClassOnClasspath(String className) {
-        try {
-            Set<Artifact> elements = project.getDependencyArtifacts();
-            URL[] urls = new URL[elements.size()];
+        Set<Artifact> elements = project.getArtifacts();
 
-            int i = 0;
-            Iterator<Artifact> it = elements.iterator();
-            while (it.hasNext()) {
-                Artifact artifact = it.next();
+        List<URL> urls = new ArrayList<>();
 
-                urls[i] = artifact.getFile().toURI().toURL();
-                i++;
+        for(Artifact artifact : elements){
+            try {
+                urls.add(artifact.getFile().toURI().toURL());
             }
-            try (URLClassLoader cl = new URLClassLoader(urls)) {
-                cl.loadClass(className);
-            }
-            return true;
+            catch(MalformedURLException e){}
+        }
+
+        try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]))) {
+            cl.loadClass(className);
         } catch (Exception e) {
             return false;
         }
+        return true;
     }
 }

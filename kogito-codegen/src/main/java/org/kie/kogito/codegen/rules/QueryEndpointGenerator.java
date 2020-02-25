@@ -16,8 +16,10 @@
 
 package org.kie.kogito.codegen.rules;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +38,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.Type;
@@ -44,9 +47,13 @@ import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.rules.RuleUnitInstance;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static com.github.javaparser.StaticJavaParser.parseImport;
+import static com.github.javaparser.StaticJavaParser.parseStatement;
+import static java.util.stream.Collectors.toList;
 import static org.drools.core.util.StringUtils.ucFirst;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classNameToReferenceType;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
@@ -61,8 +68,9 @@ public class QueryEndpointGenerator implements FileGenerator {
     private final String endpointName;
     private final String targetCanonicalName;
     private final String generatedFilePath;
+    private final boolean useMonitoring;
 
-    public QueryEndpointGenerator(RuleUnitDescription ruleUnit, QueryModel query, DependencyInjectionAnnotator annotator ) {
+    public QueryEndpointGenerator(RuleUnitDescription ruleUnit, QueryModel query, DependencyInjectionAnnotator annotator, boolean useMonitoring) {
         this.ruleUnit = ruleUnit;
         this.query = query;
         this.name = toCamelCase(query.getName());
@@ -71,6 +79,7 @@ public class QueryEndpointGenerator implements FileGenerator {
 
         this.targetCanonicalName = ruleUnit.getSimpleName() + "Query" + name + "Endpoint";
         this.generatedFilePath = (query.getNamespace() + "." + targetCanonicalName).replace('.', '/') + ".java";
+        this.useMonitoring = useMonitoring;
     }
 
     @Override
@@ -101,7 +110,7 @@ public class QueryEndpointGenerator implements FileGenerator {
 
         String returnType = getReturnType(clazz);
         generateConstructors( clazz );
-        generateQueryMethods( clazz, returnType );
+        generateQueryMethods(cu, clazz, returnType );
         clazz.getMembers().sort(new BodyDeclarationComparator());
         return cu.toString();
     }
@@ -119,7 +128,7 @@ public class QueryEndpointGenerator implements FileGenerator {
         }
     }
 
-    private void generateQueryMethods( ClassOrInterfaceDeclaration clazz, String returnType ) {
+    private void generateQueryMethods(CompilationUnit cu, ClassOrInterfaceDeclaration clazz, String returnType ) {
         MethodDeclaration queryMethod = clazz.getMethodsByName( "executeQuery" ).get(0);
         queryMethod.getParameter( 0 ).setType(ruleUnit.getCanonicalName() + "DTO");
         setGeneric(queryMethod.getType(), returnType);
@@ -127,14 +136,13 @@ public class QueryEndpointGenerator implements FileGenerator {
         Statement statement = queryMethod
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 1 );
+                .getStatement( 0 );
         statement.findAll( VariableDeclarator.class ).forEach( decl -> setUnitGeneric( decl.getType() ) );
-        // TODO: remeve hardcoded statement line - as well as above
 
         Statement returnStatement = queryMethod
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 2 );
+                .getStatement( 1 );
         returnStatement.findAll( VariableDeclarator.class ).forEach( decl -> setGeneric( decl.getType(), returnType ) );
 
         MethodDeclaration queryMethodSingle = clazz.getMethodsByName( "executeQueryFirst" ).get(0);
@@ -144,16 +152,36 @@ public class QueryEndpointGenerator implements FileGenerator {
         Statement statementSingle = queryMethodSingle
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 1 );
+                .getStatement( 0 );
         statementSingle.findAll( VariableDeclarator.class ).forEach( decl -> setGeneric( decl.getType(), returnType ) );
 
-        // TODO: remeve hardcoded statement line - as well as above
         Statement returnMethodSingle = queryMethodSingle
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 2 );
+                .getStatement( 1 );
         returnMethodSingle.findAll( VariableDeclarator.class ).forEach( decl -> decl.setType( returnType ) );
+
+        System.out.println(String.valueOf(useMonitoring));
+        if (useMonitoring){
+            addMonitoringToResource(cu, new MethodDeclaration[]{queryMethod, queryMethodSingle}, endpointName);
+        }
+
     }
+
+    private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration[] methods, String nameURL){
+        cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;"));
+
+        for(MethodDeclaration md : methods){
+            Optional<BlockStmt> body = md.getBody();
+            NodeList<Statement> statements = body.get().getStatements();
+            statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
+
+            statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(ReturnStmt.class).get());
+            statements.addBefore(parseStatement("SystemMetricsCollector.RegisterElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(ReturnStmt.class).get());
+        }
+
+    }
+
 
     private String getReturnType( ClassOrInterfaceDeclaration clazz ) {
         MethodDeclaration toResultMethod = clazz.getMethodsByName( "toResult" ).get(0);

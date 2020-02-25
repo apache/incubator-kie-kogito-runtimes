@@ -17,8 +17,10 @@ package org.kie.kogito.codegen.decision;
 
 import java.net.URLEncoder;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -30,7 +32,10 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import org.drools.core.util.StringUtils;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
@@ -40,6 +45,8 @@ import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.CodegenUtils;
 
 import static com.github.javaparser.StaticJavaParser.parse;
+import static com.github.javaparser.StaticJavaParser.parseImport;
+import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class DMNRestResourceGenerator {
 
@@ -83,7 +90,11 @@ public class DMNRestResourceGenerator {
         return resourceClazzName;
     }
 
-    public String generate() {
+    public String generate(){
+        return generate(false);
+    }
+
+    public String generate(boolean useMonitoring) {
         CompilationUnit clazz = parse(this.getClass().getResourceAsStream("/class-templates/DMNRestResourceTemplate.java"));
         clazz.setPackageDeclaration(this.packageName);
 
@@ -105,10 +116,16 @@ public class DMNRestResourceGenerator {
         }
         
         MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
+
+        if (useMonitoring){
+            addMonitoringToResource(clazz, dmnMethod, nameURL);
+        }
+
         for (DecisionService ds : definitions.getDecisionService()) {
             if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
                 continue;
             }
+
             MethodDeclaration clonedMethod = dmnMethod.clone();
             String name = CodegenStringUtil.escapeIdentifier("decisionService_" + ds.getName());
             clonedMethod.setName(name);
@@ -127,7 +144,21 @@ public class DMNRestResourceGenerator {
         template.getMembers().sort(new BodyDeclarationComparator());
         return clazz.toString();
     }
-    
+
+    private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration dmnMethod, String nameURL){
+        cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;"));
+        cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.DMNResultMetricsBuilder;"));
+
+        Optional<BlockStmt> body = dmnMethod.getBody();
+        NodeList<Statement> statements = body.get().getStatements();
+        statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
+        System.out.println(body.get().findFirst(IfStmt.class).get().toString());
+
+        statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(IfStmt.class).get());
+        statements.addBefore(parseStatement("SystemMetricsCollector.RegisterElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(IfStmt.class).get());
+        statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(\"" + nameURL + "\", result);"), body.get().findFirst(IfStmt.class).get());
+    }
+
     private void initializeApplicationField(FieldDeclaration fd) {
         fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(appCanonicalName));
     }
@@ -140,8 +171,7 @@ public class DMNRestResourceGenerator {
                                .replace("$id$", decisionId)
                                .replace("$modelName$", definitions.getName())
                                .replace("$modelNamespace$", definitions.getNamespace())
-                               .replace("$documentation$", documentation)
-                               .replace("$prometheusName$", nameURL);
+                               .replace("$documentation$", documentation);
 
         vv.setString(interpolated);
     }

@@ -95,6 +95,7 @@ public class DecisionCodegen extends AbstractGenerator {
     private Path basePath;
     private final Map<String, DMNResource> models;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
+    private boolean useMonitoring = false;
 
     public DecisionCodegen(Path basePath, Collection<? extends DMNResource> models) {
         this.basePath = basePath;
@@ -137,13 +138,13 @@ public class DecisionCodegen extends AbstractGenerator {
             rgs.add(resourceGenerator);
         }
 
-        int i = 0;
         for (DMNRestResourceGenerator resourceGenerator : rgs) {
             // Grafana dashboard generation
-            Definitions definitions = resourceGenerator.getDefinitions();
-            List<String> decisionNames = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> x.getName()).collect(Collectors.toList());
-            GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), i++, decisionNames);
-
+            if (useMonitoring) {
+                Definitions definitions = resourceGenerator.getDefinitions();
+                List<String> decisionNames = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> x.getName()).collect(Collectors.toList());
+                GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisionNames);
+            }
             storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
         }
 
@@ -168,4 +169,8 @@ public class DecisionCodegen extends AbstractGenerator {
         return moduleGenerator;
     }
 
+    public DecisionCodegen withMonitoring(boolean useMonitoring){
+        this.useMonitoring = useMonitoring;
+        return this;
+    }
 }
