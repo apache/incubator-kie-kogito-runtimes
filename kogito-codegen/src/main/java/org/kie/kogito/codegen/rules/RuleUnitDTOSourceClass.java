@@ -121,6 +121,10 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
             } else {
                 throw new IllegalArgumentException("Unknown data source type " + ruleUnitVariable.getType());
             }
+        } else {
+            if (ruleUnitVariable.setter() != null) {
+                supplierBlock.addStatement("unit." + ruleUnitVariable.setter() + "(" + ruleUnitVariable.getName() + ");");
+            }
         }
     }
 }
