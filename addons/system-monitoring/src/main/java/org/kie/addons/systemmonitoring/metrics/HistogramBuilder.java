@@ -27,8 +27,8 @@ public class HistogramBuilder {
 
     static Histogram BuildElapsedTimeHistogram(String[] labels){
         return Histogram.build()
-                .name("api_execution_elapsed_nanosecond")
-                .help("Endpoint execution elapsed nanoseconds.")
+                .name(MetricsConstants.ELAPSED_TIME_NAME)
+                .help(MetricsConstants.ELAPSED_TIME_HELP)
                 .labelNames(labels)
                 .buckets(RULE_TIME_BUCKETS)
                 .register();

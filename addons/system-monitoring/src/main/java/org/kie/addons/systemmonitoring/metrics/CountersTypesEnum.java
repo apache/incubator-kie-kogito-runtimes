@@ -2,5 +2,6 @@ package org.kie.addons.systemmonitoring.metrics;
 
 public enum CountersTypesEnum {
     EXCEPTIONS,
-    REQUESTS_STATUS_CODE
+    REQUESTS_STATUS_CODE,
+    DECISIONS
 }

@@ -123,7 +123,6 @@ public class ApplicationGenerator {
                                                                                 .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getCanonicalName()))))
                                                                                 .setName("kogitoService"));
 
-
         cls.addMember(eventPublishersFieldDeclaration);
         cls.addMember(kogitoServiceField);
         if (useInjection()) {
