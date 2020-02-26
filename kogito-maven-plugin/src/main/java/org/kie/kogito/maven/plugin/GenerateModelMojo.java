@@ -49,7 +49,7 @@ import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
 
 @Mojo(name = "generateModel",
-        requiresDependencyResolution = ResolutionScope.NONE,
+        requiresDependencyResolution = ResolutionScope.COMPILE,
         requiresProject = true,
         defaultPhase = LifecyclePhase.COMPILE)
 public class GenerateModelMojo extends AbstractKieMojo {
@@ -216,7 +216,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
                     .withClassLoader(projectClassLoader);
         }
 
-        System.out.println(String.valueOf(useMonitoring));
         if (generateRuleUnits) {
             appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withKModule(getKModuleModel())
@@ -277,15 +276,17 @@ public class GenerateModelMojo extends AbstractKieMojo {
     }
 
     protected boolean hasClassOnClasspath(String className) {
-        Set<Artifact> elements = project.getArtifacts();
+        Set<Artifact> artifacts = project.getArtifacts();
 
         List<URL> urls = new ArrayList<>();
 
-        for(Artifact artifact : elements){
+        for(Artifact artifact : artifacts){
             try {
                 urls.add(artifact.getFile().toURI().toURL());
             }
-            catch(MalformedURLException e){}
+            catch(MalformedURLException e){
+                getLog().debug("Artifact has malformed URL: skipping the artifact.", e);
+            }
         }
 
         try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]))) {

@@ -145,7 +145,7 @@ public class DecisionCodegen extends AbstractGenerator {
                 List<String> decisionNames = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> x.getName()).collect(Collectors.toList());
                 GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisionNames);
             }
-            storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
+            storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate(useMonitoring));
         }
 
         return generatedFiles;

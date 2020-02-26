@@ -16,6 +16,8 @@
 
 package org.kie.kogito.codegen.rules;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -159,13 +161,11 @@ public class QueryEndpointGenerator implements FileGenerator {
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
                 .getStatement( 1 );
-        returnMethodSingle.findAll( VariableDeclarator.class ).forEach( decl -> decl.setType( returnType ) );
+        returnMethodSingle.findAll( VariableDeclarator.class ).forEach( decl -> decl.setType( toNonPrimitiveType( returnType ) ) );
 
-        System.out.println(String.valueOf(useMonitoring));
         if (useMonitoring){
             addMonitoringToResource(cu, new MethodDeclaration[]{queryMethod, queryMethodSingle}, endpointName);
         }
-
     }
 
     private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration[] methods, String nameURL){

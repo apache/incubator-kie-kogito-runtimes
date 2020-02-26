@@ -152,7 +152,6 @@ public class DMNRestResourceGenerator {
         Optional<BlockStmt> body = dmnMethod.getBody();
         NodeList<Statement> statements = body.get().getStatements();
         statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
-        System.out.println(body.get().findFirst(IfStmt.class).get().toString());
 
         statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(IfStmt.class).get());
         statements.addBefore(parseStatement("SystemMetricsCollector.RegisterElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(IfStmt.class).get());
