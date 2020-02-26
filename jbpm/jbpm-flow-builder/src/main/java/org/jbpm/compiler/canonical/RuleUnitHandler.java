@@ -30,6 +30,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.rules.units.DataSourceTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,14 +53,16 @@ public class RuleUnitHandler {
 
     public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
 
-    RuleUnitDescription ruleUnit;
-    ProcessContextMetaModel variableScope;
-    RuleSetNode ruleSetNode;
+    private final RuleUnitDescription ruleUnit;
+    private final ProcessContextMetaModel variableScope;
+    private final RuleSetNode ruleSetNode;
+    private final DataSourceTypes dataSourceTypes;
 
-    public RuleUnitHandler(RuleUnitDescription ruleUnit, ProcessContextMetaModel variableScope, RuleSetNode ruleSetNode) {
+    public RuleUnitHandler(RuleUnitDescription ruleUnit, ProcessContextMetaModel variableScope, RuleSetNode ruleSetNode, DataSourceTypes dataSourceTypes) {
         this.ruleUnit = ruleUnit;
         this.variableScope = variableScope;
         this.ruleSetNode = ruleSetNode;
+        this.dataSourceTypes = dataSourceTypes;
     }
 
     public Expression invoke() {

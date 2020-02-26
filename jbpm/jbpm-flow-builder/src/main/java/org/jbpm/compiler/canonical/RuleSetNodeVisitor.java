@@ -38,7 +38,7 @@ import org.kie.api.definition.process.Node;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.SingletonStore;
+import org.kie.kogito.rules.units.DataSourceTypes;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
@@ -51,9 +51,11 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
     public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
 
     private final ClassLoader contextClassLoader;
+    private final DataSourceTypes dataSourceTypes;
 
     public RuleSetNodeVisitor(ClassLoader contextClassLoader) {
         this.contextClassLoader = contextClassLoader;
+        this.dataSourceTypes = DataSourceTypes.getInstance(contextClassLoader);
     }
 
     @Override
@@ -137,7 +139,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             description = d;
         }
 
-        RuleUnitHandler handler = new RuleUnitHandler(description, processContext, ruleSetNode);
+        RuleUnitHandler handler = new RuleUnitHandler(description, processContext, ruleSetNode, dataSourceTypes);
         Expression ruleUnitFactory = handler.invoke();
 
         return new MethodCallExpr("ruleUnit")
@@ -151,7 +153,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         for (Variable variable : processContext.getVariables()) {
             d.putDatasourceVar(
                     variable.getName(),
-                    SingletonStore.class.getCanonicalName(),
+                    dataSourceTypes.SingletonStore.getCanonicalName(),
                     variable.getType().getStringType());
         }
         return d;

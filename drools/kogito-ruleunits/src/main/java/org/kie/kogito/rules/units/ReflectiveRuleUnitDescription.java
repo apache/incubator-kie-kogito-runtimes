@@ -38,9 +38,11 @@ import static org.drools.reflective.util.ClassUtils.getter2property;
 public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
 
     private final Class<? extends RuleUnitData> ruleUnitClass;
+    private final DataSourceTypes dataSourceTypes;
 
     public ReflectiveRuleUnitDescription(InternalKnowledgePackage pkg, Class<? extends RuleUnitData> ruleUnitClass) {
         this.ruleUnitClass = ruleUnitClass;
+        this.dataSourceTypes = DataSourceTypes.getInstance(ruleUnitClass.getClassLoader());
         indexUnitVars();
         setConfig(loadConfig(ruleUnitClass));
     }
@@ -95,7 +97,7 @@ public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
         if (returnClass.isArray()) {
             return returnClass.getComponentType();
         }
-        if (DataSource.class.isAssignableFrom(returnClass)) {
+        if (dataSourceTypes.DataSource.isAssignableFrom(returnClass)) {
             return getParametricType(m);
         }
         if (Iterable.class.isAssignableFrom(returnClass)) {
