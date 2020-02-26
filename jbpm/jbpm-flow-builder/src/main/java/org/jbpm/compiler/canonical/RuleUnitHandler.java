@@ -99,7 +99,7 @@ public class RuleUnitHandler {
      */
     private BlockStmt bind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
         RuleUnitMetaModel unit =
-                new RuleUnitMetaModel(unitDescription, "unit");
+                new RuleUnitMetaModel(unitDescription, "unit", dataSourceTypes);
 
         BlockStmt actionBody = new BlockStmt();
 
@@ -163,7 +163,7 @@ public class RuleUnitHandler {
 
     private BlockStmt unbind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
         RuleUnitMetaModel unit =
-                new RuleUnitMetaModel(unitDescription, "unit");
+                new RuleUnitMetaModel(unitDescription, "unit", dataSourceTypes);
 
         BlockStmt actionBody = new BlockStmt();
 
