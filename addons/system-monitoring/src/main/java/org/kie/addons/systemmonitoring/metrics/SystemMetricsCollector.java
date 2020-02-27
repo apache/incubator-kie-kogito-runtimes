@@ -18,7 +18,7 @@ public class SystemMetricsCollector {
         counters.computeIfAbsent(CountersTypesEnum.REQUESTS_STATUS_CODE,
                                    k -> Counter.build().name(MetricsConstants.STATUS_CODE_NAME)
                                            .help(MetricsConstants.STATUS_CODE_HELP)
-                                           .labelNames(MetricsConstants.STATUS_CODE_LABELS).register())
+                                           .labelNames(MetricsConstants.HANDLER_IDENTIFIER_LABELS).register())
                                   .labels(handler, statusCode).inc();
         }
 
@@ -28,12 +28,12 @@ public class SystemMetricsCollector {
                 .labels(handler).observe(elapsedTime);
     }
 
-    public static void RegisterException(String stackTrace){
+    public static void RegisterException(String handler, String stackTrace){
         counters.computeIfAbsent(CountersTypesEnum.EXCEPTIONS,
                                  k -> Counter.build().name(MetricsConstants.EXCEPTIONS_NAME)
                                          .help(MetricsConstants.EXCEPTIONS_HELP)
-                                         .labelNames(MetricsConstants.EXCEPTIONS_LABEL).register())
-                                .labels(stackTrace).inc();
+                                         .labelNames(MetricsConstants.HANDLER_IDENTIFIER_LABELS).register())
+                                .labels(handler, stackTrace).inc();
     }
 
     public static void RegisterProcessorsSample(int totalProcessors){

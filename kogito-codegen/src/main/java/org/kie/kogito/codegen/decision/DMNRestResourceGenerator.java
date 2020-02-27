@@ -18,6 +18,7 @@ package org.kie.kogito.codegen.decision;
 import java.net.URLEncoder;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
@@ -43,8 +44,10 @@ import org.kie.dmn.model.api.DecisionService;
 import org.kie.dmn.model.api.Definitions;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.CodegenUtils;
+import protostream.javassist.compiler.ast.MethodDecl;
 
 import static com.github.javaparser.StaticJavaParser.parse;
+import static com.github.javaparser.StaticJavaParser.parseAnnotation;
 import static com.github.javaparser.StaticJavaParser.parseImport;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 
@@ -118,7 +121,7 @@ public class DMNRestResourceGenerator {
         MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
 
         if (useMonitoring){
-            addMonitoringToResource(clazz, dmnMethod, nameURL);
+            addMonitoringImports(clazz);
         }
 
         for (DecisionService ds : definitions.getDecisionService()) {
@@ -138,24 +141,56 @@ public class DMNRestResourceGenerator {
                 MethodCallExpr rewrittenReturnExpr = new MethodCallExpr(new MethodCallExpr(new MethodCallExpr(new NameExpr("result"), "getDecisionResults"), "get").addArgument(new IntegerLiteralExpr(0)), "getResult");
                 returnStmt.setExpression(rewrittenReturnExpr);
             }
+
+            if (useMonitoring){
+                addMonitoringToMethod(clonedMethod, ds.getName());
+            }
+
             template.addMember(clonedMethod);
+        }
+
+        if (useMonitoring){
+            // TODO: Better way to identify class?
+            ClassOrInterfaceDeclaration exceptionClazz = clazz.findAll(ClassOrInterfaceDeclaration.class).stream().filter(f -> !f.equals(template)).collect(Collectors.toList()).get(0);
+            addExceptionLogging(clazz, exceptionClazz, nameURL);
+            addMonitoringToMethod(dmnMethod, nameURL);
         }
 
         template.getMembers().sort(new BodyDeclarationComparator());
         return clazz.toString();
     }
 
-    private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration dmnMethod, String nameURL){
+    private void addExceptionLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL){
+        // TODO: Improve code generation
+        MethodDeclaration method = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("toResponse")).get(0);
+        cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;"));
+
+        Optional<BlockStmt> body = method.getBody();
+        NodeList<Statement> statements = body.get().getStatements();
+        statements.addBefore(parseStatement("SystemMetricsCollector.RegisterException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"), body.get().findFirst(ReturnStmt.class).get());
+    }
+
+    private void addMonitoringImports(CompilationUnit cu){
         cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;"));
         cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.DMNResultMetricsBuilder;"));
 
-        Optional<BlockStmt> body = dmnMethod.getBody();
+        cu.addImport(parseImport("import org.eclipse.microprofile.metrics.MetricUnits;"));
+        cu.addImport(parseImport("import org.eclipse.microprofile.metrics.annotation.Counted;"));
+        cu.addImport(parseImport("import org.eclipse.microprofile.metrics.annotation.Timed;"));
+    }
+
+    private void addMonitoringToMethod(MethodDeclaration method, String nameURL){
+        method.addAnnotation(parseAnnotation("@Counted(name = \"" + nameURL + "Count\", description = \"How many primality checks have been performed.\")"));
+        method.addAnnotation(parseAnnotation("@Timed(name = \"" + nameURL + "Metrics\", description = \"A measure of how long it takes to perform the primality test.\", unit = MetricUnits.MILLISECONDS)"));
+
+        Optional<BlockStmt> body = method.getBody();
         NodeList<Statement> statements = body.get().getStatements();
         statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
 
         statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(IfStmt.class).get());
         statements.addBefore(parseStatement("SystemMetricsCollector.RegisterElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(IfStmt.class).get());
         statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(\"" + nameURL + "\", result);"), body.get().findFirst(IfStmt.class).get());
+
     }
 
     private void initializeApplicationField(FieldDeclaration fd) {

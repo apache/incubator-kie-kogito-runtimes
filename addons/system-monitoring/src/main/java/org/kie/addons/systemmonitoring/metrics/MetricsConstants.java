@@ -5,7 +5,7 @@ public class MetricsConstants {
 
     public static final String STATUS_CODE_HELP = "Request status code.";
 
-    public static final String[] STATUS_CODE_LABELS = new String[]{"handler", "identifier"};
+    public static final String[] HANDLER_IDENTIFIER_LABELS = new String[]{"handler", "identifier"};
 
     public static final String ELAPSED_TIME_NAME = "api_execution_elapsed_nanosecond";
 
@@ -30,7 +30,5 @@ public class MetricsConstants {
     public static final String DECISIONS_NAME = "dmn_result";
 
     public static final String DECISIONS_HELP = "Decision output.";
-
-    public static final String[] DECISION_LABELS = new String[]{"identifier", "handler"};
 }
 
