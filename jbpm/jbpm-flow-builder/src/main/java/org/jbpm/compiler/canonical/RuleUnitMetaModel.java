@@ -31,7 +31,10 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataObserver;
-import org.kie.kogito.rules.units.DataSourceTypes;
+import org.kie.kogito.rules.DataStore;
+import org.kie.kogito.rules.DataStream;
+import org.kie.kogito.rules.SingletonStore;
+import org.kie.kogito.rules.units.AssignableChecker;
 
 import static com.github.javaparser.StaticJavaParser.parseExpression;
 
@@ -41,13 +44,13 @@ public class RuleUnitMetaModel {
     private final String modelClassName;
 
     private final String instanceVarName;
-    private final DataSourceTypes dataSourceTypes;
+    private final AssignableChecker assignableChecker;
 
-    public RuleUnitMetaModel(RuleUnitDescription ruleUnitDescription, String instanceVarName, DataSourceTypes dataSourceTypes) {
+    public RuleUnitMetaModel(RuleUnitDescription ruleUnitDescription, String instanceVarName, AssignableChecker assignableChecker ) {
         this.ruleUnitDescription = ruleUnitDescription;
         this.modelClassName = ruleUnitDescription.getCanonicalName();
         this.instanceVarName = instanceVarName;
-        this.dataSourceTypes = dataSourceTypes;
+        this.assignableChecker = assignableChecker;
     }
 
     public String instanceVarName() {
@@ -141,11 +144,11 @@ public class RuleUnitMetaModel {
 
     private String appendMethodOf(Class<?> type) {
         String appendMethod;
-        if (dataSourceTypes.DataStream.isAssignableFrom(type)) {
+        if ( assignableChecker.isAssignableFrom(DataStream.class, type)) {
             appendMethod = "append";
-        } else if (dataSourceTypes.DataStore.isAssignableFrom(type)) {
+        } else if ( assignableChecker.isAssignableFrom(DataStore.class, type)) {
             appendMethod = "add";
-        } else if (dataSourceTypes.SingletonStore.isAssignableFrom(type)) {
+        } else if ( assignableChecker.isAssignableFrom(SingletonStore.class, type)) {
             appendMethod = "set";
         } else {
             throw new IllegalArgumentException("Unknown data source type " + type.getCanonicalName());

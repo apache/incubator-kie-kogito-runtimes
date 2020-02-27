@@ -38,7 +38,8 @@ import org.kie.api.definition.process.Node;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.units.DataSourceTypes;
+import org.kie.kogito.rules.SingletonStore;
+import org.kie.kogito.rules.units.AssignableChecker;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
@@ -51,11 +52,11 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
     public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
 
     private final ClassLoader contextClassLoader;
-    private final DataSourceTypes dataSourceTypes;
+    private final AssignableChecker assignableChecker;
 
     public RuleSetNodeVisitor(ClassLoader contextClassLoader) {
         this.contextClassLoader = contextClassLoader;
-        this.dataSourceTypes = DataSourceTypes.getInstance(contextClassLoader);
+        this.assignableChecker = AssignableChecker.create(contextClassLoader);
     }
 
     @Override
@@ -139,7 +140,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             description = d;
         }
 
-        RuleUnitHandler handler = new RuleUnitHandler(description, processContext, ruleSetNode, dataSourceTypes);
+        RuleUnitHandler handler = new RuleUnitHandler(description, processContext, ruleSetNode, assignableChecker );
         Expression ruleUnitFactory = handler.invoke();
 
         return new MethodCallExpr("ruleUnit")
@@ -153,7 +154,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         for (Variable variable : processContext.getVariables()) {
             d.putDatasourceVar(
                     variable.getName(),
-                    dataSourceTypes.SingletonStore.getCanonicalName(),
+                    SingletonStore.class.getCanonicalName(),
                     variable.getType().getStringType());
         }
         return d;
