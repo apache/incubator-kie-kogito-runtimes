@@ -30,7 +30,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.rules.units.DataSourceTypes;
+import org.kie.kogito.rules.units.AssignableChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,13 +56,13 @@ public class RuleUnitHandler {
     private final RuleUnitDescription ruleUnit;
     private final ProcessContextMetaModel variableScope;
     private final RuleSetNode ruleSetNode;
-    private final DataSourceTypes dataSourceTypes;
+    private final AssignableChecker assignableChecker;
 
-    public RuleUnitHandler(RuleUnitDescription ruleUnit, ProcessContextMetaModel variableScope, RuleSetNode ruleSetNode, DataSourceTypes dataSourceTypes) {
+    public RuleUnitHandler(RuleUnitDescription ruleUnit, ProcessContextMetaModel variableScope, RuleSetNode ruleSetNode, AssignableChecker assignableChecker ) {
         this.ruleUnit = ruleUnit;
         this.variableScope = variableScope;
         this.ruleSetNode = ruleSetNode;
-        this.dataSourceTypes = dataSourceTypes;
+        this.assignableChecker = assignableChecker;
     }
 
     public Expression invoke() {
@@ -99,7 +99,7 @@ public class RuleUnitHandler {
      */
     private BlockStmt bind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
         RuleUnitMetaModel unit =
-                new RuleUnitMetaModel(unitDescription, "unit", dataSourceTypes);
+                new RuleUnitMetaModel(unitDescription, "unit", assignableChecker );
 
         BlockStmt actionBody = new BlockStmt();
 
@@ -163,7 +163,7 @@ public class RuleUnitHandler {
 
     private BlockStmt unbind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
         RuleUnitMetaModel unit =
-                new RuleUnitMetaModel(unitDescription, "unit", dataSourceTypes);
+                new RuleUnitMetaModel(unitDescription, "unit", assignableChecker );
 
         BlockStmt actionBody = new BlockStmt();
 
