@@ -35,8 +35,6 @@ import org.drools.core.io.impl.FileSystemResource;
 import org.kie.api.io.Resource;
 import org.kie.dmn.backend.marshalling.v1x.DMNMarshallerFactory;
 import org.kie.dmn.core.assembler.DMNResource;
-import org.kie.dmn.model.api.DMNModelInstrumentedBase;
-import org.kie.dmn.model.api.DRGElement;
 import org.kie.dmn.model.api.Definitions;
 import org.kie.dmn.model.v1_2.TDecision;
 import org.kie.internal.io.ResourceWithConfigurationImpl;
@@ -142,11 +140,12 @@ public class DecisionCodegen extends AbstractGenerator {
             // Grafana dashboard generation
             if (useMonitoring) {
                 Definitions definitions = resourceGenerator.getDefinitions();
-                List<String> decisionNames = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> x.getName()).collect(Collectors.toList());
-                String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisionNames);
+                List<TDecision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> (TDecision)x).collect(Collectors.toList());
+
+                String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisions);
                 generatedFiles.add(
                         new org.kie.kogito.codegen.GeneratedFile(
-                                org.kie.kogito.codegen.GeneratedFile.Type.DASHBOARD,
+                                org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
                                 "/dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
                                 dashboard ));
             }

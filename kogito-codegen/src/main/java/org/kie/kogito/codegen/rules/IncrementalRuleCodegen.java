@@ -268,7 +268,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                     for (QueryEndpointGenerator query : queries) {
                         if (useMonitoring){
                             String dashboard = GrafanaConfigurationWriter.generateDashboardForEndpoint(query.getEndpointName());
-                            generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.DASHBOARD,
+                            generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
                                                                                         "/dashboards/dashboard-endpoint-" + query.getEndpointName() + ".json",
                                                                                         dashboard));
                         }

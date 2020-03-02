@@ -24,7 +24,7 @@ public class SystemMetricsCollector {
 
     public static void registerElapsedTimeSampleMetrics(String handler, double elapsedTime){
         histograms.computeIfAbsent(HistogramTypes.ELAPSED_TIME,
-                                   key -> HistogramBuilder.BuildElapsedTimeHistogram(new String[]{"handler"}))
+                                   key -> HistogramBuilder.BuildElapsedTimeHistogram(MetricsConstants.HANDLER_LABEL))
                 .labels(handler).observe(elapsedTime);
     }
 

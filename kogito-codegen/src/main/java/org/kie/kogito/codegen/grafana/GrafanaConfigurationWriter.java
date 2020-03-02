@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.redhat.developer.IJGrafana;
 import com.redhat.developer.JGrafana;
 import com.redhat.developer.model.panel.PanelType;
+import org.kie.dmn.model.v1_2.TDecision;
 
 public class GrafanaConfigurationWriter {
 
@@ -34,20 +36,31 @@ public class GrafanaConfigurationWriter {
         return template;
     }
 
-    public static String generateDashboardForDMNEndpoint(String handlerName, List<String> decisionNames) {
+    public static String generateDashboardForDMNEndpoint(String handlerName, List<TDecision> decisions) {
         String template = readStandardDashboard();
         template = template.replaceAll("\\$handlerName\\$", handlerName);
         template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
         template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
 
+        IJGrafana jgrafana;
         try {
-            IJGrafana jgrafana = JGrafana.parse(template);
-            decisionNames.forEach(x -> jgrafana.addPanel(PanelType.GRAPH, "Decision " + x, String.format("dmn_result{handler = \"%s\"}", x)));
-            return jgrafana.serialize();
+            jgrafana = JGrafana.parse(template);
         } catch (IOException e) {
-            e.printStackTrace();
+            // TODO something;
+            return null;
         }
 
-        return "{}";
+        for (TDecision decision : decisions){
+            String type = decision.getVariable().getTypeRef().getLocalPart();
+            if (SupportedDecisionTypes.isSupported(type)){
+                jgrafana.addPanel(PanelType.GRAPH, "Decision " + decision.getName(), String.format("dmn_result{handler = \"%s\"}", decision.getName()));
+            }
+        }
+
+        try {
+            return jgrafana.serialize();
+        } catch (IOException e) {
+            return null;
+        }
     }
 }

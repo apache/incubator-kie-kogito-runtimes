@@ -5,6 +5,8 @@ public class MetricsConstants {
 
     public static final String STATUS_CODE_HELP = "Request status code.";
 
+    public static final String[] HANDLER_LABEL = new String[]{"handler"};
+
     public static final String[] HANDLER_IDENTIFIER_LABELS = new String[]{"handler", "identifier"};
 
     public static final String ELAPSED_TIME_NAME = "api_execution_elapsed_nanosecond";

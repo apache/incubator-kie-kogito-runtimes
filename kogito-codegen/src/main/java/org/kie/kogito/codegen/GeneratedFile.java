@@ -30,7 +30,7 @@ public class GeneratedFile {
         CLASS,
         MESSAGE_CONSUMER,
         MESSAGE_PRODUCER,
-        DASHBOARD;
+        RESOURCE;
     }
 
     private final String relativePath;
