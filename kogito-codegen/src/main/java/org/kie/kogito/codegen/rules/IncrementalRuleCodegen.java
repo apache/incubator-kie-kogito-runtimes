@@ -267,8 +267,12 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                     generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription().getRuleUnitClass() ).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
                     for (QueryEndpointGenerator query : queries) {
                         if (useMonitoring){
-                            GrafanaConfigurationWriter.generateDashboardForEndpoint(query.getEndpointName());
+                            String dashboard = GrafanaConfigurationWriter.generateDashboardForEndpoint(query.getEndpointName());
+                            generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.DASHBOARD,
+                                                                                        "/dashboards/dashboard-endpoint-" + query.getEndpointName(),
+                                                                                        dashboard));
                         }
+
                         generatedFiles.add( query.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
                     }
                 }

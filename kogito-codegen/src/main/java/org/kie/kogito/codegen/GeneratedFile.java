@@ -29,7 +29,8 @@ public class GeneratedFile {
         MODEL,
         CLASS,
         MESSAGE_CONSUMER,
-        MESSAGE_PRODUCER;
+        MESSAGE_PRODUCER,
+        DASHBOARD;
     }
 
     private final String relativePath;

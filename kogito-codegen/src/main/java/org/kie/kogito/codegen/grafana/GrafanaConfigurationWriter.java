@@ -19,47 +19,34 @@ import com.redhat.developer.model.panel.PanelType;
 
 public class GrafanaConfigurationWriter {
 
-    public static String readStandardDashboard(){
+    public static String readStandardDashboard() {
 
-        InputStream is = GrafanaConfigurationWriter.class.getResourceAsStream("/grafana-dashboard-template/dashboard-template.json" );
+        InputStream is = GrafanaConfigurationWriter.class.getResourceAsStream("/grafana-dashboard-template/dashboard-template.json");
         return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
     }
 
-    public static boolean generateDashboardForEndpoint(String handlerName){
+    public static String generateDashboardForEndpoint(String handlerName) {
+        String template = readStandardDashboard();
+        template = template.replaceAll("\\$handlerName\\$", handlerName);
+        template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
+        template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
+
+        return template;
+    }
+
+    public static String generateDashboardForDMNEndpoint(String handlerName, List<String> decisionNames) {
         String template = readStandardDashboard();
         template = template.replaceAll("\\$handlerName\\$", handlerName);
         template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
         template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
 
         try {
-            File file = new File("/tmp/dashboard-endpoint-" + handlerName + ".json");
-            file.getParentFile().mkdirs();
-            PrintWriter out = new PrintWriter(file);
-            out.write(template);
-            out.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    public static boolean generateDashboardForDMNEndpoint(String handlerName, List<String> decisionNames){
-        String template = readStandardDashboard();
-        template = template.replaceAll("\\$handlerName\\$", handlerName);
-        template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
-        template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
-
-        try{
             IJGrafana jgrafana = JGrafana.parse(template);
             decisionNames.forEach(x -> jgrafana.addPanel(PanelType.GRAPH, "Decision " + x, String.format("dmn_result{handler = \"%s\"}", x)));
-            File file = new File("/tmp/dashboard-endpoint-" + handlerName + ".json");
-            file.getParentFile().mkdirs();
-            jgrafana.writeToFile(file);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            return jgrafana.serialize();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return true;
+        return "{}";
     }
 }

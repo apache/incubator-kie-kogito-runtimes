@@ -236,6 +236,7 @@ public class ApplicationGenerator {
                                  configGenerator.generatedFilePath(),
                                  log( configGenerator.compilationUnit().toString() ).getBytes(StandardCharsets.UTF_8));
     }
+
     public void generateSectionClass(ApplicationSection section, List<GeneratedFile> generatedFiles) {
         CompilationUnit cp = section.injectableClass();
 

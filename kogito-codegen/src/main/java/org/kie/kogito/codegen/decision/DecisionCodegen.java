@@ -143,8 +143,14 @@ public class DecisionCodegen extends AbstractGenerator {
             if (useMonitoring) {
                 Definitions definitions = resourceGenerator.getDefinitions();
                 List<String> decisionNames = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> x.getName()).collect(Collectors.toList());
-                GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisionNames);
+                String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisionNames);
+                generatedFiles.add(
+                        new org.kie.kogito.codegen.GeneratedFile(
+                                org.kie.kogito.codegen.GeneratedFile.Type.DASHBOARD,
+                                "/dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL(),
+                                dashboard ));
             }
+
             storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate(useMonitoring));
         }
 
