@@ -177,7 +177,7 @@ public class QueryEndpointGenerator implements FileGenerator {
             statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
 
             statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(ReturnStmt.class).get());
-            statements.addBefore(parseStatement("SystemMetricsCollector.RegisterElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(ReturnStmt.class).get());
+            statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(ReturnStmt.class).get());
         }
 
     }

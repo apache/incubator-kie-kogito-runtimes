@@ -14,7 +14,7 @@ public class SystemMetricsCollector {
 
     private static final ConcurrentHashMap<GaugeTypesEnum, Gauge> gauges = new ConcurrentHashMap<>();
 
-    public static void RegisterStatusCodeRequest(String handler, String statusCode){
+    public static void registerStatusCodeRequest(String handler, String statusCode){
         counters.computeIfAbsent(CountersTypesEnum.REQUESTS_STATUS_CODE,
                                    k -> Counter.build().name(MetricsConstants.STATUS_CODE_NAME)
                                            .help(MetricsConstants.STATUS_CODE_HELP)
@@ -22,13 +22,13 @@ public class SystemMetricsCollector {
                                   .labels(handler, statusCode).inc();
     }
 
-    public static void RegisterElapsedTimeSampleMetrics(String handler, double elapsedTime){
+    public static void registerElapsedTimeSampleMetrics(String handler, double elapsedTime){
         histograms.computeIfAbsent(HistogramTypes.ELAPSED_TIME,
                                    key -> HistogramBuilder.BuildElapsedTimeHistogram(new String[]{"handler"}))
                 .labels(handler).observe(elapsedTime);
     }
 
-    public static void RegisterException(String handler, String stackTrace){
+    public static void registerException(String handler, String stackTrace){
         counters.computeIfAbsent(CountersTypesEnum.EXCEPTIONS,
                                  k -> Counter.build().name(MetricsConstants.EXCEPTIONS_NAME)
                                          .help(MetricsConstants.EXCEPTIONS_HELP)
@@ -36,7 +36,7 @@ public class SystemMetricsCollector {
                                 .labels(handler, stackTrace).inc();
     }
 
-    public static void RegisterProcessorsSample(int totalProcessors){
+    public static void registerProcessorsSample(int totalProcessors){
         gauges.computeIfAbsent(GaugeTypesEnum.PROCESSORS,
                                k -> Gauge.build().name(MetricsConstants.PROCESSORS_NAME)
                                        .help(MetricsConstants.PROCESSORS_HELP)
@@ -44,7 +44,7 @@ public class SystemMetricsCollector {
                                .labels().set(totalProcessors);
     }
 
-    public static void RegisterSystemMemorySample(double totalMemory, double freeMemory) {
+    public static void registerSystemMemorySample(double totalMemory, double freeMemory) {
         Gauge gauge = gauges.computeIfAbsent(GaugeTypesEnum.MEMORY,
                                k -> Gauge.build().name(MetricsConstants.MEMORY_NAME)
                                        .help(MetricsConstants.MEMORY_METRICS_HELP)

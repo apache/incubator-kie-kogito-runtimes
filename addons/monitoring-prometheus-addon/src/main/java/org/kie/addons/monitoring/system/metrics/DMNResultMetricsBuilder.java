@@ -11,7 +11,7 @@ public class DMNResultMetricsBuilder {
 
     private static final ConcurrentHashMap<CountersTypesEnum, Counter> counters = new ConcurrentHashMap<>();
 
-    public static Counter GetCounter(){
+    public static Counter getCounter(){
         return counters.computeIfAbsent(CountersTypesEnum.DECISIONS,
                                  k -> Counter.build().name(MetricsConstants.DECISIONS_NAME)
                                          .help(MetricsConstants.DECISIONS_HELP)
@@ -24,7 +24,7 @@ public class DMNResultMetricsBuilder {
             Object result = decision.getResult();
             if (result instanceof String){
                 System.out.println(String.format("Got %s result %s", handler, result.toString()));
-                GetCounter().labels(decision.getDecisionName(), result.toString()).inc();
+                getCounter().labels(decision.getDecisionName(), result.toString()).inc();
             };
         }
     }

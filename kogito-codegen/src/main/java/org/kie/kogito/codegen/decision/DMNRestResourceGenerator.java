@@ -44,10 +44,8 @@ import org.kie.dmn.model.api.DecisionService;
 import org.kie.dmn.model.api.Definitions;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.CodegenUtils;
-import protostream.javassist.compiler.ast.MethodDecl;
 
 import static com.github.javaparser.StaticJavaParser.parse;
-import static com.github.javaparser.StaticJavaParser.parseAnnotation;
 import static com.github.javaparser.StaticJavaParser.parseImport;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 
@@ -120,10 +118,6 @@ public class DMNRestResourceGenerator {
         
         MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
 
-        if (useMonitoring){
-            addMonitoringImports(clazz);
-        }
-
         for (DecisionService ds : definitions.getDecisionService()) {
             if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
                 continue;
@@ -152,8 +146,9 @@ public class DMNRestResourceGenerator {
         if (useMonitoring){
             // TODO: Better way to identify class?
             // TODO: Use annotator spring/quarkus
+            addMonitoringImports(clazz);
             ClassOrInterfaceDeclaration exceptionClazz = clazz.findAll(ClassOrInterfaceDeclaration.class).stream().filter(f -> !f.equals(template)).collect(Collectors.toList()).get(0);
-            addExceptionLogging(clazz, exceptionClazz, nameURL);
+            addExceptionMetricsLogging(clazz, exceptionClazz, nameURL);
             addMonitoringToMethod(dmnMethod, nameURL);
         }
 
@@ -161,14 +156,14 @@ public class DMNRestResourceGenerator {
         return clazz.toString();
     }
 
-    private void addExceptionLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL){
+    private void addExceptionMetricsLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL){
         // TODO: Improve code generation
         MethodDeclaration method = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("toResponse")).get(0);
         cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
 
         Optional<BlockStmt> body = method.getBody();
         NodeList<Statement> statements = body.get().getStatements();
-        statements.addBefore(parseStatement("SystemMetricsCollector.RegisterException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"), body.get().findFirst(ReturnStmt.class).get());
+        statements.addBefore(parseStatement("SystemMetricsCollector.registerException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"), body.get().findFirst(ReturnStmt.class).get());
     }
 
     private void addMonitoringImports(CompilationUnit cu){
@@ -182,7 +177,7 @@ public class DMNRestResourceGenerator {
         statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
 
         statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(IfStmt.class).get());
-        statements.addBefore(parseStatement("SystemMetricsCollector.RegisterElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(IfStmt.class).get());
+        statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(IfStmt.class).get());
         statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(\"" + nameURL + "\", result);"), body.get().findFirst(IfStmt.class).get());
 
     }

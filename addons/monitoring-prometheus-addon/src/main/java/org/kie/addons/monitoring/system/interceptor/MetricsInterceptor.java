@@ -22,14 +22,14 @@ public class MetricsInterceptor implements ContainerResponseFilter {
         List<String> matchedUris = requestContext.getUriInfo().getMatchedURIs();
 
         if (matchedUris.size() != 0){
-            SystemMetricsCollector.RegisterStatusCodeRequest(matchedUris.get(0), String.valueOf(responseContext.getStatusInfo().getStatusCode()));
+            SystemMetricsCollector.registerStatusCodeRequest(matchedUris.get(0), String.valueOf(responseContext.getStatusInfo().getStatusCode()));
         }
         else // Log the number of requests that did not match any Uri -> 404 not found.
         {
-            SystemMetricsCollector.RegisterStatusCodeRequest("", String.valueOf(responseContext.getStatusInfo().getStatusCode()));
+            SystemMetricsCollector.registerStatusCodeRequest("", String.valueOf(responseContext.getStatusInfo().getStatusCode()));
         }
 
-        SystemMetricsCollector.RegisterSystemMemorySample(Runtime.getRuntime().totalMemory(), Runtime.getRuntime().freeMemory());
-        SystemMetricsCollector.RegisterProcessorsSample(Runtime.getRuntime().availableProcessors());
+        SystemMetricsCollector.registerSystemMemorySample(Runtime.getRuntime().totalMemory(), Runtime.getRuntime().freeMemory());
+        SystemMetricsCollector.registerProcessorsSample(Runtime.getRuntime().availableProcessors());
     }
 }
