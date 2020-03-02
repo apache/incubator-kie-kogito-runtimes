@@ -47,6 +47,7 @@ public class GrafanaConfigurationWriter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return "{}";
     }
 }
