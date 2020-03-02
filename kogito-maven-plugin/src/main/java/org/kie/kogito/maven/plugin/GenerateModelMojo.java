@@ -192,7 +192,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
         boolean usePersistence = persistence || hasClassOnClasspath("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
         boolean useMonitoring = hasClassOnClasspath("org.kie.addons.monitoring.rest.MetricsResource");
-        boolean useSystemMonitoring = systemMonitoring || hasClassOnClasspath("org.kie.addons.systemmonitoring.interceptor.MetricsInterceptor");
+        boolean useSystemMonitoring = systemMonitoring || hasClassOnClasspath("org.kie.addons.monitoring.system.interceptor.MetricsInterceptor");
 
         ClassLoader projectClassLoader = MojoUtil.createProjectClassLoader(this.getClass().getClassLoader(),
                                                                            project,

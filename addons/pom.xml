@@ -18,7 +18,6 @@
     <module>process-management-addon</module>
     <module>jobs</module>
     <module>predictions</module>
-    <module>system-monitoring</module>
   </modules>
 
   <dependencyManagement>
@@ -39,6 +38,7 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
 
 
 </project>

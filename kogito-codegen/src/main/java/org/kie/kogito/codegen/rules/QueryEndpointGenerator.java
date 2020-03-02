@@ -169,7 +169,7 @@ public class QueryEndpointGenerator implements FileGenerator {
     }
 
     private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration[] methods, String nameURL){
-        cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;"));
+        cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
 
         for(MethodDeclaration md : methods){
             Optional<BlockStmt> body = md.getBody();

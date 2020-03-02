@@ -1,4 +1,4 @@
-package org.kie.addons.systemmonitoring.interceptor;
+package org.kie.addons.monitoring.system.interceptor;
 
 import java.io.IOException;
 import java.util.List;
@@ -7,7 +7,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 
-import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;
+import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

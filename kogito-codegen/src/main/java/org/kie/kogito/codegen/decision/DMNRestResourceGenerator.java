@@ -106,7 +106,7 @@ public class DMNRestResourceGenerator {
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
         template.setName(resourceClazzName);
-        
+
         template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
         template.findAll(MethodDeclaration.class).forEach(this::interpolateMethods);
 
@@ -151,6 +151,7 @@ public class DMNRestResourceGenerator {
 
         if (useMonitoring){
             // TODO: Better way to identify class?
+            // TODO: Use annotator spring/quarkus
             ClassOrInterfaceDeclaration exceptionClazz = clazz.findAll(ClassOrInterfaceDeclaration.class).stream().filter(f -> !f.equals(template)).collect(Collectors.toList()).get(0);
             addExceptionLogging(clazz, exceptionClazz, nameURL);
             addMonitoringToMethod(dmnMethod, nameURL);
@@ -163,7 +164,7 @@ public class DMNRestResourceGenerator {
     private void addExceptionLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL){
         // TODO: Improve code generation
         MethodDeclaration method = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("toResponse")).get(0);
-        cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;"));
+        cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
 
         Optional<BlockStmt> body = method.getBody();
         NodeList<Statement> statements = body.get().getStatements();
@@ -171,18 +172,11 @@ public class DMNRestResourceGenerator {
     }
 
     private void addMonitoringImports(CompilationUnit cu){
-        cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.SystemMetricsCollector;"));
-        cu.addImport(parseImport("import org.kie.addons.systemmonitoring.metrics.DMNResultMetricsBuilder;"));
-
-        cu.addImport(parseImport("import org.eclipse.microprofile.metrics.MetricUnits;"));
-        cu.addImport(parseImport("import org.eclipse.microprofile.metrics.annotation.Counted;"));
-        cu.addImport(parseImport("import org.eclipse.microprofile.metrics.annotation.Timed;"));
+        cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
+        cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder;"));
     }
 
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL){
-        method.addAnnotation(parseAnnotation("@Counted(name = \"" + nameURL + "Count\", description = \"How many primality checks have been performed.\")"));
-        method.addAnnotation(parseAnnotation("@Timed(name = \"" + nameURL + "Metrics\", description = \"A measure of how long it takes to perform the primality test.\", unit = MetricUnits.MILLISECONDS)"));
-
         Optional<BlockStmt> body = method.getBody();
         NodeList<Statement> statements = body.get().getStatements();
         statements.addFirst(parseStatement("double startTime = System.nanoTime();"));

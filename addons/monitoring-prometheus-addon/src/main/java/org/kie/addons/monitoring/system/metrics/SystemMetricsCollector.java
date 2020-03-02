@@ -1,4 +1,4 @@
-package org.kie.addons.systemmonitoring.metrics;
+package org.kie.addons.monitoring.system.metrics;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,7 +20,7 @@ public class SystemMetricsCollector {
                                            .help(MetricsConstants.STATUS_CODE_HELP)
                                            .labelNames(MetricsConstants.HANDLER_IDENTIFIER_LABELS).register())
                                   .labels(handler, statusCode).inc();
-        }
+    }
 
     public static void RegisterElapsedTimeSampleMetrics(String handler, double elapsedTime){
         histograms.computeIfAbsent(HistogramTypes.ELAPSED_TIME,

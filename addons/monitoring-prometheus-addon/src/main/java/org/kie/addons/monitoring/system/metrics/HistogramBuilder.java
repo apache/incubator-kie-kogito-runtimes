@@ -1,4 +1,4 @@
-package org.kie.addons.systemmonitoring.metrics;
+package org.kie.addons.monitoring.system.metrics;
 
 import java.util.stream.IntStream;
 
