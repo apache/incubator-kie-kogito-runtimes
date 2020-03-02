@@ -44,9 +44,5 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-codegen</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-codegen</artifactId>
-    </dependency>
   </dependencies>
 </project>
