@@ -147,7 +147,7 @@ public class DecisionCodegen extends AbstractGenerator {
                 generatedFiles.add(
                         new org.kie.kogito.codegen.GeneratedFile(
                                 org.kie.kogito.codegen.GeneratedFile.Type.DASHBOARD,
-                                "/dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL(),
+                                "/dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
                                 dashboard ));
             }
 
