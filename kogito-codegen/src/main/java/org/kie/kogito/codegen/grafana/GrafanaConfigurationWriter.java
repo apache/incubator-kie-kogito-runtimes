@@ -53,7 +53,7 @@ public class GrafanaConfigurationWriter {
         for (TDecision decision : decisions){
             String type = decision.getVariable().getTypeRef().getLocalPart();
             if (SupportedDecisionTypes.isSupported(type)){
-                jgrafana.addPanel(PanelType.GRAPH, "Decision " + decision.getName(), String.format("dmn_result{handler = \"%s\"}", decision.getName()));
+                jgrafana.addPanel(PanelType.GRAPH, "Decision " + decision.getName(), String.format("%s_dmn_result{handler = \"%s\"}", type, decision.getName()));
             }
         }
 

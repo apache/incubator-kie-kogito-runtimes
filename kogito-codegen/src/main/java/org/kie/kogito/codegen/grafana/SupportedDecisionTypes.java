@@ -1,17 +1,27 @@
 package org.kie.kogito.codegen.grafana;
 
-import java.util.Arrays;
-
+import java.math.BigDecimal;
+import java.util.HashMap;
 public class SupportedDecisionTypes {
-    private static final String[] supportedTypes = new String[]{"string", "integer", "double", "boolean"};
+    private static final HashMap<Class, String> dmnInternalClassToDmnStandardMap;
 
-    private static final Class[] supportedClasses = new Class[]{String.class, Integer.class, Double.class, Boolean.class};
+    static {
+        dmnInternalClassToDmnStandardMap = new HashMap<>();
+        dmnInternalClassToDmnStandardMap.put(String.class, "string");
+        dmnInternalClassToDmnStandardMap.put(BigDecimal.class, "number");
+        dmnInternalClassToDmnStandardMap.put(Boolean.class, "boolean");
+    }
 
     public static boolean isSupported(String type){
-        return  Arrays.stream(supportedTypes).anyMatch(type::equals);
+        return  dmnInternalClassToDmnStandardMap.values().stream().anyMatch(type::equals);
     }
 
     public static boolean isSupported(Class c){
-        return  Arrays.stream(supportedClasses).anyMatch(c::equals);
+        return  dmnInternalClassToDmnStandardMap.keySet().stream().anyMatch(c::equals);
     }
+
+    public static String fromInternalToStandard(Class c){
+        return dmnInternalClassToDmnStandardMap.get(c);
+    }
+
 }

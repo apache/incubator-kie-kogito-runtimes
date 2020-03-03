@@ -17,8 +17,6 @@ public class MetricsConstants {
 
     public static final String EXCEPTIONS_HELP = "System exceptions details";
 
-    public static final String EXCEPTIONS_LABEL = "identifier";
-
     public static final String PROCESSORS_NAME = "system_available_processors";
 
     public static final String PROCESSORS_HELP = "System Memory usage";
@@ -29,7 +27,7 @@ public class MetricsConstants {
 
     public static final String MEMORY_METRICS_LABEL = "type";
 
-    public static final String DECISIONS_NAME = "dmn_result";
+    public static final String DECISIONS_NAME_SUFFIX = "_dmn_result";
 
     public static final String DECISIONS_HELP = "Decision output.";
 }

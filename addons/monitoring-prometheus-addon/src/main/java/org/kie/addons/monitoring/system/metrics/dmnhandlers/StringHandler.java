@@ -7,12 +7,12 @@ public class StringHandler implements TypeHandler<String>{
 
     private final Counter counter;
 
-    public StringHandler(Class c){
-        this.counter = initializeCounter(getClassName(c));
+    public StringHandler(String prefix){
+        this.counter = initializeCounter(prefix);
     }
 
-    private Counter initializeCounter(String className){
-        Counter counter = Counter.build().name(MetricsConstants.DECISIONS_NAME + className)
+    private Counter initializeCounter(String prefix){
+        Counter counter = Counter.build().name(prefix + MetricsConstants.DECISIONS_NAME_SUFFIX)
                 .help(MetricsConstants.DECISIONS_HELP)
                 .labelNames(MetricsConstants.HANDLER_IDENTIFIER_LABELS).register();
         return counter;
