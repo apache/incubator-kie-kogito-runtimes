@@ -41,9 +41,6 @@ public final class MetaDataWriter {
      * @param labels
      */
     public static void writeLabelsImageMetadata(final File targetDirectory, final Map<String, String> labels) {
-        if (!targetDirectory.isDirectory()) {
-            return;
-        }
         try {
             Path imageMetaDataFile = Paths.get(targetDirectory.getAbsolutePath(), "image_metadata.json");
             ImageMetaData imageMetadata;
