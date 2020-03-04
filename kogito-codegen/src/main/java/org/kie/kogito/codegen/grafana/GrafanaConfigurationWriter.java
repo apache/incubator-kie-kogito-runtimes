@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.redhat.developer.IJGrafana;
 import com.redhat.developer.JGrafana;
+import com.redhat.developer.model.functions.GrafanaFunction;
+import com.redhat.developer.model.functions.IncreaseFunction;
 import com.redhat.developer.model.panel.PanelType;
 import org.kie.dmn.model.v1_2.TDecision;
 
@@ -46,6 +48,7 @@ public class GrafanaConfigurationWriter {
         try {
             jgrafana = JGrafana.parse(template);
         } catch (IOException e) {
+            e.printStackTrace();
             // TODO something;
             return null;
         }
@@ -53,13 +56,14 @@ public class GrafanaConfigurationWriter {
         for (TDecision decision : decisions){
             String type = decision.getVariable().getTypeRef().getLocalPart();
             if (SupportedDecisionTypes.isSupported(type)){
-                jgrafana.addPanel(PanelType.GRAPH, "Decision " + decision.getName(), String.format("%s_dmn_result{handler = \"%s\"}", type, decision.getName()));
+                jgrafana.addPanel(PanelType.GRAPH, "Decision " + decision.getName(), String.format("%s_dmn_result{handler = \"%s\"}", type, decision.getName()), SupportedDecisionTypes.getGrafanaFunction(type));
             }
         }
 
         try {
             return jgrafana.serialize();
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }

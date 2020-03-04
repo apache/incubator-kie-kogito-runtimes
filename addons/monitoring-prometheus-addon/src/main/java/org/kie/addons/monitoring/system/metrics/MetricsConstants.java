@@ -11,7 +11,7 @@ public class MetricsConstants {
 
     public static final String ELAPSED_TIME_NAME = "api_execution_elapsed_nanosecond";
 
-    public static final String ELAPSED_TIME_HELP = "Endpoint execution elapsed nanoseconds.";
+    public static final String ELAPSED_TIME_HELP = "Endpoint execution elapsed nanoseconds, 3 minutes time window.";
 
     public static final String EXCEPTIONS_NAME = "api_http_stacktrace_exceptions";
 

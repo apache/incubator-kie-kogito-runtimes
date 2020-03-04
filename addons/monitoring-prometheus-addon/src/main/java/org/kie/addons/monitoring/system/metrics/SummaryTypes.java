@@ -1,5 +1,5 @@
 package org.kie.addons.monitoring.system.metrics;
 
-public enum HistogramTypes {
+public enum SummaryTypes {
     ELAPSED_TIME
 }

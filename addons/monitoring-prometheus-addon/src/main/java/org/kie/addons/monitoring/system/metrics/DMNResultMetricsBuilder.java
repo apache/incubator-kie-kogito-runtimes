@@ -30,10 +30,10 @@ public class DMNResultMetricsBuilder {
         List<DMNDecisionResult> decisionResults = dmnResult.getDecisionResults();
         for (DMNDecisionResult decision : decisionResults){
             Object result = decision.getResult();
-            if (SupportedDecisionTypes.isSupported(result.getClass())){
+            if (result != null && SupportedDecisionTypes.isSupported(result.getClass())){
                 // TODO: remove sop
                 System.out.println(String.format("Got %s result %s", handler, result.toString()));
-                handlers.get(result.getClass()).record(handler, result);
+                handlers.get(result.getClass()).record(decision.getDecisionName(), result);
             };
         }
     }
