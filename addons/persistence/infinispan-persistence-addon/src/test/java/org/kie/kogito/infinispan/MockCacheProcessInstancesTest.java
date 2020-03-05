@@ -79,6 +79,15 @@ public class MockCacheProcessInstancesTest {
                 return mockCache.put(key, value);
             }
         });
+        when(cache.putIfAbsent(any(), any())).then(new Answer<Object>() {
+
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object key = invocation.getArgument(0, Object.class);
+                Object value = invocation.getArgument(1, Object.class);
+                return mockCache.put(key, value);
+            }
+        });
         
         when(cache.get(any())).then(new Answer<Object>() {
 
@@ -109,6 +118,31 @@ public class MockCacheProcessInstancesTest {
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameters().get("ActorId")).isEqualTo("john");
         processInstance.completeWorkItem(workItem.getId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
+    }
+    
+    @Test
+    public void testBasicFlowNoActors() {
+        
+        BpmnProcess process = (BpmnProcess) BpmnProcess.from(new ClassPathResource("BPMN2-UserTask-NoActors.bpmn2")).get(0);
+        process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
+        process.configure();
+                                     
+        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+
+        processInstance.start();
+        assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
+        
+
+        WorkItem workItem = processInstance.workItems().get(0);
+        assertThat(workItem).isNotNull();
+        assertThat(workItem.getParameters().get("ActorId")).isNull();
+        
+        
+        List<WorkItem> workItems = processInstance.workItems(SecurityPolicy.of(new StaticIdentityProvider("john")));
+        assertThat(workItems).hasSize(1);
+        
+        processInstance.completeWorkItem(workItem.getId(), null);
         assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
     }
     

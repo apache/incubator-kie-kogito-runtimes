@@ -34,13 +34,13 @@
     <checkstyle.header.template>.*</checkstyle.header.template>
     <checkstyle.header.extensions>java</checkstyle.header.extensions>
 
+    <jacoco.agent.argLine/>
     <!--
       JaCoCo coverage data file location. Using a single file for appending in the project's root directory makes it
       possible to measure cross-module test coverage -->
+    <jacoco.exec.file>${project.root.dir}/target/jacoco.exec</jacoco.exec.file>
     <!--suppress UnresolvedMavenProperty -->
-    <version.org.jacoco.agent>0.8.4</version.org.jacoco.agent>
-    <version.jacoco.plugin>${version.org.jacoco.agent}</version.jacoco.plugin>
-    <jacoco.exec.file>${maven.multiModuleProjectDirectory}/target/jacoco.exec</jacoco.exec.file>
+    <project.root.dir>${maven.multiModuleProjectDirectory}</project.root.dir>
 
     <!-- plugin versions -->
     <version.antapacheregexp>1.8.2</version.antapacheregexp>
@@ -57,6 +57,7 @@
     <version.findbugs.plugin>3.0.5</version.findbugs.plugin>
     <version.install.plugin>2.5.2</version.install.plugin>
     <version.invoker.plugin>2.0.0</version.invoker.plugin>
+    <version.jacoco.plugin>0.8.5</version.jacoco.plugin>
     <version.jandex.plugin>1.0.6</version.jandex.plugin>
     <version.jar.plugin>3.1.0</version.jar.plugin>
     <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
@@ -73,6 +74,7 @@
     <version.resources.plugin>3.1.0</version.resources.plugin>
     <version.site.plugin>3.7.1</version.site.plugin>
     <version.shade.plugin>3.0.0</version.shade.plugin>
+    <version.sonar.plugin>3.6.1.1688</version.sonar.plugin>
     <version.source.plugin>3.0.1</version.source.plugin>
     <version.surefire>2.22.1</version.surefire> <!-- minimum required by JUnit 5 -->
     <version.surefire.report.plugin>2.6</version.surefire.report.plugin>
@@ -118,7 +120,7 @@
     <version.org.infinispan.image>10.0.0.Final-1</version.org.infinispan.image>
     <version.org.infinispan.protostream>4.3.0.Final</version.org.infinispan.protostream>
     <version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>1.0.1.Final</version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>
-    <version.org.junit.minor>5.0</version.org.junit.minor> <!-- so that org.junit.platform and org.junit can share the same minor version -->
+    <version.org.junit.minor>6.0</version.org.junit.minor> <!-- so that org.junit.platform and org.junit can share the same minor version -->
     <version.org.junit>5.${version.org.junit.minor}</version.org.junit>
     <version.org.junit.jupiter>${version.org.junit}</version.org.junit.jupiter>
     <version.org.junit.vintage>${version.org.junit}</version.org.junit.vintage>
@@ -126,7 +128,7 @@
     <version.org.keycloak.image>8.0.1</version.org.keycloak.image>
     <version.org.mockito>3.0.0</version.org.mockito>
     <version.org.mvel>2.4.4.Final</version.org.mvel>
-    <version.org.kie7>7.32.0.Final</version.org.kie7>
+    <version.org.kie7>7.33.0.Final</version.org.kie7>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.25</version.org.slf4j>
     <version.org.springframework.kafka>2.2.2.RELEASE</version.org.springframework.kafka>
@@ -134,6 +136,20 @@
     <version.testcontainers>1.12.3</version.testcontainers>
     <version.xmlunit>2.2.1</version.xmlunit>
   </properties>
+
+  <!-- distributionManagement section -->
+  <distributionManagement>
+    <repository>
+      <id>jboss-releases-repository</id>
+      <name>JBoss Releases Repository</name>
+      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>jboss-snapshots-repository</id>
+      <name>JBoss Snapshot Repository</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <repositories>
     <!-- Bootstrap repository to locate the parent pom when the parent pom
@@ -204,8 +220,8 @@
     <module>kogito-codegen</module>
     <module>addons</module>
     <module>kogito-maven-plugin</module>
+    <module>kogito-quarkus-extension</module>
     <module>archetypes</module>
-    <module>data-index</module>
   </modules>
 
   <dependencyManagement>
@@ -573,27 +589,12 @@
         <version>${version.javax.activation}</version>
       </dependency>
 
-      <!-- Quarkus -->
-      <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-resteasy</artifactId>
-        <version>${version.io.quarkus}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-arc</artifactId>
-        <version>${version.io.quarkus}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-junit5</artifactId>
-        <version>${version.io.quarkus}</version>
-      </dependency>
       <dependency>
         <groupId>com.oracle.substratevm</groupId>
         <artifactId>svm</artifactId>
         <version>${version.com.oracle.substratevm}</version>
       </dependency>
+
       <dependency>
         <groupId>io.smallrye.reactive</groupId>
         <artifactId>smallrye-reactive-messaging-provider</artifactId>
@@ -689,12 +690,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.jacoco</groupId>
-        <artifactId>org.jacoco.agent</artifactId>
-        <version>${version.org.jacoco.agent}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
         <version>${version.org.reflections}</version>
@@ -719,51 +714,31 @@
 
     <profile>
       <id>run-code-coverage</id>
-      <properties>
-        <jacoco.excludes>*Lexer:org.kie.kogito.codegen.data.*</jacoco.excludes>
-        <jacoco.agent.line>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${version.org.jacoco.agent}/org.jacoco.agent-${version.org.jacoco.agent}-runtime.jar=destfile=${jacoco.exec.file},append=true,excludes=${jacoco.excludes}</jacoco.agent.line>
-        <surefire.argLine>
-          -Dfile.encoding=${project.build.sourceEncoding}
-          ${jacoco.agent.line}
-        </surefire.argLine>
-      </properties>
       <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.codehaus.cargo</groupId>
-              <artifactId>cargo-maven2-plugin</artifactId>
-              <configuration>
-                <configuration>
-                  <properties>
-                    <cargo.start.jvmargs>${jacoco.agent.line}</cargo.start.jvmargs>
-                  </properties>
-                </configuration>
-              </configuration>
-            </plugin>
-            <plugin>
-              <artifactId>maven-surefire-plugin</artifactId>
-              <configuration>
-                <argLine>${surefire.argLine}</argLine>
-              </configuration>
-              <dependencies>
-                <dependency>
-                  <groupId>org.jacoco</groupId>
-                  <artifactId>org.jacoco.agent</artifactId>
-                  <version>${version.org.jacoco.agent}</version>
-                  <classifier>runtime</classifier>
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <!-- Append jacoco.agent.argLine property populated by JaCoCo's prepare-agent goal. -->
+              <argLine>@{jacoco.agent.argLine} -Xmx1024m -Dfile.encoding=UTF-8</argLine>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
       </build>
     </profile>
 
+    <!--
+      Creates JaCoCo XML reports and invokes the Sonar scanner, which uploads code quality data into the SonarCloud.
+    -->
     <profile>
       <id>sonarcloud-analysis</id>
       <properties>
-        <sonar.jacoco.reportPaths>${jacoco.exec.file}</sonar.jacoco.reportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>kiegroup</sonar.organization>
         <!--suppress UnresolvedMavenProperty -->
@@ -772,6 +747,79 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>validate</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <!--
+                    Jacoco ant "report" task provides control over scope of the generated report. The report task
+                    requires access to sources, classes and .exec file containing coverage data. The configuration
+                    below uses sources and classes of the entire project (each of its modules) and a single jacoco.exec
+                    file placed in project root directory.
+                    Jacoco maven plugin does not provide such a level of control and requires an artificial module that
+                    depends on all modules in the project to generate an aggregated report for all the modules.
+                    This necessity of creating a reporting module in every project is rather intrusive.
+                    See:
+                    https://www.jacoco.org/jacoco/trunk/doc/report-aggregate-mojo.html and
+                    https://groups.google.com/forum/#!topic/jacoco/oMxNZs_DNII
+                  -->
+                  <target>
+                    <echo message="Generating JaCoCo Reports"/>
+                    <taskdef name="report" classname="org.jacoco.ant.ReportTask"/>
+                    <mkdir dir="${project.reporting.outputDirectory}/jacoco"/>
+                    <report>
+                      <executiondata>
+                        <fileset dir="${project.root.dir}/target">
+                          <!--
+                            Include a single jacoco.exec file, which should be used in append mode by every module.
+                          -->
+                          <include name="jacoco.exec"/>
+                        </fileset>
+                      </executiondata>
+                      <structure name="Coverage Report">
+                        <group name="${project.artifactId}">
+                          <classfiles>
+                            <fileset dir="${project.root.dir}">
+                              <!--
+                                Include class files from every module.
+                              -->
+                              <include name="**/target/classes/**/*.class"/>
+                              <!-- To avoid a complaint about duplicate classes from archetypes. -->
+                              <exclude name="**/target/test-classes/**/*.class"/>
+                            </fileset>
+                          </classfiles>
+                          <sourcefiles encoding="UTF-8">
+                            <fileset dir="${project.root.dir}">
+                              <!--
+                                Include source files from every module.
+                              -->
+                              <include name="**/src/main/**/*.java"/>
+                            </fileset>
+                          </sourcefiles>
+                        </group>
+                      </structure>
+                      <!-- The same report is generated in each module -->
+                      <xml destfile="${project.reporting.outputDirectory}/jacoco/jacoco.xml"/>
+                    </report>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.ant</artifactId>
+                <!-- Keep the version in sync with jacoco-maven-plugin -->
+                <version>${version.jacoco.plugin}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+          <plugin>
             <groupId>org.sonarsource.scanner.maven</groupId>
             <artifactId>sonar-maven-plugin</artifactId>
             <executions>
@@ -779,7 +827,7 @@
                 <goals>
                   <goal>sonar</goal>
                 </goals>
-                <phase>generate-resources</phase>
+                <phase>validate</phase>
               </execution>
             </executions>
           </plugin>
@@ -805,95 +853,6 @@
         <!--suppress UnresolvedMavenProperty -->
         <sonar.pullrequest.github.repository>${env.CHANGE_URL}</sonar.pullrequest.github.repository>
       </properties>
-    </profile>
-
-    <profile>
-      <id>default-profile</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <artifactId>maven-failsafe-plugin</artifactId>
-              <version>${version.surefire}</version>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>integration-test</goal>
-                    <goal>verify</goal>
-                  </goals>
-                  <configuration>
-                    <includes>
-                      <include>**/*IntegrationTest.java</include>
-                      <include>**/*IT.java</include>
-                    </includes>
-                    <excludes>
-                      <exclude>**/Native*IntegrationTest.java</exclude>
-                      <exclude>**/Native*IT.java</exclude>
-                    </excludes>
-                    <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-
-    <profile>
-      <id>native</id>
-      <activation>
-        <property>
-          <name>native</name>
-        </property>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>io.quarkus</groupId>
-              <artifactId>quarkus-maven-plugin</artifactId>
-              <version>${version.io.quarkus}</version>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>native-image</goal>
-                  </goals>
-                  <configuration>
-                    <enableHttpUrlHandler>true</enableHttpUrlHandler>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-            <plugin>
-              <artifactId>maven-failsafe-plugin</artifactId>
-              <version>${version.surefire}</version>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>integration-test</goal>
-                    <goal>verify</goal>
-                  </goals>
-                  <configuration>
-                    <includes>
-                      <include>**/*IntegrationTest.java</include>
-                      <include>**/*IT.java</include>
-                    </includes>
-                    <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
-                    <systemProperties>
-                      <native.image.path>${project.build.directory}/${project.build.finalName}-runner
-                      </native.image.path>
-                    </systemProperties>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
     </profile>
   </profiles>
 
@@ -983,6 +942,10 @@
           <configuration>
             <encoding>UTF-8</encoding>
           </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${version.surefire}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1233,19 +1196,9 @@
           <version>${version.plugin.plugin}</version>
         </plugin>
         <plugin>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-maven-plugin</artifactId>
-          <version>${version.io.quarkus}</version>
-        </plugin>
-        <plugin>
           <groupId>io.openapitools.swagger</groupId>
           <artifactId>swagger-maven-plugin</artifactId>
           <version>${version.swagger.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${version.jacoco.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.jboss.jandex</groupId>
@@ -1259,6 +1212,43 @@
               </goals>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${version.jacoco.plugin}</version>
+          <executions>
+            <execution>
+              <id>jacoco-prepare-agent</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+              <configuration>
+                <append>true</append>
+                <destFile>${jacoco.exec.file}</destFile>
+                <excludes>
+                  <exclude>*Lexer</exclude>
+                  <exclude>org.kie.kogito.codegen.data.*</exclude>
+                </excludes>
+                <propertyName>jacoco.agent.argLine</propertyName>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>${version.sonar.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-maven-plugin</artifactId>
+          <version>${version.io.quarkus}</version>
+        </plugin>
+        <plugin>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+          <version>${version.io.quarkus}</version>
         </plugin>
       </plugins>
     </pluginManagement>

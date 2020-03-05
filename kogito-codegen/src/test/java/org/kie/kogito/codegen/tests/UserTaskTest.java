@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.jbpm.process.instance.impl.humantask.HumanTaskTransition;
@@ -46,8 +47,10 @@ import org.kie.kogito.Model;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.codegen.AbstractCodegenTest;
+import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstanceDuplicatedException;
 import org.kie.kogito.process.VariableViolationException;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
@@ -799,4 +802,116 @@ public class UserTaskTest extends AbstractCodegenTest {
         
         assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED, processInstance.status());
     } 
+    
+    @Test
+    public void testUserTaskWithIOexpressionProcess() throws Exception {
+        
+        Application app = generateCodeProcessesOnly("usertask/UserTaskWithIOexpression.bpmn2");        
+        assertThat(app).isNotNull();     
+                
+        Process<? extends Model> p = app.processes().processById("UserTask");
+        
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("person", new Person("john", 0));
+        m.fromMap(parameters);
+        
+        ProcessInstance<?> processInstance = p.createInstance(m);
+        processInstance.start();
+        
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE); 
+        
+        List<WorkItem> workItems = processInstance.workItems(securityPolicy);
+        assertEquals(1, workItems.size());
+        assertEquals("Hello", workItems.get(0).getName());
+        assertEquals("john", workItems.get(0).getParameters().get("personName"));
+        
+        processInstance.completeWorkItem(workItems.get(0).getId(), Collections.singletonMap("personAge", 50), securityPolicy);       
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        
+        Model output = (Model) processInstance.variables();
+        Person person = (Person) output.toMap().get("person");
+        assertEquals(50, person.getAge());
+        
+    }
+
+    @Test
+    public void testBasicUserTaskProcessWithBusinessKey() throws Exception {
+        
+        Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
+        assertThat(app).isNotNull();
+     
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
+        
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+        m.fromMap(parameters);
+        // assign custom business key for process instance
+        ProcessInstance<?> processInstance = p.createInstance("custom id", m);
+        processInstance.start();
+        
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE); 
+        // verify that custom business key is assigned properly
+        assertThat(processInstance.businessKey()).isEqualTo("custom id");
+        
+        // find the process instance by business key
+        Optional<?> processInstanceByBussinesKey = p.instances().findById("custom id");
+        assertThat(processInstanceByBussinesKey.isPresent()).isTrue();
+        
+        List<WorkItem> workItems = processInstance.workItems(securityPolicy);
+        assertEquals(1, workItems.size());
+        assertEquals("FirstTask", workItems.get(0).getName());
+        
+        processInstance.completeWorkItem(workItems.get(0).getId(), null, securityPolicy);
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        
+        workItems = processInstance.workItems(securityPolicy);
+        assertEquals(1, workItems.size());
+        assertEquals("SecondTask", workItems.get(0).getName());
+        
+        processInstance.completeWorkItem(workItems.get(0).getId(), null, securityPolicy);
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
+    }
+    
+    @Test
+    public void testBasicUserTaskProcessWithDuplicatedBusinessKey() throws Exception {
+        
+        Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
+        assertThat(app).isNotNull();
+     
+        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
+        
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+        m.fromMap(parameters);
+        // assign custom business key for process instance
+        ProcessInstance<?> processInstance = p.createInstance("custom id", m);
+        processInstance.start();
+        
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE); 
+        // verify that custom business key is assigned properly
+        assertThat(processInstance.businessKey()).isEqualTo("custom id");
+        
+        
+        // start another process instance with assigned duplicated business key of already active instance        
+        assertThrows(ProcessInstanceDuplicatedException.class, () -> p.createInstance("custom id", m));
+        
+        // abort first one
+        processInstance.abort();
+        
+        // now it should be possible to start second one with same business key
+        ProcessInstance<?> processInstance2 = p.createInstance("custom id", m);
+        processInstance2.start();
+        assertThat(processInstance2.status()).isEqualTo(ProcessInstance.STATE_ACTIVE); 
+        // verify that custom business key is assigned properly
+        assertThat(processInstance2.businessKey()).isEqualTo("custom id");
+        
+                
+        // find the process instance by business key
+        Optional<?> processInstanceByBussinesKey = p.instances().findById("custom id");
+        assertThat(processInstanceByBussinesKey.isPresent()).isTrue();
+        processInstance2 = (ProcessInstance<?>) processInstanceByBussinesKey.get();
+        processInstance2.abort();
+    }
 }

@@ -32,6 +32,7 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
@@ -51,6 +52,7 @@ import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
+import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.Sig;
@@ -62,6 +64,7 @@ public abstract class AbstractResourceGenerator {
 
     private final String relativePath;
 
+    private final GeneratorContext context;
     private WorkflowProcess process;
     private final String packageName;
     private final String resourceClazzName;
@@ -78,10 +81,12 @@ public abstract class AbstractResourceGenerator {
     private Map<String, String> signals;
 
     public AbstractResourceGenerator(
+            GeneratorContext context, 
             WorkflowProcess process,
             String modelfqcn,
             String processfqcn,
             String appCanonicalName) {
+        this.context = context;
         this.process = process;
         this.packageName = process.getPackageName();
         this.processId = process.getId();
@@ -126,6 +131,7 @@ public abstract class AbstractResourceGenerator {
                 this.getClass().getResourceAsStream(getResourceTemplate()));
         clazz.setPackageDeclaration(process.getPackageName());
         clazz.addImport(modelfqcn);
+        clazz.addImport(modelfqcn + "Output");
 
         ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
@@ -139,7 +145,7 @@ public abstract class AbstractResourceGenerator {
             for (Entry<String, String> entry : signals.entrySet()) {
                 MethodDeclaration signalMethod = new MethodDeclaration()
                         .setName("signal_" + index++)
-                        .setType(modelfqcn)
+                        .setType(modelfqcn + "Output")
                         .setModifiers(Keyword.PUBLIC)
                         .addAnnotation("POST")
                         .addSingleMemberAnnotation("Path", new StringLiteralExpr("/{id}/" + entry.getKey()))
@@ -173,7 +179,7 @@ public abstract class AbstractResourceGenerator {
                 
                 MethodCallExpr send = new MethodCallExpr(new NameExpr("pi"), "send").addArgument(newSignal);
                 // return current state of variables after the signal
-                MethodCallExpr variables = new MethodCallExpr(new NameExpr("pi"), "variables");
+                MethodCallExpr variables = new MethodCallExpr("getModel").addArgument(new NameExpr("pi"));
                 signalMethod.createBody().addStatement(processInstanceField).addStatement(processInstanceExists).addStatement(send).addStatement(new ReturnStmt(variables));  
                 
                 
@@ -246,6 +252,8 @@ public abstract class AbstractResourceGenerator {
             annotator.withApplicationComponent(template);
         }
         
+        enableValidation(template);
+        
         template.getMembers().sort(new BodyDeclarationComparator());
         return clazz.toString();
     }
@@ -264,6 +272,15 @@ public abstract class AbstractResourceGenerator {
                 md.getAnnotationByName("GET").isPresent() ||
                 md.getAnnotationByName("PUT").isPresent() ||
                 md.getAnnotationByName("DELETE").isPresent();           
+    }
+    
+    private void enableValidation(ClassOrInterfaceDeclaration template) {
+        if (context.getBuildContext().isValidationSupported()) {
+            template.findAll(Parameter.class).stream().filter(param -> param.getTypeAsString().equals(dataClazzName+"Input")).forEach(param -> {
+                param.addAnnotation("javax.validation.Valid");
+                param.addAnnotation("javax.validation.constraints.NotNull");
+                });
+        }
     }
 
     private void initializeProcessField(FieldDeclaration fd) {

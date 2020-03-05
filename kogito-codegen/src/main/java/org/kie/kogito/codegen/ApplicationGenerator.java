@@ -34,12 +34,10 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import javax.lang.model.SourceVersion;
-
 import org.kie.kogito.Config;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.Labeler;
@@ -59,13 +57,10 @@ public class ApplicationGenerator {
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
     public static final String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
+    public static final String APPLICATION_CLASS_NAME = "Application";
 
     private final String packageName;
-    private final String sourceFilePath;
-    private final String targetCanonicalName;
     private final File targetDirectory;
-
-    private String targetTypeName;
 
     private DependencyInjectionAnnotator annotator;
 
@@ -89,26 +84,27 @@ public class ApplicationGenerator {
         }
         this.packageName = packageName;
         this.targetDirectory = targetDirectory;
-        this.targetTypeName = "Application";
-        this.targetCanonicalName = this.packageName + "." + targetTypeName;
-        this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
         this.factoryMethods = new ArrayList<>();
         this.configGenerator = new ConfigGenerator(packageName);
     }
 
     public String targetCanonicalName() {
-        return targetCanonicalName;
+        return this.packageName + "." + APPLICATION_CLASS_NAME;
     }
 
     public String generatedFilePath() {
-        return sourceFilePath;
+        return getFilePath(APPLICATION_CLASS_NAME);
+    }
+
+    private String getFilePath(String className) {
+        return (this.packageName + "." + className).replace('.', '/') + ".java";
     }
 
     public void addFactoryMethods(Collection<MethodDeclaration> decls) {
         factoryMethods.addAll(decls);
     }
 
-    public CompilationUnit compilationUnit() {
+    CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit =
                 parse(this.getClass().getResourceAsStream(RESOURCE))
                         .setPackageDeclaration(packageName);
@@ -169,7 +165,7 @@ public class ApplicationGenerator {
             }
             cls.addMember(section.fieldDeclaration());
             cls.addMember(section.factoryMethod());
-            cls.addMember(section.classDeclaration());
+
         }
         cls.getMembers().sort(new BodyDeclarationComparator());
         return compilationUnit;
@@ -206,15 +202,17 @@ public class ApplicationGenerator {
     public Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = generateComponents();
         generators.forEach(gen -> gen.updateConfig(configGenerator));
-        generators.forEach(gen -> MetaDataWriter.writeLabelsImageMetadata(targetDirectory, gen.getLabels()));
+        if (targetDirectory.isDirectory()) {
+            generators.forEach( gen -> MetaDataWriter.writeLabelsImageMetadata( targetDirectory, gen.getLabels() ) );
+        }
         generatedFiles.add(generateApplicationDescriptor());
+        generatedFiles.addAll(generateApplicationSections());
         generatedFiles.add(generateApplicationConfigDescriptor());
         if (useInjection()) {
             generators.stream().filter(gen -> gen.section() != null)
                     .forEach(gen -> generateSectionClass(gen.section(), generatedFiles));
         }
         this.labelers.forEach(l -> MetaDataWriter.writeLabelsImageMetadata(targetDirectory, l.generateLabels()));
-
         return generatedFiles;
     }
 
@@ -224,15 +222,33 @@ public class ApplicationGenerator {
                 .collect(Collectors.toList());
     }
 
-
     public GeneratedFile generateApplicationDescriptor() {
         return new GeneratedFile(GeneratedFile.Type.APPLICATION,
                                  generatedFilePath(),
                                  log( compilationUnit().toString() ).getBytes(StandardCharsets.UTF_8));
     }
 
+    private List<GeneratedFile> generateApplicationSections() {
+        ArrayList<GeneratedFile> generatedFiles = new ArrayList<>();
+
+        for (Generator generator : generators) {
+            ApplicationSection section = generator.section();
+            if (section == null) {
+                continue;
+            }
+            CompilationUnit sectionUnit = new CompilationUnit();
+            sectionUnit.setPackageDeclaration( this.packageName );
+            sectionUnit.addType( section.classDeclaration() );
+            generatedFiles.add(
+                    new GeneratedFile(GeneratedFile.Type.APPLICATION_SECTION,
+                                      getFilePath(section.sectionClassName()),
+                                      sectionUnit.toString()));
+        }
+        return generatedFiles;
+    }
+
     public GeneratedFile generateApplicationConfigDescriptor() {
-        return new GeneratedFile(GeneratedFile.Type.CLASS,
+        return new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
                                  configGenerator.generatedFilePath(),
                                  log( configGenerator.compilationUnit().toString() ).getBytes(StandardCharsets.UTF_8));
     }

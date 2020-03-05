@@ -23,23 +23,24 @@ import java.util.Optional;
 
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.kie.kogito.conf.Clock;
-import org.kie.kogito.conf.ClockType;
 import org.kie.kogito.conf.EventProcessing;
-import org.kie.kogito.conf.EventProcessingType;
 import org.kie.kogito.conf.SessionsPool;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.RuleUnitData;
 
+import static org.drools.reflective.util.ClassUtils.getSetter;
 import static org.drools.reflective.util.ClassUtils.getter2property;
 
 public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
 
     private final Class<? extends RuleUnitData> ruleUnitClass;
+    private final AssignableChecker assignableChecker;
 
     public ReflectiveRuleUnitDescription(InternalKnowledgePackage pkg, Class<? extends RuleUnitData> ruleUnitClass) {
         this.ruleUnitClass = ruleUnitClass;
+        this.assignableChecker = AssignableChecker.create(ruleUnitClass.getClassLoader());
         indexUnitVars();
         setConfig(loadConfig(ruleUnitClass));
     }
@@ -81,8 +82,9 @@ public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
                 String id = getter2property(m.getName());
                 if (id != null && !id.equals("class")) {
                     Class<?> parametricType = getUnitVarType(m);
+                    Method setter = getSetter(m.getDeclaringClass(), id, m.getReturnType());
                     putRuleUnitVariable(
-                            new SimpleRuleUnitVariable(id, m.getReturnType(), parametricType));
+                            new SimpleRuleUnitVariable(id, m.getReturnType(), parametricType, setter != null));
                 }
             }
         }
@@ -93,7 +95,7 @@ public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
         if (returnClass.isArray()) {
             return returnClass.getComponentType();
         }
-        if (DataSource.class.isAssignableFrom(returnClass)) {
+        if ( assignableChecker.isAssignableFrom(DataSource.class, returnClass)) {
             return getParametricType(m);
         }
         if (Iterable.class.isAssignableFrom(returnClass)) {

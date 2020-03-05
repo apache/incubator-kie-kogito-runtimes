@@ -2,7 +2,7 @@
 
 pipeline {
     agent {
-        label 'kogito-static || kie-rhel7'
+        label 'kie-rhel7 && kie-mem16g'
     }
     tools {
         maven 'kie-maven-3.5.4'
@@ -26,6 +26,21 @@ pipeline {
             steps {
                 script {
                     maven.runMavenWithSubmarineSettings('clean install -Prun-code-coverage', false)
+                    /*
+                       The analysis must happen before the other stages as these clone different projects into a root
+                       directory of kogito-runtimes and are by mistake incorporated in a test coverage report.
+                     */
+                    maven.runMavenWithSubmarineSettings('-e -nsu validate -Psonarcloud-analysis', false)
+                }
+            }
+        }
+        stage('Build kogito-apps') {
+            steps {
+                dir("kogito-apps") {
+                    script {
+                        githubscm.checkoutIfExists('kogito-apps', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
+                        maven.runMavenWithSubmarineSettings('clean install', false)
+                    }
                 }
             }
         }
@@ -54,13 +69,6 @@ pipeline {
                         // Don't run with tests so far, see: https://github.com/quarkusio/quarkus/issues/6885
                         maven.runMavenWithSubmarineSettings('clean install -Ppersistence', true)
                     }
-                }
-            }
-        }
-        stage('Analyze kogito-runtimes') {
-            steps {
-                script {
-                    maven.runMavenWithSubmarineSettings('-e -nsu generate-resources -Psonarcloud-analysis', false)
                 }
             }
         }

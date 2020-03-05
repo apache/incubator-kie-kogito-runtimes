@@ -15,10 +15,9 @@
 
 package org.kie.kogito.codegen.process;
 
-import static org.kie.kogito.codegen.ApplicationGenerator.log;
-
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,13 +25,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
+import org.drools.core.io.internal.InternalResource;
 import org.drools.core.util.StringUtils;
 import org.drools.core.xml.SemanticModules;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
@@ -47,6 +52,7 @@ import org.jbpm.compiler.xml.XmlProcessReader;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
@@ -61,7 +67,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import static org.drools.core.util.IoUtils.readBytesFromInputStream;
+import static org.kie.api.io.ResourceType.determineResourceType;
+import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 /**
  * Entry point to process code generation
@@ -79,6 +87,28 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     private ClassLoader contextClassLoader;
+
+    public static ProcessCodegen ofJar(Path jarPath) throws IOException {
+        List<Process> processes = new ArrayList<>();
+
+        try (ZipFile zipFile = new ZipFile( jarPath.toFile() )) {
+            Enumeration< ? extends ZipEntry> entries = zipFile.entries();
+            while ( entries.hasMoreElements() ) {
+                ZipEntry entry = entries.nextElement();
+                ResourceType resourceType = determineResourceType(entry.getName());
+                if (entry.getName().endsWith(".bpmn") || entry.getName().endsWith(".bpmn2")) {
+                    InternalResource resource = new ByteArrayResource( readBytesFromInputStream( zipFile.getInputStream( entry ) ) );
+                    resource.setResourceType( resourceType );
+                    resource.setSourcePath( entry.getName() );
+                    processes.addAll( parseProcessFile( resource ) );
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        return ofProcesses(processes);
+    }
 
     public static ProcessCodegen ofPath(Path path) throws IOException {
         Path srcPath = Paths.get(path.toString());
@@ -208,15 +238,15 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // first we generate all the data classes from variable declarations
         for (WorkflowProcess workFlowProcess : processes.values()) {
-            ModelClassGenerator mcg = new ModelClassGenerator(workFlowProcess);
+            ModelClassGenerator mcg = new ModelClassGenerator(context(), workFlowProcess);
             processIdToModelGenerator.put(workFlowProcess.getId(), mcg);
             processIdToModel.put(workFlowProcess.getId(), mcg.generate());
             
-            InputModelClassGenerator imcg = new InputModelClassGenerator(workFlowProcess);
+            InputModelClassGenerator imcg = new InputModelClassGenerator(context(), workFlowProcess);
             processIdToInputModelGenerator.put(workFlowProcess.getId(), imcg);
             
-            OutputModelClassGenerator omcg = new OutputModelClassGenerator(workFlowProcess);
-            processIdToOutputModelGenerator.put(workFlowProcess.getId(), omcg);
+            OutputModelClassGenerator omcg = new OutputModelClassGenerator(context(), workFlowProcess);
+            processIdToOutputModelGenerator.put( workFlowProcess.getId(), omcg);
         }
         
 
@@ -288,7 +318,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
                 LOGGER.debug("Generating Reactive REST Resources.");
                 // create REST resource class for process
-                resourceGenerator = new ReactiveResourceGenerator(
+                resourceGenerator = new ReactiveResourceGenerator(context(),
                                             workFlowProcess,
                                             modelClassGenerator.className(),
                                             execModelGen.className(),
@@ -296,7 +326,7 @@ public class ProcessCodegen extends AbstractGenerator {
             } else {
                 LOGGER.debug("Generating REST Resources.");
                 // create REST resource class for process
-                resourceGenerator = new ResourceGenerator(
+                resourceGenerator = new ResourceGenerator(context(),
                                             workFlowProcess,
                                             modelClassGenerator.className(),
                                             execModelGen.className(),
@@ -315,13 +345,15 @@ public class ProcessCodegen extends AbstractGenerator {
 
                 for (TriggerMetaData trigger : metaData.getTriggers()) {
 
-                    MessageDataEventGenerator msgDataEventGenerator = new MessageDataEventGenerator(workFlowProcess,
-                                                            trigger)
-                                                                  .withDependencyInjection(annotator);
-                    mdegs.add(msgDataEventGenerator);
+                    
                     // generate message consumers for processes with message start events
                     if (trigger.getType().equals(TriggerMetaData.TriggerType.ConsumeMessage)) {
 
+                        MessageDataEventGenerator msgDataEventGenerator = new MessageDataEventGenerator(workFlowProcess,
+                                                                                                        trigger)
+                                                                                                              .withDependencyInjection(annotator);
+                                                                mdegs.add(msgDataEventGenerator);
+                                                                
                         megs.add(new MessageConsumerGenerator(
                                     workFlowProcess,
                                     modelClassGenerator.className(),
@@ -331,6 +363,12 @@ public class ProcessCodegen extends AbstractGenerator {
                                     trigger)
                                         .withDependencyInjection(annotator));
                     } else if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
+                        
+                        MessageDataEventGenerator msgDataEventGenerator = new MessageDataEventGenerator(workFlowProcess,
+                                                                                                        trigger)
+                                                                                                              .withDependencyInjection(annotator);
+                                                                mdegs.add(msgDataEventGenerator);
+                                                                
                         mpgs.add(new MessageProducerGenerator(
                                                               workFlowProcess,
                                                               modelClassGenerator.className(),

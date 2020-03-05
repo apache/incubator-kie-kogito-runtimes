@@ -2,33 +2,20 @@ package org.kie.kogito.maven.plugin;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -43,13 +30,11 @@ import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
-import org.kie.kogito.codegen.rules.DeclaredTypeCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
-import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
 
 @Mojo(name = "generateModel",
-        requiresDependencyResolution = ResolutionScope.COMPILE,
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
         requiresProject = true,
         defaultPhase = LifecyclePhase.COMPILE)
 public class GenerateModelMojo extends AbstractKieMojo {
@@ -190,9 +175,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
         if (appPackageName.equals(ApplicationGenerator.DEFAULT_GROUP_ID)) {
             appPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
         }
-        boolean usePersistence = persistence || hasClassOnClasspath("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
-        boolean useMonitoring = hasClassOnClasspath("org.kie.addons.monitoring.rest.MetricsResource");
-        boolean useSystemMonitoring = systemMonitoring || hasClassOnClasspath("org.kie.addons.monitoring.system.interceptor.MetricsInterceptor");
+
+        boolean usePersistence = persistence || hasClassOnClasspath(project, "org.kie.kogito.persistence.KogitoProcessInstancesFactory");
+        boolean useMonitoring = hasClassOnClasspath(project, "org.kie.addons.monitoring.rest.MetricsResource");
 
         ClassLoader projectClassLoader = MojoUtil.createProjectClassLoader(this.getClass().getClassLoader(),
                                                                            project,
@@ -220,12 +205,12 @@ public class GenerateModelMojo extends AbstractKieMojo {
             appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withKModule(getKModuleModel())
                     .withClassLoader(projectClassLoader)
-                    .withMonitoring(useSystemMonitoring);
+                    .withMonitoring(useMonitoring);
         }
 
         if (generateDecisions) {
             appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()))
-                    .withMonitoring(useSystemMonitoring);
+                    .withMonitoring(useMonitoring);
         }
 
         return appGen;
@@ -275,25 +260,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
     }
 
-    protected boolean hasClassOnClasspath(String className) {
-        Set<Artifact> artifacts = project.getArtifacts();
 
-        List<URL> urls = new ArrayList<>();
 
-        for(Artifact artifact : artifacts){
-            try {
-                urls.add(artifact.getFile().toURI().toURL());
-            }
-            catch(MalformedURLException e){
-                getLog().debug("Artifact has malformed URL: skipping the artifact.", e);
-            }
-        }
-
-        try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]))) {
-            cl.loadClass(className);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
 }

@@ -33,6 +33,8 @@ import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataObserver;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;
+import org.kie.kogito.rules.SingletonStore;
+import org.kie.kogito.rules.units.AssignableChecker;
 
 import static com.github.javaparser.StaticJavaParser.parseExpression;
 
@@ -42,11 +44,13 @@ public class RuleUnitMetaModel {
     private final String modelClassName;
 
     private final String instanceVarName;
+    private final AssignableChecker assignableChecker;
 
-    public RuleUnitMetaModel(RuleUnitDescription ruleUnitDescription, String instanceVarName) {
+    public RuleUnitMetaModel(RuleUnitDescription ruleUnitDescription, String instanceVarName, AssignableChecker assignableChecker ) {
         this.ruleUnitDescription = ruleUnitDescription;
         this.modelClassName = ruleUnitDescription.getCanonicalName();
         this.instanceVarName = instanceVarName;
+        this.assignableChecker = assignableChecker;
     }
 
     public String instanceVarName() {
@@ -140,10 +144,12 @@ public class RuleUnitMetaModel {
 
     private String appendMethodOf(Class<?> type) {
         String appendMethod;
-        if (type.isAssignableFrom(DataStream.class)) {
+        if ( assignableChecker.isAssignableFrom(DataStream.class, type)) {
             appendMethod = "append";
-        } else if (type.isAssignableFrom(DataStore.class)) {
+        } else if ( assignableChecker.isAssignableFrom(DataStore.class, type)) {
             appendMethod = "add";
+        } else if ( assignableChecker.isAssignableFrom(SingletonStore.class, type)) {
+            appendMethod = "set";
         } else {
             throw new IllegalArgumentException("Unknown data source type " + type.getCanonicalName());
         }

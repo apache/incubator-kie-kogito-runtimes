@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -39,7 +42,9 @@ import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.compiler.DecisionTableFactory;
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
+import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
+import org.drools.core.io.internal.InternalResource;
 import org.drools.modelcompiler.builder.GeneratedFile;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.kie.api.builder.model.KieBaseModel;
@@ -53,7 +58,6 @@ import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratorContext;
@@ -65,17 +69,42 @@ import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.kogito.conf.ClockType;
 import org.kie.kogito.conf.EventProcessingType;
 import org.kie.kogito.rules.RuleUnitConfig;
+import org.kie.kogito.rules.units.AssignableChecker;
+
+import static java.util.stream.Collectors.toList;
 
 import static com.github.javaparser.StaticJavaParser.parse;
-import static java.util.stream.Collectors.toList;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
+import static org.drools.core.util.IoUtils.readBytesFromInputStream;
+import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public class IncrementalRuleCodegen extends AbstractGenerator {
 
+    public static IncrementalRuleCodegen ofJar(Path jarPath) {
+        Collection<Resource> resources = new ArrayList<>();
+
+        try (ZipFile zipFile = new ZipFile( jarPath.toFile() )) {
+            Enumeration< ? extends ZipEntry> entries = zipFile.entries();
+            while ( entries.hasMoreElements() ) {
+                ZipEntry entry = entries.nextElement();
+                ResourceType resourceType = determineResourceType(entry.getName());
+                if (resourceType != null) {
+                    InternalResource resource = new ByteArrayResource( readBytesFromInputStream( zipFile.getInputStream( entry ) ) );
+                    resource.setResourceType( resourceType );
+                    resource.setSourcePath( entry.getName() );
+                    resources.add( resource );
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        return new IncrementalRuleCodegen(resources);
+    }
+
     public static IncrementalRuleCodegen ofPath(Path basePath) {
-        try {
-            Stream<File> files = Files.walk(basePath).map(Path::toFile);
+        try (Stream<File> files = Files.walk(basePath).map(Path::toFile)) {
             Set<Resource> resources = toResources(files);
             return new IncrementalRuleCodegen(resources);
         } catch (IOException e) {
@@ -84,8 +113,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     }
 
     public static IncrementalRuleCodegen ofPath(Path basePath, ResourceType resourceType) {
-        try {
-            Stream<File> files = Files.walk(basePath).map(Path::toFile);
+        try (Stream<File> files = Files.walk(basePath).map(Path::toFile)) {
             Set<Resource> resources = toResources(files, resourceType);
             return new IncrementalRuleCodegen(resources);
         } catch (IOException e) {
@@ -201,6 +229,8 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         KnowledgeBuilderConfigurationImpl configuration =
                 new KnowledgeBuilderConfigurationImpl(contextClassLoader);
 
+        AssignableChecker assignableChecker = AssignableChecker.create(contextClassLoader, hotReloadMode);
+
         ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<>( KogitoPackageSources::dumpSources, configuration, dummyReleaseId, true, hotReloadMode );
 
         CompositeKnowledgeBuilder batch = modelBuilder.batch();
@@ -222,8 +252,9 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
             pkgSources.collectGeneratedFiles( modelFiles );
 
-            if (pkgSources.getReflectConfigSource() != null) {
-                addGeneratedFile( modelFiles, pkgSources.getReflectConfigSource(), "../../classes/" );
+            GeneratedFile reflectConfigSource = pkgSources.getReflectConfigSource();
+            if (reflectConfigSource != null) {
+                modelFiles.add(new GeneratedFile(GeneratedFile.Type.RULE, "../../classes/" + reflectConfigSource.getPath(), new String(reflectConfigSource.getData(), StandardCharsets.UTF_8)));
             }
 
             Collection<RuleUnitDescription> ruleUnits = pkgSources.getRuleUnits();
@@ -264,7 +295,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
                 List<QueryEndpointGenerator> queries = ruleUnit.queries();
                 if (!queries.isEmpty()) {
-                    generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription().getRuleUnitClass() ).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
+                    generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription(), assignableChecker ).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
                     for (QueryEndpointGenerator query : queries) {
                         if (useMonitoring){
                             String dashboard = GrafanaConfigurationWriter.generateDashboardForEndpoint(query.getEndpointName());
@@ -353,11 +384,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     private String ruleUnit2KieSessionName(String ruleUnit) {
         return ruleUnit.replace( '.', '$' )  + "KieSession";
-    }
-
-    private void addGeneratedFile( List<GeneratedFile> generatedFiles, GeneratedFile source, String pathPrefix ) {
-        ApplicationGenerator.log( source.getData() );
-        generatedFiles.add(new GeneratedFile(GeneratedFile.Type.RULE, pathPrefix + source.getPath(), new String(source.getData(), StandardCharsets.UTF_8)));
     }
 
     @Override

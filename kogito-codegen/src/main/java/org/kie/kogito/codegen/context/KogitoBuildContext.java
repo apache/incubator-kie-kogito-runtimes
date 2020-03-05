@@ -15,7 +15,13 @@
 
 package org.kie.kogito.codegen.context;
 
+import org.kie.kogito.codegen.KogitoCodeGenConstants;
 
-public interface KogitoBuildContext {
+public interface KogitoBuildContext {    
 
+    boolean hasClassAvailable(String fqcn);
+    
+    default boolean isValidationSupported() {
+        return hasClassAvailable(KogitoCodeGenConstants.VALIDATION_CLASS);
+    }
 }
