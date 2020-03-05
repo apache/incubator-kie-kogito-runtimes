@@ -11,8 +11,8 @@ public class DMNResultMetricsBuilderTest {
     @Test
     public void GivenANewSample_WhenMetricsAreRegistered_ThenNullValuesAreHandled(){
         // Assert
-        assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics("hello", null));
-        assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null, null));
-        assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null, new DMNResult()));
+        assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null));
+        assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null));
+        assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(new DMNResult()));
     }
 }

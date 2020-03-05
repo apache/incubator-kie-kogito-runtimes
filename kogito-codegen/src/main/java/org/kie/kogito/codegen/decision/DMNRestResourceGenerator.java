@@ -60,6 +60,7 @@ public class DMNRestResourceGenerator {
     private final String resourceClazzName;
     private final String appCanonicalName;
     private DependencyInjectionAnnotator annotator;
+    private boolean useMonitoring;
 
     
     public DMNRestResourceGenerator(Definitions definitions, String appCanonicalName) {
@@ -87,15 +88,16 @@ public class DMNRestResourceGenerator {
         return this;
     }
 
+    public DMNRestResourceGenerator withMonitoring(boolean useMonitoring) {
+        this.useMonitoring = useMonitoring;
+        return this;
+    }
+
     public String className() {
         return resourceClazzName;
     }
 
-    public String generate(){
-        return generate(false);
-    }
-
-    public String generate(boolean useMonitoring) {
+    public String generate() {
         CompilationUnit clazz = parse(this.getClass().getResourceAsStream("/class-templates/DMNRestResourceTemplate.java"));
         clazz.setPackageDeclaration(this.packageName);
 
@@ -178,7 +180,7 @@ public class DMNRestResourceGenerator {
 
         statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(IfStmt.class).get());
         statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(IfStmt.class).get());
-        statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(\"" + nameURL + "\", result);"), body.get().findFirst(IfStmt.class).get());
+        statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(result);"), body.get().findFirst(IfStmt.class).get());
     }
 
     private void initializeApplicationField(FieldDeclaration fd) {

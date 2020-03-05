@@ -1,28 +1,18 @@
 package org.kie.addons.monitoring.integration;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import ch.obermuhlner.math.big.stream.BigDecimalStream;
-import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
-import org.drools.core.command.assertion.AssertEquals;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.addons.monitoring.mocks.DMNDecisionResultMock;
 import org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder;
 import org.kie.addons.monitoring.system.metrics.MetricsConstants;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
-import org.kie.dmn.api.core.DMNDecisionResult;
 import org.kie.kogito.codegen.grafana.SupportedDecisionTypes;
 import org.kie.kogito.dmn.rest.DMNResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DMNResultMetricsBuilderTest {
 
@@ -52,7 +42,7 @@ public class DMNResultMetricsBuilderTest {
         int expectedDictionaryDecisionWorld = 1;
 
         // Act
-        DMNResultMetricsBuilder.generateMetrics(ENDPOINT_NAME, dmnResult);
+        DMNResultMetricsBuilder.generateMetrics(dmnResult);
 
         // Assert
         assertEquals(expectedAlphabetDecisionA, getLabelsValue(SupportedDecisionTypes.fromInternalToStandard(String.class), "AlphabetDecision", "A"));

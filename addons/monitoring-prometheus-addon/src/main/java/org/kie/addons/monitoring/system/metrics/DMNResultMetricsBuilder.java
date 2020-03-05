@@ -28,9 +28,9 @@ public class DMNResultMetricsBuilder {
         return handlers;
     }
 
-    public static void generateMetrics(String handler, DMNResult dmnResult){
-        if (handler == null || dmnResult == null){
-            LOGGER.warn("DMNResultMetricsBuilder can't register the metrics because the handler or the dmn result is null.");
+    public static void generateMetrics(DMNResult dmnResult){
+        if (dmnResult == null){
+            LOGGER.warn("DMNResultMetricsBuilder can't register the metrics because the dmn result is null.");
             return;
         }
 
@@ -38,7 +38,7 @@ public class DMNResultMetricsBuilder {
         for (DMNDecisionResult decision : decisionResults){
             Object result = decision.getResult();
             if (SupportedDecisionTypes.isSupported(result.getClass())){
-                LOGGER.debug(String.format("Recording handler: %s, Result: %s", handler, result.toString()));
+                LOGGER.debug(String.format("Recording Result: %s", result.toString()));
                 handlers.get(result.getClass()).record(decision.getDecisionName(), result);
             };
         }

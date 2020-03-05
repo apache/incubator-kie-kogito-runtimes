@@ -49,6 +49,62 @@ import org.kie.kogito.codegen.grafana.GrafanaConfigurationWriter;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public class DecisionCodegen extends AbstractGenerator {
+    private String packageName;
+    private String applicationCanonicalName;
+    private DependencyInjectionAnnotator annotator;
+    private DecisionContainerGenerator moduleGenerator;
+    private Path basePath;
+    private final Map<String, DMNResource> models;
+    private final List<GeneratedFile> generatedFiles = new ArrayList<>();
+    private boolean useMonitoring = false;
+
+    public DecisionCodegen(Path basePath, Collection<? extends DMNResource> models) {
+        this.basePath = basePath;
+        this.models = new HashMap<>();
+        for (DMNResource model : models) {
+            this.models.put(model.getDefinitions().getId(), model);
+        }
+
+        // set default package name
+        setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
+        this.moduleGenerator = new DecisionContainerGenerator(applicationCanonicalName, basePath, models);
+    }
+
+    @Override
+    public ApplicationSection section() {
+        return moduleGenerator;
+    }
+
+    @Override
+    public void updateConfig(ConfigGenerator cfg) {
+        // nothing.
+    }
+
+    public Path getBasePath() {
+        return this.basePath;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+        this.applicationCanonicalName = packageName + ".Application";
+    }
+
+    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
+        this.annotator = annotator;
+    }
+
+    public DecisionContainerGenerator moduleGenerator() {
+        return moduleGenerator;
+    }
+
+    public List<GeneratedFile> getGeneratedFiles() {
+        return generatedFiles;
+    }
+
+    public DecisionCodegen withMonitoring(boolean useMonitoring){
+        this.useMonitoring = useMonitoring;
+        return this;
+    }
 
     public static DecisionCodegen ofPath(Path path) throws IOException {
         Path srcPath = Paths.get(path.toString());
@@ -63,6 +119,42 @@ public class DecisionCodegen extends AbstractGenerator {
     public static DecisionCodegen ofFiles(Path basePath, Collection<File> files) throws IOException {
         List<DMNResource> result = parseDecisions(files);
         return ofDecisions(basePath, result);
+    }
+
+    public List<GeneratedFile> generate() {
+        if (models.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DMNRestResourceGenerator> rgs = new ArrayList<>(); // REST resources
+        
+        for (DMNResource dmnRes : models.values()) {
+            DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(dmnRes.getDefinitions(), applicationCanonicalName).withDependencyInjection(annotator).withMonitoring(useMonitoring);
+            rgs.add(resourceGenerator);
+        }
+
+        for (DMNRestResourceGenerator resourceGenerator : rgs) {
+            // Grafana dashboard generation
+            if (useMonitoring) {
+                Definitions definitions = resourceGenerator.getDefinitions();
+                List<TDecision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> (TDecision)x).collect(Collectors.toList());
+
+                String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisions);
+                generatedFiles.add(
+                        new org.kie.kogito.codegen.GeneratedFile(
+                                org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
+                                "/dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
+                                dashboard ));
+            }
+
+            storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
+        }
+
+        return generatedFiles;
+    }
+
+    private void storeFile(GeneratedFile.Type type, String path, String source) {
+        generatedFiles.add(new GeneratedFile(type, path, log( source ).getBytes( StandardCharsets.UTF_8 )));
     }
 
     private static DecisionCodegen ofDecisions(Path basePath, List<DMNResource> result) {
@@ -82,100 +174,5 @@ public class DecisionCodegen extends AbstractGenerator {
 
     private static Definitions parseDecisionFile(Resource r) throws IOException {
         return DMNMarshallerFactory.newDefaultMarshaller().unmarshal(r.getReader());
-    }
-
-    private String packageName;
-    private String applicationCanonicalName; 
-    private DependencyInjectionAnnotator annotator;
-    
-    private DecisionContainerGenerator moduleGenerator;
-
-    private Path basePath;
-    private final Map<String, DMNResource> models;
-    private final List<GeneratedFile> generatedFiles = new ArrayList<>();
-    private boolean useMonitoring = false;
-
-    public DecisionCodegen(Path basePath, Collection<? extends DMNResource> models) {
-        this.basePath = basePath;
-        this.models = new HashMap<>();
-        for (DMNResource model : models) {
-            this.models.put(model.getDefinitions().getId(), model);
-        }
-
-        // set default package name
-        setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
-        this.moduleGenerator = new DecisionContainerGenerator(applicationCanonicalName, basePath, models);
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-        this.applicationCanonicalName = packageName + ".Application";
-    }
-
-    public Path getBasePath() {
-        return this.basePath;
-    }
-
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-    }
-
-    public DecisionContainerGenerator moduleGenerator() {
-        return moduleGenerator;
-    }
-
-    public List<GeneratedFile> generate() {
-        if (models.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<DMNRestResourceGenerator> rgs = new ArrayList<>(); // REST resources
-        
-        for (DMNResource dmnRes : models.values()) {
-            DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(dmnRes.getDefinitions(), applicationCanonicalName).withDependencyInjection(annotator);
-            rgs.add(resourceGenerator);
-        }
-
-        for (DMNRestResourceGenerator resourceGenerator : rgs) {
-            // Grafana dashboard generation
-            if (useMonitoring) {
-                Definitions definitions = resourceGenerator.getDefinitions();
-                List<TDecision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> (TDecision)x).collect(Collectors.toList());
-
-                String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisions);
-                generatedFiles.add(
-                        new org.kie.kogito.codegen.GeneratedFile(
-                                org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
-                                "/dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
-                                dashboard ));
-            }
-
-            storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate(useMonitoring));
-        }
-
-        return generatedFiles;
-    }
-
-    @Override
-    public void updateConfig(ConfigGenerator cfg) {
-        // nothing.
-    }
-
-    private void storeFile(GeneratedFile.Type type, String path, String source) {
-        generatedFiles.add(new GeneratedFile(type, path, log( source ).getBytes( StandardCharsets.UTF_8 )));
-    }
-
-    public List<GeneratedFile> getGeneratedFiles() {
-        return generatedFiles;
-    }
-
-    @Override
-    public ApplicationSection section() {
-        return moduleGenerator;
-    }
-
-    public DecisionCodegen withMonitoring(boolean useMonitoring){
-        this.useMonitoring = useMonitoring;
-        return this;
     }
 }

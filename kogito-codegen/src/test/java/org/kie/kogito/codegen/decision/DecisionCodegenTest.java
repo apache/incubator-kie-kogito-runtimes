@@ -29,12 +29,24 @@ public class DecisionCodegenTest {
 
     @Test
     public void generateSingleFile() throws Exception {
-        DecisionCodegen codegenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision").toAbsolutePath());
+        DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision").toAbsolutePath());
 
-        List<GeneratedFile> generatedFiles = codegenerator.generate();
+        List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertEquals(2, generatedFiles.size());
 
-        ClassOrInterfaceDeclaration classDeclaration = codegenerator.moduleGenerator().classDeclaration();
+        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
+        assertNotNull(classDeclaration);
+    }
+
+    @Test
+    public void GivenADMNModel_WhenMonitoringIsActive_ThenGrafanaDashboardsAreGenerated() throws Exception {
+        DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision").toAbsolutePath()).withMonitoring(true);
+
+        List<GeneratedFile> generatedFiles = codeGenerator.generate();
+
+        assertEquals(2, generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.RESOURCE).count());
+
+        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
         assertNotNull(classDeclaration);
     }
 }
