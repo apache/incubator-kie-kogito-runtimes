@@ -2,8 +2,7 @@ package org.kie.kogito.codegen.grafana.types;
 
 import java.util.HashMap;
 
-import com.redhat.developer.model.functions.GrafanaFunction;
-import com.redhat.developer.model.functions.IncreaseFunction;
+import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
 
 public class AbstractDmnType {
     private final Class internalRepresentationClass;

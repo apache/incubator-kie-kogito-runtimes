@@ -156,7 +156,7 @@ public class DMNRestResourceGenerator {
     public String className() {
         return resourceClazzName;
     }
-    
+
     private void addExceptionMetricsLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL){
         // TODO: Improve code generation
         MethodDeclaration method = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("toResponse")).get(0);

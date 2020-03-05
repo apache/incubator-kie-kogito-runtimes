@@ -2,8 +2,8 @@ package org.kie.kogito.codegen.grafana.types;
 
 import java.util.HashMap;
 
-import com.redhat.developer.model.functions.GrafanaFunction;
-import com.redhat.developer.model.functions.IncreaseFunction;
+import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
+import org.kie.kogito.codegen.grafana.model.functions.IncreaseFunction;
 
 public class BooleanType extends AbstractDmnType {
     public BooleanType() {

@@ -13,13 +13,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.redhat.developer.IJGrafana;
-import com.redhat.developer.JGrafana;
-import com.redhat.developer.model.functions.GrafanaFunction;
-import com.redhat.developer.model.functions.IncreaseFunction;
-import com.redhat.developer.model.panel.PanelType;
 import org.kie.dmn.model.v1_2.TDecision;
+import org.kie.kogito.codegen.grafana.model.panel.PanelType;
 
 public class GrafanaConfigurationWriter {
 

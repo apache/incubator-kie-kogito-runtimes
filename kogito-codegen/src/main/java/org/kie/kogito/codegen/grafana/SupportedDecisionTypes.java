@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.redhat.developer.model.functions.GrafanaFunction;
+import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.codegen.grafana.types.AbstractDmnType;
 import org.kie.kogito.codegen.grafana.types.BooleanType;
 import org.kie.kogito.codegen.grafana.types.NumberType;
