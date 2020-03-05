@@ -81,6 +81,37 @@ import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public class IncrementalRuleCodegen extends AbstractGenerator {
 
+    private final Collection<Resource> resources;
+    private RuleUnitContainerGenerator moduleGenerator;
+
+    private boolean dependencyInjection;
+    private DependencyInjectionAnnotator annotator;
+    /**
+     * used for type-resolving during codegen/type-checking
+     */
+    private ClassLoader contextClassLoader;
+
+    private KieModuleModel kieModuleModel;
+    private boolean hotReloadMode = false;
+    private boolean useMonitoring = false;
+    private String packageName;
+    private final boolean decisionTableSupported;
+    private final Map<String, RuleUnitConfig> configs;
+
+    private IncrementalRuleCodegen(Collection<Resource> resources) {
+        this.resources = resources;
+        this.kieModuleModel = new KieModuleModelImpl();
+        setDefaultsforEmptyKieModule(kieModuleModel);
+        this.contextClassLoader = getClass().getClassLoader();
+        this.decisionTableSupported = DecisionTableFactory.getDecisionTableProvider() != null;
+        this.configs = new HashMap<>();
+    }
+
+    @Deprecated
+    public IncrementalRuleCodegen(Path basePath, Collection<File> files, ResourceType resourceType) {
+        this(toResources(files.stream(), resourceType));
+    }
+
     public static IncrementalRuleCodegen ofJar(Path jarPath) {
         Collection<Resource> resources = new ArrayList<>();
 
@@ -137,83 +168,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     public static IncrementalRuleCodegen ofResources(Collection<Resource> resources) {
         return new IncrementalRuleCodegen(resources);
-    }
-
-    private static Set<Resource> toResources(Stream<File> files, ResourceType resourceType) {
-        return files.filter(f -> resourceType.matchesExtension(f.getName())).map(FileSystemResource::new).peek(r -> r.setResourceType(resourceType)).collect(Collectors.toSet());
-    }
-
-    private static Set<Resource> toResources(Stream<File> files) {
-        return files.map(FileSystemResource::new).peek(r -> r.setResourceType(typeOf(r))).filter(r -> r.getResourceType() != null).collect(Collectors.toSet());
-    }
-
-    private static ResourceType typeOf(FileSystemResource r) {
-        for (ResourceType rt : resourceTypes) {
-            if (rt.matchesExtension(r.getFile().getName())) {
-                return rt;
-            }
-        }
-        return null;
-    }
-
-
-    private static final ResourceType[] resourceTypes = {
-            ResourceType.DRL,
-            ResourceType.DTABLE
-    };
-    private final Collection<Resource> resources;
-    private RuleUnitContainerGenerator moduleGenerator;
-
-    private boolean dependencyInjection;
-    private DependencyInjectionAnnotator annotator;
-    /**
-     * used for type-resolving during codegen/type-checking
-     */
-    private ClassLoader contextClassLoader;
-
-    private KieModuleModel kieModuleModel;
-    private boolean hotReloadMode = false;
-    private boolean useMonitoring = false;
-    private String packageName;
-    private final boolean decisionTableSupported;
-    private final Map<String, RuleUnitConfig> configs;
-
-
-    @Deprecated
-    public IncrementalRuleCodegen(Path basePath, Collection<File> files, ResourceType resourceType) {
-        this(toResources(files.stream(), resourceType));
-    }
-
-    private IncrementalRuleCodegen(Collection<Resource> resources) {
-        this.resources = resources;
-        this.kieModuleModel = new KieModuleModelImpl();
-        setDefaultsforEmptyKieModule(kieModuleModel);
-        this.contextClassLoader = getClass().getClassLoader();
-        this.decisionTableSupported = DecisionTableFactory.getDecisionTableProvider() != null;
-        this.configs = new HashMap<>();
-    }
-
-    @Override
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-    }
-
-    @Override
-    public void setContext(GeneratorContext context) {
-        super.setContext(context);
-        this.configs.clear();
-        for (NamedRuleUnitConfig cfg : NamedRuleUnitConfig.fromContext(context)) {
-            this.configs.put(cfg.getCanonicalName(), cfg.getConfig());
-        }
-    }
-
-    @Override
-    public ApplicationSection section() {
-        return moduleGenerator;
     }
 
     public List<org.kie.kogito.codegen.GeneratedFile> generate() {
@@ -350,6 +304,67 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
+    @Override
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
+        this.annotator = annotator;
+    }
+
+    @Override
+    public void setContext(GeneratorContext context) {
+        super.setContext(context);
+        this.configs.clear();
+        for (NamedRuleUnitConfig cfg : NamedRuleUnitConfig.fromContext(context)) {
+            this.configs.put(cfg.getCanonicalName(), cfg.getConfig());
+        }
+    }
+
+    @Override
+    public ApplicationSection section() {
+        return moduleGenerator;
+    }
+
+    @Override
+    public void updateConfig(ConfigGenerator cfg) {
+        cfg.withRuleConfig(new RuleConfigGenerator());
+    }
+
+    private String ruleUnit2KieBaseName(String ruleUnit) {
+        return ruleUnit.replace( '.', '$' )  + "KieBase";
+    }
+
+    private String ruleUnit2KieSessionName(String ruleUnit) {
+        return ruleUnit.replace( '.', '$' )  + "KieSession";
+    }
+
+    public void setDependencyInjection(boolean di) {
+        this.dependencyInjection = di;
+    }
+
+    public IncrementalRuleCodegen withKModule(KieModuleModel model) {
+        kieModuleModel = model;
+        setDefaultsforEmptyKieModule(kieModuleModel);
+        return this;
+    }
+
+    public IncrementalRuleCodegen withClassLoader(ClassLoader projectClassLoader) {
+        this.contextClassLoader = projectClassLoader;
+        return this;
+    }
+
+    public IncrementalRuleCodegen withHotReloadMode() {
+        this.hotReloadMode = true;
+        return this;
+    }
+
+    public IncrementalRuleCodegen withMonitoring(boolean useMonitoring) {
+        this.useMonitoring = useMonitoring;
+        return this;
+    }
+
     private void addUnitConfToKieModule(RuleUnitDescription ruleUnitDescription) {
         KieBaseModel unitKieBaseModel = kieModuleModel.newKieBaseModel(ruleUnit2KieBaseName(ruleUnitDescription.getCanonicalName()));
         unitKieBaseModel.setEventProcessingMode(org.kie.api.conf.EventProcessingOption.CLOUD);
@@ -378,41 +393,25 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
     }
 
-    private String ruleUnit2KieBaseName(String ruleUnit) {
-        return ruleUnit.replace( '.', '$' )  + "KieBase";
+    private static Set<Resource> toResources(Stream<File> files, ResourceType resourceType) {
+        return files.filter(f -> resourceType.matchesExtension(f.getName())).map(FileSystemResource::new).peek(r -> r.setResourceType(resourceType)).collect(Collectors.toSet());
     }
 
-    private String ruleUnit2KieSessionName(String ruleUnit) {
-        return ruleUnit.replace( '.', '$' )  + "KieSession";
+    private static Set<Resource> toResources(Stream<File> files) {
+        return files.map(FileSystemResource::new).peek(r -> r.setResourceType(typeOf(r))).filter(r -> r.getResourceType() != null).collect(Collectors.toSet());
     }
 
-    @Override
-    public void updateConfig(ConfigGenerator cfg) {
-        cfg.withRuleConfig(new RuleConfigGenerator());
+    private static ResourceType typeOf(FileSystemResource r) {
+        for (ResourceType rt : resourceTypes) {
+            if (rt.matchesExtension(r.getFile().getName())) {
+                return rt;
+            }
+        }
+        return null;
     }
 
-    public void setDependencyInjection(boolean di) {
-        this.dependencyInjection = di;
-    }
-
-    public IncrementalRuleCodegen withKModule(KieModuleModel model) {
-        kieModuleModel = model;
-        setDefaultsforEmptyKieModule(kieModuleModel);
-        return this;
-    }
-
-    public IncrementalRuleCodegen withClassLoader(ClassLoader projectClassLoader) {
-        this.contextClassLoader = projectClassLoader;
-        return this;
-    }
-
-    public IncrementalRuleCodegen withHotReloadMode() {
-        this.hotReloadMode = true;
-        return this;
-    }
-
-    public IncrementalRuleCodegen withMonitoring(boolean useMonitoring) {
-        this.useMonitoring = useMonitoring;
-        return this;
-    }
+    private static final ResourceType[] resourceTypes = {
+            ResourceType.DRL,
+            ResourceType.DTABLE
+    };
 }

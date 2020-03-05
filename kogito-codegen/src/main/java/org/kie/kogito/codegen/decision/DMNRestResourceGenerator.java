@@ -62,7 +62,6 @@ public class DMNRestResourceGenerator {
     private DependencyInjectionAnnotator annotator;
     private boolean useMonitoring;
 
-    
     public DMNRestResourceGenerator(Definitions definitions, String appCanonicalName) {
         this.definitions = definitions;
         this.packageName = CodegenStringUtil.escapeIdentifier(definitions.getNamespace());
@@ -73,28 +72,6 @@ public class DMNRestResourceGenerator {
         String classPrefix = StringUtils.capitalize(decisionName);
         this.resourceClazzName = classPrefix + "Resource";
         this.relativePath = packageName.replace(".", "/") + "/" + resourceClazzName + ".java";
-    }
-
-    public String getNameURL() {
-        return nameURL;
-    }
-
-    public Definitions getDefinitions(){
-        return this.definitions;
-    }
-
-    public DMNRestResourceGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        return this;
-    }
-
-    public DMNRestResourceGenerator withMonitoring(boolean useMonitoring) {
-        this.useMonitoring = useMonitoring;
-        return this;
-    }
-
-    public String className() {
-        return resourceClazzName;
     }
 
     public String generate() {
@@ -158,6 +135,28 @@ public class DMNRestResourceGenerator {
         return clazz.toString();
     }
 
+    public String getNameURL() {
+        return nameURL;
+    }
+
+    public Definitions getDefinitions(){
+        return this.definitions;
+    }
+
+    public DMNRestResourceGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
+        this.annotator = annotator;
+        return this;
+    }
+
+    public DMNRestResourceGenerator withMonitoring(boolean useMonitoring) {
+        this.useMonitoring = useMonitoring;
+        return this;
+    }
+
+    public String className() {
+        return resourceClazzName;
+    }
+    
     private void addExceptionMetricsLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL){
         // TODO: Improve code generation
         MethodDeclaration method = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("toResponse")).get(0);
