@@ -113,7 +113,7 @@ public class JGrafanaTest {
 
     public static String readStandardDashboard(){
 
-        InputStream is = JGrafanaTest.class.getResourceAsStream("/test_dashboard.json" );
+        InputStream is = JGrafanaTest.class.getResourceAsStream("/grafana/test_dashboard.json" );
         return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
     }
 }
