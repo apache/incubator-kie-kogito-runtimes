@@ -18,10 +18,10 @@ public class MetricsInterceptor implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext requestContext,
                        ContainerResponseContext responseContext) throws IOException {
-        LOGGER.debug("Logging status code " + responseContext.getStatusInfo().getStatusCode());
+        LOGGER.debug(String.format("Logging status code %s", responseContext.getStatusInfo().getStatusCode()));
         List<String> matchedUris = requestContext.getUriInfo().getMatchedURIs();
 
-        if (matchedUris.size() != 0){
+        if (!matchedUris.isEmpty()){
             SystemMetricsCollector.registerStatusCodeRequest(matchedUris.get(0), String.valueOf(responseContext.getStatusInfo().getStatusCode()));
         }
         else // Log the number of requests that did not match any Uri -> 404 not found.

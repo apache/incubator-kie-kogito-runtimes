@@ -1,6 +1,9 @@
 package org.kie.addons.monitoring.system.metrics;
 
 public class MetricsConstants {
+
+    private MetricsConstants(){}
+
     public static final String STATUS_CODE_NAME = "api_http_response_code";
 
     public static final String STATUS_CODE_HELP = "Request status code.";

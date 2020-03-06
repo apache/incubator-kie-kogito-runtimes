@@ -3,6 +3,7 @@ package org.kie.addons.monitoring.system.metrics;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.BooleanHandler;
@@ -18,9 +19,11 @@ public class DMNResultMetricsBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DMNResultMetricsBuilder.class);
 
-    private static final ConcurrentHashMap<Class, TypeHandler> handlers = generateHandlers();
+    private static final ConcurrentMap<Class, TypeHandler> handlers = generateHandlers();
 
-    private static ConcurrentHashMap<Class, TypeHandler> generateHandlers(){
+    private DMNResultMetricsBuilder(){}
+
+    private static ConcurrentMap<Class, TypeHandler> generateHandlers(){
         ConcurrentHashMap<Class, TypeHandler> handlers = new ConcurrentHashMap<>();
         handlers.put(String.class, new StringHandler(SupportedDecisionTypes.fromInternalToStandard(String.class)));
         handlers.put(Boolean.class, new BooleanHandler(SupportedDecisionTypes.fromInternalToStandard(Boolean.class)));
@@ -28,7 +31,7 @@ public class DMNResultMetricsBuilder {
         return handlers;
     }
 
-    public static ConcurrentHashMap<Class, TypeHandler> getHandlers(){
+    public static ConcurrentMap<Class, TypeHandler> getHandlers(){
         return handlers;
     }
 
@@ -42,9 +45,8 @@ public class DMNResultMetricsBuilder {
         for (DMNDecisionResult decision : decisionResults){
             Object result = decision.getResult();
             if (SupportedDecisionTypes.isSupported(result.getClass())){
-                LOGGER.debug(String.format("Recording Result: %s", result.toString()));
                 handlers.get(result.getClass()).record(decision.getDecisionName(), result);
-            };
+            }
         }
     }
 }

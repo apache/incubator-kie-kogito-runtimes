@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Summary;
 import org.kie.addons.monitoring.system.metrics.MetricsConstants;
-import org.kie.dmn.model.v1_1.TDMNElement;
 
 public class BigDecimalHandler implements TypeHandler<BigDecimal> {
 
@@ -44,8 +43,6 @@ public class BigDecimalHandler implements TypeHandler<BigDecimal> {
                 .help(MetricsConstants.DECISIONS_HELP)
                 .labelNames(MetricsConstants.HANDLER_LABEL);
 
-        Summary summary = registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
-
-        return summary;
+        return registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
     }
 }

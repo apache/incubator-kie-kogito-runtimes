@@ -3,6 +3,7 @@ package org.kie.kogito.codegen.grafana;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -26,6 +27,8 @@ public class SupportedDecisionTypes {
         supportedDmnTypes.stream().forEach(x -> dmnInternalClassToDmnStandardMap.put(x.getInternalClass(), x.getDmnType()));
     }
 
+    private SupportedDecisionTypes(){}
+
     public static boolean isSupported(String type){
         return  dmnInternalClassToDmnStandardMap.containsValue(type);
     }
@@ -38,7 +41,7 @@ public class SupportedDecisionTypes {
         return dmnInternalClassToDmnStandardMap.get(c);
     }
 
-    public static HashMap<Integer, GrafanaFunction> getGrafanaFunction(String dmnType) {
+    public static Map<Integer, GrafanaFunction> getGrafanaFunction(String dmnType) {
         if (isSupported(dmnType)) {
             Optional<AbstractDmnType> type = supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
             if (type.isPresent()){

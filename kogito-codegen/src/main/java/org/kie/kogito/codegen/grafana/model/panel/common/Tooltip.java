@@ -13,7 +13,7 @@ public class Tooltip {
     public int sort;
 
     @JsonProperty("value_type")
-    public String value_type;
+    public String valueType;
 
     @JsonProperty("show")
     public boolean show;

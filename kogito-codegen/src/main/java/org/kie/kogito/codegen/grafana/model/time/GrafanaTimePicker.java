@@ -29,7 +29,7 @@ public class GrafanaTimePicker {
                                                          "30m",
                                                          "1h",
                                                          "2h",
-                                                         "1d");;
+                                                         "1d");
 
     @JsonProperty("type")
     public String type;

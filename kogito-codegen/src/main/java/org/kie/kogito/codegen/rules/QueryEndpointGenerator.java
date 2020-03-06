@@ -16,9 +16,6 @@
 
 package org.kie.kogito.codegen.rules;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -40,7 +37,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.Type;
@@ -48,9 +44,7 @@ import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
-import org.kie.kogito.codegen.decision.DMNRestResourceGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.rules.RuleUnitInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +52,6 @@ import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static com.github.javaparser.StaticJavaParser.parseImport;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
-import static java.util.stream.Collectors.toList;
 import static org.drools.core.util.StringUtils.ucFirst;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classNameToReferenceType;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
@@ -175,28 +168,28 @@ public class QueryEndpointGenerator implements FileGenerator {
     private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration[] methods, String nameURL){
         cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
 
-        for(MethodDeclaration md : methods){
+        for(MethodDeclaration md : methods) {
             Optional<BlockStmt> body = md.getBody();
 
-            if (!body.isPresent()) {
-                logger.warn("DRL query body handler not found: can't add monitoring to endpoint");
-                return;
+            if (body.isPresent()) {
+
+                NodeList<Statement> statements = body.get().getStatements();
+                statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
+
+                Optional<ReturnStmt> returnStmt = body.get().findFirst(ReturnStmt.class);
+
+                if (returnStmt.isPresent()) {
+                    statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt.get());
+                    statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt.get());
+                }
+                else{
+                    logger.warn("Return statement not found: can't add monitoring to endpoint.");
+                }
             }
-
-            NodeList<Statement> statements = body.get().getStatements();
-            statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
-
-            Optional<ReturnStmt> returnStmt = body.get().findFirst(ReturnStmt.class);
-
-            if (!returnStmt.isPresent()) {
-                logger.warn("Return statement not found: can't add monitoring to endpoint");
-                return;
+            else{
+                logger.warn("Endpoint body method not found: can't add monitoring to endpoint.");
             }
-
-            statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt.get());
-            statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt.get());
         }
-
     }
 
 

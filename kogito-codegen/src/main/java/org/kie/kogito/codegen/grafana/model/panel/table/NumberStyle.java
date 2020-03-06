@@ -29,10 +29,10 @@ public class NumberStyle extends BaseStyle {
     }
 
     private List<String> generateDefaultColors(){
-        List<String> colors = new ArrayList<>();
-        colors.add("rgba(245, 54, 54, 0.9)");
-        colors.add("rgba(237, 129, 40, 0.89)");
-        colors.add("rgba(50, 172, 45, 0.97)");
-        return colors;
+        List<String> col = new ArrayList<>();
+        col.add("rgba(245, 54, 54, 0.9)");
+        col.add("rgba(237, 129, 40, 0.89)");
+        col.add("rgba(50, 172, 45, 0.97)");
+        return col;
     }
 }

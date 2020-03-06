@@ -66,12 +66,12 @@ public class GrafanaDashboard {
     public int version = 1;
 
     @JsonProperty("links")
-    public List<String> links = new ArrayList<>(); //todo
+    public List<String> links = new ArrayList<>();
 
     @JsonProperty("annotations")
     public Object annotations;
 
-    public GrafanaDashboard(){};
+    public GrafanaDashboard(){}
 
     public GrafanaDashboard(String id, String uid, String title){
         this.id = id;

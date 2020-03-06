@@ -167,19 +167,16 @@ public class DMNRestResourceGenerator {
         cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
 
         Optional<BlockStmt> body = method.getBody();
-        if (!body.isPresent()) {
-            logger.warn("DMN Exception body handler not found: can't add monitoring to exceptions");
-            return;
+        if (body.isPresent()) {
+            Optional<ReturnStmt> returnStmt = body.get().findFirst(ReturnStmt.class);
+            if (returnStmt.isPresent()) {
+                NodeList<Statement> statements = body.get().getStatements();
+                statements.addBefore(parseStatement("SystemMetricsCollector.registerException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"), returnStmt.get());
+                return;
+            }
         }
 
-        NodeList<Statement> statements = body.get().getStatements();
-        Optional<ReturnStmt> returnStmt = body.get().findFirst(ReturnStmt.class);
-        if (!returnStmt.isPresent()) {
-            logger.warn("Return statement not found: can't add monitoring to endpoint");
-            return;
-        }
-
-        statements.addBefore(parseStatement("SystemMetricsCollector.registerException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"), returnStmt.get());
+        logger.warn("DMN Exception handler not found: can't add monitoring to exceptions");
     }
 
     private void addMonitoringImports(CompilationUnit cu){
@@ -189,17 +186,18 @@ public class DMNRestResourceGenerator {
 
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL){
         Optional<BlockStmt> body = method.getBody();
-
-        if (!body.isPresent()) {
-            logger.warn("DMN method body not found: can't add monitoring to method.");
-            return;
+        if (body.isPresent()) {
+            NodeList<Statement> statements = body.get().getStatements();
+            Optional<IfStmt> ifStmt = body.get().findFirst(IfStmt.class);
+            if (ifStmt.isPresent()) {
+                statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
+                statements.addBefore(parseStatement("double endTime = System.nanoTime();"), ifStmt.get());
+                statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), ifStmt.get());
+                statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(result);"), ifStmt.get());
+                return;
+            }
         }
-
-        NodeList<Statement> statements = body.get().getStatements();
-        statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
-        statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(IfStmt.class).get());
-        statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(IfStmt.class).get());
-        statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(result);"), body.get().findFirst(IfStmt.class).get());
+        logger.warn("Could not inject monitoring in endpoint.");
     }
 
     private void initializeApplicationField(FieldDeclaration fd) {

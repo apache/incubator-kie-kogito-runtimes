@@ -2,9 +2,11 @@ package org.kie.kogito.codegen.grafana.model.functions;
 
 public class SumFunction implements GrafanaFunction {
 
-    private final String function = "sum";
+    private final static String function = "sum";
 
-    public SumFunction(){}
+    public SumFunction(){
+        // intentionally left blank
+    }
 
     @Override
     public String getFunction() {

@@ -14,6 +14,8 @@ public class SystemMetricsCollector {
 
     private static final ConcurrentHashMap<GaugeTypesEnum, Gauge> gauges = new ConcurrentHashMap<>();
 
+    private SystemMetricsCollector(){}
+
     public static void registerStatusCodeRequest(String handler, String statusCode){
         counters.computeIfAbsent(CountersTypesEnum.REQUESTS_STATUS_CODE,
                                    k -> Counter.build().name(MetricsConstants.STATUS_CODE_NAME)

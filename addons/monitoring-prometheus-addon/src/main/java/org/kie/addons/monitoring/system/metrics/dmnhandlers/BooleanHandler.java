@@ -2,7 +2,6 @@ package org.kie.addons.monitoring.system.metrics.dmnhandlers;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
-import io.prometheus.client.SimpleCollector;
 import org.kie.addons.monitoring.system.metrics.MetricsConstants;
 
 public class BooleanHandler implements TypeHandler<Boolean>{
@@ -35,8 +34,6 @@ public class BooleanHandler implements TypeHandler<Boolean>{
                                                 .help(MetricsConstants.DECISIONS_HELP)
                                                 .labelNames(MetricsConstants.HANDLER_IDENTIFIER_LABELS);
 
-        Counter counter = registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
-
-        return counter;
+        return registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
     }
 }

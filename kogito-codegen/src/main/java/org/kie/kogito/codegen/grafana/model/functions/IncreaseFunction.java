@@ -2,7 +2,7 @@ package org.kie.kogito.codegen.grafana.model.functions;
 
 public class IncreaseFunction implements GrafanaFunction {
 
-    private final String function = "increase";
+    private static final String function = "increase";
 
     private String timeParameter;
 

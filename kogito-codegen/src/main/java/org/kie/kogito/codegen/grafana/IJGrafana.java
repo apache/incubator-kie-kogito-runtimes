@@ -2,7 +2,7 @@ package org.kie.kogito.codegen.grafana;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.kie.kogito.codegen.grafana.model.GrafanaDashboard;
 import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
@@ -15,7 +15,7 @@ public interface IJGrafana {
 
     GrafanaPanel addPanel(PanelType type, String title, String expr);
 
-    GrafanaPanel addPanel(PanelType type, String title, String expr, HashMap<Integer, GrafanaFunction> functions);
+    GrafanaPanel addPanel(PanelType type, String title, String expr, Map<Integer, GrafanaFunction> functions);
 
     boolean removePanelByTitle(String title);
 

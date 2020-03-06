@@ -1,22 +1,22 @@
 package org.kie.kogito.codegen.grafana;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.drools.core.phreak.PhreakTimerNode;
 import org.kie.dmn.model.v1_2.TDecision;
 import org.kie.kogito.codegen.grafana.model.panel.PanelType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GrafanaConfigurationWriter {
+    private static final Logger logger = LoggerFactory.getLogger(GrafanaConfigurationWriter.class );
 
     public static String readStandardDashboard() {
 
@@ -37,8 +37,7 @@ public class GrafanaConfigurationWriter {
         try {
             jgrafana = JGrafana.parse(template);
         } catch (IOException e) {
-            e.printStackTrace();
-            // TODO something;
+            logger.warn("Could not read the grafana dashboard template.", e);
             return null;
         }
 
@@ -57,7 +56,7 @@ public class GrafanaConfigurationWriter {
         try {
             return jgrafana.serialize();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("Could not serialize the grafana dashboard template.", e);
             return null;
         }
     }

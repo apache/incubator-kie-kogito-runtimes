@@ -2,7 +2,7 @@ package org.kie.kogito.codegen.grafana;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,7 +37,7 @@ public class JGrafana implements IJGrafana {
         for(int i = 0; i < dash.panels.size(); i++){
             GrafanaPanel p = dash.panels.get(i);
             p.id = i + 1;
-            p.gridPos = GridPosFactory.CalculateGridPosById(i + 1);
+            p.gridPos = GridPosFactory.calculateGridPosById(i + 1);
         }
         return new JGrafana(dash);
     }
@@ -98,7 +98,7 @@ public class JGrafana implements IJGrafana {
      * @return: The grafana panel added to the dashboard.
      */
     @Override
-    public GrafanaPanel addPanel(PanelType type, String title, String expr, HashMap<Integer, GrafanaFunction> functions) {
+    public GrafanaPanel addPanel(PanelType type, String title, String expr, Map<Integer, GrafanaFunction> functions) {
         int id = this.dashboard.panels.size() + 1;
         if (functions != null && functions.size() != 0){
             expr = ExprBuilder.apply(expr, functions);
