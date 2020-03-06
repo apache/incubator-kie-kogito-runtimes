@@ -2,14 +2,12 @@ package org.kie.kogito.codegen.grafana;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.FileUtils;
 import org.kie.kogito.codegen.grafana.factories.GridPosFactory;
 import org.kie.kogito.codegen.grafana.factories.PanelFactory;
 import org.kie.kogito.codegen.grafana.model.GrafanaDashboard;
@@ -24,15 +22,6 @@ import org.kie.kogito.codegen.grafana.model.panel.PanelType;
 public class JGrafana implements IJGrafana {
 
     private GrafanaDashboard dashboard;
-
-    /**
-     * Reads a json grafana dashboard from file and returns the JGrafana object containing that dashboard.
-     * @param dashboardPath
-     * @throws IOException
-     */
-    public static IJGrafana parse(File dashboardPath) throws IOException {
-        return parse(FileUtils.readFileToString(dashboardPath, StandardCharsets.UTF_8));
-    }
 
     /**
      * Parse a json grafana dashboard and returns the JGrafana object containing that dashboard.
