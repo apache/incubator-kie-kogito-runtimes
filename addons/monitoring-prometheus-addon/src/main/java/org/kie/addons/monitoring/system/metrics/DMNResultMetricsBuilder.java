@@ -28,6 +28,10 @@ public class DMNResultMetricsBuilder {
         return handlers;
     }
 
+    public static ConcurrentHashMap<Class, TypeHandler> getHandlers(){
+        return handlers;
+    }
+
     public static void generateMetrics(DMNResult dmnResult){
         if (dmnResult == null){
             LOGGER.warn("DMNResultMetricsBuilder can't register the metrics because the dmn result is null.");

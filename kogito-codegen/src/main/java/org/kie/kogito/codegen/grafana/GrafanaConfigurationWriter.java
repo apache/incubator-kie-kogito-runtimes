@@ -26,18 +26,12 @@ public class GrafanaConfigurationWriter {
 
     public static String generateDashboardForEndpoint(String handlerName) {
         String template = readStandardDashboard();
-        template = template.replaceAll("\\$handlerName\\$", handlerName);
-        template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
-        template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
-
-        return template;
+        return customizeTemplate(template, handlerName);
     }
 
     public static String generateDashboardForDMNEndpoint(String handlerName, List<TDecision> decisions) {
         String template = readStandardDashboard();
-        template = template.replaceAll("\\$handlerName\\$", handlerName);
-        template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
-        template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
+        template = customizeTemplate(template, handlerName);
 
         IJGrafana jgrafana;
         try {
@@ -51,7 +45,12 @@ public class GrafanaConfigurationWriter {
         for (TDecision decision : decisions){
             String type = decision.getVariable().getTypeRef().getLocalPart();
             if (SupportedDecisionTypes.isSupported(type)){
-                jgrafana.addPanel(PanelType.GRAPH, "Decision " + decision.getName(), String.format("%s_dmn_result{handler = \"%s\"}", type, decision.getName()), SupportedDecisionTypes.getGrafanaFunction(type));
+                jgrafana.addPanel(PanelType.GRAPH,
+                                  "Decision " + decision.getName(),
+                                  String.format("%s_dmn_result{handler = \"%s\"}",
+                                                type,
+                                                decision.getName()),
+                                  SupportedDecisionTypes.getGrafanaFunction(type));
             }
         }
 
@@ -61,5 +60,12 @@ public class GrafanaConfigurationWriter {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static String customizeTemplate(String template, String handlerName){
+        template = template.replaceAll("\\$handlerName\\$", handlerName);
+        template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
+        template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
+        return template;
     }
 }

@@ -44,6 +44,9 @@ import org.kie.dmn.model.api.DecisionService;
 import org.kie.dmn.model.api.Definitions;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.CodegenUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import protostream.javassist.NotFoundException;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseImport;
@@ -51,6 +54,7 @@ import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class DMNRestResourceGenerator {
 
+    private static final Logger logger = LoggerFactory.getLogger(DMNRestResourceGenerator.class);
     private final Definitions definitions;
     private final String decisionName;
     private final String nameURL;
@@ -163,8 +167,19 @@ public class DMNRestResourceGenerator {
         cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
 
         Optional<BlockStmt> body = method.getBody();
+        if (!body.isPresent()) {
+            logger.warn("DMN Exception body handler not found: can't add monitoring to exceptions");
+            return;
+        }
+
         NodeList<Statement> statements = body.get().getStatements();
-        statements.addBefore(parseStatement("SystemMetricsCollector.registerException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"), body.get().findFirst(ReturnStmt.class).get());
+        Optional<ReturnStmt> returnStmt = body.get().findFirst(ReturnStmt.class);
+        if (!returnStmt.isPresent()) {
+            logger.warn("Return statement not found: can't add monitoring to endpoint");
+            return;
+        }
+
+        statements.addBefore(parseStatement("SystemMetricsCollector.registerException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"), returnStmt.get());
     }
 
     private void addMonitoringImports(CompilationUnit cu){
@@ -174,9 +189,14 @@ public class DMNRestResourceGenerator {
 
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL){
         Optional<BlockStmt> body = method.getBody();
+
+        if (!body.isPresent()) {
+            logger.warn("DMN method body not found: can't add monitoring to method.");
+            return;
+        }
+
         NodeList<Statement> statements = body.get().getStatements();
         statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
-
         statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(IfStmt.class).get());
         statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(IfStmt.class).get());
         statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(result);"), body.get().findFirst(IfStmt.class).get());

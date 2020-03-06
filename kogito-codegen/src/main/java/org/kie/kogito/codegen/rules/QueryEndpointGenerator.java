@@ -48,8 +48,11 @@ import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
+import org.kie.kogito.codegen.decision.DMNRestResourceGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.rules.RuleUnitInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
@@ -61,6 +64,7 @@ import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.className
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
 
 public class QueryEndpointGenerator implements FileGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(QueryEndpointGenerator.class);
 
     private final RuleUnitDescription ruleUnit;
     private final QueryModel query;
@@ -173,11 +177,24 @@ public class QueryEndpointGenerator implements FileGenerator {
 
         for(MethodDeclaration md : methods){
             Optional<BlockStmt> body = md.getBody();
+
+            if (!body.isPresent()) {
+                logger.warn("DRL query body handler not found: can't add monitoring to endpoint");
+                return;
+            }
+
             NodeList<Statement> statements = body.get().getStatements();
             statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
 
-            statements.addBefore(parseStatement("double endTime = System.nanoTime();"), body.get().findFirst(ReturnStmt.class).get());
-            statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), body.get().findFirst(ReturnStmt.class).get());
+            Optional<ReturnStmt> returnStmt = body.get().findFirst(ReturnStmt.class);
+
+            if (!returnStmt.isPresent()) {
+                logger.warn("Return statement not found: can't add monitoring to endpoint");
+                return;
+            }
+
+            statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt.get());
+            statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt.get());
         }
 
     }

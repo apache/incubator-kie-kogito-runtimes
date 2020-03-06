@@ -5,4 +5,6 @@ import io.prometheus.client.SimpleCollector;
 
 public interface TypeHandler<T> {
     void record(String handler, T sample);
+
+    String getDmnType();
 }

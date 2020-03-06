@@ -8,6 +8,7 @@ import org.kie.kogito.codegen.grafana.model.GrafanaDashboard;
 import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaPanel;
 import org.kie.kogito.codegen.grafana.model.panel.PanelType;
+import protostream.javassist.NotFoundException;
 
 public interface IJGrafana {
     GrafanaDashboard getDashboard();
@@ -18,7 +19,7 @@ public interface IJGrafana {
 
     boolean removePanelByTitle(String title);
 
-    GrafanaPanel getPanelByTitle(String title);
+    GrafanaPanel getPanelByTitle(String title) throws NotFoundException;
 
     String serialize() throws IOException;
 

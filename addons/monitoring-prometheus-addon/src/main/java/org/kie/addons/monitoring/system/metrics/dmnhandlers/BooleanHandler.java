@@ -9,26 +9,34 @@ public class BooleanHandler implements TypeHandler<Boolean>{
 
     private final Counter counter;
 
-    public BooleanHandler(String prefix, CollectorRegistry registry){
-        this.counter = initializeCounter(prefix, registry);
+    private String dmnType;
+
+    public BooleanHandler(String dmnType, CollectorRegistry registry){
+        this.dmnType = dmnType;
+        this.counter = initializeCounter(dmnType, registry);
     }
 
-    public BooleanHandler(String prefix){
-        this.counter = initializeCounter(prefix, null);
+    public BooleanHandler(String dmnType) {
+        this(dmnType, null);
     }
 
-    private Counter initializeCounter(String prefix, CollectorRegistry registry){
-        Counter.Builder builder = Counter.build().name(prefix + MetricsConstants.DECISIONS_NAME_SUFFIX)
+    @Override
+    public void record(String handler, Boolean sample) {
+        counter.labels(handler, sample.toString()).inc();
+    }
+
+    @Override
+    public String getDmnType() {
+        return dmnType;
+    }
+
+    private Counter initializeCounter(String dmnType, CollectorRegistry registry){
+        Counter.Builder builder = Counter.build().name(dmnType + MetricsConstants.DECISIONS_NAME_SUFFIX)
                                                 .help(MetricsConstants.DECISIONS_HELP)
                                                 .labelNames(MetricsConstants.HANDLER_IDENTIFIER_LABELS);
 
         Counter counter = registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
 
         return counter;
-    }
-
-    @Override
-    public void record(String handler, Boolean sample) {
-        counter.labels(handler, sample.toString()).inc();
     }
 }

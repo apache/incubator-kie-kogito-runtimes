@@ -9,26 +9,35 @@ public class StringHandler implements TypeHandler<String>{
 
     private final Counter counter;
 
-    public StringHandler(String prefix, CollectorRegistry registry){
-        this.counter = initializeCounter(prefix, registry);
+    private String dmnType;
+
+    public StringHandler(String dmnType, CollectorRegistry registry){
+        this.dmnType = dmnType;
+        this.counter = initializeCounter(dmnType, registry);
     }
 
-    public StringHandler(String prefix){
-        this.counter = initializeCounter(prefix, null);
+    public StringHandler(String dmnType){
+        this(dmnType, null);
     }
 
-    private Counter initializeCounter(String prefix, CollectorRegistry registry){
-        Counter.Builder builder = Counter.build().name(prefix + MetricsConstants.DECISIONS_NAME_SUFFIX)
+
+    @Override
+    public void record(String handler, String sample) {
+        counter.labels(handler, sample).inc();
+    }
+
+    @Override
+    public String getDmnType() {
+        return dmnType;
+    }
+
+    private Counter initializeCounter(String dmnType, CollectorRegistry registry){
+        Counter.Builder builder = Counter.build().name(dmnType + MetricsConstants.DECISIONS_NAME_SUFFIX)
                 .help(MetricsConstants.DECISIONS_HELP)
                 .labelNames(MetricsConstants.HANDLER_IDENTIFIER_LABELS);
 
         Counter counter = registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
 
         return counter;
-    }
-
-    @Override
-    public void record(String handler, String sample) {
-        counter.labels(handler, sample).inc();
     }
 }

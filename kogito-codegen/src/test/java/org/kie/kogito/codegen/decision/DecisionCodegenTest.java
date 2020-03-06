@@ -17,10 +17,14 @@ package org.kie.kogito.codegen.decision;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.grafana.IJGrafana;
+import org.kie.kogito.codegen.grafana.JGrafana;
+import org.kie.kogito.codegen.grafana.model.GrafanaDashboard;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -44,9 +48,12 @@ public class DecisionCodegenTest {
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
 
-        assertEquals(2, generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.RESOURCE).count());
+        List<GeneratedFile> dashboards =  generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.RESOURCE).collect(Collectors.toList());
 
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
-        assertNotNull(classDeclaration);
+        assertEquals(2,dashboards.size());
+
+        IJGrafana vacationDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("Vacations.json")).findFirst().get().contents()));
+
+        assertEquals(7, vacationDashboard.getDashboard().panels.size());
     }
 }

@@ -31,7 +31,7 @@ public class SystemMetricsCollector {
                                            .quantile(0.75, 0.05)
                                            .quantile(0.9, 0.05)
                                            .quantile(0.99, 0.01)
-                                           .maxAgeSeconds(60 * 3)
+                                           .maxAgeSeconds(180)
                                            .name(MetricsConstants.ELAPSED_TIME_NAME)
                                            .help(MetricsConstants.ELAPSED_TIME_HELP)
                                            .labelNames(MetricsConstants.HANDLER_LABEL)

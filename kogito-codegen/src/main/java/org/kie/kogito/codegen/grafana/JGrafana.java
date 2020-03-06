@@ -3,6 +3,7 @@ package org.kie.kogito.codegen.grafana;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +16,7 @@ import org.kie.kogito.codegen.grafana.model.functions.ExprBuilder;
 import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaPanel;
 import org.kie.kogito.codegen.grafana.model.panel.PanelType;
+import protostream.javassist.NotFoundException;
 
 /**
  *  Java configurator to create standard grafana dashboards
@@ -85,7 +87,7 @@ public class JGrafana implements IJGrafana {
      */
     @Override
     public boolean removePanelByTitle(String title){
-        return this.dashboard.panels.removeIf(x -> x.title == title);
+        return this.dashboard.panels.removeIf(x -> x.title.equals(title));
     }
 
     /**
@@ -112,8 +114,12 @@ public class JGrafana implements IJGrafana {
      * @return: The panel.
      */
     @Override
-    public GrafanaPanel getPanelByTitle(String title){
-        return this.dashboard.panels.stream().filter(x -> x.title == title).findFirst().get();
+    public GrafanaPanel getPanelByTitle(String title) throws NotFoundException {
+        Optional<GrafanaPanel> panel = this.dashboard.panels.stream().filter(x -> x.title.equals(title)).findFirst();
+        if (!panel.isPresent()){
+            throw new NotFoundException(String.format("There is no panel with title \"%s\"", title));
+        }
+        return panel.get();
     }
 
     /**

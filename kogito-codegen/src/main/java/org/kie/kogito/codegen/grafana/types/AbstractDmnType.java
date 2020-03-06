@@ -24,7 +24,7 @@ public class AbstractDmnType {
         return internalRepresentationClass;
     }
 
-    public HashMap<Integer, GrafanaFunction> getGrafanaFunctionsToApply(){
+    public HashMap<Integer, GrafanaFunction> getGrafanaFunctions(){
         return grafanaFunctionsToApply;
     }
 

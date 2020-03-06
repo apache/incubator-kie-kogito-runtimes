@@ -1,7 +1,9 @@
 package org.kie.kogito.codegen.grafana;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
@@ -38,8 +40,15 @@ public class SupportedDecisionTypes {
 
     public static HashMap<Integer, GrafanaFunction> getGrafanaFunction(String dmnType) {
         if (isSupported(dmnType)) {
-            return supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst().get().getGrafanaFunctionsToApply();
+            Optional<AbstractDmnType> type = supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
+            if (type.isPresent()){
+                return type.get().getGrafanaFunctions();
+            }
         }
         return new HashMap<>();
+    }
+
+    public static Collection<String> getSupportedDMNTypes(){
+        return dmnInternalClassToDmnStandardMap.values();
     }
 }
