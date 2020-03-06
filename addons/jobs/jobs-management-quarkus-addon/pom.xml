@@ -22,6 +22,10 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>jobs-management-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>jobs-api</artifactId>
     </dependency>
     <dependency>

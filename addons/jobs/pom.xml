@@ -13,5 +13,6 @@
     <module>jobs-api</module>
     <module>jobs-management-quarkus-addon</module>
     <module>jobs-management-springboot-addon</module>
+    <module>jobs-management-common</module>
   </modules>
 </project>
