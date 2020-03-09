@@ -3,13 +3,18 @@ package org.kie.kogito.codegen.grafana;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
+import org.kie.kogito.codegen.grafana.model.functions.SumFunction;
 import org.kie.kogito.codegen.grafana.model.panel.PanelType;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JGrafanaTest {
 
@@ -87,7 +92,7 @@ public class JGrafanaTest {
     }
 
     @Test
-    public void GivenADashboardWithManyPanelsWithSameTitle_WhenAPanelIsDeleted_ThenAllThePanelsWithThatNameAreRemoved(){
+    public void GivenADashboardWithManyPanelsWithSameTitle_WhenAPanelIsDeleted_ThenAllThePanelsWithThatNameAreRemoved() {
         JGrafana grafanaObj = new JGrafana("My Dashboard");
 
         // Act
@@ -95,7 +100,9 @@ public class JGrafanaTest {
         grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2", "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
         grafanaObj.addPanel(PanelType.STAT, "My Graph 2", "sum(api_http_stacktrace_exceptions)");
         grafanaObj.addPanel(PanelType.TABLE, "My Graph 2", "api_http_stacktrace_exceptions");
-        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 3", "api_http_response_code{handler=\"world\"}");
+        HashMap<Integer, GrafanaFunction> map = new HashMap();
+        map.put(1, new SumFunction());
+        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 3", "api_http_response_code{handler=\"world\"}", map);
         grafanaObj.removePanelByTitle("My Graph 2");
 
         // Assert
@@ -105,15 +112,29 @@ public class JGrafanaTest {
     }
 
     @Test
+    public void GivenADashboardWithSomePanels_WhenAnUnexistingPanelIsLookedUp_ThenAnExceptionIsRaised() {
+        JGrafana grafanaObj = new JGrafana("My Dashboard");
+
+        // Act
+        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 1", "api_http_response_code{handler=\"world\"}");
+        grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2", "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
+
+        // Assert
+        assertThrows(NoSuchElementException.class, () -> {
+            grafanaObj.getPanelByTitle("Hello");
+        });
+    }
+
+    @Test
     public void GivenAnExistingDashboard_WhenParseMethodIsCalled_ThenTheDashboardIsImported() {
         assertDoesNotThrow(() -> {
             IJGrafana dash = JGrafana.parse(readStandardDashboard());
         });
     }
 
-    public static String readStandardDashboard(){
+    public static String readStandardDashboard() {
 
-        InputStream is = JGrafanaTest.class.getResourceAsStream("/grafana/test_dashboard.json" );
+        InputStream is = JGrafanaTest.class.getResourceAsStream("/grafana/test_dashboard.json");
         return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
     }
 }

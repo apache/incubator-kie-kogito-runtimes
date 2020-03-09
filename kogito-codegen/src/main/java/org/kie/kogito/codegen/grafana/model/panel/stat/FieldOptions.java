@@ -21,7 +21,7 @@ public class FieldOptions {
     @JsonProperty("values")
     public boolean values = false;
 
-    private List<String> generateDefault(){
+    private List<String> generateDefault() {
         List<String> s = new ArrayList<>();
         s.add("last");
         return s;

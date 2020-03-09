@@ -8,14 +8,15 @@ import org.kie.kogito.codegen.grafana.model.panel.GrafanaPanel;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaTarget;
 
 public class StatPanel extends GrafanaPanel {
+
     @JsonProperty("options")
     public StatOptions options = new StatOptions();
 
-    public StatPanel(){
+    public StatPanel() {
         super();
     }
 
-    public StatPanel(int id, String title , GrafanaGridPos gridPos, List<GrafanaTarget> targets) {
+    public StatPanel(int id, String title, GrafanaGridPos gridPos, List<GrafanaTarget> targets) {
         super(id, title, "stat", gridPos, targets);
-            }
+    }
 }

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Defaults {
+
     @JsonProperty("mappings")
     public List<String> mappings = new ArrayList<>();
 

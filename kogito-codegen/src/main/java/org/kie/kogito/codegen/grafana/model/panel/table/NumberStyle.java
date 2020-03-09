@@ -24,11 +24,11 @@ public class NumberStyle extends BaseStyle {
     @JsonProperty("unit")
     public String unit = "short";
 
-    public NumberStyle(){
+    public NumberStyle() {
         super("", "number", "/.*/", "right");
     }
 
-    private List<String> generateDefaultColors(){
+    private List<String> generateDefaultColors() {
         List<String> col = new ArrayList<>();
         col.add("rgba(245, 54, 54, 0.9)");
         col.add("rgba(237, 129, 40, 0.89)");

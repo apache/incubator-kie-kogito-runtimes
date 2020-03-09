@@ -1,6 +1,5 @@
 package org.kie.addons.monitoring.system.interceptor;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -17,7 +16,7 @@ public class MetricsInterceptor implements ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext,
-                       ContainerResponseContext responseContext) throws IOException {
+                       ContainerResponseContext responseContext) {
         LOGGER.debug(String.format("Logging status code %s", responseContext.getStatusInfo().getStatusCode()));
         List<String> matchedUris = requestContext.getUriInfo().getMatchedURIs();
 
@@ -26,10 +25,7 @@ public class MetricsInterceptor implements ContainerResponseFilter {
         }
         else // Log the number of requests that did not match any Uri -> 404 not found.
         {
-            SystemMetricsCollector.registerStatusCodeRequest("", String.valueOf(responseContext.getStatusInfo().getStatusCode()));
+            SystemMetricsCollector.registerStatusCodeRequest("NOT FOUND", String.valueOf(responseContext.getStatusInfo().getStatusCode()));
         }
-
-        SystemMetricsCollector.registerSystemMemorySample(Runtime.getRuntime().totalMemory(), Runtime.getRuntime().freeMemory());
-        SystemMetricsCollector.registerProcessorsSample(Runtime.getRuntime().availableProcessors());
     }
 }

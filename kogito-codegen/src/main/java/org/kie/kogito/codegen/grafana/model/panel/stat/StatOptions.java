@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StatOptions {
+
     @JsonProperty("colorMode")
     public String colorMode = "value";
 
@@ -19,5 +20,4 @@ public class StatOptions {
 
     @JsonProperty("orientation")
     public String orientation = "auto";
-
 }

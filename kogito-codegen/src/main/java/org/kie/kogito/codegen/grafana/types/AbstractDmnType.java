@@ -1,11 +1,11 @@
 package org.kie.kogito.codegen.grafana.types;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
 
 public class AbstractDmnType {
+
     private final Class internalRepresentationClass;
 
     private String dmnType;
@@ -17,20 +17,19 @@ public class AbstractDmnType {
         this.dmnType = dmnType;
     }
 
-    protected void addFunctions( Map<Integer, GrafanaFunction> grafanaFunctionsToApply) {
+    protected void addFunctions(Map<Integer, GrafanaFunction> grafanaFunctionsToApply) {
         this.grafanaFunctionsToApply = grafanaFunctionsToApply;
     }
 
-    public Class getInternalClass(){
+    public Class getInternalClass() {
         return internalRepresentationClass;
     }
 
-    public Map<Integer, GrafanaFunction> getGrafanaFunctions(){
+    public Map<Integer, GrafanaFunction> getGrafanaFunctions() {
         return grafanaFunctionsToApply;
     }
 
-    public String getDmnType(){
+    public String getDmnType() {
         return dmnType;
     }
-
 }

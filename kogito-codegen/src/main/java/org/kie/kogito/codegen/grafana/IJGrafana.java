@@ -11,6 +11,7 @@ import org.kie.kogito.codegen.grafana.model.panel.PanelType;
 import protostream.javassist.NotFoundException;
 
 public interface IJGrafana {
+
     GrafanaDashboard getDashboard();
 
     GrafanaPanel addPanel(PanelType type, String title, String expr);

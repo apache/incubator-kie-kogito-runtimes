@@ -33,8 +33,7 @@ public class TablePanel extends GrafanaPanel {
     @JsonProperty("columns")
     public List<String> columns;
 
-
-    public TablePanel(){
+    public TablePanel() {
         super();
     }
 
@@ -42,7 +41,7 @@ public class TablePanel extends GrafanaPanel {
         super(id, title, "table", gridPos, targets);
     }
 
-    private List<BaseStyle> generateStyles(){
+    private List<BaseStyle> generateStyles() {
         List<BaseStyle> ll = new ArrayList<>();
         ll.add(new DateStyle());
         ll.add(new NumberStyle());

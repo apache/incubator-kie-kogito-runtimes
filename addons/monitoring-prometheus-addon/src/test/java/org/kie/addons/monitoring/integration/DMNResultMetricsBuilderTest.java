@@ -1,7 +1,6 @@
 package org.kie.addons.monitoring.integration;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.addons.monitoring.mocks.DMNDecisionResultMock;
 import org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder;
-import org.kie.addons.monitoring.system.metrics.MetricsConstants;
+import org.kie.addons.monitoring.system.metrics.dmnhandlers.DecisionConstants;
 import org.kie.kogito.codegen.grafana.SupportedDecisionTypes;
 import org.kie.kogito.dmn.rest.DMNResult;
 
@@ -65,6 +64,6 @@ public class DMNResultMetricsBuilderTest {
     }
 
     private Double getLabelsValue(String name, String decisionName, String labelValue) {
-        return registry.getSampleValue(name + MetricsConstants.DECISIONS_NAME_SUFFIX, MetricsConstants.HANDLER_IDENTIFIER_LABELS, new String[]{decisionName, labelValue});
+        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.HANDLER_IDENTIFIER_LABELS, new String[]{decisionName, labelValue});
     }
 }

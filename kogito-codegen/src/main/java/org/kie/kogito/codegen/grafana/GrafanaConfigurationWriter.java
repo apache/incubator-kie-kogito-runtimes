@@ -9,14 +9,18 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.drools.core.phreak.PhreakTimerNode;
 import org.kie.dmn.model.v1_2.TDecision;
 import org.kie.kogito.codegen.grafana.model.panel.PanelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GrafanaConfigurationWriter {
-    private static final Logger logger = LoggerFactory.getLogger(GrafanaConfigurationWriter.class );
+
+    private static final Logger logger = LoggerFactory.getLogger(GrafanaConfigurationWriter.class);
+
+    private GrafanaConfigurationWriter() {
+        // Intentionally left blank.
+    }
 
     public static String readStandardDashboard() {
 
@@ -41,9 +45,9 @@ public class GrafanaConfigurationWriter {
             return null;
         }
 
-        for (TDecision decision : decisions){
+        for (TDecision decision : decisions) {
             String type = decision.getVariable().getTypeRef().getLocalPart();
-            if (SupportedDecisionTypes.isSupported(type)){
+            if (SupportedDecisionTypes.isSupported(type)) {
                 jgrafana.addPanel(PanelType.GRAPH,
                                   "Decision " + decision.getName(),
                                   String.format("%s_dmn_result{handler = \"%s\"}",
@@ -61,7 +65,7 @@ public class GrafanaConfigurationWriter {
         }
     }
 
-    private static String customizeTemplate(String template, String handlerName){
+    private static String customizeTemplate(String template, String handlerName) {
         template = template.replaceAll("\\$handlerName\\$", handlerName);
         template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
         template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());

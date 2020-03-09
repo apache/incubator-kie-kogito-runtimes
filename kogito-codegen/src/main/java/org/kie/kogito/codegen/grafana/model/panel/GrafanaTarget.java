@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GrafanaTarget {
+
     @JsonProperty("expr")
     public String expr;
 
@@ -20,9 +21,10 @@ public class GrafanaTarget {
     @JsonProperty("instant")
     public boolean instant;
 
-    public GrafanaTarget(){}
+    public GrafanaTarget() {
+    }
 
-    public GrafanaTarget(String expr, String format){
+    public GrafanaTarget(String expr, String format) {
         this.expr = expr;
         this.format = format;
     }

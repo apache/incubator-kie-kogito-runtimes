@@ -3,24 +3,37 @@ package org.kie.addons.monitoring.system.metrics;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.prometheus.client.Counter;
-import io.prometheus.client.Gauge;
 import io.prometheus.client.Summary;
 
 public class SystemMetricsCollector {
+
+    private static final String STATUS_CODE_NAME = "api_http_response_code";
+
+    private static final String STATUS_CODE_HELP = "Request status code.";
+
+    private static final String[] HANDLER_LABEL = new String[]{"handler"};
+
+    private static final String[] HANDLER_IDENTIFIER_LABELS = new String[]{"handler", "identifier"};
+
+    private static final String ELAPSED_TIME_NAME = "api_execution_elapsed_nanosecond";
+
+    private static final String ELAPSED_TIME_HELP = "Endpoint execution elapsed nanoseconds, 3 minutes time window.";
+
+    private static final String EXCEPTIONS_NAME = "api_http_stacktrace_exceptions";
+
+    private static final String EXCEPTIONS_HELP = "System exceptions details";
 
     private static final ConcurrentHashMap<CountersTypesEnum, Counter> counters = new ConcurrentHashMap<>();
 
     private static final ConcurrentHashMap<SummaryTypes, Summary> summaries = new ConcurrentHashMap<>();
 
-    private static final ConcurrentHashMap<GaugeTypesEnum, Gauge> gauges = new ConcurrentHashMap<>();
-
     private SystemMetricsCollector(){}
 
     public static void registerStatusCodeRequest(String handler, String statusCode){
         counters.computeIfAbsent(CountersTypesEnum.REQUESTS_STATUS_CODE,
-                                   k -> Counter.build().name(MetricsConstants.STATUS_CODE_NAME)
-                                           .help(MetricsConstants.STATUS_CODE_HELP)
-                                           .labelNames(MetricsConstants.HANDLER_IDENTIFIER_LABELS).register())
+                                   k -> Counter.build().name(STATUS_CODE_NAME)
+                                           .help(STATUS_CODE_HELP)
+                                           .labelNames(HANDLER_IDENTIFIER_LABELS).register())
                                   .labels(handler, statusCode).inc();
     }
 
@@ -34,36 +47,18 @@ public class SystemMetricsCollector {
                                            .quantile(0.9, 0.05)
                                            .quantile(0.99, 0.01)
                                            .maxAgeSeconds(180)
-                                           .name(MetricsConstants.ELAPSED_TIME_NAME)
-                                           .help(MetricsConstants.ELAPSED_TIME_HELP)
-                                           .labelNames(MetricsConstants.HANDLER_LABEL)
+                                           .name(ELAPSED_TIME_NAME)
+                                           .help(ELAPSED_TIME_HELP)
+                                           .labelNames(HANDLER_LABEL)
                                            .register())
                     .labels(handler).observe(elapsedTime);
     }
 
     public static void registerException(String handler, String stackTrace){
         counters.computeIfAbsent(CountersTypesEnum.EXCEPTIONS,
-                                 k -> Counter.build().name(MetricsConstants.EXCEPTIONS_NAME)
-                                         .help(MetricsConstants.EXCEPTIONS_HELP)
-                                         .labelNames(MetricsConstants.HANDLER_IDENTIFIER_LABELS).register())
+                                 k -> Counter.build().name(EXCEPTIONS_NAME)
+                                         .help(EXCEPTIONS_HELP)
+                                         .labelNames(HANDLER_IDENTIFIER_LABELS).register())
                                 .labels(handler, stackTrace).inc();
-    }
-
-    public static void registerProcessorsSample(int totalProcessors){
-        gauges.computeIfAbsent(GaugeTypesEnum.PROCESSORS,
-                               k -> Gauge.build().name(MetricsConstants.PROCESSORS_NAME)
-                                       .help(MetricsConstants.PROCESSORS_HELP)
-                                       .labelNames().register())
-                               .labels().set(totalProcessors);
-    }
-
-    public static void registerSystemMemorySample(double totalMemory, double freeMemory) {
-        Gauge gauge = gauges.computeIfAbsent(GaugeTypesEnum.MEMORY,
-                               k -> Gauge.build().name(MetricsConstants.MEMORY_NAME)
-                                       .help(MetricsConstants.MEMORY_METRICS_HELP)
-                                       .labelNames(MetricsConstants.MEMORY_METRICS_LABEL).register());
-
-        gauge.labels("totalMemory").set(totalMemory);
-        gauge.labels("freeMemory").set(freeMemory);
     }
  }

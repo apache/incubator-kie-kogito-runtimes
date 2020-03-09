@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaPanel;
 import org.kie.kogito.codegen.grafana.model.templating.GrafanaTemplating;
 import org.kie.kogito.codegen.grafana.model.time.GrafanaTime;
@@ -71,9 +70,10 @@ public class GrafanaDashboard {
     @JsonProperty("annotations")
     public Object annotations;
 
-    public GrafanaDashboard(){}
+    public GrafanaDashboard() {
+    }
 
-    public GrafanaDashboard(String id, String uid, String title){
+    public GrafanaDashboard(String id, String uid, String title) {
         this.id = id;
         this.uid = uid;
         this.title = title;

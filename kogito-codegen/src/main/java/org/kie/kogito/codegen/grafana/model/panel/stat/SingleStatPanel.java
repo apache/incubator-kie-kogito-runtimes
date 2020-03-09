@@ -8,7 +8,7 @@ import org.kie.kogito.codegen.grafana.model.panel.GrafanaTarget;
 
 public class SingleStatPanel extends GrafanaPanel {
 
-    public SingleStatPanel(){
+    public SingleStatPanel() {
         super();
     }
 

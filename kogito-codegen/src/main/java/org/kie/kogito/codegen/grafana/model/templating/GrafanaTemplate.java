@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GrafanaTemplate {
+
     @JsonProperty("allFormat")
     public String allFormat;
 

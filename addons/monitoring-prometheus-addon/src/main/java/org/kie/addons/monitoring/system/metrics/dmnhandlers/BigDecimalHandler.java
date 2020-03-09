@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Summary;
-import org.kie.addons.monitoring.system.metrics.MetricsConstants;
 
 public class BigDecimalHandler implements TypeHandler<BigDecimal> {
 
@@ -39,9 +38,9 @@ public class BigDecimalHandler implements TypeHandler<BigDecimal> {
                 .quantile(0.75, 0.05)
                 .quantile(0.9, 0.05)
                 .quantile(0.99, 0.01)
-                .name(dmnType + MetricsConstants.DECISIONS_NAME_SUFFIX)
-                .help(MetricsConstants.DECISIONS_HELP)
-                .labelNames(MetricsConstants.HANDLER_LABEL);
+                .name(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
+                .help(DecisionConstants.DECISIONS_HELP)
+                .labelNames(DecisionConstants.HANDLER_LABEL);
 
         return registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
     }

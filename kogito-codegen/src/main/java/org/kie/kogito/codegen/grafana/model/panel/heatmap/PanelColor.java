@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PanelColor {
+
     @JsonProperty("cardColor")
     public String cardColor = "#b4ff00";
 

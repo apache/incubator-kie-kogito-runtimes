@@ -90,7 +90,7 @@ public class GraphPanel extends GrafanaPanel {
     @JsonProperty("yaxis")
     public GraphYAxis yaxis;
 
-    public GraphPanel(){
+    public GraphPanel() {
         super();
     }
 

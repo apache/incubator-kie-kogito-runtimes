@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GrafanaTemplating {
+
     @JsonProperty("enable")
     public boolean enable;
 

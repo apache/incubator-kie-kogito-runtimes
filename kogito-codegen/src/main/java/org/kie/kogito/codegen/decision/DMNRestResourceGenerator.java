@@ -38,15 +38,14 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import org.drools.core.util.StringUtils;
-import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
 import org.kie.dmn.model.api.DecisionService;
 import org.kie.dmn.model.api.Definitions;
+import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.CodegenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import protostream.javassist.NotFoundException;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseImport;
@@ -98,7 +97,7 @@ public class DMNRestResourceGenerator {
             template.findAll(FieldDeclaration.class,
                              CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
         }
-        
+
         MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
 
         for (DecisionService ds : definitions.getDecisionService()) {
@@ -119,16 +118,14 @@ public class DMNRestResourceGenerator {
                 returnStmt.setExpression(rewrittenReturnExpr);
             }
 
-            if (useMonitoring){
+            if (useMonitoring) {
                 addMonitoringToMethod(clonedMethod, ds.getName());
             }
 
             template.addMember(clonedMethod);
         }
 
-        if (useMonitoring){
-            // TODO: Better way to identify class?
-            // TODO: Use annotator spring/quarkus
+        if (useMonitoring) {
             addMonitoringImports(clazz);
             ClassOrInterfaceDeclaration exceptionClazz = clazz.findAll(ClassOrInterfaceDeclaration.class).stream().filter(f -> !f.equals(template)).collect(Collectors.toList()).get(0);
             addExceptionMetricsLogging(clazz, exceptionClazz, nameURL);
@@ -143,7 +140,7 @@ public class DMNRestResourceGenerator {
         return nameURL;
     }
 
-    public Definitions getDefinitions(){
+    public Definitions getDefinitions() {
         return this.definitions;
     }
 
@@ -161,7 +158,7 @@ public class DMNRestResourceGenerator {
         return resourceClazzName;
     }
 
-    private void addExceptionMetricsLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL){
+    private void addExceptionMetricsLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL) {
         // TODO: Improve code generation
         MethodDeclaration method = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("toResponse")).get(0);
         cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
@@ -179,12 +176,12 @@ public class DMNRestResourceGenerator {
         logger.warn("DMN Exception handler not found: can't add monitoring to exceptions");
     }
 
-    private void addMonitoringImports(CompilationUnit cu){
+    private void addMonitoringImports(CompilationUnit cu) {
         cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
         cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder;"));
     }
 
-    private void addMonitoringToMethod(MethodDeclaration method, String nameURL){
+    private void addMonitoringToMethod(MethodDeclaration method, String nameURL) {
         Optional<BlockStmt> body = method.getBody();
         if (body.isPresent()) {
             NodeList<Statement> statements = body.get().getStatements();
@@ -208,25 +205,25 @@ public class DMNRestResourceGenerator {
         String s = vv.getValue();
         String documentation = "";
         String interpolated = s.replace("$name$", decisionName)
-                               .replace("$nameURL$", nameURL)
-                               .replace("$id$", decisionId)
-                               .replace("$modelName$", definitions.getName())
-                               .replace("$modelNamespace$", definitions.getNamespace())
-                               .replace("$documentation$", documentation);
+                .replace("$nameURL$", nameURL)
+                .replace("$id$", decisionId)
+                .replace("$modelName$", definitions.getName())
+                .replace("$modelNamespace$", definitions.getNamespace())
+                .replace("$documentation$", documentation);
 
         vv.setString(interpolated);
     }
-    
+
     private void interpolateMethods(MethodDeclaration m) {
         SimpleName methodName = m.getName();
         String interpolated = methodName.asString().replace("$name$", decisionName);
         m.setName(interpolated);
     }
-    
+
     public String generatedFilePath() {
         return relativePath;
     }
-    
+
     protected boolean useInjection() {
         return this.annotator != null;
     }

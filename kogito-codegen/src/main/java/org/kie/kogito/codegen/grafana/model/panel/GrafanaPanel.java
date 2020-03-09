@@ -13,7 +13,7 @@ import org.kie.kogito.codegen.grafana.model.panel.stat.SingleStatPanel;
 import org.kie.kogito.codegen.grafana.model.panel.stat.StatPanel;
 import org.kie.kogito.codegen.grafana.model.panel.table.TablePanel;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property="type",  visible = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = TablePanel.class, name = "table"),
         @JsonSubTypes.Type(value = StatPanel.class, name = "stat"),
@@ -21,7 +21,7 @@ import org.kie.kogito.codegen.grafana.model.panel.table.TablePanel;
         @JsonSubTypes.Type(value = GraphPanel.class, name = "graph"),
         @JsonSubTypes.Type(value = GaugePanel.class, name = "gauge"),
         @JsonSubTypes.Type(value = HeatMapPanel.class, name = "heatmap")
-    }
+}
 )
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GrafanaPanel {
@@ -42,7 +42,7 @@ public class GrafanaPanel {
     public int id;
 
     @JsonProperty("pluginVersion")
-    public String pluginVersion =  "6.6.1";
+    public String pluginVersion = "6.6.1";
 
     @JsonProperty("mode")
     public String mode;
@@ -65,15 +65,14 @@ public class GrafanaPanel {
     @JsonProperty("options")
     public Options options;
 
-    public GrafanaPanel(){
+    public GrafanaPanel() {
     }
 
-    public GrafanaPanel(int id, String title, String type, GrafanaGridPos gridPos, List<GrafanaTarget> targets){
+    public GrafanaPanel(int id, String title, String type, GrafanaGridPos gridPos, List<GrafanaTarget> targets) {
         this.id = id;
         this.title = title;
         this.type = type;
         this.gridPos = gridPos;
         this.targets = targets;
     }
-
 }

@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.drools.core.base.ClassFieldAccessorCache;
 import org.kie.dmn.api.core.DMNDecisionResult;
 import org.kie.dmn.api.core.DMNMessage;
 
 public class DMNDecisionResultMock implements DMNDecisionResult {
+
     private String decisionName;
 
     private Object result;
 
     private String decisionId;
 
-    public DMNDecisionResultMock(String decisionName, Object result){
+    public DMNDecisionResultMock(String decisionName, Object result) {
         this.decisionName = decisionName;
         this.result = result;
         this.decisionId = String.valueOf(new Random().nextInt());

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 public class DMNResultMetricsBuilderTest {
 
     @Test
-    public void GivenANewSample_WhenMetricsAreRegistered_ThenNullValuesAreHandled(){
+    public void GivenANewSample_WhenMetricsAreRegistered_ThenNullValuesAreHandled() {
         // Assert
         assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null));
         assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null));

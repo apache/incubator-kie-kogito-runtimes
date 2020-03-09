@@ -63,7 +63,8 @@ public class HeatMapPanel extends GrafanaPanel {
     @JsonProperty("xBucketSize")
     public String xBucketSize;
 
-    public HeatMapPanel(){}
+    public HeatMapPanel() {
+    }
 
     public HeatMapPanel(int id, String title, GrafanaGridPos gridPos, List<GrafanaTarget> targets) {
         super(id, title, "heatmap", gridPos, targets);

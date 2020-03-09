@@ -11,5 +11,4 @@ public class Cards {
 
     @JsonProperty("cardRound")
     public String cardRound;
-
 }

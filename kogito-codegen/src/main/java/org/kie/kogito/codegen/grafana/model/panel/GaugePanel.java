@@ -4,7 +4,7 @@ import java.util.List;
 
 public class GaugePanel extends GrafanaPanel {
 
-    public GaugePanel(){
+    public GaugePanel() {
         super();
     }
 

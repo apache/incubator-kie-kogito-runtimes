@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class XAxis {
+
     @JsonProperty("buckets")
     public String buckets;
 

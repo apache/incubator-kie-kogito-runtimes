@@ -34,6 +34,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.xml.namespace.QName;
+
 import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.io.internal.InternalResource;
@@ -104,7 +105,7 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private void storeFile(GeneratedFile.Type type, String path, String source) {
-        generatedFiles.add(new GeneratedFile(type, path, log( source ).getBytes( StandardCharsets.UTF_8 )));
+        generatedFiles.add(new GeneratedFile(type, path, log(source).getBytes(StandardCharsets.UTF_8)));
     }
 
     public List<GeneratedFile> getGeneratedFiles() {
@@ -116,7 +117,7 @@ public class DecisionCodegen extends AbstractGenerator {
         return moduleGenerator;
     }
 
-    public DecisionCodegen withMonitoring(boolean useMonitoring){
+    public DecisionCodegen withMonitoring(boolean useMonitoring) {
         this.useMonitoring = useMonitoring;
         return this;
     }
@@ -124,16 +125,16 @@ public class DecisionCodegen extends AbstractGenerator {
     public static DecisionCodegen ofJar(Path jarPath) throws IOException {
         List<DMNResource> resources = new ArrayList<>();
 
-        try (ZipFile zipFile = new ZipFile( jarPath.toFile() )) {
-            Enumeration< ? extends ZipEntry> entries = zipFile.entries();
-            while ( entries.hasMoreElements() ) {
+        try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 ResourceType resourceType = determineResourceType(entry.getName());
                 if (entry.getName().endsWith(".dmn")) {
-                    InternalResource resource = new ByteArrayResource( readBytesFromInputStream( zipFile.getInputStream( entry ) ) );
-                    resource.setResourceType( resourceType );
-                    resource.setSourcePath( entry.getName() );
-                    resources.add( toDmnResource( resource ) );
+                    InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
+                    resource.setResourceType(resourceType);
+                    resource.setSourcePath(entry.getName());
+                    resources.add(toDmnResource(resource));
                 }
             }
         }
@@ -174,17 +175,17 @@ public class DecisionCodegen extends AbstractGenerator {
             // Grafana dashboard generation
             if (useMonitoring) {
                 Definitions definitions = resourceGenerator.getDefinitions();
-                List<TDecision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> (TDecision)x).collect(Collectors.toList());
+                List<TDecision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> (TDecision) x).collect(Collectors.toList());
 
                 String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisions);
                 generatedFiles.add(
                         new org.kie.kogito.codegen.GeneratedFile(
                                 org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
                                 "/dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
-                                dashboard ));
+                                dashboard));
             }
 
-            storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
+            storeFile(GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
         }
 
         return generatedFiles;
@@ -198,12 +199,12 @@ public class DecisionCodegen extends AbstractGenerator {
         List<DMNResource> result = new ArrayList<>();
         for (File dmnFile : files) {
             FileSystemResource r = new FileSystemResource(dmnFile);
-            result.add(toDmnResource( r ));
+            result.add(toDmnResource(r));
         }
         return result;
     }
 
-    private static DMNResource toDmnResource( Resource r ) throws IOException {
+    private static DMNResource toDmnResource(Resource r) throws IOException {
         Definitions defs = parseDecisionFile(r);
         return new DMNResource(new QName(defs.getNamespace(), defs.getName()), new ResourceWithConfigurationImpl(r, null, null, null), defs);
     }

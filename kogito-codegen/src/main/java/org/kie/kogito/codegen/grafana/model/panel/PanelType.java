@@ -1,40 +1,40 @@
 package org.kie.kogito.codegen.grafana.model.panel;
 
 public enum PanelType {
-    GRAPH{
+    GRAPH {
         @Override
         public String toString() {
             return "graph";
         }
     },
-    STAT{
+    STAT {
         @Override
         public String toString() {
             return "stat";
         }
     },
-    SINGLESTAT{
+    SINGLESTAT {
         @Override
         public String toString() {
             return "singleStat";
         }
     },
-    TABLE{
+    TABLE {
         @Override
         public String toString() {
             return "table";
         }
     },
-    HEATMAP{
+    HEATMAP {
         @Override
         public String toString() {
             return "heatmap";
         }
     },
-    GAUGE{
+    GAUGE {
         @Override
         public String toString() {
-                return "gauge";
-            }
+            return "gauge";
+        }
     }
 }

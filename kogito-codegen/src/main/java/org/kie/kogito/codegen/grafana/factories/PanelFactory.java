@@ -10,10 +10,12 @@ import org.kie.kogito.codegen.grafana.model.panel.stat.StatPanel;
 import org.kie.kogito.codegen.grafana.model.panel.table.TablePanel;
 
 public class PanelFactory {
-    private PanelFactory(){}
 
-    public static GrafanaPanel CreatePanel(PanelType type, int id, String title, String expr){
-        switch(type){
+    private PanelFactory() {
+    }
+
+    public static GrafanaPanel createPanel(PanelType type, int id, String title, String expr) {
+        switch (type) {
             case GRAPH:
                 return createGraph(id, title, expr);
             case STAT:
@@ -31,39 +33,39 @@ public class PanelFactory {
         }
     }
 
-    static GrafanaPanel createGraph(int id, String title, String expr){
+    static GrafanaPanel createGraph(int id, String title, String expr) {
         return new GraphPanel(id, title,
                               GridPosFactory.calculateGridPosById(id),
-                              TargetFactory.CreateTargets(expr));
+                              TargetFactory.createTargets(expr));
     }
 
-    static GrafanaPanel createStat(int id, String title, String expr){
+    static GrafanaPanel createStat(int id, String title, String expr) {
         return new StatPanel(id, title,
                              GridPosFactory.calculateGridPosById(id),
-                             TargetFactory.CreateTargets(expr));
+                             TargetFactory.createTargets(expr));
     }
 
     static GrafanaPanel createHeartMap(int id, String title, String expr) {
         return new HeatMapPanel(id, title,
                                 GridPosFactory.calculateGridPosById(id),
-                                TargetFactory.CreateTargets(expr));
+                                TargetFactory.createTargets(expr));
     }
 
-    static GrafanaPanel createSingleStat(int id, String title, String expr){
+    static GrafanaPanel createSingleStat(int id, String title, String expr) {
         return new SingleStatPanel(id, title,
                                    GridPosFactory.calculateGridPosById(id),
-                                   TargetFactory.CreateTargets(expr));
+                                   TargetFactory.createTargets(expr));
     }
 
-    static GrafanaPanel createGauge(int id, String title, String expr){
+    static GrafanaPanel createGauge(int id, String title, String expr) {
         return new GaugePanel(id, title,
                               GridPosFactory.calculateGridPosById(id),
-                              TargetFactory.CreateTargets(expr));
+                              TargetFactory.createTargets(expr));
     }
 
-    static GrafanaPanel createTable(int id, String title, String expr){
+    static GrafanaPanel createTable(int id, String title, String expr) {
         return new TablePanel(id, title,
                               GridPosFactory.calculateGridPosById(id),
-                              TargetFactory.CreateTargets(expr));
+                              TargetFactory.createTargets(expr));
     }
 }

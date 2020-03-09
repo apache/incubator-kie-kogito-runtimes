@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GrafanaTimePicker {
+
     @JsonProperty("time_options")
     public List<String> timeOptions = Arrays.asList("5m",
                                                     "15m",

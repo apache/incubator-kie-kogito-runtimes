@@ -6,8 +6,7 @@ import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.addons.monitoring.system.metrics.MetricsConstants;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.BooleanHandler;
+import org.kie.addons.monitoring.system.metrics.dmnhandlers.DecisionConstants;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.StringHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,12 +25,12 @@ public class StringHandlerTest {
     }
 
     @AfterEach
-    public void destroy(){
+    public void destroy() {
         registry.clear();
     }
 
     @Test
-    public void GivenSomeStringMetrics_WhenMetricsAreStored_ThenTheCountIsCorrect(){
+    public void GivenSomeStringMetrics_WhenMetricsAreStored_ThenTheCountIsCorrect() {
         // Arrange
         Double expectedCountStringA = 3.0;
         Double expectedCountStringB = 2.0;
@@ -49,7 +48,6 @@ public class StringHandlerTest {
     }
 
     private Double getLabelsValue(String name, String labelValue) {
-        return registry.getSampleValue(name + MetricsConstants.DECISIONS_NAME_SUFFIX, MetricsConstants.HANDLER_IDENTIFIER_LABELS, new String[]{name, labelValue});
+        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.HANDLER_IDENTIFIER_LABELS, new String[]{name, labelValue});
     }
-
 }

@@ -1,20 +1,13 @@
 package org.kie.addons.monitoring.integration;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.HashMap;
 import java.util.stream.IntStream;
 
-import ch.obermuhlner.math.big.stream.BigDecimalStream;
-import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.addons.monitoring.system.metrics.MetricsConstants;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.BooleanHandler;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.StringHandler;
+import org.kie.addons.monitoring.system.metrics.dmnhandlers.DecisionConstants;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,12 +25,12 @@ public class BooleanHandlerTest {
     }
 
     @AfterEach
-    public void destroy(){
+    public void destroy() {
         registry.clear();
     }
 
     @Test
-    public void GivenSomeBooleanMetrics_WhenMetricsAreStored_ThenTheCountIsCorrect(){
+    public void GivenSomeBooleanMetrics_WhenMetricsAreStored_ThenTheCountIsCorrect() {
         // Arrange
         Double expectedTrue = 3.0;
         Double expectedFalse = 2.0;
@@ -52,7 +45,6 @@ public class BooleanHandlerTest {
     }
 
     private Double getLabelsValue(String name, String labelValue) {
-        return registry.getSampleValue(name + MetricsConstants.DECISIONS_NAME_SUFFIX, MetricsConstants.HANDLER_IDENTIFIER_LABELS, new String[]{name, labelValue});
+        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.HANDLER_IDENTIFIER_LABELS, new String[]{name, labelValue});
     }
-
 }

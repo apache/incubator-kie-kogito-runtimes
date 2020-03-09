@@ -2,12 +2,12 @@ package org.kie.kogito.codegen.grafana.model.functions;
 
 public class IncreaseFunction implements GrafanaFunction {
 
-    private static final String function = "increase";
+    private static final String FUNCTION = "increase";
 
     private String timeParameter;
 
-    public IncreaseFunction(String timeParameter){
-        if (timeParameter == null){
+    public IncreaseFunction(String timeParameter) {
+        if (timeParameter == null) {
             throw new IllegalArgumentException("timeParameter for Increase function can't be null");
         }
         this.timeParameter = timeParameter;
@@ -15,7 +15,7 @@ public class IncreaseFunction implements GrafanaFunction {
 
     @Override
     public String getFunction() {
-        return function;
+        return FUNCTION;
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.codegen.grafana.model.functions.IncreaseFunction;
 
 public class BooleanType extends AbstractDmnType {
+
     public BooleanType() {
         super(Boolean.class, "boolean");
         HashMap<Integer, GrafanaFunction> grafanaFunctionsToApply = new HashMap<>();
