@@ -17,9 +17,7 @@ public class MetricsInterceptor implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext requestContext,
                        ContainerResponseContext responseContext) {
-        LOGGER.debug(String.format("Logging status code %s", responseContext.getStatusInfo().getStatusCode()));
         List<String> matchedUris = requestContext.getUriInfo().getMatchedURIs();
-
         if (!matchedUris.isEmpty()){
             SystemMetricsCollector.registerStatusCodeRequest(matchedUris.get(0), String.valueOf(responseContext.getStatusInfo().getStatusCode()));
         }
