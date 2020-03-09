@@ -24,11 +24,13 @@ import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.CastExpr;
@@ -37,8 +39,10 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.Type;
 import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
@@ -181,6 +185,7 @@ public class QueryEndpointGenerator implements FileGenerator {
                 if (returnStmt.isPresent()) {
                     statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt.get());
                     statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt.get());
+                    md.setBody(wrapBodyAddingExceptionLogging(body.get(), nameURL));
                 }
                 else{
                     logger.warn("Return statement not found: can't add monitoring to endpoint.");
@@ -192,6 +197,23 @@ public class QueryEndpointGenerator implements FileGenerator {
         }
     }
 
+    private BlockStmt wrapBodyAddingExceptionLogging(BlockStmt body, String nameURL) {
+        NodeList<Statement> wrappedStat = new NodeList<>();
+        TryStmt ts = new TryStmt();
+        wrappedStat.add(ts);
+        ts.setTryBlock(body);
+        CatchClause cc = new CatchClause();
+        Parameter p = new Parameter();
+        p.setName("e");
+        p.setType(Exception.class);
+        cc.setParameter(p);
+        BlockStmt cb = new BlockStmt();
+        cb.addStatement(parseStatement("SystemMetricsCollector.registerException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"));
+        cb.addStatement(parseStatement("throw e;"));
+        cc.setBody(cb);
+        ts.setCatchClauses(new NodeList<>(cc));
+        return new BlockStmt(wrappedStat);
+    }
 
     private String getReturnType( ClassOrInterfaceDeclaration clazz ) {
         MethodDeclaration toResultMethod = clazz.getMethodsByName( "toResult" ).get(0);
