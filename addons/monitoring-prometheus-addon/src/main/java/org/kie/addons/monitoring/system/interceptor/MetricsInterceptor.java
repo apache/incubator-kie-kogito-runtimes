@@ -29,10 +29,9 @@ public class MetricsInterceptor implements ContainerResponseFilter {
     public void filter(ContainerRequestContext requestContext,
                        ContainerResponseContext responseContext) {
         List<String> matchedUris = requestContext.getUriInfo().getMatchedURIs();
-        if (!matchedUris.isEmpty()){
+        if (!matchedUris.isEmpty()) {
             SystemMetricsCollector.registerStatusCodeRequest(matchedUris.get(0), String.valueOf(responseContext.getStatusInfo().getStatusCode()));
-        }
-        else // Log the number of requests that did not match any Uri -> 404 not found.
+        } else // Log the number of requests that did not match any Uri -> 404 not found.
         {
             SystemMetricsCollector.registerStatusCodeRequest("NOT FOUND", String.valueOf(responseContext.getStatusInfo().getStatusCode()));
         }

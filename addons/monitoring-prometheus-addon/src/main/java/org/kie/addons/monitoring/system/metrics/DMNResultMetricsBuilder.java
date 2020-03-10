@@ -36,9 +36,10 @@ public class DMNResultMetricsBuilder {
 
     private static final Map<Class, TypeHandler> handlers = generateHandlers();
 
-    private DMNResultMetricsBuilder(){}
+    private DMNResultMetricsBuilder() {
+    }
 
-    private static Map<Class, TypeHandler> generateHandlers(){
+    private static Map<Class, TypeHandler> generateHandlers() {
         HashMap<Class, TypeHandler> handlers = new HashMap<>();
         handlers.put(String.class, new StringHandler(SupportedDecisionTypes.fromInternalToStandard(String.class)));
         handlers.put(Boolean.class, new BooleanHandler(SupportedDecisionTypes.fromInternalToStandard(Boolean.class)));
@@ -46,20 +47,20 @@ public class DMNResultMetricsBuilder {
         return handlers;
     }
 
-    public static Map<Class, TypeHandler> getHandlers(){
+    public static Map<Class, TypeHandler> getHandlers() {
         return handlers;
     }
 
-    public static void generateMetrics(DMNResult dmnResult){
-        if (dmnResult == null){
+    public static void generateMetrics(DMNResult dmnResult) {
+        if (dmnResult == null) {
             LOGGER.warn("DMNResultMetricsBuilder can't register the metrics because the dmn result is null.");
             return;
         }
 
         List<DMNDecisionResult> decisionResults = dmnResult.getDecisionResults();
-        for (DMNDecisionResult decision : decisionResults){
+        for (DMNDecisionResult decision : decisionResults) {
             Object result = decision.getResult();
-            if (SupportedDecisionTypes.isSupported(result.getClass())){
+            if (SupportedDecisionTypes.isSupported(result.getClass())) {
                 handlers.get(result.getClass()).record(decision.getDecisionName(), result);
             }
         }
