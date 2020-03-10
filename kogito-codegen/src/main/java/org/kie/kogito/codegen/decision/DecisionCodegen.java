@@ -172,23 +172,26 @@ public class DecisionCodegen extends AbstractGenerator {
         }
 
         for (DMNRestResourceGenerator resourceGenerator : rgs) {
-            // Grafana dashboard generation
             if (useMonitoring) {
-                Definitions definitions = resourceGenerator.getDefinitions();
-                List<TDecision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> (TDecision) x).collect(Collectors.toList());
-
-                String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisions);
-                generatedFiles.add(
-                        new org.kie.kogito.codegen.GeneratedFile(
-                                org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
-                                "/dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
-                                dashboard));
+                generateAndStoreGrafanaDashboard(resourceGenerator);
             }
 
             storeFile(GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
         }
 
         return generatedFiles;
+    }
+
+    private void generateAndStoreGrafanaDashboard(DMNRestResourceGenerator resourceGenerator) {
+        Definitions definitions = resourceGenerator.getDefinitions();
+        List<TDecision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> (TDecision) x).collect(Collectors.toList());
+
+        String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisions);
+        generatedFiles.add(
+                new org.kie.kogito.codegen.GeneratedFile(
+                        org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
+                        "/dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
+                        dashboard));
     }
 
     private static DecisionCodegen ofDecisions(Path basePath, List<DMNResource> result) {
