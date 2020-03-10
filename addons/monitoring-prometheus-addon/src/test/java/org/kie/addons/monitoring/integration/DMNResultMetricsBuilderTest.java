@@ -28,12 +28,11 @@ import org.kie.addons.monitoring.system.metrics.dmnhandlers.DecisionConstants;
 import org.kie.kogito.codegen.grafana.SupportedDecisionTypes;
 import org.kie.kogito.dmn.rest.DMNResult;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DMNResultMetricsBuilderTest {
-
-    private static final String ENDPOINT_NAME = "hello";
 
     CollectorRegistry registry;
 
@@ -71,11 +70,16 @@ public class DMNResultMetricsBuilderTest {
     // Given that atm the two modules are dependent and there is not a clear way to extend the code generation,
     // this test covers the fact that the two classes are aligned, i.e. if you add/remove a supported type, you
     // have to update the addon as well.
-    // TODO: REVIEW THIS LOGIC
     @Test
     public void alighmentWithKogitoCodegenIsOk(){
         List addonSupportedTypes = DMNResultMetricsBuilder.getHandlers().values().stream().map(x -> x.getDmnType()).collect(Collectors.toList());
         assertTrue(addonSupportedTypes.containsAll(SupportedDecisionTypes.getSupportedDMNTypes()));
+    }
+
+    @Test
+    public void GivenANullDMNResult_WhenMetricsAreRegistered_ThenTheSampleIsDiscarded() {
+        // Assert
+        assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null));
     }
 
     private Double getLabelsValue(String name, String decisionName, String labelValue) {

@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.kie.kogito.codegen.grafana.model.panel.common.Options;
 import org.kie.kogito.codegen.grafana.model.panel.graph.GraphPanel;
 import org.kie.kogito.codegen.grafana.model.panel.heatmap.HeatMapPanel;
 import org.kie.kogito.codegen.grafana.model.panel.stat.SingleStatPanel;

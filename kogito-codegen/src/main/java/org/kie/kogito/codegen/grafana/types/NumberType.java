@@ -18,10 +18,12 @@ package org.kie.kogito.codegen.grafana.types;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
+import org.kie.kogito.codegen.grafana.SupportedDecisionTypes;
+
 public class NumberType extends AbstractDmnType {
 
     public NumberType() {
-        super(BigDecimal.class, "number");
+        super(BigDecimal.class, SupportedDecisionTypes.fromInternalToStandard(BigDecimal.class));
         addFunctions(new HashMap<>());
     }
 }

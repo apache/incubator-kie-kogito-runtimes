@@ -17,7 +17,6 @@ package org.kie.kogito.codegen.decision;
 
 import java.net.URLEncoder;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -35,7 +34,6 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
@@ -46,15 +44,12 @@ import org.kie.dmn.model.api.Definitions;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.CodegenUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class DMNRestResourceGenerator {
 
-    private static final Logger logger = LoggerFactory.getLogger(DMNRestResourceGenerator.class);
     private final Definitions definitions;
     private final String decisionName;
     private final String nameURL;
