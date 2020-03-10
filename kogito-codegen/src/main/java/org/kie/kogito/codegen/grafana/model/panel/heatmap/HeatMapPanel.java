@@ -23,6 +23,7 @@ import org.kie.kogito.codegen.grafana.model.panel.GrafanaGridPos;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaPanel;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaTarget;
 import org.kie.kogito.codegen.grafana.model.panel.common.Legend;
+import org.kie.kogito.codegen.grafana.model.panel.common.Options;
 import org.kie.kogito.codegen.grafana.model.panel.common.Tooltip;
 import org.kie.kogito.codegen.grafana.model.panel.common.XAxis;
 import org.kie.kogito.codegen.grafana.model.panel.common.YAxis;
@@ -77,6 +78,9 @@ public class HeatMapPanel extends GrafanaPanel {
 
     @JsonProperty("xBucketSize")
     public String xBucketSize;
+
+    @JsonProperty("options")
+    public Options options;
 
     public HeatMapPanel() {
     }

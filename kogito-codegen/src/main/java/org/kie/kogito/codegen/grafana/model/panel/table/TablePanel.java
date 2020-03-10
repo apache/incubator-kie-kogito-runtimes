@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaGridPos;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaPanel;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaTarget;
+import org.kie.kogito.codegen.grafana.model.panel.common.Options;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TablePanel extends GrafanaPanel {
@@ -47,6 +48,9 @@ public class TablePanel extends GrafanaPanel {
 
     @JsonProperty("columns")
     public List<String> columns;
+
+    @JsonProperty("options")
+    public Options options;
 
     public TablePanel() {
         super();

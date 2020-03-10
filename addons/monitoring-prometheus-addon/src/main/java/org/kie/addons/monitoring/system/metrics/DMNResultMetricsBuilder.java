@@ -16,9 +16,9 @@
 package org.kie.addons.monitoring.system.metrics;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.BooleanHandler;
@@ -34,19 +34,19 @@ public class DMNResultMetricsBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DMNResultMetricsBuilder.class);
 
-    private static final ConcurrentMap<Class, TypeHandler> handlers = generateHandlers();
+    private static final Map<Class, TypeHandler> handlers = generateHandlers();
 
     private DMNResultMetricsBuilder(){}
 
-    private static ConcurrentMap<Class, TypeHandler> generateHandlers(){
-        ConcurrentHashMap<Class, TypeHandler> handlers = new ConcurrentHashMap<>();
+    private static Map<Class, TypeHandler> generateHandlers(){
+        HashMap<Class, TypeHandler> handlers = new HashMap<>();
         handlers.put(String.class, new StringHandler(SupportedDecisionTypes.fromInternalToStandard(String.class)));
         handlers.put(Boolean.class, new BooleanHandler(SupportedDecisionTypes.fromInternalToStandard(Boolean.class)));
         handlers.put(BigDecimal.class, new BigDecimalHandler(SupportedDecisionTypes.fromInternalToStandard(BigDecimal.class)));
         return handlers;
     }
 
-    public static ConcurrentMap<Class, TypeHandler> getHandlers(){
+    public static Map<Class, TypeHandler> getHandlers(){
         return handlers;
     }
 

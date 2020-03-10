@@ -17,11 +17,16 @@ package org.kie.kogito.codegen.grafana.model.panel.stat;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaGridPos;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaPanel;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaTarget;
+import org.kie.kogito.codegen.grafana.model.panel.common.Options;
 
 public class SingleStatPanel extends GrafanaPanel {
+
+    @JsonProperty("options")
+    public Options options;
 
     public SingleStatPanel() {
         super();

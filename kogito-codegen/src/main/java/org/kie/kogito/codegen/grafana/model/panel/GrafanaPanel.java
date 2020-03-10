@@ -77,9 +77,6 @@ public class GrafanaPanel {
     @JsonProperty("timeShift")
     public String timeShift;
 
-    @JsonProperty("options")
-    public Options options;
-
     public GrafanaPanel() {
     }
 

@@ -18,14 +18,12 @@ package org.kie.kogito.codegen.rules;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
@@ -63,6 +61,7 @@ import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.className
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
 
 public class QueryEndpointGenerator implements FileGenerator {
+
     private static final Logger logger = LoggerFactory.getLogger(QueryEndpointGenerator.class);
 
     private final RuleUnitDescription ruleUnit;
@@ -101,21 +100,21 @@ public class QueryEndpointGenerator implements FileGenerator {
         ClassOrInterfaceDeclaration clazz = cu
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
-        clazz.setName( targetCanonicalName );
+        clazz.setName(targetCanonicalName);
 
         cu.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
 
         FieldDeclaration ruleUnitDeclaration = clazz
-                .getFieldByName( "ruleUnit" )
+                .getFieldByName("ruleUnit")
                 .orElseThrow(() -> new NoSuchElementException("ClassOrInterfaceDeclaration doesn't contain a field named ruleUnit!"));
-        setUnitGeneric( ruleUnitDeclaration.getElementType() );
+        setUnitGeneric(ruleUnitDeclaration.getElementType());
         if (annotator != null) {
-            annotator.withInjection( ruleUnitDeclaration );
+            annotator.withInjection(ruleUnitDeclaration);
         }
 
         String returnType = getReturnType(clazz);
-        generateConstructors( clazz );
-        generateQueryMethods(cu, clazz, returnType );
+        generateConstructors(clazz);
+        generateQueryMethods(cu, clazz, returnType);
         clazz.getMembers().sort(new BodyDeclarationComparator());
         return cu.toString();
     }
@@ -124,101 +123,88 @@ public class QueryEndpointGenerator implements FileGenerator {
         return endpointName;
     }
 
-    private void generateConstructors(ClassOrInterfaceDeclaration clazz ) {
+    private void generateConstructors(ClassOrInterfaceDeclaration clazz) {
         for (ConstructorDeclaration c : clazz.getConstructors()) {
-            c.setName( targetCanonicalName );
+            c.setName(targetCanonicalName);
             if (!c.getParameters().isEmpty()) {
-                setUnitGeneric( c.getParameter( 0 ).getType() );
+                setUnitGeneric(c.getParameter(0).getType());
             }
         }
     }
 
-    private void generateQueryMethods(CompilationUnit cu, ClassOrInterfaceDeclaration clazz, String returnType ) {
-        MethodDeclaration queryMethod = clazz.getMethodsByName( "executeQuery" ).get(0);
-        queryMethod.getParameter( 0 ).setType(ruleUnit.getCanonicalName() + "DTO");
+    private void generateQueryMethods(CompilationUnit cu, ClassOrInterfaceDeclaration clazz, String returnType) {
+        MethodDeclaration queryMethod = clazz.getMethodsByName("executeQuery").get(0);
+        queryMethod.getParameter(0).setType(ruleUnit.getCanonicalName() + "DTO");
         setGeneric(queryMethod.getType(), returnType);
 
         Statement statement = queryMethod
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 0 );
-        statement.findAll( VariableDeclarator.class ).forEach( decl -> setUnitGeneric( decl.getType() ) );
+                .getStatement(0);
+        statement.findAll(VariableDeclarator.class).forEach(decl -> setUnitGeneric(decl.getType()));
 
         Statement returnStatement = queryMethod
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 1 );
-        returnStatement.findAll( VariableDeclarator.class ).forEach( decl -> setGeneric( decl.getType(), returnType ) );
+                .getStatement(1);
+        returnStatement.findAll(VariableDeclarator.class).forEach(decl -> setGeneric(decl.getType(), returnType));
 
-        MethodDeclaration queryMethodSingle = clazz.getMethodsByName( "executeQueryFirst" ).get(0);
-        queryMethodSingle.getParameter( 0 ).setType(ruleUnit.getCanonicalName() + "DTO");
-        queryMethodSingle.setType( toNonPrimitiveType( returnType ) );
+        MethodDeclaration queryMethodSingle = clazz.getMethodsByName("executeQueryFirst").get(0);
+        queryMethodSingle.getParameter(0).setType(ruleUnit.getCanonicalName() + "DTO");
+        queryMethodSingle.setType(toNonPrimitiveType(returnType));
 
         Statement statementSingle = queryMethodSingle
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 0 );
-        statementSingle.findAll( VariableDeclarator.class ).forEach( decl -> setGeneric( decl.getType(), returnType ) );
+                .getStatement(0);
+        statementSingle.findAll(VariableDeclarator.class).forEach(decl -> setGeneric(decl.getType(), returnType));
 
         Statement returnMethodSingle = queryMethodSingle
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .getStatement( 1 );
-        returnMethodSingle.findAll( VariableDeclarator.class ).forEach( decl -> decl.setType( toNonPrimitiveType( returnType ) ) );
+                .getStatement(1);
+        returnMethodSingle.findAll(VariableDeclarator.class).forEach(decl -> decl.setType(toNonPrimitiveType(returnType)));
 
-        if (useMonitoring){
+        if (useMonitoring) {
             addMonitoringToResource(cu, new MethodDeclaration[]{queryMethod, queryMethodSingle}, endpointName);
         }
     }
 
-    private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration[] methods, String nameURL){
+    private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration[] methods, String nameURL) {
         cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.SystemMetricsCollector"), false, false));
 
-        for(MethodDeclaration md : methods) {
-            Optional<BlockStmt> body = md.getBody();
-
-            if (body.isPresent()) {
-
-                NodeList<Statement> statements = body.get().getStatements();
-                Optional<ReturnStmt> returnStmt = body.get().findFirst(ReturnStmt.class);
-
-                if (returnStmt.isPresent()) {
-                    statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
-                    statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt.get());
-                    statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt.get());
-                    md.setBody(wrapBodyAddingExceptionLogging(body.get(), nameURL));
-                }
-                else{
-                    logger.warn("Return statement not found: can't add monitoring to endpoint.");
-                }
-            }
-            else{
-                logger.warn("Endpoint body method not found: can't add monitoring to endpoint.");
-            }
+        for (MethodDeclaration md : methods) {
+            BlockStmt body = md.getBody().orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"));
+            NodeList<Statement> statements = body.getStatements();
+            ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a return statement!"));
+            statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
+            statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt);
+            statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt);
+            md.setBody(wrapBodyAddingExceptionLogging(body, nameURL));
         }
     }
 
     private BlockStmt wrapBodyAddingExceptionLogging(BlockStmt body, String nameURL) {
-        NodeList<Statement> wrappedStat = new NodeList<>();
         TryStmt ts = new TryStmt();
-        wrappedStat.add(ts);
         ts.setTryBlock(body);
         CatchClause cc = new CatchClause();
         String exceptionName = "e";
-        Parameter p = new Parameter();
-        p.setName(exceptionName);
-        p.setType(Exception.class);
-        cc.setParameter(p);
+        cc.setParameter(new Parameter().setName(exceptionName).setType(Exception.class));
         BlockStmt cb = new BlockStmt();
-        cb.addStatement(parseStatement("SystemMetricsCollector.registerException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"));
-        cb.addStatement(new ThrowStmt(new NameExpr( exceptionName ) ));
+        cb.addStatement(parseStatement(
+                String.format(
+                        "SystemMetricsCollector.registerException(\"%s\", %s.getStackTrace()[0].toString());",
+                        nameURL,
+                        exceptionName)
+        ));
+        cb.addStatement(new ThrowStmt(new NameExpr(exceptionName)));
         cc.setBody(cb);
         ts.setCatchClauses(new NodeList<>(cc));
-        return new BlockStmt(wrappedStat);
+        return new BlockStmt(new NodeList<>(ts));
     }
 
-    private String getReturnType( ClassOrInterfaceDeclaration clazz ) {
-        MethodDeclaration toResultMethod = clazz.getMethodsByName( "toResult" ).get(0);
+    private String getReturnType(ClassOrInterfaceDeclaration clazz) {
+        MethodDeclaration toResultMethod = clazz.getMethodsByName("toResult").get(0);
         String returnType;
         if (query.getBindings().size() == 1) {
             Map.Entry<String, Class<?>> binding = query.getBindings().entrySet().iterator().next();
@@ -228,46 +214,46 @@ public class QueryEndpointGenerator implements FileGenerator {
             Statement statement = toResultMethod
                     .getBody()
                     .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                    .getStatement( 0 );
+                    .getStatement(0);
 
-            statement.findAll( CastExpr.class ).get(0).setType( returnType );
-            statement.findAll( StringLiteralExpr.class ).get(0).setString( name );
+            statement.findAll(CastExpr.class).get(0).setType(returnType);
+            statement.findAll(StringLiteralExpr.class).get(0).setString(name);
         } else {
             returnType = "Result";
             generateResultClass(clazz, toResultMethod);
         }
 
-        toResultMethod.setType( returnType );
+        toResultMethod.setType(returnType);
         return returnType;
     }
 
-    private void generateResultClass( ClassOrInterfaceDeclaration clazz, MethodDeclaration toResultMethod ) {
-        ClassOrInterfaceDeclaration resultClass = new ClassOrInterfaceDeclaration( new NodeList<Modifier>(Modifier.publicModifier(), Modifier.staticModifier()), false, "Result" );
-        clazz.addMember( resultClass );
+    private void generateResultClass(ClassOrInterfaceDeclaration clazz, MethodDeclaration toResultMethod) {
+        ClassOrInterfaceDeclaration resultClass = new ClassOrInterfaceDeclaration(new NodeList<Modifier>(Modifier.publicModifier(), Modifier.staticModifier()), false, "Result");
+        clazz.addMember(resultClass);
 
-        ConstructorDeclaration constructor = resultClass.addConstructor( Modifier.Keyword.PUBLIC );
+        ConstructorDeclaration constructor = resultClass.addConstructor(Modifier.Keyword.PUBLIC);
         BlockStmt constructorBody = constructor.createBody();
 
         ObjectCreationExpr resultCreation = new ObjectCreationExpr();
-        resultCreation.setType( "Result" );
+        resultCreation.setType("Result");
         BlockStmt resultMethodBody = toResultMethod.createBody();
-        resultMethodBody.addStatement( new ReturnStmt( resultCreation ) );
+        resultMethodBody.addStatement(new ReturnStmt(resultCreation));
 
-        query.getBindings().forEach( ( name, type) -> {
-            resultClass.addField( type, name, Modifier.Keyword.PRIVATE, Modifier.Keyword.FINAL );
+        query.getBindings().forEach((name, type) -> {
+            resultClass.addField(type, name, Modifier.Keyword.PRIVATE, Modifier.Keyword.FINAL);
 
-            MethodDeclaration getterMethod = resultClass.addMethod( "get" + ucFirst(name), Modifier.Keyword.PUBLIC );
-            getterMethod.setType( type );
+            MethodDeclaration getterMethod = resultClass.addMethod("get" + ucFirst(name), Modifier.Keyword.PUBLIC);
+            getterMethod.setType(type);
             BlockStmt body = getterMethod.createBody();
-            body.addStatement( new ReturnStmt( new NameExpr( name ) ) );
+            body.addStatement(new ReturnStmt(new NameExpr(name)));
 
-            constructor.addAndGetParameter( type, name );
-            constructorBody.addStatement( new AssignExpr( new NameExpr( "this." + name ), new NameExpr( name ), AssignExpr.Operator.ASSIGN ) );
+            constructor.addAndGetParameter(type, name);
+            constructorBody.addStatement(new AssignExpr(new NameExpr("this." + name), new NameExpr(name), AssignExpr.Operator.ASSIGN));
 
-            MethodCallExpr callExpr = new MethodCallExpr( new NameExpr( "tuple" ), "get" );
-            callExpr.addArgument( new StringLiteralExpr( name ) );
-            resultCreation.addArgument( new CastExpr( classToReferenceType( type ), callExpr ) );
-        } );
+            MethodCallExpr callExpr = new MethodCallExpr(new NameExpr("tuple"), "get");
+            callExpr.addArgument(new StringLiteralExpr(name));
+            resultCreation.addArgument(new CastExpr(classToReferenceType(type), callExpr));
+        });
     }
 
     private void setUnitGeneric(Type type) {
@@ -275,27 +261,35 @@ public class QueryEndpointGenerator implements FileGenerator {
     }
 
     private void setGeneric(Type type, RuleUnitDescription ruleUnit) {
-        type.asClassOrInterfaceType().setTypeArguments( classNameToReferenceType( ruleUnit.getCanonicalName() ) );
+        type.asClassOrInterfaceType().setTypeArguments(classNameToReferenceType(ruleUnit.getCanonicalName()));
     }
 
     private void setGeneric(Type type, Class<?> typeArgument) {
-        type.asClassOrInterfaceType().setTypeArguments( classToReferenceType( typeArgument ) );
+        type.asClassOrInterfaceType().setTypeArguments(classToReferenceType(typeArgument));
     }
 
     private void setGeneric(Type type, String typeArgument) {
-        type.asClassOrInterfaceType().setTypeArguments( parseClassOrInterfaceType( toNonPrimitiveType( typeArgument ) ) );
+        type.asClassOrInterfaceType().setTypeArguments(parseClassOrInterfaceType(toNonPrimitiveType(typeArgument)));
     }
 
     private static String toNonPrimitiveType(String type) {
         switch (type) {
-            case "int": return "Integer";
-            case "long": return "Long";
-            case "double": return "Double";
-            case "float": return "Float";
-            case "short": return "Short";
-            case "byte": return "Byte";
-            case "char": return "Character";
-            case "boolean": return "Boolean";
+            case "int":
+                return "Integer";
+            case "long":
+                return "Long";
+            case "double":
+                return "Double";
+            case "float":
+                return "Float";
+            case "short":
+                return "Short";
+            case "byte":
+                return "Byte";
+            case "char":
+                return "Character";
+            case "boolean":
+                return "Boolean";
         }
         return type;
     }
@@ -311,8 +305,8 @@ public class QueryEndpointGenerator implements FileGenerator {
 
     private static String toCamelCase(String inputString) {
         return Stream.of(inputString.split(" "))
-                .map( s -> s.length() > 1 ? s.substring( 0, 1 ).toUpperCase() + s.substring( 1 ) : s.substring( 0, 1 ).toUpperCase() )
-                .collect( Collectors.joining() );
+                .map(s -> s.length() > 1 ? s.substring(0, 1).toUpperCase() + s.substring(1) : s.substring(0, 1).toUpperCase())
+                .collect(Collectors.joining());
     }
 
     private static String toKebabCase(String inputString) {

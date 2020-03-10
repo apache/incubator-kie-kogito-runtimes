@@ -61,6 +61,7 @@ public class JGrafana implements IJGrafana {
 
     /**
      * Parse a json grafana dashboard and returns the JGrafana object containing that dashboard.
+     * Panels inside the dashboard change the id and the dimensions are standardized.
      *
      * @param dashboard
      * @return

@@ -17,7 +17,13 @@ package org.kie.kogito.codegen.grafana.model.panel;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.kie.kogito.codegen.grafana.model.panel.common.Options;
+
 public class GaugePanel extends GrafanaPanel {
+
+    @JsonProperty("options")
+    public Options options;
 
     public GaugePanel() {
         super();

@@ -35,6 +35,7 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
@@ -159,21 +160,15 @@ public class DMNRestResourceGenerator {
     }
 
     private void addExceptionMetricsLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL) {
-        // TODO: Improve code generation
         MethodDeclaration method = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("toResponse")).get(0);
         cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.SystemMetricsCollector"), false, false));
 
-        Optional<BlockStmt> body = method.getBody();
-        if (body.isPresent()) {
-            Optional<ReturnStmt> returnStmt = body.get().findFirst(ReturnStmt.class);
-            if (returnStmt.isPresent()) {
-                NodeList<Statement> statements = body.get().getStatements();
-                statements.addBefore(parseStatement("SystemMetricsCollector.registerException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"), returnStmt.get());
-                return;
-            }
-        }
-
-        logger.warn("DMN Exception handler not found: can't add monitoring to exceptions");
+        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"));
+        ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("Check for null dmn result not found, can't add monitoring to endpoint."));
+        NodeList<Statement> statements = body.getStatements();
+        String methodArgumentName = method.getParameters().get(0).getNameAsString();
+        statements.addBefore(parseStatement(String.format("SystemMetricsCollector.registerException(\"%s\", %s.getStackTrace()[0].toString());", nameURL, methodArgumentName)), returnStmt);
+        return;
     }
 
     private void addMonitoringImports(CompilationUnit cu) {
@@ -182,19 +177,13 @@ public class DMNRestResourceGenerator {
     }
 
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL) {
-        Optional<BlockStmt> body = method.getBody();
-        if (body.isPresent()) {
-            NodeList<Statement> statements = body.get().getStatements();
-            Optional<IfStmt> ifStmt = body.get().findFirst(IfStmt.class);
-            if (ifStmt.isPresent()) {
-                statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
-                statements.addBefore(parseStatement("double endTime = System.nanoTime();"), ifStmt.get());
-                statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), ifStmt.get());
-                statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(result);"), ifStmt.get());
-                return;
-            }
-        }
-        logger.warn("Could not inject monitoring in endpoint.");
+        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"));
+        NodeList<Statement> statements = body.getStatements();
+        IfStmt ifStmt = body.findFirst(IfStmt.class).orElseThrow(() -> new NoSuchElementException("Check for null dmn result not found, can't add monitoring to endpoint. Template was modified."));
+        statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
+        statements.addBefore(parseStatement("double endTime = System.nanoTime();"), ifStmt);
+        statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), ifStmt);
+        statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(result);"), ifStmt);
     }
 
     private void initializeApplicationField(FieldDeclaration fd) {
