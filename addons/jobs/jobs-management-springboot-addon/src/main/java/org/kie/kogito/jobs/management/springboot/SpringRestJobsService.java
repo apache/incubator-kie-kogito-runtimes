@@ -37,18 +37,19 @@ public class SpringRestJobsService extends RestJobsService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpringRestJobsService.class);
 
-    @Autowired(required=false)
     private RestTemplate restTemplate;
 
     @Autowired
     public SpringRestJobsService(
             @Value("${kogito.jobs-service.url}") String jobServiceUrl,
-            @Value("${kogito.service.url}") String callbackEndpoint) {
+            @Value("${kogito.service.url}") String callbackEndpoint,
+            @Autowired(required=false) RestTemplate restTemplate) {
         super(jobServiceUrl, callbackEndpoint);
+        this.restTemplate = restTemplate;
     }
 
     SpringRestJobsService() {
-        this(null, null);
+        this(null, null, null);
     }
 
     @PostConstruct
