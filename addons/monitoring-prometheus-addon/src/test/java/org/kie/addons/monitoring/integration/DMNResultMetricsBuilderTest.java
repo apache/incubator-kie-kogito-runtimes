@@ -74,6 +74,7 @@ public class DMNResultMetricsBuilderTest {
     public void alighmentWithKogitoCodegenIsOk(){
         List addonSupportedTypes = DMNResultMetricsBuilder.getHandlers().values().stream().map(x -> x.getDmnType()).collect(Collectors.toList());
         assertTrue(addonSupportedTypes.containsAll(SupportedDecisionTypes.getSupportedDMNTypes()));
+        assertTrue(SupportedDecisionTypes.getSupportedDMNTypes().containsAll(addonSupportedTypes));
     }
 
     @Test
