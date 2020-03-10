@@ -17,16 +17,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- FIXME: temporary workaround for infinispan buffer overflow, remove when quarkus is updated; see KOGITO-1315 -->
-      <!-- Netty dependencies, imported as a BOM -->
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-bom</artifactId>
-        <version>${netty.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-bom</artifactId>
