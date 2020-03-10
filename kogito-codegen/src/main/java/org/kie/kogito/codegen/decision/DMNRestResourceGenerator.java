@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -48,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parse;
-import static com.github.javaparser.StaticJavaParser.parseImport;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class DMNRestResourceGenerator {
@@ -161,7 +161,7 @@ public class DMNRestResourceGenerator {
     private void addExceptionMetricsLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL) {
         // TODO: Improve code generation
         MethodDeclaration method = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("toResponse")).get(0);
-        cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
+        cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.SystemMetricsCollector"), false, false));
 
         Optional<BlockStmt> body = method.getBody();
         if (body.isPresent()) {
@@ -177,8 +177,8 @@ public class DMNRestResourceGenerator {
     }
 
     private void addMonitoringImports(CompilationUnit cu) {
-        cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
-        cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder;"));
+        cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.SystemMetricsCollector"), false, false));
+        cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder"), false, false));
     }
 
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL) {

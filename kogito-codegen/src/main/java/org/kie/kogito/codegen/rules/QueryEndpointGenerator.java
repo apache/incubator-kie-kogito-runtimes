@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
@@ -35,6 +36,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -42,6 +44,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.Type;
 import org.drools.modelcompiler.builder.QueryModel;
@@ -54,7 +57,6 @@ import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
-import static com.github.javaparser.StaticJavaParser.parseImport;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 import static org.drools.core.util.StringUtils.ucFirst;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classNameToReferenceType;
@@ -170,7 +172,7 @@ public class QueryEndpointGenerator implements FileGenerator {
     }
 
     private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration[] methods, String nameURL){
-        cu.addImport(parseImport("import org.kie.addons.monitoring.system.metrics.SystemMetricsCollector;"));
+        cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.SystemMetricsCollector"), false, false));
 
         for(MethodDeclaration md : methods) {
             Optional<BlockStmt> body = md.getBody();
@@ -178,11 +180,10 @@ public class QueryEndpointGenerator implements FileGenerator {
             if (body.isPresent()) {
 
                 NodeList<Statement> statements = body.get().getStatements();
-                statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
-
                 Optional<ReturnStmt> returnStmt = body.get().findFirst(ReturnStmt.class);
 
                 if (returnStmt.isPresent()) {
+                    statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
                     statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt.get());
                     statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt.get());
                     md.setBody(wrapBodyAddingExceptionLogging(body.get(), nameURL));
@@ -203,13 +204,14 @@ public class QueryEndpointGenerator implements FileGenerator {
         wrappedStat.add(ts);
         ts.setTryBlock(body);
         CatchClause cc = new CatchClause();
+        String exceptionName = "e";
         Parameter p = new Parameter();
-        p.setName("e");
+        p.setName(exceptionName);
         p.setType(Exception.class);
         cc.setParameter(p);
         BlockStmt cb = new BlockStmt();
         cb.addStatement(parseStatement("SystemMetricsCollector.registerException(\"" + nameURL + "\", e.getStackTrace()[0].toString());"));
-        cb.addStatement(parseStatement("throw e;"));
+        cb.addStatement(new ThrowStmt(new NameExpr( exceptionName ) ));
         cc.setBody(cb);
         ts.setCatchClauses(new NodeList<>(cc));
         return new BlockStmt(wrappedStat);
