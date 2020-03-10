@@ -24,12 +24,14 @@ public class ExprBuilder {
     }
 
     public static String apply(String expr, Map<Integer, GrafanaFunction> functions) {
-        for (Integer key : functions.keySet().stream().sorted().collect(Collectors.toList())) {
-            GrafanaFunction function = functions.get(key);
-            if (function.hasTimeParameter()) {
-                expr = String.format("%s[%s]", expr, function.getTimeParameter());
+        if (functions != null) {
+            for (Integer key : functions.keySet().stream().sorted().collect(Collectors.toList())) {
+                GrafanaFunction function = functions.get(key);
+                if (function.hasTimeParameter()) {
+                    expr = String.format("%s[%s]", expr, function.getTimeParameter());
+                }
+                expr = String.format("%s(%s)", function.getFunction(), expr);
             }
-            expr = String.format("%s(%s)", function.getFunction(), expr);
         }
 
         return expr;

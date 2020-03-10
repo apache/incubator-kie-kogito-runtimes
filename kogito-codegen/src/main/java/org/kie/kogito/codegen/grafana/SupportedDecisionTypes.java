@@ -32,14 +32,12 @@ public class SupportedDecisionTypes {
 
     private static final Set<AbstractDmnType> supportedDmnTypes = new HashSet<>();
 
-    private static final HashMap<Class, String> dmnInternalClassToDmnStandardMap;
+    private static final Map<Class, String> dmnInternalClassToDmnStandardMap = new HashMap<>();
 
     static {
         supportedDmnTypes.add(new BooleanType());
         supportedDmnTypes.add(new NumberType());
         supportedDmnTypes.add(new StringType());
-
-        dmnInternalClassToDmnStandardMap = new HashMap<>();
         supportedDmnTypes.stream().forEach(x -> dmnInternalClassToDmnStandardMap.put(x.getInternalClass(), x.getDmnType()));
     }
 

@@ -23,7 +23,7 @@ import org.kie.kogito.codegen.grafana.SupportedDecisionTypes;
 public class NumberType extends AbstractDmnType {
 
     public NumberType() {
-        super(BigDecimal.class, SupportedDecisionTypes.fromInternalToStandard(BigDecimal.class));
+        super(BigDecimal.class, "number");
         addFunctions(new HashMap<>());
     }
 }
