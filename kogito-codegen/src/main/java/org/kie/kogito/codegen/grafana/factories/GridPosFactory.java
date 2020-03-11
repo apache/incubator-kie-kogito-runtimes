@@ -20,6 +20,7 @@ import org.kie.kogito.codegen.grafana.model.panel.GrafanaGridPos;
 public class GridPosFactory {
 
     private GridPosFactory() {
+        // Intentionally left blank.
     }
 
     public static GrafanaGridPos calculateGridPosById(int id) {
