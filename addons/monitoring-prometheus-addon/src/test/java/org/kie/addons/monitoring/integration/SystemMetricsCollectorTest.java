@@ -64,8 +64,8 @@ public class SystemMetricsCollectorTest {
         IntStream.range(0, mapExceptionRepetition.get("Exception")).forEach(x -> SystemMetricsCollector.registerException(handler, "Exception"));
 
         // Assert
-        assertEquals(mapExceptionRepetition.get("400"), getLabelsValue("api_http_stacktrace_exceptions", handler, "NoSuchElement").intValue());
-        assertEquals(mapExceptionRepetition.get("404"), getLabelsValue("api_http_stacktrace_exceptions", handler, "Exception").intValue());
+        assertEquals(mapExceptionRepetition.get("NoSuchElement"), getLabelsValue("api_http_stacktrace_exceptions", handler, "NoSuchElement").intValue());
+        assertEquals(mapExceptionRepetition.get("Exception"), getLabelsValue("api_http_stacktrace_exceptions", handler, "Exception").intValue());
     }
 
     @Test
