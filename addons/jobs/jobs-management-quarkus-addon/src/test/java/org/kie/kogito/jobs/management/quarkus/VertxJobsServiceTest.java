@@ -22,7 +22,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.client.HttpRequest;
 import io.vertx.ext.web.client.WebClient;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +34,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
@@ -72,8 +73,7 @@ public class VertxJobsServiceTest {
         ProcessJobDescription processJobDescription = ProcessJobDescription.of(ExactExpirationTime.now(),
                                                                                1,
                                                                                "processId");
-        Assertions
-                .assertThatThrownBy(() -> tested.scheduleProcessJob(processJobDescription))
+        assertThatThrownBy(() -> tested.scheduleProcessJob(processJobDescription))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 
@@ -87,7 +87,7 @@ public class VertxJobsServiceTest {
                                                                                                        "processId");
         tested.scheduleProcessInstanceJob(processInstanceJobDescription);
         verify(webClient).post("/jobs");
-        ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+        ArgumentCaptor<Job> jobArgumentCaptor = forClass(Job.class);
         verify(request).sendJson(jobArgumentCaptor.capture(), any(Handler.class));
         Job job = jobArgumentCaptor.getValue();
         assertThat(job.getId()).isEqualTo(processInstanceJobDescription.id());

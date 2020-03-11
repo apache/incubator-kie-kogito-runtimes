@@ -18,7 +18,6 @@ package org.kie.kogito.jobs.management.springboot;
 
 import java.net.URI;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +32,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -60,8 +61,7 @@ public class SpringRestJobsServiceTest {
         ProcessJobDescription processJobDescription = ProcessJobDescription.of(ExactExpirationTime.now(),
                                                                                1,
                                                                                "processId");
-        Assertions
-                .assertThatThrownBy(() -> tested.scheduleProcessJob(processJobDescription))
+        assertThatThrownBy(() -> tested.scheduleProcessJob(processJobDescription))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 
@@ -73,7 +73,7 @@ public class SpringRestJobsServiceTest {
                                                                                                        "processInstanceId",
                                                                                                        "processId");
         tested.scheduleProcessInstanceJob(processInstanceJobDescription);
-        ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+        ArgumentCaptor<Job> jobArgumentCaptor = forClass(Job.class);
         verify(restTemplate).postForEntity(eq(tested.getJobsServiceUri()),
                                            jobArgumentCaptor.capture(),
                                            eq(String.class));
