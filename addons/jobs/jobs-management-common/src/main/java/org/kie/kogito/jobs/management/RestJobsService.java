@@ -25,6 +25,7 @@ import org.kie.kogito.jobs.api.URIBuilder;
 
 public abstract class RestJobsService implements JobsService {
 
+    @SuppressWarnings("squid:S1075")
     public static final String JOBS_PATH = "/jobs";
 
     private URI jobsServiceUri;

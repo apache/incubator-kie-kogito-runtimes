@@ -57,7 +57,7 @@ public class SpringRestJobsServiceTest {
     }
 
     @Test
-    void scheduleProcessJob() {
+    void testScheduleProcessJob() {
         ProcessJobDescription processJobDescription = ProcessJobDescription.of(ExactExpirationTime.now(),
                                                                                1,
                                                                                "processId");
@@ -66,7 +66,7 @@ public class SpringRestJobsServiceTest {
     }
 
     @Test
-    void scheduleProcessInstanceJob() {
+    void testScheduleProcessInstanceJob() {
         when(restTemplate.postForEntity(any(URI.class), any(Job.class), eq(String.class))).thenReturn(ResponseEntity.ok().build());
         ProcessInstanceJobDescription processInstanceJobDescription = ProcessInstanceJobDescription.of(123,
                                                                                                        ExactExpirationTime.now(),
@@ -82,7 +82,7 @@ public class SpringRestJobsServiceTest {
     }
 
     @Test
-    void cancelJob() {
+    void testCancelJob() {
         tested.cancelJob("123");
         verify(restTemplate).delete(tested.getJobsServiceUri() + "/{id}", "123");
     }

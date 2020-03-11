@@ -134,5 +134,4 @@ public class VertxJobsService extends RestJobsService {
         
         return true;
     }
-
 }

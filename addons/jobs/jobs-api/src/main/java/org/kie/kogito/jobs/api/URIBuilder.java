@@ -24,6 +24,10 @@ import java.util.Optional;
 
 public class URIBuilder {
 
+    private URIBuilder(){
+
+    }
+
     /**
      * Transform the given url String into an {@link URI} and inserts the default port in case it was not explicit set
      * on the url String.

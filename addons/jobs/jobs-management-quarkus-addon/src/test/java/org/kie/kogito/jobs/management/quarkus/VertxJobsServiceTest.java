@@ -38,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +70,16 @@ public class VertxJobsServiceTest {
     }
 
     @Test
-    void scheduleProcessJob() {
+    void testInitialize() {
+        reset(instance);
+        when(instance.isResolvable()).thenReturn(false);
+        tested = new VertxJobsService(JOB_SERVICE_URL, CALLBACK_URL, vertx, instance);
+        tested.initialize();
+        verify(instance, never()).get();
+    }
+
+    @Test
+    void testScheduleProcessJob() {
         ProcessJobDescription processJobDescription = ProcessJobDescription.of(ExactExpirationTime.now(),
                                                                                1,
                                                                                "processId");
@@ -78,8 +88,8 @@ public class VertxJobsServiceTest {
     }
 
     @Test
-    void scheduleProcessInstanceJob(@Mock HttpRequest request) {
-        lenient().when(webClient.post(anyString())).thenReturn(request);
+    void testScheduleProcessInstanceJob(@Mock HttpRequest request) {
+        when(webClient.post(anyString())).thenReturn(request);
 
         ProcessInstanceJobDescription processInstanceJobDescription = ProcessInstanceJobDescription.of(123,
                                                                                                        ExactExpirationTime.now(),
@@ -97,7 +107,7 @@ public class VertxJobsServiceTest {
     }
 
     @Test
-    void cancelJob(@Mock HttpRequest request) {
+    void testCancelJob(@Mock HttpRequest request) {
         when(webClient.delete(anyString())).thenReturn(request);
         tested.cancelJob("123");
         verify(webClient).delete("/jobs/123");

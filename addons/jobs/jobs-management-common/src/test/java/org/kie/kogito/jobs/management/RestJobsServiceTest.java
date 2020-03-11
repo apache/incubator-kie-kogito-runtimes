@@ -51,7 +51,7 @@ public class RestJobsServiceTest {
     }
 
     @Test
-    void getCallbackEndpoint() {
+    void testGetCallbackEndpoint() {
         ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(123,
                                                                                      ExactExpirationTime.now(),
                                                                                      "processInstanceId",
@@ -62,7 +62,7 @@ public class RestJobsServiceTest {
     }
 
     @Test
-    void getJobsServiceUri() {
+    void testGetJobsServiceUri() {
         URI jobsServiceUri = tested.getJobsServiceUri();
         assertThat(jobsServiceUri.toString()).isEqualTo(JOB_SERVICE_URL + "/jobs");
     }
