@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.addons.monitoring.mocks.DMNDecisionResultMock;
 import org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.kogito.codegen.grafana.SupportedDecisionTypes;
+import org.kie.kogito.codegen.dmn.SupportedDecisionTypes;
 import org.kie.kogito.dmn.rest.DMNResult;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -67,9 +67,7 @@ public class DMNResultMetricsBuilderTest {
 
     }
 
-    // Given that atm the two modules are dependent and there is not a clear way to extend the code generation,
-    // this test covers the fact that the two classes are aligned, i.e. if you add/remove a supported type, you
-    // have to update the addon as well.
+    // Keep aligned the mapping of types between kogito-codegen and prometheus-addon.
     @Test
     public void alighmentWithKogitoCodegenIsOk(){
         List addonSupportedTypes = DMNResultMetricsBuilder.getHandlers().values().stream().map(x -> x.getDmnType()).collect(Collectors.toList());

@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.codegen.grafana.types;
+package org.kie.kogito.codegen.dmn;
 
-import java.util.Map;
+import java.util.SortedMap;
 
 import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
 
@@ -25,14 +25,14 @@ public class AbstractDmnType {
 
     private String dmnType;
 
-    private Map<Integer, GrafanaFunction> grafanaFunctionsToApply;
+    private SortedMap<Integer, GrafanaFunction> grafanaFunctionsToApply;
 
     public AbstractDmnType(Class internalRepresentationClass, String dmnType) {
         this.internalRepresentationClass = internalRepresentationClass;
         this.dmnType = dmnType;
     }
 
-    protected void addFunctions(Map<Integer, GrafanaFunction> grafanaFunctionsToApply) {
+    protected void addFunctions(SortedMap<Integer, GrafanaFunction> grafanaFunctionsToApply) {
         this.grafanaFunctionsToApply = grafanaFunctionsToApply;
     }
 
@@ -40,7 +40,7 @@ public class AbstractDmnType {
         return internalRepresentationClass;
     }
 
-    public Map<Integer, GrafanaFunction> getGrafanaFunctions() {
+    public SortedMap<Integer, GrafanaFunction> getGrafanaFunctions() {
         return grafanaFunctionsToApply;
     }
 

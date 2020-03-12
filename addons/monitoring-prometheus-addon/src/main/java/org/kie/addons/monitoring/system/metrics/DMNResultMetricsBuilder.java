@@ -25,7 +25,7 @@ import org.kie.addons.monitoring.system.metrics.dmnhandlers.BooleanHandler;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.StringHandler;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.TypeHandler;
 import org.kie.dmn.api.core.DMNDecisionResult;
-import org.kie.kogito.codegen.grafana.SupportedDecisionTypes;
+import org.kie.kogito.codegen.dmn.SupportedDecisionTypes;
 import org.kie.kogito.dmn.rest.DMNResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

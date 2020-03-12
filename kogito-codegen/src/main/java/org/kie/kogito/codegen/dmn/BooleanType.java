@@ -13,19 +13,19 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.codegen.grafana.types;
+package org.kie.kogito.codegen.dmn;
 
-import java.util.HashMap;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-import org.kie.kogito.codegen.grafana.SupportedDecisionTypes;
 import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.codegen.grafana.model.functions.IncreaseFunction;
 
-public class StringType extends AbstractDmnType {
+public class BooleanType extends AbstractDmnType {
 
-    public StringType() {
-        super(String.class, "string");
-        HashMap<Integer, GrafanaFunction> grafanaFunctionsToApply = new HashMap<>();
+    public BooleanType() {
+        super(Boolean.class, "boolean");
+        SortedMap<Integer, GrafanaFunction> grafanaFunctionsToApply = new TreeMap<>();
         grafanaFunctionsToApply.put(1, new IncreaseFunction("10m"));
         addFunctions(grafanaFunctionsToApply);
     }

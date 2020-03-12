@@ -13,8 +13,15 @@
  * limitations under the License.
  */
 
-package org.kie.addons.monitoring.system.metrics;
+package org.kie.kogito.codegen.dmn;
 
-public enum SummaryTypes {
-    ELAPSED_TIME
+import java.math.BigDecimal;
+import java.util.TreeMap;
+
+public class NumberType extends AbstractDmnType {
+
+    public NumberType() {
+        super(BigDecimal.class, "number");
+        addFunctions(new TreeMap<>());
+    }
 }

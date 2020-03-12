@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.grafana.IJGrafana;
 import org.kie.kogito.codegen.grafana.JGrafana;
-import org.kie.kogito.codegen.grafana.model.GrafanaDashboard;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

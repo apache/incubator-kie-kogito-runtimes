@@ -15,7 +15,8 @@
 
 package org.kie.kogito.codegen.grafana;
 
-import java.util.HashMap;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.grafana.model.functions.ExprBuilder;
@@ -45,7 +46,7 @@ public class ExprBuilderTest {
         String target = "api_test{hanlder=\"hello\"}";
 
         // Act
-        String result = ExprBuilder.apply(target, new HashMap<>());
+        String result = ExprBuilder.apply(target, new TreeMap<>());
 
         // Assert
         assertEquals(target, result);
@@ -55,7 +56,7 @@ public class ExprBuilderTest {
     public void GivenATarget_WhenGrafanaFunctionsAreApplied_ThenTheOriginalTargetIsReturned() {
         // Arrange
         String target = "api_test{hanlder=\"hello\"}";
-        HashMap<Integer, GrafanaFunction> map = new HashMap();
+        SortedMap<Integer, GrafanaFunction> map = new TreeMap<>();
         map.put(1, new SumFunction());
         map.put(2, new IncreaseFunction("10m"));
         String expectedResult = "increase(sum(api_test{hanlder=\"hello\"})[10m])";

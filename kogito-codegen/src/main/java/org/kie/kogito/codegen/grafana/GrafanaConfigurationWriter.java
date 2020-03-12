@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.kie.dmn.model.v1_2.TDecision;
+import org.kie.kogito.codegen.dmn.SupportedDecisionTypes;
 import org.kie.kogito.codegen.grafana.model.panel.PanelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -212,8 +212,8 @@ public class QueryEndpointGenerator implements FileGenerator {
                     .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
                     .getStatement(0);
 
-            statement.findAll(CastExpr.class).get(0).setType(returnType);
-            statement.findAll(StringLiteralExpr.class).get(0).setString(name);
+            statement.findFirst(CastExpr.class).orElseThrow(() -> new NoSuchElementException("CastExpr not found in template.")).setType(returnType);
+            statement.findFirst(StringLiteralExpr.class).orElseThrow(() -> new NoSuchElementException("StringLiteralExpr not found in template.")).setString(name);
         } else {
             returnType = "Result";
             generateResultClass(clazz, toResultMethod);

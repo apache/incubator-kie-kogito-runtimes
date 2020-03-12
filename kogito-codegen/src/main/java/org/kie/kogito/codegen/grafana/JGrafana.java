@@ -17,9 +17,9 @@ package org.kie.kogito.codegen.grafana;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.SortedMap;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -121,7 +121,7 @@ public class JGrafana implements IJGrafana {
      * @return: The grafana panel added to the dashboard.
      */
     @Override
-    public GrafanaPanel addPanel(PanelType type, String title, String expr, Map<Integer, GrafanaFunction> functions) {
+    public GrafanaPanel addPanel(PanelType type, String title, String expr, SortedMap<Integer, GrafanaFunction> functions) {
         int id = this.dashboard.panels.size() + 1;
         if (functions != null && functions.size() != 0) {
             expr = ExprBuilder.apply(expr, functions);
@@ -138,7 +138,7 @@ public class JGrafana implements IJGrafana {
      * @return: The panel.
      */
     @Override
-    public GrafanaPanel getPanelByTitle(String title) throws NoSuchElementException {
+    public GrafanaPanel getPanelByTitle(String title) {
         Optional<GrafanaPanel> panel = this.dashboard.panels.stream().filter(x -> x.title.equals(title)).findFirst();
         if (!panel.isPresent()) {
             throw new NoSuchElementException(String.format("There is no panel with title \"%s\"", title));

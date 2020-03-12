@@ -17,7 +17,6 @@ package org.kie.kogito.codegen.decision;
 
 import java.net.URLEncoder;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
@@ -94,17 +93,18 @@ public class DMNRestResourceGenerator {
                              CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
         }
 
-        MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
+        MethodDeclaration dmnMethod = template.findFirst(MethodDeclaration.class, x -> "dmn".equals(x.getNameAsString()))
+                .orElseThrow(() -> new NoSuchElementException("Method dmn not found, template has changed."));
 
         for (DecisionService ds : definitions.getDecisionService()) {
-            if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
+            if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> "dynamicDecisionService".equals(qn.getLocalPart()))) {
                 continue;
             }
 
             MethodDeclaration clonedMethod = dmnMethod.clone();
             String name = CodegenStringUtil.escapeIdentifier("decisionService_" + ds.getName());
             clonedMethod.setName(name);
-            MethodCallExpr evaluateCall = clonedMethod.findFirst(MethodCallExpr.class, x -> x.getName().toString().equals("evaluateAll")).orElseThrow(() -> new RuntimeException("Template was modified!"));
+            MethodCallExpr evaluateCall = clonedMethod.findFirst(MethodCallExpr.class, x -> x.getNameAsString().equals("evaluateAll")).orElseThrow(() -> new RuntimeException("Template was modified!"));
             evaluateCall.setName(new SimpleName("evaluateDecisionService"));
             evaluateCall.addArgument(new StringLiteralExpr(ds.getName()));
             clonedMethod.addAnnotation(new SingleMemberAnnotationExpr(new Name("javax.ws.rs.Path"), new StringLiteralExpr("/" + ds.getName())));
@@ -123,8 +123,9 @@ public class DMNRestResourceGenerator {
 
         if (useMonitoring) {
             addMonitoringImports(clazz);
-            ClassOrInterfaceDeclaration exceptionClazz = clazz.findAll(ClassOrInterfaceDeclaration.class).stream().filter(f -> !f.equals(template)).collect(Collectors.toList()).get(0);
-            addExceptionMetricsLogging(clazz, exceptionClazz, nameURL);
+            ClassOrInterfaceDeclaration exceptionClazz = clazz.findFirst(ClassOrInterfaceDeclaration.class, x -> "DMNEvaluationErrorExceptionMapper".equals(x.getNameAsString()))
+                    .orElseThrow(() -> new NoSuchElementException("Could not find DMNEvaluationErrorExceptionMapper, template has changed."));
+            addExceptionMetricsLogging(exceptionClazz, nameURL);
             addMonitoringToMethod(dmnMethod, nameURL);
         }
 
@@ -154,21 +155,21 @@ public class DMNRestResourceGenerator {
         return resourceClazzName;
     }
 
-    private void addExceptionMetricsLogging(CompilationUnit cu, ClassOrInterfaceDeclaration template, String nameURL) {
-        MethodDeclaration method = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("toResponse")).get(0);
-        cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.SystemMetricsCollector"), false, false));
+    private void addExceptionMetricsLogging(ClassOrInterfaceDeclaration template, String nameURL) {
+        MethodDeclaration method = template.findFirst(MethodDeclaration.class, x -> "toResponse".equals(x.getNameAsString()))
+                .orElseThrow(() -> new NoSuchElementException("Method toResponse not found, template has changed."));
 
         BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"));
         ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("Check for null dmn result not found, can't add monitoring to endpoint."));
         NodeList<Statement> statements = body.getStatements();
         String methodArgumentName = method.getParameters().get(0).getNameAsString();
         statements.addBefore(parseStatement(String.format("SystemMetricsCollector.registerException(\"%s\", %s.getStackTrace()[0].toString());", nameURL, methodArgumentName)), returnStmt);
-        return;
     }
 
     private void addMonitoringImports(CompilationUnit cu) {
         cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.SystemMetricsCollector"), false, false));
         cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder"), false, false));
+        cu.addImport(new ImportDeclaration(new Name("org.kie.addons.monitoring.system.metrics.SystemMetricsCollector"), false, false));
     }
 
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL) {

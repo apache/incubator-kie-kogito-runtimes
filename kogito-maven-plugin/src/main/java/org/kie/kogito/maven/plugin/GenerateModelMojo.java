@@ -97,9 +97,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(property = "kogito.persistence.enabled", defaultValue = "false")
     private boolean persistence;
 
-    @Parameter(property = "kogito.systemmonitoring.enabled", defaultValue = "false")
-    private boolean systemMonitoring;
-
     @Parameter(required = true, defaultValue = "${project.basedir}/src/main/resources")
     private File kieSourcesDirectory;
 

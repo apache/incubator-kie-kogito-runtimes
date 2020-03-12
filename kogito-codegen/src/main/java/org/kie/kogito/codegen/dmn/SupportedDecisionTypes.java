@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.codegen.grafana;
+package org.kie.kogito.codegen.dmn;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,12 +21,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
-import org.kie.kogito.codegen.grafana.types.AbstractDmnType;
-import org.kie.kogito.codegen.grafana.types.BooleanType;
-import org.kie.kogito.codegen.grafana.types.NumberType;
-import org.kie.kogito.codegen.grafana.types.StringType;
 
 public class SupportedDecisionTypes {
 
@@ -56,14 +54,14 @@ public class SupportedDecisionTypes {
         return dmnInternalClassToDmnStandardMap.get(c);
     }
 
-    public static Map<Integer, GrafanaFunction> getGrafanaFunction(String dmnType) {
+    public static SortedMap<Integer, GrafanaFunction> getGrafanaFunction(String dmnType) {
         if (isSupported(dmnType)) {
             Optional<AbstractDmnType> type = supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
             if (type.isPresent()) {
                 return type.get().getGrafanaFunctions();
             }
         }
-        return new HashMap<>();
+        return new TreeMap<>();
     }
 
     public static Collection<String> getSupportedDMNTypes() {

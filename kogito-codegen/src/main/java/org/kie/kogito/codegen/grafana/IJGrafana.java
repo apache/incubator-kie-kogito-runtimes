@@ -2,13 +2,12 @@ package org.kie.kogito.codegen.grafana;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.SortedMap;
 
 import org.kie.kogito.codegen.grafana.model.GrafanaDashboard;
 import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.codegen.grafana.model.panel.GrafanaPanel;
 import org.kie.kogito.codegen.grafana.model.panel.PanelType;
-import protostream.javassist.NotFoundException;
 
 public interface IJGrafana {
 
@@ -16,11 +15,11 @@ public interface IJGrafana {
 
     GrafanaPanel addPanel(PanelType type, String title, String expr);
 
-    GrafanaPanel addPanel(PanelType type, String title, String expr, Map<Integer, GrafanaFunction> functions);
+    GrafanaPanel addPanel(PanelType type, String title, String expr, SortedMap<Integer, GrafanaFunction> functions);
 
     boolean removePanelByTitle(String title);
 
-    GrafanaPanel getPanelByTitle(String title) throws NotFoundException;
+    GrafanaPanel getPanelByTitle(String title);
 
     String serialize() throws IOException;
 

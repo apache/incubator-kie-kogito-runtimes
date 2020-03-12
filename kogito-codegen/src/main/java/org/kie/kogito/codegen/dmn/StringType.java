@@ -13,9 +13,20 @@
  * limitations under the License.
  */
 
-package org.kie.addons.monitoring.system.metrics;
+package org.kie.kogito.codegen.dmn;
 
-public enum CountersTypesEnum {
-    EXCEPTIONS,
-    REQUESTS_STATUS_CODE,
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import org.kie.kogito.codegen.grafana.model.functions.GrafanaFunction;
+import org.kie.kogito.codegen.grafana.model.functions.IncreaseFunction;
+
+public class StringType extends AbstractDmnType {
+
+    public StringType() {
+        super(String.class, "string");
+        SortedMap<Integer, GrafanaFunction> grafanaFunctionsToApply = new TreeMap<>();
+        grafanaFunctionsToApply.put(1, new IncreaseFunction("10m"));
+        addFunctions(grafanaFunctionsToApply);
+    }
 }

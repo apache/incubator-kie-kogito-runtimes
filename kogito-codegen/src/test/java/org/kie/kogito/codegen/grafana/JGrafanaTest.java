@@ -18,8 +18,9 @@ package org.kie.kogito.codegen.grafana;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -115,7 +116,7 @@ public class JGrafanaTest {
         grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2", "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
         grafanaObj.addPanel(PanelType.STAT, "My Graph 2", "sum(api_http_stacktrace_exceptions)");
         grafanaObj.addPanel(PanelType.TABLE, "My Graph 2", "api_http_stacktrace_exceptions");
-        HashMap<Integer, GrafanaFunction> map = new HashMap();
+        SortedMap<Integer, GrafanaFunction> map = new TreeMap();
         map.put(1, new SumFunction());
         grafanaObj.addPanel(PanelType.GRAPH, "My Graph 3", "api_http_response_code{handler=\"world\"}", map);
         grafanaObj.removePanelByTitle("My Graph 2");
