@@ -436,7 +436,7 @@
           "refId": "A"
         }
       ],
-      "title": "Global system exception count per day",
+      "title": "Exception count per day",
       "type": "stat"
     }
   ],
