@@ -15,12 +15,13 @@
 
 package org.kie.kogito.dmn;
 
-import java.io.InputStreamReader;
-
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNRuntime;
 
+import java.io.InputStreamReader;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DMNKogitoTest {
 
@@ -28,5 +29,12 @@ public class DMNKogitoTest {
     public void testBasic() {
         DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(DMNKogitoTest.class.getResourceAsStream("TrafficViolation.dmn")));
         assertEquals(dmnRuntime.getModels().size(), 1);
+    }
+
+    @Test
+    public void testCreateGenericDMNRuntime() {
+        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime();
+        assertEquals(dmnRuntime.getModels().size(), 1);
+        assertNotNull(dmnRuntime.getModels().get(0).getResource());
     }
 }

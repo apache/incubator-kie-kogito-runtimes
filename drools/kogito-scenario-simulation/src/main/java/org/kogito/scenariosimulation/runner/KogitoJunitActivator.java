@@ -29,11 +29,7 @@ public class KogitoJunitActivator extends ScenarioJunitActivator {
 
     @Override
     protected void runChild(ScenarioRunnerDTO child, RunNotifier notifier) {
-        KogitoDMNScenarioRunner scenarioRunner = new KogitoDMNScenarioRunner(
-                child,
-                ExpressionEvaluatorFactory.create(
-                        null,
-                        child.getSettings().getType()));
+        KogitoDMNScenarioRunner scenarioRunner = new KogitoDMNScenarioRunner(child);
         scenarioRunner.run(notifier);
     }
 }
