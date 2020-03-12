@@ -8,6 +8,9 @@ pipeline {
         maven 'kie-maven-3.5.4'
         jdk 'kie-jdk1.8'
     }
+    triggers {
+        cron ('H 9 * * *')
+    }
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')
         timeout(time: 90, unit: 'MINUTES')
@@ -31,16 +34,6 @@ pipeline {
                 dir("kogito-apps") {
                     script {
                       maven.runMavenWithSubmarineSettings('clean deploy', false)
-                    }
-                }
-            }
-        }
-        stage('Build kogito-cloud') {
-            steps {
-                checkout([$class: 'GitSCM', branches: [[name: 'master']], browser: [$class: 'GithubWeb', repoUrl: 'git@github.com:kiegroup/kogito-cloud.git'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kogito-cloud']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'kie-ci-user-key', url: 'git@github.com:kiegroup/kogito-cloud.git']]])
-                dir("kogito-cloud") {
-                    script {
-                        maven.runMavenWithSubmarineSettings('clean deploy', false)
                     }
                 }
             }
