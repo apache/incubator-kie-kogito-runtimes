@@ -33,7 +33,6 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import org.drools.core.util.StringUtils;
@@ -175,11 +174,11 @@ public class DMNRestResourceGenerator {
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL) {
         BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"));
         NodeList<Statement> statements = body.getStatements();
-        IfStmt ifStmt = body.findFirst(IfStmt.class).orElseThrow(() -> new NoSuchElementException("Check for null dmn result not found, can't add monitoring to endpoint. Template was modified."));
+        ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("Return statement not found: can't add monitoring to endpoint. Template was modified."));
         statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
-        statements.addBefore(parseStatement("double endTime = System.nanoTime();"), ifStmt);
-        statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), ifStmt);
-        statements.addBefore(parseStatement(String.format("DMNResultMetricsBuilder.generateMetrics(result, \"%s\");", nameURL)), ifStmt);
+        statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt);
+        statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt);
+        statements.addBefore(parseStatement(String.format("DMNResultMetricsBuilder.generateMetrics(result, \"%s\");", nameURL)), returnStmt);
     }
 
     private void initializeApplicationField(FieldDeclaration fd) {
