@@ -89,10 +89,10 @@ public class SystemMetricsCollectorTest {
     }
 
     private double getQuantile(String name, String labelValue, double q) {
-        return registry.getSampleValue(name, new String[]{"handler", "quantile"}, new String[]{labelValue, Collector.doubleToGoString(q)}).doubleValue();
+        return registry.getSampleValue(name, new String[]{"endpoint", "quantile"}, new String[]{labelValue, Collector.doubleToGoString(q)}).doubleValue();
     }
 
     private Double getLabelsValue(String name, String handler, String identifier) {
-        return registry.getSampleValue(name, new String[]{"handler", "identifier"}, new String[]{handler, identifier});
+        return registry.getSampleValue(name, new String[]{"endpoint", "identifier"}, new String[]{handler, identifier});
     }
 }

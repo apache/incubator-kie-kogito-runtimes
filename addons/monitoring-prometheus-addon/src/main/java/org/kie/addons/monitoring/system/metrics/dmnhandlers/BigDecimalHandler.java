@@ -36,8 +36,8 @@ public class BigDecimalHandler implements TypeHandler<BigDecimal> {
     }
 
     @Override
-    public void record(String handler, BigDecimal sample) {
-        summary.labels(handler).observe(sample.doubleValue());
+    public void record(String decision, String endpointName, BigDecimal sample) {
+        summary.labels(decision, endpointName).observe(sample.doubleValue());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class BigDecimalHandler implements TypeHandler<BigDecimal> {
                 .quantile(0.99, 0.01)
                 .name(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
                 .help(DecisionConstants.DECISIONS_HELP)
-                .labelNames(DecisionConstants.HANDLER_LABEL);
+                .labelNames(DecisionConstants.DECISION_ENDPOINT_LABELS);
 
         return registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
     }

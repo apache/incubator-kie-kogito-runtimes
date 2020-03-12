@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class StringHandlerTest {
 
     private static final String ENDPOINT_NAME = "hello";
-
+    private static final String DECISION_NAME = "decision";
     CollectorRegistry registry;
     StringHandler handler;
 
@@ -52,17 +52,17 @@ public class StringHandlerTest {
         Double expectedCountStringC = 5.0;
 
         // Act
-        IntStream.rangeClosed(1, 3).forEach(x -> handler.record(ENDPOINT_NAME, "A"));
-        IntStream.rangeClosed(1, 2).forEach(x -> handler.record(ENDPOINT_NAME, "B"));
-        IntStream.rangeClosed(1, 5).forEach(x -> handler.record(ENDPOINT_NAME, "C"));
+        IntStream.rangeClosed(1, 3).forEach(x -> handler.record(DECISION_NAME, ENDPOINT_NAME, "A"));
+        IntStream.rangeClosed(1, 2).forEach(x -> handler.record(DECISION_NAME, ENDPOINT_NAME, "B"));
+        IntStream.rangeClosed(1, 5).forEach(x -> handler.record(DECISION_NAME, ENDPOINT_NAME, "C"));
 
         // Assert
-        assertEquals(expectedCountStringA, getLabelsValue(ENDPOINT_NAME, "A"));
-        assertEquals(expectedCountStringB, getLabelsValue(ENDPOINT_NAME, "B"));
-        assertEquals(expectedCountStringC, getLabelsValue(ENDPOINT_NAME, "C"));
+        assertEquals(expectedCountStringA, getLabelsValue(DECISION_NAME, ENDPOINT_NAME, "A"));
+        assertEquals(expectedCountStringB, getLabelsValue(DECISION_NAME, ENDPOINT_NAME, "B"));
+        assertEquals(expectedCountStringC, getLabelsValue(DECISION_NAME, ENDPOINT_NAME, "C"));
     }
 
-    private Double getLabelsValue(String name, String labelValue) {
-        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.HANDLER_IDENTIFIER_LABELS, new String[]{name, labelValue});
+    private Double getLabelsValue(String decision, String name, String labelValue) {
+        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS, new String[]{decision, name, labelValue});
     }
 }

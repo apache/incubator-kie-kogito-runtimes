@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.addons.monitoring.mocks.DMNDecisionResultMock;
 import org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.kogito.codegen.dmn.SupportedDecisionTypes;
+import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.kie.kogito.dmn.rest.DMNResult;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DMNResultMetricsBuilderTest {
-
+    private static final String ENDPOINT_NAME = "hello";
     CollectorRegistry registry;
 
     @BeforeEach
@@ -58,7 +58,7 @@ public class DMNResultMetricsBuilderTest {
         int expectedDictionaryDecisionWorld = 1;
 
         // Act
-        DMNResultMetricsBuilder.generateMetrics(dmnResult);
+        DMNResultMetricsBuilder.generateMetrics(dmnResult, ENDPOINT_NAME);
 
         // Assert
         assertEquals(expectedAlphabetDecisionA, getLabelsValue(SupportedDecisionTypes.fromInternalToStandard(String.class), "AlphabetDecision", "A"));
@@ -78,10 +78,10 @@ public class DMNResultMetricsBuilderTest {
     @Test
     public void GivenANullDMNResult_WhenMetricsAreRegistered_ThenTheSampleIsDiscarded() {
         // Assert
-        assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null));
+        assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null, ENDPOINT_NAME));
     }
 
     private Double getLabelsValue(String name, String decisionName, String labelValue) {
-        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.HANDLER_IDENTIFIER_LABELS, new String[]{decisionName, labelValue});
+        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS, new String[]{decisionName, ENDPOINT_NAME, labelValue});
     }
 }

@@ -63,17 +63,16 @@ import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.codegen.grafana.GrafanaConfigurationWriter;
 import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.kogito.conf.ClockType;
 import org.kie.kogito.conf.EventProcessingType;
+import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.units.AssignableChecker;
 
-import static java.util.stream.Collectors.toList;
-
 import static com.github.javaparser.StaticJavaParser.parse;
+import static java.util.stream.Collectors.toList;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;

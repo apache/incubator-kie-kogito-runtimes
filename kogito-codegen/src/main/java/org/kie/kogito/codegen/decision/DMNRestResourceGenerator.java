@@ -179,7 +179,7 @@ public class DMNRestResourceGenerator {
         statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
         statements.addBefore(parseStatement("double endTime = System.nanoTime();"), ifStmt);
         statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), ifStmt);
-        statements.addBefore(parseStatement("DMNResultMetricsBuilder.generateMetrics(result);"), ifStmt);
+        statements.addBefore(parseStatement(String.format("DMNResultMetricsBuilder.generateMetrics(result, \"%s\");", nameURL)), ifStmt);
     }
 
     private void initializeApplicationField(FieldDeclaration fd) {

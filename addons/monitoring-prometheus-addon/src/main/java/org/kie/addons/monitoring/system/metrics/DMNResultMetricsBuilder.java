@@ -25,8 +25,8 @@ import org.kie.addons.monitoring.system.metrics.dmnhandlers.BooleanHandler;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.StringHandler;
 import org.kie.addons.monitoring.system.metrics.dmnhandlers.TypeHandler;
 import org.kie.dmn.api.core.DMNDecisionResult;
-import org.kie.kogito.codegen.dmn.SupportedDecisionTypes;
 import org.kie.kogito.dmn.rest.DMNResult;
+import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class DMNResultMetricsBuilder {
         return handlers;
     }
 
-    public static void generateMetrics(DMNResult dmnResult) {
+    public static void generateMetrics(DMNResult dmnResult, String endpointName) {
         if (dmnResult == null) {
             LOGGER.warn("DMNResultMetricsBuilder can't register the metrics because the dmn result is null.");
             return;
@@ -61,7 +61,7 @@ public class DMNResultMetricsBuilder {
         for (DMNDecisionResult decision : decisionResults) {
             Object result = decision.getResult();
             if (SupportedDecisionTypes.isSupported(result.getClass())) {
-                handlers.get(result.getClass()).record(decision.getDecisionName(), result);
+                handlers.get(result.getClass()).record(decision.getDecisionName(), endpointName, result);
             }
         }
     }

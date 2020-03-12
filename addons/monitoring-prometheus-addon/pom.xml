@@ -34,6 +34,10 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>drools-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>grafana-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.spec.javax.ws.rs</groupId>

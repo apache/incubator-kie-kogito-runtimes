@@ -22,8 +22,7 @@ import java.util.stream.Collectors;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.grafana.IJGrafana;
-import org.kie.kogito.codegen.grafana.JGrafana;
+import org.kie.kogito.grafana.JGrafana;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -51,7 +50,7 @@ public class DecisionCodegenTest {
 
         assertEquals(2,dashboards.size());
 
-        IJGrafana vacationDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("Vacations.json")).findFirst().get().contents()));
+        JGrafana vacationDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("Vacations.json")).findFirst().get().contents()));
 
         assertEquals(7, vacationDashboard.getDashboard().panels.size());
     }

@@ -51,15 +51,15 @@ public class BooleanHandlerTest {
         Double expectedFalse = 2.0;
 
         // Act
-        IntStream.rangeClosed(1, 3).forEach(x -> handler.record(ENDPOINT_NAME, true));
-        IntStream.rangeClosed(1, 2).forEach(x -> handler.record(ENDPOINT_NAME, false));
+        IntStream.rangeClosed(1, 3).forEach(x -> handler.record("decision", ENDPOINT_NAME, true));
+        IntStream.rangeClosed(1, 2).forEach(x -> handler.record("decision", ENDPOINT_NAME, false));
 
         // Assert
-        assertEquals(expectedTrue, getLabelsValue(ENDPOINT_NAME, "true"));
-        assertEquals(expectedFalse, getLabelsValue(ENDPOINT_NAME, "false"));
+        assertEquals(expectedTrue, getLabelsValue("decision", ENDPOINT_NAME, "true"));
+        assertEquals(expectedFalse, getLabelsValue("decision", ENDPOINT_NAME, "false"));
     }
 
-    private Double getLabelsValue(String name, String labelValue) {
-        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.HANDLER_IDENTIFIER_LABELS, new String[]{name, labelValue});
+    private Double getLabelsValue(String decision, String name, String labelValue) {
+        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS, new String[]{decision, name, labelValue});
     }
 }

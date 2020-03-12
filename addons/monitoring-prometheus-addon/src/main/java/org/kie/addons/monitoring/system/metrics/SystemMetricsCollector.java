@@ -24,9 +24,9 @@ public class SystemMetricsCollector {
 
     private static final String STATUS_CODE_HELP = "Request status code.";
 
-    private static final String[] HANDLER_LABEL = new String[]{"handler"};
+    private static final String[] ENDPOINT_LABEL = new String[]{"endpoint"};
 
-    private static final String[] HANDLER_IDENTIFIER_LABELS = new String[]{"handler", "identifier"};
+    private static final String[] ENDPOINT_INDENTIFIER_LABELS = new String[]{"endpoint", "identifier"};
 
     private static final String ELAPSED_TIME_NAME = "api_execution_elapsed_nanosecond";
 
@@ -39,12 +39,12 @@ public class SystemMetricsCollector {
     private static final Counter REQUEST_STATUS_CODE_COUNTER =
             Counter.build().name(STATUS_CODE_NAME)
                     .help(STATUS_CODE_HELP)
-                    .labelNames(HANDLER_IDENTIFIER_LABELS).register();
+                    .labelNames(ENDPOINT_INDENTIFIER_LABELS).register();
 
     private static final Counter EXCEPTIONS_COUNTER =
             Counter.build().name(EXCEPTIONS_NAME)
                     .help(EXCEPTIONS_HELP)
-                    .labelNames(HANDLER_IDENTIFIER_LABELS).register();
+                    .labelNames(ENDPOINT_INDENTIFIER_LABELS).register();
 
     private static final Summary ELAPSED_TIME_SUMMARY =
             Summary.build() // Calculate quantiles over a sliding window of 3 minutes.
@@ -57,21 +57,21 @@ public class SystemMetricsCollector {
                     .maxAgeSeconds(180)
                     .name(ELAPSED_TIME_NAME)
                     .help(ELAPSED_TIME_HELP)
-                    .labelNames(HANDLER_LABEL)
+                    .labelNames(ENDPOINT_LABEL)
                     .register();
 
     private SystemMetricsCollector() {
     }
 
-    public static void registerStatusCodeRequest(String handler, String statusCode) {
-        REQUEST_STATUS_CODE_COUNTER.labels(handler, statusCode).inc();
+    public static void registerStatusCodeRequest(String endpoint, String statusCode) {
+        REQUEST_STATUS_CODE_COUNTER.labels(endpoint, statusCode).inc();
     }
 
-    public static void registerElapsedTimeSampleMetrics(String handler, double elapsedTime) {
-        ELAPSED_TIME_SUMMARY.labels(handler).observe(elapsedTime);
+    public static void registerElapsedTimeSampleMetrics(String endpoint, double elapsedTime) {
+        ELAPSED_TIME_SUMMARY.labels(endpoint).observe(elapsedTime);
     }
 
-    public static void registerException(String handler, String stackTrace) {
-        EXCEPTIONS_COUNTER.labels(handler, stackTrace).inc();
+    public static void registerException(String endpoint, String stackTrace) {
+        EXCEPTIONS_COUNTER.labels(endpoint, stackTrace).inc();
     }
 }

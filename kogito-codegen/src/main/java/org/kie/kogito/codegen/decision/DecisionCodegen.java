@@ -51,7 +51,7 @@ import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.codegen.grafana.GrafanaConfigurationWriter;
+import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;

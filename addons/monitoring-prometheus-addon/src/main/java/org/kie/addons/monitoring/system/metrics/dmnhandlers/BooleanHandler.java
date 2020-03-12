@@ -34,8 +34,8 @@ public class BooleanHandler implements TypeHandler<Boolean> {
     }
 
     @Override
-    public void record(String handler, Boolean sample) {
-        counter.labels(handler, sample.toString()).inc();
+    public void record(String decision, String endpointName, Boolean sample) {
+        counter.labels(decision, endpointName, sample.toString()).inc();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class BooleanHandler implements TypeHandler<Boolean> {
     private Counter initializeCounter(String dmnType, CollectorRegistry registry) {
         Counter.Builder builder = Counter.build().name(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
                 .help(DecisionConstants.DECISIONS_HELP)
-                .labelNames(DecisionConstants.HANDLER_IDENTIFIER_LABELS);
+                .labelNames(DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS);
 
         return registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
     }
