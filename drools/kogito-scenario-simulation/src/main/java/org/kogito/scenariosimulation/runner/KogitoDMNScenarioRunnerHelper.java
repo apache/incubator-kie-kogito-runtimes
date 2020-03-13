@@ -51,7 +51,7 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
         if (!ScenarioSimulationModel.Type.DMN.equals(settings.getType())) {
             throw new ScenarioException("Impossible to run a not-DMN simulation with DMN runner");
         }
-        DMNModel dmnModel = DMNSimulationUtils.extractDMNModel(dmnRuntime, settings.getDmnFilePath());
+        DMNModel dmnModel = getDMNModel(dmnRuntime, settings);
         DMNContext dmnContext = dmnRuntime.newContext();
 
         loadInputData(scenarioRunnerData.getBackgrounds(), dmnContext);
@@ -64,6 +64,15 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
         toReturn.put(DMN_RESULT, dmnResult);
 
         return toReturn;
+    }
+
+    private DMNModel getDMNModel(DMNRuntime dmnRuntime, Settings settings) {
+        try {
+            return DMNSimulationUtils.extractDMNModel(dmnRuntime, settings.getDmnFilePath());
+        } catch (Exception e) {
+            // if filename is not available or it fails, try directly with namespace/name
+            return dmnRuntime.getModel(settings.getDmnNamespace(), settings.getDmnName());
+        }
     }
 
     protected void loadInputData(List<InstanceGiven> dataToLoad, DMNContext dmnContext) {

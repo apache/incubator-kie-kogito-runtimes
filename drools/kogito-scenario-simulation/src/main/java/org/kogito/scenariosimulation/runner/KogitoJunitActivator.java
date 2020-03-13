@@ -15,7 +15,6 @@
  */
 package org.kogito.scenariosimulation.runner;
 
-import org.drools.scenariosimulation.backend.expression.ExpressionEvaluatorFactory;
 import org.drools.scenariosimulation.backend.runner.ScenarioJunitActivator;
 import org.drools.scenariosimulation.backend.runner.model.ScenarioRunnerDTO;
 import org.junit.runner.notification.RunNotifier;
