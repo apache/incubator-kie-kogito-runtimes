@@ -188,7 +188,12 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
         CompositeKnowledgeBuilder batch = modelBuilder.batch();
         resources.forEach(f -> batch.add(f, f.getResourceType()));
-        batch.build();
+
+        try {
+            batch.build();
+        } catch (RuntimeException e) {
+            throw new RuleCodegenError(e, modelBuilder.getErrors().getErrors());
+        }
 
         if (modelBuilder.hasErrors()) {
             throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
