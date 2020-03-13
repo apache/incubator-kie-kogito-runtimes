@@ -380,7 +380,7 @@
         {
           "expr": "increase(api_http_stacktrace_exceptions{endpoint=\"$handlerName$\"}[1d])",
           "format": "table",
-          "instant": false,
+          "instant": true,
           "intervalFactor": 2,
           "refId": "A"
         }
