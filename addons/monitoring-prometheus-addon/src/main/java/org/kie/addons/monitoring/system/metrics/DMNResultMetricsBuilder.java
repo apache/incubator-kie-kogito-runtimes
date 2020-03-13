@@ -60,7 +60,7 @@ public class DMNResultMetricsBuilder {
         List<DMNDecisionResult> decisionResults = dmnResult.getDecisionResults();
         for (DMNDecisionResult decision : decisionResults) {
             Object result = decision.getResult();
-            if (SupportedDecisionTypes.isSupported(result.getClass())) {
+            if (result != null && SupportedDecisionTypes.isSupported(result.getClass())) {
                 handlers.get(result.getClass()).record(decision.getDecisionName(), endpointName, result);
             }
         }
