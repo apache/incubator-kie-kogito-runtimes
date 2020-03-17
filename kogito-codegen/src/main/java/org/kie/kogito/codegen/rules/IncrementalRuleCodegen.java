@@ -80,7 +80,7 @@ import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public class IncrementalRuleCodegen extends AbstractGenerator {
 
-    private final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
+    private static final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
     private final Collection<Resource> resources;
     private RuleUnitContainerGenerator moduleGenerator;
 

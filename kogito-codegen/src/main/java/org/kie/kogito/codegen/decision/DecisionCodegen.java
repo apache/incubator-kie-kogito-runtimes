@@ -59,7 +59,7 @@ import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public class DecisionCodegen extends AbstractGenerator {
 
-    private final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
+    private static final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
     private String packageName;
     private String applicationCanonicalName;
     private DependencyInjectionAnnotator annotator;
