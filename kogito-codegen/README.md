@@ -4,7 +4,8 @@ Kogito Codegen
 This repository contains the shared (Maven Plug-In, Quarkus Extension, ...)
 code generation logic for Kogito: processes, rules, decisions, etc.
 
-- `GrafanaConfigurationWriter` is the main entry point. 
+- `ApplicationGenerator` is the main entry point. The fluent API allows to 
+configure its global behavior.
 
     ```java
     ApplicationGenerator appGen =

@@ -24,7 +24,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.kie.dmn.model.v1_2.TDecision;
+import org.kie.dmn.model.api.Decision;
 import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.kie.kogito.grafana.model.panel.PanelType;
 import org.slf4j.Logger;
@@ -58,7 +58,7 @@ public class GrafanaConfigurationWriter {
      * @param decisions: The decisions in the DMN model.
      * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the arguments.
      */
-    public static String generateDashboardForDMNEndpoint(String templatePath, String endpoint, List<TDecision> decisions) {
+    public static String generateDashboardForDMNEndpoint(String templatePath, String endpoint, List<Decision> decisions) {
         String template = readStandardDashboard(templatePath);
         template = customizeTemplate(template, endpoint);
 
@@ -70,7 +70,7 @@ public class GrafanaConfigurationWriter {
             return null;
         }
 
-        for (TDecision decision : decisions) {
+        for (Decision decision : decisions) {
             String type = decision.getVariable().getTypeRef().getLocalPart();
             if (SupportedDecisionTypes.isSupported(type)) {
                 jgrafana.addPanel(PanelType.GRAPH,

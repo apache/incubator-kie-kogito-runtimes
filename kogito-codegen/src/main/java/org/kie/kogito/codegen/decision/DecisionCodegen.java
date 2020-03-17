@@ -43,7 +43,7 @@ import org.kie.api.io.ResourceType;
 import org.kie.dmn.backend.marshalling.v1x.DMNMarshallerFactory;
 import org.kie.dmn.core.assembler.DMNResource;
 import org.kie.dmn.model.api.Definitions;
-import org.kie.dmn.model.v1_2.TDecision;
+import org.kie.dmn.model.api.Decision;
 import org.kie.internal.io.ResourceWithConfigurationImpl;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationGenerator;
@@ -185,7 +185,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
     private void generateAndStoreGrafanaDashboard(DMNRestResourceGenerator resourceGenerator) {
         Definitions definitions = resourceGenerator.getDefinitions();
-        List<TDecision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> (TDecision) x).collect(Collectors.toList());
+        List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect(Collectors.toList());
 
         String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(grafanaTemplatePath, resourceGenerator.getNameURL(), decisions);
         generatedFiles.add(
