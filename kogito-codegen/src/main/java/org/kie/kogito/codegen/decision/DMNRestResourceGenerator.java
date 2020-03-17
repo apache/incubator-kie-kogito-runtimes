@@ -158,7 +158,7 @@ public class DMNRestResourceGenerator {
         MethodDeclaration method = template.findFirst(MethodDeclaration.class, x -> "toResponse".equals(x.getNameAsString()))
                 .orElseThrow(() -> new NoSuchElementException("Method toResponse not found, template has changed."));
 
-        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"));
+        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("This method should be invoked only with concrete classes and not with abstract methods or interfaces."));
         ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("Check for null dmn result not found, can't add monitoring to endpoint."));
         NodeList<Statement> statements = body.getStatements();
         String methodArgumentName = method.getParameters().get(0).getNameAsString();
@@ -172,7 +172,7 @@ public class DMNRestResourceGenerator {
     }
 
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL) {
-        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"));
+        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("This method should be invoked only with concrete classes and not with abstract methods or interfaces."));
         NodeList<Statement> statements = body.getStatements();
         ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("Return statement not found: can't add monitoring to endpoint. Template was modified."));
         statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
