@@ -12,7 +12,7 @@ This repository contains the library to create and customize grafana dashboards.
     
     The following method instead will also add some panels depending on the decisions included in the DMN model.
     ```java
-    public static String generateDashboardForDMNEndpoint(String templatePath, String endpoint, List<TDecision> decisions);
+    public static String generateDashboardForDMNEndpoint(String templatePath, String endpoint, List<Decision> decisions);
     ```
 
 - For full customization it is possible to use the class `JGrafana`, that contains all the properties to fully customize a dashboard.
