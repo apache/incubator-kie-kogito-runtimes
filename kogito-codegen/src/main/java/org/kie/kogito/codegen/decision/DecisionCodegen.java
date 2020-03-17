@@ -59,6 +59,7 @@ import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public class DecisionCodegen extends AbstractGenerator {
 
+    private final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
     private String packageName;
     private String applicationCanonicalName;
     private DependencyInjectionAnnotator annotator;
@@ -186,7 +187,7 @@ public class DecisionCodegen extends AbstractGenerator {
         Definitions definitions = resourceGenerator.getDefinitions();
         List<TDecision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof TDecision).map(x -> (TDecision) x).collect(Collectors.toList());
 
-        String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(resourceGenerator.getNameURL(), decisions);
+        String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(grafanaTemplatePath, resourceGenerator.getNameURL(), decisions);
         generatedFiles.add(
                 new org.kie.kogito.codegen.GeneratedFile(
                         org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,

@@ -34,25 +34,32 @@ public class GrafanaConfigurationWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(GrafanaConfigurationWriter.class);
 
-    private static final String grafanaTemplateResourcePath = "/grafana-dashboard-template/dashboard-template.json";
-
     private GrafanaConfigurationWriter() {
         // Intentionally left blank.
     }
 
-    public static String readStandardDashboard() {
-
-        InputStream is = GrafanaConfigurationWriter.class.getResourceAsStream(grafanaTemplateResourcePath);
-        return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
-    }
-
-    public static String generateDashboardForEndpoint(String handlerName) {
-        String template = readStandardDashboard();
+    /**
+     * Adds a panel of a type to the dashboard.
+     *
+     * @param templatePath:  The path to the dashboard template. It must be a valid grafana dashboard in JSON format.
+     * @param handlerName: The name of the endpoint.
+     * @return: The template customized for the endpoint.
+     */
+    public static String generateDashboardForEndpoint(String templatePath, String handlerName) {
+        String template = readStandardDashboard(templatePath);
         return customizeTemplate(template, handlerName);
     }
 
-    public static String generateDashboardForDMNEndpoint(String endpoint, List<TDecision> decisions) {
-        String template = readStandardDashboard();
+    /**
+     * Adds a panel of a type to the dashboard.
+     *
+     * @param templatePath:  The path to the dashboard template. It must be a valid grafana dashboard in JSON format.
+     * @param endpoint: The name of the endpoint.
+     * @param decisions: The decisions in the DMN model.
+     * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the arguments.
+     */
+    public static String generateDashboardForDMNEndpoint(String templatePath, String endpoint, List<TDecision> decisions) {
+        String template = readStandardDashboard(templatePath);
         template = customizeTemplate(template, endpoint);
 
         JGrafana jgrafana;
@@ -82,6 +89,12 @@ public class GrafanaConfigurationWriter {
             logger.warn("Could not serialize the grafana dashboard template.", e);
             return null;
         }
+    }
+
+    private static String readStandardDashboard(String templatePath) {
+
+        InputStream is = GrafanaConfigurationWriter.class.getResourceAsStream(templatePath);
+        return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
     }
 
     private static String customizeTemplate(String template, String handlerName) {

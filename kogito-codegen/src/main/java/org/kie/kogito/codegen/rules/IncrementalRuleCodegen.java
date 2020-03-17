@@ -80,6 +80,7 @@ import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public class IncrementalRuleCodegen extends AbstractGenerator {
 
+    private final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
     private final Collection<Resource> resources;
     private RuleUnitContainerGenerator moduleGenerator;
 
@@ -256,7 +257,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                     generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription(), assignableChecker ).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
                     for (QueryEndpointGenerator query : queries) {
                         if (useMonitoring){
-                            String dashboard = GrafanaConfigurationWriter.generateDashboardForEndpoint(query.getEndpointName());
+                            String dashboard = GrafanaConfigurationWriter.generateDashboardForEndpoint(grafanaTemplatePath, query.getEndpointName());
                             generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
                                                                                         "/dashboards/dashboard-endpoint-" + query.getEndpointName() + ".json",
                                                                                         dashboard));
