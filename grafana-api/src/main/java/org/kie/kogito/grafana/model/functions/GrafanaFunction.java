@@ -15,11 +15,26 @@
 
 package org.kie.kogito.grafana.model.functions;
 
+/**
+ * Interface for a grafana/prometheus function. See <a href="https://prometheus.io/docs/prometheus/latest/querying/functions/">https://prometheus.io/docs/prometheus/latest/querying/functions/</>
+ */
 public interface GrafanaFunction {
 
+    /**
+     * Gets the function name.
+     * @return The function name.
+     */
     String getFunction();
 
+    /**
+     * Returns a boolean representing the presence of a time parameter for the function.
+     * @return true if the function has a time parameter, false otherwise.
+     */
     boolean hasTimeParameter();
 
+    /**
+     * Gets the time parameter.
+     * @return The time parameter.
+     */
     String getTimeParameter();
 }
