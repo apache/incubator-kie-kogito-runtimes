@@ -34,7 +34,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.xml.namespace.QName;
-
 import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.io.internal.InternalResource;
@@ -42,8 +41,8 @@ import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.dmn.backend.marshalling.v1x.DMNMarshallerFactory;
 import org.kie.dmn.core.assembler.DMNResource;
-import org.kie.dmn.model.api.Definitions;
 import org.kie.dmn.model.api.Decision;
+import org.kie.dmn.model.api.Definitions;
 import org.kie.internal.io.ResourceWithConfigurationImpl;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationGenerator;
@@ -58,6 +57,63 @@ import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 public class DecisionCodegen extends AbstractGenerator {
+
+    public static DecisionCodegen ofJar(Path jarPath) throws IOException {
+        List<DMNResource> resources = new ArrayList<>();
+
+        try (ZipFile zipFile = new ZipFile( jarPath.toFile() )) {
+            Enumeration< ? extends ZipEntry> entries = zipFile.entries();
+            while ( entries.hasMoreElements() ) {
+                ZipEntry entry = entries.nextElement();
+                ResourceType resourceType = determineResourceType(entry.getName());
+                if (entry.getName().endsWith(".dmn")) {
+                    InternalResource resource = new ByteArrayResource( readBytesFromInputStream( zipFile.getInputStream( entry ) ) );
+                    resource.setResourceType( resourceType );
+                    resource.setSourcePath( entry.getName() );
+                    resources.add( toDmnResource( resource ) );
+                }
+            }
+        }
+
+        return ofDecisions(jarPath, resources);
+    }
+
+    public static DecisionCodegen ofPath(Path path) throws IOException {
+        Path srcPath = Paths.get(path.toString());
+        try (Stream<Path> filesStream = Files.walk(srcPath)) {
+            List<File> files = filesStream.filter(p -> p.toString().endsWith(".dmn"))
+                    .map(Path::toFile)
+                    .collect(Collectors.toList());
+            return ofFiles(srcPath, files);
+        }
+    }
+
+    public static DecisionCodegen ofFiles(Path basePath, Collection<File> files) throws IOException {
+        List<DMNResource> result = parseDecisions(files);
+        return ofDecisions(basePath, result);
+    }
+
+    private static DecisionCodegen ofDecisions(Path basePath, List<DMNResource> result) {
+        return new DecisionCodegen(basePath, result);
+    }
+
+    private static List<DMNResource> parseDecisions(Collection<File> files) throws IOException {
+        List<DMNResource> result = new ArrayList<>();
+        for (File dmnFile : files) {
+            FileSystemResource r = new FileSystemResource(dmnFile);
+            result.add(toDmnResource( r ));
+        }
+        return result;
+    }
+
+    private static DMNResource toDmnResource( Resource r ) throws IOException {
+        Definitions defs = parseDecisionFile(r);
+        return new DMNResource(new QName(defs.getNamespace(), defs.getName()), new ResourceWithConfigurationImpl(r, null, null, null), defs);
+    }
+
+    private static Definitions parseDecisionFile(Resource r) throws IOException {
+        return DMNMarshallerFactory.newDefaultMarshaller().unmarshal(r.getReader());
+    }
 
     private static final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
     private String packageName;
@@ -100,64 +156,6 @@ public class DecisionCodegen extends AbstractGenerator {
         return moduleGenerator;
     }
 
-    @Override
-    public void updateConfig(ConfigGenerator cfg) {
-        // nothing.
-    }
-
-    private void storeFile(GeneratedFile.Type type, String path, String source) {
-        generatedFiles.add(new GeneratedFile(type, path, log(source).getBytes(StandardCharsets.UTF_8)));
-    }
-
-    public List<GeneratedFile> getGeneratedFiles() {
-        return generatedFiles;
-    }
-
-    @Override
-    public ApplicationSection section() {
-        return moduleGenerator;
-    }
-
-    public DecisionCodegen withMonitoring(boolean useMonitoring) {
-        this.useMonitoring = useMonitoring;
-        return this;
-    }
-
-    public static DecisionCodegen ofJar(Path jarPath) throws IOException {
-        List<DMNResource> resources = new ArrayList<>();
-
-        try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                ResourceType resourceType = determineResourceType(entry.getName());
-                if (entry.getName().endsWith(".dmn")) {
-                    InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
-                    resource.setResourceType(resourceType);
-                    resource.setSourcePath(entry.getName());
-                    resources.add(toDmnResource(resource));
-                }
-            }
-        }
-
-        return ofDecisions(jarPath, resources);
-    }
-
-    public static DecisionCodegen ofPath(Path path) throws IOException {
-        Path srcPath = Paths.get(path.toString());
-        try (Stream<Path> filesStream = Files.walk(srcPath)) {
-            List<File> files = filesStream.filter(p -> p.toString().endsWith(".dmn"))
-                    .map(Path::toFile)
-                    .collect(Collectors.toList());
-            return ofFiles(srcPath, files);
-        }
-    }
-
-    public static DecisionCodegen ofFiles(Path basePath, Collection<File> files) throws IOException {
-        List<DMNResource> result = parseDecisions(files);
-        return ofDecisions(basePath, result);
-    }
-
     public List<GeneratedFile> generate() {
         if (models.isEmpty()) {
             return Collections.emptyList();
@@ -195,25 +193,27 @@ public class DecisionCodegen extends AbstractGenerator {
                         dashboard));
     }
 
-    private static DecisionCodegen ofDecisions(Path basePath, List<DMNResource> result) {
-        return new DecisionCodegen(basePath, result);
+    @Override
+    public void updateConfig(ConfigGenerator cfg) {
+        // nothing.
     }
 
-    private static List<DMNResource> parseDecisions(Collection<File> files) throws IOException {
-        List<DMNResource> result = new ArrayList<>();
-        for (File dmnFile : files) {
-            FileSystemResource r = new FileSystemResource(dmnFile);
-            result.add(toDmnResource(r));
-        }
-        return result;
+    private void storeFile(GeneratedFile.Type type, String path, String source) {
+        generatedFiles.add(new GeneratedFile(type, path, log( source ).getBytes( StandardCharsets.UTF_8 )));
     }
 
-    private static DMNResource toDmnResource(Resource r) throws IOException {
-        Definitions defs = parseDecisionFile(r);
-        return new DMNResource(new QName(defs.getNamespace(), defs.getName()), new ResourceWithConfigurationImpl(r, null, null, null), defs);
+    public List<GeneratedFile> getGeneratedFiles() {
+        return generatedFiles;
     }
 
-    private static Definitions parseDecisionFile(Resource r) throws IOException {
-        return DMNMarshallerFactory.newDefaultMarshaller().unmarshal(r.getReader());
+    @Override
+    public ApplicationSection section() {
+        return moduleGenerator;
     }
+
+    public DecisionCodegen withMonitoring(boolean useMonitoring) {
+        this.useMonitoring = useMonitoring;
+        return this;
+    }
+
 }
