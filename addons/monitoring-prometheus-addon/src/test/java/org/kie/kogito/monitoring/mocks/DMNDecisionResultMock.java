@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.addons.monitoring.mocks;
+package org.kie.kogito.monitoring.mocks;
 
 import java.util.ArrayList;
 import java.util.List;

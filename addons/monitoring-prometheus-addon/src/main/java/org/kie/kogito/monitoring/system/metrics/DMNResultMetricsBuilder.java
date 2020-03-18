@@ -13,20 +13,20 @@
  * limitations under the License.
  */
 
-package org.kie.addons.monitoring.system.metrics;
+package org.kie.kogito.monitoring.system.metrics;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.BooleanHandler;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.StringHandler;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.TypeHandler;
 import org.kie.dmn.api.core.DMNDecisionResult;
 import org.kie.kogito.dmn.rest.DMNResult;
 import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BooleanHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.StringHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.TypeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

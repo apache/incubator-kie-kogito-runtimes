@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.addons.monitoring.system.metrics.dmnhandlers;
+package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
 
 import java.math.BigDecimal;
 

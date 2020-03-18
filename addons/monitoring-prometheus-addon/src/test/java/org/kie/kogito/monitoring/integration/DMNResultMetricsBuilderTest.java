@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.addons.monitoring.integration;
+package org.kie.kogito.monitoring.integration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.addons.monitoring.mocks.DMNDecisionResultMock;
-import org.kie.addons.monitoring.system.metrics.DMNResultMetricsBuilder;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.DecisionConstants;
+import org.kie.kogito.monitoring.mocks.DMNDecisionResultMock;
 import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.kie.kogito.dmn.rest.DMNResult;
+import org.kie.kogito.monitoring.system.metrics.DMNResultMetricsBuilder;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;

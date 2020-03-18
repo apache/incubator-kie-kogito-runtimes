@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.addons.monitoring.integration;
+package org.kie.kogito.monitoring.integration;
 
 import java.util.stream.IntStream;
 
@@ -21,8 +21,8 @@ import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.addons.monitoring.system.metrics.dmnhandlers.StringHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.StringHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

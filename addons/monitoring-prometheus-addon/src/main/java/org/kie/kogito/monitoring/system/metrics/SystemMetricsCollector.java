@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.addons.monitoring.system.metrics;
+package org.kie.kogito.monitoring.system.metrics;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.Summary;
