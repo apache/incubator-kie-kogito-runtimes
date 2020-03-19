@@ -108,75 +108,56 @@ public class NodeInstanceFactoryRegistry {
 
     protected NodeInstanceFactory get(Class<?> clazz) {
         // hard wired nodes:
-        if (RuleSetNode.class == clazz) {
-            return factory(RuleSetNodeInstance::new);
+        switch (clazz.getSimpleName()) {
+            case "RuleSetNode":
+                return factory(RuleSetNodeInstance::new);
+            case "Split":
+                return factory(SplitInstance::new);
+            case "Join":
+                return factoryOnce(JoinInstance::new);
+            case "StartNode":
+                return factory(StartNodeInstance::new);
+            case "EndNode":
+                return factory(EndNodeInstance::new);
+            case "MilestoneNode":
+                return factory(MilestoneNodeInstance::new);
+            case "SubProcessNode":
+                return factory(SubProcessNodeInstance::new);
+            case "ActionNode":
+                return factory(ActionNodeInstance::new);
+            case "WorkItemNode":
+                return factory(WorkItemNodeInstance::new);
+            case "TimerNode":
+                return factory(TimerNodeInstance::new);
+            case "FaultNode":
+                return factory(FaultNodeInstance::new);
+            case "EventSubProcessNode":
+                return factory(EventSubProcessNodeInstance::new);
+            case "CompositeNode":
+                return factory(CompositeNodeInstance::new);
+            case "CompositeContextNode":
+                return factory(CompositeContextNodeInstance::new);
+            case "HumanTaskNode":
+                return factory(HumanTaskNodeInstance::new);
+            case "ForEachNode":
+                return factory(ForEachNodeInstance::new);
+            case "EventNode":
+                return factory(EventNodeInstance::new);
+            case "StateNode":
+                return factory(StateNodeInstance::new);
+            case "DynamicNode":
+                return factory(DynamicNodeInstance::new);
+            case "BoundaryEventNode":
+                return factory(BoundaryEventNodeInstance::new);
+            case "CatchLinkNode":
+                return factory(
+                        CatchLinkNodeInstance::new);
+            case "ThrowLinkNode":
+                return factory(
+                        ThrowLinkNodeInstance::new);
+            default:
+                return this.registry.get(clazz);
         }
-        if (Split.class == clazz) {
-            return factory(SplitInstance::new);
-        }
-        if (Join.class == clazz) {
-            return factoryOnce(JoinInstance::new);
-        }
-        if (StartNode.class == clazz) {
-            return factory(StartNodeInstance::new);
-        }
-        if (EndNode.class == clazz) {
-            return factory(EndNodeInstance::new);
-        }
-        if (MilestoneNode.class == clazz) {
-            return factory(MilestoneNodeInstance::new);
-        }
-        if (SubProcessNode.class == clazz) {
-            return factory(SubProcessNodeInstance::new);
-        }
-        if (ActionNode.class == clazz) {
-            return factory(ActionNodeInstance::new);
-        }
-        if (WorkItemNode.class == clazz) {
-            return factory(WorkItemNodeInstance::new);
-        }
-        if (TimerNode.class == clazz) {
-            return factory(TimerNodeInstance::new);
-        }
-        if (FaultNode.class == clazz) {
-            return factory(FaultNodeInstance::new);
-        }
-        if (EventSubProcessNode.class == clazz) {
-            return factory(EventSubProcessNodeInstance::new);
-        }
-        if (CompositeNode.class == clazz) {
-            return factory(CompositeNodeInstance::new);
-        }
-        if (CompositeContextNode.class == clazz) {
-            return factory(CompositeContextNodeInstance::new);
-        }
-        if (HumanTaskNode.class == clazz) {
-            return factory(HumanTaskNodeInstance::new);
-        }
-        if (ForEachNode.class == clazz) {
-            return factory(ForEachNodeInstance::new);
-        }
-        if (EventNode.class == clazz) {
-            return factory(EventNodeInstance::new);
-        }
-        if (StateNode.class == clazz) {
-            return factory(StateNodeInstance::new);
-        }
-        if (DynamicNode.class == clazz) {
-            return factory(DynamicNodeInstance::new);
-        }
-        if (BoundaryEventNode.class == clazz) {
-            return factory(BoundaryEventNodeInstance::new);
-        }
-        if (CatchLinkNode.class == clazz) {
-            return factory(
-                    CatchLinkNodeInstance::new);
-        }
-        if (ThrowLinkNode.class == clazz) {
-            return factory(
-                    ThrowLinkNodeInstance::new);
-        }
-        return this.registry.get(clazz);
     }
 
     protected NodeInstanceFactory factoryOnce(Supplier<NodeInstanceImpl> supplier) {
