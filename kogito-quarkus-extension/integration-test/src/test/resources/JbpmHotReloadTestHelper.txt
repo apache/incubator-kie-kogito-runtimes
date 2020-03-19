@@ -1,0 +1,18 @@
+package io.quarkus.it.kogito.jbpm;
+
+import javax.enterprise.context.ApplicationScoped;
+
+/**
+ * HotReloadTestHelper
+ */
+@ApplicationScoped
+public class JbpmHotReloadTestHelper {
+
+    public String toUpper(String text) {
+        return text.toUpperCase();
+    }
+
+    public String toLower(String text) {
+        return text.toLowerCase();
+    }
+}
