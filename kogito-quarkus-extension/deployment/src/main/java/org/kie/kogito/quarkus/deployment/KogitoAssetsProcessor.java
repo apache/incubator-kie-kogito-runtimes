@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
 
 public class KogitoAssetsProcessor {
 
-    private final transient String generatedDashboardsDir = "resources/";
+    private final transient String generatedDashboardsDir = "/target/resources/";
     private final transient String generatedClassesDir = System.getProperty("quarkus.debug.generated-classes-dir");
     private final transient String appPackageName = "org.kie.kogito.app";
     private final transient String persistenceFactoryClass = "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
@@ -177,7 +177,8 @@ public class KogitoAssetsProcessor {
         Collection<GeneratedFile> javaFiles = generatedFiles.stream().filter( f -> f.relativePath().endsWith( ".java" ) ).collect( Collectors.toCollection( ArrayList::new ));
         Collection<GeneratedFile> resourceFiles = generatedFiles.stream().filter( f -> f.getType() == GeneratedFile.Type.RESOURCE ).collect( Collectors.toCollection( ArrayList::new ));
 
-        writeResourceFiles(resourceFiles);
+        String resourcePath = Paths.get(projectPath.toString()).toString() + generatedDashboardsDir;
+        writeResourceFiles(resourcePath, resourceFiles);
 
         if (!javaFiles.isEmpty()) {
 
@@ -227,10 +228,10 @@ public class KogitoAssetsProcessor {
 
     }
 
-    private void writeResourceFiles(Collection<GeneratedFile> resourceFiles){
+    private void writeResourceFiles(String projectPath, Collection<GeneratedFile> resourceFiles){
         resourceFiles.forEach(f -> {
             try {
-                writeGeneratedFile(f, generatedDashboardsDir);
+                writeGeneratedFile(f, projectPath);
             } catch (IOException e) {
                 logger.warn(String.format("Could not write resource file %s", f.toString()), e);
             }
