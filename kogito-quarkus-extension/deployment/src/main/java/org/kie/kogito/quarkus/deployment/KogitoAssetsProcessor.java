@@ -68,12 +68,12 @@ import org.slf4j.LoggerFactory;
 
 public class KogitoAssetsProcessor {
 
-    private final transient String generatedDashboardsDir = "/target/resources/";
+    private static final String generatedDashboardsDir = "/target/resources/";
+    private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
     private final transient String generatedClassesDir = System.getProperty("quarkus.debug.generated-classes-dir");
     private final transient String appPackageName = "org.kie.kogito.app";
     private final transient String persistenceFactoryClass = "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
     private final transient String metricsClass = "org.kie.kogito.monitoring.rest.MetricsResource";
-    private final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
 
     @BuildStep
     CapabilityBuildItem capability() {
