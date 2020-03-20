@@ -39,7 +39,7 @@ pipeline {
             steps {
                 dir("kogito-apps") {
                     script {
-                        githubscm.checkoutIfExists('kogito-apps', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "devel")
+                        githubscm.checkoutIfExists('kogito-apps', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
                         maven.runMavenWithSubmarineSettings('clean install', false)
                     }
                 }
@@ -56,7 +56,7 @@ pipeline {
                 // Use a separate dir for persistence to not overwrite the test results
                 dir("kogito-examples-persistence") {
                     script {
-                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "${CHANGE_TARGET ?: 'devel'}")
+                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "devel")
                         // Don't run with tests so far, see: https://github.com/quarkusio/quarkus/issues/6885
                         maven.runMavenWithSubmarineSettings('clean install -Ppersistence', true)
                     }
