@@ -35,6 +35,10 @@ public class KogitoDMNScenarioRunner extends DMNScenarioRunner {
         return new KogitoDMNScenarioRunnerHelper();
     }
 
+    /**
+     * Temporary hack, it is needed because AbstractScenarioRunner invokes kieContainer.getClassLoader() in the constructor
+     * @return
+     */
     private static KieContainer mockKieContainer() {
         InvocationHandler nullHandler = (o, method, objects) -> null;
         return (KieContainer) Proxy.newProxyInstance(KieContainer.class.getClassLoader(),
