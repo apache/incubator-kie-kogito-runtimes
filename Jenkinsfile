@@ -38,7 +38,7 @@ pipeline {
             steps {
                 dir("kogito-apps") {
                     script {
-                        githubscm.checkoutIfExists('kogito-apps', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
+                        githubscm.checkoutIfExists('kogito-apps', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "devel")
                         maven.runMavenWithSubmarineSettings('clean install', false)
                     }
                 }
@@ -48,7 +48,7 @@ pipeline {
             steps {
                 dir("kogito-examples") {
                     script {
-                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "${CHANGE_TARGET ?: 'devel'}")
+                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "devel")
                         maven.runMavenWithSubmarineSettings('clean install', false)
                     }
                 }
