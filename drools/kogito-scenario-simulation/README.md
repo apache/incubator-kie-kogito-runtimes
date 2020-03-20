@@ -1,0 +1,34 @@
+Kogito Test Scenario runner
+===========================
+
+This module is a wrapper for Kogito of test scenario runner from `drools` repo.
+
+It contains a JUnit runner to make it possible to run `*.scesim` files via Maven build.
+
+How to use
+----------
+
+If you have one or more `*.scesim` files in your project to execute, add this dependency to project POM
+
+```xml
+<dependency>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-scenario-simulation</artifactId>
+    <version>${kogito.version}</version>
+</dependency>
+```
+
+And then create `KogitoScenarioJunitActivatorTest.java` file in `src/test/java/testscenario` with this content
+
+```java
+package testscenario;
+
+/**
+ * Do not remove this file
+ */
+@org.junit.runner.RunWith(org.kogito.scenariosimulation.runner.KogitoJunitActivator.class)
+public class KogitoScenarioJunitActivatorTest {
+}
+```
+
+After that execute `mvn clean test` to execute it (you can also execute `KogitoScenarioJunitActivatorTest` in your IDE)
