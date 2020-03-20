@@ -5,6 +5,8 @@ This module is a wrapper for Kogito of test scenario runner from `drools` repo.
 
 It contains a JUnit runner to make it possible to run `*.scesim` files via Maven build.
 
+NOTE: it works with JUnit 5 vintange engine
+
 How to use
 ----------
 
