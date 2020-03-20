@@ -25,6 +25,7 @@ pipeline {
         stage('Build kogito-runtimes') {
             steps {
                 script {
+		    println("$CHANGE_TARGET") // debugging var...
                     maven.runMavenWithSubmarineSettings('clean install -Prun-code-coverage', false)
                     /*
                        The analysis must happen before the other stages as these clone different projects into a root
