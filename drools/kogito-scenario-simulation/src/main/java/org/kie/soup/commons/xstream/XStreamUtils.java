@@ -27,6 +27,10 @@ import static com.thoughtworks.xstream.XStream.setupDefaultSecurity;
  */
 public class XStreamUtils {
 
+    private XStreamUtils() {
+        // utility static class
+    }
+
     /**
      * Only use for XML or JSON that comes from a 100% trusted source.
      * The XML/JSON must be as safe as executable java code.

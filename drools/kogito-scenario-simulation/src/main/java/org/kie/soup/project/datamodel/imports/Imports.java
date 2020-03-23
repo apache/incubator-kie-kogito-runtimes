@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class Imports {
 
-    private ArrayList<Import> imports = new ArrayList<Import>();
+    private ArrayList<Import> imports = new ArrayList<>();
 
     public Imports() {
     }
