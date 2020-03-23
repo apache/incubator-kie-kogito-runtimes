@@ -28,13 +28,13 @@ public class DMNKogitoTest {
     @Test
     public void testBasic() {
         DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(DMNKogitoTest.class.getResourceAsStream("TrafficViolation.dmn")));
-        assertEquals(dmnRuntime.getModels().size(), 1);
+        assertEquals(1, dmnRuntime.getModels().size());
     }
 
     @Test
     public void testCreateGenericDMNRuntime() {
         DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime();
-        assertEquals(dmnRuntime.getModels().size(), 1);
+        assertEquals(1, dmnRuntime.getModels().size());
         assertNotNull(dmnRuntime.getModels().get(0).getResource());
     }
 }

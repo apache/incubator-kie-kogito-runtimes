@@ -31,6 +31,7 @@ public class KogitoDMNScenarioRunner extends DMNScenarioRunner {
         super(mockKieContainer, scenarioRunnerDTO);
     }
 
+    @Override
     protected AbstractRunnerHelper newRunnerHelper() {
         return new KogitoDMNScenarioRunnerHelper();
     }

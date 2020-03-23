@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
  * limitations under the License.
  *
  */
-
 package org.kie.soup.project.datamodel.imports;
+
+import java.util.Objects;
 
 /**
  * Copied from kie-soup to avoid the dependency
@@ -52,11 +53,7 @@ public class Import {
 
         Import anImport = (Import) o;
 
-        if (type != null ? !type.equals(anImport.type) : anImport.type != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(type, anImport.type);
     }
 
     public void setType(String type) {

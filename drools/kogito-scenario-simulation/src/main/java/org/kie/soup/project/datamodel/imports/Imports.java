@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package org.kie.soup.project.datamodel.imports;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -50,6 +50,7 @@ public class Imports {
         return strings;
     }
 
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         for (final Import i : imports) {
@@ -82,11 +83,7 @@ public class Imports {
 
         Imports imports1 = (Imports) o;
 
-        if (imports != null ? !imports.equals(imports1.imports) : imports1.imports != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(imports, imports1.imports);
     }
 
     @Override
