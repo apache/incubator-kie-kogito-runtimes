@@ -66,7 +66,7 @@ public class RuleUnitDescriptionTest {
         assertEntryPointIdExists("simpleFactList");
     }
 
-    @Disabled
+    @Test
     public void getDatasourceType() {
         final Optional<Class<?>> dataSourceType = ruleUnitDescr.getDatasourceType("nonexisting");
         Assertions.assertThat(dataSourceType).isNotPresent();
@@ -116,7 +116,7 @@ public class RuleUnitDescriptionTest {
                 .containsExactlyInAnyOrder("bound", "number", "numbersArray", "stringList", "simpleFactList");
     }
 
-    @Disabled
+    @Test
     public void hasDataSource() {
         Assertions.assertThat(ruleUnitDescr.hasDataSource("nonexisting")).isFalse();
         Assertions.assertThat(ruleUnitDescr.hasDataSource("numbers")).isFalse();
