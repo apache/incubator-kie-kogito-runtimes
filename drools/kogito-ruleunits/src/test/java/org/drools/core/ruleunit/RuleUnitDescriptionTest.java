@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
+import org.kie.kogito.rules.units.UndefinedRuleUnitVariable;
 
-@Disabled
 public class RuleUnitDescriptionTest {
 
     private ReflectiveRuleUnitDescription ruleUnitDescr;
@@ -49,6 +49,13 @@ public class RuleUnitDescriptionTest {
     }
 
     @Test
+    public void getRuleUnitVariable() {
+        Assertions.assertThat(ruleUnitDescr.getVar("number")).isNotNull();
+        Assertions.assertThatThrownBy(() -> ruleUnitDescr.getVar("undefinedField")).isInstanceOf(UndefinedRuleUnitVariable.class);
+    }
+
+
+    @Test
     public void getEntryPointId() {
         final String entryPointId = ruleUnitDescr.getEntryPointName("nonexisting");
         Assertions.assertThat(entryPointId).isNotNull();
@@ -59,7 +66,7 @@ public class RuleUnitDescriptionTest {
         assertEntryPointIdExists("simpleFactList");
     }
 
-    @Test
+    @Disabled
     public void getDatasourceType() {
         final Optional<Class<?>> dataSourceType = ruleUnitDescr.getDatasourceType("nonexisting");
         Assertions.assertThat(dataSourceType).isNotPresent();
@@ -109,7 +116,7 @@ public class RuleUnitDescriptionTest {
                 .containsExactlyInAnyOrder("bound", "number", "numbersArray", "stringList", "simpleFactList");
     }
 
-    @Test
+    @Disabled
     public void hasDataSource() {
         Assertions.assertThat(ruleUnitDescr.hasDataSource("nonexisting")).isFalse();
         Assertions.assertThat(ruleUnitDescr.hasDataSource("numbers")).isFalse();
