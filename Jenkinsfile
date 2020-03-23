@@ -25,7 +25,6 @@ pipeline {
         stage('Build kogito-runtimes') {
             steps {
                 script {
-		    println("$CHANGE_TARGET") // debugging var...
                     maven.runMavenWithSubmarineSettings('clean install -Prun-code-coverage', false)
                     /*
                        The analysis must happen before the other stages as these clone different projects into a root
@@ -49,14 +48,15 @@ pipeline {
             steps {
                 dir("kogito-examples") {
                     script {
-                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "devel")
+		    	println("$CHANGE_TARGET") // debugging var...
+                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
                         maven.runMavenWithSubmarineSettings('clean install', false)
                     }
                 }
                 // Use a separate dir for persistence to not overwrite the test results
                 dir("kogito-examples-persistence") {
                     script {
-                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "devel")
+                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
                         // Don't run with tests so far, see: https://github.com/quarkusio/quarkus/issues/6885
                         maven.runMavenWithSubmarineSettings('clean install -Ppersistence', true)
                     }
