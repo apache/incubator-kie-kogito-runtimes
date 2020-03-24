@@ -66,6 +66,7 @@ import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessWorkItemHandlerException;
+import org.kie.kogito.process.workitem.WorkItemExecutionError;
 import org.mvel2.MVEL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,21 +165,27 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
             } catch (ProcessWorkItemHandlerException handlerException) {
                 this.workItemId = workItem.getId();
                 handleWorkItemHandlerException(handlerException, workItem);
-            } catch (Exception e) {
+            } catch (WorkItemExecutionError e) {
+            	handleException(e.getErrorCode(), e);
+			} catch (Exception e) {
                 String exceptionName = e.getClass().getName();
-                ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, exceptionName);
-                if (exceptionScopeInstance == null) {
-                    throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
-                }
-                // workItemId must be set otherwise cancel activity will not find the right work item
-                this.workItemId = workItem.getId();
-                exceptionScopeInstance.handleException(exceptionName, e);
+                handleException(exceptionName, e);
             }
         }
         if (!workItemNode.isWaitForCompletion()) {
             triggerCompleted();
         }
         this.workItemId = workItem.getId();
+    }
+    
+    protected void handleException(String exceptionName, Exception e) {
+    	ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, exceptionName);
+        if (exceptionScopeInstance == null) {
+            throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
+        }
+        // workItemId must be set otherwise cancel activity will not find the right work item
+        this.workItemId = workItem.getId();
+        exceptionScopeInstance.handleException(exceptionName, e);
     }
     
     protected WorkItem newWorkItem() {
