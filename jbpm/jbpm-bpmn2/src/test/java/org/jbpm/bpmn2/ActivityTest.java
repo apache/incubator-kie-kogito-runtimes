@@ -47,6 +47,7 @@ import org.jbpm.process.instance.event.listeners.TriggerRulesEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
+import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.DynamicNodeInstance;
@@ -58,6 +59,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.kie.api.KieBase;
 import org.kie.api.command.ExecutableCommand;
+import org.kie.api.definition.process.Node;
+import org.kie.api.definition.process.NodeContainer;
+import org.kie.api.definition.process.Process;
 import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
@@ -222,6 +226,24 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         ksession.getWorkItemManager().completeWorkItem(handler.getWorkItem().getId(), null);
         assertEquals("Exit", getProcessVarValue(processInstance, "y"));
         assertEquals("tester", processInstance.getVariable("surname"));
+    }
+    
+    @Test
+    public void testScriptTaskWithIO() throws Exception {
+        KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-ScriptTaskWithIO.bpmn2");
+        
+        Process scriptProcess = kbase.getProcess("ScriptTask");
+        assertThat(scriptProcess).isNotNull();
+        Node[] nodes = ((NodeContainer)scriptProcess).getNodes();
+        assertThat(nodes).hasSize(3);
+        assertThat(nodes).filteredOn(n -> n instanceof ActionNode).allMatch(n -> ((ActionNode) n).getInAssociations().size() == 1 && ((ActionNode) n).getOutAssociations().size() == 1);
+        ksession = createKnowledgeSession(kbase);
+        
+        Map<String, Object> params = new HashMap<>();                
+        params.put("name", "John");
+        ProcessInstance processInstance = ksession.startProcess("ScriptTask", params);
+        
+        assertProcessInstanceCompleted(processInstance);
     }
 
     @Test
