@@ -17,6 +17,8 @@ import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.DMNEvaluationErrorException;
 import org.kie.kogito.dmn.rest.DMNResult;
 
+import org.kie.dmn.api.core.FEELPropertyAccessible;
+
 @Path("/$nameURL$")
 public class DMNRestResourceTemplate {
 
@@ -25,7 +27,7 @@ public class DMNRestResourceTemplate {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Object dmn(java.util.Map<String, Object> variables) {
+    public Object dmn(INPUT_TYPE variables) {
         org.kie.kogito.decision.DecisionModel decision = application.decisionModels().getDecisionModel("$modelNamespace$", "$modelName$");
         org.kie.kogito.dmn.rest.DMNResult result = new org.kie.kogito.dmn.rest.DMNResult("$modelNamespace$", "$modelName$", decision.evaluateAll(decision.newContext(variables)));
         return extractContextIfSucceded(result);

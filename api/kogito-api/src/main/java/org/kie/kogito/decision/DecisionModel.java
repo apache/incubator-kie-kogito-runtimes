@@ -15,15 +15,13 @@
 
 package org.kie.kogito.decision;
 
-import java.util.Map;
-
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNResult;
 
 public interface DecisionModel {
 
-    DMNContext newContext(Map<String, Object> variables);
+    DMNContext newContext(Object variables);
 
     DMNResult evaluateAll(DMNContext context);
 
