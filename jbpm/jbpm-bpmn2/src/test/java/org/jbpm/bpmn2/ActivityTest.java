@@ -988,6 +988,29 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, ksession);
         assertEquals("Hello john!", processInstance.getVariable("s"));
     }
+    
+    @Test
+    public void testServiceTaskWithAccessoWorkItemInfo() throws Exception {
+        KieBase kbase = createKnowledgeBase("BPMN2-ServiceProcess.bpmn2");
+        ksession = createKnowledgeSession(kbase);
+        ksession.getWorkItemManager().registerWorkItemHandler("Service Task",
+                new ServiceTaskHandler() {
+
+                    @Override
+                    public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
+                        assertThat(workItem.getProcessInstance()).isNotNull();
+                        assertThat(workItem.getNodeInstance()).isNotNull();
+                        super.executeWorkItem(workItem, manager);
+                    }
+            
+        });
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("s", "john");
+        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) ksession
+                .startProcess("ServiceProcess", params);
+        assertProcessInstanceFinished(processInstance, ksession);
+        assertEquals("Hello john!", processInstance.getVariable("s"));
+    }
 
     @Test
     @Disabled("Transfomer has been disabled")
