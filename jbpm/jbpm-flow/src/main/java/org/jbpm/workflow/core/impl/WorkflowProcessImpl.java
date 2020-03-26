@@ -16,9 +16,6 @@
 
 package org.jbpm.workflow.core.impl;
 
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,11 +139,8 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
 
         List<StartNode> timerStartNodes = new ArrayList<StartNode>();
         for (int i = 0; i < nodes.length; i++) {
-            if (nodes[i] instanceof StartNode) {
-                // return start node that is not event based node
-                if (((StartNode) nodes[i]).getTimer() != null) {
-                    timerStartNodes.add((StartNode) nodes[i]);
-                }
+            if (nodes[i] instanceof StartNode && ((StartNode) nodes[i]).getTimer() != null) {
+                timerStartNodes.add((StartNode) nodes[i]);                
             }
         }
 

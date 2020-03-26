@@ -58,7 +58,7 @@ public class StartNodeVisitor extends AbstractVisitor {
                                      getOrNullExpr(timer.getPeriod()),
                                      getOrNullExpr(timer.getDate()),
                                      new IntegerLiteralExpr(startNode.getTimer().getTimeType()));
-                                     
+
         } else if (startNode.getTriggers() != null && !startNode.getTriggers().isEmpty()) {
             Map<String, Object> nodeMetaData = startNode.getMetaData();
             metadata.getTriggers().add(new TriggerMetaData((String)nodeMetaData.get(TRIGGER_REF), 

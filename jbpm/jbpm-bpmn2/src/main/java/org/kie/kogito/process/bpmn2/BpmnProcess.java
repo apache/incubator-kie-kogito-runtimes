@@ -36,7 +36,6 @@ public class BpmnProcess extends AbstractProcess<BpmnVariables> {
         process = p;
     }
 
-
     public BpmnProcess(Process p, ProcessConfig config) {
         super(config);
         process = p;
@@ -61,7 +60,6 @@ public class BpmnProcess extends AbstractProcess<BpmnVariables> {
         return process;
     }
 
-
     @Override
     public BpmnVariables createModel() {
         return BpmnVariables.create(new HashMap<String, Object>());
@@ -71,7 +69,7 @@ public class BpmnProcess extends AbstractProcess<BpmnVariables> {
      *
      */
     public static void overrideCompiler(BpmnProcessCompiler compiler) {
-    	COMPILER = Objects.requireNonNull(compiler);
+        COMPILER = Objects.requireNonNull(compiler);
     }
 
     public static List<BpmnProcess> from(Resource... resource) {

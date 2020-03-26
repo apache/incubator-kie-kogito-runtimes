@@ -34,8 +34,8 @@ public class ActionNode extends ExtendedNodeImpl {
 
 	private static final long serialVersionUID = 510l;
 	
-	private DroolsAction action;
-	private List<DataAssociation> inMapping = new LinkedList<DataAssociation>();
+    private DroolsAction action;
+    private List<DataAssociation> inMapping = new LinkedList<DataAssociation>();
     private List<DataAssociation> outMapping = new LinkedList<DataAssociation>();
 
 	public DroolsAction getAction() {
@@ -73,7 +73,7 @@ public class ActionNode extends ExtendedNodeImpl {
                 + "] cannot have more than one outgoing connection!");
         }
     }
-    
+
     public void addInAssociation(DataAssociation dataAssociation) {
         inMapping.add(dataAssociation);
     }
@@ -81,7 +81,7 @@ public class ActionNode extends ExtendedNodeImpl {
     public List<DataAssociation> getInAssociations() {
         return Collections.unmodifiableList(inMapping);
     }
-    
+
     public void addOutAssociation(DataAssociation dataAssociation) {
         outMapping.add(dataAssociation);
     }
@@ -89,5 +89,5 @@ public class ActionNode extends ExtendedNodeImpl {
     public List<DataAssociation> getOutAssociations() {
         return Collections.unmodifiableList(outMapping);
     }
-    
+
 }

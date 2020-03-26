@@ -404,7 +404,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 		ProcessInstance processInstance = ksession .startProcess("com.sample.bpmn.hello");
 		assertEquals(ProcessInstance.STATE_ERROR, processInstance.getState());
     }
-    
+
     @Test
     public void testBoundaryErrorEventDefaultHandlerWithWorkItemExecutionError() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-BoundaryErrorEventDefaultHandlerByErrorCode.bpmn2");
@@ -412,8 +412,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         WorkItemExecutionErrorWorkItemHandler handler = new WorkItemExecutionErrorWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
-        
-        ProcessInstance processInstance = ksession .startProcess("com.sample.bpmn.hello");
+        ProcessInstance processInstance = ksession.startProcess("com.sample.bpmn.hello");
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 
@@ -493,7 +492,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 		}
 
     }
-    
+
     class WorkItemExecutionErrorWorkItemHandler implements WorkItemHandler {
 
         @Override
@@ -502,8 +501,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         }
 
         @Override
-        public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
-        }
+        public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {}
 
     }
 }

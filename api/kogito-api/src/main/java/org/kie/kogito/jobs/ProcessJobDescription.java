@@ -73,16 +73,16 @@ public class ProcessJobDescription implements JobDescription {
 		return process;
 	}
 
-	public static ProcessJobDescription of(ExpirationTime expirationTime, Process<?> process) {
-		return new ProcessJobDescription(expirationTime, DEFAULT_PRIORITY, process);
-	}
+    public static ProcessJobDescription of(ExpirationTime expirationTime, Process<?> process) {
+        return new ProcessJobDescription(expirationTime, DEFAULT_PRIORITY, process);
+    }
 
-	public static ProcessJobDescription of(ExpirationTime expirationTime, String processId) {
-		return of(expirationTime, DEFAULT_PRIORITY, processId);
-	}
+    public static ProcessJobDescription of(ExpirationTime expirationTime, String processId) {
+        return of(expirationTime, DEFAULT_PRIORITY, processId);
+    }
 
-	public static ProcessJobDescription of(ExpirationTime expirationTime, Integer priority, String processId) {
+    public static ProcessJobDescription of(ExpirationTime expirationTime, Integer priority, String processId) {
 
-		return new ProcessJobDescription(expirationTime, priority, processId);
-	}
+        return new ProcessJobDescription(expirationTime, priority, processId);
+    }
 }

@@ -67,12 +67,12 @@ public class Variable implements TypeObject, ValueObject, Serializable {
     }
 
     public String getId() {
-		return id;
-	}
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
 	public DataType getType() {
         return this.type;

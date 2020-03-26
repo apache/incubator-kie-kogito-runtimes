@@ -18,22 +18,16 @@ package org.jbpm.workflow.instance.node;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import org.drools.core.addon.MVELEvaluator;
-import org.drools.core.addon.RawMVELEvaluator;
 import org.drools.core.spi.ProcessContext;
-import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.Action;
-import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
-import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.kie.api.runtime.process.NodeInstance;
 
 /**
@@ -69,7 +63,7 @@ public class ActionNodeInstance extends NodeInstanceImpl {
 		} 
     	triggerCompleted();
     }
-    
+
     public void setOutputVariable(Object variable) {
         List<DataAssociation> outputs = getActionNode().getOutAssociations();
         if (outputs != null && !outputs.isEmpty()) {

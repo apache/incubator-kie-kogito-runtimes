@@ -65,14 +65,14 @@ public class StartNodeFactory extends NodeFactory {
         
         return this;
     }
-    
+
     public StartNodeFactory timer(String delay, String period, String date, int timeType) {
         Timer timer = new Timer();
         timer.setDate(date);
         timer.setDelay(delay);
         timer.setPeriod(period);
         timer.setTimeType(timeType);
-        
+
         getStartNode().setTimer(timer);
         return this;
     }

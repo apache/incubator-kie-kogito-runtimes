@@ -149,8 +149,8 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         ((WorkItem) workItem).setDeploymentId(deploymentId);
         ((WorkItem) workItem).setNodeInstanceId(this.getId());
         ((WorkItem) workItem).setNodeId(getNodeId());
-        ((WorkItem) workItem).setNodeInsstance(this);
-        ((WorkItem) workItem).setProcessInstance(getProcessInstance());
+        workItem.setNodeInsstance(this);
+        workItem.setProcessInstance(getProcessInstance());
         if (isInversionOfControl()) {
             ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime()
                                                     .update(((ProcessInstance) getProcessInstance()).getKnowledgeRuntime().getFactHandle(this), this);
@@ -166,8 +166,8 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 this.workItemId = workItem.getId();
                 handleWorkItemHandlerException(handlerException, workItem);
             } catch (WorkItemExecutionError e) {
-            	handleException(e.getErrorCode(), e);
-			} catch (Exception e) {
+                handleException(e.getErrorCode(), e);
+            } catch (Exception e) {
                 String exceptionName = e.getClass().getName();
                 handleException(exceptionName, e);
             }
@@ -177,9 +177,9 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         }
         this.workItemId = workItem.getId();
     }
-    
+
     protected void handleException(String exceptionName, Exception e) {
-    	ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, exceptionName);
+        ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, exceptionName);
         if (exceptionScopeInstance == null) {
             throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
         }
@@ -187,7 +187,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         this.workItemId = workItem.getId();
         exceptionScopeInstance.handleException(exceptionName, e);
     }
-    
+
     protected WorkItem newWorkItem() {
         return new WorkItemImpl();
     }

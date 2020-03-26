@@ -107,44 +107,44 @@ public class ScriptTaskHandler extends AbstractNodeHandler {
 	public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
 	    throw new IllegalArgumentException("Writing out should be handled by action node handler");
 	}
-	
-	protected void readDataInputAssociation(org.w3c.dom.Node xmlNode, ActionNode actionNode, Map<String, String> dataInputs) {
+
+    protected void readDataInputAssociation(org.w3c.dom.Node xmlNode, ActionNode actionNode, Map<String, String> dataInputs) {
         // sourceRef
         org.w3c.dom.Node subNode = xmlNode.getFirstChild();
         if ("sourceRef".equals(subNode.getNodeName())) {
-        	List<String> sources = new ArrayList<>();
-    		sources.add(subNode.getTextContent());
-    		
-    		subNode = subNode.getNextSibling();
-    		
-    		while ("sourceRef".equals(subNode.getNodeName())) {
-    			sources.add(subNode.getTextContent());
-    			subNode = subNode.getNextSibling();
-    		}
+            List<String> sources = new ArrayList<>();
+            sources.add(subNode.getTextContent());
+
+            subNode = subNode.getNextSibling();
+
+            while ("sourceRef".equals(subNode.getNodeName())) {
+                sources.add(subNode.getTextContent());
+                subNode = subNode.getNextSibling();
+            }
             // targetRef
             String target = subNode.getTextContent();
             // transformation
-    		Transformation transformation = null;
-    		subNode = subNode.getNextSibling();
-    		if (subNode != null && "transformation".equals(subNode.getNodeName())) {
-    			String lang = subNode.getAttributes().getNamedItem("language").getNodeValue();
-    			String expression = subNode.getTextContent();
-    			
-    			DataTransformer transformer = transformerRegistry.find(lang);
-    			if (transformer == null) {
-    				throw new IllegalArgumentException("No transformer registered for language " + lang);
-    			}    			
-    			transformation = new Transformation(lang, expression);    			
-    			
-    			subNode = subNode.getNextSibling();
-    		}
-    		// assignments  
+            Transformation transformation = null;
+            subNode = subNode.getNextSibling();
+            if (subNode != null && "transformation".equals(subNode.getNodeName())) {
+                String lang = subNode.getAttributes().getNamedItem("language").getNodeValue();
+                String expression = subNode.getTextContent();
+
+                DataTransformer transformer = transformerRegistry.find(lang);
+                if (transformer == null) {
+                    throw new IllegalArgumentException("No transformer registered for language " + lang);
+                }
+                transformation = new Transformation(lang, expression);
+
+                subNode = subNode.getNextSibling();
+            }
+            // assignments  
             List<Assignment> assignments = new LinkedList<Assignment>();
-            while(subNode != null){
-            	String expressionLang = ((Element)subNode).getAttribute("expressionLanguage");
-            	if (expressionLang == null || expressionLang.trim().isEmpty()) {
-            		expressionLang = "XPath";
-            	}
+            while (subNode != null) {
+                String expressionLang = ((Element) subNode).getAttribute("expressionLanguage");
+                if (expressionLang == null || expressionLang.trim().isEmpty()) {
+                    expressionLang = "XPath";
+                }
                 org.w3c.dom.Node ssubNode = subNode.getFirstChild();
                 String from = ssubNode.getTextContent();
                 String to = ssubNode.getNextSibling().getTextContent();
@@ -152,45 +152,45 @@ public class ScriptTaskHandler extends AbstractNodeHandler {
                 subNode = subNode.getNextSibling();
             }
             actionNode.addInAssociation(new DataAssociation(
-                    sources,
-                    dataInputs.get(target), assignments, transformation));
+                                                            sources,
+                                                            dataInputs.get(target), assignments, transformation));
         }
     }
-    
+
     protected void readDataOutputAssociation(org.w3c.dom.Node xmlNode, ActionNode actionNode, Map<String, String> dataOutputs) {
         // sourceRef
         org.w3c.dom.Node subNode = xmlNode.getFirstChild();
         List<String> sources = new ArrayList<>();
-		sources.add(subNode.getTextContent());
-		
-		subNode = subNode.getNextSibling();
-		
-		while ("sourceRef".equals(subNode.getNodeName())) {
-			sources.add(subNode.getTextContent());
-			subNode = subNode.getNextSibling();
-		}
+        sources.add(subNode.getTextContent());
+
+        subNode = subNode.getNextSibling();
+
+        while ("sourceRef".equals(subNode.getNodeName())) {
+            sources.add(subNode.getTextContent());
+            subNode = subNode.getNextSibling();
+        }
         // targetRef
         String target = subNode.getTextContent();
         // transformation
- 		Transformation transformation = null;
- 		subNode = subNode.getNextSibling();
- 		if (subNode != null && "transformation".equals(subNode.getNodeName())) {
- 			String lang = subNode.getAttributes().getNamedItem("language").getNodeValue();
- 			String expression = subNode.getTextContent();
- 			DataTransformer transformer = transformerRegistry.find(lang);
- 			if (transformer == null) {
- 				throw new IllegalArgumentException("No transformer registered for language " + lang);
- 			}    			
- 			transformation = new Transformation(lang, expression); 		
- 			subNode = subNode.getNextSibling();
- 		}
- 		// assignments 
+        Transformation transformation = null;
+        subNode = subNode.getNextSibling();
+        if (subNode != null && "transformation".equals(subNode.getNodeName())) {
+            String lang = subNode.getAttributes().getNamedItem("language").getNodeValue();
+            String expression = subNode.getTextContent();
+            DataTransformer transformer = transformerRegistry.find(lang);
+            if (transformer == null) {
+                throw new IllegalArgumentException("No transformer registered for language " + lang);
+            }
+            transformation = new Transformation(lang, expression);
+            subNode = subNode.getNextSibling();
+        }
+        // assignments 
         List<Assignment> assignments = new LinkedList<Assignment>();
-        while(subNode != null){
-        	String expressionLang = ((Element)subNode).getAttribute("expressionLanguage");
-        	if (expressionLang == null || expressionLang.trim().isEmpty()) {
-        		expressionLang = "XPath";
-        	}
+        while (subNode != null) {
+            String expressionLang = ((Element) subNode).getAttribute("expressionLanguage");
+            if (expressionLang == null || expressionLang.trim().isEmpty()) {
+                expressionLang = "XPath";
+            }
             org.w3c.dom.Node ssubNode = subNode.getFirstChild();
             String from = ssubNode.getTextContent();
             String to = ssubNode.getNextSibling().getTextContent();

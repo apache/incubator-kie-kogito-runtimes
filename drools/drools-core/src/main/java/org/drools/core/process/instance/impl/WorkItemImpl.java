@@ -45,7 +45,7 @@ public class WorkItemImpl implements WorkItem, Serializable {
 
     private Date startDate;
     private Date completeDate;
-    
+
     private transient ProcessInstance processInstance;
     private transient NodeInstance nodeInstance;
 
@@ -198,23 +198,23 @@ public class WorkItemImpl implements WorkItem, Serializable {
         return b.toString();
     }
 
-	@Override
-	public NodeInstance getNodeInstance() {
-		return this.nodeInstance;
-	}
+    @Override
+    public NodeInstance getNodeInstance() {
+        return this.nodeInstance;
+    }
 
-	@Override
-	public ProcessInstance getProcessInstance() {
-		return this.processInstance;
-	}
+    @Override
+    public ProcessInstance getProcessInstance() {
+        return this.processInstance;
+    }
 
-	@Override
-	public void setNodeInsstance(NodeInstance nodeInstance) {
-		this.nodeInstance = nodeInstance;
-	}
+    @Override
+    public void setNodeInsstance(NodeInstance nodeInstance) {
+        this.nodeInstance = nodeInstance;
+    }
 
-	@Override
-	public void setProcessInstance(ProcessInstance processInstance) {
-		this.processInstance = processInstance;
-	}
+    @Override
+    public void setProcessInstance(ProcessInstance processInstance) {
+        this.processInstance = processInstance;
+    }
 }

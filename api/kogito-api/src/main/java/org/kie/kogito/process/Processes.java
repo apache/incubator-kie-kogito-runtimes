@@ -25,11 +25,11 @@ public interface Processes {
     
     Collection<String> processIds();
 
-	default void activate() {
-		
-	}
+    default void activate() {
 
-	default void deactivate() {
-		
-	}
+    }
+
+    default void deactivate() {
+
+    }
 }

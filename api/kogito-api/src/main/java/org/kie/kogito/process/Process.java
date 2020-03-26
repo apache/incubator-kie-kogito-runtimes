@@ -35,7 +35,7 @@ public interface Process<T> {
     
     String id();
 
-	void activate();
+    void activate();
 
-	void deactivate();
+    void deactivate();
 }

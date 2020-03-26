@@ -55,8 +55,8 @@ public interface WorkItem extends org.kie.api.runtime.process.WorkItem {
     void setStartDate(Date date);
     
     void setCompleteDate(Date date);
-    
+
     void setNodeInsstance(NodeInstance nodeInstance);
-    
+
     void setProcessInstance(ProcessInstance processInstance);
 }

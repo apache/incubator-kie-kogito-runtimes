@@ -245,18 +245,18 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     @Test
     public void testScriptTaskWithIO() throws Exception {
         KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-ScriptTaskWithIO.bpmn2");
-        
+
         Process scriptProcess = kbase.getProcess("ScriptTask");
         assertThat(scriptProcess).isNotNull();
-        Node[] nodes = ((NodeContainer)scriptProcess).getNodes();
+        Node[] nodes = ((NodeContainer) scriptProcess).getNodes();
         assertThat(nodes).hasSize(3);
         assertThat(nodes).filteredOn(n -> n instanceof ActionNode).allMatch(n -> ((ActionNode) n).getInAssociations().size() == 1 && ((ActionNode) n).getOutAssociations().size() == 1);
         ksession = createKnowledgeSession(kbase);
-        
-        Map<String, Object> params = new HashMap<>();                
+
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "John");
         ProcessInstance processInstance = ksession.startProcess("ScriptTask", params);
-        
+
         assertProcessInstanceCompleted(processInstance);
     }
 
@@ -1002,26 +1002,26 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, ksession);
         assertEquals("Hello john!", processInstance.getVariable("s"));
     }
-    
+
     @Test
-    public void testServiceTaskWithAccessoWorkItemInfo() throws Exception {
+    public void testServiceTaskWithAccessToWorkItemInfo() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-ServiceProcess.bpmn2");
         ksession = createKnowledgeSession(kbase);
         ksession.getWorkItemManager().registerWorkItemHandler("Service Task",
-                new ServiceTaskHandler() {
+                                                              new ServiceTaskHandler() {
 
-                    @Override
-                    public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
-                        assertThat(workItem.getProcessInstance()).isNotNull();
-                        assertThat(workItem.getNodeInstance()).isNotNull();
-                        super.executeWorkItem(workItem, manager);
-                    }
-            
-        });
+                                                                  @Override
+                                                                  public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
+                                                                      assertThat(workItem.getProcessInstance()).isNotNull();
+                                                                      assertThat(workItem.getNodeInstance()).isNotNull();
+                                                                      super.executeWorkItem(workItem, manager);
+                                                                  }
+
+                                                              });
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("s", "john");
         WorkflowProcessInstance processInstance = (WorkflowProcessInstance) ksession
-                .startProcess("ServiceProcess", params);
+                                                                                    .startProcess("ServiceProcess", params);
         assertProcessInstanceFinished(processInstance, ksession);
         assertEquals("Hello john!", processInstance.getVariable("s"));
     }
@@ -1989,93 +1989,93 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     
     @Test
     public void testUserTaskWithAssignment() throws Exception {
-ProcessDialectRegistry.setDialect("custom", new ProcessDialect() {
-            
+        ProcessDialectRegistry.setDialect("custom", new ProcessDialect() {
+
             @Override
             public ReturnValueEvaluatorBuilder getReturnValueEvaluatorBuilder() {
                 // TODO Auto-generated method stub
                 return null;
             }
-            
+
             @Override
             public ProcessClassBuilder getProcessClassBuilder() {
                 return null;
             }
-            
+
             @Override
             public AssignmentBuilder getAssignmentBuilder() {
                 return new AssignmentBuilder() {
-                    
+
                     @Override
                     public void build(PackageBuildContext context, Assignment assignment, String sourceExpr, String targetExpr, ContextResolver contextResolver, boolean isInput) {
                         assignment.setMetaData("Action", new AssignmentAction() {
-                            
+
                             @Override
                             public void execute(org.drools.core.process.instance.WorkItem workItem, ProcessContext context) throws Exception {
                                 assertEquals("from_expression", assignment.getFrom());
                                 assertEquals("to_expression", assignment.getTo());
                             }
                         });
-                        
+
                     }
                 };
             }
-            
+
             @Override
             public ActionBuilder getActionBuilder() {
                 return null;
             }
-            
+
             @Override
             public void addProcess(ProcessBuildContext context) {
-                
+
             }
         });
         KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-DataOutputAssignmentCustomExpressionLang.bpmn2");
-        
+
         Process scriptProcess = kbase.getProcess("process");
         assertThat(scriptProcess).isNotNull();
-        Node[] nodes = ((NodeContainer)scriptProcess).getNodes();
+        Node[] nodes = ((NodeContainer) scriptProcess).getNodes();
         assertThat(nodes).hasSize(3);
         assertThat(nodes).filteredOn(n -> n instanceof WorkItemNode).allMatch(n -> matchExpectedAssociationSetup(n));
         ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
 
-        Map<String, Object> params = new HashMap<>();                
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "John");
         ProcessInstance processInstance = ksession.startProcess("process", params);
-        
+
         ksession.abortProcessInstance(processInstance.getId());
-        
+
         assertProcessInstanceAborted(processInstance);
     }
-    
+
     protected boolean matchExpectedAssociationSetup(Node node) {
         List<DataAssociation> inputs = ((WorkItemNode) node).getInAssociations();
         List<DataAssociation> outputs = ((WorkItemNode) node).getOutAssociations();
-        
+
         assertThat(inputs).hasSize(1);
         assertThat(outputs).hasSize(1);
-        
-        DataAssociation association = inputs.get(0);        
+
+        DataAssociation association = inputs.get(0);
         assertThat(association.getAssignments()).hasSize(1);
         assertThat(association.getSources()).hasSize(2);
-        
+
         Assignment assignment = association.getAssignments().get(0);
         assertThat(assignment.getDialect()).isEqualTo("custom");
         assertThat(assignment.getFrom()).isEqualTo("from_expression");
         assertThat(assignment.getTo()).isEqualTo("to_expression");
-        
-        association = outputs.get(0);        
+
+        association = outputs.get(0);
         assertThat(association.getAssignments()).hasSize(1);
         assertThat(association.getSources()).hasSize(2);
-        
+
         assignment = association.getAssignments().get(0);
         assertThat(assignment.getDialect()).isEqualTo("custom");
         assertThat(assignment.getFrom()).isEqualTo("from_expression");
         assertThat(assignment.getTo()).isEqualTo("to_expression");
-        
+
         return true;
     }
 }

@@ -185,7 +185,7 @@ public class TaskHandler extends AbstractNodeHandler {
             String target = subNode.getTextContent();
             // transformation
             Transformation transformation = null;
-    		subNode = subNode.getNextSibling();
+            subNode = subNode.getNextSibling();
     		if (subNode != null && "transformation".equals(subNode.getNodeName())) {
     			String lang = subNode.getAttributes().getNamedItem("language").getNodeValue();
     			String expression = subNode.getTextContent();
@@ -202,10 +202,10 @@ public class TaskHandler extends AbstractNodeHandler {
     		// assignments    	
     		List<Assignment> assignments = new LinkedList<Assignment>();
     		while(subNode != null){
-    			String expressionLang = ((Element)subNode).getAttribute("expressionLanguage");
-            	if (expressionLang == null || expressionLang.trim().isEmpty()) {
-            		expressionLang = "XPath";
-            	}
+                String expressionLang = ((Element) subNode).getAttribute("expressionLanguage");
+                if (expressionLang == null || expressionLang.trim().isEmpty()) {
+                    expressionLang = "XPath";
+                }
     			org.w3c.dom.Node ssubNode = subNode.getFirstChild();
     			String from = ssubNode.getTextContent();
     			String to = ssubNode.getNextSibling().getTextContent();
@@ -249,7 +249,7 @@ public class TaskHandler extends AbstractNodeHandler {
     }
     
     protected void readDataOutputAssociation(org.w3c.dom.Node xmlNode, WorkItemNode workItemNode, Map<String, String> dataOutputs) {
-		// sourceRef
+        // sourceRef
         org.w3c.dom.Node subNode = xmlNode.getFirstChild();
         List<String> sources = new ArrayList<>();
         sources.add(subNode.getTextContent());
@@ -279,10 +279,10 @@ public class TaskHandler extends AbstractNodeHandler {
 		// assignments  
 		List<Assignment> assignments = new LinkedList<Assignment>();
 		while(subNode != null){
-			String expressionLang = ((Element)subNode).getAttribute("expressionLanguage");
-        	if (expressionLang == null || expressionLang.trim().isEmpty()) {
-        		expressionLang = "XPath";
-        	}
+            String expressionLang = ((Element) subNode).getAttribute("expressionLanguage");
+            if (expressionLang == null || expressionLang.trim().isEmpty()) {
+                expressionLang = "XPath";
+            }
 			org.w3c.dom.Node ssubNode = subNode.getFirstChild();
 			String from = ssubNode.getTextContent();
 			String to = ssubNode.getNextSibling().getTextContent();
