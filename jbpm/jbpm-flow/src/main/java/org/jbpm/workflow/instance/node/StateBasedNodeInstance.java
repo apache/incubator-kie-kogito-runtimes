@@ -57,6 +57,7 @@ import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
+import org.kie.kogito.process.EventDescription;
 import org.kie.services.time.TimerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -483,4 +484,28 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
             }
         }
     }
+    
+    public Map<String, String> extractTimerEventInformation() {
+        if (getTimerInstances() != null) {
+            for (String id : getTimerInstances()) {
+                String[] ids = id.split("_");
+                
+                for (Map.Entry<Timer, DroolsAction> entry : getEventBasedNode().getTimers().entrySet()) {
+                    if (entry.getKey().getId() == Long.valueOf(ids[1])) {
+                        Map<String, String> properties = new HashMap<>();
+                        properties.put("TimerID", id);
+                        properties.put("Delay", entry.getKey().getDelay());
+                        properties.put("Period", entry.getKey().getPeriod());
+                        properties.put("Date", entry.getKey().getDate()); 
+                        
+                        return properties;
+                    }
+                
+                }
+            }
+        }
+        
+        return null;
+    }
+     
 }

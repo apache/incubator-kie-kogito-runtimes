@@ -25,5 +25,7 @@ public interface EventNodeInterface {
 	default	boolean acceptsEvent(String type, Object event, Function<String, String> resolver) {
 	    return acceptsEvent(type, event);
 	}
+	
+	String getVariableName();
 
 }

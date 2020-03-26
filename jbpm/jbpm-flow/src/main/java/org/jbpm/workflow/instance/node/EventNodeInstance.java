@@ -19,12 +19,15 @@ package org.jbpm.workflow.instance.node;
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.process.core.event.EventTransformer;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
@@ -37,13 +40,14 @@ import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.process.EventDescription;
 import org.kie.services.time.TimerInstance;
 
 /**
  * Runtime counterpart of an event node.
  * 
  */
-public class EventNodeInstance extends ExtendedNodeInstanceImpl implements EventNodeInstanceInterface, EventBasedNodeInstanceInterface {
+public class EventNodeInstance extends ExtendedNodeInstanceImpl implements EventListener, EventNodeInstanceInterface, EventBasedNodeInstanceInterface {
 
     private static final long serialVersionUID = 510l;
 
@@ -285,4 +289,19 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Event
 	private void callSignal(String type, Object event) {
 	    signalEvent(type, event);
 	}
+
+    @Override
+    public String[] getEventTypes() {
+        return new String[] {getEventType()};
+    }
+
+    @Override
+    public Set<EventDescription> getEventDescriptions() {
+        DataType dataType = null;
+        if (getEventNode().getVariableName() != null) {
+            VariableScope variableScope = (VariableScope) getEventNode().getContext(VariableScope.VARIABLE_SCOPE);
+            dataType = variableScope.findVariable(getEventNode().getVariableName()).getType();
+        }
+        return Collections.singleton(new EventDescription(getEventType(), getNodeDefinitionId(), getNodeName(), "signal", getId(), getProcessInstance().getId(), dataType));
+    }
 }

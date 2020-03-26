@@ -38,4 +38,5 @@ public interface Process<T> {
     void activate();
 
     void deactivate();
+
 }

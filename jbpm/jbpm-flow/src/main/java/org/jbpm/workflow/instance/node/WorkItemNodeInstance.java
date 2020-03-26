@@ -19,11 +19,13 @@ package org.jbpm.workflow.instance.node;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.drools.core.WorkItemHandlerNotFoundException;
@@ -66,6 +68,7 @@ import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessWorkItemHandlerException;
+import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.workitem.WorkItemExecutionError;
 import org.mvel2.MVEL;
 import org.slf4j.Logger;
@@ -682,6 +685,15 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         KieRuntime kruntime = ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime();        
         
         return kruntime;
+    }
+
+    @Override
+    public Set<EventDescription> getEventDescriptions() {
+        Map<String, DataType> outputs = new HashMap<>();
+        VariableScope variableScope = (VariableScope) getWorkItemNode().getContext(VariableScope.VARIABLE_SCOPE);
+        getWorkItemNode().getOutAssociations().forEach(da -> outputs.put(da.getTarget(), variableScope.findVariable(da.getTarget()).getType()));
+        // return just the main completion type of an event
+        return Collections.singleton(new EventDescription("workItemCompleted", getNodeDefinitionId(), getNodeName(), "workItem", getId(), getProcessInstance().getId(), outputs));
     }
     
     /*
