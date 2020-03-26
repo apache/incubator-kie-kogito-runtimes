@@ -1,7 +1,6 @@
 {
   "id": "function",
   "name": "test-wf",
-  "startsAt": "HelloWorld",
   "functions": [
     {
       "name": "helloOne",
@@ -20,11 +19,14 @@
     {
       "name":"HelloWorld",
       "type":"OPERATION",
+      "start": {
+        "kind": "DEFAULT"
+      },
       "actionMode":"SEQUENTIAL",
       "actions":[
         {
-          "functionref": {
-            "refname": "helloOne",
+          "functionRef": {
+            "refName": "helloOne",
             "parameters" : {
               "script" : "System.out.println(\"First Serverless Workflow World\");"
             }
@@ -39,15 +41,14 @@
       "name":"UpdateArg",
       "type":"OPERATION",
       "actionMode":"SEQUENTIAL",
-      "filter": {
-        "inputPath": "$.trace",
-        "resultPath": "$.trace",
-        "outputPath": "$.stateerror"
+      "stateDataFilter": {
+        "dataInputPath": "$.trace",
+        "dataOutputPath": "$.trace"
       },
       "actions":[
         {
-          "functionref": {
-            "refname": "helloTwo",
+          "functionRef": {
+            "refName": "helloTwo",
             "parameters" : {
               "script" : "System.out.println(\"Second Serverless Workflow World\");"
             }
@@ -64,8 +65,8 @@
       "actionMode":"SEQUENTIAL",
       "actions":[
         {
-          "functionref": {
-            "refname": "helloThree",
+          "functionRef": {
+            "refName": "helloThree",
             "parameters" : {
               "script" : "System.out.println(\"Third Serverless Workflow World\");"
             }
@@ -73,7 +74,7 @@
         }
       ],
       "end": {
-        "type": "TERMINATE"
+        "kind": "TERMINATE"
       }
     }
   ]

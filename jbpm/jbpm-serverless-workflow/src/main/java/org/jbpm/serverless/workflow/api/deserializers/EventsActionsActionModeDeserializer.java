@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ *   Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -25,30 +25,30 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import org.jbpm.serverless.workflow.api.WorkflowPropertySource;
-import org.jbpm.serverless.workflow.api.events.OnEvent;
+import org.jbpm.serverless.workflow.api.events.EventsActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OnEventActionModeDeserializer extends StdDeserializer<OnEvent.ActionMode> {
+public class EventsActionsActionModeDeserializer extends StdDeserializer<EventsActions.ActionMode> {
 
     private WorkflowPropertySource context;
-    private static Logger logger = LoggerFactory.getLogger(OnEventActionModeDeserializer.class);
+    private static Logger logger = LoggerFactory.getLogger(EventsActionsActionModeDeserializer.class);
 
-    public OnEventActionModeDeserializer() {
-        this(OnEvent.ActionMode.class);
+    public EventsActionsActionModeDeserializer() {
+        this(EventsActions.ActionMode.class);
     }
 
-    public OnEventActionModeDeserializer(WorkflowPropertySource context) {
-        this(OnEvent.ActionMode.class);
+    public EventsActionsActionModeDeserializer(WorkflowPropertySource context) {
+        this(EventsActions.ActionMode.class);
         this.context = context;
     }
 
-    public OnEventActionModeDeserializer(Class<?> vc) {
+    public EventsActionsActionModeDeserializer(Class<?> vc) {
         super(vc);
     }
 
     @Override
-    public OnEvent.ActionMode deserialize(JsonParser jp,
+    public EventsActions.ActionMode deserialize(JsonParser jp,
                                         DeserializationContext ctxt) throws IOException {
 
         String value = jp.getText();
@@ -57,16 +57,16 @@ public class OnEventActionModeDeserializer extends StdDeserializer<OnEvent.Actio
                 String result = context.getPropertySource().getProperty(value);
 
                 if (result != null) {
-                    return OnEvent.ActionMode.fromValue(result);
+                    return EventsActions.ActionMode.fromValue(result);
                 } else {
-                    return OnEvent.ActionMode.fromValue(jp.getText());
+                    return EventsActions.ActionMode.fromValue(jp.getText());
                 }
             } catch (Exception e) {
                 logger.info("Exception trying to evaluate property: " + e.getMessage());
-                return OnEvent.ActionMode.fromValue(jp.getText());
+                return EventsActions.ActionMode.fromValue(jp.getText());
             }
         } else {
-            return OnEvent.ActionMode.fromValue(jp.getText());
+            return EventsActions.ActionMode.fromValue(jp.getText());
         }
     }
 }

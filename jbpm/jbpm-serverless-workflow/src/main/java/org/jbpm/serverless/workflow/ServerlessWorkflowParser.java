@@ -37,9 +37,8 @@ import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.serverless.workflow.api.end.End;
-import org.jbpm.serverless.workflow.api.events.Consume;
 import org.jbpm.serverless.workflow.api.events.EventDefinition;
-import org.jbpm.serverless.workflow.api.events.OnEvent;
+import org.jbpm.serverless.workflow.api.events.EventsActions;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.interfaces.State;
 import org.jbpm.serverless.workflow.api.mapper.BaseObjectMapper;
@@ -138,20 +137,24 @@ public class ServerlessWorkflowParser {
 
                 CompositeContextNode embedded = compositeContextNode(state.getName(), process);
 
-                List<Consume> consumedEvents = eventState.getConsume();
+                // TODO FIX !
+                // WAS BEFORE: eventState.getConsume();
+                List<EventsActions> eventsActions = eventState.getEventsActions();
+                //List<Consume> consumedEvents = eventState.getEventsActions().get(0).;
 
-                if(consumedEvents != null && !consumedEvents.isEmpty()) {
+                if(eventsActions != null && !eventsActions.isEmpty()) {
 
-                    Consume consumedEvent = consumedEvents.get(0);
+                    EventsActions eventsAction = eventsActions.get(0);
+                    //Consume consumedEvent = consumedEvents.get(0);
 
                     // add process var
-                    addJSONNodetVar(process, getWorkflowEventFor(workflowEventDefinitions, consumedEvent.getEventName()));
+                    addJSONNodetVar(process, getWorkflowEventFor(workflowEventDefinitions, eventsAction.getEventRefs().get(0)));
 
                     // remove original start node and replace with message start
                     process.removeNode(startNode);
-                    startNode = messageStartNode(process, getWorkflowEventFor(workflowEventDefinitions, consumedEvent.getEventName()));
+                    startNode = messageStartNode(process, getWorkflowEventFor(workflowEventDefinitions, eventsAction.getEventRefs().get(0)));
 
-                    List<Action> actions = consumedEvent.getActions();
+                    List<Action> actions = eventsAction.getActions();
 
                     if(actions != null && !actions.isEmpty()) {
                         StartNode embeddedStartNode = startNode(embedded);
@@ -160,19 +163,19 @@ public class ServerlessWorkflowParser {
 
                         for(Action action : actions) {
                             Function actionFunction = workflowFunctions.stream()
-                                    .filter(wf -> wf.getName().equals(action.getFunctionref().getRefname()))
+                                    .filter(wf -> wf.getName().equals(action.getFunctionRef().getRefName()))
                                     .findFirst()
                                     .get();
 
                             if ("script".equalsIgnoreCase(actionFunction.getType())) {
-                                String script = applySubstitutionsToScript(action.getFunctionref().getParameters().get("script"));
-                                current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
+                                String script = applySubstitutionsToScript(action.getFunctionRef().getParameters().get("script"));
+                                current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
 
                                 connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                                 start = current;
                             } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
-                                String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionref().getParameters().get("prefix") + " \" + " + action.getFunctionref().getParameters().get("message") + ");");
-                                current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
+                                String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionRef().getParameters().get("prefix") + " \" + " + action.getFunctionRef().getParameters().get("message") + ");");
+                                current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
 
                                 connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                                 start = current;
@@ -181,14 +184,14 @@ public class ServerlessWorkflowParser {
                         EndNode embeddedEndNode = endNode(true, embedded);
                         connection(current.getId(), embeddedEndNode.getId(), current.getId() + "_" + embeddedEndNode.getId(), embedded);
                     }
-                    if (state.getName().equals(workflow.getStartsAt())) {
+                    if (state.getStart() != null) {
                         connection(startNode.getId(), embedded.getId(), startNode.getId() + "_" + embedded.getId(), process);
                     }
 
                     if (state.getEnd() != null) {
 
                         EndNode endNode = null;
-                        if(state.getEnd().getType() == End.Type.TERMINATE) {
+                        if(state.getEnd().getKind() == End.Kind.TERMINATE) {
                             endNode = endNode(true, process);
                         } else { //TODO assume its otherwise message...need to fix
                             endNode = messageEndNode(process, workflowEventDefinitions, state.getEnd());
@@ -217,30 +220,29 @@ public class ServerlessWorkflowParser {
                     for (Action action : actions) {
 
                         Function actionFunction = workflowFunctions.stream()
-                                .filter(wf -> wf.getName().equals(action.getFunctionref().getRefname()))
+                                .filter(wf -> wf.getName().equals(action.getFunctionRef().getRefName()))
                                 .findFirst()
                                 .get();
 
                         if ("script".equalsIgnoreCase(actionFunction.getType())) {
-                            String script = applySubstitutionsToScript(action.getFunctionref().getParameters().get("script"));
-                            current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
+                            String script = applySubstitutionsToScript(action.getFunctionRef().getParameters().get("script"));
+                            current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
 
                             connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                             start = current;
                         } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
-                            String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionref().getParameters().get("prefix") + " \" + " + action.getFunctionref().getParameters().get("message") + ");");
-                            current = scriptNode(action.getFunctionref().getRefname(), script, embedded);
+                            String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionRef().getParameters().get("prefix") + " \" + " + action.getFunctionRef().getParameters().get("message") + ");");
+                            current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
 
                             connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                             start = current;
                         }
-
                     }
 
                     EndNode embeddedEndNode = endNode(true, embedded);
                     connection(current.getId(), embeddedEndNode.getId(), current.getId() + "_" + embeddedEndNode.getId(), embedded);
                 }
-                if (state.getName().equals(workflow.getStartsAt())) {
+                if (state.getStart() != null) {
                     connection(startNode.getId(), embedded.getId(), startNode.getId() + "_" + embedded.getId(), process);
                 }
 
@@ -256,14 +258,14 @@ public class ServerlessWorkflowParser {
 
         // link states
         workflow.getStates().stream().filter(state -> (state instanceof State)).forEach(state -> {
-            Transition transition = null;
-            if(state instanceof EventState) {
-                // TODO -- same thing here, assuming a single event
-                // TODO within event state
-                transition = ((EventState)state).getConsume().get(0).getTransition();
-            } else if(state instanceof OperationState) {
-                transition = ((OperationState)state).getTransition();
-            }
+            Transition transition = state.getTransition();
+//            if(state instanceof EventState) {
+//                // TODO -- same thing here, assuming a single event
+//                // TODO within event state
+//                transition = ((EventState)state).getEventsActions().get(0).getTransition();
+//            } else if(state instanceof OperationState) {
+//                transition = ((OperationState)state).getTransition();
+//            }
 
             if (transition != null && transition.getNextState() != null) {
                 Long sourceId = nameToNodeId.get(state.getName());
@@ -330,13 +332,19 @@ public class ServerlessWorkflowParser {
         endNode.setId(idCounter.getAndIncrement());
         endNode.setName("end node");
 
-        EventDefinition eventDef = getWorkflowEventFor(workflowEventDefinitions, stateEnd.getProduce().getEventName());
+        // TODO - FIX THIS !!
+        // WAS BEFORE: stateEnd.getProduce().getEventName()
+        EventDefinition eventDef = getWorkflowEventFor(workflowEventDefinitions, stateEnd.getProduceEvent().getNameRef());
 
         endNode.setMetaData("TriggerRef", eventDef.getSource());
         endNode.setMetaData("TriggerType", "ProduceMessage");
         endNode.setMetaData("MessageType", "com.fasterxml.jackson.databind.JsonNode");
-        endNode.setMetaData("MappingVariable", stateEnd.getProduce().getDataRef());
-        addMessageEndNodeAction(endNode, stateEnd.getProduce().getDataRef(), "com.fasterxml.jackson.databind.JsonNode");
+        // TODO - FIX THIS!!
+        // WAS BEFORE: stateEnd.getProduce().getDataRef()
+        endNode.setMetaData("MappingVariable", stateEnd.getProduceEvent().getData());
+        // TODO - FIX THIS!!
+        // WAS BEFORE: stateEnd.getProduce().getDataRef()
+        addMessageEndNodeAction(endNode, stateEnd.getProduceEvent().getData(), "com.fasterxml.jackson.databind.JsonNode");
 
         nodeContainer.addNode(endNode);
         return endNode;

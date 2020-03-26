@@ -1,7 +1,6 @@
 {
   "id": "function",
   "name": "test-wf",
-  "startsAt": "HelloWorld",
   "functions": [
     {
       "name": "helloWorld",
@@ -16,19 +15,22 @@
     {
       "name":"HelloWorld",
       "type":"OPERATION",
+      "start": {
+        "kind": "DEFAULT"
+      },
       "actionMode":"SEQUENTIAL",
       "actions":[
         {
-          "functionref": {
-            "refname": "helloWorld",
+          "functionRef": {
+            "refName": "helloWorld",
             "parameters" : {
               "script" : "System.out.println(\"Hello Serverless Workflow World\");"
             }
           }
         },
         {
-          "functionref": {
-            "refname": "goodbyeWorld",
+          "functionRef": {
+            "refName": "goodbyeWorld",
             "parameters" : {
               "script" : "System.out.println(\"GoodBye Serverless Workflow World\");"
             }
@@ -36,7 +38,7 @@
         }
       ],
       "end": {
-        "type": "TERMINATE"
+        "kind": "TERMINATE"
       }
     }
   ]

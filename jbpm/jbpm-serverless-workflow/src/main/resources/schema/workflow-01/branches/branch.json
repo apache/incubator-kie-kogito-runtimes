@@ -7,10 +7,6 @@
       "type": "string",
       "description": "Branch name"
     },
-    "startsAt": {
-      "type": "string",
-      "description": "Starts at state name"
-    },
     "states": {
       "type": "array",
       "description": "State Definitions",
@@ -23,14 +19,10 @@
       "type": "boolean",
       "default": false,
       "description": "Flow must wait for this branch to finish before continuing"
-    },
-    "metadata": {
-      "$ref": "../metadata/metadata.json"
     }
   },
   "required": [
     "name",
-    "startsAt",
     "states",
     "waitForCompletion"
   ]

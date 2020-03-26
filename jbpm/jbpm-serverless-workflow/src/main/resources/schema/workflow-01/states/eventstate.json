@@ -9,21 +9,25 @@
     "$ref": "defaultstate.json"
   },
   "properties": {
-    "consume": {
+    "exclusive": {
+      "type": "boolean",
+      "default": true,
+      "description": "If true consuming one of the defined events causes its associated actions to be performed. If false all of the defined events must be consumed in order for actions to be performed"
+    },
+    "eventsActions": {
       "type": "array",
-      "description": "Event Handler Definitions",
+      "description": "Define what events trigger one or more actions to be performed",
       "items": {
         "type": "object",
-        "$ref": "../consume/consume.json"
+        "$ref": "../events/eventsactions.json"
       }
     },
-    "metadata": {
-      "$ref": "../metadata/metadata.json"
+    "timeout": {
+      "type": "string",
+      "description": "Time period to wait for incoming events (ISO 8601 format)"
     }
   },
   "required": [
-    "name",
-    "type",
-    "events"
+    "eventsActions"
   ]
 }

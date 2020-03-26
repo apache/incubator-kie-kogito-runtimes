@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ *   Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -24,24 +24,16 @@ import org.jbpm.serverless.workflow.api.WorkflowPropertySource;
 import org.jbpm.serverless.workflow.api.deserializers.ChoiceDeserializer;
 import org.jbpm.serverless.workflow.api.deserializers.DefaultChoiceOperatorDeserializer;
 import org.jbpm.serverless.workflow.api.deserializers.DefaultStateTypeDeserializer;
-import org.jbpm.serverless.workflow.api.deserializers.OnEventActionModeDeserializer;
+import org.jbpm.serverless.workflow.api.deserializers.EventsActionsActionModeDeserializer;
 import org.jbpm.serverless.workflow.api.deserializers.ExtensionDeserializer;
 import org.jbpm.serverless.workflow.api.deserializers.OperationStateActionModeDeserializer;
 import org.jbpm.serverless.workflow.api.deserializers.StateDeserializer;
 import org.jbpm.serverless.workflow.api.deserializers.StringValueDeserializer;
-import org.jbpm.serverless.workflow.api.events.OnEvent;
+import org.jbpm.serverless.workflow.api.events.EventsActions;
 import org.jbpm.serverless.workflow.api.interfaces.Choice;
 import org.jbpm.serverless.workflow.api.interfaces.Extension;
 import org.jbpm.serverless.workflow.api.interfaces.State;
-import org.jbpm.serverless.workflow.api.serializers.DelayStateSerializer;
-import org.jbpm.serverless.workflow.api.serializers.EventStateSerializer;
-import org.jbpm.serverless.workflow.api.serializers.ExtensionSerializer;
-import org.jbpm.serverless.workflow.api.serializers.OperationStateSerializer;
-import org.jbpm.serverless.workflow.api.serializers.ParallelStateSerializer;
-import org.jbpm.serverless.workflow.api.serializers.SubflowStateSerializer;
-import org.jbpm.serverless.workflow.api.serializers.SwitchStateSerializer;
-import org.jbpm.serverless.workflow.api.serializers.EventDefinitionSerializer;
-import org.jbpm.serverless.workflow.api.serializers.WorkflowSerializer;
+import org.jbpm.serverless.workflow.api.serializers.*;
 import org.jbpm.serverless.workflow.api.choices.DefaultChoice;
 import org.jbpm.serverless.workflow.api.states.DefaultState;
 import org.jbpm.serverless.workflow.api.states.DelayState;
@@ -76,8 +68,10 @@ public class WorkflowModule extends SimpleModule {
         addSerializer(new OperationStateSerializer());
         addSerializer(new ParallelStateSerializer());
         addSerializer(new SwitchStateSerializer());
-        addSerializer(new EventDefinitionSerializer());
         addSerializer(new SubflowStateSerializer());
+        addSerializer(new RelayStateSerializer());
+        addSerializer(new ForEachStateSerializer());
+        addSerializer(new CallbackStateSerializer());
         addSerializer(extensionSerializer);
     }
 
@@ -88,8 +82,8 @@ public class WorkflowModule extends SimpleModule {
                         new ChoiceDeserializer());
         addDeserializer(String.class,
                         new StringValueDeserializer(workflowPropertySource));
-        addDeserializer(OnEvent.ActionMode.class,
-                        new OnEventActionModeDeserializer(workflowPropertySource));
+        addDeserializer(EventsActions.ActionMode.class,
+                        new EventsActionsActionModeDeserializer(workflowPropertySource));
         addDeserializer(OperationState.ActionMode.class,
                         new OperationStateActionModeDeserializer(workflowPropertySource));
         addDeserializer(DefaultState.Type.class,

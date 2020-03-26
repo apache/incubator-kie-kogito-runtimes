@@ -16,19 +16,16 @@
 package org.jbpm.serverless.workflow;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Arrays;
 
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.StartNode;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;

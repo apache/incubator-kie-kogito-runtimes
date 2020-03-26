@@ -17,7 +17,7 @@
     },
     "correlationToken": {
       "type": "string",
-      "description": "Path used for event correlation"
+      "description": "Context attribute name of the CloudEvent which value is to be used for event correlation"
     },
     "metadata": {
       "$ref": "../metadata/metadata.json"

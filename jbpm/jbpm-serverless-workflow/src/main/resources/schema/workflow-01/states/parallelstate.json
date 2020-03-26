@@ -16,18 +16,9 @@
         "type": "object",
         "$ref": "../branches/branch.json"
       }
-    },
-    "transition": {
-      "$ref": "../transitions/transition.json"
-    },
-    "metadata": {
-      "$ref": "../metadata/metadata.json"
     }
   },
   "required": [
-    "name",
-    "type",
-    "branches",
-    "transition"
+    "branches"
   ]
 }

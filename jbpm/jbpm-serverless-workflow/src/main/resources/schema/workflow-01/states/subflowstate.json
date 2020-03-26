@@ -4,7 +4,7 @@
   "javaInterfaces": [
     "org.jbpm.serverless.workflow.api.interfaces.State"
   ],
-  "description": "Defines a workflow to be executed",
+  "description": "Defines a sub-workflow to be executed",
   "extends": {
     "$ref": "defaultstate.json"
   },
@@ -16,23 +16,10 @@
     },
     "workflowId": {
       "type": "string",
-      "description": "Local workflow unique id."
-    },
-    "workflowVersion": {
-      "type": "string",
-      "description": "Local workflow version"
-    },
-    "transition": {
-      "$ref": "../transitions/transition.json"
-    },
-    "metadata": {
-      "$ref": "../metadata/metadata.json"
+      "description": "Sub-workflow unique id."
     }
   },
   "required": [
-    "name",
-    "type",
-    "workflowId",
-    "transition"
+    "workflowId"
   ]
 }

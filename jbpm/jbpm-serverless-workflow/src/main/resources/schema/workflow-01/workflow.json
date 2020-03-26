@@ -1,7 +1,7 @@
 {
   "$id": "https://wg-serverless.org/workflow.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "Workflow is a vendor-neutral specification for defining the format/primitives that the users can use to specify/describe their serverless application flow.",
+  "description": "Serverless Workflow is a vendor-neutral specification for defining the model of workflows responsible for orchestrating event-driven serverless applications.",
   "type": "object",
   "javaType": "org.jbpm.serverless.workflow.api.Workflow",
   "javaInterfaces": [
@@ -30,23 +30,13 @@
       "type": "string",
       "description": "Serverless Workflow schema version"
     },
-    "owner": {
+    "dataInputSchema": {
       "type": "string",
-      "description": "Workflow owner"
+      "description": "URI to JSON Schema that workflow data input adheres to"
     },
-    "startsAt": {
+    "dataOutputSchema": {
       "type": "string",
-      "description": "Starts at state name"
-    },
-    "execStatus": {
-      "type": "string",
-      "enum": [
-        "Success",
-        "Fail",
-        "Timeout",
-        "Invalid"
-      ],
-      "description": "Workflow execution status"
+      "description": "URI to JSON Schema that workflow data output adheres to"
     },
     "metadata": {
       "$ref": "metadata/metadata.json"
@@ -57,7 +47,7 @@
     },
     "events": {
       "type": "array",
-      "description": "Event Definitions",
+      "description": "Workflow event definitions. Defines events that can be consumed or produced",
       "items": {
         "type": "object",
         "$ref": "events/eventdef.json"
@@ -79,25 +69,40 @@
         "existingJavaType": "org.jbpm.serverless.workflow.api.interfaces.State",
         "anyOf": [
           {
-            "$ref": "states/defaultstate.json"
-          },
-          {
+            "title": "Delay State",
             "$ref": "states/delaystate.json"
           },
           {
+            "title": "Event State",
             "$ref": "states/eventstate.json"
           },
           {
+            "title": "Operation State",
             "$ref": "states/operationstate.json"
           },
           {
+            "title": "Parallel State",
             "$ref": "states/parallelstate.json"
           },
           {
+            "title": "Switch State",
             "$ref": "states/switchstate.json"
           },
           {
+            "title": "SubFlow State",
             "$ref": "states/subflowstate.json"
+          },
+          {
+            "title": "Relay State",
+            "$ref": "states/relaystate.json"
+          },
+          {
+            "title": "ForEach State",
+            "$ref": "states/foreachstate.json"
+          },
+          {
+            "title": "Callback State",
+            "$ref": "states/callbackstate.json"
           }
         ]
       }
@@ -115,7 +120,6 @@
     "id",
     "name",
     "version",
-    "startsAt",
     "states"
   ]
 }

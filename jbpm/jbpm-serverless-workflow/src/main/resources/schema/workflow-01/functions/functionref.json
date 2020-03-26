@@ -2,7 +2,7 @@
   "type": "object",
   "javaType": "org.jbpm.serverless.workflow.api.functions.FunctionRef",
   "properties": {
-    "refname": {
+    "refName": {
       "type": "string",
       "description": "Name of the referenced function",
       "minLength": 1
@@ -11,12 +11,9 @@
       "type": "object",
       "description": "Function parameters",
       "existingJavaType": "java.util.Map<String, String>"
-    },
-    "metadata": {
-      "$ref": "../metadata/metadata.json"
     }
   },
   "required": [
-    "refname"
+    "refName"
   ]
 }

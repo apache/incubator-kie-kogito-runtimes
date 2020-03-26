@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ *   Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -51,9 +51,6 @@ public class WorkflowSerializer extends StdSerializer<Workflow> {
 
         gen.writeStartObject();
 
-        gen.writeStringField("name",
-                             workflow.getName());
-
         if(workflow.getId() !=null && !workflow.getId().isEmpty()) {
             gen.writeStringField("id",
                                  workflow.getId());
@@ -61,6 +58,9 @@ public class WorkflowSerializer extends StdSerializer<Workflow> {
             gen.writeStringField("id",
                                  generateUniqueId());
         }
+
+        gen.writeStringField("name",
+                workflow.getName());
 
         if(workflow.getDescription() != null && !workflow.getDescription().isEmpty()) {
             gen.writeStringField("description",
@@ -77,47 +77,45 @@ public class WorkflowSerializer extends StdSerializer<Workflow> {
                                  workflow.getSchemaVersion());
         }
 
-        if(workflow.getOwner() != null && !workflow.getOwner().isEmpty()) {
-            gen.writeStringField("owner",
-                                 workflow.getOwner());
+        if(workflow.getDataInputSchema() != null && !workflow.getDataInputSchema().isEmpty() ) {
+            gen.writeObjectField("dataInputSchema",
+                    workflow.getDataInputSchema());
         }
 
-        if (workflow.getStartsAt() != null && !workflow.getStartsAt().isEmpty()) {
-            gen.writeObjectField("startsAt",
-                                 workflow.getStartsAt());
-        } else {
-            gen.writeObjectField("startsAt",
-                                 "");
+        if(workflow.getDataOutputSchema() != null && !workflow.getDataOutputSchema().isEmpty() ) {
+            gen.writeObjectField("dataOutputSchema",
+                    workflow.getDataOutputSchema());
         }
 
-        if (workflow.getExecStatus() != null) {
-            gen.writeObjectField("execStatus",
-                                 workflow.getExecStatus().value());
-        }
-
-        if (workflow.getMetadata() != null && !workflow.getMetadata().isEmpty()) {
+        if(workflow.getMetadata() != null && !workflow.getMetadata().isEmpty()) {
             gen.writeObjectField("metadata",
                                  workflow.getMetadata());
         }
 
-        if (workflow.getExpressionLanguage() != null && !workflow.getExpressionLanguage().isEmpty()) {
+        if(workflow.getExpressionLanguage() != null && !workflow.getExpressionLanguage().isEmpty()) {
             gen.writeObjectField("expressionLanguage",
                                  workflow.getExpressionLanguage());
         }
 
-        if (workflow.getEvents() != null && !workflow.getEvents().isEmpty()) {
+        if(workflow.getEvents() != null && !workflow.getEvents().isEmpty()) {
             gen.writeArrayFieldStart("events");
             for (EventDefinition eventDefinition : workflow.getEvents()) {
                 gen.writeObject(eventDefinition);
             }
             gen.writeEndArray();
+        } else {
+            gen.writeArrayFieldStart("events");
+            gen.writeEndArray();
         }
 
-        if (workflow.getFunctions() != null && !workflow.getFunctions().isEmpty()) {
+        if(workflow.getFunctions() != null && !workflow.getFunctions().isEmpty()) {
             gen.writeArrayFieldStart("functions");
             for (Function function : workflow.getFunctions()) {
                 gen.writeObject(function);
             }
+            gen.writeEndArray();
+        } else {
+            gen.writeArrayFieldStart("functions");
             gen.writeEndArray();
         }
 
@@ -143,7 +141,7 @@ public class WorkflowSerializer extends StdSerializer<Workflow> {
         gen.writeEndObject();
     }
 
-    public static String generateUniqueId() {
+    protected static String generateUniqueId() {
         try {
             MessageDigest salt = MessageDigest.getInstance("SHA-256");
 
@@ -157,7 +155,7 @@ public class WorkflowSerializer extends StdSerializer<Workflow> {
         }
     }
 
-    public static String bytesToHex(byte[] bytes) {
+    protected static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;

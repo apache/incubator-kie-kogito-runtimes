@@ -24,19 +24,11 @@
         "type": "object",
         "$ref": "../actions/action.json"
       }
-    },
-    "transition": {
-      "$ref": "../transitions/transition.json"
-    },
-    "metadata": {
-      "$ref": "../metadata/metadata.json"
     }
   },
   "required": [
     "name",
     "actionMode",
-    "actions",
-    "type",
-    "transition"
+    "actions"
   ]
 }

@@ -9,9 +9,6 @@
   "properties": {
     "transition": {
       "$ref": "../transitions/transition.json"
-    },
-    "metadata": {
-      "$ref": "../metadata/metadata.json"
     }
   },
   "required": [

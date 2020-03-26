@@ -4,16 +4,16 @@
   "properties": {
     "name": {
       "type": "string",
-      "description": "Function name",
+      "description": "Function unique name",
       "minLength": 1
     },
     "resource": {
       "type": "string",
-      "desription": "Function resource (URI)"
+      "description": "Function resource (URI)"
     },
     "type": {
       "type": "string",
-      "description": "Function type",
+      "description": "Type of function to implement. Can be defined by implementations",
       "minLength": 1
     },
     "metadata": {
