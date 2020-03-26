@@ -5,8 +5,8 @@ pipeline {
         label 'kie-rhel7 && kie-mem16g'
     }
     tools {
-        maven 'kie-maven-3.5.4'
-        jdk 'kie-jdk1.8'
+        maven 'kie-maven-3.6.2'
+        jdk 'kie-jdk11'
     }
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')

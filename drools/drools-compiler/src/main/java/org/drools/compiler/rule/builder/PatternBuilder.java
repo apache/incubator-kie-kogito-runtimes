@@ -238,7 +238,8 @@ public class PatternBuilder
             Declaration declr = resolver.getDeclaration(identifier);
             patternDescr.setXpathStartDeclaration(declr);
             patternDescr.setObjectType(declr.getExtractor().getExtractToClassName());
-            expr = patternDescr.getIdentifier() + (patternDescr.isUnification() ? " := " : " : ") + expr.substring(identifier.length() + 1);
+            expr = (patternDescr.getIdentifier() != null ? patternDescr.getIdentifier() + (patternDescr.isUnification() ? " := " : " : ") : "")
+                    + expr.substring(identifier.length() + 1);
             descr.setExpression(expr);
         }
     }
@@ -764,7 +765,7 @@ public class PatternBuilder
                 return constraints;
             }
             Constraint constraint = isXPath ?
-                    buildXPathDescr(context, patternDescr, pattern, d, mvelCtx) :
+                    buildXPathDescr(context, patternDescr, pattern, (ExpressionDescr)  d, mvelCtx) :
                     buildCcdDescr(context, patternDescr, pattern, d, descr, mvelCtx);
             if (constraint != null) {
                 Declaration declCorrXpath = getDeclarationCorrespondingToXpath(pattern, isXPath, constraint);
@@ -829,10 +830,10 @@ public class PatternBuilder
     private Constraint buildXPathDescr(RuleBuildContext context,
                                        PatternDescr patternDescr,
                                        Pattern pattern,
-                                       BaseDescr descr,
+                                       ExpressionDescr descr,
                                        MVELDumper.MVELDumperContext mvelCtx) {
 
-        String expression = ((ExpressionDescr) descr).getExpression();
+        String expression = descr.getExpression();
         XpathAnalysis xpathAnalysis = XpathAnalysis.analyze(expression);
 
         if (xpathAnalysis.hasError()) {
@@ -963,7 +964,7 @@ public class PatternBuilder
                 !ClassObjectType.Match_ObjectType.isAssignableFrom(pattern.getObjectType())) {
             String normalizedExpr = normalizeExpression(context, pattern, relDescr, expr);
             if (negated) {
-                normalizedExpr = "!(" + normalizedExpr + ")";
+                normalizedExpr = normalizeNegatedExpr(normalizedExpr, relDescr.getOperator());
                 relDescr.getOperatorDescr().setNegated( !relDescr.getOperatorDescr().isNegated() );
             }
             return buildRelationalExpression(context, pattern, relDescr, normalizedExpr, aliases);
@@ -977,6 +978,13 @@ public class PatternBuilder
             rewrittenExpr = "!(" + rewrittenExpr + ")";
         }
         return createAndBuildPredicate(context, pattern, d, rewrittenExpr, aliases);
+    }
+
+    private String normalizeNegatedExpr(String expr, String operator) {
+        IndexUtil.ConstraintType constraintType = IndexUtil.ConstraintType.decode(operator);
+        return constraintType.getOperator() != null ?
+                expr.replace( constraintType.getOperator(), constraintType.negate().getOperator() ) :
+                "!(" + expr + ")";
     }
 
     private String rewriteOrExpressions(RuleBuildContext context, Pattern pattern, BaseDescr d, String expr) {
