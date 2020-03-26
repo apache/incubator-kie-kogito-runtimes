@@ -9,7 +9,7 @@ pipeline {
         jdk 'kie-jdk11'
     }
     triggers {
-        cron ('H 9 * * *')
+        cron ('H 10 * * *')
     }
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')
@@ -21,10 +21,20 @@ pipeline {
                 sh 'printenv'
             }
         }
+        stage('Build quarkus') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: 'master']], browser: [$class: 'GithubWeb', repoUrl: 'git@github.com:quarkusio/quarkus.git'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'quarkus']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'kie-ci-user-key', url: 'git@github.com:quarkusio/quarkus.git']]])
+                dir("quarkus") {
+                    script {
+                        maven.runMavenWithSubmarineSettings('clean install', true)
+                    }
+                }
+            }
+        }
         stage('Build kogito-runtimes') {
             steps {
                 script {
-                    maven.runMavenWithSubmarineSettings('clean deploy', false)
+                    maven.runMavenWithSubmarineSettings('clean install -Dversion.io.quarkus=999-SNAPSHOT', false)
                 }
             }
         }
@@ -33,7 +43,7 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: 'master']], browser: [$class: 'GithubWeb', repoUrl: 'git@github.com:kiegroup/kogito-apps.git'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kogito-apps']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'kie-ci-user-key', url: 'git@github.com:kiegroup/kogito-apps.git']]])
                 dir("kogito-apps") {
                     script {
-                      maven.runMavenWithSubmarineSettings('clean deploy', false)
+                      maven.runMavenWithSubmarineSettings('clean install -Dversion.io.quarkus=999-SNAPSHOT', false)
                     }
                 }
             }
@@ -43,7 +53,7 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: 'master']], browser: [$class: 'GithubWeb', repoUrl: 'git@github.com:kiegroup/kogito-examples.git'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kogito-examples']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'kie-ci-user-key', url: 'git@github.com:kiegroup/kogito-examples.git']]])
                 dir("kogito-examples") {
                     script {
-                         maven.runMavenWithSubmarineSettings('clean deploy', false)
+                         maven.runMavenWithSubmarineSettings('clean install -Dversion.io.quarkus=999-SNAPSHOT', false)
                     }
                 }
             }
@@ -51,22 +61,22 @@ pipeline {
     }
     post {
         failure{
-            emailext body: 'kogito deploy #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\\n' +
+            emailext body: 'kogito-quarkus #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\\n' +
                     'Please look here: ${BUILD_URL} \\n' +
                     ' \\n' +
-                    '${BUILD_LOG, maxLines=750}', subject: 'kogito deploy #${BUILD_NUMBER}: ' + "${currentBuild.currentResult}", to: 'cnicolai@redhat.com, mbiarnes@redhat.com'
+                    '${BUILD_LOG, maxLines=750}', subject: 'kogito quarkus #${BUILD_NUMBER}: ' + "${currentBuild.currentResult}", to: 'cnicolai@redhat.com, mbiarnes@redhat.com'
         }
         unstable{
-            emailext body: 'kogito-deploy #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\\n' +
+            emailext body: 'kogito-quarkus #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\\n' +
                     'Please look here: ${BUILD_URL} \\n' +
                     ' \\n' +
                     'Failed tests: ${BUILD_URL}/testReport \\n' +
                     ' \\n' +
-                    '${BUILD_LOG, maxLines=750}', subject: 'kogito deploy #${BUILD_NUMBER}: ' + "${currentBuild.currentResult}", to: 'cnicolai@redhat.com, mbiarnes@redhat.com'
+                    '${BUILD_LOG, maxLines=750}', subject: 'kogito quarkus #${BUILD_NUMBER}: ' + "${currentBuild.currentResult}", to: 'cnicolai@redhat.com, mbiarnes@redhat.com'
         }
         success{
-            emailext body: 'kogito-deploy #${BUILD_NUMBER} was:' + "${currentBuild.currentResult}" +  '\\n' +
-                    'Please look here: ${BUILD_URL}', subject: 'kogito deploy #${BUILD_NUMBER}: ' + "${currentBuild.currentResult}", to: 'cnicolai@redhat.com, mbiarnes@redhat.com'
+            emailext body: 'kogito-quarkus #${BUILD_NUMBER} was:' + "${currentBuild.currentResult}" +  '\\n' +
+                    'Please look here: ${BUILD_URL}', subject: 'kogito quarkus #${BUILD_NUMBER}: ' + "${currentBuild.currentResult}", to: 'cnicolai@redhat.com, mbiarnes@redhat.com'
         }
         always {
             junit '**/target/surefire-reports/**/*.xml'
