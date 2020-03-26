@@ -180,9 +180,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         Set<EventDescription> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
             .hasSize(2)
-            .extracting("event").contains("MySignal");
+            .extracting("event").contains("MySignal", "workItemCompleted");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal");
+            .extracting("eventType").contains("signal", "workItem");
+        assertThat(eventDescriptions)
+            .extracting("nodeId").contains("BoundaryEvent_2", "UserTask_1");
         assertThat(eventDescriptions)            
             .extracting("processInstanceId").contains(processInstance.getId());
         assertThat(eventDescriptions)
@@ -190,6 +192,22 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             .hasSize(1)
             .extracting("properties", Map.class)
             .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
+        assertThat(eventDescriptions)
+            .filteredOn("eventType", "signal")
+            .hasSize(1)
+            .extracting("nodeInstanceId").containsOnlyNulls();        
+        
+        assertThat(eventDescriptions)
+            .filteredOn("eventType", "workItem")
+            .hasSize(1)
+            .extracting("nodeInstanceId").doesNotContainNull();
+        
+        assertThat(eventDescriptions)
+        .filteredOn("eventType", "workItem")
+        .hasSize(1)
+        .extracting("dataType", Map.class)
+        .anyMatch(m -> m.containsKey("Output"))
+        .anyMatch(m -> m.get("Output") instanceof StringDataType);
                
         ksession.signalEvent("MySignal", "value");
         assertProcessInstanceFinished(processInstance, ksession);
@@ -242,9 +260,9 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         Set<EventDescription> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
             .hasSize(2)
-            .extracting("event").contains("MyMessage");
+            .extracting("event").contains("MyMessage", "workItemCompleted");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal");
+            .extracting("eventType").contains("signal", "workItem");
         assertThat(eventDescriptions)            
             .extracting("processInstanceId").contains(processInstance.getId());
         assertThat(eventDescriptions)
@@ -321,6 +339,8 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             .extracting("dataType").hasOnlyElementsOfType(StringDataType.class);
         assertThat(eventDescriptions)            
             .extracting("processInstanceId").contains(processInstance.getId());
+        assertThat(eventDescriptions)            
+            .extracting("nodeInstanceId").containsOnlyNulls();
         
         ksession.signalEvent("Yes", "YesValue", processInstance.getId());
         assertProcessInstanceFinished(processInstance, ksession);

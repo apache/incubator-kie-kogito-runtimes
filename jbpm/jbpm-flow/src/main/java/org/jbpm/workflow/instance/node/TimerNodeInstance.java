@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
-import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.api.runtime.process.EventListener;

@@ -690,8 +690,9 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     @Override
     public Set<EventDescription> getEventDescriptions() {
         Map<String, DataType> outputs = new HashMap<>();
-        VariableScope variableScope = (VariableScope) getWorkItemNode().getContext(VariableScope.VARIABLE_SCOPE);
-        getWorkItemNode().getOutAssociations().forEach(da -> outputs.put(da.getTarget(), variableScope.findVariable(da.getTarget()).getType()));
+        VariableScope variableScope = (VariableScope) getProcessInstance().getContextContainer().getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        getWorkItemNode().getOutAssociations().forEach(da -> da.getSources().forEach(s -> outputs.put(s, variableScope.findVariable(da.getTarget()).getType())));
+        
         // return just the main completion type of an event
         return Collections.singleton(new EventDescription("workItemCompleted", getNodeDefinitionId(), getNodeName(), "workItem", getId(), getProcessInstance().getId(), outputs));
     }

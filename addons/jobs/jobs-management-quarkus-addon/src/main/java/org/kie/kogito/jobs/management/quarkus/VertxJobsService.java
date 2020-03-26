@@ -17,26 +17,31 @@
 package org.kie.kogito.jobs.management.quarkus;
 
 import java.net.URI;
+import java.time.ZonedDateTime;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.jackson.DatabindCodec;
-import io.vertx.ext.web.client.WebClient;
-import io.vertx.ext.web.client.WebClientOptions;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.jobs.api.Job;
 import org.kie.kogito.jobs.api.JobBuilder;
+import org.kie.kogito.jobs.api.JobNotFoundException;
 import org.kie.kogito.jobs.management.RestJobsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.jackson.DatabindCodec;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.client.WebClientOptions;
 
 @ApplicationScoped
 public class VertxJobsService extends RestJobsService {
@@ -66,13 +71,15 @@ public class VertxJobsService extends RestJobsService {
 
     @PostConstruct
     void initialize() {
-        DatabindCodec.mapper().disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);        
+        DatabindCodec.mapper().disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
+        DatabindCodec.mapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);             
         DatabindCodec.mapper().registerModule(new JavaTimeModule());
         DatabindCodec.mapper().findAndRegisterModules();
         
         DatabindCodec.prettyMapper().registerModule(new JavaTimeModule());
         DatabindCodec.prettyMapper().findAndRegisterModules();
         DatabindCodec.prettyMapper().disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
+        DatabindCodec.prettyMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         if (providedWebClient.isResolvable()) {
             this.client = providedWebClient.get();
@@ -133,5 +140,25 @@ public class VertxJobsService extends RestJobsService {
         });
         
         return true;
+    }
+
+    @Override
+    public ZonedDateTime getScheduledTime(String id) {
+        Promise<Job> promise = Promise.promise();
+        
+        client.get(JOBS_PATH + "/" + id).send(res -> {
+            if (res.succeeded() && res.result().statusCode() == 200) {
+                promise.complete(res.result().bodyAsJson(Job.class));
+            } else if (res.succeeded() && res.result().statusCode() == 404) {
+                promise.fail(new JobNotFoundException(id));
+            } else {
+                promise.fail(new RuntimeException("Unable to find job with id " + id));
+            }
+        });
+        if (promise.future().result() != null) {
+            return promise.future().result().getExpirationTime();
+        } else {
+            throw new RuntimeException(promise.future().cause());
+        }
     }
 }

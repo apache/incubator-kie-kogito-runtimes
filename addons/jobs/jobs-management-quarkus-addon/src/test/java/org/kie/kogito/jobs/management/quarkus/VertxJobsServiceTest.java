@@ -16,23 +16,6 @@
 
 package org.kie.kogito.jobs.management.quarkus;
 
-import javax.enterprise.inject.Instance;
-
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.ext.web.client.HttpRequest;
-import io.vertx.ext.web.client.WebClient;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.kie.kogito.jobs.ExactExpirationTime;
-import org.kie.kogito.jobs.ProcessInstanceJobDescription;
-import org.kie.kogito.jobs.ProcessJobDescription;
-import org.kie.kogito.jobs.api.Job;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;
@@ -42,6 +25,35 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doAnswer;
+
+import java.time.ZonedDateTime;
+
+import javax.enterprise.inject.Instance;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.kie.kogito.jobs.ExactExpirationTime;
+import org.kie.kogito.jobs.ProcessInstanceJobDescription;
+import org.kie.kogito.jobs.ProcessJobDescription;
+import org.kie.kogito.jobs.api.Job;
+import org.kie.kogito.jobs.api.JobNotFoundException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.ext.web.client.HttpRequest;
+import io.vertx.ext.web.client.HttpResponse;
+import io.vertx.ext.web.client.WebClient;
 
 @ExtendWith(MockitoExtension.class)
 public class VertxJobsServiceTest {
@@ -111,5 +123,55 @@ public class VertxJobsServiceTest {
         when(webClient.delete(anyString())).thenReturn(request);
         tested.cancelJob("123");
         verify(webClient).delete("/jobs/123");
+    }
+    
+    @Test
+    void testGetScheduleTime(@Mock HttpRequest request, @Mock HttpResponse<Buffer> response) {
+        when(webClient.get(anyString())).thenReturn(request);
+        Job job = new Job();
+        job.setId("123");
+        job.setExpirationTime(ZonedDateTime.now());
+        AsyncResult<HttpResponse<Buffer>> asyncResult =mock(AsyncResult.class);
+        when(asyncResult.succeeded()).thenReturn(true);
+        when(asyncResult.result()).thenReturn(response);
+        when(response.statusCode()).thenReturn(200);
+        when(response.bodyAsJson(any())).thenReturn(job);
+        
+        doAnswer(new Answer<AsyncResult<HttpResponse<Buffer>>>() {
+            @Override
+            public AsyncResult<HttpResponse<Buffer>> answer(InvocationOnMock arg0) throws Throwable {
+            ((Handler<AsyncResult<HttpResponse<Buffer>>>) arg0.getArgument(0)).handle(asyncResult);
+            return null;
+            }
+          }).when(request).send(any());
+        
+        ZonedDateTime scheduledTime = tested.getScheduledTime("123");
+        assertThat(scheduledTime).isNotNull();
+        verify(webClient).get("/jobs/123");
+    }
+    
+    @Test
+    void testGetScheduleTimeJobNotFound(@Mock HttpRequest request, @Mock HttpResponse<Buffer> response) {
+        when(webClient.get(anyString())).thenReturn(request);
+        Job job = new Job();
+        job.setId("123");
+        job.setExpirationTime(ZonedDateTime.now());
+        AsyncResult<HttpResponse<Buffer>> asyncResult =mock(AsyncResult.class);
+        when(asyncResult.succeeded()).thenReturn(true);
+        when(asyncResult.result()).thenReturn(response);
+        when(response.statusCode()).thenReturn(404);
+        
+        doAnswer(new Answer<AsyncResult<HttpResponse<Buffer>>>() {
+            @Override
+            public AsyncResult<HttpResponse<Buffer>> answer(InvocationOnMock arg0) throws Throwable {
+            ((Handler<AsyncResult<HttpResponse<Buffer>>>) arg0.getArgument(0)).handle(asyncResult);
+            return null;
+            }
+          }).when(request).send(any());
+        
+        assertThatThrownBy(() -> tested.getScheduledTime("123"))
+            .hasCauseExactlyInstanceOf(JobNotFoundException.class);
+        
+        verify(webClient).get("/jobs/123");
     }
 }

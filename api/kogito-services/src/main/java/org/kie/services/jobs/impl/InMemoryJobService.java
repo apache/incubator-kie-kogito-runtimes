@@ -17,6 +17,7 @@
 package org.kie.services.jobs.impl;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -88,6 +89,20 @@ public class InMemoryJobService implements JobsService {
         }
         
         return false;
+    }
+    
+    @Override
+    public ZonedDateTime getScheduledTime(String id) {
+        if (scheduledJobs.containsKey(id)) {
+             ScheduledFuture<?> scheduled = scheduledJobs.get(id);
+             
+             long remainingTime = scheduled.getDelay(TimeUnit.MILLISECONDS);
+             if (remainingTime > 0) {
+                 return ZonedDateTime.from(Instant.ofEpochMilli(System.currentTimeMillis() + remainingTime));
+             }
+        }
+        
+        return null;
     }
     
     protected long calculateDelay(JobDescription description) {
