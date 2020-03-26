@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
@@ -51,7 +50,6 @@ import org.jboss.jandex.Index;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
 import org.jboss.jandex.MethodInfo;
-import org.jboss.logmanager.Level;
 import org.kie.api.builder.model.KieModuleModel;
 import org.kie.internal.jci.CompilationProblem;
 import org.kie.internal.kogito.codegen.Generated;
@@ -299,7 +297,7 @@ public class KogitoAssetsProcessor {
             for (CompilationProblem compilationProblem : result.getErrors()) {
                 errorInfo.append(compilationProblem.toString());
                 errorInfo.append("\n");
-                log.log(Level.ERROR, compilationProblem.toString());
+                logger.error(compilationProblem.toString());
             }
             Arrays.stream(result.getErrors()).forEach(cp -> errorInfo.append(cp.toString()));
             throw new IllegalStateException(errorInfo.toString());
