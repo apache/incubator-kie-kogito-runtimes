@@ -28,13 +28,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import org.jbpm.serverless.workflow.api.WorkflowPropertySource;
 import org.jbpm.serverless.workflow.api.interfaces.State;
-import org.jbpm.serverless.workflow.api.states.DefaultState;
-import org.jbpm.serverless.workflow.api.states.DelayState;
-import org.jbpm.serverless.workflow.api.states.EventState;
-import org.jbpm.serverless.workflow.api.states.OperationState;
-import org.jbpm.serverless.workflow.api.states.ParallelState;
-import org.jbpm.serverless.workflow.api.states.SubflowState;
-import org.jbpm.serverless.workflow.api.states.SwitchState;
+import org.jbpm.serverless.workflow.api.states.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +92,18 @@ public class StateDeserializer extends StdDeserializer<State> {
             case SUBFLOW:
                 return mapper.treeToValue(node,
                                           SubflowState.class);
+
+            case RELAY:
+                return mapper.treeToValue(node,
+                        RelayState.class);
+
+            case FOREACH:
+                return mapper.treeToValue(node,
+                        ForEachState.class);
+
+            case CALLBACK:
+                return mapper.treeToValue(node,
+                        CallbackState.class);
             default:
                 return mapper.treeToValue(node,
                                           DefaultState.class);

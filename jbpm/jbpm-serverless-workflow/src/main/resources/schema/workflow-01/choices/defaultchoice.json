@@ -22,6 +22,9 @@
         "GreaterThanEquals"
       ],
       "description": "Specifies how the input data is compared with the values"
+    },
+    "transition": {
+      "$ref": "../transitions/transition.json"
     }
   },
   "required": [

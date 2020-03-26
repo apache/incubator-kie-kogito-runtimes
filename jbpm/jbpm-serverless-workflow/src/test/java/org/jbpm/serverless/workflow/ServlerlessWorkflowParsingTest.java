@@ -15,9 +15,6 @@
 
 package org.jbpm.serverless.workflow;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.InputStreamReader;
 import java.io.Reader;
 
@@ -30,10 +27,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class ServlerlessWorkflowParsingTest {
 
     @ParameterizedTest
-    @ValueSource(strings = {"/single-operation.sw.json", "/single-operation.sw.yml"})
+    @ValueSource(strings = {"/simple/single-operation.sw.json", "/simple/single-operation.sw.yml"})
     public void testSingleOperationWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -65,7 +64,7 @@ public class ServlerlessWorkflowParsingTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/single-eventstate.sw.json", "/single-eventstate.sw.yml"})
+    @ValueSource(strings = {"/simple/single-eventstate.sw.json", "/simple/single-eventstate.sw.yml"})
     public void testSingleEventStateWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -98,7 +97,7 @@ public class ServlerlessWorkflowParsingTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/single-operation-many-functions.sw.json", "/single-operation-many-functions.sw.yml"})
+    @ValueSource(strings = {"/simple/single-operation-many-functions.sw.json", "/simple/single-operation-many-functions.sw.yml"})
     public void testSingleOperationWithManyFunctionsWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -132,7 +131,7 @@ public class ServlerlessWorkflowParsingTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/multiple-operations.sw.json", "/multiple-operations.sw.yml"})
+    @ValueSource(strings = {"/simple/multiple-operations.sw.json", "/simple/multiple-operations.sw.yml"})
     public void testMultipleOperationWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -188,11 +187,26 @@ public class ServlerlessWorkflowParsingTest {
         node = compositeNode.getNodes()[2];
         assertTrue(node instanceof EndNode);
     }
-    
-    /*
-     * Helper methods
-     */
-    protected Reader classpathResourceReader(String location) {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/specexamples/helloworld.sw.json", "/specexamples/helloworld.sw.yml",
+            "/specexamples/greeting.sw.json", "/specexamples/greeting.sw.yml",
+            "/specexamples/eventbasedgreeting.sw.json", "/specexamples/eventbasedgreeting.sw.yml",
+            "/specexamples/solvemathproblems.sw.json", "/specexamples/solvemathproblems.sw.yml",
+            "/specexamples/parallel.sw.json", "/specexamples/parallel.sw.yml",
+            "/specexamples/provisionorder.sw.json", "/specexamples/provisionorder.sw.yml",
+            "/specexamples/jobmonitoring.sw.json", "/specexamples/jobmonitoring.sw.yml",
+            "/specexamples/sendcloudevent.sw.json", "/specexamples/sendcloudevent.sw.yml",
+            "/specexamples/monitorpatient.sw.json", "/specexamples/monitorpatient.sw.yml",
+            "/specexamples/finalizecollegeapplication.sw.json", "/specexamples/finalizecollegeapplication.sw.yml",
+            "/specexamples/creditcheck.sw.json", "/specexamples/creditcheck.sw.yml"
+    })
+    public void testSpecExamplesParsing(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertNotNull(process);
+    }
+
+        protected Reader classpathResourceReader(String location) {
         return new InputStreamReader(this.getClass().getResourceAsStream(location));
     }
 

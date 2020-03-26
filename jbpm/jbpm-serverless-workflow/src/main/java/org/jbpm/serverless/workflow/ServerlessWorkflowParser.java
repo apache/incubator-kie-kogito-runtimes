@@ -121,6 +121,17 @@ public class ServerlessWorkflowParser {
         process.setVisibility(RuleFlowProcess.PUBLIC_VISIBILITY);
 
         StartNode startNode = startNode(process);
+
+        if(!isSupportedWorkflow(workflow)) {
+            // if we cannot support this valid process, just return start->end
+            EndNode endNode = endNode(true, process);
+            connection(startNode.getId(), endNode.getId(), startNode.getId() + "_" + endNode.getId(), process);
+
+            validate(process);
+            return process;
+        }
+
+
         // add "workflowdata" process var
         addJsonNodeVar(process, "workflowdata");
 
@@ -167,16 +178,26 @@ public class ServerlessWorkflowParser {
                                     .findFirst()
                                     .get();
 
-                            if ("script".equalsIgnoreCase(actionFunction.getType())) {
-                                String script = applySubstitutionsToScript(action.getFunctionRef().getParameters().get("script"));
-                                current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
+                            if(actionFunction.getType() != null) {
+                                if ("script".equalsIgnoreCase(actionFunction.getType())) {
+                                    String script = applySubstitutionsToScript(action.getFunctionRef().getParameters().get("script"));
+                                    current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
 
-                                connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
-                                start = current;
-                            } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
-                                String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionRef().getParameters().get("prefix") + " \" + " + action.getFunctionRef().getParameters().get("message") + ");");
-                                current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
+                                    connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
+                                    start = current;
+                                } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
+                                    String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionRef().getParameters().get("prefix") + " \" + " + action.getFunctionRef().getParameters().get("message") + ");");
+                                    current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
 
+                                    connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
+                                    start = current;
+                                } else {
+                                    current = scriptNode(action.getFunctionRef().getRefName(), "", embedded);
+                                    connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
+                                    start = current;
+                                }
+                            } else {
+                                current = scriptNode(action.getFunctionRef().getRefName(), "", embedded);
                                 connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                                 start = current;
                             }
@@ -184,6 +205,7 @@ public class ServerlessWorkflowParser {
                         EndNode embeddedEndNode = endNode(true, embedded);
                         connection(current.getId(), embeddedEndNode.getId(), current.getId() + "_" + embeddedEndNode.getId(), embedded);
                     }
+
                     if (state.getStart() != null) {
                         connection(startNode.getId(), embedded.getId(), startNode.getId() + "_" + embedded.getId(), process);
                     }
@@ -191,7 +213,7 @@ public class ServerlessWorkflowParser {
                     if (state.getEnd() != null) {
 
                         EndNode endNode = null;
-                        if(state.getEnd().getKind() == End.Kind.TERMINATE) {
+                        if(state.getEnd().getKind() == End.Kind.TERMINATE || state.getEnd().getKind() == End.Kind.DEFAULT ) {
                             endNode = endNode(true, process);
                         } else { //TODO assume its otherwise message...need to fix
                             endNode = messageEndNode(process, workflowEventDefinitions, state.getEnd());
@@ -199,7 +221,6 @@ public class ServerlessWorkflowParser {
 
                         connection(embedded.getId(), endNode.getId(), embedded.getId() + "_" + endNode.getId(), process);
                     }
-
                     nameToNodeId.put(state.getName(), embedded.getId());
                 }
 
@@ -224,21 +245,30 @@ public class ServerlessWorkflowParser {
                                 .findFirst()
                                 .get();
 
-                        if ("script".equalsIgnoreCase(actionFunction.getType())) {
-                            String script = applySubstitutionsToScript(action.getFunctionRef().getParameters().get("script"));
-                            current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
+                        if (actionFunction.getType() != null) {
+                            if ("script".equalsIgnoreCase(actionFunction.getType())) {
+                                String script = applySubstitutionsToScript(action.getFunctionRef().getParameters().get("script"));
+                                current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
 
-                            connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
-                            start = current;
-                        } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
-                            String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionRef().getParameters().get("prefix") + " \" + " + action.getFunctionRef().getParameters().get("message") + ");");
-                            current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
+                                connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
+                                start = current;
+                            } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
+                                String script = applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionRef().getParameters().get("prefix") + " \" + " + action.getFunctionRef().getParameters().get("message") + ");");
+                                current = scriptNode(action.getFunctionRef().getRefName(), script, embedded);
 
+                                connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
+                                start = current;
+                            } else {
+                                current = scriptNode(action.getFunctionRef().getRefName(), "", embedded);
+                                connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
+                                start = current;
+                            }
+                        } else {
+                            current = scriptNode(action.getFunctionRef().getRefName(), "", embedded);
                             connection(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embedded);
                             start = current;
                         }
                     }
-
                     EndNode embeddedEndNode = endNode(true, embedded);
                     connection(current.getId(), embeddedEndNode.getId(), current.getId() + "_" + embeddedEndNode.getId(), embedded);
                 }
@@ -269,9 +299,11 @@ public class ServerlessWorkflowParser {
 
             if (transition != null && transition.getNextState() != null) {
                 Long sourceId = nameToNodeId.get(state.getName());
-                Long targetId = nameToNodeId.get(((OperationState)state).getTransition().getNextState());
+                //Long targetId = nameToNodeId.get(((OperationState)state).getTransition().getNextState());
+                Long targetId = nameToNodeId.get(state.getTransition().getNextState());
 
                 connection(sourceId, targetId, sourceId + "_" + targetId, process);
+
             }
         });
 
@@ -457,5 +489,16 @@ public class ServerlessWorkflowParser {
             script = script.replaceFirst("\\$.([A-Za-z]+)", "((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\\\"workflowdata\\\")).get(\"$1\")");
         }
         return script;
+    }
+
+    protected boolean isSupportedWorkflow(Workflow workflow) {
+        // true if it includes only states that we currently support
+        for(State state : workflow.getStates()) {
+            if(!state.getType().equals(Type.EVENT) && !state.getType().equals(Type.OPERATION)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
