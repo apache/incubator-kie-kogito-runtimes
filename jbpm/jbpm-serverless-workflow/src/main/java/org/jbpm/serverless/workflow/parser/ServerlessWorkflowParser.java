@@ -22,10 +22,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.serverless.workflow.api.end.End;
-import org.jbpm.serverless.workflow.api.events.EventDefinition;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.interfaces.State;
 import org.jbpm.serverless.workflow.api.mapper.BaseObjectMapper;
+import org.jbpm.serverless.workflow.api.states.DelayState;
 import org.jbpm.serverless.workflow.api.states.EventState;
 import org.jbpm.serverless.workflow.api.transitions.Transition;
 import org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory;
@@ -33,6 +33,7 @@ import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.StartNode;
+import org.jbpm.workflow.core.node.TimerNode;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
 import org.jbpm.serverless.workflow.api.Workflow;
@@ -117,7 +118,6 @@ public class ServerlessWorkflowParser {
             }
 
             if (state.getType().equals(Type.OPERATION)) {
-
                 OperationState operationState = (OperationState) state;
                 CompositeContextNode embeddedSubProcess = factory.subProcessNode(idCounter.getAndIncrement(), state.getName(), process);
                 handleActions(workflowFunctions, operationState.getActions(), embeddedSubProcess);
@@ -131,6 +131,23 @@ public class ServerlessWorkflowParser {
                 }
 
                 nameToNodeId.put(state.getName(), embeddedSubProcess.getId());
+            }
+
+            if (state.getType().equals(Type.DELAY)) {
+                DelayState delayState = (DelayState) state;
+
+                TimerNode timerNode = factory.timerNode(idCounter.getAndIncrement(), delayState.getName(), delayState.getTimeDelay(), process);
+
+                if(state.getStart() != null) {
+                    factory.connect(processStartNode.getId(), timerNode.getId(), processStartNode.getId() + "_" + timerNode.getId(), process);
+                }
+
+                if(state.getEnd() != null) {
+                    factory.connect(timerNode.getId(), processEndNode.getId(), timerNode.getId() + "_" + processEndNode.getId(), process);
+                }
+
+                nameToNodeId.put(state.getName(), timerNode.getId());
+
             }
         }
 

@@ -20,10 +20,7 @@ import java.io.Reader;
 
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
-import org.jbpm.workflow.core.node.ActionNode;
-import org.jbpm.workflow.core.node.CompositeContextNode;
-import org.jbpm.workflow.core.node.EndNode;
-import org.jbpm.workflow.core.node.StartNode;
+import org.jbpm.workflow.core.node.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
@@ -47,7 +44,6 @@ public class ServlerlessWorkflowParsingTest {
         Node node = process.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = process.getNodes()[2];
-
         assertTrue(node instanceof CompositeContextNode);
         node = process.getNodes()[1];
         assertTrue(node instanceof EndNode);
@@ -64,6 +60,44 @@ public class ServlerlessWorkflowParsingTest {
         node = compositeNode.getNodes()[2];
         assertTrue(node instanceof EndNode);
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/exec/single-operation-with-delay.sw.json", "/exec/single-operation-with-delay.sw.yml"})
+    public void testSingleOperationWithDelayWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("function", process.getId());
+        assertEquals("test-wf", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(4, process.getNodes().length);
+
+        Node node = process.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[2];
+        assertTrue(node instanceof CompositeContextNode);
+        node = process.getNodes()[3];
+        assertTrue(node instanceof TimerNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof EndNode);
+
+        // now check the composite one to see what nodes it has
+        CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
+
+        assertEquals(3, compositeNode.getNodes().length);
+
+        node = compositeNode.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = compositeNode.getNodes()[1];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof EndNode);
+
+        TimerNode timerNode = (TimerNode) process.getNodes()[3];
+        assertEquals("PT1S", timerNode.getTimer().getDelay());
+    }
+
 
     @ParameterizedTest
     @ValueSource(strings = {"/exec/single-eventstate.sw.json", "/exec/single-eventstate.sw.yml"})

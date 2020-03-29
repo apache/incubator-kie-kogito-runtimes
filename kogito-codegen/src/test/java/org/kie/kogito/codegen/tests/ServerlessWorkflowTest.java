@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -28,6 +29,7 @@ import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
 
 public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
@@ -46,6 +48,32 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"serverless/single-operation-with-delay.sw.json", "serverless/single-operation-with-delay.sw.yml"})
+    public void testSingleFunctionCallWithDelayWorkflow(String processLocation) throws Exception {
+
+        Application app = generateCodeProcessesOnly(processLocation);
+        assertThat(app).isNotNull();
+
+        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("SmallDelay", 1);
+        ((DefaultProcessEventListenerConfig)app.config().process().processEventListeners()).register(listener);
+
+
+        Process<? extends Model> p = app.processes().processById("function");
+
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+        m.fromMap(parameters);
+
+        ProcessInstance<?> processInstance = p.createInstance(m);
+        processInstance.start();
+
+        boolean completed = listener.waitTillCompleted(5000);
+        assertThat(completed).isTrue();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }

@@ -20,6 +20,7 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.core.event.EventTypeFilter;
+import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
@@ -146,6 +147,22 @@ public class ServerlessWorkflowFactory {
         nodeContainer.addNode(endNode);
 
         return endNode;
+    }
+
+    public TimerNode timerNode(long id, String name, String delay, NodeContainer nodeContainer) {
+        TimerNode timerNode = new TimerNode();
+        timerNode.setId(id);
+        timerNode.setName(name);
+        timerNode.setMetaData("EventType", "timer");
+
+        Timer timer = new Timer();
+        timer.setTimeType(Timer.TIME_DURATION);
+        timer.setDelay(delay);
+        timerNode.setTimer(timer);
+
+        nodeContainer.addNode(timerNode);
+
+        return timerNode;
     }
 
     private void addMessageEndNodeAction(EndNode endNode, String variable, String messageType){
