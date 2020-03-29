@@ -33,7 +33,6 @@ public class ServerlessWorkflowUtils {
     public static final String ALTERNATE_WORKFLOW_FORMAT = "yml";
     public static final String DEFAULT_START_STATE_NAME = "StartState";
     public static final String DEFAULT_END_STATE_NAME = "EndState";
-    public static final String EOL = System.getProperty( "line.separator" );
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowUtils.class);
 
@@ -46,7 +45,7 @@ public class ServerlessWorkflowUtils {
             return new YamlObjectMapper();
         }
 
-        LOGGER.error("unable to determin workflow format {}", workflowFormat);
+        LOGGER.error("unable to determine workflow format {}", workflowFormat);
         throw new IllegalArgumentException("invalid workflow format");
     }
 

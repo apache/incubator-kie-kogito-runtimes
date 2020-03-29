@@ -52,14 +52,27 @@
 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.10.1</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
-      <version>2.9.10</version>
     </dependency>
+
+<!--    <dependency>-->
+<!--      <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--      <artifactId>jackson-databind</artifactId>-->
+<!--      <version>2.9.10.1</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>com.fasterxml.jackson.dataformat</groupId>-->
+<!--      <artifactId>jackson-dataformat-yaml</artifactId>-->
+<!--      <version>2.9.10</version>-->
+<!--    </dependency>-->
 
     <dependency>
       <groupId>javax.validation</groupId>
@@ -122,7 +135,6 @@
       <plugin>
         <groupId>org.jsonschema2pojo</groupId>
         <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-        <version>1.0.1</version>
         <configuration>
           <sourceDirectory>${basedir}/src/main/resources/schema</sourceDirectory>
           <targetPackage>org.jbpm.serverless.workflow.types</targetPackage>
