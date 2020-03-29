@@ -206,13 +206,25 @@ public class ServerlessWorkflowParser {
 
                         factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
                         start = current;
+                    } else if ("service".equalsIgnoreCase(actionFunction.getType())) {
+                        current = factory.serviceNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), actionFunction, embeddedSubProcess);
+                        factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
+                        start = current;
                     } else {
-                        current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), "", embeddedSubProcess);
+                        LOGGER.warn("currently unsupported function type, supported types are 'script', 'sysout', 'service'");
+                        LOGGER.warn("defaulting to script type");
+                        String script = ServerlessWorkflowUtils.applySubstitutionsToScript("");
+                        current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), script, embeddedSubProcess);
+
                         factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
                         start = current;
                     }
                 } else {
-                    current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), "", embeddedSubProcess);
+                    LOGGER.warn("invalid function type. supported types are 'script', 'sysout', 'service'");
+                    LOGGER.warn("defaulting to script type");
+                    String script = ServerlessWorkflowUtils.applySubstitutionsToScript("");
+                    current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), script, embeddedSubProcess);
+
                     factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
                     start = current;
                 }

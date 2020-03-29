@@ -16,10 +16,12 @@ package org.jbpm.serverless.workflow.parser.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.drools.compiler.rule.builder.dialect.java.JavaDialect;
+import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.core.event.EventTypeFilter;
+import org.jbpm.process.core.impl.WorkImpl;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
@@ -27,6 +29,7 @@ import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.serverless.workflow.api.Workflow;
 import org.jbpm.serverless.workflow.api.end.End;
 import org.jbpm.serverless.workflow.api.events.EventDefinition;
+import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.NodeContainer;
@@ -220,6 +223,36 @@ public class ServerlessWorkflowFactory {
         nodeContainer.addNode(scriptNode);
 
         return scriptNode;
+    }
+
+    public WorkItemNode serviceNode(long id, String name, Function function, NodeContainer nodeContainer) {
+        WorkItemNode workItemNode = new WorkItemNode();
+        workItemNode.setId(id);
+        workItemNode.setName(name);
+        workItemNode.setMetaData("Type", "Service Task");
+
+        Work work = new WorkImpl();
+        workItemNode.setWork(work);
+
+        work.setName("Service Task");
+        work.setParameter("Interface", function.getMetadata().get("interface"));
+        work.setParameter("Operation", function.getMetadata().get("operation"));
+        work.setParameter("interfaceImplementationRef", function.getMetadata().get("interface"));
+        work.setParameter("operationImplementationRef", function.getMetadata().get("operation"));
+        work.setParameter("ParameterType", JSON_NODE);
+        String metaImpl = function.getMetadata().get("implementation");
+        if(metaImpl == null) {
+            metaImpl = "Java";
+        }
+        work.setParameter("implementation", metaImpl);
+
+        workItemNode.addInMapping("Parameter", "workflowdata");
+        workItemNode.addOutMapping("Result", "workflowdata");
+
+        nodeContainer.addNode(workItemNode);
+
+        return workItemNode;
+
     }
 
     public static void processVar(String name, RuleFlowProcess process) {

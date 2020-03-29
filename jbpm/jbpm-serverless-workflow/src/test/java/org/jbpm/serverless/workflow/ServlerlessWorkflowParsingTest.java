@@ -99,6 +99,47 @@ public class ServlerlessWorkflowParsingTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"/exec/single-service-operation.sw.json", "/exec/single-service-operation.sw.yml"})
+    public void testSingleServiceOperationWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("function", process.getId());
+        assertEquals("test-wf", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(3, process.getNodes().length);
+
+        Node node = process.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[2];
+        assertTrue(node instanceof CompositeContextNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof EndNode);
+
+        // now check the composite one to see what nodes it has
+        CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
+
+        assertEquals(3, compositeNode.getNodes().length);
+
+        node = compositeNode.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = compositeNode.getNodes()[1];
+        assertTrue(node instanceof WorkItemNode);
+        node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof EndNode);
+
+        WorkItemNode workItemNode = (WorkItemNode) compositeNode.getNodes()[1];
+        assertEquals("helloWorld", workItemNode.getName());
+        assertEquals("org.something.other.TestService", workItemNode.getWork().getParameter("Interface"));
+        assertEquals("get", workItemNode.getWork().getParameter("Operation"));
+        assertEquals("org.something.other.TestService", workItemNode.getWork().getParameter("interfaceImplementationRef"));
+        assertEquals("get", workItemNode.getWork().getParameter("operationImplementationRef"));
+        assertEquals("Java", workItemNode.getWork().getParameter("implementation"));
+
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"/exec/single-subflow.sw.json", "/exec/single-subflow.sw.yml"})
     public void testSingleSubFlowWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));

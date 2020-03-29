@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -114,6 +116,43 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"serverless/single-service-operation.sw.json", "serverless/single-service-operation.sw.yml"})
+    public void testBasicServiceWorkflow(String processLocation) throws Exception {
+
+        Application app = generateCodeProcessesOnly(processLocation);
+        assertThat(app).isNotNull();
+
+        Process<? extends Model> p = app.processes().processById("singleservice");
+
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+
+        String jsonParamStr = "{\n" +
+                "  \"name\": \"john\"\n" +
+                "}";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonParamObj =  mapper.readTree(jsonParamStr);
+
+
+        parameters.put("workflowdata", jsonParamObj);
+        m.fromMap(parameters);
+
+        ProcessInstance<?> processInstance = p.createInstance(m);
+        processInstance.start();
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Model result = (Model)processInstance.variables();
+        assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
+
+        assertThat(result.toMap() instanceof JsonNode);
+
+        JsonNode dataOut = (JsonNode) result.toMap().get("workflowdata");
+
+        assertThat(dataOut.get("result").textValue()).isEqualTo("Hello john");
     }
 
     @Test
