@@ -165,6 +165,19 @@ public class ServerlessWorkflowFactory {
         return timerNode;
     }
 
+    public SubProcessNode callActivity(long id, String name, String calledId, boolean waitForCompletion, NodeContainer nodeContainer) {
+        SubProcessNode subProcessNode = new SubProcessNode();
+        subProcessNode.setId(id);
+        subProcessNode.setName(name);
+        subProcessNode.setProcessId(calledId);
+        subProcessNode.setWaitForCompletion(waitForCompletion);
+        subProcessNode.setIndependent(true);
+
+        nodeContainer.addNode(subProcessNode);
+
+        return subProcessNode;
+    }
+
     private void addMessageEndNodeAction(EndNode endNode, String variable, String messageType){
         List<DroolsAction> actions = new ArrayList<DroolsAction>();
 

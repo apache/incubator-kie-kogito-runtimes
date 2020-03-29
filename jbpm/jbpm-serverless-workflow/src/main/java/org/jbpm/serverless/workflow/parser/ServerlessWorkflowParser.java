@@ -27,13 +27,11 @@ import org.jbpm.serverless.workflow.api.interfaces.State;
 import org.jbpm.serverless.workflow.api.mapper.BaseObjectMapper;
 import org.jbpm.serverless.workflow.api.states.DelayState;
 import org.jbpm.serverless.workflow.api.states.EventState;
+import org.jbpm.serverless.workflow.api.states.SubflowState;
 import org.jbpm.serverless.workflow.api.transitions.Transition;
 import org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory;
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
-import org.jbpm.workflow.core.node.CompositeContextNode;
-import org.jbpm.workflow.core.node.EndNode;
-import org.jbpm.workflow.core.node.StartNode;
-import org.jbpm.workflow.core.node.TimerNode;
+import org.jbpm.workflow.core.node.*;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
 import org.jbpm.serverless.workflow.api.Workflow;
@@ -148,6 +146,22 @@ public class ServerlessWorkflowParser {
 
                 nameToNodeId.put(state.getName(), timerNode.getId());
 
+            }
+
+            if (state.getType().equals(Type.SUBFLOW)) {
+                SubflowState subflowState = (SubflowState) state;
+
+                SubProcessNode callActivityNode = factory.callActivity(idCounter.getAndIncrement(), subflowState.getName(), subflowState.getWorkflowId(), subflowState.isWaitForCompletion(), process);
+
+                if(state.getStart() != null) {
+                    factory.connect(processStartNode.getId(), callActivityNode.getId(), processStartNode.getId() + "_" + callActivityNode.getId(), process);
+                }
+
+                if(state.getEnd() != null) {
+                    factory.connect(callActivityNode.getId(), processEndNode.getId(), callActivityNode.getId() + "_" + processEndNode.getId(), process);
+                }
+
+                nameToNodeId.put(state.getName(), callActivityNode.getId());
             }
         }
 

@@ -76,8 +76,10 @@ public class ServerlessWorkflowUtils {
 
     public static boolean includesSupportedStates(Workflow workflow) {
         for(State state : workflow.getStates()) {
-            if(!state.getType().equals(DefaultState.Type.EVENT) && !state.getType().equals(DefaultState.Type.OPERATION)
-                    && !state.getType().equals(DefaultState.Type.DELAY)) {
+            if(!state.getType().equals(DefaultState.Type.EVENT)
+                    && !state.getType().equals(DefaultState.Type.OPERATION)
+                    && !state.getType().equals(DefaultState.Type.DELAY)
+                    && !state.getType().equals(DefaultState.Type.SUBFLOW)) {
                 return false;
             }
         }

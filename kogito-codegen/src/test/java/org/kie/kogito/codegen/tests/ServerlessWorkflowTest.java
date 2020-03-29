@@ -115,4 +115,22 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
+
+    @Test
+    public void testSubFlowWorkflow() throws Exception {
+
+        Application app = generateCodeProcessesOnly("serverless/single-subflow.sw.json", "serverless/called-subflow.sw.json");
+        assertThat(app).isNotNull();
+
+        Process<? extends Model> p = app.processes().processById("singlesubflow");
+
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+        m.fromMap(parameters);
+
+        ProcessInstance<?> processInstance = p.createInstance(m);
+        processInstance.start();
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+    }
 }

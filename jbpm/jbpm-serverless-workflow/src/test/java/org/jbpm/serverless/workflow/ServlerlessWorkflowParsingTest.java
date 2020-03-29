@@ -98,6 +98,28 @@ public class ServlerlessWorkflowParsingTest {
         assertEquals("PT1S", timerNode.getTimer().getDelay());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"/exec/single-subflow.sw.json", "/exec/single-subflow.sw.yml"})
+    public void testSingleSubFlowWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("function", process.getId());
+        assertEquals("test-wf", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(3, process.getNodes().length);
+
+        Node node = process.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[2];
+        assertTrue(node instanceof SubProcessNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof EndNode);
+
+        SubProcessNode subProcessNode = (SubProcessNode) process.getNodes()[2];
+        assertEquals("abc", subProcessNode.getProcessId());
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"/exec/single-eventstate.sw.json", "/exec/single-eventstate.sw.yml"})
@@ -230,7 +252,6 @@ public class ServlerlessWorkflowParsingTest {
             "/specexamples/eventbasedgreeting.sw.json", "/specexamples/eventbasedgreeting.sw.yml",
             "/specexamples/solvemathproblems.sw.json", "/specexamples/solvemathproblems.sw.yml",
             "/specexamples/parallel.sw.json", "/specexamples/parallel.sw.yml",
-            "/specexamples/provisionorder.sw.json", "/specexamples/provisionorder.sw.yml",
             "/specexamples/jobmonitoring.sw.json", "/specexamples/jobmonitoring.sw.yml",
             "/specexamples/sendcloudevent.sw.json", "/specexamples/sendcloudevent.sw.yml",
             "/specexamples/monitorpatient.sw.json", "/specexamples/monitorpatient.sw.yml",
