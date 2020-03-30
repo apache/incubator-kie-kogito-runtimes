@@ -174,7 +174,6 @@ public class ServerlessWorkflowFactory {
         subProcessNode.setName(name);
         subProcessNode.setProcessId(calledId);
         subProcessNode.setWaitForCompletion(waitForCompletion);
-        subProcessNode.setIndependent(true);
 
         nodeContainer.addNode(subProcessNode);
 

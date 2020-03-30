@@ -135,6 +135,7 @@
 
     <version.testcontainers>1.12.4</version.testcontainers>
     <version.xmlunit>2.2.1</version.xmlunit>
+    <version.jsonschema2pojo-maven-plugin>1.0.1</version.jsonschema2pojo-maven-plugin>
   </properties>
 
   <!-- distributionManagement section -->
@@ -1262,6 +1263,11 @@
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
           <version>${version.io.quarkus}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jsonschema2pojo</groupId>
+          <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+          <version>${version.jsonschema2pojo-maven-plugin}</version>
         </plugin>
       </plugins>
     </pluginManagement>
