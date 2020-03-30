@@ -49,11 +49,14 @@ public class FileSystemProcessInstancesTest {
 
         processInstance.start();
         assertEquals(STATE_ACTIVE, processInstance.status());
+        assertEquals("User Task", processInstance.description());
         
         process.instances().values();
         
         String testVar = (String) processInstance.variables().get("test");
         assertEquals("test", testVar);
+        
+        assertEquals("User Task", processInstance.description());
 
         WorkItem workItem = processInstance.workItems(securityPolicy).get(0);
         assertNotNull(workItem);

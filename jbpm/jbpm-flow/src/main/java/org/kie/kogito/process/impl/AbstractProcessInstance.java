@@ -66,6 +66,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     private Integer status;
     private String id;
     private String businessKey;
+    private String description;
     
     private ProcessError processError;
     
@@ -92,6 +93,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.legacyProcessInstance = ((CorrelationAwareProcessRuntime)rt).createProcessInstance(processId, correlationKey, map);
         this.id = legacyProcessInstance.getId();
         this.businessKey = ((WorkflowProcessInstance)legacyProcessInstance).getCorrelationKey();
+        this.description = ((WorkflowProcessInstanceImpl)legacyProcessInstance).getDescription();
         this.status = ProcessInstance.STATE_PENDING;
         // this applies to business keys only as non business keys process instances id are always unique
         if (correlationKey != null && process.instances.exists(id)) {
@@ -108,6 +110,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.status = legacyProcessInstance.getState();
         this.id = legacyProcessInstance.getId();
         this.businessKey = ((WorkflowProcessInstance)legacyProcessInstance).getCorrelationKey();
+        this.description = ((WorkflowProcessInstanceImpl)legacyProcessInstance).getDescription();
         ((WorkflowProcessInstanceImpl) this.legacyProcessInstance).setKnowledgeRuntime( ((InternalProcessRuntime)rt).getInternalKieRuntime() );
         ((WorkflowProcessInstanceImpl) this.legacyProcessInstance).reconnect();
         
@@ -207,6 +210,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         return this.businessKey;
     }
     
+    @Override
+    public String description() {
+        return this.description;
+    }
+
     @Override
     public void updateVariables(T updates) {
         Map<String, Object> map = bind(updates);
@@ -360,6 +368,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             this.status = legacyProcessInstance.getState();
             this.id = legacyProcessInstance.getId();
             this.businessKey = ((WorkflowProcessInstance)legacyProcessInstance).getCorrelationKey();
+            this.description = ((WorkflowProcessInstanceImpl)legacyProcessInstance).getDescription();
             
             addToUnitOfWork(pi -> ((MutableProcessInstances<T>)process.instances()).remove(pi.id()));
             
