@@ -36,11 +36,7 @@ import org.jbpm.serverless.workflow.api.interfaces.State;
 import org.jbpm.serverless.workflow.api.serializers.*;
 import org.jbpm.serverless.workflow.api.choices.DefaultChoice;
 import org.jbpm.serverless.workflow.api.states.DefaultState;
-import org.jbpm.serverless.workflow.api.states.DelayState;
-import org.jbpm.serverless.workflow.api.states.EventState;
 import org.jbpm.serverless.workflow.api.states.OperationState;
-import org.jbpm.serverless.workflow.api.states.ParallelState;
-import org.jbpm.serverless.workflow.api.states.SwitchState;
 
 public class WorkflowModule extends SimpleModule {
 
