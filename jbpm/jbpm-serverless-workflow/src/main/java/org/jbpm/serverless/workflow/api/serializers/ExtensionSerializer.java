@@ -53,7 +53,7 @@ public class ExtensionSerializer extends StdSerializer<Extension> {
 
         String extensionId = extension.getExtensionId();
 
-        if (extension != null && extensionsMap.containsKey(extensionId)) {
+        if (extensionsMap.containsKey(extensionId)) {
             // serialize after setting default bean values...
             BeanSerializerFactory.instance.createSerializer(provider,
                                                             TypeFactory.defaultInstance().constructType(extensionsMap.get(extensionId))).serialize(extension,

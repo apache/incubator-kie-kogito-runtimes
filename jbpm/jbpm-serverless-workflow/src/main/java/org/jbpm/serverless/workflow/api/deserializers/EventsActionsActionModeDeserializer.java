@@ -62,7 +62,7 @@ public class EventsActionsActionModeDeserializer extends StdDeserializer<EventsA
                     return EventsActions.ActionMode.fromValue(jp.getText());
                 }
             } catch (Exception e) {
-                logger.info("Exception trying to evaluate property: " + e.getMessage());
+                logger.info("Exception trying to evaluate property: {}", e.getMessage());
                 return EventsActions.ActionMode.fromValue(jp.getText());
             }
         } else {

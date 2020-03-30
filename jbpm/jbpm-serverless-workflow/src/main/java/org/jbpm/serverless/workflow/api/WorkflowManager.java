@@ -19,7 +19,6 @@
 package org.jbpm.serverless.workflow.api;
 
 import org.jbpm.serverless.workflow.api.interfaces.Extension;
-import org.jbpm.serverless.workflow.api.Workflow;
 
 public interface WorkflowManager {
 

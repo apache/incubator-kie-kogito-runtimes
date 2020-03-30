@@ -62,7 +62,7 @@ public class OperationStateActionModeDeserializer extends StdDeserializer<Operat
                     return OperationState.ActionMode.fromValue(jp.getText());
                 }
             } catch (Exception e) {
-                logger.info("Exception trying to evaluate property: " + e.getMessage());
+                logger.info("Exception trying to evaluate property: {}", e.getMessage());
                 return OperationState.ActionMode.fromValue(jp.getText());
             }
         } else {

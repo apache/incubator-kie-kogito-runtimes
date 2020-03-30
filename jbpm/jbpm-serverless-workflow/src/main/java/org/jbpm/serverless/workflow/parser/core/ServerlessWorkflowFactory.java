@@ -35,6 +35,7 @@ import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
+import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.node.*;
 import org.kie.api.definition.process.Node;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ public class ServerlessWorkflowFactory {
     private static final String DEFAULT_VISIBILITY = "Public";
     private static final String DEFAULT_VAR = "Var";
     private static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
+    private static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
     private static final Set<String> DEFAULT_IMPORTS = new HashSet<String>(Arrays.asList(JSON_NODE));
 
     public RuleFlowProcess createProcess(Workflow workflow) {
@@ -90,7 +92,7 @@ public class ServerlessWorkflowFactory {
         process.setVisibility(DEFAULT_VISIBILITY);
 
         // add workflow data var
-        processVar("workflowdata", process);
+        processVar(DEFAULT_WORKFLOW_VAR, process);
 
         return process;
     }
@@ -193,7 +195,7 @@ public class ServerlessWorkflowFactory {
                         (variable == null ? "" : "workItem.setParameter(\"Message\", " + variable + ");" + EOL) +
                         "workItem.setDeploymentId((String) kcontext.getKnowledgeRuntime().getEnvironment().get(\"deploymentId\"));" + EOL +
                         "((org.drools.core.process.instance.WorkItemManager) kcontext.getKnowledgeRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);"));
-        endNode.setActions(EndNode.EVENT_NODE_ENTER, actions);
+        endNode.setActions(ExtendedNodeImpl.EVENT_NODE_ENTER, actions);
     }
 
     private void addTriggerToStartNode(StartNode startNode, String triggerEventType) {
@@ -245,8 +247,8 @@ public class ServerlessWorkflowFactory {
         }
         work.setParameter("implementation", metaImpl);
 
-        workItemNode.addInMapping("Parameter", "workflowdata");
-        workItemNode.addOutMapping("Result", "workflowdata");
+        workItemNode.addInMapping("Parameter", DEFAULT_WORKFLOW_VAR);
+        workItemNode.addOutMapping("Result", DEFAULT_WORKFLOW_VAR);
 
         nodeContainer.addNode(workItemNode);
 

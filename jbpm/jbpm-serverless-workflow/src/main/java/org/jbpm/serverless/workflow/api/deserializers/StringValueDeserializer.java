@@ -61,7 +61,7 @@ public class StringValueDeserializer extends StdDeserializer<String> {
                     return jp.getText();
                 }
             } catch (Exception e) {
-                logger.info("Exception trying to evaluate property: " + e.getMessage());
+                logger.info("Exception trying to evaluate property: {}", e.getMessage());
                 return jp.getText();
             }
         } else {

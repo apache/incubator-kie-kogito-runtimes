@@ -148,8 +148,7 @@ public class WorkflowSerializer extends StdSerializer<Workflow> {
             salt.update(UUID.randomUUID()
                                 .toString()
                                 .getBytes("UTF-8"));
-            String digest = bytesToHex(salt.digest());
-            return digest;
+            return bytesToHex(salt.digest());
         } catch (Exception e) {
             return UUID.randomUUID().toString();
         }

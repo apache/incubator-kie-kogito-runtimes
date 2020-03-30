@@ -147,8 +147,8 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
-
-        assertThat(result.toMap() instanceof JsonNode);
+        
+        assertThat(result.toMap().get("workflowdata")).isInstanceOf(JsonNode.class);
 
         JsonNode dataOut = (JsonNode) result.toMap().get("workflowdata");
 

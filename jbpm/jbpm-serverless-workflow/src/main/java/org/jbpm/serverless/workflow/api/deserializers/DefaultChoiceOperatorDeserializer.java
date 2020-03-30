@@ -62,7 +62,7 @@ public class DefaultChoiceOperatorDeserializer extends StdDeserializer<DefaultCh
                     return DefaultChoice.Operator.fromValue(jp.getText());
                 }
             } catch (Exception e) {
-                logger.info("Exception trying to evaluate property: " + e.getMessage());
+                logger.info("Exception trying to evaluate property: {}", e.getMessage());
                 return DefaultChoice.Operator.fromValue(jp.getText());
             }
         } else {

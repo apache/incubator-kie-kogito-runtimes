@@ -73,7 +73,7 @@ public class ExtensionDeserializer extends StdDeserializer<Extension> {
                     extensionId = result;
                 }
             } catch (Exception e) {
-                logger.info("Exception trying to evaluate property: " + e.getMessage());
+                logger.info("Exception trying to evaluate property: {}", e.getMessage());
             }
         }
 

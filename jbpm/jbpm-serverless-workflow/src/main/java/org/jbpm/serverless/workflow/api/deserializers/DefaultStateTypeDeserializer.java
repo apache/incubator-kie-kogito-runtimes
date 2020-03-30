@@ -63,7 +63,7 @@ public class DefaultStateTypeDeserializer extends StdDeserializer<DefaultState.T
                     return DefaultState.Type.fromValue(jp.getText());
                 }
             } catch (Exception e) {
-                logger.info("Exception trying to evaluate property: " + e.getMessage());
+                logger.info("Exception trying to evaluate property: {}", e.getMessage());
                 return DefaultState.Type.fromValue(jp.getText());
             }
         } else {
