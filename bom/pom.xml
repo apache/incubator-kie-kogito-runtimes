@@ -163,6 +163,17 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>process-management-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>process-management-common</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>process-management-addon</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -172,7 +183,17 @@
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
-
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>process-management-springboot-addon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>process-management-springboot-addon</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>jobs-api</artifactId>
@@ -476,6 +497,26 @@
         <scope>test</scope>
       </dependency>
 
+      <!-- Scenario Simulation Runner -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-scenario-simulation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-scenario-simulation</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-scenario-simulation</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+
       <!-- Optaplanner -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -527,6 +568,17 @@
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>jbpm-bpmn2</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jbpm-serverless-workflow</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jbpm-serverless-workflow</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
