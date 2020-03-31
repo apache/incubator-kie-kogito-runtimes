@@ -16,17 +16,12 @@
 
 package org.kie.kogito.dmn;
 
-import java.io.IOException;
 import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.io.impl.ReaderResource;
 import org.kie.api.io.Resource;
 import org.kie.dmn.api.core.DMNModel;
@@ -57,36 +52,12 @@ public class DMNKogito {
      */
     public static DMNRuntime createGenericDMNRuntime(Reader... readers) {
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
-        DMNRuntime dmnRuntime = fromResources(resources);
-        return dmnRuntime;
-    }
-
-    private static DMNRuntime fromResources(List<Resource> resources) {
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
                                                  .setRootClassLoader(null)
                                                  .buildConfiguration()
                                                  .fromResources(resources)
                                                  .getOrElseThrow(e -> new RuntimeException("Error initalizing DMNRuntime", e));
         return dmnRuntime;
-    }
-
-    /**
-     * Internal Utility class.<br/>
-     * Use {@link Application#decisionModels()} of Kogito API to programmatically access DMN assets and evaluate DMN decisions.
-     */
-    public static DMNRuntime createGenericDMNRuntime() {
-        try (Stream<Path> fileStream = Files.walk(Paths.get("."))) {
-            List<Resource> resources = fileStream.filter(path -> Files.isRegularFile(path) && path.toString().endsWith(".dmn"))
-                                                 .peek(x -> LOG.debug("Adding DMN model {} to runtime", x))
-                                                 .map(Path::toFile)
-                                                 .map(FileSystemResource::new)
-                                                 .collect(Collectors.toList());
-            DMNRuntime dmnRuntime = fromResources(resources);
-            return dmnRuntime;
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error initalizing DMNRuntime", e);
-        }
     }
 
     public static DMNModel modelByName(DMNRuntime dmnRuntime, String modelName) {
