@@ -57,6 +57,11 @@ public class DMNKogito {
      */
     public static DMNRuntime createGenericDMNRuntime(Reader... readers) {
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
+        DMNRuntime dmnRuntime = fromResources(resources);
+        return dmnRuntime;
+    }
+
+    private static DMNRuntime fromResources(List<Resource> resources) {
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
                                                  .setRootClassLoader(null)
                                                  .buildConfiguration()
@@ -76,11 +81,7 @@ public class DMNKogito {
                                                  .map(Path::toFile)
                                                  .map(FileSystemResource::new)
                                                  .collect(Collectors.toList());
-            DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                                                     .setRootClassLoader(null)
-                                                     .buildConfiguration()
-                                                     .fromResources(resources)
-                                                     .getOrElseThrow(e -> new RuntimeException("Error initalizing DMNRuntime", e));
+            DMNRuntime dmnRuntime = fromResources(resources);
             return dmnRuntime;
         } catch (IOException e) {
             e.printStackTrace();
