@@ -22,11 +22,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import javax.lang.model.SourceVersion;
+
+import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.TypeObject;
+import org.jbpm.process.core.ValueObject;
 import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.process.core.datatype.impl.type.UndefinedDataType;
-import org.jbpm.process.core.ValueObject;
 
 /**
  * Default implementation of a variable.
@@ -48,6 +52,7 @@ public class Variable implements TypeObject, ValueObject, Serializable {
 
     private String id;
     private String name;
+    private String sanitizedName;
     private DataType type;
     private Object value;
     private Map<String, Object> metaData = new HashMap<String, Object>();
@@ -64,6 +69,27 @@ public class Variable implements TypeObject, ValueObject, Serializable {
 
     public void setName(final String name) {
         this.name = name;
+        this.sanitizedName = sanitizeIdentifier(name);
+    }
+
+    public String getSanitizedName() {
+        return sanitizedName;
+    }
+
+    /**
+     * Return a valid unique Java identifier based on the given @param name. It consider valid characters and
+     * reserved words.
+     * In case the input is valid it is returned itself otherwise a unique valid identifier is generated.
+     * @param name the input
+     * @return the output valid Java identifier
+     */
+    private static String sanitizeIdentifier(String name) {
+        return Optional.ofNullable(name)
+                        .filter(SourceVersion::isName)
+                        .orElseGet(() -> Optional.ofNullable(StringUtils.extractFirstIdentifier(name, 0))
+                                .filter(s -> !StringUtils.isEmpty(s))
+                                .filter(SourceVersion::isName)
+                                .orElseGet(() -> "attribute" + StringUtils.generateUUID()));
     }
 
     public String getId() {
