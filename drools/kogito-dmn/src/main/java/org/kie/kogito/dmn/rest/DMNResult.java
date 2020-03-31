@@ -55,7 +55,7 @@ public class DMNResult implements Serializable, org.kie.dmn.api.core.DMNResult {
         this.setDecisionResults(dmnResult.getDecisionResults());
     }
 
-    public DMNResult(String namespace, String modelName, DMNResult dmnResult) {
+    public DMNResult(String namespace, String modelName, org.kie.dmn.api.core.DMNResult dmnResult) {
         this(dmnResult);
         this.namespace = namespace;
         this.modelName = modelName;

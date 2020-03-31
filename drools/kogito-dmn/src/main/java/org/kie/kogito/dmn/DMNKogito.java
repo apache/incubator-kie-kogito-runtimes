@@ -113,7 +113,7 @@ public class DMNKogito {
                                                                            null,
                                                                            null,
                                                                            null);
-        return new DMNResult(evaluationResult.result);
+        return new DMNResult(modelNamespace, modelName, evaluationResult.result);
     }
 
 }
