@@ -79,17 +79,22 @@ public class Variable implements TypeObject, ValueObject, Serializable {
     /**
      * Return a valid unique Java identifier based on the given @param name. It consider valid characters and
      * reserved words.
-     * In case the input is valid it is returned itself otherwise a unique valid identifier is generated.
+     * In case the input is valid it is returned itself otherwise a valid identifier is generated prefixing v$ based
+     * on the @param input excluding invalid characters.
      * @param name the input
      * @return the output valid Java identifier
      */
     private static String sanitizeIdentifier(String name) {
         return Optional.ofNullable(name)
                         .filter(SourceVersion::isName)
-                        .orElseGet(() -> Optional.ofNullable(StringUtils.extractFirstIdentifier(name, 0))
-                                .filter(s -> !StringUtils.isEmpty(s))
-                                .filter(SourceVersion::isName)
-                                .orElseGet(() -> "attribute" + StringUtils.generateUUID()));
+                        .orElseGet(() -> {
+                            String identifier = StringUtils.extractFirstIdentifier(name, 0);
+                            return Optional.ofNullable(identifier)
+                                    .filter(s -> !StringUtils.isEmpty(s))
+                                    .filter(SourceVersion::isName)
+                                    // prepend v$ in front of the variable name to prevent clashing with reserved keywords
+                                    .orElseGet(() -> String.format("v$%s", identifier));
+                        });
     }
 
     public String getId() {

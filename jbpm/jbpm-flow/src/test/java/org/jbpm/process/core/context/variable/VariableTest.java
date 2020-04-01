@@ -20,12 +20,10 @@ import java.util.stream.Stream;
 
 import javax.lang.model.SourceVersion;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class VariableTest {
 
@@ -40,16 +38,29 @@ class VariableTest {
     void testValidIdentifierName() {
         final String name = "valid";
         tested.setName(name);
-        assertThat(tested.getName()).isEqualTo(name);
+        assertValidSanitizedName(name);
         assertThat(tested.getSanitizedName()).isEqualTo(name);
+    }
+
+    private void assertValidSanitizedName(String name) {
+        assertThat(tested.getName()).isEqualTo(name);
+        assertThat(SourceVersion.isName(tested.getSanitizedName())).isTrue();
     }
 
     @Test
     void testInvalidIdentifierName() {
-        final String name = "123valid";
+        final String name = "123valid%^á+-)([]?!@";
         tested.setName(name);
-        assertThat(tested.getName()).isEqualTo(name);
+        assertValidSanitizedName(name);
         assertThat(tested.getSanitizedName()).isNotEqualTo(name).isEqualTo("valid");
+    }
+
+    @Test
+    void testInvalidIdentifierWithReservedWordName() {
+        final String name = "123class%^á+-)([]?!@";
+        tested.setName(name);
+        assertValidSanitizedName(name);
+        assertThat(tested.getSanitizedName()).isNotEqualTo(name).isEqualTo("v$class");
     }
 
     @Test
@@ -63,9 +74,8 @@ class VariableTest {
                   "strictfp", "volatile", "const", "float", "native", "super", "while")
                 .forEach(name -> {
                     tested.setName(name);
-                    assertThat(tested.getName()).isEqualTo(name);
-                    assertThat(tested.getSanitizedName()).isNotEqualTo(name);
-                    assertThat(SourceVersion.isName(tested.getSanitizedName())).isTrue();
+                    assertValidSanitizedName(name);
+                    assertThat(tested.getSanitizedName()).isNotEqualTo(name).isEqualTo("v$" + tested.getName());
                 });
     }
 }
