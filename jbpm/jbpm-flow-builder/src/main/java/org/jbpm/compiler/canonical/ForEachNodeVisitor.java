@@ -32,37 +32,44 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public class ForEachNodeVisitor extends AbstractCompositeNodeVisitor {
-    
-    public ForEachNodeVisitor(Map<Class<?>, AbstractVisitor> nodesVisitors) {
+
+    private static final String NODE_KEY = "forEachNode";
+
+    public ForEachNodeVisitor(Map<Class<?>, AbstractNodeVisitor> nodesVisitors) {
         super(nodesVisitors);
     }
 
     @Override
+    public String getNodeKey() {
+        return NODE_KEY;
+    }
+    
+    @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         ForEachNode forEachNode = (ForEachNode) node;
         
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, ForEachNodeFactory.class, "forEachNode" + node.getId(), "forEachNode", new LongLiteralExpr(forEachNode.getId()));
-        visitMetaData(forEachNode.getMetaData(), body, "forEachNode" + node.getId());
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, ForEachNodeFactory.class, getNodeId(node), "forEachNode", new LongLiteralExpr(forEachNode.getId()));
+        visitMetaData(forEachNode.getMetaData(), body, getNodeId(node));
         
-        addFactoryMethodWithArgs(body, "forEachNode" + node.getId(), "collectionExpression", new StringLiteralExpr(stripExpression(forEachNode.getCollectionExpression())));
-        addFactoryMethodWithArgs(body, "forEachNode" + node.getId(), "variable", new StringLiteralExpr(forEachNode.getVariableName()), 
+        addFactoryMethodWithArgs(body, getNodeId(node), "collectionExpression", new StringLiteralExpr(stripExpression(forEachNode.getCollectionExpression())));
+        addFactoryMethodWithArgs(body, getNodeId(node), "variable", new StringLiteralExpr(forEachNode.getVariableName()), 
                                                                                  new ObjectCreationExpr(null, new ClassOrInterfaceType(null, ObjectDataType.class.getSimpleName()), NodeList.nodeList(
                                                                                                                                                                                                       new StringLiteralExpr(forEachNode.getVariableType().getStringType())
                                                                                          )));
         
         if (forEachNode.getOutputCollectionExpression() != null) {
-            addFactoryMethodWithArgs(body, "forEachNode" + node.getId(), "outputCollectionExpression", new StringLiteralExpr(stripExpression(forEachNode.getOutputCollectionExpression())));
-            addFactoryMethodWithArgs(body, "forEachNode" + node.getId(), "outputVariable", new StringLiteralExpr(forEachNode.getOutputVariableName()), 
+            addFactoryMethodWithArgs(body, getNodeId(node), "outputCollectionExpression", new StringLiteralExpr(stripExpression(forEachNode.getOutputCollectionExpression())));
+            addFactoryMethodWithArgs(body, getNodeId(node), "outputVariable", new StringLiteralExpr(forEachNode.getOutputVariableName()), 
                                      new ObjectCreationExpr(null, new ClassOrInterfaceType(null, ObjectDataType.class.getSimpleName()), NodeList.nodeList(
                                                                                                                                                           new StringLiteralExpr(forEachNode.getOutputVariableType().getStringType())
                                              )));
         }
         // visit nodes
-        visitNodes("forEachNode" + node.getId(), forEachNode.getNodes(), body, ((VariableScope) forEachNode.getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);      
-        addFactoryMethodWithArgs(body, "forEachNode" + node.getId(), "linkIncomingConnections", new LongLiteralExpr(forEachNode.getLinkedIncomingNode(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE).getNodeId()));
-        addFactoryMethodWithArgs(body, "forEachNode" + node.getId(), "linkOutgoingConnections", new LongLiteralExpr(forEachNode.getLinkedOutgoingNode(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE).getNodeId()));
+        visitNodes(getNodeId(node), forEachNode.getNodes(), body, ((VariableScope) forEachNode.getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);      
+        addFactoryMethodWithArgs(body, getNodeId(node), "linkIncomingConnections", new LongLiteralExpr(forEachNode.getLinkedIncomingNode(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE).getNodeId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "linkOutgoingConnections", new LongLiteralExpr(forEachNode.getLinkedOutgoingNode(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE).getNodeId()));
         
-        addFactoryMethodWithArgs(body, "forEachNode" + node.getId(), "done");
+        addFactoryDoneMethod(body, getNodeId(node));
         
     }
 

@@ -28,27 +28,35 @@ import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
-public class SubProcessNodeVisitor extends AbstractVisitor {
+@Deprecated
+public class SubProcessNodeVisitor extends AbstractNodeVisitor {
+    
+    private static final String NODE_NAME = "subProcessNode";
 
+    @Override
+    protected String getNodeKey() {
+        return NODE_NAME;
+    }
+    
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         SubProcessNode subProcessNode = (SubProcessNode) node;
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, SubProcessNodeFactory.class, "subProcessNode" + node.getId(), "subProcessNode", new LongLiteralExpr(subProcessNode.getId()));
-        addFactoryMethodWithArgs(body, "subProcessNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(subProcessNode.getName(), "Call Activity")));
-        addFactoryMethodWithArgs(body, "subProcessNode" + node.getId(), "processId", new StringLiteralExpr(subProcessNode.getProcessId()));
-        addFactoryMethodWithArgs(body, "subProcessNode" + node.getId(), "processName", new StringLiteralExpr(getOrDefault(subProcessNode.getProcessName(), "")));
-        addFactoryMethodWithArgs(body, "subProcessNode" + node.getId(), "waitForCompletion", new BooleanLiteralExpr(subProcessNode.isWaitForCompletion()));
-        addFactoryMethodWithArgs(body, "subProcessNode" + node.getId(), "independent", new BooleanLiteralExpr(subProcessNode.isIndependent()));
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, SubProcessNodeFactory.class, getNodeId(node), "subProcessNode", new LongLiteralExpr(subProcessNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(subProcessNode.getName(), "Call Activity")));
+        addFactoryMethodWithArgs(body, getNodeId(node), "processId", new StringLiteralExpr(subProcessNode.getProcessId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "processName", new StringLiteralExpr(getOrDefault(subProcessNode.getProcessName(), "")));
+        addFactoryMethodWithArgs(body, getNodeId(node), "waitForCompletion", new BooleanLiteralExpr(subProcessNode.isWaitForCompletion()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "independent", new BooleanLiteralExpr(subProcessNode.isIndependent()));
 
         for (Entry<String, String> entry : subProcessNode.getInMappings().entrySet()) {
-            addFactoryMethodWithArgs(body, "subProcessNode" + node.getId(), "inMapping", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
+            addFactoryMethodWithArgs(body, getNodeId(node), "inMapping", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
         }
         for (Entry<String, String> entry : subProcessNode.getOutMappings().entrySet()) {
-            addFactoryMethodWithArgs(body, "subProcessNode" + node.getId(), "outMapping", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
+            addFactoryMethodWithArgs(body, getNodeId(node), "outMapping", new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
         }
         
-        visitMetaData(subProcessNode.getMetaData(), body, "subProcessNode" + node.getId());
+        visitMetaData(subProcessNode.getMetaData(), body, getNodeId(node));
 
-        addFactoryMethodWithArgs(body, "subProcessNode" + node.getId(), "done");
+        addFactoryDoneMethod(body, getNodeId(node));
     }
 }

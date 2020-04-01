@@ -22,6 +22,7 @@ import java.util.Map;
  * Top level of Case(File)Data that holds all shared information within a case.
  *
  */
+@Deprecated
 public interface CaseData {
 
     /**

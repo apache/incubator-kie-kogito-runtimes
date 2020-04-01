@@ -29,7 +29,7 @@ import org.jbpm.workflow.core.node.EndNode;
 /**
  *
  */
-public class EndNodeFactory extends NodeFactory {
+public class EndNodeFactory extends ExtendedNodeFactory {
 
     public EndNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
@@ -43,8 +43,15 @@ public class EndNodeFactory extends NodeFactory {
         return (EndNode) getNode();
     }
 
+    @Override
     public EndNodeFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
+        return this;
+    }
+
+    @Override
+    public EndNodeFactory metaData(String name, Object value) {
+        super.metaData(name, value);
         return this;
     }
 
@@ -55,7 +62,7 @@ public class EndNodeFactory extends NodeFactory {
     
     public EndNodeFactory action(Action action) {
         DroolsAction droolsAction = new DroolsAction();
-        droolsAction.setMetaData("Action", action);
+        droolsAction.setMetaData(DroolsAction.METADATA_ACTION, action);
         List<DroolsAction> enterActions = getEndNode().getActions(EndNode.EVENT_NODE_ENTER);
         if (enterActions == null) {
             enterActions = new ArrayList<>();

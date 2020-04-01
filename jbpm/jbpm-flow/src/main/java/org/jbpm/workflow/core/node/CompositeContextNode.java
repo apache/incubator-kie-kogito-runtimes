@@ -22,6 +22,9 @@ import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.AbstractContext;
 import org.jbpm.process.core.impl.ContextContainerImpl;
+import org.jbpm.process.core.timer.Timer;
+import org.jbpm.ruleflow.core.factory.StateBasedNodeFactory;
+import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 
 /**
  * 
@@ -64,5 +67,4 @@ public class CompositeContextNode extends CompositeNode implements ContextContai
         }
         return super.resolveContext(contextId, param);
     }
-
 }

@@ -22,6 +22,7 @@ import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
@@ -39,17 +40,17 @@ public class CompositeNodeFactory extends RuleFlowNodeContainerFactory {
 	private long linkedOutgoingNodeId = -1;
 	
     public CompositeNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
-    	this.nodeContainerFactory = nodeContainerFactory;
-    	this.nodeContainer = nodeContainer;
-    	CompositeContextNode compositeNode = createNode();
-        compositeNode.setId(id);
-        setNodeContainer(compositeNode);
+		this.nodeContainerFactory = nodeContainerFactory;
+		this.nodeContainer = nodeContainer;
+		setNodeContainer(createNode(id));
     }
-    
-    protected CompositeContextNode createNode() {
-        return new CompositeContextNode();
-    }
-    
+
+    protected CompositeContextNode createNode(long id) {
+		CompositeContextNode node = new CompositeContextNode();
+		node.setId(id);
+		return node;
+	}
+
     protected CompositeContextNode getCompositeNode() {
     	return (CompositeContextNode) getNodeContainer();
     }
@@ -117,7 +118,7 @@ public class CompositeNodeFactory extends RuleFlowNodeContainerFactory {
     	this.linkedOutgoingNodeId = nodeId;
     	return this;
     }
-    
+
     public CompositeNodeFactory metaData(String name, Object value) {
         getCompositeNode().setMetaData(name, value);
         return this;
@@ -137,5 +138,13 @@ public class CompositeNodeFactory extends RuleFlowNodeContainerFactory {
         nodeContainer.addNode(getCompositeNode());
         return nodeContainerFactory;
     }
+
+	public CompositeNodeFactory timer(String delay, String period, String dialect, String action) {
+		Timer timer = new Timer();
+		timer.setDelay(delay);
+		timer.setPeriod(period);
+		getCompositeNode().addTimer(timer, new DroolsConsequenceAction(dialect, action));
+		return this;
+	}
 
 }

@@ -203,7 +203,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
 
     @Test
     @Timeout(10)
-    public void testAdHocSimple() throws Exception {
+    public void testAdHocSimple() {
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("org.jbpm.process");
         factory
                 .dynamic(true)

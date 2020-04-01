@@ -38,8 +38,9 @@ public class JoinFactory extends NodeFactory {
     	return (Join) getNode();
     }
 
+    @Override
     public JoinFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
         return this;
     }
 

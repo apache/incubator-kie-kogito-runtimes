@@ -18,50 +18,45 @@ package org.jbpm.compiler.canonical;
 import java.util.Map;
 import java.util.Set;
 
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.kie.api.definition.process.Node;
-
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.kie.api.definition.process.Node;
 
-public class AbstractCompositeNodeVisitor extends AbstractVisitor {
+public abstract class AbstractCompositeNodeVisitor extends AbstractNodeVisitor {
 
-    protected Map<Class<?>, AbstractVisitor> nodesVisitors;
+    protected Map<Class<?>, AbstractNodeVisitor> nodesVisitors;
 
-    public AbstractCompositeNodeVisitor(Map<Class<?>, AbstractVisitor> nodesVisitors) {
+    public AbstractCompositeNodeVisitor(Map<Class<?>, AbstractNodeVisitor> nodesVisitors) {
         this.nodesVisitors = nodesVisitors;
     }
-    
-    
+
     protected void visitNodes(String factoryField, Node[] nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
 
-        for (Node node: nodes) {
-            AbstractVisitor visitor = nodesVisitors.get(node.getClass());
+        for (Node node : nodes) {
+            AbstractNodeVisitor visitor = nodesVisitors.get(node.getClass());
 
             if (visitor == null) {
                 continue;
             }
-
             visitor.visitNode(factoryField, node, body, variableScope, metadata);
         }
-
     }
-    
+
     protected String stripExpression(String expression) {
         if (expression.startsWith("#{")) {
-            return expression.substring(2, expression.length() -1);
+            return expression.substring(2, expression.length() - 1);
         }
-        
+
         return expression;
     }
-    
-    
+
     protected void visitVariableScope(String contextNode, VariableScope variableScope, BlockStmt body, Set<String> visitedVariables) {
         if (variableScope != null && !variableScope.getVariables().isEmpty()) {
             for (Variable variable : variableScope.getVariables()) {

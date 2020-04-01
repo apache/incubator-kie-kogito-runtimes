@@ -35,14 +35,21 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
 
-public class ActionNodeVisitor extends AbstractVisitor {
+public class ActionNodeVisitor extends AbstractNodeVisitor {
+
+    private static final String NODE_KEY = "actionNode";
+
+    @Override
+    public String getNodeKey() {
+        return NODE_KEY;
+    }
 
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         ActionNode actionNode = (ActionNode) node;
         
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, ActionNodeFactory.class, "actionNode" + node.getId(), "actionNode", new LongLiteralExpr(actionNode.getId()));
-        addFactoryMethodWithArgs(body, "actionNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(actionNode.getName(), "Script")));
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, ActionNodeFactory.class, getNodeId(node), "actionNode", new LongLiteralExpr(actionNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(actionNode.getName(), "Script")));
         
         // if there is trigger defined on end event create TriggerMetaData for it
         if (actionNode.getMetaData("TriggerRef") != null) {
@@ -70,7 +77,7 @@ public class ActionNodeVisitor extends AbstractVisitor {
             MethodCallExpr producerMethodCall = new MethodCallExpr(new NameExpr("producer_" + node.getId()), "produce").addArgument(new MethodCallExpr(new NameExpr("kcontext"), "getProcessInstance")).addArgument(variable);
             actionBody.addStatement(producerMethodCall);
             
-            addFactoryMethodWithArgs(body, "actionNode" + node.getId(), "action", lambda);
+            addFactoryMethodWithArgs(body, getNodeId(node), "action", lambda);
         } else {
             if (actionNode.getAction().toString() == null || actionNode.getAction().toString().trim().isEmpty()) {
                 throw new IllegalStateException("Action node " + node.getId() + " name " + node.getName() + " has not action defined");
@@ -86,10 +93,10 @@ public class ActionNodeVisitor extends AbstractVisitor {
             }
             actionBody.addStatement(new NameExpr(actionNode.getAction().toString()));
             
-            addFactoryMethodWithArgs(body, "actionNode" + node.getId(), "action", lambda);
+            addFactoryMethodWithArgs(body, getNodeId(node), "action", lambda);
         }
-        visitMetaData(actionNode.getMetaData(), body, "actionNode" + node.getId());
+        visitMetaData(actionNode.getMetaData(), body, getNodeId(node));
         
-        addFactoryMethodWithArgs(body, "actionNode" + node.getId(), "done");
+        addFactoryDoneMethod(body, getNodeId(node));
     }
 }

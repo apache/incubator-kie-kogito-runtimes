@@ -15,16 +15,23 @@
 
 package org.jbpm.compiler.canonical;
 
-import java.util.Map;
-
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.CompositeNodeFactory;
 import org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory;
+import org.jbpm.workflow.core.node.EventSubProcessNode;
+import org.kie.api.definition.process.Node;
+
+import java.util.HashSet;
+import java.util.Map;
 
 public class EventSubprocessNodeVisitor extends CompositeContextNodeVisitor {
     
-    private static final String FACTORY_METHOD_NAME = "eventSubProcessNode";
-    
-    public EventSubprocessNodeVisitor(Map<Class<?>, AbstractVisitor> nodesVisitors) {
+    private static final String NODE_KEY = "eventSubProcessNode";
+
+    public EventSubprocessNodeVisitor(Map<Class<?>, AbstractNodeVisitor> nodesVisitors) {
         super(nodesVisitors);
     }
 
@@ -32,9 +39,31 @@ public class EventSubprocessNodeVisitor extends CompositeContextNodeVisitor {
     protected Class<? extends CompositeNodeFactory> factoryClass() {
         return EventSubProcessNodeFactory.class;
     }
-    
+
     @Override
-    protected String factoryMethod() {
-        return FACTORY_METHOD_NAME;
+    protected String getNodeKey() {
+        return NODE_KEY;
+    }
+
+    @Override
+    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        EventSubProcessNode eventSubProcessNode = (EventSubProcessNode) node;
+
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, EventSubProcessNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(eventSubProcessNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(node.getName(), "EventSubProcess")));
+
+        addActions(body, eventSubProcessNode);
+        visitMetaData(eventSubProcessNode.getMetaData(), body, getNodeId(node));
+        VariableScope variableScopeNode = (VariableScope) eventSubProcessNode.getDefaultContext(VariableScope.VARIABLE_SCOPE);
+
+        if (variableScope != null) {
+            visitVariableScope(getNodeId(node), variableScopeNode, body, new HashSet<>());
+        }
+        visitExtendedFields(body, eventSubProcessNode);
+
+        // visit nodes
+        visitNodes(getNodeId(node), eventSubProcessNode.getNodes(), body, ((VariableScope) eventSubProcessNode.getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);
+        visitConnections(getNodeId(node), eventSubProcessNode.getNodes(), body);
+        addFactoryDoneMethod(body, getNodeId(node));
     }
 }

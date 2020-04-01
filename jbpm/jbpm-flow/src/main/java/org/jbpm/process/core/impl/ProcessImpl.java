@@ -16,16 +16,6 @@
 
 package org.jbpm.process.core.impl;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.ContextResolver;
@@ -33,6 +23,10 @@ import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.AbstractContext;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Default implementation of a Process
@@ -50,13 +44,12 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     private String packageName;
     private Resource resource;
     private ContextContainer contextContainer = new ContextContainerImpl();
-    private Map<String, Object> metaData = new HashMap<String, Object>();
-    private transient Map<String, Object> runtimeMetaData = new HashMap<String, Object>();
+    private Map<String, Object> metaData = new HashMap<>();
+    private transient Map<String, Object> runtimeMetaData = new HashMap<>();
     private Set<String> imports = new HashSet<>();
-    private Map<String, String> globals;
-    private List<String> functionImports;
+    private Map<String, String> globals = new HashMap<>();
+    private List<String> functionImports = new ArrayList<>();
 
-    
     public void setId(final String id) {
         this.id = id;
     }
@@ -150,9 +143,7 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         Context context = getDefaultContext(contextId);
         if (context != null) {
             context = context.resolveContext(param);
-            if (context != null) {
-                return context;
-            }
+            return context;
         }
         return null;
     }
@@ -202,13 +193,11 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     }
 
     public String[] getGlobalNames() {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
         if (this.globals != null) {
-            for ( Iterator<String> iterator = this.globals.keySet().iterator(); iterator.hasNext(); ) {
-                result.add(iterator.next());
-            }
+            result.addAll(this.globals.keySet());
         }
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
 
     public KnowledgeType getKnowledgeType() {
@@ -232,6 +221,6 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
      */
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        this.runtimeMetaData = new HashMap<String, Object>();
+        this.runtimeMetaData = new HashMap<>();
     }
 }

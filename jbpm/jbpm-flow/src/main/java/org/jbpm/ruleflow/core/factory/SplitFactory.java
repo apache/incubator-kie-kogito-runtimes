@@ -42,8 +42,9 @@ public class SplitFactory extends NodeFactory {
     	return (Split) getNode();
     }
 
+    @Override
     public SplitFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
         return this;
     }
 

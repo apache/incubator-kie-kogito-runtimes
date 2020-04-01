@@ -53,30 +53,36 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
 
-public class WorkItemNodeVisitor extends AbstractVisitor {
+public class WorkItemNodeVisitor extends AbstractNodeVisitor {
 
     private final ClassLoader contextClassLoader;
-
+   
+    protected static final String NODE_KEY = "workItemNode";
+    
     public WorkItemNodeVisitor(ClassLoader contextClassLoader) {
         this.contextClassLoader = contextClassLoader;
     }
 
-
+    @Override
+    protected String getNodeKey() {
+        return NODE_KEY;
+    }
+    
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         WorkItemNode workItemNode = (WorkItemNode) node;
         Work work = workItemNode.getWork();
         String workName = workItemName(workItemNode, metadata);
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, WorkItemNodeFactory.class, "workItemNode" + node.getId(), "workItemNode", new LongLiteralExpr(workItemNode.getId()));
-        addFactoryMethodWithArgs(body, "workItemNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(workItemNode.getName(), work.getName())));
-        addFactoryMethodWithArgs(body, "workItemNode" + node.getId(), "workName", new StringLiteralExpr(workName));
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, WorkItemNodeFactory.class, getNodeId(node), "workItemNode", new LongLiteralExpr(workItemNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(workItemNode.getName(), work.getName())));
+        addFactoryMethodWithArgs(body, getNodeId(node), "workName", new StringLiteralExpr(workName));
 
-        addWorkItemParameters(work, body, "workItemNode" + node.getId());
-        addNodeMappings(workItemNode, body, "workItemNode" + node.getId());
+        addWorkItemParameters(work, body, getNodeId(node));
+        addNodeMappings(workItemNode, body, getNodeId(node));
         
-        addFactoryMethodWithArgs(body, "workItemNode" + node.getId(), "done");
+        addFactoryDoneMethod(body, getNodeId(node));
         
-        visitMetaData(workItemNode.getMetaData(), body, "workItemNode" + node.getId());
+        visitMetaData(workItemNode.getMetaData(), body, getNodeId(node));
         
         metadata.getWorkItems().add(workName);
     }
@@ -96,16 +102,14 @@ public class WorkItemNodeVisitor extends AbstractVisitor {
 
             workName = interfaceName + "." + operationName;
 
-            Map<String, String> parameters = null;
+            Map<String, String> parameters;
             if (type != null) {
                 if (isDefaultParameterType(type)) {
-                    type = inferParameterType(workItemNode.getName(),  interfaceName, operationName, type);
+                    type = inferParameterType(workItemNode.getName(),  interfaceName, operationName);
                 }
-                
                 parameters = Collections.singletonMap("Parameter", type);
             } else {
                 parameters = new LinkedHashMap<>();
-                
                 for (ParameterDefinition def : workItemNode.getWork().getParameterDefinitions()) {
                     parameters.put(def.getName(), def.getType().getStringType());
                 }
@@ -120,7 +124,7 @@ public class WorkItemNodeVisitor extends AbstractVisitor {
     }
 
     // assume 1 single arg as above
-    private String inferParameterType(String nodeName, String interfaceName, String operationName, String defaultType) {
+    private String inferParameterType(String nodeName, String interfaceName, String operationName) {
         try {
             Class<?> i = contextClassLoader.loadClass(interfaceName);
             for (Method m : i.getMethods()) {
@@ -175,7 +179,7 @@ public class WorkItemNodeVisitor extends AbstractVisitor {
             MethodCallExpr getParamMethod = new MethodCallExpr(new NameExpr("workItem"), "getParameter").addArgument(new StringLiteralExpr(paramEntry.getKey()));
             callService.addArgument(new CastExpr(new ClassOrInterfaceType(null, paramEntry.getValue()), getParamMethod));
         }
-        Expression results = null;
+        Expression results;
         if (outAssociations.isEmpty()) {
             
             executeWorkItemBody.addStatement(callService);

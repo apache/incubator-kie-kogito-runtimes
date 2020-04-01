@@ -16,49 +16,20 @@
 
 package org.jbpm.compiler.canonical;
 
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import org.jbpm.process.core.Work;
+import org.jbpm.process.core.context.variable.Mappable;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.drools.core.util.StringUtils;
-import org.jbpm.process.core.Work;
-import org.jbpm.process.core.context.variable.Mappable;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.kie.api.definition.process.Node;
-
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.CastExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
-import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public abstract class AbstractVisitor {
 
     protected static final String FACTORY_FIELD_NAME = "factory";
     protected static final String KCONTEXT_VAR = "kcontext";
 
-    public void visitNode(Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        visitNode(FACTORY_FIELD_NAME, node, body, variableScope, metadata);
-    }
-
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-
-    }
-
     protected MethodCallExpr addFactoryMethodWithArgs(String factoryField, BlockStmt body, String methodName, Expression... args) {
-
         return addFactoryMethodWithArgs(body, factoryField, methodName, args);
     }
 
@@ -73,72 +44,10 @@ public abstract class AbstractVisitor {
         return variableMethod;
     }
 
-    protected MethodCallExpr addFactoryMethodWithArgsWithAssignment(String factoryField, BlockStmt body, Class<?> typeClass, String variableName, String methodName, Expression... args) {
-        ClassOrInterfaceType type = new ClassOrInterfaceType(null, typeClass.getCanonicalName());
-
-        MethodCallExpr variableMethod = new MethodCallExpr(new NameExpr(factoryField), methodName);
-
-        for (Expression arg : args) {
-            variableMethod.addArgument(arg);
-        }
-
-        AssignExpr assignExpr = new AssignExpr(
-                                               new VariableDeclarationExpr(type, variableName),
-                                               variableMethod,
-                                               AssignExpr.Operator.ASSIGN);
-        body.addStatement(assignExpr);
-
-        return variableMethod;
-    }
-
-    public static Statement makeAssignment(Variable v) {
-        String name = v.getSanitizedName();
-        return makeAssignment(name, v);
-    }
-
-    public static Statement makeAssignment(String targetLocalVariable, Variable processVariable) {
-        ClassOrInterfaceType type = parseClassOrInterfaceType(processVariable.getType().getStringType());
-        // `type` `name` = (`type`) `kcontext.getVariable
-        AssignExpr assignExpr = new AssignExpr(
-                                               new VariableDeclarationExpr(type, targetLocalVariable),
-                                               new CastExpr(
-                                                            type,
-                                                            new MethodCallExpr(
-                                                                               new NameExpr(KCONTEXT_VAR),
-                                                                               "getVariable")
-                                                                                             .addArgument(new StringLiteralExpr(targetLocalVariable))),
-                                               AssignExpr.Operator.ASSIGN);
-
-        return new ExpressionStmt(assignExpr);
-    }
-
-    protected Statement makeAssignmentFromModel(Variable v) {
-
-        return makeAssignmentFromModel(v, v.getSanitizedName());
-    }
-
-    protected Statement makeAssignmentFromModel(Variable v, String name) {
-        ClassOrInterfaceType type = parseClassOrInterfaceType(v.getType().getStringType());
-
-
-        // `type` `name` = (`type`) `model.get<Name>
-        AssignExpr assignExpr = new AssignExpr(
-                                               new VariableDeclarationExpr(type, name),
-                                               new CastExpr(
-                                                            type,
-                                                            new MethodCallExpr(
-                                                                               new NameExpr("model"),
-                                                                               "get" + StringUtils.capitalize(name))),
-                                               AssignExpr.Operator.ASSIGN);
-
-        return new ExpressionStmt(assignExpr);
-    }
-
     protected String getOrDefault(String value, String defaultValue) {
         if (value == null) {
             return defaultValue;
         }
-
         return value;
     }
 
@@ -186,12 +95,5 @@ public abstract class AbstractVisitor {
                 addFactoryMethodWithArgs(body, variableName, "metaData", new StringLiteralExpr(entry.getKey()), value);
             }
         }
-    }
-
-    protected String extractVariableFromExpression(String variableExpression) {
-        if (variableExpression.startsWith("#{")) {
-            return variableExpression.substring(2, variableExpression.indexOf("."));
-        }
-        return variableExpression;
     }
 }

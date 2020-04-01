@@ -16,28 +16,22 @@
 
 package org.jbpm.ruleflow.core.factory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import org.jbpm.process.core.ParameterDefinition;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.process.core.impl.ParameterDefinitionImpl;
 import org.jbpm.process.core.impl.WorkImpl;
-import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
-import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
-import org.jbpm.workflow.core.node.MilestoneNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
+
+import java.util.Set;
 
 /**
  *
  */
-public class WorkItemNodeFactory extends NodeFactory {
+public class WorkItemNodeFactory extends StateBasedNodeFactory {
 
     public WorkItemNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
@@ -51,8 +45,9 @@ public class WorkItemNodeFactory extends NodeFactory {
         return (WorkItemNode) getNode();
     }
 
+    @Override
     public WorkItemNodeFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
         return this;
     }
     
@@ -103,33 +98,21 @@ public class WorkItemNodeFactory extends NodeFactory {
     	return this;
     }
 
+    @Override
     public WorkItemNodeFactory onEntryAction(String dialect, String action) {
-        if (getWorkItemNode().getActions(dialect) != null) {
-        	getWorkItemNode().getActions(dialect).add(new DroolsConsequenceAction(dialect, action));
-        } else {
-            List<DroolsAction> actions = new ArrayList<DroolsAction>();
-            actions.add(new DroolsConsequenceAction(dialect, action));
-            getWorkItemNode().setActions(MilestoneNode.EVENT_NODE_ENTER, actions);
-        }
+        super.onEntryAction(dialect, action);
         return this;
     }
 
+    @Override
     public WorkItemNodeFactory onExitAction(String dialect, String action) {
-        if (getWorkItemNode().getActions(dialect) != null) {
-        	getWorkItemNode().getActions(dialect).add(new DroolsConsequenceAction(dialect, action));
-        } else {
-            List<DroolsAction> actions = new ArrayList<DroolsAction>();
-            actions.add(new DroolsConsequenceAction(dialect, action));
-            getWorkItemNode().setActions(MilestoneNode.EVENT_NODE_EXIT, actions);
-        }
+        super.onExitAction(dialect, action);
         return this;
     }
 
+    @Override
     public WorkItemNodeFactory timer(String delay, String period, String dialect, String action) {
-    	Timer timer = new Timer();
-    	timer.setDelay(delay);
-    	timer.setPeriod(period);
-    	getWorkItemNode().addTimer(timer, new DroolsConsequenceAction(dialect, action));
+    	super.timer(delay, period, dialect, action);
     	return this;
     }
     

@@ -20,20 +20,19 @@ import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTransformer;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.EventNode;
 
 /**
  *
  */
-public class EventNodeFactory extends NodeFactory {
+public class EventNodeFactory extends ExtendedNodeFactory {
 
     public EventNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
     }
 
-    protected Node createNode() {
+    protected EventNode createNode() {
         return new EventNode();
     }
     
@@ -41,8 +40,15 @@ public class EventNodeFactory extends NodeFactory {
     	return(EventNode) getNode();
     }
 
+    @Override
     public EventNodeFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
+        return this;
+    }
+
+    @Override
+    public EventNodeFactory metaData(String name, Object value) {
+        super.metaData(name, value);
         return this;
     }
 
@@ -71,4 +77,5 @@ public class EventNodeFactory extends NodeFactory {
     	getEventNode().setScope(scope);
         return this;
     }
+
 }

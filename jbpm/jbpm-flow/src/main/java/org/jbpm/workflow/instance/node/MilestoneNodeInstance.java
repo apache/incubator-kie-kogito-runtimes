@@ -16,7 +16,6 @@
 
 package org.jbpm.workflow.instance.node;
 
-import org.drools.core.common.InternalAgenda;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.spi.Activation;
 import org.jbpm.workflow.core.node.MilestoneNode;
@@ -51,17 +50,9 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance implements Age
         }
         if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
-                    "A MilestoneNode only accepts default incoming connections!");
+                "A MilestoneNode only accepts default incoming connections!");
         }
-        String rule = "RuleFlow-Milestone-" + getProcessInstance().getProcessId()
-                + "-" + getMilestoneNode().getUniqueId();
-        boolean isActive = ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda())
-                .isRuleActiveInRuleFlowGroup("DROOLS_SYSTEM", rule, getProcessInstance().getId());
-        if (isActive) {
-            triggerCompleted();
-        } else {
-            addActivationEventListener();
-        }
+        triggerCompleted();
     }
 
     @Override
@@ -84,7 +75,7 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance implements Age
 
     private String getActivationEventType() {
         return "RuleFlow-Milestone-" + getProcessInstance().getProcessId()
-                + "-" + getMilestoneNode().getUniqueId();
+            + "-" + getMilestoneNode().getUniqueId();
     }
 
     @Override

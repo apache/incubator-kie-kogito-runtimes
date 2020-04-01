@@ -31,7 +31,7 @@ import org.kie.kogito.decision.DecisionModel;
 /**
  *
  */
-public class RuleSetNodeFactory extends NodeFactory {
+public class RuleSetNodeFactory extends StateBasedNodeFactory {
 
     public RuleSetNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
@@ -43,11 +43,6 @@ public class RuleSetNodeFactory extends NodeFactory {
     
     protected RuleSetNode getRuleSetNode() {
     	return (RuleSetNode) getNode();
-    }
-
-    public RuleSetNodeFactory name(String name) {
-        getNode().setName(name);
-        return this;
     }
 
     public RuleSetNodeFactory ruleUnit(String unit, RuleUnitFactory<?> ruleUnit) {
@@ -70,15 +65,7 @@ public class RuleSetNodeFactory extends NodeFactory {
         getRuleSetNode().setDecisionModel(supplier);
         return this;
     }
-    
-    public RuleSetNodeFactory timer(String delay, String period, String dialect, String action) {
-    	Timer timer = new Timer();
-    	timer.setDelay(delay);
-    	timer.setPeriod(period);
-    	getRuleSetNode().addTimer(timer, new DroolsConsequenceAction(dialect, action));
-    	return this;
-    }
-    
+
     public RuleSetNodeFactory inMapping(String parameterName, String variableName) {
         getRuleSetNode().addInMapping(parameterName, variableName);
         return this;
@@ -86,6 +73,30 @@ public class RuleSetNodeFactory extends NodeFactory {
 
     public RuleSetNodeFactory outMapping(String parameterName, String variableName) {
         getRuleSetNode().addOutMapping(parameterName, variableName);
+        return this;
+    }
+
+    @Override
+    public RuleSetNodeFactory name(String name) {
+        super.name(name);
+        return this;
+    }
+
+    @Override
+    public RuleSetNodeFactory timer(String delay, String period, String dialect, String action) {
+    	super.timer(delay, period, dialect, action);
+    	return this;
+    }
+
+    @Override
+    public RuleSetNodeFactory onEntryAction(String dialect, String action) {
+        super.onEntryAction(dialect, action);
+        return this;
+    }
+
+    @Override
+    public RuleSetNodeFactory onExitAction(String dialect, String action) {
+        super.onExitAction(dialect, action);
         return this;
     }
 

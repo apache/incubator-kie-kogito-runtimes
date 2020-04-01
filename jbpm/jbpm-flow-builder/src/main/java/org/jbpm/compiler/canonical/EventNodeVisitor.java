@@ -29,20 +29,25 @@ import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
-public class EventNodeVisitor extends AbstractVisitor {
+public class EventNodeVisitor extends AbstractNodeVisitor {
+
+    private static final String NODE_KEY = "eventNode";
+
+    protected String getNodeKey() {
+        return NODE_KEY;
+    }
 
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         EventNode eventNode = (EventNode) node;
 
-        String variableName = "eventNode" + node.getId();
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, EventNodeFactory.class, variableName, "eventNode", new LongLiteralExpr(eventNode.getId()));
-        addFactoryMethodWithArgs(body, variableName, "name", new StringLiteralExpr(getOrDefault(eventNode.getName(), "Event")));
-        addFactoryMethodWithArgs(body, variableName, "eventType", new StringLiteralExpr(eventNode.getType()));
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, EventNodeFactory.class, getNodeId(node), "eventNode", new LongLiteralExpr(eventNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(eventNode.getName(), "Event")));
+        addFactoryMethodWithArgs(body, getNodeId(node), "eventType", new StringLiteralExpr(eventNode.getType()));
         
         Variable variable = null;
         if (eventNode.getVariableName() != null) {
-            addFactoryMethodWithArgs(body, variableName, "variableName", new StringLiteralExpr(eventNode.getVariableName()));
+            addFactoryMethodWithArgs(body, getNodeId(node), "variableName", new StringLiteralExpr(eventNode.getVariableName()));
             variable = variableScope.findVariable(eventNode.getVariableName());
         }
         
@@ -66,9 +71,9 @@ public class EventNodeVisitor extends AbstractVisitor {
             }
         }
 
-        visitMetaData(eventNode.getMetaData(), body, variableName);
+        visitMetaData(eventNode.getMetaData(), body, getNodeId(node));
         
-        addFactoryMethodWithArgs(body, variableName, "done");
+        addFactoryDoneMethod(body, getNodeId(node));
         
     }
 }

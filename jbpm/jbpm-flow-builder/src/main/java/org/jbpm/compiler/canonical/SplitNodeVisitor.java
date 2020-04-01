@@ -34,16 +34,23 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.UnknownType;
 
-public class SplitNodeVisitor extends AbstractVisitor {
+public class SplitNodeVisitor extends AbstractNodeVisitor {
+    
+    private static final String NODE_NAME = "splitNode";
+
+    @Override
+    protected String getNodeKey() {
+        return NODE_NAME;
+    }
 
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         Split splitNode = (Split) node;
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, SplitFactory.class, "splitNode" + node.getId(), "splitNode", new LongLiteralExpr(splitNode.getId()));
-        addFactoryMethodWithArgs(body, "splitNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(splitNode.getName(), "Split")));
-        addFactoryMethodWithArgs(body, "splitNode" + node.getId(), "type", new IntegerLiteralExpr(splitNode.getType()));
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, SplitFactory.class, getNodeId(node), "splitNode", new LongLiteralExpr(splitNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(splitNode.getName(), "Split")));
+        addFactoryMethodWithArgs(body, getNodeId(node), "type", new IntegerLiteralExpr(splitNode.getType()));
         
-        visitMetaData(splitNode.getMetaData(), body, "splitNode" + node.getId());            
+        visitMetaData(splitNode.getMetaData(), body, getNodeId(node));            
         
         if (splitNode.getType() == Split.TYPE_OR || splitNode.getType() == Split.TYPE_XOR) {
             for (Entry<ConnectionRef, Constraint> entry : splitNode.getConstraints().entrySet()) {
@@ -64,7 +71,7 @@ public class SplitNodeVisitor extends AbstractVisitor {
                                   
                     actionBody.addStatement(constraintBody);
                     
-                    addFactoryMethodWithArgs(body, "splitNode" + node.getId(), "constraint", new LongLiteralExpr(entry.getKey().getNodeId()),                
+                    addFactoryMethodWithArgs(body, getNodeId(node), "constraint", new LongLiteralExpr(entry.getKey().getNodeId()),                
                                              new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
                                              new StringLiteralExpr(entry.getKey().getToType()),
                                              new StringLiteralExpr(entry.getValue().getDialect()),
@@ -73,6 +80,6 @@ public class SplitNodeVisitor extends AbstractVisitor {
                 }
             }
         }
-        addFactoryMethodWithArgs(body, "splitNode" + node.getId(), "done");
+        addFactoryDoneMethod(body, getNodeId(node));
     }
 }

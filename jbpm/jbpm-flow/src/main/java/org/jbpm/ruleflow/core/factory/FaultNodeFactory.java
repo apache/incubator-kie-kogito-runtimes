@@ -35,7 +35,7 @@ public class FaultNodeFactory extends NodeFactory {
     }
 
     public FaultNodeFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
         return this;
     }
 

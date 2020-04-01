@@ -25,24 +25,31 @@ import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
-public class FaultNodeVisitor extends AbstractVisitor {
+public class FaultNodeVisitor extends AbstractNodeVisitor {
+    
+    private static final String NODE_KEY = "faultNode";
 
+    @Override
+    public String getNodeKey() {
+        return NODE_KEY;
+    }
+    
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         FaultNode faultNode = (FaultNode) node;
         
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, FaultNodeFactory.class, "faultNode" + node.getId(), "faultNode", new LongLiteralExpr(faultNode.getId()));
-        addFactoryMethodWithArgs(body, "faultNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(faultNode.getName(), "Error")));
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, FaultNodeFactory.class, getNodeId(node), "faultNode", new LongLiteralExpr(faultNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(faultNode.getName(), "Error")));
         if (faultNode.getFaultVariable() != null) {
-            addFactoryMethodWithArgs(body, "faultNode" + node.getId(), "setFaultVariable", new StringLiteralExpr(faultNode.getFaultVariable()));
+            addFactoryMethodWithArgs(body, getNodeId(node), "setFaultVariable", new StringLiteralExpr(faultNode.getFaultVariable()));
         }
         if (faultNode.getFaultName() != null) {
-            addFactoryMethodWithArgs(body, "faultNode" + node.getId(), "setFaultName", new StringLiteralExpr(faultNode.getFaultName()));
+            addFactoryMethodWithArgs(body, getNodeId(node), "setFaultName", new StringLiteralExpr(faultNode.getFaultName()));
         }
 
-        visitMetaData(faultNode.getMetaData(), body, "faultNode" + node.getId());
+        visitMetaData(faultNode.getMetaData(), body, getNodeId(node));
         
-        addFactoryMethodWithArgs(body, "faultNode" + node.getId(), "done");
+        addFactoryDoneMethod(body, getNodeId(node));
         
     }
 }

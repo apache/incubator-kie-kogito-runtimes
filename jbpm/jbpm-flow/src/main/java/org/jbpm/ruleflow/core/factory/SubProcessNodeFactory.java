@@ -36,7 +36,7 @@ import org.kie.kogito.process.ProcessInstance;
 /**
  *
  */
-public class SubProcessNodeFactory extends NodeFactory {
+public class SubProcessNodeFactory extends StateBasedNodeFactory {
 
     public SubProcessNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
@@ -50,8 +50,9 @@ public class SubProcessNodeFactory extends NodeFactory {
         return (SubProcessNode) getNode();
     }
 
+    @Override
     public SubProcessNodeFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
         return this;
     }
 
@@ -85,33 +86,21 @@ public class SubProcessNodeFactory extends NodeFactory {
         return this;
     }
 
+    @Override
     public SubProcessNodeFactory onEntryAction(String dialect, String action) {
-        if (getSubProcessNode().getActions(dialect) != null) {
-            getSubProcessNode().getActions(dialect).add(new DroolsConsequenceAction(dialect, action));
-        } else {
-            List<DroolsAction> actions = new ArrayList<DroolsAction>();
-            actions.add(new DroolsConsequenceAction(dialect, action));
-            getSubProcessNode().setActions(MilestoneNode.EVENT_NODE_ENTER, actions);
-        }
+        super.onEntryAction(dialect, action);
         return this;
     }
 
+    @Override
     public SubProcessNodeFactory onExitAction(String dialect, String action) {
-        if (getSubProcessNode().getActions(dialect) != null) {
-            getSubProcessNode().getActions(dialect).add(new DroolsConsequenceAction(dialect, action));
-        } else {
-            List<DroolsAction> actions = new ArrayList<DroolsAction>();
-            actions.add(new DroolsConsequenceAction(dialect, action));
-            getSubProcessNode().setActions(MilestoneNode.EVENT_NODE_EXIT, actions);
-        }
+        super.onExitAction(dialect, action);
         return this;
     }
 
+    @Override
     public SubProcessNodeFactory timer(String delay, String period, String dialect, String action) {
-        Timer timer = new Timer();
-        timer.setDelay(delay);
-        timer.setPeriod(period);
-        getSubProcessNode().addTimer(timer, new DroolsConsequenceAction(dialect, action));
+        super.timer(delay, period, dialect, action);
         return this;
     }
 

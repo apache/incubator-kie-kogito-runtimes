@@ -24,15 +24,12 @@ import java.util.regex.Matcher;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
@@ -48,11 +45,16 @@ import org.kie.api.definition.process.WorkflowProcess;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 
-public class LambdaSubProcessNodeVisitor extends AbstractVisitor {
+public class LambdaSubProcessNodeVisitor extends
+                                         AbstractNodeVisitor {
 
-    public LambdaSubProcessNodeVisitor() {
+    private static final String NODE_NAME = "subProcessNode";
+
+    @Override
+    protected String getNodeKey() {
+        return NODE_NAME;
     }
-
+    
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
 
@@ -69,14 +71,12 @@ public class LambdaSubProcessNodeVisitor extends AbstractVisitor {
                 .validate();
 
 
-        String nodeVar = "subProcessNode" + node.getId();
-
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, SubProcessNodeFactory.class, nodeVar, "subProcessNode", new LongLiteralExpr(subProcessNode.getId()));
-        addFactoryMethodWithArgs(body, nodeVar, "name", new StringLiteralExpr(getOrDefault(name, "Call Activity")));
-        addFactoryMethodWithArgs(body, nodeVar, "processId", new StringLiteralExpr(subProcessId));
-        addFactoryMethodWithArgs(body, nodeVar, "processName", new StringLiteralExpr(getOrDefault(processName, "")));
-        addFactoryMethodWithArgs(body, nodeVar, "waitForCompletion", new BooleanLiteralExpr(subProcessNode.isWaitForCompletion()));
-        addFactoryMethodWithArgs(body, nodeVar, "independent", new BooleanLiteralExpr(subProcessNode.isIndependent()));
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, SubProcessNodeFactory.class, getNodeId(node), "subProcessNode", new LongLiteralExpr(subProcessNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(name, "Call Activity")));
+        addFactoryMethodWithArgs(body, getNodeId(node), "processId", new StringLiteralExpr(subProcessId));
+        addFactoryMethodWithArgs(body, getNodeId(node), "processName", new StringLiteralExpr(getOrDefault(processName, "")));
+        addFactoryMethodWithArgs(body, getNodeId(node), "waitForCompletion", new BooleanLiteralExpr(subProcessNode.isWaitForCompletion()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "independent", new BooleanLiteralExpr(subProcessNode.isIndependent()));
 
         Map<String, String> inputTypes = (Map<String, String>) subProcessNode.getMetaData("BPMN.InputTypes");
 
@@ -103,14 +103,15 @@ public class LambdaSubProcessNodeVisitor extends AbstractVisitor {
         });
 
         if (retValue.isPresent()) {
-            addFactoryMethodWithArgs(body, nodeVar, "subProcessFactory", retValue.get());
+            addFactoryMethodWithArgs(body, getNodeId(node), "subProcessFactory", retValue.get());
         } else {
-            addFactoryMethodWithArgs(body, nodeVar, "subProcessFactory");
+            addFactoryMethodWithArgs(body, getNodeId(node), "subProcessFactory");
         }
         
-        visitMetaData(subProcessNode.getMetaData(), body, "subProcessNode" + node.getId());
+        visitMetaData(subProcessNode.getMetaData(), body, getNodeId(node));
         
-        addFactoryMethodWithArgs(body, nodeVar, "done");
+        addFactoryDoneMethod(body, getNodeId(node));
+        addActions(body, subProcessNode);
     }
 
     private BlockStmt bind(VariableScope variableScope, SubProcessNode subProcessNode, ModelMetaData subProcessModel) {

@@ -19,7 +19,6 @@ package org.jbpm.compiler.canonical;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.junit.jupiter.api.Test;
-import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ProcessToExecModelGeneratorTest {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGeneratorTest.class);
 
     @Test
@@ -60,14 +59,14 @@ public class ProcessToExecModelGeneratorTest {
         .connection(2, 1)
         .connection(4, 2)
         .connection(1, 3);
-        
-        Process process = factory.validate().getProcess();
-        
-        ProcessMetaData processMetadata = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process);
+
+        WorkflowProcess process = factory.validate().getProcess();
+
+        ProcessMetaData processMetadata = ProcessToExecModelGenerator.INSTANCE.generate(process);
         assertNotNull(processMetadata, "Dumper should return non null class for process");
-        
+
         logger.debug(processMetadata.getGeneratedClassModel().toString());
-        
+
         assertEquals("orders", processMetadata.getExtractedProcessId());
         assertEquals("demo.orders", processMetadata.getProcessId());
         assertEquals("orders", processMetadata.getProcessName());
@@ -76,7 +75,7 @@ public class ProcessToExecModelGeneratorTest {
         assertNotNull(processMetadata.getGeneratedClassModel());
         assertEquals(1, processMetadata.getWorkItems().size());
     }
-    
+
     @Test
     public void testScriptAndWorkItemModelGeneration() {
 
@@ -106,12 +105,12 @@ public class ProcessToExecModelGeneratorTest {
         .connection(2, 1)
         .connection(4, 2)
         .connection(1, 3);
-        
-        Process process = factory.validate().getProcess();
-        
-        ModelMetaData modelMetadata = ProcessToExecModelGenerator.INSTANCE.generateModel((WorkflowProcess) process);
+
+        WorkflowProcess process = factory.validate().getProcess();
+
+        ModelMetaData modelMetadata = ProcessToExecModelGenerator.INSTANCE.generateModel(process);
         assertNotNull(modelMetadata, "Dumper should return non null class for process");
-        
+
         logger.info(modelMetadata.generate());
         assertEquals("com.myspace.demo.OrdersModel", modelMetadata.getModelClassName());
     }

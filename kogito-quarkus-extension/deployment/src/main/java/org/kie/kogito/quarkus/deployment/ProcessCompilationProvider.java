@@ -1,11 +1,8 @@
 package org.kie.kogito.quarkus.deployment;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.kie.kogito.codegen.ApplicationGenerator;
@@ -16,14 +13,14 @@ public class ProcessCompilationProvider extends KogitoCompilationProvider {
 
     @Override
     public Set<String> handledExtensions() {
-        return new HashSet<>(asList(".bpmn", ".bpmn2"));
+        return ProcessCodegen.SUPPORTED_BPMN_EXTENSIONS;
     }
 
     @Override
     protected Generator addGenerator(ApplicationGenerator appGen, Set<File> filesToCompile, Context context)
-            throws IOException {
+        throws IOException {
         return appGen.withGenerator(
-                ProcessCodegen.ofFiles(new ArrayList<>(filesToCompile)))
-                .withClassLoader(Thread.currentThread().getContextClassLoader());
+            ProcessCodegen.ofFiles(new ArrayList<>(filesToCompile)))
+            .withClassLoader(Thread.currentThread().getContextClassLoader());
     }
 }

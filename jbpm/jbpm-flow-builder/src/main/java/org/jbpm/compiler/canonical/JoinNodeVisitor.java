@@ -26,17 +26,24 @@ import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
-public class JoinNodeVisitor extends AbstractVisitor {
+public class JoinNodeVisitor extends AbstractNodeVisitor {
+    
+    private static final String NODE_NAME = "joinNode";
 
+    @Override
+    protected String getNodeKey() {
+        return NODE_NAME;
+    }
+    
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         Join joinNode = (Join) node;
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, JoinFactory.class, "joinNode" + node.getId(), "joinNode", new LongLiteralExpr(joinNode.getId()));
-        addFactoryMethodWithArgs(body, "joinNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(joinNode.getName(), "Join")));
-        addFactoryMethodWithArgs(body, "joinNode" + node.getId(), "type", new IntegerLiteralExpr(joinNode.getType()));
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, JoinFactory.class, getNodeId(node), "joinNode", new LongLiteralExpr(joinNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(joinNode.getName(), "Join")));
+        addFactoryMethodWithArgs(body, getNodeId(node), "type", new IntegerLiteralExpr(joinNode.getType()));
 
-        visitMetaData(joinNode.getMetaData(), body, "joinNode" + node.getId());
+        visitMetaData(joinNode.getMetaData(), body, getNodeId(node));
         
-        addFactoryMethodWithArgs(body, "joinNode" + node.getId(), "done");
+        addFactoryDoneMethod(body, getNodeId(node));
     }
 }

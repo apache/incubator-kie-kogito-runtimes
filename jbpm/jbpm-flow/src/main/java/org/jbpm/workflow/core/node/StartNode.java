@@ -44,7 +44,7 @@ public class StartNode extends ExtendedNodeImpl implements Mappable {
 
     private boolean isInterrupting;
     
-    private List<DataAssociation> outMapping = new LinkedList<DataAssociation>();
+    private List<DataAssociation> outMapping = new LinkedList<>();
 
     private Timer timer;
     
@@ -53,7 +53,7 @@ public class StartNode extends ExtendedNodeImpl implements Mappable {
 
 	public void addTrigger(Trigger trigger) {
 		if (triggers == null) {
-			triggers = new ArrayList<Trigger>();
+			triggers = new ArrayList<>();
 		}
 		triggers.add(trigger);
 	}

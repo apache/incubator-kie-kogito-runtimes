@@ -35,16 +35,23 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
 
-public class EndNodeVisitor extends AbstractVisitor {
+public class EndNodeVisitor extends AbstractNodeVisitor {
 
+    public static final String NODE_KEY = "endNode";
+
+    @Override
+    public String getNodeKey() {
+        return NODE_KEY;
+    }
+    
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         EndNode endNode = (EndNode) node;
         
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, EndNodeFactory.class, "endNode" + node.getId(), "endNode", new LongLiteralExpr(endNode.getId()));
-        addFactoryMethodWithArgs(body, "endNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(endNode.getName(), "End")));
-        addFactoryMethodWithArgs(body, "endNode" + node.getId(), "terminate", new BooleanLiteralExpr(endNode.isTerminate()));
-        
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, EndNodeFactory.class, getNodeId(node), "endNode", new LongLiteralExpr(endNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(endNode.getName(), "End")));
+        addFactoryMethodWithArgs(body, getNodeId(node), "terminate", new BooleanLiteralExpr(endNode.isTerminate()));
+        addActions(body, endNode);
         // if there is trigger defined on end event create TriggerMetaData for it
         if (endNode.getMetaData("TriggerRef") != null) {
             Map<String, Object> nodeMetaData = endNode.getMetaData();
@@ -71,11 +78,11 @@ public class EndNodeVisitor extends AbstractVisitor {
             MethodCallExpr producerMethodCall = new MethodCallExpr(new NameExpr("producer_" + node.getId()), "produce").addArgument(new MethodCallExpr(new NameExpr("kcontext"), "getProcessInstance")).addArgument(variable);
             actionBody.addStatement(producerMethodCall);
             
-            addFactoryMethodWithArgs(body, "endNode" + node.getId(), "action", lambda);
+            addFactoryMethodWithArgs(body, getNodeId(node), "action", lambda);
         }
 
-        visitMetaData(endNode.getMetaData(), body, "endNode" + node.getId());
+        visitMetaData(endNode.getMetaData(), body, getNodeId(node));
         
-        addFactoryMethodWithArgs(body, "endNode" + node.getId(), "done");
+        addFactoryDoneMethod(body, getNodeId(node));
     }
 }

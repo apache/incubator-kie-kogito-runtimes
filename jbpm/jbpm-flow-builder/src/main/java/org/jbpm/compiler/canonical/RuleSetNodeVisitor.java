@@ -47,9 +47,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class RuleSetNodeVisitor extends AbstractVisitor {
+public class RuleSetNodeVisitor extends AbstractNodeVisitor {
 
     public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
+    private static final String NODE_NAME = "ruleSetNode";
 
     private final ClassLoader contextClassLoader;
     private final AssignableChecker assignableChecker;
@@ -58,15 +59,19 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         this.contextClassLoader = contextClassLoader;
         this.assignableChecker = AssignableChecker.create(contextClassLoader);
     }
-
+    
+    @Override
+    protected String getNodeKey() {
+        return NODE_NAME;
+    }
+    
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         RuleSetNode ruleSetNode = (RuleSetNode) node;
         String nodeName = ruleSetNode.getName();
 
-        String callTargetName = "ruleSetNode" + node.getId();
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, RuleSetNodeFactory.class, callTargetName, "ruleSetNode", new LongLiteralExpr(ruleSetNode.getId()));
-        addFactoryMethodWithArgs(body, callTargetName, "name", new StringLiteralExpr(getOrDefault(nodeName, "Rule")));
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, RuleSetNodeFactory.class, getNodeId(node), "ruleSetNode", new LongLiteralExpr(ruleSetNode.getId()));
+        addFactoryMethodWithArgs(body, getNodeId(node), "name", new StringLiteralExpr(getOrDefault(nodeName, "Rule")));
 
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
         if (ruleType.getName().isEmpty()) {
@@ -75,9 +80,9 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
                             "Rule task \"{0}\" is invalid: you did not set a unit name, a rule flow group or a decision model.", nodeName));
         }
 
-        addNodeMappings(ruleSetNode, body, callTargetName);
+        addNodeMappings(ruleSetNode, body, getNodeId(node));
 
-        NameExpr methodScope = new NameExpr(callTargetName);
+        NameExpr methodScope = new NameExpr(getNodeId(node));
         MethodCallExpr m;
         if (ruleType.isRuleFlowGroup()) {
             m = handleRuleFlowGroup(ruleType);
@@ -91,9 +96,9 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         m.setScope(methodScope);
         body.addStatement(m);
 
-        visitMetaData(ruleSetNode.getMetaData(), body, callTargetName);
+        visitMetaData(ruleSetNode.getMetaData(), body, getNodeId(node));
 
-        addFactoryMethodWithArgs(body, callTargetName, "done");
+        addFactoryDoneMethod(body, getNodeId(node));
 
     }
 
@@ -128,7 +133,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         RuleUnitDescription description;
 
         try {
-            Class<?> unitClass = loadUnitClass(nodeName, unitName, metadata.getPackageName());
+            Class<?> unitClass = loadUnitClass(unitName, metadata.getPackageName());
             description = new ReflectiveRuleUnitDescription(null, (Class<? extends RuleUnitData>) unitClass);
         } catch (ClassNotFoundException e) {
             logger.warn("Rule task \"{}\": cannot load class {}. " +
@@ -178,7 +183,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
 
     }
 
-    private Class<?> loadUnitClass(String nodeName, String unitName, String packageName) throws ClassNotFoundException {
+    private Class<?> loadUnitClass(String unitName, String packageName) throws ClassNotFoundException {
         ClassNotFoundException ex;
         try {
             return contextClassLoader.loadClass(unitName);

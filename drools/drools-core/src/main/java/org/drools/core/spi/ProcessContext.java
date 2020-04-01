@@ -16,21 +16,26 @@
 
 package org.drools.core.spi;
 
+import java.util.Collection;
+
+import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieRuntime;
+import org.kie.api.runtime.casemgmt.CaseFile;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessContext implements org.kie.api.runtime.process.ProcessContext {
-    
+
     private static Logger logger = LoggerFactory.getLogger(ProcessContext.class);
-    
+
     private KieRuntime kruntime;
     private ProcessInstance processInstance;
     private NodeInstance nodeInstance;
-    
+
     public ProcessContext(KieRuntime kruntime) {
         this.kruntime = kruntime;
     }
@@ -40,7 +45,7 @@ public class ProcessContext implements org.kie.api.runtime.process.ProcessContex
             return processInstance;
         }
         if (nodeInstance != null) {
-            return (ProcessInstance) nodeInstance.getProcessInstance();
+            return nodeInstance.getProcessInstance();
         }
         return null;
     }
@@ -48,7 +53,7 @@ public class ProcessContext implements org.kie.api.runtime.process.ProcessContex
     public void setProcessInstance(ProcessInstance processInstance) {
         this.processInstance = processInstance;
     }
-    
+
     public NodeInstance getNodeInstance() {
         return nodeInstance;
     }
@@ -56,7 +61,7 @@ public class ProcessContext implements org.kie.api.runtime.process.ProcessContex
     public void setNodeInstance(NodeInstance nodeInstance) {
         this.nodeInstance = nodeInstance;
     }
-    
+
     public Object getVariable(String variableName) {
         if (nodeInstance != null) {
             return nodeInstance.getVariable(variableName);
@@ -64,7 +69,7 @@ public class ProcessContext implements org.kie.api.runtime.process.ProcessContex
             return ((WorkflowProcessInstance) getProcessInstance()).getVariable(variableName);
         }
     }
-    
+
     public void setVariable(String variableName, Object value) {
         if (nodeInstance != null) {
             nodeInstance.setVariable(variableName, value);
@@ -73,16 +78,20 @@ public class ProcessContext implements org.kie.api.runtime.process.ProcessContex
         }
     }
 
+    public CaseFile<? extends Model> getCaseFile() {
+        Collection<?> objects = kruntime.getObjects(new ClassObjectFilter(CaseFile.class));
+        return objects.isEmpty() ? null : (CaseFile<? extends Model>) objects.iterator().next();
+    }
+
     public KieRuntime getKieRuntime() {
         return kruntime;
     }
-    
+
     public KieRuntime getKnowledgeRuntime() {
-    	return kruntime;
-    }
-    
-    public Logger getLogger() { 
-        return logger;
+        return kruntime;
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
 }

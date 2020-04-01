@@ -27,7 +27,7 @@ import org.jbpm.workflow.core.node.StartNode;
 /**
  *
  */
-public class StartNodeFactory extends NodeFactory {
+public class StartNodeFactory extends ExtendedNodeFactory {
 
     public StartNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
@@ -42,7 +42,7 @@ public class StartNodeFactory extends NodeFactory {
     }
 
     public StartNodeFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
         return this;
     } 
     
@@ -56,7 +56,6 @@ public class StartNodeFactory extends NodeFactory {
         EventTypeFilter eventFilter = new EventTypeFilter();
         eventFilter.setType(triggerEventType);
         trigger.addEventFilter(eventFilter);
-        
         if (mapping != null) {
             trigger.addInMapping(mapping, getStartNode().getOutMapping(mapping));
         }
@@ -74,6 +73,11 @@ public class StartNodeFactory extends NodeFactory {
         timer.setTimeType(timeType);
 
         getStartNode().setTimer(timer);
+        return this;
+    }
+
+    public StartNodeFactory addOutMapping(String parameterName, String variableName) {
+        getStartNode().addOutMapping(parameterName, variableName);
         return this;
     }
 }

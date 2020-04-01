@@ -24,7 +24,7 @@ import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
 
-public class ActionNodeFactory extends NodeFactory {
+public class ActionNodeFactory extends ExtendedNodeFactory {
 
     public ActionNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory,
                              NodeContainer nodeContainer,
@@ -42,8 +42,9 @@ public class ActionNodeFactory extends NodeFactory {
         return (ActionNode) getNode();
     }
 
+    @Override
     public ActionNodeFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
         return this;
     }
 
@@ -57,7 +58,7 @@ public class ActionNodeFactory extends NodeFactory {
                                     boolean isDroolsAction) {
         if(isDroolsAction) {
             DroolsAction droolsAction = new DroolsAction();
-            droolsAction.setMetaData("Action",
+            droolsAction.setMetaData(DroolsAction.METADATA_ACTION,
                                      action);
             getActionNode().setAction(droolsAction);
         } else {
@@ -69,7 +70,7 @@ public class ActionNodeFactory extends NodeFactory {
 
     public ActionNodeFactory action(Action action) {
         DroolsAction droolsAction = new DroolsAction();
-        droolsAction.setMetaData("Action",
+        droolsAction.setMetaData(DroolsAction.METADATA_ACTION,
                                  action);
         getActionNode().setAction(droolsAction);
         return this;
