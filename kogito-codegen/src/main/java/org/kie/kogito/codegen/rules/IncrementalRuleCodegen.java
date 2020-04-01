@@ -71,8 +71,9 @@ import org.kie.kogito.conf.EventProcessingType;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.units.AssignableChecker;
 
-import static com.github.javaparser.StaticJavaParser.parse;
 import static java.util.stream.Collectors.toList;
+
+import static com.github.javaparser.StaticJavaParser.parse;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
@@ -252,6 +253,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
         }
 
+        List<DroolsError> errors = new ArrayList<>();
         boolean hasRuleUnits = false;
         Map<String, String> unitsMap = new HashMap<>();
 
@@ -306,7 +308,11 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 if (!queries.isEmpty()) {
                     generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription(), assignableChecker ).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
                     for (QueryEndpointGenerator query : queries) {
-                        generatedFiles.add( query.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
+                        if (query.validate()) {
+                            generatedFiles.add( query.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
+                        } else {
+                            errors.add( query.getError() );
+                        }
                     }
                 }
             }
@@ -347,6 +353,10 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                                        org.kie.kogito.codegen.GeneratedFile.Type.RULE,
                     projectSourceClass.getName(),
                     projectSourceClass.generate()));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new RuleCodegenError(errors);
         }
 
         return generatedFiles;
