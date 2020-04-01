@@ -36,9 +36,9 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import org.drools.core.util.StringUtils;
+import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
 import org.kie.dmn.model.api.DecisionService;
-import org.kie.dmn.model.api.Definitions;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.CodegenUtils;
@@ -48,7 +48,7 @@ import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class DMNRestResourceGenerator {
 
-    private final Definitions definitions;
+    private final DMNModel dmnModel;
     private final String decisionName;
     private final String nameURL;
     private final String packageName;
@@ -59,12 +59,12 @@ public class DMNRestResourceGenerator {
     private DependencyInjectionAnnotator annotator;
     private boolean useMonitoring;
 
-    public DMNRestResourceGenerator(Definitions definitions, String appCanonicalName) {
-        this.definitions = definitions;
-        this.packageName = CodegenStringUtil.escapeIdentifier(definitions.getNamespace());
-        this.decisionId = definitions.getId();
-        this.decisionName = CodegenStringUtil.escapeIdentifier(definitions.getName());
-        this.nameURL = URLEncoder.encode(definitions.getName()).replaceAll("\\+", "%20");
+    public DMNRestResourceGenerator(DMNModel model, String appCanonicalName) {
+        this.dmnModel = model;
+        this.packageName = CodegenStringUtil.escapeIdentifier(model.getNamespace());
+        this.decisionId = model.getDefinitions().getId();
+        this.decisionName = CodegenStringUtil.escapeIdentifier(model.getName());
+        this.nameURL = URLEncoder.encode(model.getName()).replaceAll("\\+", "%20");
         this.appCanonicalName = appCanonicalName;
         String classPrefix = StringUtils.capitalize(decisionName);
         this.resourceClazzName = classPrefix + "Resource";
@@ -92,11 +92,9 @@ public class DMNRestResourceGenerator {
                              CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
         }
 
-        MethodDeclaration dmnMethod = template.findFirst(MethodDeclaration.class, x -> "dmn".equals(x.getNameAsString()))
-                .orElseThrow(() -> new NoSuchElementException("Method dmn not found, template has changed."));
-
-        for (DecisionService ds : definitions.getDecisionService()) {
-            if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> "dynamicDecisionService".equals(qn.getLocalPart()))) {
+        MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
+        for (DecisionService ds : dmnModel.getDefinitions().getDecisionService()) {
+            if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
                 continue;
             }
 
@@ -136,8 +134,8 @@ public class DMNRestResourceGenerator {
         return nameURL;
     }
 
-    public Definitions getDefinitions() {
-        return this.definitions;
+    public DMNModel getDmnModel() {
+        return this.dmnModel;
     }
 
     public DMNRestResourceGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
@@ -189,12 +187,11 @@ public class DMNRestResourceGenerator {
         String s = vv.getValue();
         String documentation = "";
         String interpolated = s.replace("$name$", decisionName)
-                .replace("$nameURL$", nameURL)
-                .replace("$id$", decisionId)
-                .replace("$modelName$", definitions.getName())
-                .replace("$modelNamespace$", definitions.getNamespace())
-                .replace("$documentation$", documentation);
-
+                               .replace("$nameURL$", nameURL)
+                               .replace("$id$", decisionId)
+                               .replace("$modelName$", dmnModel.getName())
+                               .replace("$modelNamespace$", dmnModel.getNamespace())
+                               .replace("$documentation$", documentation);
         vv.setString(interpolated);
     }
 
