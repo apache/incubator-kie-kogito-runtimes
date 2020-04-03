@@ -19,9 +19,9 @@ package org.jbpm.ruleflow.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.ExceptionHandler;
@@ -97,12 +97,12 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
     }
 
     public RuleFlowProcessFactory imports(String... imports) {
-    	getRuleFlowProcess().setImports(new HashSet<String>(Arrays.asList(imports)));
+        getRuleFlowProcess().getImports().addAll(Set.of(imports));
         return this;
     }
     
     public RuleFlowProcessFactory functionImports(String... functionImports) {
-    	getRuleFlowProcess().setFunctionImports(Arrays.asList(functionImports));
+        getRuleFlowProcess().getFunctionImports().addAll(Arrays.asList(functionImports));
         return this;
     }
     

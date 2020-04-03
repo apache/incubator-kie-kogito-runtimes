@@ -51,7 +51,7 @@ public class StartNodeVisitor extends AbstractVisitor {
         visitMetaData(startNode.getMetaData(), body, "startNode" + node.getId());
         
         addFactoryMethodWithArgs(body, "startNode" + node.getId(), "done");
-        
+        startNode.getOutMappings().forEach((k, v) -> addFactoryMethodWithArgs(body, "startNode" + node.getId(), "addOutMapping", new StringLiteralExpr(k), new StringLiteralExpr(v)));
         if (startNode.getTimer() != null) {
             Timer timer = startNode.getTimer();
             addFactoryMethodWithArgs(body, "startNode" + node.getId(), "timer", getOrNullExpr(timer.getDelay()),
@@ -68,9 +68,6 @@ public class StartNodeVisitor extends AbstractVisitor {
                                                            String.valueOf(node.getId())).validate());
             
             handleSignal(startNode, nodeMetaData, body, variableScope, metadata);
-            
-            addFactoryMethodWithArgs(body, "startNode" + node.getId(), "trigger", new StringLiteralExpr((String)nodeMetaData.get(TRIGGER_REF)),
-                                                                                  new StringLiteralExpr(getOrDefault((String)nodeMetaData.get(TRIGGER_MAPPING), "")));
         } else {
             // since there is start node without trigger then make sure it is startable
             metadata.setStartable(true);
@@ -93,11 +90,12 @@ public class StartNodeVisitor extends AbstractVisitor {
                     VariableScope vscope = (VariableScope) startNode.resolveContext(VariableScope.VARIABLE_SCOPE, varInfo.getKey());
                     variable = vscope.findVariable(varInfo.getKey());
                 }
-                
-                
+            } else {
+                addFactoryMethodWithArgs(body, "startNode" + startNode.getId(), "trigger", new StringLiteralExpr((String)nodeMetaData.get(MESSAGE_TYPE)), new StringLiteralExpr(getOrDefault((String) nodeMetaData.get(TRIGGER_MAPPING), "")));
             }
-            
             metadata.getSignals().put((String)nodeMetaData.get(MESSAGE_TYPE), variable != null ? variable.getType().getStringType() : null);
+        } else {
+            addFactoryMethodWithArgs(body, "startNode" + startNode.getId(), "trigger", new StringLiteralExpr((String) nodeMetaData.get(TRIGGER_REF)), new StringLiteralExpr(getOrDefault((String) nodeMetaData.get(TRIGGER_MAPPING), "")));
         }
     }
 }

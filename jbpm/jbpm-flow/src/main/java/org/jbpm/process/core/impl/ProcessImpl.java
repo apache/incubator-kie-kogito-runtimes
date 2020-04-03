@@ -54,7 +54,7 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     private transient Map<String, Object> runtimeMetaData = new HashMap<String, Object>();
     private Set<String> imports = new HashSet<>();
     private Map<String, String> globals;
-    private List<String> functionImports;
+    private List<String> functionImports = new ArrayList<>();
 
     
     public void setId(final String id) {

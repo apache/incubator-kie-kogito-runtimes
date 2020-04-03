@@ -50,6 +50,11 @@ public class StartNodeFactory extends NodeFactory {
         getStartNode().setInterrupting(interrupting);
         return this;
     }
+
+    public StartNodeFactory addOutMapping(String parameterName, String variableName) {
+        getStartNode().addOutMapping(parameterName, variableName);
+        return this;
+    }
     
     public StartNodeFactory trigger(String triggerEventType, String mapping) {
         EventTrigger trigger = new EventTrigger();
