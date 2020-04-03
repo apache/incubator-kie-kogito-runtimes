@@ -68,11 +68,13 @@ import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.kogito.conf.ClockType;
 import org.kie.kogito.conf.EventProcessingType;
+import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.units.AssignableChecker;
 
-import static com.github.javaparser.StaticJavaParser.parse;
 import static java.util.stream.Collectors.toList;
+
+import static com.github.javaparser.StaticJavaParser.parse;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
@@ -161,6 +163,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             ResourceType.DRL,
             ResourceType.DTABLE
     };
+    private static final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
     private final Collection<Resource> resources;
     private RuleUnitContainerGenerator moduleGenerator;
 
@@ -173,6 +176,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     private KieModuleModel kieModuleModel;
     private boolean hotReloadMode = false;
+    private boolean useMonitoring = false;
     private String packageName;
     private final boolean decisionTableSupported;
     private final Map<String, RuleUnitConfig> configs;
@@ -252,6 +256,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
         }
 
+        List<DroolsError> errors = new ArrayList<>();
         boolean hasRuleUnits = false;
         Map<String, String> unitsMap = new HashMap<>();
 
@@ -274,7 +279,9 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 for (RuleUnitDescription ruleUnit : ruleUnits) {
                     RuleUnitGenerator ruSource = new RuleUnitGenerator(ruleUnit, pkgSources.getRulesFileName())
                             .withDependencyInjection(annotator)
-                            .withQueries( pkgSources.getQueriesInRuleUnit( ruleUnit.getCanonicalName() ) );
+                            .withQueries( pkgSources.getQueriesInRuleUnit( ruleUnit.getCanonicalName() ) )
+                            .withMonitoring(useMonitoring);
+
                     moduleGenerator.addRuleUnit(ruSource);
                     unitsMap.put(ruleUnit.getCanonicalName(), ruSource.targetCanonicalName());
                     // only Class<?> has config for now
@@ -306,7 +313,18 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 if (!queries.isEmpty()) {
                     generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription(), assignableChecker ).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
                     for (QueryEndpointGenerator query : queries) {
-                        generatedFiles.add( query.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
+                        if (useMonitoring){
+                            String dashboard = GrafanaConfigurationWriter.generateDashboardForEndpoint(grafanaTemplatePath, query.getEndpointName());
+                            generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
+                                                                                        "dashboards/dashboard-endpoint-" + query.getEndpointName() + ".json",
+                                                                                        dashboard));
+                        }
+
+                        if (query.validate()) {
+                            generatedFiles.add( query.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
+                        } else {
+                            errors.add( query.getError() );
+                        }
                     }
                 }
             }
@@ -322,7 +340,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
                     template.findAll( StringLiteralExpr.class ).forEach( s -> s.setString( s.getValue().replace( "$SessionName$", sessionName ) ) );
                     generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(
-                                               org.kie.kogito.codegen.GeneratedFile.Type.RULE,
+                            org.kie.kogito.codegen.GeneratedFile.Type.RULE,
                             "org/drools/project/model/SessionRuleUnit_" + sessionName + ".java",
                             log( cu.toString() ) ));
                 }
@@ -334,7 +352,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             ModelSourceClass modelSourceClass = new ModelSourceClass( dummyReleaseId, modelMethod, modelsByUnit );
 
             generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(
-                                       org.kie.kogito.codegen.GeneratedFile.Type.RULE,
+                    org.kie.kogito.codegen.GeneratedFile.Type.RULE,
                     modelSourceClass.getName(),
                     modelSourceClass.generate()));
 
@@ -344,9 +362,13 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             }
 
             generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(
-                                       org.kie.kogito.codegen.GeneratedFile.Type.RULE,
+                    org.kie.kogito.codegen.GeneratedFile.Type.RULE,
                     projectSourceClass.getName(),
                     projectSourceClass.generate()));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new RuleCodegenError(errors);
         }
 
         return generatedFiles;
@@ -413,4 +435,8 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return this;
     }
 
+    public IncrementalRuleCodegen withMonitoring(boolean useMonitoring) {
+        this.useMonitoring = useMonitoring;
+        return this;
+    }
 }

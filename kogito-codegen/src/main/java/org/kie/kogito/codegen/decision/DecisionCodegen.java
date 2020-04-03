@@ -33,22 +33,23 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.xml.namespace.QName;
 import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.io.internal.InternalResource;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
-import org.kie.dmn.backend.marshalling.v1x.DMNMarshallerFactory;
-import org.kie.dmn.core.assembler.DMNResource;
+import org.kie.dmn.api.core.DMNModel;
+import org.kie.dmn.api.core.DMNRuntime;
+import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
+import org.kie.dmn.model.api.Decision;
 import org.kie.dmn.model.api.Definitions;
-import org.kie.internal.io.ResourceWithConfigurationImpl;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
@@ -57,76 +58,69 @@ import static org.kie.kogito.codegen.ApplicationGenerator.log;
 public class DecisionCodegen extends AbstractGenerator {
 
     public static DecisionCodegen ofJar(Path jarPath) throws IOException {
-        List<DMNResource> resources = new ArrayList<>();
+        List<Resource> resources = new ArrayList<>();
 
         try (ZipFile zipFile = new ZipFile( jarPath.toFile() )) {
             Enumeration< ? extends ZipEntry> entries = zipFile.entries();
             while ( entries.hasMoreElements() ) {
                 ZipEntry entry = entries.nextElement();
                 ResourceType resourceType = determineResourceType(entry.getName());
-                if (entry.getName().endsWith(".dmn")) {
+                if (resourceType == ResourceType.DMN) {
                     InternalResource resource = new ByteArrayResource( readBytesFromInputStream( zipFile.getInputStream( entry ) ) );
                     resource.setResourceType( resourceType );
                     resource.setSourcePath( entry.getName() );
-                    resources.add( toDmnResource( resource ) );
+                    resources.add(resource);
                 }
             }
         }
 
-        return ofDecisions(jarPath, resources);
+        return ofDecisions(jarPath, parseDecisions(resources));
     }
 
     public static DecisionCodegen ofPath(Path path) throws IOException {
         Path srcPath = Paths.get(path.toString());
         try (Stream<Path> filesStream = Files.walk(srcPath)) {
             List<File> files = filesStream.filter(p -> p.toString().endsWith(".dmn"))
-                                          .map(Path::toFile)
-                                          .collect(Collectors.toList());
+                    .map(Path::toFile)
+                    .collect(Collectors.toList());
             return ofFiles(srcPath, files);
         }
     }
 
     public static DecisionCodegen ofFiles(Path basePath, Collection<File> files) throws IOException {
-        List<DMNResource> result = parseDecisions(files);
+        List<DMNModel> result = parseDecisions(files.stream().map(FileSystemResource::new).collect(Collectors.toList()));
         return ofDecisions(basePath, result);
     }
 
-    private static DecisionCodegen ofDecisions(Path basePath, List<DMNResource> result) {
+    private static DecisionCodegen ofDecisions(Path basePath, List<DMNModel> result) {
         return new DecisionCodegen(basePath, result);
     }
 
-    private static List<DMNResource> parseDecisions(Collection<File> files) throws IOException {
-        List<DMNResource> result = new ArrayList<>();
-        for (File dmnFile : files) {
-            FileSystemResource r = new FileSystemResource(dmnFile);
-            result.add(toDmnResource( r ));
-        }
-        return result;
+    private static List<DMNModel> parseDecisions(Collection<Resource> resources) throws IOException {
+        DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
+                                                 .setRootClassLoader(null)
+                                                 .buildConfiguration()
+                                                 .fromResources(resources)
+                                                 .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
+        return dmnRuntime.getModels();
     }
 
-    private static DMNResource toDmnResource( Resource r ) throws IOException {
-        Definitions defs = parseDecisionFile(r);
-        return new DMNResource(new QName(defs.getNamespace(), defs.getName()), new ResourceWithConfigurationImpl(r, null, null, null), defs);
-    }
-
-    private static Definitions parseDecisionFile(Resource r) throws IOException {
-        return DMNMarshallerFactory.newDefaultMarshaller().unmarshal(r.getReader());
-    }
-
+    private static final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
     private String packageName;
-    private String applicationCanonicalName; 
+    private String applicationCanonicalName;
     private DependencyInjectionAnnotator annotator;
-    
+
     private DecisionContainerGenerator moduleGenerator;
 
     private Path basePath;
-    private final Map<String, DMNResource> models;
+    private final Map<String, DMNModel> models;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
+    private boolean useMonitoring = false;
 
-    public DecisionCodegen(Path basePath, Collection<? extends DMNResource> models) {
+    public DecisionCodegen(Path basePath, Collection<DMNModel> models) {
         this.basePath = basePath;
         this.models = new HashMap<>();
-        for (DMNResource model : models) {
+        for (DMNModel model : models) {
             this.models.put(model.getDefinitions().getId(), model);
         }
 
@@ -158,17 +152,33 @@ public class DecisionCodegen extends AbstractGenerator {
         }
 
         List<DMNRestResourceGenerator> rgs = new ArrayList<>(); // REST resources
-        
-        for (DMNResource dmnRes : models.values()) {
-            DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(dmnRes.getDefinitions(), applicationCanonicalName).withDependencyInjection(annotator);
+
+        for (DMNModel model : models.values()) {
+            DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(model, applicationCanonicalName).withDependencyInjection(annotator).withMonitoring(useMonitoring);
             rgs.add(resourceGenerator);
         }
-        
+
         for (DMNRestResourceGenerator resourceGenerator : rgs) {
-            storeFile( GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
+            if (useMonitoring) {
+                generateAndStoreGrafanaDashboard(resourceGenerator);
+            }
+
+            storeFile(GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
         }
 
         return generatedFiles;
+    }
+
+    private void generateAndStoreGrafanaDashboard(DMNRestResourceGenerator resourceGenerator) {
+        Definitions definitions = resourceGenerator.getDmnModel().getDefinitions();
+        List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect(Collectors.toList());
+
+        String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(grafanaTemplatePath, resourceGenerator.getNameURL(), decisions);
+        generatedFiles.add(
+                new org.kie.kogito.codegen.GeneratedFile(
+                        org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
+                        "dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
+                        dashboard));
     }
 
     @Override
@@ -187,6 +197,11 @@ public class DecisionCodegen extends AbstractGenerator {
     @Override
     public ApplicationSection section() {
         return moduleGenerator;
+    }
+
+    public DecisionCodegen withMonitoring(boolean useMonitoring) {
+        this.useMonitoring = useMonitoring;
+        return this;
     }
 
 }
