@@ -16,6 +16,9 @@ pipeline {
         SONARCLOUD_TOKEN = credentials('SONARCLOUD_TOKEN')
         MAVEN_OPTS = '-Xms512m -Xmx3g'
     }
+    triggers {
+        issueCommentTrigger('.*test this please.*')
+    }
     stages {
         stage('Initialize') {
             steps {
