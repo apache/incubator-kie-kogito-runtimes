@@ -46,7 +46,7 @@ import java.util.*;
 public class ServerlessWorkflowFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowFactory.class);
 
-    protected static final String EOL = System.getProperty( "line.separator" );
+    private static final String EOL = System.getProperty( "line.separator" );
     private static final String DEFAULT_WORKFLOW_ID = "serverless";
     private static final String DEFAULT_WORKFLOW_NAME = "workflow";
     private static final String DEFAULT_WORKFLOW_VERSION = "1.0";
@@ -55,7 +55,8 @@ public class ServerlessWorkflowFactory {
     private static final String DEFAULT_VAR = "Var";
     private static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     private static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
-    private static final Set<String> DEFAULT_IMPORTS = new HashSet<String>(Arrays.asList(JSON_NODE));
+    private static final Set<String> DEFAULT_IMPORTS = new HashSet<>(Arrays.asList("org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils"));
+
 
     public RuleFlowProcess createProcess(Workflow workflow) {
         RuleFlowProcess process = new RuleFlowProcess();
@@ -71,7 +72,7 @@ public class ServerlessWorkflowFactory {
             process.setName(workflow.getName());
         } else {
             LOGGER.info("setting default name {}", DEFAULT_WORKFLOW_NAME);
-            process.setId(DEFAULT_WORKFLOW_NAME);
+            process.setName(DEFAULT_WORKFLOW_NAME);
         }
 
         if(workflow.getVersion() != null && !workflow.getVersion().isEmpty()) {
@@ -92,7 +93,7 @@ public class ServerlessWorkflowFactory {
         process.setVisibility(DEFAULT_VISIBILITY);
 
         // add workflow data var
-        processVar(DEFAULT_WORKFLOW_VAR, process);
+        processVar(DEFAULT_WORKFLOW_VAR, JsonNode.class, process);
 
         return process;
     }
@@ -182,8 +183,8 @@ public class ServerlessWorkflowFactory {
         return subProcessNode;
     }
 
-    private void addMessageEndNodeAction(EndNode endNode, String variable, String messageType){
-        List<DroolsAction> actions = new ArrayList<DroolsAction>();
+    public void addMessageEndNodeAction(EndNode endNode, String variable, String messageType){
+        List<DroolsAction> actions = new ArrayList<>();
 
         actions.add(new DroolsConsequenceAction("java",
                 "org.drools.core.process.instance.impl.WorkItemImpl workItem = new org.drools.core.process.instance.impl.WorkItemImpl();" + EOL +
@@ -198,7 +199,7 @@ public class ServerlessWorkflowFactory {
         endNode.setActions(ExtendedNodeImpl.EVENT_NODE_ENTER, actions);
     }
 
-    private void addTriggerToStartNode(StartNode startNode, String triggerEventType) {
+    public void addTriggerToStartNode(StartNode startNode, String triggerEventType) {
         EventTrigger trigger = new EventTrigger();
         EventTypeFilter eventFilter = new EventTypeFilter();
         eventFilter.setType(triggerEventType);
@@ -256,10 +257,10 @@ public class ServerlessWorkflowFactory {
 
     }
 
-    public static void processVar(String name, RuleFlowProcess process) {
+    public void processVar(String varName, Class varType, RuleFlowProcess process) {
         Variable variable = new Variable();
-        variable.setName(name);
-        variable.setType(new ObjectDataType(JsonNode.class.getName()));
+        variable.setName(varName);
+        variable.setType(new ObjectDataType(varType.getName()));
         process.getVariableScope().getVariables().add(variable);
     }
 

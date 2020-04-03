@@ -15,11 +15,7 @@
 
 package org.jbpm.serverless.workflow;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.jbpm.workflow.core.node.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -27,7 +23,7 @@ import org.kie.api.definition.process.Node;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ServlerlessWorkflowParsingTest {
+public class ServlerlessWorkflowParsingTest extends BaseServerlessTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"/exec/single-operation.sw.json", "/exec/single-operation.sw.yml"})
@@ -288,6 +284,29 @@ public class ServlerlessWorkflowParsingTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"/exec/single-relay-state.sw.json", "/exec/single-relay-state.sw.yml"})
+    public void testSingleRelayWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("function", process.getId());
+        assertEquals("test-wf", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(3, process.getNodes().length);
+
+        Node node = process.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof EndNode);
+
+        ActionNode actionNode = (ActionNode) process.getNodes()[2];
+        assertEquals("SimpleRelay", actionNode.getName());
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"/specexamples/helloworld.sw.json", "/specexamples/helloworld.sw.yml",
             "/specexamples/greeting.sw.json", "/specexamples/greeting.sw.yml",
             "/specexamples/eventbasedgreeting.sw.json", "/specexamples/eventbasedgreeting.sw.yml",
@@ -304,17 +323,4 @@ public class ServlerlessWorkflowParsingTest {
         assertNotNull(process);
     }
 
-        protected Reader classpathResourceReader(String location) {
-        return new InputStreamReader(this.getClass().getResourceAsStream(location));
-    }
-
-    protected ServerlessWorkflowParser getWorkflowParser(String workflowLocation) {
-        ServerlessWorkflowParser parser;
-        if(workflowLocation.endsWith(".sw.json")) {
-            parser = new ServerlessWorkflowParser("json");
-        } else {
-            parser = new ServerlessWorkflowParser("yml");
-        }
-        return parser;
-    }
 }

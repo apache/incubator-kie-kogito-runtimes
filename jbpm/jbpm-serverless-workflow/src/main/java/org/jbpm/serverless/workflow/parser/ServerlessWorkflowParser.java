@@ -20,14 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.serverless.workflow.api.end.End;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.interfaces.State;
 import org.jbpm.serverless.workflow.api.mapper.BaseObjectMapper;
-import org.jbpm.serverless.workflow.api.states.DelayState;
-import org.jbpm.serverless.workflow.api.states.EventState;
-import org.jbpm.serverless.workflow.api.states.SubflowState;
+import org.jbpm.serverless.workflow.api.states.*;
 import org.jbpm.serverless.workflow.api.transitions.Transition;
 import org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory;
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
@@ -37,12 +37,18 @@ import org.kie.api.definition.process.Process;
 import org.jbpm.serverless.workflow.api.Workflow;
 import org.jbpm.serverless.workflow.api.actions.Action;
 import org.jbpm.serverless.workflow.api.states.DefaultState.Type;
-import org.jbpm.serverless.workflow.api.states.OperationState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ServerlessWorkflowParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowParser.class);
+
+    private static final String SCRIPT_TYPE = "script";
+    private static final String SCRIPT_TYPE_PARAM = "script";
+    private static final String SYSOUT_TYPE = "sysout";
+    private static final String SYSOUT_TYPE_PARAM = "message";
+    private static final String SERVICE_TYPE = "service";
+
 
     private AtomicLong idCounter = new AtomicLong(1);
     private ServerlessWorkflowFactory factory;
@@ -57,7 +63,7 @@ public class ServerlessWorkflowParser {
         this.factory = new ServerlessWorkflowFactory();
     }
 
-    public Process parseWorkFlow(Reader workflowFile) throws Exception {
+    public Process parseWorkFlow(Reader workflowFile) throws JsonProcessingException {
         Workflow workflow = objectMapper.readValue(ServerlessWorkflowUtils.readWorkflowFile(workflowFile), Workflow.class);
         RuleFlowProcess process = factory.createProcess(workflow);
         Map<String, Long> nameToNodeId = new HashMap<>();
@@ -100,7 +106,7 @@ public class ServerlessWorkflowParser {
             if(state.getType().equals(Type.EVENT)) {
                 EventState eventState = (EventState) state;
                 if(eventState.getStart() == null) {
-                    throw new RuntimeException("currently support only event start states");
+                    throw new IllegalArgumentException("currently support only event start states");
                 }
 
                 CompositeContextNode embeddedSubProcess = factory.subProcessNode(idCounter.getAndIncrement(), state.getName(), process);
@@ -115,7 +121,7 @@ public class ServerlessWorkflowParser {
                 nameToNodeId.put(state.getName(), embeddedSubProcess.getId());
             }
 
-            if (state.getType().equals(Type.OPERATION)) {
+            if(state.getType().equals(Type.OPERATION)) {
                 OperationState operationState = (OperationState) state;
                 CompositeContextNode embeddedSubProcess = factory.subProcessNode(idCounter.getAndIncrement(), state.getName(), process);
                 handleActions(workflowFunctions, operationState.getActions(), embeddedSubProcess);
@@ -131,7 +137,7 @@ public class ServerlessWorkflowParser {
                 nameToNodeId.put(state.getName(), embeddedSubProcess.getId());
             }
 
-            if (state.getType().equals(Type.DELAY)) {
+            if(state.getType().equals(Type.DELAY)) {
                 DelayState delayState = (DelayState) state;
 
                 TimerNode timerNode = factory.timerNode(idCounter.getAndIncrement(), delayState.getName(), delayState.getTimeDelay(), process);
@@ -148,7 +154,32 @@ public class ServerlessWorkflowParser {
 
             }
 
-            if (state.getType().equals(Type.SUBFLOW)) {
+            if(state.getType().equals(Type.RELAY)) {
+                RelayState relayState = (RelayState) state;
+
+                ActionNode actionNode;
+
+                JsonNode toInjectNode = relayState.getInject();
+
+                if(toInjectNode != null) {
+                    actionNode = factory.scriptNode(idCounter.getAndIncrement(), relayState.getName(), ServerlessWorkflowUtils.getInjectScript(toInjectNode), process);
+                } else {
+                    //no-op script
+                    actionNode = factory.scriptNode(idCounter.getAndIncrement(), relayState.getName(), "", process);
+                }
+
+                if(state.getStart() != null) {
+                    factory.connect(processStartNode.getId(), actionNode.getId(), processStartNode.getId() + "_" + actionNode.getId(), process);
+                }
+
+                if(state.getEnd() != null) {
+                    factory.connect(actionNode.getId(), processEndNode.getId(), actionNode.getId() + "_" + processEndNode.getId(), process);
+                }
+
+                nameToNodeId.put(state.getName(), actionNode.getId());
+            }
+
+            if(state.getType().equals(Type.SUBFLOW)) {
                 SubflowState subflowState = (SubflowState) state;
 
                 SubProcessNode callActivityNode = factory.callActivity(idCounter.getAndIncrement(), subflowState.getName(), subflowState.getWorkflowId(), subflowState.isWaitForCompletion(), process);
@@ -194,26 +225,26 @@ public class ServerlessWorkflowParser {
                         .get();
 
                 if(actionFunction.getType() != null) {
-                    if ("script".equalsIgnoreCase(actionFunction.getType())) {
-                        String script = ServerlessWorkflowUtils.applySubstitutionsToScript(action.getFunctionRef().getParameters().get("script"));
+                    if (SCRIPT_TYPE.equalsIgnoreCase(actionFunction.getType())) {
+                        String script = ServerlessWorkflowUtils.scriptFunctionScript(action.getFunctionRef().getParameters().get(SCRIPT_TYPE_PARAM));
                         current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), script, embeddedSubProcess);
 
                         factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
                         start = current;
-                    } else if ("sysout".equalsIgnoreCase(actionFunction.getType())) {
-                        String script = ServerlessWorkflowUtils.applySubstitutionsToScript("System.out.println(" + "\"" + action.getFunctionRef().getParameters().get("prefix") + " \" + " + action.getFunctionRef().getParameters().get("message") + ");");
+                    } else if (SYSOUT_TYPE.equalsIgnoreCase(actionFunction.getType())) {
+                        String script = ServerlessWorkflowUtils.sysOutFunctionScript(action.getFunctionRef().getParameters().get(SYSOUT_TYPE_PARAM));
                         current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), script, embeddedSubProcess);
 
                         factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
                         start = current;
-                    } else if ("service".equalsIgnoreCase(actionFunction.getType())) {
+                    } else if (SERVICE_TYPE.equalsIgnoreCase(actionFunction.getType())) {
                         current = factory.serviceNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), actionFunction, embeddedSubProcess);
                         factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
                         start = current;
                     } else {
                         LOGGER.warn("currently unsupported function type, supported types are 'script', 'sysout', 'service'");
                         LOGGER.warn("defaulting to script type");
-                        String script = ServerlessWorkflowUtils.applySubstitutionsToScript("");
+                        String script = ServerlessWorkflowUtils.scriptFunctionScript("");
                         current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), script, embeddedSubProcess);
 
                         factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
@@ -222,7 +253,7 @@ public class ServerlessWorkflowParser {
                 } else {
                     LOGGER.warn("invalid function type. supported types are 'script', 'sysout', 'service'");
                     LOGGER.warn("defaulting to script type");
-                    String script = ServerlessWorkflowUtils.applySubstitutionsToScript("");
+                    String script = ServerlessWorkflowUtils.scriptFunctionScript("");
                     current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), script, embeddedSubProcess);
 
                     factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
@@ -230,7 +261,11 @@ public class ServerlessWorkflowParser {
                 }
             }
             EndNode embeddedEndNode = factory.endNode(idCounter.getAndIncrement(), "EmbeddedEnd", true, embeddedSubProcess);
-            factory.connect(current.getId(), embeddedEndNode.getId(), current.getId() + "_" + embeddedEndNode.getId(), embeddedSubProcess);
+            try {
+                factory.connect(current.getId(), embeddedEndNode.getId(), current.getId() + "_" + embeddedEndNode.getId(), embeddedSubProcess);
+            } catch (NullPointerException e) {
+                LOGGER.warn("unable to connect current node to embedded end node");
+            }
         }
     }
 
