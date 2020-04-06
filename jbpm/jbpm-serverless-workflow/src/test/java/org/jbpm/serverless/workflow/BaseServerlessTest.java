@@ -37,6 +37,16 @@ public abstract class BaseServerlessTest {
         );
     }});
 
+    protected static final Workflow multiRelayStateWorkflow = new Workflow().withStates(new ArrayList<>() {{
+        add(
+                new RelayState().withName("relayState").withType(DefaultState.Type.RELAY).withStart(new Start().withKind(Start.Kind.DEFAULT))
+                        .withEnd(new End(End.Kind.DEFAULT))
+        );
+        add(
+                new RelayState().withName("relayState2").withType(DefaultState.Type.RELAY).withEnd(new End(End.Kind.DEFAULT))
+        );
+    }});
+
     protected static final Workflow eventDefOnlyWorkflow = new Workflow().withEvents(new ArrayList<>() {{
         add(
                 new EventDefinition().withName("sampleEvent").withSource("sampleSource").withType("sampleType")

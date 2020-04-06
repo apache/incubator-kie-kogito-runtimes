@@ -22,6 +22,7 @@ import org.jbpm.serverless.workflow.api.events.EventDefinition;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.produce.ProduceEvent;
 import org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory;
+import org.jbpm.workflow.core.impl.ConstraintImpl;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.node.*;
 import org.junit.jupiter.api.Test;
@@ -92,10 +93,10 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         End endDef = new End().withKind(End.Kind.EVENT).withProduceEvent(
                 new ProduceEvent().withNameRef("sampleEvent").withData("sampleData"));
 
-        EndNode endNode = factory.messageEndNode(1L, eventDefOnlyWorkflow, endDef, nodeContainer);
+        EndNode endNode = factory.messageEndNode(1L,"End",  eventDefOnlyWorkflow, endDef, nodeContainer);
 
         assertThat(endNode).isNotNull();
-        assertThat(endNode.getName()).isEqualTo("sampleEvent");
+        assertThat(endNode.getName()).isEqualTo("End");
         assertThat(endNode.getMetaData()).isNotNull();
         assertThat(endNode.getMetaData().get("TriggerRef")).isEqualTo("sampleSource");
         assertThat(endNode.getMetaData().get("TriggerType")).isEqualTo("ProduceMessage");
@@ -202,5 +203,18 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         assertThat(compositeContextNode).isNotNull();
         assertThat(compositeContextNode.getName()).isEqualTo("subprocess");
         assertThat(compositeContextNode.isAutoComplete()).isTrue();
+    }
+
+    @Test
+    public void testSplitConstraint() {
+        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
+
+        ConstraintImpl constraint = factory.splitConstraint("testName", "testType", "testDialect", "testConstraint", 0);
+        assertThat(constraint).isNotNull();
+        assertThat(constraint.getName()).isEqualTo("testName");
+        assertThat(constraint.getType()).isEqualTo("testType");
+        assertThat(constraint.getDialect()).isEqualTo("testDialect");
+        assertThat(constraint.getConstraint()).isEqualTo("testConstraint");
+        assertThat(constraint.getPriority()).isEqualTo(0);
     }
 }

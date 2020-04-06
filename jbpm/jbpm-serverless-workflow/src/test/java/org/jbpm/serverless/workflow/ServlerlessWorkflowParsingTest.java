@@ -307,6 +307,39 @@ public class ServlerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"/exec/switch-state.sw.json", "/exec//switch-state.sw.yml"})
+    public void testSwitchWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("switchworkflow", process.getId());
+        assertEquals("switch-wf", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(7, process.getNodes().length);
+
+        Node node = process.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof EndNode);
+        node = process.getNodes()[2];
+        assertTrue(node instanceof EndNode);
+        node = process.getNodes()[3];
+        assertTrue(node instanceof ActionNode);
+        node = process.getNodes()[4];
+        assertTrue(node instanceof Split);
+        node = process.getNodes()[5];
+        assertTrue(node instanceof ActionNode);
+        node = process.getNodes()[6];
+        assertTrue(node instanceof ActionNode);
+
+        Split split = (Split) process.getNodes()[4];
+        assertEquals("ChooseOnAge", split.getName());
+        assertEquals(2, split.getType());
+        assertEquals(2, split.getConstraints().size());
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"/specexamples/helloworld.sw.json", "/specexamples/helloworld.sw.yml",
             "/specexamples/greeting.sw.json", "/specexamples/greeting.sw.yml",
             "/specexamples/eventbasedgreeting.sw.json", "/specexamples/eventbasedgreeting.sw.yml",

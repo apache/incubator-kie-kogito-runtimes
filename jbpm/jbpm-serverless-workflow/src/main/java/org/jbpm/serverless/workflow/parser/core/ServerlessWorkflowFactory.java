@@ -34,6 +34,7 @@ import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
+import org.jbpm.workflow.core.impl.ConstraintImpl;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.node.*;
@@ -135,14 +136,13 @@ public class ServerlessWorkflowFactory {
         return endNode;
     }
 
-    public EndNode messageEndNode(long id, Workflow workflow, End stateEnd, NodeContainer nodeContainer) {
+    public EndNode messageEndNode(long id, String name, Workflow workflow, End stateEnd, NodeContainer nodeContainer) {
         EndNode endNode = new EndNode();
         endNode.setTerminate(false);
         endNode.setId(id);
+        endNode.setName(name);
 
         EventDefinition eventDef = ServerlessWorkflowUtils.getWorkflowEventFor(workflow, stateEnd.getProduceEvent().getNameRef());
-
-        endNode.setName(eventDef.getName());
 
         endNode.setMetaData("TriggerRef", eventDef.getSource());
         endNode.setMetaData("TriggerType", "ProduceMessage");
@@ -276,6 +276,28 @@ public class ServerlessWorkflowFactory {
         nodeContainer.addNode(subProcessNode);
 
         return subProcessNode;
+    }
+
+    public Split xorSplitNode(long id, String name, NodeContainer nodeContainer) {
+        Split split = new Split();
+        split.setId(id);
+        split.setName(name);
+        split.setType(2);
+        split.setMetaData("UniqueId", Long.toString(id));
+
+        nodeContainer.addNode(split);
+        return split;
+    }
+
+    public ConstraintImpl splitConstraint(String name, String type, String dialect, String constraint, int priority) {
+        ConstraintImpl constraintImpl = new ConstraintImpl();
+        constraintImpl.setName(name);
+        constraintImpl.setType(type);
+        constraintImpl.setDialect(dialect);
+        constraintImpl.setConstraint(constraint);
+        constraintImpl.setPriority(priority);
+
+        return constraintImpl;
     }
 
     public void connect(long fromId, long toId, String uniqueId, NodeContainer nodeContainer) {
