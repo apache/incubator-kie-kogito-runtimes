@@ -254,8 +254,15 @@ public class ServerlessWorkflowParser {
                                 factory.connect(xorSplit.getId(), targetId, xorSplit.getId() + "_" + targetId, process);
 
                                 // set constraint
+                                boolean isDefaultConstraint = false;
+                                if(switchState.getDefault().getNextState() != null) {
+                                    if(defaultChoice.getTransition().getNextState().equals(switchState.getDefault().getNextState())) {
+                                        isDefaultConstraint = true;
+                                    }
+                                }
+
                                 ConstraintImpl constraintImpl = factory.splitConstraint(xorSplit.getId() + "_" + targetId,
-                                        "DROOLS_DEFAULT", "java", ServerlessWorkflowUtils.conditionScript(defaultChoice.getPath(), defaultChoice.getOperator(), defaultChoice.getValue()), 0);
+                                        "DROOLS_DEFAULT", "java", ServerlessWorkflowUtils.conditionScript(defaultChoice.getPath(), defaultChoice.getOperator(), defaultChoice.getValue()), 0, isDefaultConstraint);
                                 xorSplit.addConstraint(new ConnectionRef(xorSplit.getId() + "_" + targetId, targetId, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
 
 

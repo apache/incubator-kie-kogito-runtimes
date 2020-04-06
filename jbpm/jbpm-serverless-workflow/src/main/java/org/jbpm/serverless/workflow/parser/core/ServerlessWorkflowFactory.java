@@ -289,13 +289,14 @@ public class ServerlessWorkflowFactory {
         return split;
     }
 
-    public ConstraintImpl splitConstraint(String name, String type, String dialect, String constraint, int priority) {
+    public ConstraintImpl splitConstraint(String name, String type, String dialect, String constraint, int priority, boolean isDefault) {
         ConstraintImpl constraintImpl = new ConstraintImpl();
         constraintImpl.setName(name);
         constraintImpl.setType(type);
         constraintImpl.setDialect(dialect);
         constraintImpl.setConstraint(constraint);
         constraintImpl.setPriority(priority);
+        constraintImpl.setDefault(isDefault);
 
         return constraintImpl;
     }

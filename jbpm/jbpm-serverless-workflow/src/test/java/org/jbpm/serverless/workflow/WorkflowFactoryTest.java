@@ -209,12 +209,13 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     public void testSplitConstraint() {
         ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
 
-        ConstraintImpl constraint = factory.splitConstraint("testName", "testType", "testDialect", "testConstraint", 0);
+        ConstraintImpl constraint = factory.splitConstraint("testName", "testType", "testDialect", "testConstraint", 0, true);
         assertThat(constraint).isNotNull();
         assertThat(constraint.getName()).isEqualTo("testName");
         assertThat(constraint.getType()).isEqualTo("testType");
         assertThat(constraint.getDialect()).isEqualTo("testDialect");
         assertThat(constraint.getConstraint()).isEqualTo("testConstraint");
         assertThat(constraint.getPriority()).isEqualTo(0);
+        assertThat(constraint.isDefault()).isTrue();
     }
 }

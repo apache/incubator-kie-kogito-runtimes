@@ -16,6 +16,7 @@
 package org.jbpm.serverless.workflow;
 
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.node.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -337,6 +338,13 @@ public class ServlerlessWorkflowParsingTest extends BaseServerlessTest {
         assertEquals("ChooseOnAge", split.getName());
         assertEquals(2, split.getType());
         assertEquals(2, split.getConstraints().size());
+
+        boolean haveDefaultConstraint = false;
+        for(Constraint constraint : split.getConstraints().values()) {
+            haveDefaultConstraint = haveDefaultConstraint || constraint.isDefault();
+        }
+
+        assertTrue(haveDefaultConstraint);
     }
 
     @ParameterizedTest
