@@ -41,6 +41,7 @@ import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 public class CodegenUtils {
 
+    private static final Modifier.Keyword[] NONE = new Modifier.Keyword[]{};
     private static final Modifier.Keyword[] PUBLIC = new Modifier.Keyword[]{Modifier.Keyword.PUBLIC};
     private static final Modifier.Keyword[] PRIVATE = new Modifier.Keyword[]{Modifier.Keyword.PRIVATE};
 
@@ -58,6 +59,78 @@ public class CodegenUtils {
 
     public static ClassOrInterfaceType genericType(String outer, String inner) {
         return new ClassOrInterfaceType(null, outer).setTypeArguments(new ClassOrInterfaceType(null, inner));
+    }
+
+    public static FieldDeclaration field(Modifier.Keyword[] modifiers, Type type, String name) {
+        return new FieldDeclaration()
+                .setModifiers(modifiers)
+                .addVariable(variableDeclarator(type, name));
+    }
+
+    public static FieldDeclaration field(Modifier.Keyword[] modifiers, Type type, String name, Expression expr) {
+        return new FieldDeclaration()
+                .setModifiers(modifiers)
+                .addVariable(variableDeclarator(type, name, expr));
+    }
+
+    public static FieldDeclaration field(Modifier.Keyword[] modifiers, Class<?> type, String name) {
+        return new FieldDeclaration()
+                .setModifiers(modifiers)
+                .addVariable(variableDeclarator(type, name));
+    }
+
+    public static FieldDeclaration field(Modifier.Keyword[] modifiers, Class<?> type, String name, Expression expr) {
+        return new FieldDeclaration()
+                .setModifiers(modifiers)
+                .addVariable(variableDeclarator(type, name, expr));
+    }
+
+    public static FieldDeclaration field(Type type, String name) {
+        return field(NONE, type, name);
+    }
+
+    public static FieldDeclaration field(Type type, String name, Expression expr) {
+        return field(NONE, type, name, expr);
+    }
+
+    public static FieldDeclaration field(Class<?> type, String name) {
+        return field(NONE, type, name);
+    }
+
+    public static FieldDeclaration field(Class<?> type, String name, Expression expr) {
+        return field(NONE, type, name, expr);
+    }
+
+    public static FieldDeclaration publicField(Type type, String name) {
+        return field(PUBLIC, type, name);
+    }
+
+    public static FieldDeclaration publicField(Type type, String name, Expression expr) {
+        return field(PUBLIC, type, name, expr);
+    }
+
+    public static FieldDeclaration publicField(Class<?> type, String name) {
+        return field(PUBLIC, type, name);
+    }
+
+    public static FieldDeclaration publicField(Class<?> type, String name, Expression expr) {
+        return field(PUBLIC, type, name, expr);
+    }
+
+    public static FieldDeclaration privateField(Type type, String name) {
+        return field(PRIVATE, type, name);
+    }
+
+    public static FieldDeclaration privateField(Type type, String name, Expression expr) {
+        return field(PRIVATE, type, name, expr);
+    }
+
+    public static FieldDeclaration privateField(Class<?> type, String name) {
+        return field(PRIVATE, type, name);
+    }
+
+    public static FieldDeclaration privateField(Class<?> type, String name, Expression expr) {
+        return field(PRIVATE, type, name, expr);
     }
 
     public static MethodDeclaration method(Modifier.Keyword[] modifiers, Class<?> type, String name, NodeList<Parameter> parameters, BlockStmt body) {
@@ -123,16 +196,52 @@ public class CodegenUtils {
         return new Parameter().setType(type).setName(name);
     }
 
+    public static Expression variable(Type type, String name) {
+        return new VariableDeclarationExpr(variableDeclarator(type, name));
+    }
+
     public static Expression variable(Type type, String name, Expression expr) {
-        return new VariableDeclarationExpr(new VariableDeclarator(type, name, expr));
+        return new VariableDeclarationExpr(variableDeclarator(type, name, expr));
+    }
+
+    public static Expression variable(Class<?> type, String name) {
+        return variable(type.getCanonicalName(), name);
     }
 
     public static Expression variable(Class<?> type, String name, Expression expr) {
         return variable(type.getCanonicalName(), name, expr);
     }
 
+    public static Expression variable(String type, String name) {
+        return new VariableDeclarationExpr(variableDeclarator(type, name));
+    }
+
     public static Expression variable(String type, String name, Expression expr) {
-        return new VariableDeclarationExpr(new VariableDeclarator(new ClassOrInterfaceType(null, type), name, expr));
+        return new VariableDeclarationExpr(variableDeclarator(type, name, expr));
+    }
+
+    public static VariableDeclarator variableDeclarator(Type type, String name) {
+        return new VariableDeclarator(type, name);
+    }
+
+    public static VariableDeclarator variableDeclarator(Type type, String name, Expression expr) {
+        return new VariableDeclarator(type, name, expr);
+    }
+
+    public static VariableDeclarator variableDeclarator(Class<?> type, String name) {
+        return variableDeclarator(type.getCanonicalName(), name);
+    }
+
+    public static VariableDeclarator variableDeclarator(Class<?> type, String name, Expression expr) {
+        return variableDeclarator(type.getCanonicalName(), name, expr);
+    }
+
+    public static VariableDeclarator variableDeclarator(String type, String name) {
+        return new VariableDeclarator(new ClassOrInterfaceType(null, type), name);
+    }
+
+    public static VariableDeclarator variableDeclarator(String type, String name, Expression expr) {
+        return new VariableDeclarator(new ClassOrInterfaceType(null, type), name, expr);
     }
 
     public static void interpolateArguments(MethodDeclaration md, String dataType) {

@@ -22,18 +22,22 @@ import java.util.Enumeration;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.MethodReferenceExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.util.StringUtils;
 import org.kie.kogito.Addons;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
@@ -194,4 +198,17 @@ public class ConfigGenerator {
     public void withClassLoader(ClassLoader projectClassLoader) {
         this.classLoader = projectClassLoader;
     }
+
+    public static MethodCallExpr callMerge(String configsName, Class<?> configToListenersScope, String configToListenersIdentifier, String listenersName) {
+        return new MethodCallExpr(null, "merge", NodeList.nodeList(
+                new NameExpr(configsName),
+                new MethodReferenceExpr(
+                        new TypeExpr(new ClassOrInterfaceType(null, configToListenersScope.getCanonicalName())),
+                        null,
+                        configToListenersIdentifier
+                ),
+                new NameExpr(listenersName)
+        ));
+    }
+
 }
