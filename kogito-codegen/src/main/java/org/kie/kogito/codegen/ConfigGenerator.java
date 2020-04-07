@@ -15,25 +15,13 @@
 
 package org.kie.kogito.codegen;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Enumeration;
 
-import org.drools.core.util.StringUtils;
-import org.kie.kogito.Addons;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
-import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -46,7 +34,18 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.drools.core.util.StringUtils;
+import org.kie.kogito.Addons;
+import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
+import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.kie.kogito.codegen.CodegenUtils.newObject;
+import static org.kie.kogito.codegen.CodegenUtils.publicMethod;
 
 public class ConfigGenerator {
     
@@ -56,6 +55,7 @@ public class ConfigGenerator {
     private DependencyInjectionAnnotator annotator;
     private ProcessConfigGenerator processConfig;
     private RuleConfigGenerator ruleConfig;
+    private DecisionConfigGenerator decisionConfig;
     
     private String packageName;
     private final String sourceFilePath;
@@ -78,7 +78,7 @@ public class ConfigGenerator {
         }
         return this;
     }
-    
+
     public ConfigGenerator withRuleConfig(RuleConfigGenerator cfg) {
         this.ruleConfig = cfg;
         if (this.ruleConfig != null) {
@@ -86,7 +86,15 @@ public class ConfigGenerator {
         }
         return this;
     }
-    
+
+    public ConfigGenerator withDecisionConfig(DecisionConfigGenerator cfg) {
+        this.decisionConfig = cfg;
+        if (this.decisionConfig != null) {
+            this.decisionConfig.withDependencyInjection(annotator);
+        }
+        return this;
+    }
+
     public ConfigGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
         return this;
@@ -95,68 +103,33 @@ public class ConfigGenerator {
     public ObjectCreationExpr newInstance() {
         return new ObjectCreationExpr()
                 .setType(targetCanonicalName);
-
     }
 
-    private Expression processConfig() {
-        return processConfig == null ? new NullLiteralExpr() : processConfig.newInstance();
-    }
-    
-    private Expression ruleConfig() {
-        return ruleConfig == null ? new NullLiteralExpr() : ruleConfig.newInstance();
-    }
-    
     public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit =
                 parse(this.getClass().getResourceAsStream(RESOURCE))
                         .setPackageDeclaration(packageName);
-        ClassOrInterfaceDeclaration cls = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new RuntimeException("ApplicationConfig template class not found"));
-        
+
+        ClassOrInterfaceDeclaration cls = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new RuntimeException("ApplicationConfig template class not found"));
+
         if (processConfig != null) {
-            for (BodyDeclaration<?> member : processConfig.members()) {
-                cls.addMember(member);
-            }
+            processConfig.members().forEach(cls::addMember);
         }
-        
+
         if (ruleConfig != null) {
-            for (BodyDeclaration<?> member : ruleConfig.members()) {
-                cls.addMember(member);
-            }
+            ruleConfig.members().forEach(cls::addMember);
         }
-        
-        
+
+        if (decisionConfig != null) {
+            decisionConfig.members().forEach(cls::addMember);
+        }
+
         // add found addons
-        BlockStmt addonsMethodBody = new BlockStmt();
-        MethodDeclaration addonsMethod = new MethodDeclaration()
-                .setName("addons")
-                .setType(Addons.class.getCanonicalName())
-                .setModifiers(Keyword.PUBLIC)
-                .setBody(addonsMethodBody);
-        cls.addMember(addonsMethod);
-        
-        MethodCallExpr asList = new MethodCallExpr(new NameExpr("java.util.Arrays"), "asList");
-        ReturnStmt returnStmt = new ReturnStmt(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, Addons.class.getCanonicalName()), NodeList.nodeList(asList)));
-        
-        addonsMethodBody.addStatement(returnStmt);
-        try {
-            Enumeration<URL> urls = classLoader.getResources("META-INF/kogito.addon");
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                String addon = StringUtils.readFileAsString(new InputStreamReader(url.openStream()));
-                asList.addArgument(new StringLiteralExpr(addon));
-            }
-        } catch (IOException e) {
-            LOGGER.warn("Unexpected exception during loading of kogito.addon files", e);
-        }
-        
-        MethodDeclaration initMethod = new MethodDeclaration()
-            .addModifier(Keyword.PUBLIC)
-            .setName("init")
-            .setType(void.class)
-            .setBody(new BlockStmt()
-                     .addStatement(new AssignExpr(new NameExpr("processConfig"), processConfig(), AssignExpr.Operator.ASSIGN))
-                     .addStatement(new AssignExpr(new NameExpr("ruleConfig"), ruleConfig(), AssignExpr.Operator.ASSIGN)));
-            
+        cls.addMember(generateAddonsMethod());
+
+        // init method
+        MethodDeclaration initMethod = generateInitMethod();
         if (useInjection()) {
             annotator.withSingletonComponent(cls);
             initMethod.addAnnotation("javax.annotation.PostConstruct");
@@ -164,15 +137,56 @@ public class ConfigGenerator {
             cls.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt().addStatement(new MethodCallExpr(new ThisExpr(), "init")));
         }
         cls.addMember(initMethod);
-        
+
         cls.getMembers().sort(new BodyDeclarationComparator());
         return compilationUnit;
     }
-    
+
+    private MethodDeclaration generateAddonsMethod() {
+        MethodCallExpr asListOfAddons = new MethodCallExpr(new NameExpr("java.util.Arrays"), "asList");
+        try {
+            Enumeration<URL> urls = classLoader.getResources("META-INF/kogito.addon");
+            while (urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                String addon = StringUtils.readFileAsString(new InputStreamReader(url.openStream()));
+                asListOfAddons.addArgument(new StringLiteralExpr(addon));
+            }
+        } catch (IOException e) {
+            LOGGER.warn("Unexpected exception during loading of kogito.addon files", e);
+        }
+
+        BlockStmt body = new BlockStmt().addStatement(new ReturnStmt(
+                newObject(Addons.class, asListOfAddons)
+        ));
+
+        return publicMethod(Addons.class, "addons", body);
+    }
+
+    private MethodDeclaration generateInitMethod() {
+        BlockStmt body = new BlockStmt()
+                .addStatement(new AssignExpr(new NameExpr("processConfig"), newProcessConfigInstance(), AssignExpr.Operator.ASSIGN))
+                .addStatement(new AssignExpr(new NameExpr("ruleConfig"), newRuleConfigInstance(), AssignExpr.Operator.ASSIGN))
+                .addStatement(new AssignExpr(new NameExpr("decisionConfig"), newDecisionConfigInstance(), AssignExpr.Operator.ASSIGN));
+
+        return publicMethod(void.class, "init", body);
+    }
+
+    private Expression newProcessConfigInstance() {
+        return processConfig == null ? new NullLiteralExpr() : processConfig.newInstance();
+    }
+
+    private Expression newRuleConfigInstance() {
+        return ruleConfig == null ? new NullLiteralExpr() : ruleConfig.newInstance();
+    }
+
+    private Expression newDecisionConfigInstance() {
+        return decisionConfig == null ? new NullLiteralExpr() : decisionConfig.newInstance();
+    }
+
     protected boolean useInjection() {
         return this.annotator != null;
     }
-    
+
     public String generatedFilePath() {
         return sourceFilePath;
     }

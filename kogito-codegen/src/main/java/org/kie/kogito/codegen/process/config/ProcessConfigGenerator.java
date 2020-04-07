@@ -18,18 +18,6 @@ package org.kie.kogito.codegen.process.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.codegen.process.CodegenUtils;
-import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.process.ProcessEventListenerConfig;
-import org.kie.kogito.process.WorkItemHandlerConfig;
-import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
-import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
-import org.kie.kogito.process.impl.StaticProcessConfig;
-import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
-import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
-import org.kie.kogito.uow.UnitOfWorkManager;
-
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
@@ -41,6 +29,17 @@ import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.kie.kogito.codegen.CodegenUtils;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.process.ProcessEventListenerConfig;
+import org.kie.kogito.process.WorkItemHandlerConfig;
+import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
+import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
+import org.kie.kogito.process.impl.StaticProcessConfig;
+import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
+import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
+import org.kie.kogito.uow.UnitOfWorkManager;
 
 public class ProcessConfigGenerator {
     
@@ -70,7 +69,7 @@ public class ProcessConfigGenerator {
                 .addArgument(new NameExpr(DEFAULT_JOBS_SEVICE));
         }
     }
-    
+
     public List<BodyDeclaration<?>> members() {
         
         FieldDeclaration defaultPelcFieldDeclaration = new FieldDeclaration()
@@ -139,6 +138,5 @@ public class ProcessConfigGenerator {
         this.annotator = annotator;
         return this;
     }
-    
-    
+
 }

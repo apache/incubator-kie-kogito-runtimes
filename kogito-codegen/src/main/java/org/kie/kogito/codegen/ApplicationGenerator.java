@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.lang.model.SourceVersion;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -37,7 +38,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import javax.lang.model.SourceVersion;
 import org.kie.kogito.Config;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.Labeler;
@@ -131,7 +131,7 @@ public class ApplicationGenerator {
             annotator.withOptionalInjection(eventPublishersFieldDeclaration);
             eventPublishersDeclarator = new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(annotator.multiInstanceInjectionType()), NodeList.nodeList(new ClassOrInterfaceType(null, EventPublisher.class.getCanonicalName()))), "eventPublishers");
 
-            annotator.withConfigInjection("kogito.service.url", kogitoServiceField);
+            annotator.withConfigInjection(kogitoServiceField, "kogito.service.url");
         } else {
             eventPublishersDeclarator = new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(List.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, EventPublisher.class.getCanonicalName()))), "eventPublishers");
             kogitoServiceField.getVariable(0).setInitializer(new MethodCallExpr(new NameExpr(Optional.class.getCanonicalName()), "empty"));
