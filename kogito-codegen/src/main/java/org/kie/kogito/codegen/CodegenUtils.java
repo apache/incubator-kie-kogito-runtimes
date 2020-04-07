@@ -43,6 +43,7 @@ public class CodegenUtils {
 
     private static final Modifier.Keyword[] NONE = new Modifier.Keyword[]{};
     private static final Modifier.Keyword[] PUBLIC = new Modifier.Keyword[]{Modifier.Keyword.PUBLIC};
+    private static final Modifier.Keyword[] PROTECTED = new Modifier.Keyword[]{Modifier.Keyword.PROTECTED};
     private static final Modifier.Keyword[] PRIVATE = new Modifier.Keyword[]{Modifier.Keyword.PRIVATE};
 
     public static ClassOrInterfaceType genericType(Class<?> outer, Class<?> inner) {
@@ -115,6 +116,22 @@ public class CodegenUtils {
 
     public static FieldDeclaration publicField(Class<?> type, String name, Expression expr) {
         return field(PUBLIC, type, name, expr);
+    }
+
+    public static FieldDeclaration protectedField(Type type, String name) {
+        return field(PROTECTED, type, name);
+    }
+
+    public static FieldDeclaration protectedField(Type type, String name, Expression expr) {
+        return field(PROTECTED, type, name, expr);
+    }
+
+    public static FieldDeclaration protectedField(Class<?> type, String name) {
+        return field(PROTECTED, type, name);
+    }
+
+    public static FieldDeclaration protectedField(Class<?> type, String name, Expression expr) {
+        return field(PROTECTED, type, name, expr);
     }
 
     public static FieldDeclaration privateField(Type type, String name) {

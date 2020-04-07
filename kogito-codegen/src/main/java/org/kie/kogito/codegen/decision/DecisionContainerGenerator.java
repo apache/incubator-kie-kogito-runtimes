@@ -18,17 +18,23 @@ package org.kie.kogito.codegen.decision;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.kogito.codegen.AbstractApplicationSection;
@@ -90,4 +96,12 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     protected boolean useApplication() {
         return false;
     }
+
+    @Override
+    public List<Statement> setupStatements() {
+        return List.of(new ExpressionStmt(new MethodCallExpr(
+                new NameExpr("decisionModels"), "init", NodeList.nodeList(new ThisExpr())
+        )));
+    }
+
 }

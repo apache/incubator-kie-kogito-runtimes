@@ -37,6 +37,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.Config;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
@@ -108,6 +109,7 @@ public class ApplicationGenerator {
         CompilationUnit compilationUnit =
                 parse(this.getClass().getResourceAsStream(RESOURCE))
                         .setPackageDeclaration(packageName);
+
         ClassOrInterfaceDeclaration cls = compilationUnit
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
@@ -148,16 +150,19 @@ public class ApplicationGenerator {
             annotator.withInjection(configField);
         } else {
             configField = new FieldDeclaration()
-                .addModifier(Modifier.Keyword.PROTECTED)
-                .addVariable(new VariableDeclarator()
-                                     .setType(Config.class.getCanonicalName())
-                                     .setName("config")
-                                     .setInitializer(configGenerator.newInstance()));
+                    .addModifier(Modifier.Keyword.PROTECTED)
+                    .addVariable(new VariableDeclarator()
+                            .setType(Config.class.getCanonicalName())
+                            .setName("config")
+                            .setInitializer(configGenerator.newInstance()));
         }
         cls.addMember(configField);
 
         factoryMethods.forEach(cls::addMember);
 
+        Optional<BlockStmt> optSetupBody = cls
+                .findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("setup"))
+                .flatMap(MethodDeclaration::getBody);
         for (Generator generator : generators) {
             ApplicationSection section = generator.section();
             if (section == null) {
@@ -165,7 +170,7 @@ public class ApplicationGenerator {
             }
             cls.addMember(section.fieldDeclaration());
             cls.addMember(section.factoryMethod());
-
+            optSetupBody.ifPresent(b -> section.setupStatements().forEach(b::addStatement));
         }
         cls.getMembers().sort(new BodyDeclarationComparator());
         return compilationUnit;
