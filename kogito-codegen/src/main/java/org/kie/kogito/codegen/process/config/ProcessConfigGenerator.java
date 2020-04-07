@@ -16,6 +16,7 @@
 package org.kie.kogito.codegen.process.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.github.javaparser.ast.NodeList;
@@ -122,13 +123,13 @@ public class ProcessConfigGenerator {
             ));
             members.add(jobsServiceFieldDeclaration);
 
-            FieldDeclaration pelcFieldDeclaration = annotator.withInjection(field(
+            FieldDeclaration pelcFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), ProcessEventListenerConfig.class),
                     "processEventListenerConfigs"
             ));
             members.add(pelcFieldDeclaration);
 
-            FieldDeclaration pelFieldDeclaration = annotator.withInjection(field(
+            FieldDeclaration pelFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), ProcessEventListener.class),
                     "processEventListeners"
             ));
@@ -179,8 +180,8 @@ public class ProcessConfigGenerator {
 
         return privateMethod(ProcessEventListenerConfig.class, "merge_processEventListenerConfig",
                 NodeList.nodeList(
-                        parameter(genericType(List.class, ProcessEventListenerConfig.class), "processEventListenerConfigs"),
-                        parameter(genericType(List.class, ProcessEventListener.class), "processEventListeners")
+                        parameter(genericType(Collection.class, ProcessEventListenerConfig.class), "processEventListenerConfigs"),
+                        parameter(genericType(Collection.class, ProcessEventListener.class), "processEventListeners")
                 ),
                 body);
     }

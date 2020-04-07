@@ -16,6 +16,7 @@
 package org.kie.kogito.codegen.rules.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.github.javaparser.ast.NodeList;
@@ -66,19 +67,19 @@ public class RuleConfigGenerator {
     public List<BodyDeclaration<?>> members() {
 
         if (annotator != null) {
-            FieldDeclaration relcFieldDeclaration = annotator.withInjection(field(
+            FieldDeclaration relcFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), RuleEventListenerConfig.class),
                     "ruleEventListenerConfigs"
             ));
             members.add(relcFieldDeclaration);
 
-            FieldDeclaration aelFieldDeclaration = annotator.withInjection(field(
+            FieldDeclaration aelFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), AgendaEventListener.class),
                     "agendaEventListeners"
             ));
             members.add(aelFieldDeclaration);
 
-            FieldDeclaration rrelFieldDeclaration = annotator.withInjection(field(
+            FieldDeclaration rrelFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), RuleRuntimeEventListener.class),
                     "ruleRuntimeEventListeners"
             ));
@@ -131,9 +132,9 @@ public class RuleConfigGenerator {
 
         return privateMethod(RuleEventListenerConfig.class, "merge_ruleEventListenerConfig",
                 NodeList.nodeList(
-                        parameter(genericType(List.class, RuleEventListenerConfig.class), "ruleEventListenerConfigs"),
-                        parameter(genericType(List.class, AgendaEventListener.class), "agendaEventListeners"),
-                        parameter(genericType(List.class, RuleRuntimeEventListener.class), "ruleRuntimeEventListeners")
+                        parameter(genericType(Collection.class, RuleEventListenerConfig.class), "ruleEventListenerConfigs"),
+                        parameter(genericType(Collection.class, AgendaEventListener.class), "agendaEventListeners"),
+                        parameter(genericType(Collection.class, RuleRuntimeEventListener.class), "ruleRuntimeEventListeners")
                 ),
                 body);
     }

@@ -1,3 +1,4 @@
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class ApplicationConfig implements org.kie.kogito.Config {
         return decisionConfig;
     }
 
-    private static <C, L> List<L> merge(List<C> configs, Function<C, List<L>> configToListeners, List<L> listeners) {
+    private static <C, L> List<L> merge(Collection<C> configs, Function<C, Collection<L>> configToListeners, Collection<L> listeners) {
         return Stream.concat(
                 configs.stream().flatMap(c -> configToListeners.apply(c).stream()),
                 listeners.stream()

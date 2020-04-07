@@ -16,6 +16,7 @@
 package org.kie.kogito.codegen.decision.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.github.javaparser.ast.NodeList;
@@ -66,13 +67,13 @@ public class DecisionConfigGenerator {
     public List<BodyDeclaration<?>> members() {
 
         if (annotator != null) {
-            FieldDeclaration delcFieldDeclaration = annotator.withInjection(field(
+            FieldDeclaration delcFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), DecisionEventListenerConfig.class),
                     "decisionEventListenerConfigs"
             ));
             members.add(delcFieldDeclaration);
 
-            FieldDeclaration drelFieldDeclaration = annotator.withInjection(field(
+            FieldDeclaration drelFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), DMNRuntimeEventListener.class),
                     "dmnRuntimeEventListeners"
             ));
@@ -119,8 +120,8 @@ public class DecisionConfigGenerator {
 
         return privateMethod(DecisionEventListenerConfig.class, "merge_decisionEventListenerConfig",
                 NodeList.nodeList(
-                        parameter(genericType(List.class, DecisionEventListenerConfig.class), "decisionEventListenerConfigs"),
-                        parameter(genericType(List.class, DMNRuntimeEventListener.class), "dmnRuntimeEventListeners")
+                        parameter(genericType(Collection.class, DecisionEventListenerConfig.class), "decisionEventListenerConfigs"),
+                        parameter(genericType(Collection.class, DMNRuntimeEventListener.class), "dmnRuntimeEventListeners")
                 ),
                 body);
     }
