@@ -123,7 +123,7 @@ public class StartNode extends ExtendedNodeImpl implements Mappable {
 
     @Override
     public Map<String, String> getInMappings() {
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 
     @Override
@@ -133,7 +133,7 @@ public class StartNode extends ExtendedNodeImpl implements Mappable {
 
     @Override
     public List<DataAssociation> getInAssociations() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public void addOutMapping(String parameterName, String variableName) {
