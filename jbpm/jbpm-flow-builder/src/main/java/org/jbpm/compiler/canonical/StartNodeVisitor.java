@@ -33,7 +33,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 public class StartNodeVisitor extends AbstractVisitor {
-    
+
     private static final String TRIGGER_REF = "TriggerRef";
     private static final String MESSAGE_TYPE = "MessageType";
     private static final String TRIGGER_TYPE = "TriggerType";
@@ -42,16 +42,16 @@ public class StartNodeVisitor extends AbstractVisitor {
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         StartNode startNode = (StartNode) node;
-        
+
         addFactoryMethodWithArgsWithAssignment(factoryField, body, StartNodeFactory.class, "startNode" + node.getId(), "startNode", new LongLiteralExpr(startNode.getId()));
         addFactoryMethodWithArgs(body, "startNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(startNode.getName(), "Start")));
-        
+
         addFactoryMethodWithArgs(body, "startNode" + node.getId(), "interrupting", new BooleanLiteralExpr(startNode.isInterrupting()));
-        
+
         visitMetaData(startNode.getMetaData(), body, "startNode" + node.getId());
-        
+
         addFactoryMethodWithArgs(body, "startNode" + node.getId(), "done");
-        addNodeMappings(startNode, body, "startNode" + node.getId());
+        startNode.getOutMappings().forEach((k,v) -> addFactoryMethodWithArgs(body, "startNode" + node.getId(), "outMapping", new StringLiteralExpr(k), new StringLiteralExpr(v)));
 
         if (startNode.getTimer() != null) {
             Timer timer = startNode.getTimer();
@@ -62,30 +62,30 @@ public class StartNodeVisitor extends AbstractVisitor {
 
         } else if (startNode.getTriggers() != null && !startNode.getTriggers().isEmpty()) {
             Map<String, Object> nodeMetaData = startNode.getMetaData();
-            metadata.getTriggers().add(new TriggerMetaData((String)nodeMetaData.get(TRIGGER_REF), 
-                                                           (String)nodeMetaData.get(TRIGGER_TYPE), 
-                                                           (String)nodeMetaData.get(MESSAGE_TYPE), 
+            metadata.getTriggers().add(new TriggerMetaData((String)nodeMetaData.get(TRIGGER_REF),
+                                                           (String)nodeMetaData.get(TRIGGER_TYPE),
+                                                           (String)nodeMetaData.get(MESSAGE_TYPE),
                                                            (String)nodeMetaData.get(TRIGGER_MAPPING),
                                                            String.valueOf(node.getId())).validate());
-            
+
             handleSignal(startNode, nodeMetaData, body, variableScope, metadata);
         } else {
             // since there is start node without trigger then make sure it is startable
             metadata.setStartable(true);
         }
-        
+
     }
-    
+
     protected void handleSignal(StartNode startNode, Map<String, Object> nodeMetaData, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         if ("signal".equalsIgnoreCase((String)startNode.getMetaData(TRIGGER_TYPE))) {
             Variable variable = null;
             Map<String, String> variableMapping = startNode.getOutMappings();
             if (variableMapping != null && !variableMapping.isEmpty()) {
                 Entry<String, String> varInfo = variableMapping.entrySet().iterator().next();
-                
-                addFactoryMethodWithArgs(body, "startNode" + startNode.getId(), "trigger", new StringLiteralExpr((String)nodeMetaData.get(MESSAGE_TYPE)), new StringLiteralExpr(varInfo.getKey()));                    
+
+                addFactoryMethodWithArgs(body, "startNode" + startNode.getId(), "trigger", new StringLiteralExpr((String)nodeMetaData.get(MESSAGE_TYPE)), new StringLiteralExpr(varInfo.getKey()));
                 variable = variableScope.findVariable(varInfo.getKey());
-                
+
                 if (variable == null) {
                     // check parent node container
                     VariableScope vscope = (VariableScope) startNode.resolveContext(VariableScope.VARIABLE_SCOPE, varInfo.getKey());
