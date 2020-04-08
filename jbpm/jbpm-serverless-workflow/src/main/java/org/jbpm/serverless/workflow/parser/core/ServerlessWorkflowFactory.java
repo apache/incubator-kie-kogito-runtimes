@@ -56,8 +56,6 @@ public class ServerlessWorkflowFactory {
     private static final String DEFAULT_VAR = "Var";
     private static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     private static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
-    private static final Set<String> DEFAULT_IMPORTS = new HashSet<>(Arrays.asList("org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils"));
-
 
     public RuleFlowProcess createProcess(Workflow workflow) {
         RuleFlowProcess process = new RuleFlowProcess();
@@ -89,7 +87,6 @@ public class ServerlessWorkflowFactory {
             process.setPackageName(DEFAULT_PACKAGE_NAME);
         }
 
-        process.setImports(DEFAULT_IMPORTS);
         process.setAutoComplete(true);
         process.setVisibility(DEFAULT_VISIBILITY);
 

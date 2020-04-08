@@ -45,7 +45,6 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         assertThat(process.isAutoComplete()).isTrue();
         assertThat(process.getVisibility()).isEqualTo("Public");
         assertThat(process.getImports()).isNotNull();
-        assertThat(process.getImports()).hasSize(1);
         assertThat(process.getVariableScope()).isNotNull();
         assertThat(process.getVariableScope().getVariables()).isNotNull();
         assertThat(process.getVariableScope().getVariables()).hasSize(1);
