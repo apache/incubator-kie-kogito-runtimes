@@ -49,9 +49,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withNamedApplicationComponent(T node, String name) {
-        node.addAnnotation("javax.enterprise.context.ApplicationScoped");
-        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("javax.inject.Named"), new StringLiteralExpr(name)));
-        return node;
+        return withNamed(withApplicationComponent(node), name);
     }
 
     @Override
@@ -62,15 +60,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withNamedSingletonComponent(T node, String name) {
-        node.addAnnotation("javax.inject.Singleton");
-        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("javax.inject.Named"), new StringLiteralExpr(name)));
-        return node;
-    }
-
-    @Override
-    public <T extends NodeWithAnnotations<?>> T withBeanProducer(T node) {
-        node.addAnnotation("javax.enterprise.inject.Produces");
-        return node;
+        return withNamed(withSingletonComponent(node), name);
     }
 
     @Override
@@ -81,9 +71,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withNamedInjection(T node, String name) {
-        node.addAnnotation("javax.inject.Inject");
-        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("javax.inject.Named"), new StringLiteralExpr(name)));
-        return node;
+        return withNamed(withInjection(node), name);
     }
 
     @Override
@@ -139,7 +127,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public String multiInstanceInjectionType() {
-        return "javax.enterprise.inject.Instance";
+        return optionalInstanceInjectionType();
     }
 
     @Override
@@ -168,13 +156,24 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withConfigInjection(T node, String configKey) {
-        node.addAnnotation(new NormalAnnotationExpr(new Name("org.eclipse.microprofile.config.inject.ConfigProperty"), NodeList.nodeList(new MemberValuePair("name", new StringLiteralExpr(configKey)))));
+        node.addAnnotation(new NormalAnnotationExpr(
+                new Name("org.eclipse.microprofile.config.inject.ConfigProperty"),
+                NodeList.nodeList(
+                        new MemberValuePair("name", new StringLiteralExpr(configKey))
+                )
+        ));
         return node;
     }
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withConfigInjection(T node, String configKey, String defaultValue) {
-        node.addAnnotation(new NormalAnnotationExpr(new Name("org.eclipse.microprofile.config.inject.ConfigProperty"), NodeList.nodeList(new MemberValuePair("name", new StringLiteralExpr(configKey)))));
+        node.addAnnotation(new NormalAnnotationExpr(
+                new Name("org.eclipse.microprofile.config.inject.ConfigProperty"),
+                NodeList.nodeList(
+                        new MemberValuePair("name", new StringLiteralExpr(configKey)),
+                        new MemberValuePair("defaultValue", new StringLiteralExpr(defaultValue))
+                )
+        ));
         return node;
     }
 

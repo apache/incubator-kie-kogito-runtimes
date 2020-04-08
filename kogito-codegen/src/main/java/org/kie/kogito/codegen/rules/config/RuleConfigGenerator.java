@@ -47,21 +47,26 @@ import static org.kie.kogito.codegen.ConfigGenerator.callMerge;
 
 public class RuleConfigGenerator {
 
-    private static final String DEFAULT_RULE_EVENT_LISTENER_CONFIG = "defaultRuleEventListenerConfig";
+    private static final String METHOD_EXTRACT_RULE_EVENT_LISTENER_CONFIG = "extract_ruleEventListenerConfig";
+    private static final String METHOD_MERGE_RULE_EVENT_LISTENER_CONFIG = "merge_ruleEventListenerConfig";
+    private static final String VAR_AGENDA_EVENT_LISTENERS = "agendaEventListeners";
+    private static final String VAR_DEFAULT_RULE_EVENT_LISTENER_CONFIG = "defaultRuleEventListenerConfig";
+    private static final String VAR_RULE_EVENT_LISTENER_CONFIGS = "ruleEventListenerConfigs";
+    private static final String VAR_RULE_RUNTIME_EVENT_LISTENERS = "ruleRuntimeEventListeners";
 
     private List<BodyDeclaration<?>> members = new ArrayList<>();
 
     private DependencyInjectionAnnotator annotator;
 
     public ObjectCreationExpr newInstance() {
-        if (annotator!= null) {
+        if (annotator != null) {
             return new ObjectCreationExpr()
                     .setType(StaticRuleConfig.class.getCanonicalName())
-                    .addArgument(new MethodCallExpr("extract_ruleEventListenerConfig"));
+                    .addArgument(new MethodCallExpr(METHOD_EXTRACT_RULE_EVENT_LISTENER_CONFIG));
         } else {
             return new ObjectCreationExpr()
-                .setType(StaticRuleConfig.class.getCanonicalName())
-                .addArgument(new NameExpr(DEFAULT_RULE_EVENT_LISTENER_CONFIG));
+                    .setType(StaticRuleConfig.class.getCanonicalName())
+                    .addArgument(new NameExpr(VAR_DEFAULT_RULE_EVENT_LISTENER_CONFIG));
         }
     }
     public List<BodyDeclaration<?>> members() {
@@ -69,19 +74,19 @@ public class RuleConfigGenerator {
         if (annotator != null) {
             FieldDeclaration relcFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), RuleEventListenerConfig.class),
-                    "ruleEventListenerConfigs"
+                    VAR_RULE_EVENT_LISTENER_CONFIGS
             ));
             members.add(relcFieldDeclaration);
 
             FieldDeclaration aelFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), AgendaEventListener.class),
-                    "agendaEventListeners"
+                    VAR_AGENDA_EVENT_LISTENERS
             ));
             members.add(aelFieldDeclaration);
 
             FieldDeclaration rrelFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), RuleRuntimeEventListener.class),
-                    "ruleRuntimeEventListeners"
+                    VAR_RULE_RUNTIME_EVENT_LISTENERS
             ));
             members.add(rrelFieldDeclaration);
 
@@ -90,7 +95,7 @@ public class RuleConfigGenerator {
         } else {
             FieldDeclaration defaultRelcFieldDeclaration = privateField(
                     RuleEventListenerConfig.class,
-                    DEFAULT_RULE_EVENT_LISTENER_CONFIG,
+                    VAR_DEFAULT_RULE_EVENT_LISTENER_CONFIG,
                     newObject(DefaultRuleEventListenerConfig.class)
             );
             members.add(defaultRelcFieldDeclaration);
@@ -106,35 +111,35 @@ public class RuleConfigGenerator {
 
     private MethodDeclaration generateExtractEventListenerConfigMethod() {
         BlockStmt body = new BlockStmt().addStatement(new ReturnStmt(
-                new MethodCallExpr(new ThisExpr(), "merge_ruleEventListenerConfig", NodeList.nodeList(
-                        annotator.getMultiInstance("ruleEventListenerConfigs"),
-                        annotator.getMultiInstance("agendaEventListeners"),
-                        annotator.getMultiInstance("ruleRuntimeEventListeners")
+                new MethodCallExpr(new ThisExpr(), METHOD_MERGE_RULE_EVENT_LISTENER_CONFIG, NodeList.nodeList(
+                        annotator.getMultiInstance(VAR_RULE_EVENT_LISTENER_CONFIGS),
+                        annotator.getMultiInstance(VAR_AGENDA_EVENT_LISTENERS),
+                        annotator.getMultiInstance(VAR_RULE_RUNTIME_EVENT_LISTENERS)
                 ))
         ));
 
-        return privateMethod(RuleEventListenerConfig.class, "extract_ruleEventListenerConfig", body);
+        return privateMethod(RuleEventListenerConfig.class, METHOD_EXTRACT_RULE_EVENT_LISTENER_CONFIG, body);
     }
 
     private MethodDeclaration generateMergeEventListenerConfigMethod() {
         BlockStmt body = new BlockStmt().addStatement(new ReturnStmt(newObject(CachedRuleEventListenerConfig.class,
                 callMerge(
-                        "ruleEventListenerConfigs",
+                        VAR_RULE_EVENT_LISTENER_CONFIGS,
                         RuleEventListenerConfig.class, "agendaListeners",
-                        "agendaEventListeners"
+                        VAR_AGENDA_EVENT_LISTENERS
                 ),
                 callMerge(
-                        "ruleEventListenerConfigs",
+                        VAR_RULE_EVENT_LISTENER_CONFIGS,
                         RuleEventListenerConfig.class, "ruleRuntimeListeners",
-                        "ruleRuntimeEventListeners"
+                        VAR_RULE_RUNTIME_EVENT_LISTENERS
                 )
         )));
 
-        return privateMethod(RuleEventListenerConfig.class, "merge_ruleEventListenerConfig",
+        return privateMethod(RuleEventListenerConfig.class, METHOD_MERGE_RULE_EVENT_LISTENER_CONFIG,
                 NodeList.nodeList(
-                        parameter(genericType(Collection.class, RuleEventListenerConfig.class), "ruleEventListenerConfigs"),
-                        parameter(genericType(Collection.class, AgendaEventListener.class), "agendaEventListeners"),
-                        parameter(genericType(Collection.class, RuleRuntimeEventListener.class), "ruleRuntimeEventListeners")
+                        parameter(genericType(Collection.class, RuleEventListenerConfig.class), VAR_RULE_EVENT_LISTENER_CONFIGS),
+                        parameter(genericType(Collection.class, AgendaEventListener.class), VAR_AGENDA_EVENT_LISTENERS),
+                        parameter(genericType(Collection.class, RuleRuntimeEventListener.class), VAR_RULE_RUNTIME_EVENT_LISTENERS)
                 ),
                 body);
     }

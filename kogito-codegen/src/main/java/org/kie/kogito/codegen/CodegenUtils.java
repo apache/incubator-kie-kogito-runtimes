@@ -27,7 +27,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
@@ -309,7 +308,7 @@ public class CodegenUtils {
                 .setType(type)
                 .setBody(body);
         Expression condition = annotator.optionalInstanceExists(fieldName);
-        IfStmt valueExists = new IfStmt(condition, new ReturnStmt(new MethodCallExpr(new NameExpr(fieldName), "get")), new ReturnStmt(new NameExpr(defaultMethod)));
+        IfStmt valueExists = new IfStmt(condition, new ReturnStmt(annotator.getOptionalInstance(fieldName)), new ReturnStmt(new NameExpr(defaultMethod)));
         body.addStatement(valueExists);
         return extractMethod;
     }

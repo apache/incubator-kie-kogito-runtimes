@@ -46,7 +46,11 @@ import static org.kie.kogito.codegen.ConfigGenerator.callMerge;
 
 public class DecisionConfigGenerator {
 
-    private static final String DEFAULT_DECISION_EVENT_LISTENER_CONFIG = "defaultDecisionEventListenerConfig";
+    private static final String METHOD_EXTRACT_DECISION_EVENT_LISTENER_CONFIG = "extract_decisionEventListenerConfig";
+    private static final String METHOD_MERGE_DECISION_EVENT_LISTENER_CONFIG = "merge_decisionEventListenerConfig";
+    private static final String VAR_DECISION_EVENT_LISTENER_CONFIG = "decisionEventListenerConfigs";
+    private static final String VAR_DEFAULT_DECISION_EVENT_LISTENER_CONFIG = "defaultDecisionEventListenerConfig";
+    private static final String VAR_DMN_RUNTIME_EVENT_LISTENERS = "dmnRuntimeEventListeners";
 
     private DependencyInjectionAnnotator annotator;
 
@@ -56,11 +60,11 @@ public class DecisionConfigGenerator {
         if (annotator != null) {
             return new ObjectCreationExpr()
                     .setType(StaticDecisionConfig.class.getCanonicalName())
-                    .addArgument(new MethodCallExpr("extract_decisionEventListenerConfig"));
+                    .addArgument(new MethodCallExpr(METHOD_EXTRACT_DECISION_EVENT_LISTENER_CONFIG));
         } else {
             return new ObjectCreationExpr()
                     .setType(StaticDecisionConfig.class.getCanonicalName())
-                    .addArgument(new NameExpr(DEFAULT_DECISION_EVENT_LISTENER_CONFIG));
+                    .addArgument(new NameExpr(VAR_DEFAULT_DECISION_EVENT_LISTENER_CONFIG));
         }
     }
 
@@ -69,13 +73,13 @@ public class DecisionConfigGenerator {
         if (annotator != null) {
             FieldDeclaration delcFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), DecisionEventListenerConfig.class),
-                    "decisionEventListenerConfigs"
+                    VAR_DECISION_EVENT_LISTENER_CONFIG
             ));
             members.add(delcFieldDeclaration);
 
             FieldDeclaration drelFieldDeclaration = annotator.withOptionalInjection(field(
                     genericType(annotator.multiInstanceInjectionType(), DMNRuntimeEventListener.class),
-                    "dmnRuntimeEventListeners"
+                    VAR_DMN_RUNTIME_EVENT_LISTENERS
             ));
             members.add(drelFieldDeclaration);
 
@@ -84,7 +88,7 @@ public class DecisionConfigGenerator {
         } else {
             FieldDeclaration defaultDelcFieldDeclaration = privateField(
                     DecisionEventListenerConfig.class,
-                    DEFAULT_DECISION_EVENT_LISTENER_CONFIG,
+                    VAR_DEFAULT_DECISION_EVENT_LISTENER_CONFIG,
                     newObject(DefaultDecisionEventListenerConfig.class)
             );
             members.add(defaultDelcFieldDeclaration);
@@ -100,28 +104,28 @@ public class DecisionConfigGenerator {
 
     private MethodDeclaration generateExtractEventListenerConfigMethod() {
         BlockStmt body = new BlockStmt().addStatement(new ReturnStmt(
-                new MethodCallExpr(new ThisExpr(), "merge_decisionEventListenerConfig", NodeList.nodeList(
-                        annotator.getMultiInstance("decisionEventListenerConfigs"),
-                        annotator.getMultiInstance("dmnRuntimeEventListeners")
+                new MethodCallExpr(new ThisExpr(), METHOD_MERGE_DECISION_EVENT_LISTENER_CONFIG, NodeList.nodeList(
+                        annotator.getMultiInstance(VAR_DECISION_EVENT_LISTENER_CONFIG),
+                        annotator.getMultiInstance(VAR_DMN_RUNTIME_EVENT_LISTENERS)
                 ))
         ));
 
-        return privateMethod(DecisionEventListenerConfig.class, "extract_decisionEventListenerConfig", body);
+        return privateMethod(DecisionEventListenerConfig.class, METHOD_EXTRACT_DECISION_EVENT_LISTENER_CONFIG, body);
     }
 
     private MethodDeclaration generateMergeEventListenerConfigMethod() {
         BlockStmt body = new BlockStmt().addStatement(new ReturnStmt(newObject(CachedDecisionEventListenerConfig.class,
                 callMerge(
-                        "decisionEventListenerConfigs",
+                        VAR_DECISION_EVENT_LISTENER_CONFIG,
                         DecisionEventListenerConfig.class, "listeners",
-                        "dmnRuntimeEventListeners"
+                        VAR_DMN_RUNTIME_EVENT_LISTENERS
                 )
         )));
 
-        return privateMethod(DecisionEventListenerConfig.class, "merge_decisionEventListenerConfig",
+        return privateMethod(DecisionEventListenerConfig.class, METHOD_MERGE_DECISION_EVENT_LISTENER_CONFIG,
                 NodeList.nodeList(
-                        parameter(genericType(Collection.class, DecisionEventListenerConfig.class), "decisionEventListenerConfigs"),
-                        parameter(genericType(Collection.class, DMNRuntimeEventListener.class), "dmnRuntimeEventListeners")
+                        parameter(genericType(Collection.class, DecisionEventListenerConfig.class), VAR_DECISION_EVENT_LISTENER_CONFIG),
+                        parameter(genericType(Collection.class, DMNRuntimeEventListener.class), VAR_DMN_RUNTIME_EVENT_LISTENERS)
                 ),
                 body);
     }

@@ -63,20 +63,12 @@ public class SpringDependencyInjectionAnnotator implements DependencyInjectionAn
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withSingletonComponent(T node) {
-        node.addAnnotation("org.springframework.stereotype.Component");
-        return node;
+        return withApplicationComponent(node);
     }
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withNamedSingletonComponent(T node, String name) {
-        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("org.springframework.stereotype.Component"), new StringLiteralExpr(name)));
-        return node;
-    }
-
-    @Override
-    public <T extends NodeWithAnnotations<?>> T withBeanProducer(T node) {
-        node.addAnnotation("org.springframework.context.annotation.Bean");
-        return node;
+        return withNamedApplicationComponent(node, name);
     }
 
     @Override
@@ -87,20 +79,12 @@ public class SpringDependencyInjectionAnnotator implements DependencyInjectionAn
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withNamedInjection(T node, String name) {
-        node.addAnnotation("org.springframework.beans.factory.annotation.Autowired");
-        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("org.springframework.beans.factory.annotation.Qualifier"), new StringLiteralExpr(name)));
-        return node;
+        return withNamed(withInjection(node), name);
     }
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withOptionalInjection(T node) {
         node.addAnnotation(new NormalAnnotationExpr(new Name("org.springframework.beans.factory.annotation.Autowired"), NodeList.nodeList(new MemberValuePair("required", new BooleanLiteralExpr(false)))));
-        return node;
-    }
-
-    @Override
-    public <T extends NodeWithAnnotations<?>> T withSpringBootConfiguration(T node) {
-        node.addAnnotation("org.springframework.context.annotation.Configuration");
         return node;
     }
 
@@ -179,7 +163,7 @@ public class SpringDependencyInjectionAnnotator implements DependencyInjectionAn
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withConfigInjection(T node, String configKey, String defaultValue) {
-        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("org.springframework.beans.factory.annotation.Value"), new StringLiteralExpr("${" + configKey + ":#{null}}")));
+        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("org.springframework.beans.factory.annotation.Value"), new StringLiteralExpr("${" + configKey + ":" + defaultValue + "}")));
         return node;
     }
     

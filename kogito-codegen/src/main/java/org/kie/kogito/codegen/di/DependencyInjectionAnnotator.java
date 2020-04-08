@@ -83,22 +83,6 @@ public interface DependencyInjectionAnnotator {
     <T extends NodeWithAnnotations<?>> T withNamedSingletonComponent(T node, String name);
 
     /**
-     * Annotates given node with bean producer annotations e.g. Produces, Bean
-     *
-     * @param node node to be annotated
-     */
-    <T extends NodeWithAnnotations<?>> T withBeanProducer(T node);
-
-    /**
-     * Annotates given node with bean producer annotations e.g. Produces, Bean
-     *
-     * @param node node to be annotated
-     */
-    default <T extends NodeWithAnnotations<?>> T withNamedBeanProducer(T node, String name) {
-        return withNamed(withBeanProducer(node), name);
-    }
-
-    /**
      * Annotates given node with injection annotations e.g. Inject, Autowire
      *
      * @param node node to be annotated
@@ -120,15 +104,6 @@ public interface DependencyInjectionAnnotator {
      * @param node node to be annotated
      */
     <T extends NodeWithAnnotations<?>> T withOptionalInjection(T node);
-
-    /**
-     * Annotates given node with Spring Boot @Configuration
-     *
-     * @param node node to be annotated
-     */
-    default <T extends NodeWithAnnotations<?>> T withSpringBootConfiguration(T node) {
-        return node;
-    }
 
     /**
      * Annotates given node with incoming message that it should consume from
