@@ -15,14 +15,26 @@
 
 package org.kie.kogito.codegen.process;
 
-import org.assertj.core.api.ThrowableAssert;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.impl.NodeImpl;
-import org.jbpm.workflow.core.node.*;
+import org.jbpm.workflow.core.node.ActionNode;
+import org.jbpm.workflow.core.node.Assignment;
+import org.jbpm.workflow.core.node.BoundaryEventNode;
+import org.jbpm.workflow.core.node.DataAssociation;
+import org.jbpm.workflow.core.node.EndNode;
+import org.jbpm.workflow.core.node.EventNode;
+import org.jbpm.workflow.core.node.HumanTaskNode;
+import org.jbpm.workflow.core.node.Join;
+import org.jbpm.workflow.core.node.MilestoneNode;
+import org.jbpm.workflow.core.node.Split;
+import org.jbpm.workflow.core.node.StartNode;
+import org.jbpm.workflow.core.node.StateBasedNode;
+import org.jbpm.workflow.core.node.Trigger;
+import org.jbpm.workflow.core.node.WorkItemNode;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
@@ -35,14 +47,44 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * ProcessGenerationTest iterates over all the listed process files in process-generation-test.txt
+ *
+ * For each process the test will:
+ * <ul>
+ *     <li>Parse the XML and generate an instance of the process: Expected</li>
+ *     <li>Generate the code from this process and instantiate a process definition using the generated code: Current</li>
+ *     <li>Iterate over all the process fields and metadata and assert that current and expected are equivalent</li>
+ *     <li>Iterate over all the process' nodes fields and metadata and assert that current and expected are equivalent</li>
+ * </ul>
+ *
+ * Exceptions:
+ * <ul>
+ *     <li>Version is not set by default in Expected</li>
+ *     <li>The node name has a default value for current when not set</li>
+ *     <li>Node constraints are ignored</li>
+ *     <li>OnEntry/OnExit actions are not yet implemented</li>
+ *     <li>Timer Actions are generated differently</li>
+ * </ul>
+ */
 public class ProcessGenerationTest extends AbstractCodegenTest {
 
     private static final Set<String> IGNORED_PROCESS_META = Set.of("Definitions", "BPMN.Connections", "ItemDefinitions");

@@ -51,7 +51,7 @@ public class StartNodeFactory extends NodeFactory {
         return this;
     }
 
-    public StartNodeFactory addOutMapping(String parameterName, String variableName) {
+    public StartNodeFactory outMapping(String parameterName, String variableName) {
         getStartNode().addOutMapping(parameterName, variableName);
         return this;
     }

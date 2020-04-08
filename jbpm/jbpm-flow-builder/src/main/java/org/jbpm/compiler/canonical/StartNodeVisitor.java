@@ -51,7 +51,8 @@ public class StartNodeVisitor extends AbstractVisitor {
         visitMetaData(startNode.getMetaData(), body, "startNode" + node.getId());
         
         addFactoryMethodWithArgs(body, "startNode" + node.getId(), "done");
-        startNode.getOutMappings().forEach((k, v) -> addFactoryMethodWithArgs(body, "startNode" + node.getId(), "addOutMapping", new StringLiteralExpr(k), new StringLiteralExpr(v)));
+        addNodeMappings(startNode, body, "startNode" + node.getId());
+
         if (startNode.getTimer() != null) {
             Timer timer = startNode.getTimer();
             addFactoryMethodWithArgs(body, "startNode" + node.getId(), "timer", getOrNullExpr(timer.getDelay()),
