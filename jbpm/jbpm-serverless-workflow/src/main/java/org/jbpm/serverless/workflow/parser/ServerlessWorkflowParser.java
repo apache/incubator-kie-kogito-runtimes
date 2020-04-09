@@ -205,7 +205,7 @@ public class ServerlessWorkflowParser {
             if(state.getType().equals(Type.SWITCH)) {
                 SwitchState switchState = (SwitchState) state;
 
-                Split splitNode = factory.xorSplitNode(idCounter.getAndIncrement(), switchState.getName(), process);
+                Split splitNode = factory.splitNode(idCounter.getAndIncrement(), switchState.getName(), Split.TYPE_XOR, process);
 
                 if(state.getStart() != null) {
                     factory.connect(workflowStartNode.getId(), splitNode.getId(), workflowStartNode.getId() + "_" + splitNode.getId(), process);

@@ -174,6 +174,20 @@ public class ServerlessWorkflowFactory {
         subProcessNode.setName(name);
         subProcessNode.setProcessId(calledId);
         subProcessNode.setWaitForCompletion(waitForCompletion);
+        subProcessNode.setIndependent(true);
+
+        VariableScope variableScope = new VariableScope();
+        subProcessNode.addContext(variableScope);
+        subProcessNode.setDefaultContext(variableScope);
+
+        Map<String, String> inputotuputTypes = new HashMap<>();
+        inputotuputTypes.put(DEFAULT_WORKFLOW_VAR, JSON_NODE);
+        subProcessNode.setMetaData("BPMN.InputTypes", inputotuputTypes);
+        subProcessNode.setMetaData("BPMN.OutputTypes", inputotuputTypes);
+
+        // parent and sub processes have process var "workflowdata"
+        subProcessNode.addInMapping(DEFAULT_WORKFLOW_VAR, DEFAULT_WORKFLOW_VAR);
+        subProcessNode.addOutMapping(DEFAULT_WORKFLOW_VAR, DEFAULT_WORKFLOW_VAR);
 
         nodeContainer.addNode(subProcessNode);
 
@@ -275,15 +289,38 @@ public class ServerlessWorkflowFactory {
         return subProcessNode;
     }
 
-    public Split xorSplitNode(long id, String name, NodeContainer nodeContainer) {
+
+    public Split splitNode(long id, String name, int type, NodeContainer nodeContainer) {
+        // 0 = TYPE_UNDEFINED
+        // 1 = TYPE_AND
+        // 2 = TYPE_XOR
+        // 3 = TYPE_OR
+        // 4 = TYPE_XAND
         Split split = new Split();
         split.setId(id);
         split.setName(name);
-        split.setType(2);
+        split.setType(type);
         split.setMetaData("UniqueId", Long.toString(id));
 
         nodeContainer.addNode(split);
         return split;
+    }
+
+    public Join joinNode(long id, String name, int type, NodeContainer nodeContainer) {
+        // 0 = TYPE_UNDEFINED
+        // 1 = TYPE_AND
+        // 2 = TYPE_XOR
+        // 3 = TYPE_DISCRIMINATOR
+        // 4 = TYPE_N_OF_M
+        // 5 = TYPE_OR
+        Join join = new Join();
+        join.setId(id);
+        join.setName(name);
+        join.setType(type);
+        join.setMetaData("UniqueId", Long.toString(id));
+
+        nodeContainer.addNode(join);
+        return join;
     }
 
     public ConstraintImpl splitConstraint(String name, String type, String dialect, String constraint, int priority, boolean isDefault) {

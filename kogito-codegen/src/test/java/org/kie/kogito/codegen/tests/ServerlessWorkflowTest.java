@@ -270,11 +270,30 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
+
+        String jsonParamStr = "{}";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonParamObj =  mapper.readTree(jsonParamStr);
+
+
+        parameters.put("workflowdata", jsonParamObj);
         m.fromMap(parameters);
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
+        Model result = (Model)processInstance.variables();
+        assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
+
+        assertThat(result.toMap().get("workflowdata")).isInstanceOf(JsonNode.class);
+
+        JsonNode dataOut = (JsonNode) result.toMap().get("workflowdata");
+
+        assertThat(dataOut.get("parentData").textValue()).isEqualTo("parentTestData");
+        assertThat(dataOut.get("childData").textValue()).isEqualTo("childTestData");
+
     }
 }
