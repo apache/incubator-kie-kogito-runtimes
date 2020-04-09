@@ -180,10 +180,10 @@ public class ServerlessWorkflowFactory {
         subProcessNode.addContext(variableScope);
         subProcessNode.setDefaultContext(variableScope);
 
-        Map<String, String> inputotuputTypes = new HashMap<>();
-        inputotuputTypes.put(DEFAULT_WORKFLOW_VAR, JSON_NODE);
-        subProcessNode.setMetaData("BPMN.InputTypes", inputotuputTypes);
-        subProcessNode.setMetaData("BPMN.OutputTypes", inputotuputTypes);
+        Map<String, String> inputOtuputTypes = new HashMap<>();
+        inputOtuputTypes.put(DEFAULT_WORKFLOW_VAR, JSON_NODE);
+        subProcessNode.setMetaData("BPMN.InputTypes", inputOtuputTypes);
+        subProcessNode.setMetaData("BPMN.OutputTypes", inputOtuputTypes);
 
         // parent and sub processes have process var "workflowdata"
         subProcessNode.addInMapping(DEFAULT_WORKFLOW_VAR, DEFAULT_WORKFLOW_VAR);
@@ -283,7 +283,6 @@ public class ServerlessWorkflowFactory {
         subProcessNode.addContext(variableScope);
         subProcessNode.setDefaultContext(variableScope);
         subProcessNode.setAutoComplete(true);
-
         nodeContainer.addNode(subProcessNode);
 
         return subProcessNode;

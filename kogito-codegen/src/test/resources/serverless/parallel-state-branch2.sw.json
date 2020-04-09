@@ -1,0 +1,20 @@
+{
+  "id": "branch2subflow",
+  "name": "branch2subflow",
+  "version": "1.0",
+  "states":[
+    {
+      "name":"InjectTestData2",
+      "type":"RELAY",
+      "start": {
+        "kind": "DEFAULT"
+      },
+      "inject": {
+        "branch2data" : "testBranch2Data"
+      },
+      "end": {
+        "kind": "TERMINATE"
+      }
+    }
+  ]
+}
