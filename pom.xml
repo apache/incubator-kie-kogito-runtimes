@@ -27,8 +27,7 @@
   </licenses>
 
   <properties>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source> 
+    <maven.compiler.release>8</maven.compiler.release>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -969,6 +968,7 @@
           <configuration>
             <showDeprecation>true</showDeprecation>
             <showWarnings>true</showWarnings>
+            <release>${maven.compiler.release}</release>
             <compilerArgs>
               <arg>-Xlint:unchecked</arg>
             </compilerArgs>
