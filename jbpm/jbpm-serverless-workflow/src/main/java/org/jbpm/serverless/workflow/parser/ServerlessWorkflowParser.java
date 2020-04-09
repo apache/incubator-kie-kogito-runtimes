@@ -332,28 +332,6 @@ public class ServerlessWorkflowParser {
         return process;
     }
 
-    protected void handleBranches(List<Branch> branches, CompositeContextNode embeddedSubProcess) {
-        StartNode embeddedStartNode = factory.startNode(idCounter.getAndIncrement(), "EmbeddedStart", embeddedSubProcess);
-        EndNode embeddedEndNode = factory.endNode(idCounter.getAndIncrement(), "EmbeddedEnd", true, embeddedSubProcess);
-
-        Split embeddedSplit = factory.splitNode(idCounter.getAndIncrement(), "EmbeddedSplit", Split.TYPE_AND, embeddedSubProcess);
-        Join embeddedJoin = factory.joinNode(idCounter.getAndIncrement(), "EmbeddedJoin", Join.TYPE_AND, embeddedSubProcess);
-
-        // connect start to split
-        factory.connect(embeddedStartNode.getId(), embeddedSplit.getId(), embeddedStartNode.getId() + "_" + embeddedSplit.getId(), embeddedSubProcess);
-        // connect join to end
-        factory.connect(embeddedJoin.getId(), embeddedEndNode.getId(), embeddedJoin.getId() + "_" + embeddedEndNode.getId(), embeddedSubProcess);
-
-        for(Branch branch : branches) {
-            SubflowState subflowState = (SubflowState) branch.getStates().get(0);
-            SubProcessNode callActivityNode = factory.callActivity(idCounter.getAndIncrement(), subflowState.getName(), subflowState.getWorkflowId(), subflowState.isWaitForCompletion(), embeddedSubProcess);
-
-            factory.connect(embeddedSplit.getId(), callActivityNode.getId(), embeddedSplit.getId() + "_" + callActivityNode.getId(), embeddedSubProcess);
-            factory.connect(callActivityNode.getId(), embeddedJoin.getId(), callActivityNode.getId() + "_" + embeddedJoin.getId(), embeddedSubProcess);
-        }
-
-    }
-
     protected void handleActions(List<Function> workflowFunctions, List<Action> actions, CompositeContextNode embeddedSubProcess) {
         if(actions != null && !actions.isEmpty()) {
             StartNode embeddedStartNode = factory.startNode(idCounter.getAndIncrement(), "EmbeddedStart", embeddedSubProcess);
