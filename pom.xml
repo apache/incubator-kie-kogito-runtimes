@@ -133,6 +133,7 @@
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.25</version.org.slf4j>
     <version.testcontainers>1.12.4</version.testcontainers>
+    <version.mockserver.client>5.5.4</version.mockserver.client>
     <version.resteasy.springboot>4.5.0.Final</version.resteasy.springboot>
     <version.springboot>2.2.5.RELEASE</version.springboot>
     <version.spring.framework>5.2.4.RELEASE</version.spring.framework>
@@ -539,6 +540,18 @@
         <groupId>org.testcontainers</groupId>
         <artifactId>kafka</artifactId>
         <version>${version.testcontainers}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>mockserver</artifactId>
+        <version>${version.testcontainers}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mock-server</groupId>
+        <artifactId>mockserver-client-java</artifactId>
+        <version>${version.mockserver.client}</version>
         <scope>test</scope>
       </dependency>
 
