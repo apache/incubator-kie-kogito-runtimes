@@ -15,7 +15,6 @@
 
   <properties>
     <java.module.name>org.kie.kogito.jbpm.serverless.workflow</java.module.name>
-    <validation.version>2.0.1.Final</validation.version>
   </properties>
 
 
@@ -62,11 +61,14 @@
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
-      <version>${validation.version}</version>
     </dependency>
 
     <!-- test -->
@@ -114,6 +116,11 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>drools-core</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path-assert</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
