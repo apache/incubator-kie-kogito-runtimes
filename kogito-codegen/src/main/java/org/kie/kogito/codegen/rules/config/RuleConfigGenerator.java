@@ -19,16 +19,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.config.CachedRuleEventListenerConfig;
 import org.drools.core.config.DefaultRuleEventListenerConfig;
 import org.drools.core.config.StaticRuleConfig;
@@ -37,12 +41,9 @@ import org.kie.api.event.rule.RuleRuntimeEventListener;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.rules.RuleEventListenerConfig;
 
-import static org.kie.kogito.codegen.CodegenUtils.field;
 import static org.kie.kogito.codegen.CodegenUtils.genericType;
+import static org.kie.kogito.codegen.CodegenUtils.method;
 import static org.kie.kogito.codegen.CodegenUtils.newObject;
-import static org.kie.kogito.codegen.CodegenUtils.parameter;
-import static org.kie.kogito.codegen.CodegenUtils.privateField;
-import static org.kie.kogito.codegen.CodegenUtils.privateMethod;
 import static org.kie.kogito.codegen.ConfigGenerator.callMerge;
 
 public class RuleConfigGenerator {
@@ -72,32 +73,21 @@ public class RuleConfigGenerator {
     public List<BodyDeclaration<?>> members() {
 
         if (annotator != null) {
-            FieldDeclaration relcFieldDeclaration = annotator.withOptionalInjection(field(
-                    genericType(annotator.multiInstanceInjectionType(), RuleEventListenerConfig.class),
-                    VAR_RULE_EVENT_LISTENER_CONFIGS
-            ));
+            FieldDeclaration relcFieldDeclaration = annotator.withOptionalInjection(new FieldDeclaration().addVariable(new VariableDeclarator(genericType(annotator.multiInstanceInjectionType(), RuleEventListenerConfig.class), VAR_RULE_EVENT_LISTENER_CONFIGS)));
             members.add(relcFieldDeclaration);
 
-            FieldDeclaration aelFieldDeclaration = annotator.withOptionalInjection(field(
-                    genericType(annotator.multiInstanceInjectionType(), AgendaEventListener.class),
-                    VAR_AGENDA_EVENT_LISTENERS
-            ));
+            FieldDeclaration aelFieldDeclaration = annotator.withOptionalInjection(new FieldDeclaration().addVariable(new VariableDeclarator(genericType(annotator.multiInstanceInjectionType(), AgendaEventListener.class), VAR_AGENDA_EVENT_LISTENERS)));
             members.add(aelFieldDeclaration);
 
-            FieldDeclaration rrelFieldDeclaration = annotator.withOptionalInjection(field(
-                    genericType(annotator.multiInstanceInjectionType(), RuleRuntimeEventListener.class),
-                    VAR_RULE_RUNTIME_EVENT_LISTENERS
-            ));
+            FieldDeclaration rrelFieldDeclaration = annotator.withOptionalInjection(new FieldDeclaration().addVariable(new VariableDeclarator(genericType(annotator.multiInstanceInjectionType(), RuleRuntimeEventListener.class), VAR_RULE_RUNTIME_EVENT_LISTENERS)));
             members.add(rrelFieldDeclaration);
 
             members.add(generateExtractEventListenerConfigMethod());
             members.add(generateMergeEventListenerConfigMethod());
         } else {
-            FieldDeclaration defaultRelcFieldDeclaration = privateField(
-                    RuleEventListenerConfig.class,
-                    VAR_DEFAULT_RULE_EVENT_LISTENER_CONFIG,
-                    newObject(DefaultRuleEventListenerConfig.class)
-            );
+            FieldDeclaration defaultRelcFieldDeclaration = new FieldDeclaration()
+                    .setModifiers(Modifier.Keyword.PRIVATE)
+                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, RuleEventListenerConfig.class.getCanonicalName()), VAR_DEFAULT_RULE_EVENT_LISTENER_CONFIG, newObject(DefaultRuleEventListenerConfig.class)));
             members.add(defaultRelcFieldDeclaration);
         }
 
@@ -118,7 +108,7 @@ public class RuleConfigGenerator {
                 ))
         ));
 
-        return privateMethod(RuleEventListenerConfig.class, METHOD_EXTRACT_RULE_EVENT_LISTENER_CONFIG, body);
+        return method(Modifier.Keyword.PRIVATE, RuleEventListenerConfig.class, METHOD_EXTRACT_RULE_EVENT_LISTENER_CONFIG, body);
     }
 
     private MethodDeclaration generateMergeEventListenerConfigMethod() {
@@ -135,11 +125,11 @@ public class RuleConfigGenerator {
                 )
         )));
 
-        return privateMethod(RuleEventListenerConfig.class, METHOD_MERGE_RULE_EVENT_LISTENER_CONFIG,
+        return method(Modifier.Keyword.PRIVATE, RuleEventListenerConfig.class, METHOD_MERGE_RULE_EVENT_LISTENER_CONFIG,
                 NodeList.nodeList(
-                        parameter(genericType(Collection.class, RuleEventListenerConfig.class), VAR_RULE_EVENT_LISTENER_CONFIGS),
-                        parameter(genericType(Collection.class, AgendaEventListener.class), VAR_AGENDA_EVENT_LISTENERS),
-                        parameter(genericType(Collection.class, RuleRuntimeEventListener.class), VAR_RULE_RUNTIME_EVENT_LISTENERS)
+                        new Parameter().setType(genericType(Collection.class, RuleEventListenerConfig.class)).setName(VAR_RULE_EVENT_LISTENER_CONFIGS),
+                        new Parameter().setType(genericType(Collection.class, AgendaEventListener.class)).setName(VAR_AGENDA_EVENT_LISTENERS),
+                        new Parameter().setType(genericType(Collection.class, RuleRuntimeEventListener.class)).setName(VAR_RULE_RUNTIME_EVENT_LISTENERS)
                 ),
                 body);
     }

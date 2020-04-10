@@ -19,10 +19,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
@@ -30,6 +33,7 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.jobs.JobsService;
@@ -44,12 +48,9 @@ import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
 import static org.kie.kogito.codegen.CodegenUtils.extractOptionalInjection;
-import static org.kie.kogito.codegen.CodegenUtils.field;
 import static org.kie.kogito.codegen.CodegenUtils.genericType;
+import static org.kie.kogito.codegen.CodegenUtils.method;
 import static org.kie.kogito.codegen.CodegenUtils.newObject;
-import static org.kie.kogito.codegen.CodegenUtils.parameter;
-import static org.kie.kogito.codegen.CodegenUtils.privateField;
-import static org.kie.kogito.codegen.CodegenUtils.privateMethod;
 import static org.kie.kogito.codegen.ConfigGenerator.callMerge;
 
 public class ProcessConfigGenerator {
@@ -93,56 +94,35 @@ public class ProcessConfigGenerator {
 
     public List<BodyDeclaration<?>> members() {
 
-        FieldDeclaration defaultWihcFieldDeclaration = privateField(
-                WorkItemHandlerConfig.class,
-                VAR_DEFAULT_WORK_ITEM_HANDLER_CONFIG,
-                newObject(DefaultWorkItemHandlerConfig.class)
-        );
+        FieldDeclaration defaultWihcFieldDeclaration = new FieldDeclaration()
+                .setModifiers(Modifier.Keyword.PRIVATE)
+                .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, WorkItemHandlerConfig.class.getCanonicalName()), VAR_DEFAULT_WORK_ITEM_HANDLER_CONFIG, newObject(DefaultWorkItemHandlerConfig.class)));
         members.add(defaultWihcFieldDeclaration);
 
-        FieldDeclaration defaultUowFieldDeclaration = privateField(
-                UnitOfWorkManager.class,
-                VAR_DEFAULT_UNIT_OF_WORK_MANAGER,
-                newObject(DefaultUnitOfWorkManager.class, newObject(CollectingUnitOfWorkFactory.class))
-        );
+        FieldDeclaration defaultUowFieldDeclaration = new FieldDeclaration()
+                .setModifiers(Modifier.Keyword.PRIVATE)
+                .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, UnitOfWorkManager.class.getCanonicalName()), VAR_DEFAULT_UNIT_OF_WORK_MANAGER, newObject(DefaultUnitOfWorkManager.class, newObject(CollectingUnitOfWorkFactory.class))));
         members.add(defaultUowFieldDeclaration);
 
-        FieldDeclaration defaultJobsServiceFieldDeclaration = privateField(
-                JobsService.class,
-                VAR_DEFAULT_JOBS_SEVICE,
-                new NullLiteralExpr()
-        );
+        FieldDeclaration defaultJobsServiceFieldDeclaration = new FieldDeclaration()
+                .setModifiers(Modifier.Keyword.PRIVATE)
+                .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, JobsService.class.getCanonicalName()), VAR_DEFAULT_JOBS_SEVICE, new NullLiteralExpr()));
         members.add(defaultJobsServiceFieldDeclaration);
 
         if (annotator != null) {
-            FieldDeclaration wihcFieldDeclaration = annotator.withInjection(field(
-                    genericType(annotator.optionalInstanceInjectionType(), WorkItemHandlerConfig.class),
-                    VAR_WORK_ITEM_HANDLER_CONFIG
-            ));
+            FieldDeclaration wihcFieldDeclaration = annotator.withInjection(new FieldDeclaration().addVariable(new VariableDeclarator(genericType(annotator.optionalInstanceInjectionType(), WorkItemHandlerConfig.class), VAR_WORK_ITEM_HANDLER_CONFIG)));
             members.add(wihcFieldDeclaration);
 
-            FieldDeclaration uowmFieldDeclaration = annotator.withInjection(field(
-                    genericType(annotator.optionalInstanceInjectionType(), UnitOfWorkManager.class),
-                    VAR_UNIT_OF_WORK_MANAGER
-            ));
+            FieldDeclaration uowmFieldDeclaration = annotator.withInjection(new FieldDeclaration().addVariable(new VariableDeclarator(genericType(annotator.optionalInstanceInjectionType(), UnitOfWorkManager.class), VAR_UNIT_OF_WORK_MANAGER)));
             members.add(uowmFieldDeclaration);
 
-            FieldDeclaration jobsServiceFieldDeclaration = annotator.withInjection(field(
-                    genericType(annotator.optionalInstanceInjectionType(), JobsService.class),
-                    VAR_JOBS_SERVICE
-            ));
+            FieldDeclaration jobsServiceFieldDeclaration = annotator.withInjection(new FieldDeclaration().addVariable(new VariableDeclarator(genericType(annotator.optionalInstanceInjectionType(), JobsService.class), VAR_JOBS_SERVICE)));
             members.add(jobsServiceFieldDeclaration);
 
-            FieldDeclaration pelcFieldDeclaration = annotator.withOptionalInjection(field(
-                    genericType(annotator.multiInstanceInjectionType(), ProcessEventListenerConfig.class),
-                    VAR_PROCESS_EVENT_LISTENER_CONFIGS
-            ));
+            FieldDeclaration pelcFieldDeclaration = annotator.withOptionalInjection(new FieldDeclaration().addVariable(new VariableDeclarator(genericType(annotator.multiInstanceInjectionType(), ProcessEventListenerConfig.class), VAR_PROCESS_EVENT_LISTENER_CONFIGS)));
             members.add(pelcFieldDeclaration);
 
-            FieldDeclaration pelFieldDeclaration = annotator.withOptionalInjection(field(
-                    genericType(annotator.multiInstanceInjectionType(), ProcessEventListener.class),
-                    VAR_PROCESS_EVENT_LISTENERS
-            ));
+            FieldDeclaration pelFieldDeclaration = annotator.withOptionalInjection(new FieldDeclaration().addVariable(new VariableDeclarator(genericType(annotator.multiInstanceInjectionType(), ProcessEventListener.class), VAR_PROCESS_EVENT_LISTENERS)));
             members.add(pelFieldDeclaration);
 
             members.add(extractOptionalInjection(WorkItemHandlerConfig.class.getCanonicalName(), VAR_WORK_ITEM_HANDLER_CONFIG, VAR_DEFAULT_WORK_ITEM_HANDLER_CONFIG, annotator));
@@ -152,11 +132,9 @@ public class ProcessConfigGenerator {
             members.add(generateExtractEventListenerConfigMethod());
             members.add(generateMergeEventListenerConfigMethod());
         } else {
-            FieldDeclaration defaultPelcFieldDeclaration = privateField(
-                    ProcessEventListenerConfig.class,
-                    VAR_DEFAULT_PROCESS_EVENT_LISTENER_CONFIG,
-                    newObject(DefaultProcessEventListenerConfig.class)
-            );
+            FieldDeclaration defaultPelcFieldDeclaration = new FieldDeclaration()
+                    .setModifiers(Modifier.Keyword.PRIVATE)
+                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, ProcessEventListenerConfig.class.getCanonicalName()), VAR_DEFAULT_PROCESS_EVENT_LISTENER_CONFIG, newObject(DefaultProcessEventListenerConfig.class)));
             members.add(defaultPelcFieldDeclaration);
         }
 
@@ -176,7 +154,7 @@ public class ProcessConfigGenerator {
                 ))
         ));
 
-        return privateMethod(ProcessEventListenerConfig.class, METHOD_EXTRACT_PROCESS_EVENT_LISTENER_CONFIG, body);
+        return method(Modifier.Keyword.PRIVATE, ProcessEventListenerConfig.class, METHOD_EXTRACT_PROCESS_EVENT_LISTENER_CONFIG, body);
     }
 
     private MethodDeclaration generateMergeEventListenerConfigMethod() {
@@ -188,10 +166,10 @@ public class ProcessConfigGenerator {
                 )
         )));
 
-        return privateMethod(ProcessEventListenerConfig.class, METHOD_MERGE_PROCESS_EVENT_LISTENER_CONFIG,
+        return method(Modifier.Keyword.PRIVATE, ProcessEventListenerConfig.class, METHOD_MERGE_PROCESS_EVENT_LISTENER_CONFIG,
                 NodeList.nodeList(
-                        parameter(genericType(Collection.class, ProcessEventListenerConfig.class), VAR_PROCESS_EVENT_LISTENER_CONFIGS),
-                        parameter(genericType(Collection.class, ProcessEventListener.class), VAR_PROCESS_EVENT_LISTENERS)
+                        new Parameter().setType(genericType(Collection.class, ProcessEventListenerConfig.class)).setName(VAR_PROCESS_EVENT_LISTENER_CONFIGS),
+                        new Parameter().setType(genericType(Collection.class, ProcessEventListener.class)).setName(VAR_PROCESS_EVENT_LISTENERS)
                 ),
                 body);
     }

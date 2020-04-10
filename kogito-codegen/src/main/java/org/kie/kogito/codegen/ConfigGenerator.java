@@ -48,8 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parse;
+import static org.kie.kogito.codegen.CodegenUtils.method;
 import static org.kie.kogito.codegen.CodegenUtils.newObject;
-import static org.kie.kogito.codegen.CodegenUtils.publicMethod;
 
 public class ConfigGenerator {
     
@@ -163,7 +163,7 @@ public class ConfigGenerator {
                 newObject(Addons.class, asListOfAddons)
         ));
 
-        return publicMethod(Addons.class, "addons", body);
+        return method(Keyword.PUBLIC, Addons.class, "addons", body);
     }
 
     private MethodDeclaration generateInitMethod() {
@@ -172,7 +172,7 @@ public class ConfigGenerator {
                 .addStatement(new AssignExpr(new NameExpr("ruleConfig"), newRuleConfigInstance(), AssignExpr.Operator.ASSIGN))
                 .addStatement(new AssignExpr(new NameExpr("decisionConfig"), newDecisionConfigInstance(), AssignExpr.Operator.ASSIGN));
 
-        return publicMethod(void.class, "init", body);
+        return method(Keyword.PUBLIC, void.class, "init", body);
     }
 
     private Expression newProcessConfigInstance() {
