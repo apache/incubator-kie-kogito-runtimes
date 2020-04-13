@@ -56,6 +56,7 @@ public class ServerlessWorkflowFactory {
     private static final String DEFAULT_VAR = "Var";
     private static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     private static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
+    private static final String UNIQUE_ID_PARAM = "UniqueId";
 
     public RuleFlowProcess createProcess(Workflow workflow) {
         RuleFlowProcess process = new RuleFlowProcess();
@@ -299,7 +300,7 @@ public class ServerlessWorkflowFactory {
         split.setId(id);
         split.setName(name);
         split.setType(type);
-        split.setMetaData("UniqueId", Long.toString(id));
+        split.setMetaData(UNIQUE_ID_PARAM, Long.toString(id));
 
         nodeContainer.addNode(split);
         return split;
@@ -316,7 +317,7 @@ public class ServerlessWorkflowFactory {
         join.setId(id);
         join.setName(name);
         join.setType(type);
-        join.setMetaData("UniqueId", Long.toString(id));
+        join.setMetaData(UNIQUE_ID_PARAM, Long.toString(id));
 
         nodeContainer.addNode(join);
         return join;
@@ -340,7 +341,7 @@ public class ServerlessWorkflowFactory {
         ConnectionImpl connection = new ConnectionImpl(
                 from, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE,
                 to, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
-        connection.setMetaData("UniqueId", uniqueId);
+        connection.setMetaData(UNIQUE_ID_PARAM, uniqueId);
     }
 
     public void validate(RuleFlowProcess process) {
