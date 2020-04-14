@@ -47,7 +47,7 @@ import java.util.*;
 public class ServerlessWorkflowFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowFactory.class);
 
-    private static final String EOL = System.getProperty( "line.separator" );
+    private static final String EOL = System.getProperty("line.separator");
     private static final String DEFAULT_WORKFLOW_ID = "serverless";
     private static final String DEFAULT_WORKFLOW_NAME = "workflow";
     private static final String DEFAULT_WORKFLOW_VERSION = "1.0";
@@ -61,28 +61,28 @@ public class ServerlessWorkflowFactory {
     public RuleFlowProcess createProcess(Workflow workflow) {
         RuleFlowProcess process = new RuleFlowProcess();
 
-        if(workflow.getId() != null && !workflow.getId().isEmpty()) {
+        if (workflow.getId() != null && !workflow.getId().isEmpty()) {
             process.setId(workflow.getId());
         } else {
             LOGGER.info("setting default id {}", DEFAULT_WORKFLOW_ID);
             process.setId(DEFAULT_WORKFLOW_ID);
         }
 
-        if(workflow.getName() != null && !workflow.getName().isEmpty()) {
+        if (workflow.getName() != null && !workflow.getName().isEmpty()) {
             process.setName(workflow.getName());
         } else {
             LOGGER.info("setting default name {}", DEFAULT_WORKFLOW_NAME);
             process.setName(DEFAULT_WORKFLOW_NAME);
         }
 
-        if(workflow.getVersion() != null && !workflow.getVersion().isEmpty()) {
+        if (workflow.getVersion() != null && !workflow.getVersion().isEmpty()) {
             process.setVersion(workflow.getVersion());
         } else {
             LOGGER.info("setting default version {}", DEFAULT_WORKFLOW_VERSION);
             process.setVersion(DEFAULT_WORKFLOW_VERSION);
         }
 
-        if(workflow.getMetadata() != null && workflow.getMetadata().get("package") != null) {
+        if (workflow.getMetadata() != null && workflow.getMetadata().get("package") != null) {
             process.setPackageName(workflow.getMetadata().get("package"));
         } else {
             process.setPackageName(DEFAULT_PACKAGE_NAME);
@@ -186,7 +186,6 @@ public class ServerlessWorkflowFactory {
         subProcessNode.setMetaData("BPMN.InputTypes", inputOtuputTypes);
         subProcessNode.setMetaData("BPMN.OutputTypes", inputOtuputTypes);
 
-        // parent and sub processes have process var "workflowdata"
         subProcessNode.addInMapping(DEFAULT_WORKFLOW_VAR, DEFAULT_WORKFLOW_VAR);
         subProcessNode.addOutMapping(DEFAULT_WORKFLOW_VAR, DEFAULT_WORKFLOW_VAR);
 
@@ -195,7 +194,7 @@ public class ServerlessWorkflowFactory {
         return subProcessNode;
     }
 
-    public void addMessageEndNodeAction(EndNode endNode, String variable, String messageType){
+    public void addMessageEndNodeAction(EndNode endNode, String variable, String messageType) {
         List<DroolsAction> actions = new ArrayList<>();
 
         actions.add(new DroolsConsequenceAction("java",
@@ -231,8 +230,8 @@ public class ServerlessWorkflowFactory {
         scriptNode.setName(name);
 
         scriptNode.setAction(new DroolsConsequenceAction());
-        ((DroolsConsequenceAction)scriptNode.getAction()).setConsequence(script);
-        ((DroolsConsequenceAction)scriptNode.getAction()).setDialect(JavaDialect.ID);
+        ((DroolsConsequenceAction) scriptNode.getAction()).setConsequence(script);
+        ((DroolsConsequenceAction) scriptNode.getAction()).setDialect(JavaDialect.ID);
 
         nodeContainer.addNode(scriptNode);
 
@@ -255,7 +254,7 @@ public class ServerlessWorkflowFactory {
         work.setParameter("operationImplementationRef", function.getMetadata().get("operation"));
         work.setParameter("ParameterType", JSON_NODE);
         String metaImpl = function.getMetadata().get("implementation");
-        if(metaImpl == null) {
+        if (metaImpl == null) {
             metaImpl = "Java";
         }
         work.setParameter("implementation", metaImpl);
@@ -291,11 +290,6 @@ public class ServerlessWorkflowFactory {
 
 
     public Split splitNode(long id, String name, int type, NodeContainer nodeContainer) {
-        // 0 = TYPE_UNDEFINED
-        // 1 = TYPE_AND
-        // 2 = TYPE_XOR
-        // 3 = TYPE_OR
-        // 4 = TYPE_XAND
         Split split = new Split();
         split.setId(id);
         split.setName(name);
@@ -307,12 +301,6 @@ public class ServerlessWorkflowFactory {
     }
 
     public Join joinNode(long id, String name, int type, NodeContainer nodeContainer) {
-        // 0 = TYPE_UNDEFINED
-        // 1 = TYPE_AND
-        // 2 = TYPE_XOR
-        // 3 = TYPE_DISCRIMINATOR
-        // 4 = TYPE_N_OF_M
-        // 5 = TYPE_OR
         Join join = new Join();
         join.setId(id);
         join.setName(name);

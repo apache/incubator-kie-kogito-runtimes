@@ -48,14 +48,15 @@ public class ServerlessWorkflowUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowUtils.class);
 
-    private ServerlessWorkflowUtils() {}
+    private ServerlessWorkflowUtils() {
+    }
 
     public static BaseObjectMapper getObjectMapper(String workflowFormat) {
-        if(workflowFormat != null && workflowFormat.equalsIgnoreCase(DEFAULT_WORKFLOW_FORMAT)) {
+        if (workflowFormat != null && workflowFormat.equalsIgnoreCase(DEFAULT_WORKFLOW_FORMAT)) {
             return new JsonObjectMapper();
         }
 
-        if(workflowFormat != null && workflowFormat.equalsIgnoreCase(ALTERNATE_WORKFLOW_FORMAT)) {
+        if (workflowFormat != null && workflowFormat.equalsIgnoreCase(ALTERNATE_WORKFLOW_FORMAT)) {
             return new YamlObjectMapper();
         }
 
@@ -86,8 +87,8 @@ public class ServerlessWorkflowUtils {
     }
 
     public static boolean includesSupportedStates(Workflow workflow) {
-        for(State state : workflow.getStates()) {
-            if(!state.getType().equals(DefaultState.Type.EVENT)
+        for (State state : workflow.getStates()) {
+            if (!state.getType().equals(DefaultState.Type.EVENT)
                     && !state.getType().equals(DefaultState.Type.OPERATION)
                     && !state.getType().equals(DefaultState.Type.DELAY)
                     && !state.getType().equals(DefaultState.Type.SUBFLOW)
@@ -97,9 +98,9 @@ public class ServerlessWorkflowUtils {
                 return false;
             }
 
-            if(state.getType().equals(DefaultState.Type.PARALLEL)) {
-                if(!supportedParallelState((ParallelState) state)) {
-                    LOGGER.warn("unsupported parallel state");
+            if (state.getType().equals(DefaultState.Type.PARALLEL)) {
+                if (!supportedParallelState((ParallelState) state)) {
+                    LOGGER.warn("unsupported parallel state - currently branches can include single subflow states only");
                     return false;
                 }
             }
@@ -113,9 +114,9 @@ public class ServerlessWorkflowUtils {
         // currently branches must exist and states included can
         // be single subflow states only
         // this will be improved in future
-        if(parallelState.getBranches() != null && parallelState.getBranches().size() > 0) {
-            for(Branch branch : parallelState.getBranches()) {
-                if(branch.getStates() == null || branch.getStates().size() != 1 || !(branch.getStates().get(0) instanceof SubflowState)) {
+        if (parallelState.getBranches() != null && parallelState.getBranches().size() > 0) {
+            for (Branch branch : parallelState.getBranches()) {
+                if (branch.getStates() == null || branch.getStates().size() != 1 || !(branch.getStates().get(0) instanceof SubflowState)) {
                     return false;
                 }
             }
@@ -149,22 +150,22 @@ public class ServerlessWorkflowUtils {
 
     public static String conditionScript(String path, DefaultChoice.Operator operator, String value) {
 
-        if(path.startsWith("$.")) {
+        if (path.startsWith("$.")) {
             path = path.substring(2);
         }
 
         String workflowDataToInteger = "return java.lang.Integer.parseInt(workflowdata.get(\"";
 
         String retStr = "";
-        if(operator == DefaultChoice.Operator.EQUALS) {
+        if (operator == DefaultChoice.Operator.EQUALS) {
             retStr += "return workflowdata.get(\"" + path + "\").textValue().equals(\"" + value + "\");";
-        } else if(operator == DefaultChoice.Operator.GREATER_THAN) {
+        } else if (operator == DefaultChoice.Operator.GREATER_THAN) {
             retStr += workflowDataToInteger + path + "\").textValue()) > " + value + ";";
-        } else if(operator == DefaultChoice.Operator.GREATER_THAN_EQUALS) {
+        } else if (operator == DefaultChoice.Operator.GREATER_THAN_EQUALS) {
             retStr += workflowDataToInteger + path + "\").textValue()) >= " + value + ";";
-        } else if(operator == DefaultChoice.Operator.LESS_THAN ) {
+        } else if (operator == DefaultChoice.Operator.LESS_THAN) {
             retStr += workflowDataToInteger + path + "\").textValue()) < " + value + ";";
-        } else if(operator == DefaultChoice.Operator.LESS_THAN_EQUALS) {
+        } else if (operator == DefaultChoice.Operator.LESS_THAN_EQUALS) {
             retStr += workflowDataToInteger + path + "\").textValue()) <= " + value + ";";
         }
 
@@ -173,12 +174,12 @@ public class ServerlessWorkflowUtils {
 
     public static String getJsonPathScript(String script) {
 
-        if(script.indexOf("$") >= 0) {
+        if (script.indexOf("$") >= 0) {
 
             String replacement = "toPrint += com.jayway.jsonpath.JsonPath.using(jsonPathConfig)" +
                     ".parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\")))" +
                     ".read(\"@@.$1\", com.fasterxml.jackson.databind.JsonNode.class).textValue();";
-            script =  script.replaceAll("\\$.([A-Za-z]+)", replacement);
+            script = script.replaceAll("\\$.([A-Za-z]+)", replacement);
             script = script.replaceAll("@@", Matcher.quoteReplacement("$"));
             return script;
         } else {
@@ -207,7 +208,7 @@ public class ServerlessWorkflowUtils {
                     "        }\n" +
                     "        kcontext.setVariable(\"workflowdata\", mainNode2);\n";
 
-        } catch(JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             LOGGER.warn("unable to set inject script: {}", e.getMessage());
             return "";
         }
