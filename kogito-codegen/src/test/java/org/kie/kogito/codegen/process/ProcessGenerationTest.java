@@ -16,8 +16,12 @@
 package org.kie.kogito.codegen.process;
 
 import org.jbpm.process.core.timer.Timer;
+import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.DroolsAction;
+import org.jbpm.workflow.core.impl.ConnectionRef;
+import org.jbpm.workflow.core.impl.ConstraintImpl;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.impl.NodeImpl;
@@ -59,6 +63,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -93,10 +98,10 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
     public void testProcessesGeneration() throws IOException {
         Files.lines(Paths.get("src/test/resources/org/kie/kogito/codegen/process/process-generation-test.txt"))
                 .filter(f -> !f.startsWith("#"))
-                .forEach(this::testProcessGereration);
+                .forEach(this::testProcessGeneration);
     }
 
-    private void testProcessGereration(String processFile) {
+    private void testProcessGeneration(String processFile) {
         try {
             List<org.kie.api.definition.process.Process> processes = ProcessCodegen.parseProcesses(Stream.of(processFile)
                     .map(resource -> new File("src/test/resources", resource))
@@ -115,7 +120,11 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             assertEquals(expected.getType(), current.getType(), "Type");
             assertEquals(expected.isAutoComplete(), current.isAutoComplete(), "AutoComplete");
             assertEquals(expected.isDynamic(), current.isDynamic(), "Dynamic");
-//        assertEquals(expected.getVersion(), current.getVersion());
+            if(expected.getVersion() != null) {
+                assertEquals(expected.getVersion(), current.getVersion());
+            } else {
+                assertEquals("1.0", current.getVersion());
+            }
             assertEquals(expected.getImports(), current.getImports(), "Imports");
             assertEquals(expected.getFunctionImports(), current.getFunctionImports(), "FunctionImports");
             assertMetadata(expected.getMetaData(), current.getMetaData(), IGNORED_PROCESS_META);
@@ -135,10 +144,14 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
 
     private static final BiConsumer<Node, Node> nodeAsserter = (expected, current) -> {
         assertEquals(expected.getId(), current.getId());
-//        assertEquals(expected.getName(), current.getName());
+        if(expected.getName() != null) {
+            assertEquals(expected.getName(), current.getName());
+        } else {
+            assertNotNull(current.getName());
+        }
         assertConnections(expected.getIncomingConnections(), current.getIncomingConnections());
         assertConnections(expected.getOutgoingConnections(), current.getOutgoingConnections());
-//        assertEquals(((NodeImpl) eNode).getConstraints(), ((NodeImpl) cNode).getConstraints());
+        assertConstraints((NodeImpl) expected, (NodeImpl) current);
     };
 
     private static final BiConsumer<Node, Node> extendedNodeAsserter = (eNode, cNode) -> {
@@ -149,7 +162,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         assertActions(eNode, expected, current);
     };
 
-    // onEntry and onExit actions are not yet supported
+    // onEntry and onExit actions are not yet supported - KOGITO-1709
     private static void assertActions(Node eNode, ExtendedNodeImpl expected, ExtendedNodeImpl current) {
         for (String actionType : expected.getActionTypes()) {
             List<DroolsAction> expectedActions = expected.getActions(actionType);
@@ -207,7 +220,9 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         WorkItemNode expected = (WorkItemNode) eNode;
         WorkItemNode current = (WorkItemNode) cNode;
         assertEquals(expected.isWaitForCompletion(), current.isWaitForCompletion(), "WaitForCompletion");
+        assertEquals(expected.getInMappings().size(), current.getInMappings().size(), "inMappings");
         expected.getInMappings().forEach((k, v) -> assertEquals(v, current.getInMapping(k), "inMapping " + k));
+        assertEquals(expected.getOutMappings().size(), current.getOutMappings().size(), "outMappings");
         expected.getOutMappings().forEach((k, v) -> assertEquals(v, current.getOutMapping(k), "outMapping " + k));
 
     };
@@ -302,7 +317,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
                     try {
                         nodeAsserters.get(clazz).accept(expected, current);
                     } catch (Throwable e) {
-                        fail(String.format("[%s] nodes with name [%s] are not equal", clazz.getSimpleName(), current.getName()), e);
+                        fail(String.format("[%s] nodes with name [%s] are not equal", expected.getClass().getSimpleName(), current.getName()), e);
                     }
                 });
     }
@@ -313,7 +328,10 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             return;
         }
         assertNotNull(current);
-        if(ignoredKeys == null) ignoredKeys = new HashSet<>();
+        if(ignoredKeys == null) {
+            ignoredKeys = new HashSet<>();
+        }
+        assertEquals(expected.keySet().stream().filter(Predicate.not(ignoredKeys::contains)).count(), current.size());
         expected.keySet()
                 .stream()
                 .filter(Predicate.not(ignoredKeys::contains))
@@ -422,6 +440,39 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             assertEquals(expectedAction.getName(), currentAction.getName(), "DroolsAction name");
             //TODO: Is this expected? They are totally different objects. Expected DroolsConsequenceAction, Got lambda
             // assertEquals(expectedAction.getMetaData(DroolsAction.METADATA_ACTION), currentAction.getMetaData(DroolsAction.METADATA_ACTION));
+        });
+    }
+
+    private static void assertConstraints(NodeImpl eNode, NodeImpl cNode) {
+        if(eNode instanceof Split && ((Split)eNode).getType() != Split.TYPE_OR && ((Split)eNode).getType() != Split.TYPE_XOR) {
+            return;
+        }
+        if(eNode.getConstraints() == null) {
+            assertNull(cNode.getConstraints());
+            return;
+        }
+        Map<ConnectionRef, Constraint> expected = eNode.getConstraints();
+        Map<ConnectionRef, Constraint> current = cNode.getConstraints();
+        assertEquals(expected.size(), current.size());
+        expected.forEach((conn, constraint) -> {
+            Optional<Map.Entry<ConnectionRef, Constraint>> currentEntry = current.entrySet()
+                    .                    stream()
+                    .filter(e -> e.getKey().getConnectionId().equals(conn.getConnectionId()))
+                    .findFirst();
+            assertTrue(currentEntry.isPresent());
+            ConnectionRef currentConn = currentEntry.get().getKey();
+            assertEquals(conn.getNodeId(), currentConn.getNodeId());
+            assertEquals(conn.getToType(), currentConn.getToType());
+            Constraint currentConstraint = currentEntry.get().getValue();
+            if(constraint == null) {
+                assertNull(currentConstraint);
+            } else {
+                assertNotNull(currentConstraint);
+                assertEquals(constraint.getPriority(), currentConstraint.getPriority());
+                assertEquals(constraint.getDialect(), currentConstraint.getDialect());
+                assertEquals(conn.getConnectionId(), currentConstraint.getName());
+                assertEquals(CONNECTION_DEFAULT_TYPE, currentConstraint.getType());
+            }
         });
     }
 }

@@ -44,6 +44,11 @@ public class ForEachNodeFactory extends RuleFlowNodeContainerFactory {
     	return (ForEachNode) getNodeContainer();
     }
 
+    public ForEachNodeFactory name(String name) {
+        getForEachNode().setName(name);
+        return this;
+    }
+
     public ForEachNodeFactory collectionExpression(String collectionExpression) {
     	getForEachNode().setCollectionExpression(collectionExpression);
         return this;
