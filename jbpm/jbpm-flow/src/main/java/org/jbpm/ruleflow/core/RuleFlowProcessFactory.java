@@ -97,7 +97,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
     }
 
     public RuleFlowProcessFactory imports(String... imports) {
-        getRuleFlowProcess().getImports().addAll(Set.of(imports));
+        getRuleFlowProcess().getImports().addAll(Arrays.asList(imports));
         return this;
     }
     
