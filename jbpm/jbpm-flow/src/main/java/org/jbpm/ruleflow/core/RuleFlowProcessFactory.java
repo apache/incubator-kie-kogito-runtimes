@@ -50,8 +50,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(RuleFlowProcessFactory.class);
+
+    public static final String METADATA_ACTION = "Action";
 
     public static RuleFlowProcessFactory createProcess(String id) {
         return new RuleFlowProcessFactory(id);
@@ -249,7 +251,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
                 actions = new ArrayList<>();
             }
             DroolsConsequenceAction cancelAction =  new DroolsConsequenceAction("java", null);
-            cancelAction.setMetaData("Action", new CancelNodeInstanceAction(attachedTo));
+            cancelAction.setMetaData(METADATA_ACTION, new CancelNodeInstanceAction(attachedTo));
             actions.add(cancelAction);
             ((EventNode)node).setActions(EndNode.EVENT_NODE_EXIT, actions);
         }
@@ -263,7 +265,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
                 actions = new ArrayList<>();
             }
             DroolsConsequenceAction action =  new DroolsConsequenceAction("java", null);
-            action.setMetaData("Action", new CancelNodeInstanceAction(attachedTo));
+            action.setMetaData(METADATA_ACTION, new CancelNodeInstanceAction(attachedTo));
             actions.add(action);
             ((EventNode)node).setActions(EndNode.EVENT_NODE_EXIT, actions);
         }

@@ -16,13 +16,10 @@
 package org.kie.kogito.codegen.process;
 
 import org.jbpm.process.core.timer.Timer;
-import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.ConnectionRef;
-import org.jbpm.workflow.core.impl.ConstraintImpl;
-import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -63,6 +60,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METADATA_ACTION;
 import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -72,7 +70,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * ProcessGenerationTest iterates over all the listed process files in process-generation-test.txt
- *
+ * <p>
  * For each process the test will:
  * <ul>
  *     <li>Parse the XML and generate an instance of the process: Expected</li>
@@ -80,7 +78,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  *     <li>Iterate over all the process fields and metadata and assert that current and expected are equivalent</li>
  *     <li>Iterate over all the process' nodes fields and metadata and assert that current and expected are equivalent</li>
  * </ul>
- *
+ * <p>
  * Exceptions:
  * <ul>
  *     <li>Version is not set by default in Expected</li>
@@ -120,7 +118,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             assertEquals(expected.getType(), current.getType(), "Type");
             assertEquals(expected.isAutoComplete(), current.isAutoComplete(), "AutoComplete");
             assertEquals(expected.isDynamic(), current.isDynamic(), "Dynamic");
-            if(expected.getVersion() != null) {
+            if (expected.getVersion() != null) {
                 assertEquals(expected.getVersion(), current.getVersion());
             } else {
                 assertEquals("1.0", current.getVersion());
@@ -144,7 +142,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
 
     private static final BiConsumer<Node, Node> nodeAsserter = (expected, current) -> {
         assertEquals(expected.getId(), current.getId());
-        if(expected.getName() != null) {
+        if (expected.getName() != null) {
             assertEquals(expected.getName(), current.getName());
         } else {
             assertNotNull(current.getName());
@@ -166,7 +164,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
     private static void assertActions(Node eNode, ExtendedNodeImpl expected, ExtendedNodeImpl current) {
         for (String actionType : expected.getActionTypes()) {
             List<DroolsAction> expectedActions = expected.getActions(actionType);
-            if(eNode instanceof EndNode && expected.getMetaData("TriggerRef") != null) {
+            if (eNode instanceof EndNode && expected.getMetaData("TriggerRef") != null) {
                 // Generated lambda to publish event for the given variable
                 if (expectedActions == null) {
                     expectedActions = new ArrayList<>();
@@ -278,7 +276,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         ActionNode current = (ActionNode) cNode;
         if (expected.getAction() != null) {
             assertNotNull(current.getAction());
-            assertEquals(expected.getAction().getName(), current.getAction().getName(), "Action");
+            assertEquals(expected.getAction().getName(), current.getAction().getName(), METADATA_ACTION);
         }
     };
 
@@ -328,14 +326,14 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             return;
         }
         assertNotNull(current);
-        if(ignoredKeys == null) {
+        if (ignoredKeys == null) {
             ignoredKeys = new HashSet<>();
         }
         assertEquals(expected.keySet().stream().filter(Predicate.not(ignoredKeys::contains)).count(), current.size());
         expected.keySet()
                 .stream()
                 .filter(Predicate.not(ignoredKeys::contains))
-                .forEach(k -> assertEquals(expected.get(k), current.get(k), "Metadata "+ k));
+                .forEach(k -> assertEquals(expected.get(k), current.get(k), "Metadata " + k));
     }
 
     private static void assertConnections(Map<String, List<Connection>> expectedConnections, Map<String, List<Connection>> currentConnections) {
@@ -396,14 +394,6 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         }
     }
 
-    private static void assertActions(List<DroolsAction> expected, List<DroolsAction> current) {
-        assertEquals(expected.size(), current.size());
-        for (int i = 0; i < expected.size(); i++) {
-            assertEquals(((DroolsConsequenceAction) expected.get(i)).getDialect(), ((DroolsConsequenceAction) current.get(i)).getDialect(), "Dialect");
-            assertEquals(((DroolsConsequenceAction) expected.get(i)).getConsequence(), ((DroolsConsequenceAction) current.get(i)).getConsequence(), "Consequence");
-        }
-    }
-
     private static void assertAssignments(List<Assignment> expected, List<Assignment> current) {
         if (expected == null) {
             assertNull(current);
@@ -418,7 +408,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
     }
 
     private static void assertTimers(Map<Timer, DroolsAction> expected, Map<Timer, DroolsAction> current) {
-        if(expected == null) {
+        if (expected == null) {
             assertNull(current);
             return;
         }
@@ -432,22 +422,25 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             assertEquals(expectedTimer.getDelay(), currentTimer.get().getDelay(), "Delay");
             assertEquals(expectedTimer.getTimeType(), currentTimer.get().getTimeType(), "TimeType");
             DroolsAction currentAction = current.get(currentTimer.get());
-            if(expectedAction == null) {
+            if (expectedAction == null) {
                 assertNull(currentAction);
                 return;
             }
             assertNotNull(currentAction);
             assertEquals(expectedAction.getName(), currentAction.getName(), "DroolsAction name");
-            //TODO: Is this expected? They are totally different objects. Expected DroolsConsequenceAction, Got lambda
-            // assertEquals(expectedAction.getMetaData(DroolsAction.METADATA_ACTION), currentAction.getMetaData(DroolsAction.METADATA_ACTION));
+            if (expectedAction.getMetaData(METADATA_ACTION) == null) {
+                assertNull(currentAction.getMetaData(METADATA_ACTION));
+            } else {
+                assertNotNull(currentAction.getMetaData(METADATA_ACTION));
+            }
         });
     }
 
     private static void assertConstraints(NodeImpl eNode, NodeImpl cNode) {
-        if(eNode instanceof Split && ((Split)eNode).getType() != Split.TYPE_OR && ((Split)eNode).getType() != Split.TYPE_XOR) {
+        if (eNode instanceof Split && ((Split) eNode).getType() != Split.TYPE_OR && ((Split) eNode).getType() != Split.TYPE_XOR) {
             return;
         }
-        if(eNode.getConstraints() == null) {
+        if (eNode.getConstraints() == null) {
             assertNull(cNode.getConstraints());
             return;
         }
@@ -456,7 +449,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         assertEquals(expected.size(), current.size());
         expected.forEach((conn, constraint) -> {
             Optional<Map.Entry<ConnectionRef, Constraint>> currentEntry = current.entrySet()
-                    .                    stream()
+                    .stream()
                     .filter(e -> e.getKey().getConnectionId().equals(conn.getConnectionId()))
                     .findFirst();
             assertTrue(currentEntry.isPresent());
@@ -464,7 +457,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             assertEquals(conn.getNodeId(), currentConn.getNodeId());
             assertEquals(conn.getToType(), currentConn.getToType());
             Constraint currentConstraint = currentEntry.get().getValue();
-            if(constraint == null) {
+            if (constraint == null) {
                 assertNull(currentConstraint);
             } else {
                 assertNotNull(currentConstraint);
