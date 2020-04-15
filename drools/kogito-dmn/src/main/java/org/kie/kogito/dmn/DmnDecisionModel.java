@@ -1,6 +1,7 @@
 package org.kie.kogito.dmn;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNModel;
@@ -9,6 +10,7 @@ import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.decision.DecisionModel;
 
 public class DmnDecisionModel implements DecisionModel {
+
     private final DMNRuntime dmnRuntime;
     private final String namespace;
     private final String name;
@@ -30,7 +32,7 @@ public class DmnDecisionModel implements DecisionModel {
         if (dmnModel == null) {
             throw new IllegalArgumentException("DMN model '" + name + "' not found with namespace '" + namespace + "'");
         }
-        return dmnRuntime.evaluateAll(dmnModel, context);
+        return dmnRuntime.evaluateAll(dmnModel, injectEvaluationId(context));
     }
 
     @Override
@@ -39,6 +41,12 @@ public class DmnDecisionModel implements DecisionModel {
         if (dmnModel == null) {
             throw new IllegalArgumentException("DMN model '" + name + "' not found with namespace '" + namespace + "'");
         }
-        return dmnRuntime.evaluateDecisionService(dmnModel, context, decisionServiceName);
+        return dmnRuntime.evaluateDecisionService(dmnModel, injectEvaluationId(context), decisionServiceName);
     }
+
+    private static DMNContext injectEvaluationId(DMNContext context) {
+        context.getMetadata().set(EVALUATION_ID_KEY, UUID.randomUUID().toString());
+        return context;
+    }
+
 }

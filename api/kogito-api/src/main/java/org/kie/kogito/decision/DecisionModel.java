@@ -22,6 +22,8 @@ import org.kie.dmn.api.core.DMNResult;
 
 public interface DecisionModel {
 
+    String EVALUATION_ID_KEY = "__kogito_evaluation_id__";
+
     DMNContext newContext(Map<String, Object> variables);
 
     DMNResult evaluateAll(DMNContext context);
