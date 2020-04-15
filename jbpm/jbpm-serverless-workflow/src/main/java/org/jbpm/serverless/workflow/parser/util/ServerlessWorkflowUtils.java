@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.drools.core.util.StringUtils;
 import org.jbpm.serverless.workflow.api.Workflow;
+import org.jbpm.serverless.workflow.api.branches.Branch;
 import org.jbpm.serverless.workflow.api.choices.DefaultChoice;
 import org.jbpm.serverless.workflow.api.events.EventDefinition;
 import org.jbpm.serverless.workflow.api.interfaces.State;
@@ -26,6 +27,8 @@ import org.jbpm.serverless.workflow.api.mapper.BaseObjectMapper;
 import org.jbpm.serverless.workflow.api.mapper.JsonObjectMapper;
 import org.jbpm.serverless.workflow.api.mapper.YamlObjectMapper;
 import org.jbpm.serverless.workflow.api.states.DefaultState;
+import org.jbpm.serverless.workflow.api.states.ParallelState;
+import org.jbpm.serverless.workflow.api.states.SubflowState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,14 +48,15 @@ public class ServerlessWorkflowUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowUtils.class);
 
-    private ServerlessWorkflowUtils() {}
+    private ServerlessWorkflowUtils() {
+    }
 
     public static BaseObjectMapper getObjectMapper(String workflowFormat) {
-        if(workflowFormat != null && workflowFormat.equalsIgnoreCase(DEFAULT_WORKFLOW_FORMAT)) {
+        if (workflowFormat != null && workflowFormat.equalsIgnoreCase(DEFAULT_WORKFLOW_FORMAT)) {
             return new JsonObjectMapper();
         }
 
-        if(workflowFormat != null && workflowFormat.equalsIgnoreCase(ALTERNATE_WORKFLOW_FORMAT)) {
+        if (workflowFormat != null && workflowFormat.equalsIgnoreCase(ALTERNATE_WORKFLOW_FORMAT)) {
             return new YamlObjectMapper();
         }
 
@@ -83,18 +87,43 @@ public class ServerlessWorkflowUtils {
     }
 
     public static boolean includesSupportedStates(Workflow workflow) {
-        for(State state : workflow.getStates()) {
-            if(!state.getType().equals(DefaultState.Type.EVENT)
+        for (State state : workflow.getStates()) {
+            if (!state.getType().equals(DefaultState.Type.EVENT)
                     && !state.getType().equals(DefaultState.Type.OPERATION)
                     && !state.getType().equals(DefaultState.Type.DELAY)
                     && !state.getType().equals(DefaultState.Type.SUBFLOW)
                     && !state.getType().equals(DefaultState.Type.RELAY)
-                    && !state.getType().equals(DefaultState.Type.SWITCH)) {
+                    && !state.getType().equals(DefaultState.Type.SWITCH)
+                    && !state.getType().equals(DefaultState.Type.PARALLEL)) {
                 return false;
             }
+
+            if (state.getType().equals(DefaultState.Type.PARALLEL)) {
+                if (!supportedParallelState((ParallelState) state)) {
+                    LOGGER.warn("unsupported parallel state - currently branches can include single subflow states only");
+                    return false;
+                }
+            }
+
         }
 
         return true;
+    }
+
+    public static boolean supportedParallelState(ParallelState parallelState) {
+        // currently branches must exist and states included can
+        // be single subflow states only
+        // this will be improved in future
+        if (parallelState.getBranches() != null && parallelState.getBranches().size() > 0) {
+            for (Branch branch : parallelState.getBranches()) {
+                if (branch.getStates() == null || branch.getStates().size() != 1 || !(branch.getStates().get(0) instanceof SubflowState)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static EventDefinition getWorkflowEventFor(Workflow workflow, String eventName) {
@@ -121,22 +150,22 @@ public class ServerlessWorkflowUtils {
 
     public static String conditionScript(String path, DefaultChoice.Operator operator, String value) {
 
-        if(path.startsWith("$.")) {
+        if (path.startsWith("$.")) {
             path = path.substring(2);
         }
 
         String workflowDataToInteger = "return java.lang.Integer.parseInt(workflowdata.get(\"";
 
         String retStr = "";
-        if(operator == DefaultChoice.Operator.EQUALS) {
+        if (operator == DefaultChoice.Operator.EQUALS) {
             retStr += "return workflowdata.get(\"" + path + "\").textValue().equals(\"" + value + "\");";
-        } else if(operator == DefaultChoice.Operator.GREATER_THAN) {
+        } else if (operator == DefaultChoice.Operator.GREATER_THAN) {
             retStr += workflowDataToInteger + path + "\").textValue()) > " + value + ";";
-        } else if(operator == DefaultChoice.Operator.GREATER_THAN_EQUALS) {
+        } else if (operator == DefaultChoice.Operator.GREATER_THAN_EQUALS) {
             retStr += workflowDataToInteger + path + "\").textValue()) >= " + value + ";";
-        } else if(operator == DefaultChoice.Operator.LESS_THAN ) {
+        } else if (operator == DefaultChoice.Operator.LESS_THAN) {
             retStr += workflowDataToInteger + path + "\").textValue()) < " + value + ";";
-        } else if(operator == DefaultChoice.Operator.LESS_THAN_EQUALS) {
+        } else if (operator == DefaultChoice.Operator.LESS_THAN_EQUALS) {
             retStr += workflowDataToInteger + path + "\").textValue()) <= " + value + ";";
         }
 
@@ -145,12 +174,12 @@ public class ServerlessWorkflowUtils {
 
     public static String getJsonPathScript(String script) {
 
-        if(script.indexOf("$") >= 0) {
+        if (script.indexOf("$") >= 0) {
 
             String replacement = "toPrint += com.jayway.jsonpath.JsonPath.using(jsonPathConfig)" +
                     ".parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\")))" +
                     ".read(\"@@.$1\", com.fasterxml.jackson.databind.JsonNode.class).textValue();";
-            script =  script.replaceAll("\\$.([A-Za-z]+)", replacement);
+            script = script.replaceAll("\\$.([A-Za-z]+)", replacement);
             script = script.replaceAll("@@", Matcher.quoteReplacement("$"));
             return script;
         } else {
@@ -179,7 +208,7 @@ public class ServerlessWorkflowUtils {
                     "        }\n" +
                     "        kcontext.setVariable(\"workflowdata\", mainNode2);\n";
 
-        } catch(JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             LOGGER.warn("unable to set inject script: {}", e.getMessage());
             return "";
         }
