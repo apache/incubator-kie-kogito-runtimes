@@ -28,8 +28,6 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.kie.kogito.tracing.decision.DecisionTracingUtils.extractEvaluationId;
-
 @Singleton
 public class DecisionTracingCollector {
 
@@ -75,7 +73,7 @@ public class DecisionTracingCollector {
                     LOG.trace(
                             "Received {}(evaluationId: {}, modelName: {}, modelNamespace: {}, decisionId: {})",
                             event.getClass().getSimpleName(),
-                            event.getEvaluationId(),
+                            event.getExecutionId(),
                             event.getModelName(),
                             event.getModelNamespace(),
                             ((EvaluateDecisionEvent) event).getDecisionId()
@@ -84,14 +82,14 @@ public class DecisionTracingCollector {
                     LOG.trace(
                             "Received {}(evaluationId: {}, modelName: {}, modelNamespace: {})",
                             event.getClass().getSimpleName(),
-                            event.getEvaluationId(),
+                            event.getExecutionId(),
                             event.getModelName(),
                             event.getModelNamespace()
                     );
                 }
             }
 
-            String evaluationId = extractEvaluationId(event.getContextMetadata());
+            String evaluationId = event.getExecutionId();
             if (cacheMap.containsKey(evaluationId)) {
                 cacheMap.get(evaluationId).add(event);
             } else {

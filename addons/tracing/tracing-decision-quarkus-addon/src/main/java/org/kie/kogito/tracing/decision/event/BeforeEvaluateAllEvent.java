@@ -4,8 +4,8 @@ import org.kie.dmn.api.core.DMNContext;
 
 public class BeforeEvaluateAllEvent extends EvaluateEvent {
 
-    public BeforeEvaluateAllEvent(String evaluationId, String modelName, String modelNamespace, DMNContext context) {
-        super(evaluationId, modelName, modelNamespace, context);
+    public BeforeEvaluateAllEvent(String executionId, String modelName, String modelNamespace, DMNContext context) {
+        super(executionId, modelName, modelNamespace, context);
     }
 
 }

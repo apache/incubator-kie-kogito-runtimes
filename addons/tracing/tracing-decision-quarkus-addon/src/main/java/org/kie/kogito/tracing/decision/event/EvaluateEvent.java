@@ -14,16 +14,16 @@ import org.kie.dmn.api.core.DMNResult;
 
 public abstract class EvaluateEvent implements Serializable {
 
-    private final String evaluationId;
+    private final String executionId;
     private final String modelName;
     private final String modelNamespace;
     private final Map<String, Object> context;
     private final Map<String, Object> contextMetadata;
     private final Result result;
 
-    public EvaluateEvent(String evaluationId, String modelName, String modelNamespace, DMNContext context) {
+    public EvaluateEvent(String executionId, String modelName, String modelNamespace, DMNContext context) {
         DMNContext clone = context.clone();
-        this.evaluationId = evaluationId;
+        this.executionId = executionId;
         this.modelName = modelName;
         this.modelNamespace = modelNamespace;
         this.context = clone.getAll();
@@ -31,9 +31,9 @@ public abstract class EvaluateEvent implements Serializable {
         this.result = null;
     }
 
-    public EvaluateEvent(String evaluationId, String modelName, String modelNamespace, DMNResult result) {
+    public EvaluateEvent(String executionId, String modelName, String modelNamespace, DMNResult result) {
         DMNContext clone = result.getContext().clone();
-        this.evaluationId = evaluationId;
+        this.executionId = executionId;
         this.modelName = modelName;
         this.modelNamespace = modelNamespace;
         this.context = clone.getAll();
@@ -41,8 +41,8 @@ public abstract class EvaluateEvent implements Serializable {
         this.result = from(result);
     }
 
-    public String getEvaluationId() {
-        return evaluationId;
+    public String getExecutionId() {
+        return executionId;
     }
 
     public String getModelName() {
