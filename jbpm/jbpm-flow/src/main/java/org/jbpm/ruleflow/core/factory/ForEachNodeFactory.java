@@ -22,9 +22,6 @@ import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.ForEachNode;
 
-/**
- *
- */
 public class ForEachNodeFactory extends RuleFlowNodeContainerFactory {
 	
 	private RuleFlowNodeContainerFactory nodeContainerFactory;

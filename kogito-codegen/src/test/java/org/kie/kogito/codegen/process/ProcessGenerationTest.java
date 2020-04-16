@@ -37,7 +37,7 @@ import org.jbpm.workflow.core.node.StateBasedNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 import org.kie.kogito.Application;
@@ -49,7 +49,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -99,60 +98,53 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
     private static final Path BASE_PATH = Path.of("src/test/resources");
     private static final Collection<String> PROCESS_EXTENSIONS = Arrays.asList(".bpmn2", ".bpmn");
 
-    @ParameterizedTest
-    @ValueSource(strings = {"decision", "event-subprocess", "gateway", "messageevent", "messagestartevent",
-            "org/kie/kogito/codegen/tests", "ruletask", "servicetask", "signalevent", "subprocess",
-            "timer", "usertask"})
-    public void testProcessesGeneration(String folderName) throws IOException {
+    static Stream<String> processesProvider() throws IOException {
         Set<String> ignoredFiles = Files.lines(BASE_PATH.resolve("org/kie/kogito/codegen/process/process-generation-test.skip.txt"))
                 .collect(Collectors.toSet());
-        Files.find(BASE_PATH.resolve(folderName), 1, ((path, basicFileAttributes) -> basicFileAttributes.isRegularFile()
-                    && PROCESS_EXTENSIONS.stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext))))
+        return Files.find(BASE_PATH, 10, ((path, basicFileAttributes) -> basicFileAttributes.isRegularFile()
+                && PROCESS_EXTENSIONS.stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext))))
                 .map(BASE_PATH::relativize)
                 .map(Path::toString)
-                .filter(Predicate.not(ignoredFiles::contains))
-                .forEach(this::testProcessGeneration);
+                .filter(Predicate.not(ignoredFiles::contains));
     }
 
-    private void testProcessGeneration(String processFile) {
-        try {
-            List<org.kie.api.definition.process.Process> processes = ProcessCodegen.parseProcesses(Stream.of(processFile)
-                    .map(resource -> new File(BASE_PATH.toString(), resource))
-                    .collect(Collectors.toList()));
-            RuleFlowProcess expected = (RuleFlowProcess) processes.get(0);
+    @ParameterizedTest
+    @MethodSource("processesProvider")
+    public void testProcessGeneration(String processFile) throws Exception {
+        List<org.kie.api.definition.process.Process> processes = ProcessCodegen.parseProcesses(Stream.of(processFile)
+                .map(resource -> new File(BASE_PATH.toString(), resource))
+                .collect(Collectors.toList()));
+        RuleFlowProcess expected = (RuleFlowProcess) processes.get(0);
 
-            Application app = generateCodeProcessesOnly(processFile);
-            AbstractProcess<? extends Model> process = (AbstractProcess<? extends Model>) app.processes().processById(expected.getId());
-            RuleFlowProcess current = (RuleFlowProcess) process.legacyProcess();
+        Application app = generateCodeProcessesOnly(processFile);
+        AbstractProcess<? extends Model> process = (AbstractProcess<? extends Model>) app.processes().processById(expected.getId());
+        RuleFlowProcess current = (RuleFlowProcess) process.legacyProcess();
 
-            assertNotNull(current);
-            assertEquals(expected.getId(), current.getId(), "Id");
-            assertEquals(expected.getName(), current.getName(), "Name");
-            assertEquals(expected.getPackageName(), current.getPackageName(), "PackageName");
-            assertEquals(expected.getVisibility(), current.getVisibility(), "Visibility");
-            assertEquals(expected.getType(), current.getType(), "Type");
-            assertEquals(expected.isAutoComplete(), current.isAutoComplete(), "AutoComplete");
-            assertEquals(expected.isDynamic(), current.isDynamic(), "Dynamic");
-            if (expected.getVersion() != null) {
-                assertEquals(expected.getVersion(), current.getVersion());
-            } else {
-                assertEquals("1.0", current.getVersion());
-            }
-            assertEquals(expected.getImports(), current.getImports(), "Imports");
-            assertEquals(expected.getFunctionImports(), current.getFunctionImports(), "FunctionImports");
-            assertMetadata(expected.getMetaData(), current.getMetaData(), IGNORED_PROCESS_META);
-
-            List<Node> expectedNodes = expected.getNodesRecursively();
-            List<Node> currentNodes = current.getNodesRecursively();
-            assertEquals(expectedNodes.size(), currentNodes.size());
-            expectedNodes.forEach(eNode -> {
-                Optional<Node> cNode = currentNodes.stream().filter(c -> eNode.getMetaData().get("UniqueId").equals(c.getMetaData().get("UniqueId"))).findFirst();
-                assertTrue(cNode.isPresent(), "Missing node " + eNode.getName());
-                assertNode(eNode, cNode.get());
-            });
-        } catch (Throwable e) {
-            fail("Unable to validate process generation for: " + processFile, e);
+        assertNotNull(current);
+        assertEquals(expected.getId(), current.getId(), "Id");
+        assertEquals(expected.getName(), current.getName(), "Name");
+        assertEquals(expected.getPackageName(), current.getPackageName(), "PackageName");
+        assertEquals(expected.getVisibility(), current.getVisibility(), "Visibility");
+        assertEquals(expected.getType(), current.getType(), "Type");
+        assertEquals(expected.isAutoComplete(), current.isAutoComplete(), "AutoComplete");
+        assertEquals(expected.isDynamic(), current.isDynamic(), "Dynamic");
+        if (expected.getVersion() != null) {
+            assertEquals(expected.getVersion(), current.getVersion());
+        } else {
+            assertEquals("1.0", current.getVersion());
         }
+        assertEquals(expected.getImports(), current.getImports(), "Imports");
+        assertEquals(expected.getFunctionImports(), current.getFunctionImports(), "FunctionImports");
+        assertMetadata(expected.getMetaData(), current.getMetaData(), IGNORED_PROCESS_META);
+
+        List<Node> expectedNodes = expected.getNodesRecursively();
+        List<Node> currentNodes = current.getNodesRecursively();
+        assertEquals(expectedNodes.size(), currentNodes.size());
+        expectedNodes.forEach(eNode -> {
+            Optional<Node> cNode = currentNodes.stream().filter(c -> eNode.getMetaData().get("UniqueId").equals(c.getMetaData().get("UniqueId"))).findFirst();
+            assertTrue(cNode.isPresent(), "Missing node " + eNode.getName());
+            assertNode(eNode, cNode.get());
+        });
     }
 
     private static final BiConsumer<Node, Node> nodeAsserter = (expected, current) -> {
