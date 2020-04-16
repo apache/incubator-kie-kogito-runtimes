@@ -36,7 +36,8 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.StateBasedNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 import org.kie.kogito.Application;
@@ -47,8 +48,11 @@ import org.kie.kogito.process.impl.AbstractProcess;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +73,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * ProcessGenerationTest iterates over all the listed process files in process-generation-test.txt
+ * ProcessGenerationTest iterates over all the process files in the project except the
+ * ones listed in process-generation-test.skip.txt
  * <p>
  * For each process the test will:
  * <ul>
@@ -91,18 +96,28 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ProcessGenerationTest extends AbstractCodegenTest {
 
     private static final Set<String> IGNORED_PROCESS_META = Set.of("Definitions", "BPMN.Connections", "ItemDefinitions");
+    private static final Path BASE_PATH = Path.of("src/test/resources");
+    private static final Collection<String> PROCESS_EXTENSIONS = Arrays.asList(".bpmn2", ".bpmn");
 
-    @Test
-    public void testProcessesGeneration() throws IOException {
-        Files.lines(Paths.get("src/test/resources/org/kie/kogito/codegen/process/process-generation-test.txt"))
-                .filter(f -> !f.startsWith("#"))
+    @ParameterizedTest
+    @ValueSource(strings = {"decision", "event-subprocess", "gateway", "messageevent", "messagestartevent",
+            "org/kie/kogito/codegen/tests", "ruletask", "servicetask", "signalevent", "subprocess",
+            "timer", "usertask"})
+    public void testProcessesGeneration(String folderName) throws IOException {
+        Set<String> ignoredFiles = Files.lines(BASE_PATH.resolve("org/kie/kogito/codegen/process/process-generation-test.skip.txt"))
+                .collect(Collectors.toSet());
+        Files.find(BASE_PATH.resolve(folderName), 1, ((path, basicFileAttributes) -> basicFileAttributes.isRegularFile()
+                    && PROCESS_EXTENSIONS.stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext))))
+                .map(BASE_PATH::relativize)
+                .map(Path::toString)
+                .filter(Predicate.not(ignoredFiles::contains))
                 .forEach(this::testProcessGeneration);
     }
 
     private void testProcessGeneration(String processFile) {
         try {
             List<org.kie.api.definition.process.Process> processes = ProcessCodegen.parseProcesses(Stream.of(processFile)
-                    .map(resource -> new File("src/test/resources", resource))
+                    .map(resource -> new File(BASE_PATH.toString(), resource))
                     .collect(Collectors.toList()));
             RuleFlowProcess expected = (RuleFlowProcess) processes.get(0);
 
