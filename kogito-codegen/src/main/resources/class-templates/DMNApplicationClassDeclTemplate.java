@@ -8,7 +8,7 @@ public class DecisionModels implements org.kie.kogito.decision.DecisionModels {
     }
 
     public org.kie.kogito.decision.DecisionModel getDecisionModel(java.lang.String namespace, java.lang.String name) {
-        return new org.kie.kogito.dmn.DmnDecisionModel(dmnRuntime, namespace, name);
+        return new org.kie.kogito.dmn.DmnDecisionModel(dmnRuntime, namespace, name, new org.kie.kogito.dmn.DmnExecutionIdSupplier());
     }
 
 }

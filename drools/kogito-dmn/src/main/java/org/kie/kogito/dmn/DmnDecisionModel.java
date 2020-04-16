@@ -1,24 +1,28 @@
 package org.kie.kogito.dmn;
 
 import java.util.Map;
-import java.util.UUID;
 
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.dmn.api.core.DMNRuntime;
+import org.kie.kogito.ExecutionIdSupplier;
 import org.kie.kogito.decision.DecisionModel;
+
+import static org.kie.kogito.decision.DecisionExecutionIdUtils.inject;
 
 public class DmnDecisionModel implements DecisionModel {
 
     private final DMNRuntime dmnRuntime;
     private final String namespace;
     private final String name;
+    private final ExecutionIdSupplier execIdSupplier;
 
-    public DmnDecisionModel(DMNRuntime dmnRuntime, String namespace, String name) {
+    public DmnDecisionModel(DMNRuntime dmnRuntime, String namespace, String name, ExecutionIdSupplier execIdSupplier) {
         this.dmnRuntime = dmnRuntime;
         this.namespace = namespace;
         this.name = name;
+        this.execIdSupplier = execIdSupplier;
     }
 
     @Override
@@ -32,7 +36,7 @@ public class DmnDecisionModel implements DecisionModel {
         if (dmnModel == null) {
             throw new IllegalArgumentException("DMN model '" + name + "' not found with namespace '" + namespace + "'");
         }
-        return dmnRuntime.evaluateAll(dmnModel, injectEvaluationId(context));
+        return dmnRuntime.evaluateAll(dmnModel, inject(context, execIdSupplier));
     }
 
     @Override
@@ -41,12 +45,7 @@ public class DmnDecisionModel implements DecisionModel {
         if (dmnModel == null) {
             throw new IllegalArgumentException("DMN model '" + name + "' not found with namespace '" + namespace + "'");
         }
-        return dmnRuntime.evaluateDecisionService(dmnModel, injectEvaluationId(context), decisionServiceName);
-    }
-
-    private static DMNContext injectEvaluationId(DMNContext context) {
-        context.getMetadata().set(EVALUATION_ID_KEY, UUID.randomUUID().toString());
-        return context;
+        return dmnRuntime.evaluateDecisionService(dmnModel, inject(context, execIdSupplier), decisionServiceName);
     }
 
 }
