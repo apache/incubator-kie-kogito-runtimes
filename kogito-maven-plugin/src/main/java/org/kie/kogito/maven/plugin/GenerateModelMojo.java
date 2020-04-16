@@ -62,6 +62,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
     private File outputDirectory;
 
+    @Parameter(property = "kogito.codegen.rest.directory", defaultValue = "${project.build.directory}/generated-sources/kogito")
+    private File generatedRestSources;
+
     @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build.directory}/generated-sources/kogito")
     private File generatedSources;
 
