@@ -49,17 +49,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -94,8 +93,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class ProcessGenerationTest extends AbstractCodegenTest {
 
-    private static final Set<String> IGNORED_PROCESS_META = Set.of("Definitions", "BPMN.Connections", "ItemDefinitions");
-    private static final Path BASE_PATH = Path.of("src/test/resources");
+    private static final Collection<String> IGNORED_PROCESS_META = Arrays.asList("Definitions", "BPMN.Connections", "ItemDefinitions");
+    private static final Path BASE_PATH = Paths.get("src/test/resources");
     private static final Collection<String> PROCESS_EXTENSIONS = Arrays.asList(".bpmn2", ".bpmn");
 
     static Stream<String> processesProvider() throws IOException {
@@ -105,7 +104,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
                 && PROCESS_EXTENSIONS.stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext))))
                 .map(BASE_PATH::relativize)
                 .map(Path::toString)
-                .filter(Predicate.not(ignoredFiles::contains));
+                .filter(p -> !ignoredFiles.contains(p));
     }
 
     @ParameterizedTest
@@ -327,19 +326,19 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
                 });
     }
 
-    private static void assertMetadata(Map<String, Object> expected, Map<String, Object> current, Set<String> ignoredKeys) {
+    private static void assertMetadata(Map<String, Object> expected, Map<String, Object> current, Collection<String> ignoredKeys) {
         if (expected == null) {
             assertNull(current);
             return;
         }
         assertNotNull(current);
-        if (ignoredKeys == null) {
-            ignoredKeys = new HashSet<>();
-        }
-        assertEquals(expected.keySet().stream().filter(Predicate.not(ignoredKeys::contains)).count(), current.size());
+        assertEquals(expected.keySet()
+                .stream()
+                .filter(k -> ignoredKeys == null || !ignoredKeys.contains(k))
+                .count(), current.size());
         expected.keySet()
                 .stream()
-                .filter(Predicate.not(ignoredKeys::contains))
+                .filter(k -> ignoredKeys == null || !ignoredKeys.contains(k))
                 .forEach(k -> assertEquals(expected.get(k), current.get(k), "Metadata " + k));
     }
 
