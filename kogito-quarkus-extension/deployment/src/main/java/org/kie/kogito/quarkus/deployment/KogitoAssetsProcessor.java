@@ -243,7 +243,7 @@ public class KogitoAssetsProcessor {
             try {
                 if (f.getType() == GeneratedFile.Type.RESOURCE) {
                     writeGeneratedFile(f, resourcePath);
-                } else if (f.relativePath().endsWith("Resource.java")) {
+                } else if (isCustomizable(f)) {
                     writeGeneratedFile(f, restResourcePath);
                 } else {
                     writeGeneratedFile(f, sourcePath);
@@ -253,6 +253,13 @@ public class KogitoAssetsProcessor {
             }
         }
     }
+
+    private boolean isCustomizable(GeneratedFile f) {
+        return f.relativePath().endsWith("Resource.java")
+                || (f.relativePath().contains("Query") && f.relativePath().endsWith(".java"))
+                || (f.relativePath().contains("DTO") && f.relativePath().endsWith(".java"));
+    }
+
 
     private Path getProjectPath(Path archiveLocation) {
         //TODO: revisit this, we should not be depending on a project, it breaks the upgrade use case
