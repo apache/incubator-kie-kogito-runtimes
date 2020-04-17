@@ -85,6 +85,12 @@ public class DynamicNodeFactory extends CompositeContextNodeFactory {
         return this;
     }
 
+    @Override
+    public DynamicNodeFactory metaData(String name, Object value) {
+        super.metaData(name, value);
+        return this;
+    }
+
     public DynamicNodeFactory language(String language) {
         getDynamicNode().setLanguage(language);
         return this;

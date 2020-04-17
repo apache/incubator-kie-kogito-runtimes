@@ -37,6 +37,7 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.StateBasedNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.jbpm.workflow.core.node.WorkItemNode;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.definition.process.Connection;
@@ -138,6 +139,16 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         assertMetadata(expected.getMetaData(), current.getMetaData(), IGNORED_PROCESS_META);
 
         assertNodes(expected.getNodes(), current.getNodes());
+    }
+
+    @Test
+    public void testInvalidProcess() throws Exception {
+        try {
+            testProcessGeneration("messageevent/EventNodeMalformed.bpmn2");
+            fail("Expected ProcessCodegenException");
+        } catch (ProcessCodegenException e) {
+            assertNotNull(e);
+        }
     }
 
     private static void assertNodes(Node[] expected, Node[] current) {
