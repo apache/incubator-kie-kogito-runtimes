@@ -33,37 +33,45 @@ import org.kie.api.definition.process.Node;
 
 import java.util.Map.Entry;
 
-public class SplitNodeVisitor extends AbstractVisitor {
+import static org.jbpm.ruleflow.core.factory.SplitFactory.METHOD_CONSTRAINT;
+import static org.jbpm.ruleflow.core.factory.SplitFactory.METHOD_TYPE;
+
+public class SplitNodeVisitor extends AbstractNodeVisitor {
+
+    private static final String NODE_KEY = "splitNode";
+
+    @Override
+    protected String getNodeKey() {
+        return NODE_KEY;
+    }
 
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         Split splitNode = (Split) node;
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, SplitFactory.class, "splitNode" + node.getId(), "splitNode", new LongLiteralExpr(splitNode.getId()));
-        addFactoryMethodWithArgs(body, "splitNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(splitNode.getName(), "Split")));
-        addFactoryMethodWithArgs(body, "splitNode" + node.getId(), "type", new IntegerLiteralExpr(splitNode.getType()));
-        
-        visitMetaData(splitNode.getMetaData(), body, "splitNode" + node.getId());            
+        addFactoryMethodWithArgsWithAssignment(factoryField, body, SplitFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(splitNode.getId()));
+        addFactoryNameMethod(body, node, "Split");
+        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(splitNode.getType()));
+
+        visitMetaData(splitNode.getMetaData(), body, getNodeId(node));
 
         if (splitNode.getType() == Split.TYPE_OR || splitNode.getType() == Split.TYPE_XOR) {
             for (Entry<ConnectionRef, Constraint> entry : splitNode.getConstraints().entrySet()) {
-                
                 if (entry.getValue() != null) {
-                
                     BlockStmt actionBody = new BlockStmt();
                     LambdaExpr lambda = new LambdaExpr(
-                            new Parameter(new UnknownType(), "kcontext"), // (kcontext) ->
+                            new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
                             actionBody
                     );
-    
+
                     for (Variable v : variableScope.getVariables()) {
                         actionBody.addStatement(makeAssignment(v));
                     }
                     BlockStmt constraintBody = new BlockStmt();
                     constraintBody.addStatement(entry.getValue().getConstraint());
-                                  
+
                     actionBody.addStatement(constraintBody);
 
-                    addFactoryMethodWithArgs(body, "splitNode" + node.getId(), "constraint",
+                    addFactoryMethodWithArgs(body, getNodeId(node), METHOD_CONSTRAINT,
                             new LongLiteralExpr(entry.getKey().getNodeId()),
                             new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
                             new StringLiteralExpr(entry.getKey().getToType()),
@@ -73,6 +81,6 @@ public class SplitNodeVisitor extends AbstractVisitor {
                 }
             }
         }
-        addFactoryMethodWithArgs(body, "splitNode" + node.getId(), "done");
+        addFactoryDoneMethod(body, getNodeId(node));
     }
 }
