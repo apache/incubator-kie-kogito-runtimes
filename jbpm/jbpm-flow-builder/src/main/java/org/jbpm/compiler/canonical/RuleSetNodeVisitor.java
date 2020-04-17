@@ -72,8 +72,8 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor {
         RuleSetNode ruleSetNode = (RuleSetNode) node;
         String nodeName = ruleSetNode.getName();
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, RuleSetNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(ruleSetNode.getId()));
-        addFactoryNameMethod(body, node, "Rule");
+        body.addStatement(getAssignedFactoryMethod(factoryField, RuleSetNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(ruleSetNode.getId())))
+                .addStatement(getNameMethod(node, "Rule"));
 
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
         if (ruleType.getName().isEmpty()) {
@@ -99,8 +99,7 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor {
         body.addStatement(m);
 
         visitMetaData(ruleSetNode.getMetaData(), body, getNodeId(node));
-
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 
     private MethodCallExpr handleDecision(RuleSetNode.RuleType.Decision ruleType) {

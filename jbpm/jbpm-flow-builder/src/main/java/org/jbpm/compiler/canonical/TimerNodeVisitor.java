@@ -44,26 +44,24 @@ public class TimerNodeVisitor extends AbstractNodeVisitor {
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         TimerNode timerNode = (TimerNode) node;
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, TimerNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(timerNode.getId()));
-        addFactoryNameMethod(body, node, "End");
+        body.addStatement(getAssignedFactoryMethod(factoryField, TimerNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(timerNode.getId())))
+        .addStatement(getNameMethod(node, "End"));
 
         Timer timer = timerNode.getTimer();
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(timer.getTimeType()));
+        body.addStatement(getFactoryMethod(getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(timer.getTimeType())));
 
         if (timer.getTimeType() == Timer.TIME_CYCLE) {
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_DELAY, new StringLiteralExpr(timer.getDelay()));
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_DELAY, new StringLiteralExpr(timer.getDelay())));
             if (timer.getPeriod() != null && !timer.getPeriod().isEmpty()) {
-                addFactoryMethodWithArgs(body, getNodeId(node), METHOD_PERIOD, new StringLiteralExpr(timer.getPeriod()));
+                body.addStatement(getFactoryMethod(getNodeId(node), METHOD_PERIOD, new StringLiteralExpr(timer.getPeriod())));
             }
         } else if (timer.getTimeType() == Timer.TIME_DURATION) {
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_DELAY, new StringLiteralExpr(timer.getDelay()));
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_DELAY, new StringLiteralExpr(timer.getDelay())));
         } else if (timer.getTimeType() == Timer.TIME_DATE) {
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_DATE, new StringLiteralExpr(timer.getDate()));
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_DATE, new StringLiteralExpr(timer.getDate())));
         }
 
-
         visitMetaData(timerNode.getMetaData(), body, getNodeId(node));
-
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }

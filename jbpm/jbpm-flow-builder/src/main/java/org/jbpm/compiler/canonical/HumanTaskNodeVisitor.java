@@ -42,12 +42,12 @@ public class HumanTaskNodeVisitor extends WorkItemNodeVisitor {
         HumanTaskNode humanTaskNode = (HumanTaskNode) node;
         Work work = humanTaskNode.getWork();
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, HumanTaskNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(humanTaskNode.getId()));
-        addFactoryNameMethod(body, node, "Task");
+        body.addStatement(getAssignedFactoryMethod(factoryField, HumanTaskNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(humanTaskNode.getId())))
+                .addStatement(getNameMethod(node, "Task"));
 
         addWorkItemParameters(work, body, getNodeId(node));
         addNodeMappings(humanTaskNode, body, getNodeId(node));
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
 
         visitMetaData(humanTaskNode.getMetaData(), body, getNodeId(node));
 

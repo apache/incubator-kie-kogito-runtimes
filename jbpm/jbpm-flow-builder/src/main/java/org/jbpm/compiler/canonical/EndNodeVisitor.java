@@ -50,9 +50,9 @@ public class EndNodeVisitor extends AbstractNodeVisitor {
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         EndNode endNode = (EndNode) node;
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, EndNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(endNode.getId()));
-        addFactoryNameMethod(body, node, "End");
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_TERMINATE, new BooleanLiteralExpr(endNode.isTerminate()));
+        body.addStatement(getAssignedFactoryMethod(factoryField, EndNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(endNode.getId())))
+                .addStatement(getNameMethod(node, "End"))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_TERMINATE, new BooleanLiteralExpr(endNode.isTerminate())));
 
         // if there is trigger defined on end event create TriggerMetaData for it
         if (endNode.getMetaData(METADATA_TRIGGER_REF) != null) {
@@ -80,10 +80,10 @@ public class EndNodeVisitor extends AbstractNodeVisitor {
             MethodCallExpr producerMethodCall = new MethodCallExpr(new NameExpr("producer_" + node.getId()), "produce").addArgument(new MethodCallExpr(new NameExpr("kcontext"), "getProcessInstance")).addArgument(variable);
             actionBody.addStatement(producerMethodCall);
 
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_ACTION, lambda);
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         }
 
         visitMetaData(endNode.getMetaData(), body, getNodeId(node));
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }

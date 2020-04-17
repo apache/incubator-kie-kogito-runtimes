@@ -48,8 +48,8 @@ public class ActionNodeVisitor extends AbstractNodeVisitor {
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         ActionNode actionNode = (ActionNode) node;
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, ActionNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(actionNode.getId()));
-        addFactoryNameMethod(body, node, "Script");
+        body.addStatement(getAssignedFactoryMethod(factoryField, ActionNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(actionNode.getId())))
+                .addStatement(getNameMethod(node, "Script"));
 
         // if there is trigger defined on end event create TriggerMetaData for it
         if (actionNode.getMetaData(METADATA_TRIGGER_REF) != null) {
@@ -78,7 +78,7 @@ public class ActionNodeVisitor extends AbstractNodeVisitor {
             MethodCallExpr producerMethodCall = new MethodCallExpr(new NameExpr("producer_" + node.getId()), "produce").addArgument(new MethodCallExpr(new NameExpr("kcontext"), "getProcessInstance")).addArgument(variable);
             actionBody.addStatement(producerMethodCall);
 
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_ACTION, lambda);
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         } else {
             if (actionNode.getAction().toString() == null || actionNode.getAction().toString().trim().isEmpty()) {
                 throw new IllegalStateException("Action node " + node.getId() + " name " + node.getName() + " has not action defined");
@@ -94,9 +94,9 @@ public class ActionNodeVisitor extends AbstractNodeVisitor {
             }
             actionBody.addStatement(new NameExpr(actionNode.getAction().toString()));
 
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_ACTION, lambda);
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         }
         visitMetaData(actionNode.getMetaData(), body, getNodeId(node));
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }

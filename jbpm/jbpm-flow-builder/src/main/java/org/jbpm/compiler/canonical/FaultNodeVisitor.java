@@ -40,17 +40,17 @@ public class FaultNodeVisitor extends AbstractNodeVisitor {
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         FaultNode faultNode = (FaultNode) node;
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, FaultNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(faultNode.getId()));
-        addFactoryNameMethod(body, node, "Error");
+        body.addStatement(getAssignedFactoryMethod(factoryField, FaultNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(faultNode.getId())))
+                .addStatement(getNameMethod(node, "Error"));
         if (faultNode.getFaultVariable() != null) {
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_FAULT_VARIABLE, new StringLiteralExpr(faultNode.getFaultVariable()));
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_FAULT_VARIABLE, new StringLiteralExpr(faultNode.getFaultVariable())));
         }
         if (faultNode.getFaultName() != null) {
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_FAULT_NAME, new StringLiteralExpr(faultNode.getFaultName()));
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_FAULT_NAME, new StringLiteralExpr(faultNode.getFaultName())));
         }
 
         visitMetaData(faultNode.getMetaData(), body, getNodeId(node));
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
 
     }
 }

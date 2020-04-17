@@ -75,14 +75,14 @@ public class WorkItemNodeVisitor extends AbstractNodeVisitor {
         WorkItemNode workItemNode = (WorkItemNode) node;
         Work work = workItemNode.getWork();
         String workName = workItemName(workItemNode, metadata);
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, WorkItemNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(workItemNode.getId()));
-        addFactoryNameMethod(body, node, work.getName());
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_WORK_NAME, new StringLiteralExpr(workName));
+        body.addStatement(getAssignedFactoryMethod(factoryField, WorkItemNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(workItemNode.getId())))
+        .addStatement(getNameMethod(node, work.getName()))
+        .addStatement(getFactoryMethod(getNodeId(node), METHOD_WORK_NAME, new StringLiteralExpr(workName)));
 
         addWorkItemParameters(work, body, getNodeId(node));
         addNodeMappings(workItemNode, body, getNodeId(node));
 
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
 
         visitMetaData(workItemNode.getMetaData(), body, getNodeId(node));
 
@@ -94,7 +94,7 @@ public class WorkItemNodeVisitor extends AbstractNodeVisitor {
             if (entry.getValue() == null) {
                 continue; // interfaceImplementationRef ?
             }
-            addFactoryMethodWithArgs(body, variableName, METHOD_WORK_PARAMETER, new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue().toString()));
+            body.addStatement(getFactoryMethod(variableName, METHOD_WORK_PARAMETER, new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue().toString())));
         }
     }
 

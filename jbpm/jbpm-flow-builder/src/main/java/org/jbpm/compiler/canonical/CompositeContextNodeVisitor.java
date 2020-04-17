@@ -62,8 +62,8 @@ public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         CompositeContextNode compositeContextNode = (CompositeContextNode) node;
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, factoryClass(), getNodeId(node), factoryMethod(), new LongLiteralExpr(compositeContextNode.getId()));
-        addFactoryNameMethod(body, node, getDefaultName());
+        body.addStatement(getAssignedFactoryMethod(factoryField, factoryClass(), getNodeId(node), factoryMethod(), new LongLiteralExpr(compositeContextNode.getId())))
+                .addStatement(getNameMethod(node, getDefaultName()));
         visitMetaData(compositeContextNode.getMetaData(), body, getNodeId(node));
         VariableScope variableScopeNode = (VariableScope) compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE);
 
@@ -74,7 +74,7 @@ public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
         // visit nodes
         visitNodes(getNodeId(node), compositeContextNode.getNodes(), body, ((VariableScope) compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);
         visitConnections(getNodeId(node), compositeContextNode.getNodes(), body);
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 
     protected String getDefaultName() {
@@ -90,9 +90,9 @@ public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
                 String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS);
                 ClassOrInterfaceType variableType = new ClassOrInterfaceType(null, ObjectDataType.class.getSimpleName());
                 ObjectCreationExpr variableValue = new ObjectCreationExpr(null, variableType, new NodeList<>(new StringLiteralExpr(variable.getType().getStringType())));
-                addFactoryMethodWithArgs(contextNode, body, METHOD_VARIABLE,
+                body.addStatement(getFactoryMethod(contextNode, METHOD_VARIABLE,
                         new StringLiteralExpr(variable.getName()), variableValue,
-                        new StringLiteralExpr(Variable.VARIABLE_TAGS), (tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr()));
+                        new StringLiteralExpr(Variable.VARIABLE_TAGS), (tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr())));
             }
         }
     }

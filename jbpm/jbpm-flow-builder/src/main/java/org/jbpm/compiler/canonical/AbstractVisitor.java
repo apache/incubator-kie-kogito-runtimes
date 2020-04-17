@@ -25,8 +25,11 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.utils.StringEscapeUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_METADATA;
@@ -36,18 +39,12 @@ public abstract class AbstractVisitor {
     protected static final String FACTORY_FIELD_NAME = "factory";
     protected static final String KCONTEXT_VAR = "kcontext";
 
-    protected MethodCallExpr addFactoryMethodWithArgs(String factoryField, BlockStmt body, String methodName, Expression... args) {
-        return addFactoryMethodWithArgs(body, factoryField, methodName, args);
-    }
-
-    protected MethodCallExpr addFactoryMethodWithArgs(BlockStmt body, String object, String methodName, Expression... args) {
+    protected MethodCallExpr getFactoryMethod(String object, String methodName, Expression... args) {
         MethodCallExpr variableMethod = new MethodCallExpr(new NameExpr(object), methodName);
 
         for (Expression arg : args) {
             variableMethod.addArgument(arg);
         }
-        body.addStatement(variableMethod);
-
         return variableMethod;
     }
 
@@ -78,7 +75,7 @@ public abstract class AbstractVisitor {
                 expression = new StringLiteralExpr(StringEscapeUtils.escapeJava(v.toString()));
             }
             if (expression != null) {
-                addFactoryMethodWithArgs(body, variableName, METHOD_METADATA, new StringLiteralExpr(k), expression);
+                body.addStatement(getFactoryMethod(variableName, METHOD_METADATA, new StringLiteralExpr(k), expression));
             }
         });
     }

@@ -45,15 +45,15 @@ public class BoundaryEventNodeVisitor extends AbstractNodeVisitor {
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         BoundaryEventNode boundaryEventNode = (BoundaryEventNode) node;
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, BoundaryEventNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(boundaryEventNode.getId()));
-        addFactoryNameMethod(body, node, "BoundaryEvent");
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_EVENT_TYPE, new StringLiteralExpr(boundaryEventNode.getType()));
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_ATTACHED_TO, new StringLiteralExpr(boundaryEventNode.getAttachedToNodeId()));
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_SCOPE, getOrNullExpr(boundaryEventNode.getScope()));
+        body.addStatement(getAssignedFactoryMethod(factoryField, BoundaryEventNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(boundaryEventNode.getId())))
+                .addStatement(getNameMethod(node, "BoundaryEvent"))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_EVENT_TYPE, new StringLiteralExpr(boundaryEventNode.getType())))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_ATTACHED_TO, new StringLiteralExpr(boundaryEventNode.getAttachedToNodeId())))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_SCOPE, getOrNullExpr(boundaryEventNode.getScope())));
 
         Variable variable = null;
         if (boundaryEventNode.getVariableName() != null) {
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_VARIABLE_NAME, new StringLiteralExpr(boundaryEventNode.getVariableName()));
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_VARIABLE_NAME, new StringLiteralExpr(boundaryEventNode.getVariableName())));
             variable = variableScope.findVariable(boundaryEventNode.getVariableName());
         }
 
@@ -69,7 +69,6 @@ public class BoundaryEventNodeVisitor extends AbstractNodeVisitor {
         }
 
         visitMetaData(boundaryEventNode.getMetaData(), body, getNodeId(node));
-        addFactoryDoneMethod(body, getNodeId(node));
-
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }

@@ -48,9 +48,9 @@ public class SplitNodeVisitor extends AbstractNodeVisitor {
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         Split splitNode = (Split) node;
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, SplitFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(splitNode.getId()));
-        addFactoryNameMethod(body, node, "Split");
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(splitNode.getType()));
+        body.addStatement(getAssignedFactoryMethod(factoryField, SplitFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(splitNode.getId())))
+                .addStatement(getNameMethod(node, "Split"))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(splitNode.getType())));
 
         visitMetaData(splitNode.getMetaData(), body, getNodeId(node));
 
@@ -71,16 +71,16 @@ public class SplitNodeVisitor extends AbstractNodeVisitor {
 
                     actionBody.addStatement(constraintBody);
 
-                    addFactoryMethodWithArgs(body, getNodeId(node), METHOD_CONSTRAINT,
+                    body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
                             new LongLiteralExpr(entry.getKey().getNodeId()),
                             new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
                             new StringLiteralExpr(entry.getKey().getToType()),
                             new StringLiteralExpr(entry.getValue().getDialect()),
                             lambda,
-                            new IntegerLiteralExpr(entry.getValue().getPriority()));
+                            new IntegerLiteralExpr(entry.getValue().getPriority())));
                 }
             }
         }
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }

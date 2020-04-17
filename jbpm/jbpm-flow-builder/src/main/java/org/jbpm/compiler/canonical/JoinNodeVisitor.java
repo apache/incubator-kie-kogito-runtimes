@@ -38,11 +38,11 @@ public class JoinNodeVisitor extends AbstractNodeVisitor {
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         Join joinNode = (Join) node;
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, JoinFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(joinNode.getId()));
-        addFactoryNameMethod(body, node, "Join");
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(joinNode.getType()));
+        body.addStatement(getAssignedFactoryMethod(factoryField, JoinFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(joinNode.getId())));
+        body.addStatement(getNameMethod(node, "Join"));
+        body.addStatement(getFactoryMethod(getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(joinNode.getType())));
 
         visitMetaData(joinNode.getMetaData(), body, getNodeId(node));
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }

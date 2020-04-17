@@ -126,11 +126,11 @@ public class ProcessVisitor extends AbstractVisitor {
         visitInterfaces(process.getNodes(), body);
 
         // the process itself
-        addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_NAME, new StringLiteralExpr(process.getName()));
-        addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_PACKAGE_NAME, new StringLiteralExpr(process.getPackageName()));
-        addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_DYNAMIC, new BooleanLiteralExpr(((org.jbpm.workflow.core.WorkflowProcess) process).isDynamic()));
-        addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_VERSION, new StringLiteralExpr(getOrDefault(process.getVersion(), DEFAULT_VERSION)));
-        addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_VISIBILITY, new StringLiteralExpr(getOrDefault(process.getVisibility(), WorkflowProcess.PUBLIC_VISIBILITY)));
+        body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_NAME, new StringLiteralExpr(process.getName())))
+                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_PACKAGE_NAME, new StringLiteralExpr(process.getPackageName())))
+                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_DYNAMIC, new BooleanLiteralExpr(((org.jbpm.workflow.core.WorkflowProcess) process).isDynamic())))
+                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VERSION, new StringLiteralExpr(getOrDefault(process.getVersion(), DEFAULT_VERSION))))
+                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VISIBILITY, new StringLiteralExpr(getOrDefault(process.getVisibility(), WorkflowProcess.PUBLIC_VISIBILITY))));
 
         visitMetaData(process.getMetaData(), body, FACTORY_FIELD_NAME);
 
@@ -143,7 +143,7 @@ public class ProcessVisitor extends AbstractVisitor {
         visitNodes(processNodes, body, variableScope, metadata);
         visitConnections(process.getNodes(), body);
 
-        addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_VALIDATE);
+        body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VALIDATE));
 
         MethodCallExpr getProcessMethod = new MethodCallExpr(new NameExpr(FACTORY_FIELD_NAME), "getProcess");
         body.addStatement(new ReturnStmt(getProcessMethod));
@@ -160,7 +160,7 @@ public class ProcessVisitor extends AbstractVisitor {
                 String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS);
                 ClassOrInterfaceType variableType = new ClassOrInterfaceType(null, ObjectDataType.class.getSimpleName());
                 ObjectCreationExpr variableValue = new ObjectCreationExpr(null, variableType, new NodeList<>(new StringLiteralExpr(variable.getType().getStringType())));
-                addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), variableValue, new StringLiteralExpr(Variable.VARIABLE_TAGS), tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr());
+                body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), variableValue, new StringLiteralExpr(Variable.VARIABLE_TAGS), tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr()));
             }
         }
     }
@@ -187,12 +187,12 @@ public class ProcessVisitor extends AbstractVisitor {
         if ((imports != null && !imports.isEmpty()) || (globals != null && globals.size() > 0) || !metaData.isEmpty()) {
             if (imports != null) {
                 for (String s : imports) {
-                    addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_IMPORTS, new StringLiteralExpr(s));
+                    body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_IMPORTS, new StringLiteralExpr(s)));
                 }
             }
             if (globals != null) {
                 for (Map.Entry<String, String> global : globals.entrySet()) {
-                    addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_GLOBAL, new StringLiteralExpr(global.getKey()), new StringLiteralExpr(global.getValue()));
+                    body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_GLOBAL, new StringLiteralExpr(global.getKey()), new StringLiteralExpr(global.getValue())));
                 }
             }
         }
@@ -214,11 +214,9 @@ public class ProcessVisitor extends AbstractVisitor {
 
         for (org.kie.api.definition.process.Node node : nodes) {
             AbstractNodeVisitor visitor = nodesVisitors.get(node.getClass());
-
             if (visitor == null) {
                 throw new IllegalStateException("No visitor found for node " + node.getClass().getName());
             }
-
             visitor.visitNode(node, body, variableScope, metadata);
         }
     }
@@ -259,9 +257,9 @@ public class ProcessVisitor extends AbstractVisitor {
             return;
         }
 
-        addFactoryMethodWithArgs(FACTORY_FIELD_NAME, body, METHOD_CONNECTION, new LongLiteralExpr(connection.getFrom().getId()),
+        body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_CONNECTION, new LongLiteralExpr(connection.getFrom().getId()),
                 new LongLiteralExpr(connection.getTo().getId()),
-                new StringLiteralExpr(getOrDefault((String) connection.getMetaData().get(METADATA_UNIQUE_ID), "")));
+                new StringLiteralExpr(getOrDefault((String) connection.getMetaData().get(METADATA_UNIQUE_ID), ""))));
     }
 
     private boolean isConnectionRepresentingLinkEvent(Connection connection) {

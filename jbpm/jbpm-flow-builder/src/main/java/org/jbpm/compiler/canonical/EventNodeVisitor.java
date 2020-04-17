@@ -44,13 +44,13 @@ public class EventNodeVisitor extends AbstractNodeVisitor {
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         EventNode eventNode = (EventNode) node;
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, EventNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(eventNode.getId()));
-        addFactoryNameMethod(body, node, "Event");
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_EVENT_TYPE, new StringLiteralExpr(eventNode.getType()));
+        body.addStatement(getAssignedFactoryMethod(factoryField, EventNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(eventNode.getId())))
+                .addStatement(getNameMethod(node, "Event"))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_EVENT_TYPE, new StringLiteralExpr(eventNode.getType())));
 
         Variable variable = null;
         if (eventNode.getVariableName() != null) {
-            addFactoryMethodWithArgs(body, getNodeId(node), METHOD_VARIABLE_NAME, new StringLiteralExpr(eventNode.getVariableName()));
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_VARIABLE_NAME, new StringLiteralExpr(eventNode.getVariableName())));
             variable = variableScope.findVariable(eventNode.getVariableName());
         }
 
@@ -74,6 +74,6 @@ public class EventNodeVisitor extends AbstractNodeVisitor {
             }
         }
         visitMetaData(eventNode.getMetaData(), body, getNodeId(node));
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }

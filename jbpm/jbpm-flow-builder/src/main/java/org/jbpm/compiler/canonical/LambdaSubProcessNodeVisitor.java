@@ -72,12 +72,12 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor {
                 .validate();
 
 
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, SubProcessNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(subProcessNode.getId()));
-        addFactoryNameMethod(body, node, "Call Activity");
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_PROCESS_ID, new StringLiteralExpr(subProcessId));
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_PROCESS_NAME, new StringLiteralExpr(getOrDefault(subProcessNode.getProcessName(), "")));
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_WAIT_FOR_COMPLETION, new BooleanLiteralExpr(subProcessNode.isWaitForCompletion()));
-        addFactoryMethodWithArgs(body, getNodeId(node), METHOD_INDEPENDENT, new BooleanLiteralExpr(subProcessNode.isIndependent()));
+        body.addStatement(getAssignedFactoryMethod(factoryField, SubProcessNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(subProcessNode.getId())))
+                .addStatement(getNameMethod(node, "Call Activity"))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_PROCESS_ID, new StringLiteralExpr(subProcessId)))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_PROCESS_NAME, new StringLiteralExpr(getOrDefault(subProcessNode.getProcessName(), ""))))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_WAIT_FOR_COMPLETION, new BooleanLiteralExpr(subProcessNode.isWaitForCompletion())))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_INDEPENDENT, new BooleanLiteralExpr(subProcessNode.isIndependent())));
 
         Map<String, String> inputTypes = (Map<String, String>) subProcessNode.getMetaData("BPMN.InputTypes");
 
@@ -104,13 +104,13 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor {
         });
 
         if (retValue.isPresent()) {
-            addFactoryMethodWithArgs(body, getNodeId(node), FACTORY_NAME, retValue.get());
+            body.addStatement(getFactoryMethod(getNodeId(node), FACTORY_NAME, retValue.get()));
         } else {
-            addFactoryMethodWithArgs(body, getNodeId(node), FACTORY_NAME);
+            body.addStatement(getFactoryMethod(getNodeId(node), FACTORY_NAME));
         }
 
         visitMetaData(subProcessNode.getMetaData(), body, getNodeId(node));
-        addFactoryDoneMethod(body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 
     private BlockStmt bind(VariableScope variableScope, SubProcessNode subProcessNode, ModelMetaData subProcessModel) {

@@ -74,28 +74,15 @@ public abstract class AbstractNodeVisitor extends AbstractVisitor {
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
     }
 
-    protected MethodCallExpr addFactoryMethodWithArgs(String factoryField, BlockStmt body, String methodName, Expression... args) {
-        return addFactoryMethodWithArgs(body, factoryField, methodName, args);
+    protected MethodCallExpr getNameMethod(Node node, String defaultName) {
+        return getFactoryMethod(getNodeId(node), METHOD_NAME, new StringLiteralExpr(getOrDefault(node.getName(), defaultName)));
     }
 
-    protected MethodCallExpr addFactoryMethodWithArgs(BlockStmt body, String object, String methodName, Expression... args) {
-        MethodCallExpr variableMethod = new MethodCallExpr(new NameExpr(object), methodName);
-        for (Expression arg : args) {
-            variableMethod.addArgument(arg);
-        }
-        body.addStatement(variableMethod);
-        return variableMethod;
+    protected MethodCallExpr getDoneMethod(String object) {
+        return getFactoryMethod(object, METHOD_DONE);
     }
 
-    protected MethodCallExpr addFactoryNameMethod(BlockStmt body, Node node, String defaultName) {
-        return addFactoryMethodWithArgs(body, getNodeId(node), METHOD_NAME, new StringLiteralExpr(getOrDefault(node.getName(), defaultName)));
-    }
-
-    protected MethodCallExpr addFactoryDoneMethod(BlockStmt body, String object) {
-        return addFactoryMethodWithArgs(body, object, METHOD_DONE);
-    }
-
-    protected MethodCallExpr addFactoryMethodWithArgsWithAssignment(String factoryField, BlockStmt body, Class<?> typeClass, String variableName, String methodName, Expression... args) {
+    protected AssignExpr getAssignedFactoryMethod(String factoryField, Class<?> typeClass, String variableName, String methodName, Expression... args) {
         ClassOrInterfaceType type = new ClassOrInterfaceType(null, typeClass.getCanonicalName());
 
         MethodCallExpr variableMethod = new MethodCallExpr(new NameExpr(factoryField), methodName);
@@ -108,9 +95,8 @@ public abstract class AbstractNodeVisitor extends AbstractVisitor {
                 new VariableDeclarationExpr(type, variableName),
                 variableMethod,
                 AssignExpr.Operator.ASSIGN);
-        body.addStatement(assignExpr);
 
-        return variableMethod;
+        return assignExpr;
     }
 
     public static Statement makeAssignment(Variable v) {
@@ -154,10 +140,10 @@ public abstract class AbstractNodeVisitor extends AbstractVisitor {
 
     protected void addNodeMappings(Mappable node, BlockStmt body, String variableName) {
         for (Entry<String, String> entry : node.getInMappings().entrySet()) {
-            addFactoryMethodWithArgs(body, variableName, METHOD_IN_MAPPING, new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
+            body.addStatement(getFactoryMethod(variableName, METHOD_IN_MAPPING, new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue())));
         }
         for (Entry<String, String> entry : node.getOutMappings().entrySet()) {
-            addFactoryMethodWithArgs(body, variableName, METHOD_OUT_MAPPING, new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue()));
+            body.addStatement(getFactoryMethod(variableName, METHOD_OUT_MAPPING, new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue())));
         }
     }
 
@@ -187,20 +173,20 @@ public abstract class AbstractNodeVisitor extends AbstractVisitor {
             return;
         }
 
-        addFactoryMethodWithArgs(factoryField, body, "connection", new LongLiteralExpr(connection.getFrom().getId()),
+        body.addStatement(getFactoryMethod(factoryField, "connection", new LongLiteralExpr(connection.getFrom().getId()),
                 new LongLiteralExpr(connection.getTo().getId()),
-                new StringLiteralExpr(getOrDefault((String) connection.getMetaData().get("UniqueId"), "")));
+                new StringLiteralExpr(getOrDefault((String) connection.getMetaData().get("UniqueId"), ""))));
     }
 
     protected void addTimers(BlockStmt body, StateBasedNode node) {
         if (node.getTimers() != null) {
             node.getTimers().forEach((timer, action) -> {
                 DroolsConsequenceAction droolsAction = (DroolsConsequenceAction) action;
-                addFactoryMethodWithArgs(body, getNodeId(node), "timer",
+                body.addStatement(getFactoryMethod(getNodeId(node), "timer",
                         new StringLiteralExpr(timer.getDelay()),
                         getOrNullExpr(timer.getPeriod()),
                         new StringLiteralExpr(droolsAction.getDialect()),
-                        new StringLiteralExpr(StringEscapeUtils.escapeJava(droolsAction.getConsequence())));
+                        new StringLiteralExpr(StringEscapeUtils.escapeJava(droolsAction.getConsequence()))));
             });
         }
     }
