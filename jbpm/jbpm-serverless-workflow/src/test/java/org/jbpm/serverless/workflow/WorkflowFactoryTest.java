@@ -35,8 +35,7 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
 
     @Test
     public void testCreateProcess() {
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
-        RuleFlowProcess process = factory.createProcess(singleRelayStateWorkflow);
+        RuleFlowProcess process = testFactory.createProcess(singleRelayStateWorkflow);
         assertThat(process).isNotNull();
         assertThat(process.getId()).isEqualTo("serverless");
         assertThat(process.getName()).isEqualTo("workflow");
@@ -53,8 +52,7 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testStartNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
-        StartNode startNode = factory.startNode(1L, "start", nodeContainer);
+        StartNode startNode = testFactory.startNode(1L, "start", nodeContainer);
         assertThat(startNode).isNotNull();
         assertThat(startNode.getName()).isEqualTo("start");
     }
@@ -62,10 +60,9 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testMessageStartNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
         EventDefinition eventDefinition = new EventDefinition().withName("testEvent")
                 .withSource("testSource").withType("testType");
-        StartNode startNode = factory.messageStartNode(1L, eventDefinition, nodeContainer);
+        StartNode startNode = testFactory.messageStartNode(1L, eventDefinition, nodeContainer);
 
         assertThat(startNode).isNotNull();
         assertThat(startNode.getName()).isEqualTo(eventDefinition.getName());
@@ -78,8 +75,7 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testEndNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
-        EndNode endNode = factory.endNode(1L, "end", true, nodeContainer);
+        EndNode endNode = testFactory.endNode(1L, "end", true, nodeContainer);
         assertThat(endNode).isNotNull();
         assertThat(endNode.getName()).isEqualTo("end");
     }
@@ -87,12 +83,11 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testMessageEndNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
 
         End endDef = new End().withKind(End.Kind.EVENT).withProduceEvent(
                 new ProduceEvent().withNameRef("sampleEvent").withData("sampleData"));
 
-        EndNode endNode = factory.messageEndNode(1L,"End",  eventDefOnlyWorkflow, endDef, nodeContainer);
+        EndNode endNode = testFactory.messageEndNode(1L,"End",  eventDefOnlyWorkflow, endDef, nodeContainer);
 
         assertThat(endNode).isNotNull();
         assertThat(endNode.getName()).isEqualTo("End");
@@ -106,9 +101,8 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testTimerNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
 
-        TimerNode timerNode = factory.timerNode(1L, "timer", "sampleDelay", nodeContainer);
+        TimerNode timerNode = testFactory.timerNode(1L, "timer", "sampleDelay", nodeContainer);
         assertThat(timerNode).isNotNull();
         assertThat(timerNode.getName()).isEqualTo("timer");
         assertThat(timerNode.getMetaData().get("EventType")).isEqualTo("timer");
@@ -117,9 +111,8 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testCallActivity() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
 
-        SubProcessNode subProcessNode = factory.callActivity(1L, "subprocess", "calledId", true, nodeContainer);
+        SubProcessNode subProcessNode = testFactory.callActivity(1L, "subprocess", "calledId", true, nodeContainer);
         assertThat(subProcessNode).isNotNull();
         assertThat(subProcessNode.getName()).isEqualTo("subprocess");
         assertThat(subProcessNode.getProcessId()).isEqualTo("calledId");
@@ -134,33 +127,30 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testaAdMessageEndNodeAction() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
-        EndNode endNode = factory.endNode(1L, "end", true, nodeContainer);
+        EndNode endNode = testFactory.endNode(1L, "end", true, nodeContainer);
         assertThat(endNode).isNotNull();
         assertThat(endNode.getName()).isEqualTo("end");
 
-        factory.addMessageEndNodeAction(endNode, "testVar", "testMessageType");
+        testFactory.addMessageEndNodeAction(endNode, "testVar", "testMessageType");
         assertThat(endNode.getActions(ExtendedNodeImpl.EVENT_NODE_ENTER)).hasSize(1);
     }
 
     @Test
     public void testAddTriggerToStartNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
-        StartNode startNode = factory.startNode(1L, "start", nodeContainer);
+        StartNode startNode = testFactory.startNode(1L, "start", nodeContainer);
         assertThat(startNode).isNotNull();
         assertThat(startNode.getName()).isEqualTo("start");
 
-        factory.addTriggerToStartNode(startNode, "testTriggerType");
+        testFactory.addTriggerToStartNode(startNode, "testTriggerType");
         assertThat(startNode.getTriggers()).hasSize(1);
     }
 
     @Test
     public void testScriptNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
 
-        ActionNode actionNode = factory.scriptNode(1L, "script", "testScript", nodeContainer);
+        ActionNode actionNode = testFactory.scriptNode(1L, "script", "testScript", nodeContainer);
         assertThat(actionNode).isNotNull();
         assertThat(actionNode.getName()).isEqualTo("script");
         assertThat(actionNode.getAction()).isNotNull();
@@ -169,7 +159,6 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testServiceNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
         Function function = new Function().withName("testFunction").withType("testType")
                 .withResource("testResource").withMetadata(
                         new HashMap<String, String>() {{
@@ -178,7 +167,7 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
                             put("implementation", "testImplementation");
                         }}
                 );
-        WorkItemNode workItemNode = factory.serviceNode(1L, "testService", function, nodeContainer);
+        WorkItemNode workItemNode = testFactory.serviceNode(1L, "testService", function, nodeContainer);
         assertThat(workItemNode).isNotNull();
         assertThat(workItemNode.getName()).isEqualTo("testService");
         assertThat(workItemNode.getMetaData().get("Type")).isEqualTo("Service Task");
@@ -202,9 +191,8 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testSubProcessNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
 
-        CompositeContextNode compositeContextNode = factory.subProcessNode(1L, "subprocess", nodeContainer);
+        CompositeContextNode compositeContextNode = testFactory.subProcessNode(1L, "subprocess", nodeContainer);
         assertThat(compositeContextNode).isNotNull();
         assertThat(compositeContextNode.getName()).isEqualTo("subprocess");
         assertThat(compositeContextNode.isAutoComplete()).isTrue();
@@ -212,9 +200,7 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
 
     @Test
     public void testSplitConstraint() {
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
-
-        ConstraintImpl constraint = factory.splitConstraint("testName", "testType", "testDialect", "testConstraint", 0, true);
+        ConstraintImpl constraint = testFactory.splitConstraint("testName", "testType", "testDialect", "testConstraint", 0, true);
         assertThat(constraint).isNotNull();
         assertThat(constraint.getName()).isEqualTo("testName");
         assertThat(constraint.getType()).isEqualTo("testType");
@@ -227,9 +213,8 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testSplitNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
 
-        Split split = factory.splitNode(1L, "testSplit", Split.TYPE_XOR, nodeContainer);
+        Split split = testFactory.splitNode(1L, "testSplit", Split.TYPE_XOR, nodeContainer);
         assertThat(split).isNotNull();
         assertThat(split.getId()).isEqualTo(1L);
         assertThat(split.getName()).isEqualTo("testSplit");
@@ -240,9 +225,8 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testJoinNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-        ServerlessWorkflowFactory factory = new ServerlessWorkflowFactory();
 
-        Join join = factory.joinNode(1L, "testJoin", Join.TYPE_XOR, nodeContainer);
+        Join join = testFactory.joinNode(1L, "testJoin", Join.TYPE_XOR, nodeContainer);
         assertThat(join).isNotNull();
         assertThat(join.getId()).isEqualTo(1L);
         assertThat(join.getName()).isEqualTo("testJoin");

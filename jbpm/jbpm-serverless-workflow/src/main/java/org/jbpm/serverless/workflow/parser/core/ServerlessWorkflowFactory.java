@@ -31,6 +31,7 @@ import org.jbpm.serverless.workflow.api.end.End;
 import org.jbpm.serverless.workflow.api.events.EventDefinition;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
+import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
@@ -47,7 +48,7 @@ import java.util.*;
 public class ServerlessWorkflowFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowFactory.class);
 
-    private static final String EOL = System.getProperty( "line.separator" );
+    private static final String EOL = System.getProperty("line.separator");
     private static final String DEFAULT_WORKFLOW_ID = "serverless";
     private static final String DEFAULT_WORKFLOW_NAME = "workflow";
     private static final String DEFAULT_WORKFLOW_VERSION = "1.0";
@@ -58,31 +59,41 @@ public class ServerlessWorkflowFactory {
     private static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
     private static final String UNIQUE_ID_PARAM = "UniqueId";
 
+    private static final String APP_PROPERTIES_BASE = "kogito.sw.";
+    private static final String APP_PROPERTIES_FUNCTIONS_BASE = "functions.";
+    private static final String APP_PROPERTIES_EVENTS_BASE = "events.";
+
+    private WorkflowAppContext workflowAppContext;
+
+    public ServerlessWorkflowFactory(WorkflowAppContext workflowAppContext) {
+        this.workflowAppContext = workflowAppContext;
+    }
+
     public RuleFlowProcess createProcess(Workflow workflow) {
         RuleFlowProcess process = new RuleFlowProcess();
 
-        if(workflow.getId() != null && !workflow.getId().isEmpty()) {
+        if (workflow.getId() != null && !workflow.getId().isEmpty()) {
             process.setId(workflow.getId());
         } else {
             LOGGER.info("setting default id {}", DEFAULT_WORKFLOW_ID);
             process.setId(DEFAULT_WORKFLOW_ID);
         }
 
-        if(workflow.getName() != null && !workflow.getName().isEmpty()) {
+        if (workflow.getName() != null && !workflow.getName().isEmpty()) {
             process.setName(workflow.getName());
         } else {
             LOGGER.info("setting default name {}", DEFAULT_WORKFLOW_NAME);
             process.setName(DEFAULT_WORKFLOW_NAME);
         }
 
-        if(workflow.getVersion() != null && !workflow.getVersion().isEmpty()) {
+        if (workflow.getVersion() != null && !workflow.getVersion().isEmpty()) {
             process.setVersion(workflow.getVersion());
         } else {
             LOGGER.info("setting default version {}", DEFAULT_WORKFLOW_VERSION);
             process.setVersion(DEFAULT_WORKFLOW_VERSION);
         }
 
-        if(workflow.getMetadata() != null && workflow.getMetadata().get("package") != null) {
+        if (workflow.getMetadata() != null && workflow.getMetadata().get("package") != null) {
             process.setPackageName(workflow.getMetadata().get("package"));
         } else {
             process.setPackageName(DEFAULT_PACKAGE_NAME);
@@ -195,7 +206,7 @@ public class ServerlessWorkflowFactory {
         return subProcessNode;
     }
 
-    public void addMessageEndNodeAction(EndNode endNode, String variable, String messageType){
+    public void addMessageEndNodeAction(EndNode endNode, String variable, String messageType) {
         List<DroolsAction> actions = new ArrayList<>();
 
         actions.add(new DroolsConsequenceAction("java",
@@ -231,8 +242,8 @@ public class ServerlessWorkflowFactory {
         scriptNode.setName(name);
 
         scriptNode.setAction(new DroolsConsequenceAction());
-        ((DroolsConsequenceAction)scriptNode.getAction()).setConsequence(script);
-        ((DroolsConsequenceAction)scriptNode.getAction()).setDialect(JavaDialect.ID);
+        ((DroolsConsequenceAction) scriptNode.getAction()).setConsequence(script);
+        ((DroolsConsequenceAction) scriptNode.getAction()).setDialect(JavaDialect.ID);
 
         nodeContainer.addNode(scriptNode);
 
@@ -249,13 +260,13 @@ public class ServerlessWorkflowFactory {
         workItemNode.setWork(work);
 
         work.setName("Service Task");
-        work.setParameter("Interface", function.getMetadata().get("interface"));
-        work.setParameter("Operation", function.getMetadata().get("operation"));
-        work.setParameter("interfaceImplementationRef", function.getMetadata().get("interface"));
-        work.setParameter("operationImplementationRef", function.getMetadata().get("operation"));
+        work.setParameter("Interface", resolveFunctionMetadata(function, "interface"));
+        work.setParameter("Operation", resolveFunctionMetadata(function, "operation"));
+        work.setParameter("interfaceImplementationRef", resolveFunctionMetadata(function, "interface"));
+        work.setParameter("operationImplementationRef", resolveFunctionMetadata(function, "operation"));
         work.setParameter("ParameterType", JSON_NODE);
-        String metaImpl = function.getMetadata().get("implementation");
-        if(metaImpl == null) {
+        String metaImpl = resolveFunctionMetadata(function, "implementation");
+        if (metaImpl == null || metaImpl.isEmpty()) {
             metaImpl = "Java";
         }
         work.setParameter("implementation", metaImpl);
@@ -352,6 +363,20 @@ public class ServerlessWorkflowFactory {
         if (errors.length > 0) {
             throw new RuntimeException("Workflow could not be validated !");
         }
+    }
+
+    private String resolveFunctionMetadata(Function function, String metadataKey) {
+        if (function != null && function.getMetadata() != null && function.getMetadata().containsKey(metadataKey)) {
+            return function.getMetadata().get(metadataKey);
+        }
+
+        if (function != null && workflowAppContext != null &&
+                workflowAppContext.getApplicationProperties().containsKey(APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName() + "." + metadataKey)) {
+            return workflowAppContext.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName() + "." + metadataKey);
+        }
+
+        LOGGER.warn("Could not resolve function metadata: {}", metadataKey);
+        return "";
     }
 
 }

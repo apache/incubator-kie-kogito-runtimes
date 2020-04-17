@@ -17,6 +17,7 @@ package org.jbpm.serverless.workflow;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Properties;
 
 import org.jbpm.serverless.workflow.api.Workflow;
 import org.jbpm.serverless.workflow.api.end.End;
@@ -58,5 +59,15 @@ public abstract class BaseServerlessTest {
 
     protected Reader classpathResourceReader(String location) {
         return new InputStreamReader(this.getClass().getResourceAsStream(location));
+    }
+
+    protected static Properties testWorkflowProperties() {
+        Properties properties = new Properties();
+        properties.put("kogito.sw.functions.testfunction1.testprop1", "testprop1val");
+        properties.put("kogito.sw.functions.testfunction1.testprop2", "testprop2val");
+        properties.put("kogito.sw.functions.testfunction2.testprop1", "testprop1val");
+        properties.put("kogito.sw.functions.testfunction2.testprop2", "testprop2val");
+
+        return properties;
     }
 }
