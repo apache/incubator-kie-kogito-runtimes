@@ -30,7 +30,6 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Disabled
 public class HotReloadTest {
 
     private static final String PACKAGE = "io.quarkus.it.kogito.drools";
