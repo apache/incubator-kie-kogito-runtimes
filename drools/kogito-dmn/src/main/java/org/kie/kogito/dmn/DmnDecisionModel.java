@@ -60,4 +60,11 @@ public class DmnDecisionModel implements DecisionModel {
                 : context;
     }
 
+    public DMNModel getDMNModel() {
+        DMNModel dmnModel = dmnRuntime.getModel(namespace, name);
+        if (dmnModel == null) {
+            throw new IllegalStateException("DMN model '" + name + "' not found with namespace '" + namespace + "' in the inherent DMNRuntime.");
+        }
+        return dmnModel;
+    }
 }
