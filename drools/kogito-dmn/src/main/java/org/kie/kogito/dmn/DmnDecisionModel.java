@@ -60,6 +60,7 @@ public class DmnDecisionModel implements DecisionModel {
                 : context;
     }
 
+    @Override
     public DMNModel getDMNModel() {
         DMNModel dmnModel = dmnRuntime.getModel(namespace, name);
         if (dmnModel == null) {
