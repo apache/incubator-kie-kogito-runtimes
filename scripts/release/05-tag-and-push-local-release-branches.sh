@@ -49,8 +49,8 @@ for repository in `cat $organizationDir/kogito-runtimes/scripts/repository-list.
         cd $repository
 
         releaseTagName=$1
-        git tag -f -a $releaseTagName -m "Tagging $releaseTagName"
-        git push origin $releaseTagName -f
+        git tag -a $releaseTagName -m "Tagging $releaseTagName"
+        git push origin $releaseTagName
 
         if [ $# == 2 ] && [ $2 != "" ]; then
           targetBranchName=$2
