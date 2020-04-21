@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>events</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.2-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-events-reactive-messaging-addon</artifactId>
   <name>Kogito Events Reactive Messaging AddOn</name>
