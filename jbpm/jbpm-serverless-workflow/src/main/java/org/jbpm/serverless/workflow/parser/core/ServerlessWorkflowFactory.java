@@ -58,6 +58,10 @@ public class ServerlessWorkflowFactory {
     private static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     private static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
     private static final String UNIQUE_ID_PARAM = "UniqueId";
+    private static final String DEFAULT_SERVICE_IMPL = "Java";
+    private static final String SERVICE_INTERFACE_KEY = "interface";
+    private static final String SERVICE_OPERATION_KEY = "operation";
+    private static final String SERVICE_IMPL_KEY = "implementation";
 
     private WorkflowAppContext workflowAppContext;
 
@@ -256,16 +260,16 @@ public class ServerlessWorkflowFactory {
         workItemNode.setWork(work);
 
         work.setName("Service Task");
-        work.setParameter("Interface", ServerlessWorkflowUtils.resolveFunctionMetadata(function, "interface", workflowAppContext));
-        work.setParameter("Operation", ServerlessWorkflowUtils.resolveFunctionMetadata(function, "operation", workflowAppContext));
-        work.setParameter("interfaceImplementationRef", ServerlessWorkflowUtils.resolveFunctionMetadata(function, "interface", workflowAppContext));
-        work.setParameter("operationImplementationRef", ServerlessWorkflowUtils.resolveFunctionMetadata(function, "operation", workflowAppContext));
+        work.setParameter("Interface", ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_INTERFACE_KEY, workflowAppContext));
+        work.setParameter("Operation", ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_OPERATION_KEY, workflowAppContext));
+        work.setParameter("interfaceImplementationRef", ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_INTERFACE_KEY, workflowAppContext));
+        work.setParameter("operationImplementationRef", ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_OPERATION_KEY, workflowAppContext));
         work.setParameter("ParameterType", JSON_NODE);
-        String metaImpl = ServerlessWorkflowUtils.resolveFunctionMetadata(function, "implementation", workflowAppContext);
+        String metaImpl = ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_IMPL_KEY, workflowAppContext);
         if (metaImpl == null || metaImpl.isEmpty()) {
-            metaImpl = "Java";
+            metaImpl = DEFAULT_SERVICE_IMPL;
         }
-        work.setParameter("implementation", metaImpl);
+        work.setParameter(SERVICE_IMPL_KEY, metaImpl);
 
         workItemNode.addInMapping("Parameter", DEFAULT_WORKFLOW_VAR);
         workItemNode.addOutMapping("Result", DEFAULT_WORKFLOW_VAR);
