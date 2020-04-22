@@ -66,11 +66,11 @@ public abstract class NodeImpl implements Node, Serializable, ContextResolver {
     
     public String getUniqueId() {
     	String result = id + "";
-    	NodeContainer nodeContainer = getNodeContainer();
+    	NodeContainer nodeContainer = getParentContainer();
     	while (nodeContainer instanceof CompositeNode) {
     		CompositeNode composite = (CompositeNode) nodeContainer;
     		result = composite.getId() + ":" + result;
-    		nodeContainer = composite.getNodeContainer();
+    		nodeContainer = composite.getParentContainer();
     	}
     	return result;
     }
@@ -245,7 +245,7 @@ public abstract class NodeImpl implements Node, Serializable, ContextResolver {
         return getOutgoingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
     }
 
-    public NodeContainer getNodeContainer() {
+    public NodeContainer getParentContainer() {
         return parentNodeContainer;
     }
     

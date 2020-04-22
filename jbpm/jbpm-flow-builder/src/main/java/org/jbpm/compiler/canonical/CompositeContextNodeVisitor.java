@@ -17,6 +17,7 @@ package org.jbpm.compiler.canonical;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -32,6 +33,7 @@ import org.kie.api.definition.process.Node;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory.METHOD_VARIABLE;
 
@@ -60,7 +62,6 @@ public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
 
     @Override
     public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-
         CompositeContextNode compositeContextNode = (CompositeContextNode) node;
 
         body.addStatement(getAssignedFactoryMethod(factoryField, factoryClass(), getNodeId(node), factoryMethod(), new LongLiteralExpr(compositeContextNode.getId())))
@@ -72,6 +73,10 @@ public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
             visitVariableScope(getNodeId(node), variableScopeNode, body, new HashSet<>());
         }
 
+        visitCustomFields(compositeContextNode).forEach(body::addStatement);
+
+        // visit nodes
+        visitNodes(getNodeId(node), compositeContextNode.getNodes(), body, ((VariableScope) compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);
         // composite context node might not have variable scope
         // in that case inherit it from parent
         if (compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE) == null) {
@@ -87,6 +92,10 @@ public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
 
     protected String getDefaultName() {
         return DEFAULT_NAME;
+    }
+
+    protected Stream<MethodCallExpr> visitCustomFields(CompositeContextNode compositeContextNode) {
+        return Stream.empty();
     }
 
     protected void visitVariableScope(String contextNode, VariableScope variableScope, BlockStmt body, Set<String> visitedVariables) {

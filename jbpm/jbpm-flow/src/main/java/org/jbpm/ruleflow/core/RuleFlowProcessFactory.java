@@ -30,6 +30,7 @@ import org.jbpm.process.instance.impl.actions.CancelNodeInstanceAction;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
+import org.jbpm.workflow.core.node.CompositeNode;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.EventNode;
 import org.jbpm.workflow.core.node.EventSubProcessNode;
@@ -209,10 +210,12 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
 
     protected void linkBoundaryEvents(NodeContainer nodeContainer) {
         for (Node node : nodeContainer.getNodes()) {
+            if (node instanceof CompositeNode) {
+                CompositeNode compositeNode = (CompositeNode) node;
+                linkBoundaryEvents(compositeNode.getNodeContainer());
+            }
             if (node instanceof EventNode) {
-
                 final String attachedTo = (String) node.getMetaData().get("AttachedTo");
-
                 if (attachedTo != null) {
                     Node attachedNode = findNodeByIdOrUniqueIdInMetadata(nodeContainer, attachedTo, "Could not find node to attach to: " + attachedTo);
                     for (EventFilter filter : ((EventNode) node).getEventFilters()) {

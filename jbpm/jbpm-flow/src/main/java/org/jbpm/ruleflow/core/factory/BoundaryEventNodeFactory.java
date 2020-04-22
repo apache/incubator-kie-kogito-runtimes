@@ -90,10 +90,7 @@ public class BoundaryEventNodeFactory extends EventNodeFactory {
     }
 
     public BoundaryEventNodeFactory attachedTo(long attachedToId) {
-        attachedToUniqueId = (String) nodeContainer.getNode(attachedToId).getMetaData().get("UniqueId");
-        getBoundaryEventNode().setAttachedToNodeId(attachedToUniqueId);
-        getBoundaryEventNode().setMetaData(BoundaryEventNodeFactory.METADATA_ATTACHED_TO, attachedToUniqueId);
-        return this;
+        return attachedTo((String) nodeContainer.getNode(attachedToId).getMetaData().get("UniqueId"));
     }
 
     public BoundaryEventNodeFactory attachedTo(String attachedToId) {
@@ -117,25 +114,5 @@ public class BoundaryEventNodeFactory extends EventNodeFactory {
         filter.setType(eventTypePrefix + "-" + attachedToUniqueId + "-" + eventTypeSurffix);
         super.eventFilter(filter);
         return this;
-    }
-
-    public BoundaryEventNodeFactory timeCycle(String timeCycle) {
-        eventType(EVENT_TYPE_TIMER, timeCycle);
-        return metaData(METADATA_TIME_CYCLE, timeCycle);
-    }
-
-    public BoundaryEventNodeFactory timeCycle(String timeCycle, String language) {
-        eventType(EVENT_TYPE_TIMER, timeCycle);
-        metaData(METADATA_TIME_CYCLE, timeCycle);
-        return metaData(METADATA_LANGUAGE, language);
-    }
-
-    public BoundaryEventNodeFactory timeDuration(String timeDuration) {
-        eventType(EVENT_TYPE_TIMER, timeDuration);
-        return metaData(METADATA_TIME_DURATION, timeDuration);
-    }
-
-    public BoundaryEventNodeFactory cancelActivity(boolean cancelActivity) {
-        return metaData(METADATA_CANCEL_ACTIVITY, cancelActivity);
     }
 }
