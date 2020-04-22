@@ -147,7 +147,7 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     @Test
     public void testResolveFunctionMetadata() throws Exception {
         Function function = new Function().withName("testfunction1").withMetadata(
-                new HashMap<>() {{
+                new HashMap() {{
                     put("testprop1", "customtestprop1val");
                 }}
         );
@@ -166,7 +166,7 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     @Test
     public void testResolveEvenDefinitiontMetadata() throws Exception {
         EventDefinition eventDefinition = new EventDefinition().withName("testevent1").withMetadata(
-                new HashMap<>() {{
+                new HashMap() {{
                     put("testprop1", "customtestprop1val");
                 }}
         );
@@ -185,7 +185,7 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     @Test
     public void testResolveStatetMetadata() throws Exception {
         DefaultState defaultState = new DefaultState().withName("teststate1").withMetadata(
-                new HashMap<>() {{
+                new HashMap() {{
                     put("testprop1", "customtestprop1val");
                 }}
         );
@@ -205,7 +205,7 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     @Test
     public void testResolveWorkflowMetadata() throws Exception {
         Workflow workflow = new Workflow().withId("workflowid1").withMetadata(
-                new HashMap<>() {{
+                new HashMap() {{
                     put("testprop1", "customtestprop1val");
                 }}
         );
