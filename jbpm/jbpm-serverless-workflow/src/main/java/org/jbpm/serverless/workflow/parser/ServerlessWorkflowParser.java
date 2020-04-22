@@ -59,17 +59,16 @@ public class ServerlessWorkflowParser {
     private static final String NODETOID_START = "start";
     private static final String NODETOID_END = "end";
 
-
     private AtomicLong idCounter = new AtomicLong(1);
     private ServerlessWorkflowFactory factory;
     private BaseObjectMapper objectMapper;
-    private WorkflowAppContext workflowAppContext = WorkflowAppContext.ofAppResources();
-
-    public ServerlessWorkflowParser() {
-        this.factory = new ServerlessWorkflowFactory(workflowAppContext);
-    }
 
     public ServerlessWorkflowParser(String workflowFormat) {
+        this.objectMapper = ServerlessWorkflowUtils.getObjectMapper(workflowFormat);
+        this.factory = new ServerlessWorkflowFactory(WorkflowAppContext.ofAppResources());
+    }
+
+    public ServerlessWorkflowParser(String workflowFormat, WorkflowAppContext workflowAppContext) {
         this.objectMapper = ServerlessWorkflowUtils.getObjectMapper(workflowFormat);
         this.factory = new ServerlessWorkflowFactory(workflowAppContext);
     }

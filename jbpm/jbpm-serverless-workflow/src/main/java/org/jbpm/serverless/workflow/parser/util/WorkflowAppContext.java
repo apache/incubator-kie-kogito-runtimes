@@ -24,17 +24,17 @@ public class WorkflowAppContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowAppContext.class);
 
-    private static final String APPLICATION_PROPERTIES_FILE_NAME = "application.properties";
+    private static final String APP_PROPERTIES_FILE_NAME = "application.properties";
 
     private Properties applicationProperties;
 
     public static WorkflowAppContext ofAppResources() {
         Properties properties = new Properties();
 
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(APPLICATION_PROPERTIES_FILE_NAME)) {
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(APP_PROPERTIES_FILE_NAME)) {
             properties.load(is);
         } catch (Exception e) {
-            LOGGER.debug("Unable to load '" + APPLICATION_PROPERTIES_FILE_NAME + "'.");
+            LOGGER.debug("Unable to load {}", APP_PROPERTIES_FILE_NAME);
         }
         return new WorkflowAppContext(properties);
     }

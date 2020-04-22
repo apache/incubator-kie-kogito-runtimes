@@ -21,7 +21,6 @@ import org.jbpm.serverless.workflow.api.end.End;
 import org.jbpm.serverless.workflow.api.events.EventDefinition;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.produce.ProduceEvent;
-import org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory;
 import org.jbpm.workflow.core.impl.ConstraintImpl;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.node.*;
@@ -87,7 +86,7 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         End endDef = new End().withKind(End.Kind.EVENT).withProduceEvent(
                 new ProduceEvent().withNameRef("sampleEvent").withData("sampleData"));
 
-        EndNode endNode = testFactory.messageEndNode(1L,"End",  eventDefOnlyWorkflow, endDef, nodeContainer);
+        EndNode endNode = testFactory.messageEndNode(1L, "End", eventDefOnlyWorkflow, endDef, nodeContainer);
 
         assertThat(endNode).isNotNull();
         assertThat(endNode.getName()).isEqualTo("End");

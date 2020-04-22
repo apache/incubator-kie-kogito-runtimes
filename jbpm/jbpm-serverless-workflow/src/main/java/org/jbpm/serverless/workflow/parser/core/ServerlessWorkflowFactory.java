@@ -59,10 +59,6 @@ public class ServerlessWorkflowFactory {
     private static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
     private static final String UNIQUE_ID_PARAM = "UniqueId";
 
-    private static final String APP_PROPERTIES_BASE = "kogito.sw.";
-    private static final String APP_PROPERTIES_FUNCTIONS_BASE = "functions.";
-    private static final String APP_PROPERTIES_EVENTS_BASE = "events.";
-
     private WorkflowAppContext workflowAppContext;
 
     public ServerlessWorkflowFactory(WorkflowAppContext workflowAppContext) {
@@ -260,12 +256,12 @@ public class ServerlessWorkflowFactory {
         workItemNode.setWork(work);
 
         work.setName("Service Task");
-        work.setParameter("Interface", resolveFunctionMetadata(function, "interface"));
-        work.setParameter("Operation", resolveFunctionMetadata(function, "operation"));
-        work.setParameter("interfaceImplementationRef", resolveFunctionMetadata(function, "interface"));
-        work.setParameter("operationImplementationRef", resolveFunctionMetadata(function, "operation"));
+        work.setParameter("Interface", ServerlessWorkflowUtils.resolveFunctionMetadata(function, "interface", workflowAppContext));
+        work.setParameter("Operation", ServerlessWorkflowUtils.resolveFunctionMetadata(function, "operation", workflowAppContext));
+        work.setParameter("interfaceImplementationRef", ServerlessWorkflowUtils.resolveFunctionMetadata(function, "interface", workflowAppContext));
+        work.setParameter("operationImplementationRef", ServerlessWorkflowUtils.resolveFunctionMetadata(function, "operation", workflowAppContext));
         work.setParameter("ParameterType", JSON_NODE);
-        String metaImpl = resolveFunctionMetadata(function, "implementation");
+        String metaImpl = ServerlessWorkflowUtils.resolveFunctionMetadata(function, "implementation", workflowAppContext);
         if (metaImpl == null || metaImpl.isEmpty()) {
             metaImpl = "Java";
         }
@@ -302,11 +298,6 @@ public class ServerlessWorkflowFactory {
 
 
     public Split splitNode(long id, String name, int type, NodeContainer nodeContainer) {
-        // 0 = TYPE_UNDEFINED
-        // 1 = TYPE_AND
-        // 2 = TYPE_XOR
-        // 3 = TYPE_OR
-        // 4 = TYPE_XAND
         Split split = new Split();
         split.setId(id);
         split.setName(name);
@@ -318,12 +309,6 @@ public class ServerlessWorkflowFactory {
     }
 
     public Join joinNode(long id, String name, int type, NodeContainer nodeContainer) {
-        // 0 = TYPE_UNDEFINED
-        // 1 = TYPE_AND
-        // 2 = TYPE_XOR
-        // 3 = TYPE_DISCRIMINATOR
-        // 4 = TYPE_N_OF_M
-        // 5 = TYPE_OR
         Join join = new Join();
         join.setId(id);
         join.setName(name);
@@ -363,20 +348,6 @@ public class ServerlessWorkflowFactory {
         if (errors.length > 0) {
             throw new RuntimeException("Workflow could not be validated !");
         }
-    }
-
-    private String resolveFunctionMetadata(Function function, String metadataKey) {
-        if (function != null && function.getMetadata() != null && function.getMetadata().containsKey(metadataKey)) {
-            return function.getMetadata().get(metadataKey);
-        }
-
-        if (function != null && workflowAppContext != null &&
-                workflowAppContext.getApplicationProperties().containsKey(APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName() + "." + metadataKey)) {
-            return workflowAppContext.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName() + "." + metadataKey);
-        }
-
-        LOGGER.warn("Could not resolve function metadata: {}", metadataKey);
-        return "";
     }
 
 }
