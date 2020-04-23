@@ -1,0 +1,15 @@
+package io.quarkus.it.kogito.drools.newunithotreloadtest;
+unit PersonUnit;
+
+import io.quarkus.it.kogito.drools.newunithotreloadtest.Person;
+
+rule "adult"
+when
+    $p: /persons[age >= 18];
+then
+    modify($p) { setAdult(true) };
+end
+
+query FindAdultNames
+    /persons[adult, $name: name];
+end
