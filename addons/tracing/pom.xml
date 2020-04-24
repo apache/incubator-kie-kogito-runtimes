@@ -11,9 +11,10 @@
 
   <artifactId>tracing</artifactId>
   <packaging>pom</packaging>
+
   <modules>
+    <module>tracing-decision-common</module>
     <module>tracing-decision-quarkus-addon</module>
   </modules>
-
 
 </project>
