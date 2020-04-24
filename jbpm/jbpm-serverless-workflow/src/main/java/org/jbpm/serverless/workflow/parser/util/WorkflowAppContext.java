@@ -25,6 +25,7 @@ public class WorkflowAppContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowAppContext.class);
 
     private static final String APP_PROPERTIES_FILE_NAME = "application.properties";
+    private static final String DEFAULT_PROP_VALUE = "";
 
     private Properties applicationProperties;
 
@@ -51,7 +52,7 @@ public class WorkflowAppContext {
         if (applicationProperties != null && applicationProperties.containsKey(key)) {
             return applicationProperties.getProperty(key);
         } else {
-            return null;
+            return DEFAULT_PROP_VALUE;
         }
     }
 
