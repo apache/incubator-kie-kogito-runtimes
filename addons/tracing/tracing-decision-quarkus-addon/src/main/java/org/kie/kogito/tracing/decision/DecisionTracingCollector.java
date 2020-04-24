@@ -13,13 +13,6 @@ import org.reactivestreams.Publisher;
 @Singleton
 public class DecisionTracingCollector extends AbstractDecisionTracingCollector {
 
-//    private static final Logger LOG = LoggerFactory.getLogger(DecisionTracingCollector.class);
-//
-//    private static final ObjectMapper MAPPER = new ObjectMapper()
-//            .registerModule(new ParameterNamesModule())
-//            .registerModule(new Jdk8Module())
-//            .registerModule(new JavaTimeModule());
-
     private final PublishSubject<String> eventSubject = PublishSubject.create();
 
     @Outgoing("kogito-tracing-decision")
@@ -41,15 +34,5 @@ public class DecisionTracingCollector extends AbstractDecisionTracingCollector {
     protected void handlePayload(String payload) {
         eventSubject.onNext(payload);
     }
-
-//    @Override
-//    protected String serializeCloudEvent(org.kie.kogito.tracing.decision.CloudEvent<?> event) {
-//        try {
-//            return MAPPER.writer().writeValueAsString(event);
-//        } catch (JsonProcessingException e) {
-//            LOG.error("JsonProcessingException during CloudEvent serialization", e);
-//            throw new RuntimeException(e);
-//        }
-//    }
 
 }
