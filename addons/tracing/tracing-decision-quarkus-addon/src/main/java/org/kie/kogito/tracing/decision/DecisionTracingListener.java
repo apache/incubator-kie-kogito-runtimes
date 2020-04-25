@@ -9,8 +9,12 @@ import org.kie.kogito.tracing.decision.event.EvaluateEvent;
 @ApplicationScoped
 public final class DecisionTracingListener extends AbstractDecisionTracingListener {
 
+    private final EventBus bus;
+
     @Inject
-    EventBus bus;
+    public DecisionTracingListener(EventBus bus) {
+        this.bus = bus;
+    }
 
     @Override
     protected void handleEvaluateEvent(EvaluateEvent event) {

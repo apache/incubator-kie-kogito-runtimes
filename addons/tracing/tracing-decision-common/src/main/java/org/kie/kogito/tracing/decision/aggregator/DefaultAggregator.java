@@ -1,6 +1,8 @@
 package org.kie.kogito.tracing.decision.aggregator;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +25,7 @@ public class DefaultAggregator implements Aggregator<AfterEvaluateAllEvent> {
         return CloudEventBuilder.<AfterEvaluateAllEvent>builder()
                 .withType(AfterEvaluateAllEvent.class.getName())
                 .withId(evaluationId)
-                .withSource(URI.create(event.getModelName()))
+                .withSource(URI.create(URLEncoder.encode(event.getModelName(), StandardCharsets.UTF_8)))
                 .withData(event)
                 .build();
     }
