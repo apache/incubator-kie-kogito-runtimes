@@ -204,6 +204,7 @@ public class ApplicationGenerator {
        return this;
    }
 
+
     public Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = generateComponents();
         generators.forEach(gen -> gen.updateConfig(configGenerator));
