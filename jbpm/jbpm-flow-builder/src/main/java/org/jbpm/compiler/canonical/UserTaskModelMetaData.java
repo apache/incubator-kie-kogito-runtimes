@@ -48,6 +48,7 @@ public class UserTaskModelMetaData {
 
     private final String packageName;
 
+    private final VariableScope processVariableScope;
     private final VariableScope variableScope;
     private final HumanTaskNode humanTaskNode;
     private final String processId;
@@ -58,8 +59,9 @@ public class UserTaskModelMetaData {
     private String outputModelClassName;
     private String outputMoodelClassSimpleName;
 
-    public UserTaskModelMetaData(String packageName, VariableScope variableScope, HumanTaskNode humanTaskNode, String processId) {
+    public UserTaskModelMetaData(String packageName, VariableScope processVariableScope, VariableScope variableScope, HumanTaskNode humanTaskNode, String processId) {
         this.packageName = packageName;
+        this.processVariableScope = processVariableScope;
         this.variableScope = variableScope;
         this.humanTaskNode = humanTaskNode;
         this.processId = processId;
@@ -160,7 +162,10 @@ public class UserTaskModelMetaData {
             Variable variable = variableScope.findVariable(entry.getValue());
 
             if (variable == null) {
-                throw new IllegalStateException("Task " + humanTaskNode.getName() +" (input) " + entry.getKey() + " reference not existing variable " + entry.getValue());
+                variable = processVariableScope.findVariable(entry.getValue());
+                if (variable == null) {
+                    throw new IllegalStateException("Task " + humanTaskNode.getName() +" (input) " + entry.getKey() + " reference not existing variable " + entry.getValue());
+                }
             }
 
             FieldDeclaration fd = new FieldDeclaration().addVariable(
@@ -251,15 +256,18 @@ public class UserTaskModelMetaData {
             Variable variable = variableScope.findVariable(entry.getValue());
 
             if (variable == null) {
-                // check if given mapping is an expression
-                Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(entry.getValue());
-                if (matcher.find()) {                    
-                    Map<String, String> dataOutputs = (Map<String, String>) humanTaskNode.getMetaData("DataOutputs");
-                    variable = new Variable();
-                    variable.setName(entry.getKey());
-                    variable.setType(new ObjectDataType(dataOutputs.get(entry.getKey())));
-                } else {
-                    throw new IllegalStateException("Task " + humanTaskNode.getName() +" (output) " + entry.getKey() + " reference not existing variable " + entry.getValue());
+                variable = processVariableScope.findVariable(entry.getValue());
+                if (variable == null) {
+                    // check if given mapping is an expression
+                    Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(entry.getValue());
+                    if (matcher.find()) {
+                        Map<String, String> dataOutputs = (Map<String, String>) humanTaskNode.getMetaData("DataOutputs");
+                        variable = new Variable();
+                        variable.setName(entry.getKey());
+                        variable.setType(new ObjectDataType(dataOutputs.get(entry.getKey())));
+                    } else {
+                        throw new IllegalStateException("Task " + humanTaskNode.getName() +" (output) " + entry.getKey() + " reference not existing variable " + entry.getValue());
+                    }
                 }
             }
 

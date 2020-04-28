@@ -374,6 +374,41 @@ public class ServlerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"/exec/single-decision-operation.sw.json", "/exec/single-decision-operation.sw.yml"})
+    public void testDecisionService(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("singledecisionworkflow", process.getId());
+        assertEquals("Single Decision Workflow", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(3, process.getNodes().length);
+        Node node = process.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[2];
+        assertTrue(node instanceof CompositeContextNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof EndNode);
+
+        // now check the composite one to see what nodes it has
+        CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
+
+        assertEquals(3, compositeNode.getNodes().length);
+
+        node = compositeNode.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = compositeNode.getNodes()[1];
+        assertTrue(node instanceof HumanTaskNode);
+        node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof EndNode);
+
+        assertNotNull(process.getVariableScope().getVariables());
+        assertEquals(2, process.getVariableScope().getVariables().size());
+
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"/specexamples/helloworld.sw.json", "/specexamples/helloworld.sw.yml",
             "/specexamples/greeting.sw.json", "/specexamples/greeting.sw.yml",
             "/specexamples/eventbasedgreeting.sw.json", "/specexamples/eventbasedgreeting.sw.yml",

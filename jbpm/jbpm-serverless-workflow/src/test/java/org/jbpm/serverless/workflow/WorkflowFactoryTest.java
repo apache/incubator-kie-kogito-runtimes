@@ -15,6 +15,7 @@
 
 package org.jbpm.serverless.workflow;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.jbpm.process.core.Work;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.serverless.workflow.api.end.End;
@@ -190,7 +191,6 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     @Test
     public void testSubProcessNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
-
         CompositeContextNode compositeContextNode = testFactory.subProcessNode(1L, "subprocess", nodeContainer);
         assertThat(compositeContextNode).isNotNull();
         assertThat(compositeContextNode.getName()).isEqualTo("subprocess");
@@ -232,4 +232,73 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         assertThat(join.getType()).isEqualTo(Join.TYPE_XOR);
         assertThat(join.getMetaData().get("UniqueId")).isEqualTo("1");
     }
+
+    @Test
+    public void testProcessVar() {
+        RuleFlowProcess process = new RuleFlowProcess();
+        testFactory.processVar("testVar", JsonNode.class, process);
+
+        assertThat(process.getVariableScope()).isNotNull();
+        assertThat(process.getVariableScope().getVariables()).isNotNull();
+        assertThat(process.getVariableScope().getVariables().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void testHumanTaskNode() {
+        TestNodeContainer nodeContainer = new TestNodeContainer();
+        RuleFlowProcess process = new RuleFlowProcess();
+
+        Function function = new Function().withName("testfunction1").withMetadata(
+                new HashMap() {{
+                    put("taskname", "testTaskName");
+                    put("skippable", "false");
+                    put("groupid", "testGroupId");
+                    put("actorid", "testActorId");
+                }}
+        );
+
+        HumanTaskNode humanTaskNode = testFactory.humanTaskNode(1L, "test name", function, process, nodeContainer);
+
+        assertThat(humanTaskNode).isNotNull();
+        assertThat(humanTaskNode.getWork().getParameter("TaskName")).isEqualTo("testTaskName");
+        assertThat(humanTaskNode.getWork().getParameter("Skippable")).isEqualTo("false");
+        assertThat(humanTaskNode.getWork().getParameter("GroupId")).isEqualTo("testGroupId");
+        assertThat(humanTaskNode.getWork().getParameter("ActorId")).isEqualTo("testActorId");
+        assertThat(humanTaskNode.getWork().getParameter("NodeName")).isEqualTo("test name");
+
+        assertThat(humanTaskNode.getInMappings()).isNotNull();
+        assertThat(humanTaskNode.getInMappings().size()).isEqualTo(1);
+        assertThat(humanTaskNode.getOutMappings()).isNotNull();
+        assertThat(humanTaskNode.getOutMappings().size()).isEqualTo(1);
+
+        assertThat(process.getVariableScope().getVariables()).isNotNull();
+        assertThat(process.getVariableScope().getVariables().size()).isEqualTo(1);
+
+    }
+
+    @Test
+    public void testHumanTaskNodeDefaultValues() {
+        TestNodeContainer nodeContainer = new TestNodeContainer();
+        RuleFlowProcess process = new RuleFlowProcess();
+
+        Function function = new Function().withName("testfunction1");
+
+        HumanTaskNode humanTaskNode = testFactory.humanTaskNode(1L, "test name", function, process, nodeContainer);
+
+        assertThat(humanTaskNode).isNotNull();
+        assertThat(humanTaskNode.getWork().getParameter("TaskName")).isEqualTo("workflowhtask");
+        assertThat(humanTaskNode.getWork().getParameter("Skippable")).isEqualTo("true");
+        assertThat(humanTaskNode.getWork().getParameter("GroupId")).isNull();
+        assertThat(humanTaskNode.getWork().getParameter("ActorId")).isNull();
+        assertThat(humanTaskNode.getWork().getParameter("NodeName")).isEqualTo("test name");
+
+        assertThat(humanTaskNode.getInMappings()).isNotNull();
+        assertThat(humanTaskNode.getInMappings().size()).isEqualTo(1);
+        assertThat(humanTaskNode.getOutMappings()).isNotNull();
+        assertThat(humanTaskNode.getOutMappings().size()).isEqualTo(1);
+
+        assertThat(process.getVariableScope().getVariables()).isNotNull();
+        assertThat(process.getVariableScope().getVariables().size()).isEqualTo(1);
+    }
+
 }

@@ -54,6 +54,7 @@ public class ServerlessWorkflowParser {
     private static final String SYSOUT_TYPE = "sysout";
     private static final String SYSOUT_TYPE_PARAM = "message";
     private static final String SERVICE_TYPE = "service";
+    private static final String DECISION_TYPE = "decision";
     private static final String NODE_START_NAME = "Start";
     private static final String NODE_END_NAME = "End";
     private static final String NODETOID_START = "start";
@@ -123,7 +124,7 @@ public class ServerlessWorkflowParser {
                 }
 
                 CompositeContextNode embeddedSubProcess = factory.subProcessNode(idCounter.getAndIncrement(), state.getName(), process);
-                handleActions(workflowFunctions, eventState.getEventsActions().get(0).getActions(), embeddedSubProcess);
+                handleActions(workflowFunctions, eventState.getEventsActions().get(0).getActions(), process, embeddedSubProcess);
 
                 factory.connect(workflowStartNode.getId(), embeddedSubProcess.getId(), workflowStartNode.getId() + "_" + embeddedSubProcess.getId(), process);
 
@@ -140,7 +141,7 @@ public class ServerlessWorkflowParser {
             if (state.getType().equals(Type.OPERATION)) {
                 OperationState operationState = (OperationState) state;
                 CompositeContextNode embeddedSubProcess = factory.subProcessNode(idCounter.getAndIncrement(), state.getName(), process);
-                handleActions(workflowFunctions, operationState.getActions(), embeddedSubProcess);
+                handleActions(workflowFunctions, operationState.getActions(), process, embeddedSubProcess);
 
                 if (state.getStart() != null) {
                     factory.connect(workflowStartNode.getId(), embeddedSubProcess.getId(), workflowStartNode.getId() + "_" + embeddedSubProcess.getId(), process);
@@ -333,7 +334,7 @@ public class ServerlessWorkflowParser {
         return process;
     }
 
-    protected void handleActions(List<Function> workflowFunctions, List<Action> actions, CompositeContextNode embeddedSubProcess) {
+    protected void handleActions(List<Function> workflowFunctions, List<Action> actions, RuleFlowProcess process, CompositeContextNode embeddedSubProcess) {
         if (actions != null && !actions.isEmpty()) {
             StartNode embeddedStartNode = factory.startNode(idCounter.getAndIncrement(), "EmbeddedStart", embeddedSubProcess);
             Node start = embeddedStartNode;
@@ -362,6 +363,10 @@ public class ServerlessWorkflowParser {
                         current = factory.serviceNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), actionFunction, embeddedSubProcess);
                         factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
                         start = current;
+                    } else if (DECISION_TYPE.equals(actionFunction.getType())) {
+                        current = factory.humanTaskNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), actionFunction, process, embeddedSubProcess);
+                        factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
+                        start = current;
                     } else {
                         LOGGER.warn("currently unsupported function type, supported types are 'script', 'sysout', 'service'");
                         LOGGER.warn("defaulting to script type");
@@ -372,7 +377,7 @@ public class ServerlessWorkflowParser {
                         start = current;
                     }
                 } else {
-                    LOGGER.warn("invalid function type. supported types are 'script', 'sysout', 'service'");
+                    LOGGER.warn("invalid function type. supported types are 'script', 'sysout', 'service', 'decision'");
                     LOGGER.warn("defaulting to script type");
                     String script = ServerlessWorkflowUtils.scriptFunctionScript("");
                     current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), script, embeddedSubProcess);
