@@ -368,7 +368,7 @@ public class ServerlessWorkflowParser {
                         factory.connect(start.getId(), current.getId(), start.getId() + "_" + current.getId(), embeddedSubProcess);
                         start = current;
                     } else {
-                        LOGGER.warn("currently unsupported function type, supported types are 'script', 'sysout', 'service'");
+                        LOGGER.warn("currently unsupported function type, supported types are 'script', 'sysout', 'service', 'decision'");
                         LOGGER.warn("defaulting to script type");
                         String script = ServerlessWorkflowUtils.scriptFunctionScript("");
                         current = factory.scriptNode(idCounter.getAndIncrement(), action.getFunctionRef().getRefName(), script, embeddedSubProcess);
