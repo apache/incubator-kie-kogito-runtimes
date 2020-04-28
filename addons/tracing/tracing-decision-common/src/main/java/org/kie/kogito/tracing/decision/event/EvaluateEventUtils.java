@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision;
+package org.kie.kogito.tracing.decision.event;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import io.vertx.core.eventbus.EventBus;
-import org.kie.kogito.tracing.decision.event.EvaluateEvent;
+public class EvaluateEventUtils {
 
-@ApplicationScoped
-public final class DecisionTracingListener extends AbstractDecisionTracingListener {
-
-    private final EventBus bus;
-
-    @Inject
-    public DecisionTracingListener(EventBus bus) {
-        this.bus = bus;
-    }
-
-    @Override
-    protected void handleEvaluateEvent(EvaluateEvent event) {
-        bus.send(String.format("kogito-tracing-decision_%s", event.getClass().getSimpleName()), event);
+    static <I, O> List<O> map(List<I> input, Function<I, O> mapper) {
+        return input == null
+                ? null
+                : input.stream().map(mapper).collect(Collectors.toList());
     }
 
 }

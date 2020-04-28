@@ -18,6 +18,7 @@ package org.kie.kogito.tracing.decision;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
@@ -25,15 +26,18 @@ import org.junit.jupiter.api.Test;
 import org.kie.dmn.feel.util.Pair;
 import org.kie.kogito.tracing.decision.event.AfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.event.EvaluateEvent;
-import org.kie.kogito.tracing.decision.mock.MockDecisionTracingCollector;
 import org.kie.kogito.tracing.decision.mock.MockDefaultAggregator;
+import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.afterEvaluateAllEvent;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.beforeEvaluateAllEvent;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-public class AbstractDecisionTracingCollectorTest {
+public class DecisionTracingCollectorTest {
 
     private static final String TEST_EXECUTION_ID_1 = "c91da8ec-05f7-4dbd-adf4-c7aa88f7888b";
     private static final String TEST_EXECUTION_ID_2 = "550e2947-0952-4225-81a0-ea6e1064efd2";
@@ -41,12 +45,14 @@ public class AbstractDecisionTracingCollectorTest {
     @Test
     public void test_Collector_InterleavedEvaluations_Working() {
         MockDefaultAggregator aggregator = new MockDefaultAggregator();
-        MockDecisionTracingCollector collector = new MockDecisionTracingCollector(aggregator);
+        Consumer<String> payloadConsumer = mock(Consumer.class);
 
-        collector.handleEvaluateEvent(beforeEvaluateAllEvent(TEST_EXECUTION_ID_1));
-        collector.handleEvaluateEvent(beforeEvaluateAllEvent(TEST_EXECUTION_ID_2));
-        collector.handleEvaluateEvent(afterEvaluateAllEvent(TEST_EXECUTION_ID_1));
-        collector.handleEvaluateEvent(afterEvaluateAllEvent(TEST_EXECUTION_ID_2));
+        DecisionTracingCollector collector = new DecisionTracingCollector(aggregator, payloadConsumer);
+
+        collector.addEvent(beforeEvaluateAllEvent(TEST_EXECUTION_ID_1));
+        collector.addEvent(beforeEvaluateAllEvent(TEST_EXECUTION_ID_2));
+        collector.addEvent(afterEvaluateAllEvent(TEST_EXECUTION_ID_1));
+        collector.addEvent(afterEvaluateAllEvent(TEST_EXECUTION_ID_2));
 
         Map<String, Pair<List<EvaluateEvent>, CloudEventImpl<AfterEvaluateAllEvent>>> aggregatorCalls = aggregator.getCalls();
         assertEquals(2, aggregatorCalls.size());
@@ -55,8 +61,10 @@ public class AbstractDecisionTracingCollectorTest {
         assertTrue(aggregatorCalls.containsKey(TEST_EXECUTION_ID_2));
         assertEquals(2, aggregatorCalls.get(TEST_EXECUTION_ID_2).getLeft().size());
 
-        List<String> payloads = collector.getPayloads();
-        assertEquals(2, payloads.size());
+        ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        verify(payloadConsumer, times(2)).accept(payloadCaptor.capture());
+
+        List<String> payloads = payloadCaptor.getAllValues();
         assertEquals(Json.encode(aggregatorCalls.get(TEST_EXECUTION_ID_1).getRight()), payloads.get(0));
         assertEquals(Json.encode(aggregatorCalls.get(TEST_EXECUTION_ID_2).getRight()), payloads.get(1));
     }

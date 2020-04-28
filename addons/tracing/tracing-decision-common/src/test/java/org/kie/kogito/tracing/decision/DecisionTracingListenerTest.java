@@ -19,6 +19,7 @@ package org.kie.kogito.tracing.decision;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
@@ -35,14 +36,17 @@ import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.tracing.decision.event.EvaluateEvent;
 import org.kie.kogito.tracing.decision.mock.MockAfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.mock.MockBeforeEvaluateAllEvent;
-import org.kie.kogito.tracing.decision.mock.MockDecisionTracingListener;
+import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAME;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAMESPACE;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-public class AbstractDecisionTracingListenerTest {
+public class DecisionTracingListenerTest {
 
     private static final String TEST_EXECUTION_ID_1 = "e3140fbb-49fd-4835-bb2e-682bbe02d862";
     private static final String TEST_EXECUTION_ID_2 = "77408667-f218-40b0-a355-1bab047a3e9e";
@@ -58,11 +62,15 @@ public class AbstractDecisionTracingListenerTest {
         BeforeEvaluateAllEvent beforeEvent = new MockBeforeEvaluateAllEvent(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, result);
         AfterEvaluateAllEvent afterEvent = new MockAfterEvaluateAllEvent(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, result);
 
-        MockDecisionTracingListener listener = new MockDecisionTracingListener();
+        Consumer<EvaluateEvent> eventConsumer = mock(Consumer.class);
+        DecisionTracingListener listener = new DecisionTracingListener(eventConsumer);
         listener.beforeEvaluateAll(beforeEvent);
         listener.afterEvaluateAll(afterEvent);
 
-        assertEvaluateEvents(listener.getEvents(), TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, TEST_EXECUTION_ID_1);
+        ArgumentCaptor<EvaluateEvent> eventCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
+        verify(eventConsumer, times(2)).accept(eventCaptor.capture());
+
+        assertEvaluateEvents(eventCaptor.getAllValues(), TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, TEST_EXECUTION_ID_1);
     }
 
     @Test
@@ -72,10 +80,11 @@ public class AbstractDecisionTracingListenerTest {
         final String modelName = "Traffic Violation";
 
         final DMNRuntime runtime = DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
-                AbstractDecisionTracingListenerTest.class.getResourceAsStream(modelResource)
+                DecisionTracingListenerTest.class.getResourceAsStream(modelResource)
         ));
 
-        MockDecisionTracingListener listener = new MockDecisionTracingListener();
+        Consumer<EvaluateEvent> eventConsumer = mock(Consumer.class);
+        DecisionTracingListener listener = new DecisionTracingListener(eventConsumer);
         runtime.addListener(listener);
 
         final Map<String, Object> driver = new HashMap<>();
@@ -92,7 +101,10 @@ public class AbstractDecisionTracingListenerTest {
         final DMNContext context = model.newContext(contextVariables);
         model.evaluateAll(context);
 
-        assertEvaluateEvents(listener.getEvents(), modelNamespace, modelName, TEST_EXECUTION_ID_2);
+        ArgumentCaptor<EvaluateEvent> eventCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
+        verify(eventConsumer, times(2)).accept(eventCaptor.capture());
+
+        assertEvaluateEvents(eventCaptor.getAllValues(), modelNamespace, modelName, TEST_EXECUTION_ID_2);
     }
 
     private static void assertEvaluateEvents(List<EvaluateEvent> evaluateEvents, String modelNamespace, String modelName, String executionId) {

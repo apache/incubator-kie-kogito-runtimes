@@ -16,6 +16,8 @@
 
 package org.kie.kogito.tracing.decision;
 
+import java.util.function.Consumer;
+
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.event.DMNRuntimeEventListener;
 import org.kie.kogito.decision.DecisionExecutionIdUtils;
@@ -23,11 +25,24 @@ import org.kie.kogito.tracing.decision.event.AfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.event.BeforeEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.event.EvaluateEvent;
 
-public abstract class AbstractDecisionTracingListener implements DMNRuntimeEventListener {
+public class DecisionTracingListener implements DMNRuntimeEventListener {
+
+    private Consumer<EvaluateEvent> eventConsumer;
+
+    public DecisionTracingListener(Consumer<EvaluateEvent> eventConsumer) {
+        this.eventConsumer = eventConsumer;
+    }
+
+    protected DecisionTracingListener() {
+    }
+
+    protected void setEventConsumer(Consumer<EvaluateEvent> eventConsumer) {
+        this.eventConsumer = eventConsumer;
+    }
 
     @Override
     public void beforeEvaluateAll(org.kie.dmn.api.core.event.BeforeEvaluateAllEvent event) {
-        handleEvaluateEvent(new BeforeEvaluateAllEvent(
+        eventConsumer.accept(new BeforeEvaluateAllEvent(
                 extractExecutionId(event.getResult().getContext()),
                 event.getModelName(),
                 event.getModelNamespace(),
@@ -37,15 +52,13 @@ public abstract class AbstractDecisionTracingListener implements DMNRuntimeEvent
 
     @Override
     public void afterEvaluateAll(org.kie.dmn.api.core.event.AfterEvaluateAllEvent event) {
-        handleEvaluateEvent(new AfterEvaluateAllEvent(
+        eventConsumer.accept(new AfterEvaluateAllEvent(
                 extractExecutionId(event.getResult().getContext()),
                 event.getModelName(),
                 event.getModelNamespace(),
                 event.getResult()
         ));
     }
-
-    protected abstract void handleEvaluateEvent(EvaluateEvent event);
 
     private String extractExecutionId(DMNContext context) {
         return DecisionExecutionIdUtils.get(context);

@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.mock;
+package org.kie.kogito.tracing.decision;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
-import org.kie.kogito.tracing.decision.AbstractDecisionTracingListener;
-import org.kie.kogito.tracing.decision.event.EvaluateEvent;
+import io.vertx.core.eventbus.EventBus;
 
-public class MockDecisionTracingListener extends AbstractDecisionTracingListener {
+@ApplicationScoped
+public final class QuarkusDecisionTracingListener extends DecisionTracingListener {
 
-    private final List<EvaluateEvent> events = new LinkedList<>();
-
-    public List<EvaluateEvent> getEvents() {
-        return events;
-    }
-
-    @Override
-    protected void handleEvaluateEvent(EvaluateEvent event) {
-        events.add(event);
+    @Inject
+    public QuarkusDecisionTracingListener(EventBus bus) {
+        setEventConsumer(event ->
+                bus.send(String.format("kogito-tracing-decision_%s", event.getClass().getSimpleName()), event)
+        );
     }
 
 }

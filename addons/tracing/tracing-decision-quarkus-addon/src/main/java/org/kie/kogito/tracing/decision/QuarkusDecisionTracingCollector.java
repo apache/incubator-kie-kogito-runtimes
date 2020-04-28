@@ -27,9 +27,15 @@ import org.kie.kogito.tracing.decision.event.BeforeEvaluateAllEvent;
 import org.reactivestreams.Publisher;
 
 @Singleton
-public class DecisionTracingCollector extends AbstractDecisionTracingCollector {
+public class QuarkusDecisionTracingCollector {
 
-    private final PublishSubject<String> eventSubject = PublishSubject.create();
+    private final PublishSubject<String> eventSubject;
+    private final DecisionTracingCollector collector;
+
+    public QuarkusDecisionTracingCollector() {
+        eventSubject = PublishSubject.create();
+        collector = new DecisionTracingCollector(eventSubject::onNext);
+    }
 
     @Outgoing("kogito-tracing-decision")
     public Publisher<String> getEventPublisher() {
@@ -38,17 +44,12 @@ public class DecisionTracingCollector extends AbstractDecisionTracingCollector {
 
     @ConsumeEvent("kogito-tracing-decision_BeforeEvaluateAllEvent")
     public void onEvent(BeforeEvaluateAllEvent event) {
-        handleEvaluateEvent(event);
+        collector.addEvent(event);
     }
 
     @ConsumeEvent("kogito-tracing-decision_AfterEvaluateAllEvent")
     public void onEvent(AfterEvaluateAllEvent event) {
-        handleEvaluateEvent(event);
-    }
-
-    @Override
-    protected void handlePayload(String payload) {
-        eventSubject.onNext(payload);
+        collector.addEvent(event);
     }
 
 }

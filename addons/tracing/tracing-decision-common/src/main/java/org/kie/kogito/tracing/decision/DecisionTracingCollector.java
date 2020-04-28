@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import io.cloudevents.json.Json;
 import org.kie.kogito.tracing.decision.aggregator.Aggregator;
@@ -29,23 +30,25 @@ import org.kie.kogito.tracing.decision.event.EvaluateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractDecisionTracingCollector {
+public class DecisionTracingCollector {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractDecisionTracingCollector.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DecisionTracingCollector.class);
 
     private final Map<String, List<EvaluateEvent>> cacheMap;
     private final Aggregator<?> aggregator;
+    private final Consumer<String> payloadConsumer;
 
-    public AbstractDecisionTracingCollector() {
-        this(new DefaultAggregator());
+    public DecisionTracingCollector(Consumer<String> payloadConsumer) {
+        this(new DefaultAggregator(), payloadConsumer);
     }
 
-    public AbstractDecisionTracingCollector(Aggregator<?> aggregator) {
+    public DecisionTracingCollector(Aggregator<?> aggregator, Consumer<String> payloadConsumer) {
+        this.payloadConsumer = payloadConsumer;
         this.cacheMap = new HashMap<>();
         this.aggregator = aggregator;
     }
 
-    protected void handleEvaluateEvent(EvaluateEvent event) {
+    public void addEvent(EvaluateEvent event) {
         LOG.trace(
                 "Received {}(evaluationId: {}, modelName: {}, modelNamespace: {})",
                 event.getClass().getSimpleName(),
@@ -66,14 +69,12 @@ public abstract class AbstractDecisionTracingCollector {
 
         if (event instanceof AfterEvaluateAllEvent) {
             String payload = aggregate(evaluationId, cacheMap.get(evaluationId));
-            handlePayload(payload);
+            payloadConsumer.accept(payload);
             LOG.debug("Generated aggregated event for evaluation {} (length {})", evaluationId, payload.length());
             cacheMap.remove(evaluationId);
             LOG.trace("Removed evaluation {} from cache (current size: {})", evaluationId, cacheMap.size());
         }
     }
-
-    protected abstract void handlePayload(String payload);
 
     private String aggregate(String evaluationId, List<EvaluateEvent> events) {
         return Json.encode(aggregator.aggregate(evaluationId, events));
