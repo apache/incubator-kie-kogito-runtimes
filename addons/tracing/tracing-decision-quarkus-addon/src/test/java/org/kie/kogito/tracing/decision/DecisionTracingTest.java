@@ -1,26 +1,32 @@
 package org.kie.kogito.tracing.decision;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.reactivex.subscribers.TestSubscriber;
+import io.vertx.core.eventbus.EventBus;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNRuntime;
-import org.kie.dmn.feel.util.Pair;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.tracing.decision.event.AfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.event.BeforeEvaluateAllEvent;
-import org.kie.kogito.tracing.decision.testimpl.TestEventBus;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class DecisionTracingTest {
 
@@ -36,7 +42,8 @@ public class DecisionTracingTest {
                 DecisionTracingTest.class.getResourceAsStream(modelResource)
         ));
 
-        TestEventBus eventBus = new TestEventBus();
+        EventBus eventBus = mock(EventBus.class);
+
         DecisionTracingListener listener = new DecisionTracingListener(eventBus);
         runtime.addListener(listener);
 
@@ -54,15 +61,17 @@ public class DecisionTracingTest {
         final DMNContext context = model.newContext(contextVariables);
         model.evaluateAll(context);
 
-        List<Pair<String, Object>> eventBusCalls = eventBus.getCalls();
-        assertEquals(2, eventBusCalls.size());
-        assertEquals("kogito-tracing-decision_BeforeEvaluateAllEvent", eventBusCalls.get(0).getLeft());
-        assertTrue(eventBusCalls.get(0).getRight() instanceof BeforeEvaluateAllEvent);
-        assertEquals("kogito-tracing-decision_AfterEvaluateAllEvent", eventBusCalls.get(1).getLeft());
-        assertTrue(eventBusCalls.get(1).getRight() instanceof AfterEvaluateAllEvent);
+        verify(eventBus, times(2)).send(anyString(), any());
 
-        BeforeEvaluateAllEvent beforeEvent = (BeforeEvaluateAllEvent) eventBusCalls.get(0).getRight();
-        AfterEvaluateAllEvent afterEvent = (AfterEvaluateAllEvent) eventBusCalls.get(1).getRight();
+        ArgumentCaptor<BeforeEvaluateAllEvent> beforeCaptor = ArgumentCaptor.forClass(BeforeEvaluateAllEvent.class);
+        ArgumentCaptor<AfterEvaluateAllEvent> afterCaptor = ArgumentCaptor.forClass(AfterEvaluateAllEvent.class);
+
+        InOrder inOrder = inOrder(eventBus);
+        inOrder.verify(eventBus).send(eq("kogito-tracing-decision_BeforeEvaluateAllEvent"), beforeCaptor.capture());
+        inOrder.verify(eventBus).send(eq("kogito-tracing-decision_AfterEvaluateAllEvent"), afterCaptor.capture());
+
+        BeforeEvaluateAllEvent beforeEvent = beforeCaptor.getValue();
+        AfterEvaluateAllEvent afterEvent = afterCaptor.getValue();
 
         TestSubscriber<String> subscriber = new TestSubscriber<>();
 
