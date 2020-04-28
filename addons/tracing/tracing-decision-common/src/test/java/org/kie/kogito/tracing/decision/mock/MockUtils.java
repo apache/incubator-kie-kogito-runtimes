@@ -1,4 +1,4 @@
-package org.kie.kogito.tracing.decision.testimpl;
+package org.kie.kogito.tracing.decision.mock;
 
 import org.kie.dmn.core.impl.DMNContextImpl;
 import org.kie.dmn.core.impl.DMNModelImpl;
@@ -7,7 +7,7 @@ import org.kie.kogito.decision.DecisionExecutionIdUtils;
 import org.kie.kogito.tracing.decision.event.AfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.event.BeforeEvaluateAllEvent;
 
-public class TestUtils {
+public class MockUtils {
 
     public static final String TEST_MODEL_NAME = "modelName";
     public static final String TEST_MODEL_NAMESPACE = "modelNamespace";

@@ -10,8 +10,8 @@ import org.kie.kogito.tracing.decision.event.EvaluateEvent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.kie.kogito.tracing.decision.testimpl.TestUtils.afterEvaluateAllEvent;
-import static org.kie.kogito.tracing.decision.testimpl.TestUtils.beforeEvaluateAllEvent;
+import static org.kie.kogito.tracing.decision.mock.MockUtils.afterEvaluateAllEvent;
+import static org.kie.kogito.tracing.decision.mock.MockUtils.beforeEvaluateAllEvent;
 
 public class DefaultAggregatorTest {
 

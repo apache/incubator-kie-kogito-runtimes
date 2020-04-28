@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.kie.dmn.feel.util.Pair;
 import org.kie.kogito.tracing.decision.event.AfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.event.EvaluateEvent;
-import org.kie.kogito.tracing.decision.testimpl.TestDecisionTracingCollector;
-import org.kie.kogito.tracing.decision.testimpl.TestDefaultAggregator;
+import org.kie.kogito.tracing.decision.mock.MockDecisionTracingCollector;
+import org.kie.kogito.tracing.decision.mock.MockDefaultAggregator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.tracing.decision.testimpl.TestUtils.afterEvaluateAllEvent;
-import static org.kie.kogito.tracing.decision.testimpl.TestUtils.beforeEvaluateAllEvent;
+import static org.kie.kogito.tracing.decision.mock.MockUtils.afterEvaluateAllEvent;
+import static org.kie.kogito.tracing.decision.mock.MockUtils.beforeEvaluateAllEvent;
 
 public class AbstractDecisionTracingCollectorTest {
 
@@ -24,8 +24,8 @@ public class AbstractDecisionTracingCollectorTest {
 
     @Test
     public void test_Collector_InterleavedEvaluations_Working() {
-        TestDefaultAggregator aggregator = new TestDefaultAggregator();
-        TestDecisionTracingCollector collector = new TestDecisionTracingCollector(aggregator);
+        MockDefaultAggregator aggregator = new MockDefaultAggregator();
+        MockDecisionTracingCollector collector = new MockDecisionTracingCollector(aggregator);
 
         collector.handleEvaluateEvent(beforeEvaluateAllEvent(TEST_EXECUTION_ID_1));
         collector.handleEvaluateEvent(beforeEvaluateAllEvent(TEST_EXECUTION_ID_2));

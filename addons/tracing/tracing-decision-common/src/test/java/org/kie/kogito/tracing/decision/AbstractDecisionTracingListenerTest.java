@@ -17,14 +17,14 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.tracing.decision.event.EvaluateEvent;
-import org.kie.kogito.tracing.decision.testimpl.TestAfterEvaluateAllEvent;
-import org.kie.kogito.tracing.decision.testimpl.TestBeforeEvaluateAllEvent;
-import org.kie.kogito.tracing.decision.testimpl.TestDecisionTracingListener;
+import org.kie.kogito.tracing.decision.mock.MockAfterEvaluateAllEvent;
+import org.kie.kogito.tracing.decision.mock.MockBeforeEvaluateAllEvent;
+import org.kie.kogito.tracing.decision.mock.MockDecisionTracingListener;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.tracing.decision.testimpl.TestUtils.TEST_MODEL_NAME;
-import static org.kie.kogito.tracing.decision.testimpl.TestUtils.TEST_MODEL_NAMESPACE;
+import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAME;
+import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAMESPACE;
 
 public class AbstractDecisionTracingListenerTest {
 
@@ -32,17 +32,17 @@ public class AbstractDecisionTracingListenerTest {
     private static final String TEST_EXECUTION_ID_2 = "77408667-f218-40b0-a355-1bab047a3e9e";
 
     @Test
-    public void test_Listener_UseTestEvents_Working() {
+    public void test_Listener_UseMockedEvents_Working() {
         DMNContextImpl context = new DMNContextImpl();
         DecisionExecutionIdUtils.inject(context, () -> TEST_EXECUTION_ID_1);
 
         DMNResultImpl result = new DMNResultImpl(new DMNModelImpl());
         result.setContext(context);
 
-        BeforeEvaluateAllEvent beforeEvent = new TestBeforeEvaluateAllEvent(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, result);
-        AfterEvaluateAllEvent afterEvent = new TestAfterEvaluateAllEvent(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, result);
+        BeforeEvaluateAllEvent beforeEvent = new MockBeforeEvaluateAllEvent(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, result);
+        AfterEvaluateAllEvent afterEvent = new MockAfterEvaluateAllEvent(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, result);
 
-        TestDecisionTracingListener listener = new TestDecisionTracingListener();
+        MockDecisionTracingListener listener = new MockDecisionTracingListener();
         listener.beforeEvaluateAll(beforeEvent);
         listener.afterEvaluateAll(afterEvent);
 
@@ -59,7 +59,7 @@ public class AbstractDecisionTracingListenerTest {
                 AbstractDecisionTracingListenerTest.class.getResourceAsStream(modelResource)
         ));
 
-        TestDecisionTracingListener listener = new TestDecisionTracingListener();
+        MockDecisionTracingListener listener = new MockDecisionTracingListener();
         runtime.addListener(listener);
 
         final Map<String, Object> driver = new HashMap<>();

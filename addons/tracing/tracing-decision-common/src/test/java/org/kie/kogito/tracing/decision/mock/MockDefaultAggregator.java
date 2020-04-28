@@ -1,4 +1,4 @@
-package org.kie.kogito.tracing.decision.testimpl;
+package org.kie.kogito.tracing.decision.mock;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.kie.kogito.tracing.decision.aggregator.DefaultAggregator;
 import org.kie.kogito.tracing.decision.event.AfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.event.EvaluateEvent;
 
-public class TestDefaultAggregator extends DefaultAggregator {
+public class MockDefaultAggregator extends DefaultAggregator {
 
     final Map<String, Pair<List<EvaluateEvent>, CloudEventImpl<AfterEvaluateAllEvent>>> calls = new HashMap<>();
 

@@ -1,4 +1,4 @@
-package org.kie.kogito.tracing.decision.testimpl;
+package org.kie.kogito.tracing.decision.mock;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.kie.kogito.tracing.decision.AbstractDecisionTracingListener;
 import org.kie.kogito.tracing.decision.event.EvaluateEvent;
 
-public class TestDecisionTracingListener extends AbstractDecisionTracingListener {
+public class MockDecisionTracingListener extends AbstractDecisionTracingListener {
 
     private final List<EvaluateEvent> events = new LinkedList<>();
 

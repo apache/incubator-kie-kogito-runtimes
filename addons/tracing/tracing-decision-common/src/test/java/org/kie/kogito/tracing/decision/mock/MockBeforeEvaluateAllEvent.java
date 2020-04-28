@@ -1,15 +1,15 @@
-package org.kie.kogito.tracing.decision.testimpl;
+package org.kie.kogito.tracing.decision.mock;
 
 import org.kie.dmn.api.core.DMNResult;
-import org.kie.dmn.api.core.event.AfterEvaluateAllEvent;
+import org.kie.dmn.api.core.event.BeforeEvaluateAllEvent;
 
-public class TestAfterEvaluateAllEvent implements AfterEvaluateAllEvent {
+public class MockBeforeEvaluateAllEvent implements BeforeEvaluateAllEvent {
 
     private final String modelNamespace;
     private final String modelName;
     private final DMNResult result;
 
-    public TestAfterEvaluateAllEvent(String modelNamespace, String modelName, DMNResult result) {
+    public MockBeforeEvaluateAllEvent(String modelNamespace, String modelName, DMNResult result) {
         this.modelNamespace = modelNamespace;
         this.modelName = modelName;
         this.result = result;

@@ -1,4 +1,4 @@
-package org.kie.kogito.tracing.decision.testimpl;
+package org.kie.kogito.tracing.decision.mock;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,11 +7,11 @@ import org.kie.kogito.tracing.decision.AbstractDecisionTracingCollector;
 import org.kie.kogito.tracing.decision.aggregator.Aggregator;
 import org.kie.kogito.tracing.decision.event.EvaluateEvent;
 
-public class TestDecisionTracingCollector extends AbstractDecisionTracingCollector {
+public class MockDecisionTracingCollector extends AbstractDecisionTracingCollector {
 
     private final List<String> payloads = new LinkedList<>();
 
-    public TestDecisionTracingCollector(Aggregator<?> aggregator) {
+    public MockDecisionTracingCollector(Aggregator<?> aggregator) {
         super(aggregator);
     }
 
