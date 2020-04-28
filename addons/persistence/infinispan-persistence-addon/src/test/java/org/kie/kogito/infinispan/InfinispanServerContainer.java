@@ -29,17 +29,17 @@ import org.testcontainers.lifecycle.Startable;
 
 public class InfinispanServerContainer implements Startable {
 
-    private static final String INFINISPAN_VERSION = Optional.ofNullable(System.getProperty("infinispan.version")).orElse("latest");
+    private static final String INFINISPAN_IMAGE = System.getProperty("container.image.infinispan");
     private static final Logger LOGGER = LoggerFactory.getLogger(InfinispanServerContainer.class);
     private GenericContainer infinispan;
 
     @Override
     public void start() {
-        if (INFINISPAN_VERSION == null) {
-            throw new RuntimeException("Please define a valid Infinispan image version in system property infinispan.version");
+        if (INFINISPAN_IMAGE == null) {
+            throw new RuntimeException("Please define a valid Infinispan image in system property container.image.infinispan");
         }
-        LOGGER.info("Using Infinispan image version: {}", INFINISPAN_VERSION);
-        infinispan = new FixedHostPortGenericContainer("quay.io/infinispan/server:" + INFINISPAN_VERSION)
+        LOGGER.info("Using Infinispan image: {}", INFINISPAN_IMAGE);
+        infinispan = new FixedHostPortGenericContainer(INFINISPAN_IMAGE)
                 .withFixedExposedPort(11222, 11222)
                 //wait for the server to be  fully started
                 .waitingFor(Wait.forLogMessage(".*\\bstarted\\b.*", 1))
