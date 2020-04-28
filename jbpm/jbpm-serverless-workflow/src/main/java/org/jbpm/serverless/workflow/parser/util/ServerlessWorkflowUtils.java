@@ -160,11 +160,9 @@ public class ServerlessWorkflowUtils {
 
         if (path.startsWith("$.")) {
             path = path.substring(2);
-        } else {
-            if (path.indexOf(".") >= 0) {
-                workflowVar = path.split("\\.")[0];
-                path = path.substring(workflowVar.length() + 1);
-            }
+        } else if (path.indexOf(".") >= 0) {
+            workflowVar = path.split("\\.")[0];
+            path = path.substring(workflowVar.length() + 1);
         }
 
         String workflowDataToInteger = "return java.lang.Integer.parseInt(" + workflowVar + ".get(\"";

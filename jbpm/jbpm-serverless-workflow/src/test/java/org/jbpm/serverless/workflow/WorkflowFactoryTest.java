@@ -28,6 +28,7 @@ import org.jbpm.workflow.core.node.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -248,14 +249,12 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         TestNodeContainer nodeContainer = new TestNodeContainer();
         RuleFlowProcess process = new RuleFlowProcess();
 
-        Function function = new Function().withName("testfunction1").withMetadata(
-                new HashMap() {{
-                    put("taskname", "testTaskName");
-                    put("skippable", "false");
-                    put("groupid", "testGroupId");
-                    put("actorid", "testActorId");
-                }}
-        );
+        Map<String, String> metaMap = new HashMap<>();
+        metaMap.put("taskname", "testTaskName");
+        metaMap.put("skippable", "false");
+        metaMap.put("groupid", "testGroupId");
+        metaMap.put("actorid", "testActorId");
+        Function function = new Function().withName("testfunction1").withMetadata(metaMap);
 
         HumanTaskNode humanTaskNode = testFactory.humanTaskNode(1L, "test name", function, process, nodeContainer);
 
