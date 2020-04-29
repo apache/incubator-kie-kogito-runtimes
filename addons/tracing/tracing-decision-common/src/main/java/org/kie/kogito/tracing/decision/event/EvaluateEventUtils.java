@@ -28,4 +28,8 @@ public class EvaluateEventUtils {
                 : input.stream().map(mapper).collect(Collectors.toList());
     }
 
+    private EvaluateEventUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
 }

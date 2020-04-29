@@ -16,13 +16,12 @@
 
 package org.kie.kogito.tracing.decision.event;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNResult;
 
-public abstract class EvaluateEvent implements Serializable {
+public abstract class EvaluateEvent {
 
     private final String executionId;
     private final String modelName;
