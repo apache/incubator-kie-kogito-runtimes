@@ -1106,26 +1106,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertThat(nodeId > 0).isTrue();
         assertThat(nodeInstanceId).isNotNull();
         assertThat(deploymentId).isNull();
-
-        // now set deployment id as part of ksession's env
-        ksession.getEnvironment().set("deploymentId", "testDeploymentId");
-
-        ksession.startProcess("MessageIntermediateEvent", params);
-        assertProcessInstanceCompleted(processInstance);
-
-        workItem = handler.getWorkItem();
-        assertThat(workItem).isNotNull();
-        assertThat(workItem instanceof org.drools.core.process.instance.WorkItem).isTrue();
-
-        nodeInstanceId = ((org.drools.core.process.instance.WorkItem) workItem).getNodeInstanceId();
-        nodeId = ((org.drools.core.process.instance.WorkItem) workItem).getNodeId();
-        deploymentId = ((org.drools.core.process.instance.WorkItem) workItem).getDeploymentId();
-
-        assertThat(nodeId).isNotNull();
-        assertThat(nodeId > 0).isTrue();
-        assertThat(nodeInstanceId).isNotNull();
-        assertThat(deploymentId).isNotNull();
-        assertThat(deploymentId).isEqualTo("testDeploymentId");
     }
 
     @Test

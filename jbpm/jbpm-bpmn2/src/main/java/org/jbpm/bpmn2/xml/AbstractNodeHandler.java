@@ -27,12 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.drools.compiler.compiler.xml.XmlDumper;
 import org.drools.compiler.rule.builder.dialect.java.JavaDialect;
-import org.jbpm.process.core.datatype.DataType;
-import org.jbpm.process.core.datatype.impl.type.BooleanDataType;
-import org.jbpm.process.core.datatype.impl.type.FloatDataType;
-import org.jbpm.process.core.datatype.impl.type.IntegerDataType;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.jbpm.process.core.datatype.impl.type.StringDataType;
 import org.drools.core.xml.BaseAbstractHandler;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.drools.core.xml.Handler;
@@ -44,7 +38,15 @@ import org.jbpm.bpmn2.core.Lane;
 import org.jbpm.bpmn2.core.SequenceFlow;
 import org.jbpm.bpmn2.core.Signal;
 import org.jbpm.compiler.xml.ProcessBuildData;
+import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.core.datatype.impl.type.BooleanDataType;
+import org.jbpm.process.core.datatype.impl.type.FloatDataType;
+import org.jbpm.process.core.datatype.impl.type.IntegerDataType;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.process.core.datatype.impl.type.StringDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
@@ -661,4 +663,29 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         
         return null;
     }
+    
+    
+    /**
+     * Finds the right variable by its name to make sure that when given as id it will be also matched
+     * @param variableName name or id of the variable
+     * @param parser parser instance
+     * @return returns found variable name or given 'variableName' otherwise
+     */
+    protected String findVariable(String variableName, final ExtensibleXmlParser parser) {
+        if (variableName == null) {
+            return null;
+        }
+        List<?> parents = parser.getParents();
+        
+        for (Object parent : parents) {
+            if (parent instanceof ContextContainer) {
+                ContextContainer contextContainer = (ContextContainer) parent;
+                VariableScope variableScope = (VariableScope) contextContainer.getDefaultContext(VariableScope.VARIABLE_SCOPE);
+                return variableScope.getVariables().stream().filter(v -> v.matchByIdOrName(variableName)).map(v -> v.getName()).findFirst().orElse(variableName);
+            }
+        }
+        
+        return variableName;
+    }
+
 }
