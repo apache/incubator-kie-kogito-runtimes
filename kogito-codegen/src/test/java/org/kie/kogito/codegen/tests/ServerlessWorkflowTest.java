@@ -344,7 +344,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"serverless/decision-workflow.sw.json", "serverless/decision-workflow.sw.yml"})
-    public void testDecisionWorkflow(String processLocation) throws Exception {
+    public void testSingleDecisionWorkflow(String processLocation) throws Exception {
 
         Policy<?> securityPolicy = SecurityPolicy.of(new StaticIdentityProvider("workflow"));
 
@@ -409,5 +409,86 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         JsonNode approvalDecisionOut = (JsonNode) result.toMap().get("approvaldecision");
 
         assertThat(workflowdataOut.get("decision").textValue()).isEqualTo("Approved");
+        assertThat(approvalDecisionOut.get("result").textValue()).isEqualTo("approved");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"serverless/multi-decision-workflow.sw.json", "serverless/multi-decision-workflow.sw.yml"})
+    public void testMultiDecisionWorkflow(String processLocation) throws Exception {
+
+        Policy<?> securityPolicy = SecurityPolicy.of(new StaticIdentityProvider("workflow"));
+
+        Application app = generateCodeProcessesOnly(processLocation);
+        assertThat(app).isNotNull();
+        final List<String> workItemTransitionEvents = new ArrayList<>();
+        app.config().process().processEventListeners().listeners().add(new DefaultProcessEventListener() {
+
+            @Override
+            public void beforeWorkItemTransition(ProcessWorkItemTransitionEvent event) {
+                workItemTransitionEvents.add("BEFORE:: " + event);
+            }
+
+            @Override
+            public void afterWorkItemTransition(ProcessWorkItemTransitionEvent event) {
+                workItemTransitionEvents.add("AFTER:: " + event);
+            }
+        });
+
+        Process<? extends Model> p = app.processes().processById("multidecisionworkflow");
+
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+
+        String jsonParamStr = "{}";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
+
+
+        parameters.put("workflowdata", jsonParamObj);
+        parameters.put("approvaldecision", jsonParamObj);
+        m.fromMap(parameters);
+
+        ProcessInstance<?> processInstance = p.createInstance(m);
+        processInstance.start();
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+
+        List<WorkItem> workItems = processInstance.workItems(securityPolicy);
+        assertEquals(1, workItems.size());
+        assertEquals("firstfunction", workItems.get(0).getName());
+
+        String decisionParamStr = "{\"result\": \"approved\"}";
+        JsonNode decisionParamObj = mapper.readTree(decisionParamStr);
+
+        Map<String, Object> decisionMap = new HashMap<>();
+        decisionMap.put("decision", decisionParamObj);
+
+        processInstance.completeWorkItem(workItems.get(0).getId(), decisionMap, securityPolicy);
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+
+
+        workItems = processInstance.workItems(securityPolicy);
+        assertEquals(1, workItems.size());
+        assertEquals("secondfunction", workItems.get(0).getName());
+
+        processInstance.completeWorkItem(workItems.get(0).getId(), decisionMap, securityPolicy);
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
+        assertThat(workItemTransitionEvents).hasSize(8);
+
+        Model result = (Model) processInstance.variables();
+        assertThat(result.toMap()).hasSize(3).containsKeys("workflowdata", "firstfunctiondecision", "secondfunctiondecision");
+
+        assertThat(result.toMap().get("workflowdata")).isInstanceOf(JsonNode.class);
+        assertThat(result.toMap().get("firstfunctiondecision")).isInstanceOf(JsonNode.class);
+        assertThat(result.toMap().get("secondfunctiondecision")).isInstanceOf(JsonNode.class);
+
+        JsonNode firstDecisionOut = (JsonNode) result.toMap().get("firstfunctiondecision");
+        JsonNode secondDecisionOut = (JsonNode) result.toMap().get("secondfunctiondecision");
+        assertThat(firstDecisionOut.get("result").textValue()).isEqualTo("approved");
+        assertThat(secondDecisionOut.get("result").textValue()).isEqualTo("approved");
     }
 }
