@@ -300,4 +300,45 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         assertThat(process.getVariableScope().getVariables().size()).isEqualTo(1);
     }
 
+    @Test
+    public void testRuleSetNode() {
+        TestNodeContainer nodeContainer = new TestNodeContainer();
+
+        Map<String, String> metaMap = new HashMap<>();
+        metaMap.put("ruleflowgroup", "testruleflowgroup");
+        Function function = new Function().withName("testfunction3").withMetadata(metaMap);
+
+        RuleSetNode ruleSetNode = testFactory.ruleSetNode(1L, "test name", function, nodeContainer);
+        assertThat(ruleSetNode).isNotNull();
+        assertThat(ruleSetNode.getName()).isEqualTo("test name");
+        assertThat(ruleSetNode.getLanguage()).isEqualTo(RuleSetNode.DRL_LANG);
+        assertThat(ruleSetNode.getRuleType().getName()).isEqualTo("testruleflowgroup");
+        assertThat(ruleSetNode.getRuleType().isRuleUnit()).isFalse();
+        assertThat(ruleSetNode.getRuleType().isDecision()).isFalse();
+        assertThat(ruleSetNode.getRuleType().isRuleFlowGroup()).isTrue();
+        assertThat(ruleSetNode.getInMappings()).isNotNull();
+        assertThat(ruleSetNode.getInMappings().size()).isEqualTo(1);
+        assertThat(ruleSetNode.getOutMappings()).isNotNull();
+        assertThat(ruleSetNode.getOutMappings().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void testRuleSetNodeDefaultValues() {
+        TestNodeContainer nodeContainer = new TestNodeContainer();
+
+        Function function = new Function().withName("testfunction3");
+
+        RuleSetNode ruleSetNode = testFactory.ruleSetNode(1L, "test name", function, nodeContainer);
+        assertThat(ruleSetNode).isNotNull();
+        assertThat(ruleSetNode.getName()).isEqualTo("test name");
+        assertThat(ruleSetNode.getLanguage()).isEqualTo(RuleSetNode.DRL_LANG);
+        assertThat(ruleSetNode.getRuleType().getName()).isEqualTo("testruleflowgroup");
+        assertThat(ruleSetNode.getRuleType().isRuleUnit()).isFalse();
+        assertThat(ruleSetNode.getRuleType().isDecision()).isFalse();
+        assertThat(ruleSetNode.getRuleType().isRuleFlowGroup()).isTrue();
+        assertThat(ruleSetNode.getInMappings()).isNotNull();
+        assertThat(ruleSetNode.getInMappings().size()).isEqualTo(1);
+        assertThat(ruleSetNode.getOutMappings()).isNotNull();
+        assertThat(ruleSetNode.getOutMappings().size()).isEqualTo(1);
+    }
 }

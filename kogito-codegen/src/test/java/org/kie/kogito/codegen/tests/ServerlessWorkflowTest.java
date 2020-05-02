@@ -491,4 +491,42 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         assertThat(firstDecisionOut.get("result").textValue()).isEqualTo("approved");
         assertThat(secondDecisionOut.get("result").textValue()).isEqualTo("approved");
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"serverless/rule-workflow.sw.json", "serverless/rule-workflow.sw.yml"})
+    public void testRuleWorkflow(String processLocation) throws Exception {
+
+        Application app = generateCode(Collections.singletonList(processLocation), Collections.singletonList("serverless/workflowrule.drl"));
+        assertThat(app).isNotNull();
+
+        Process<? extends Model> p = app.processes().processById("ruleworkflow");
+
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+
+        String jsonParamStr = "{ \"person\": { \"age\": \"21\" } }";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
+
+
+        parameters.put("workflowdata", jsonParamObj);
+        m.fromMap(parameters);
+
+        ProcessInstance<?> processInstance = p.createInstance(m);
+        processInstance.start();
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
+        Model result = (Model) processInstance.variables();
+        assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
+
+        assertThat(result.toMap().get("workflowdata")).isInstanceOf(JsonNode.class);
+
+        JsonNode workflowdataOut = (JsonNode) result.toMap().get("workflowdata");
+
+        assertThat(workflowdataOut.get("person").get("age").textValue()).isEqualTo("21");
+        assertThat(workflowdataOut.get("person").get("adult").textValue()).isEqualTo("true");
+
+    }
 }

@@ -65,11 +65,11 @@ public class ServerlessWorkflowFactory {
     public static final String SERVICE_IMPL_KEY = "implementation";
     public static final String DEFAULT_HT_TASKNAME = "workflowhtask";
     public static final String DEFAULT_HT_SKIPPABLE = "true";
-    public static final String DEFAULT_HT_GROUPID = "workflow";
     public static final String HT_TASKNAME = "taskname";
     public static final String HT_SKIPPABLE = "skippable";
     public static final String HTP_GROUPID = "groupid";
     public static final String HT_ACTORID = "actorid";
+    public static final String RF_GROUP = "ruleflowgroup";
 
     private WorkflowAppContext workflowAppContext;
 
@@ -299,9 +299,6 @@ public class ServerlessWorkflowFactory {
         CompositeContextNode subProcessNode = new CompositeContextNode();
         subProcessNode.setId(id);
         subProcessNode.setName(name);
-        VariableScope variableScope = new VariableScope();
-        subProcessNode.addContext(variableScope);
-        subProcessNode.setDefaultContext(variableScope);
         subProcessNode.setAutoComplete(true);
         nodeContainer.addNode(subProcessNode);
 
@@ -376,6 +373,22 @@ public class ServerlessWorkflowFactory {
         nodeContainer.addNode(humanTaskNode);
 
         return humanTaskNode;
+    }
+
+    public RuleSetNode ruleSetNode(long id, String name, Function function, NodeContainer nodeContainer) {
+        RuleSetNode ruleSetNode = new RuleSetNode();
+        ruleSetNode.setId(id);
+        ruleSetNode.setName(name);
+
+        ruleSetNode.setRuleType(RuleSetNode.RuleType.ruleFlowGroup(ServerlessWorkflowUtils.resolveFunctionMetadata(function, RF_GROUP, workflowAppContext)));
+        ruleSetNode.setLanguage(RuleSetNode.DRL_LANG);
+
+        ruleSetNode.addInMapping(DEFAULT_WORKFLOW_VAR, DEFAULT_WORKFLOW_VAR);
+        ruleSetNode.addOutMapping(DEFAULT_WORKFLOW_VAR, DEFAULT_WORKFLOW_VAR);
+
+        nodeContainer.addNode(ruleSetNode);
+
+        return ruleSetNode;
     }
 
     public void connect(long fromId, long toId, String uniqueId, NodeContainer nodeContainer) {
