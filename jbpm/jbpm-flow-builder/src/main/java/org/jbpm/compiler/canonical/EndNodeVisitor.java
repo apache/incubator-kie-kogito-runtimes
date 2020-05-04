@@ -30,7 +30,6 @@ import com.github.javaparser.ast.type.UnknownType;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
 import org.jbpm.workflow.core.node.EndNode;
-import org.kie.api.definition.process.Node;
 
 import java.util.Map;
 
@@ -41,7 +40,7 @@ import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
 import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_ACTION;
 import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_TERMINATE;
 
-public class EndNodeVisitor extends AbstractNodeVisitor {
+public class EndNodeVisitor extends AbstractNodeVisitor<EndNode> {
 
     private static final String NODE_KEY = "endNode";
 
@@ -51,16 +50,14 @@ public class EndNodeVisitor extends AbstractNodeVisitor {
     }
 
     @Override
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        EndNode endNode = (EndNode) node;
-
-        body.addStatement(getAssignedFactoryMethod(factoryField, EndNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(endNode.getId())))
+    public void visitNode(String factoryField, EndNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, EndNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "End"))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_TERMINATE, new BooleanLiteralExpr(endNode.isTerminate())));
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_TERMINATE, new BooleanLiteralExpr(node.isTerminate())));
 
         // if there is trigger defined on end event create TriggerMetaData for it
-        if (endNode.getMetaData(TRIGGER_REF) != null) {
-            Map<String, Object> nodeMetaData = endNode.getMetaData();
+        if (node.getMetaData(TRIGGER_REF) != null) {
+            Map<String, Object> nodeMetaData = node.getMetaData();
             TriggerMetaData triggerMetaData = new TriggerMetaData((String) nodeMetaData.get(TRIGGER_REF),
                     (String) nodeMetaData.get(TRIGGER_TYPE),
                     (String) nodeMetaData.get(MESSAGE_TYPE),
@@ -87,7 +84,7 @@ public class EndNodeVisitor extends AbstractNodeVisitor {
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         }
 
-        visitMetaData(endNode.getMetaData(), body, getNodeId(node));
+        visitMetaData(node.getMetaData(), body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }

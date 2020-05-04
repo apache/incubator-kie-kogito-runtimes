@@ -23,12 +23,11 @@ import com.github.javaparser.utils.StringEscapeUtils;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.MilestoneNodeFactory;
 import org.jbpm.workflow.core.node.MilestoneNode;
-import org.kie.api.definition.process.Node;
 
 import static org.jbpm.ruleflow.core.factory.MilestoneNodeFactory.METHOD_CONSTRAINT;
 import static org.jbpm.ruleflow.core.factory.MilestoneNodeFactory.METHOD_MATCH_VARIABLE;
 
-public class MilestoneNodeVisitor extends AbstractNodeVisitor {
+public class MilestoneNodeVisitor extends AbstractNodeVisitor<MilestoneNode> {
 
     private static final String NODE_KEY = "milestoneNode";
 
@@ -38,16 +37,15 @@ public class MilestoneNodeVisitor extends AbstractNodeVisitor {
     }
 
     @Override
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        MilestoneNode milestoneNode = (MilestoneNode) node;
-        body.addStatement(getAssignedFactoryMethod(factoryField, MilestoneNodeFactory.class, getNodeId(node), NODE_KEY,new LongLiteralExpr(milestoneNode.getId())))
+    public void visitNode(String factoryField, MilestoneNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, MilestoneNodeFactory.class, getNodeId(node), NODE_KEY,new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Milestone"))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT, new StringLiteralExpr(StringEscapeUtils.escapeJava(milestoneNode.getConstraint()))));
-        if (milestoneNode.getMatchVariable() != null) {
-            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_MATCH_VARIABLE, new StringLiteralExpr(milestoneNode.getMatchVariable())));
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT, new StringLiteralExpr(StringEscapeUtils.escapeJava(node.getConstraint()))));
+        if (node.getMatchVariable() != null) {
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_MATCH_VARIABLE, new StringLiteralExpr(node.getMatchVariable())));
         }
         body.addStatement(getDoneMethod(getNodeId(node)));
-        visitMetaData(milestoneNode.getMetaData(), body, getNodeId(node));
+        visitMetaData(node.getMetaData(), body, getNodeId(node));
     }
 
 }

@@ -22,19 +22,19 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.utils.StringEscapeUtils;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.StateNodeFactory;
-import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.StateNode;
+import org.kie.api.definition.process.Node;
 
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.jbpm.ruleflow.core.factory.StateNodeFactory.METHOD_CONSTRAINT;
 
-public class StateNodeVisitor extends CompositeContextNodeVisitor {
+public class StateNodeVisitor extends CompositeContextNodeVisitor<StateNode> {
 
     private static final String FACTORY_METHOD_NAME = "stateNode";
 
-    public StateNodeVisitor(Map<Class<?>, AbstractNodeVisitor> nodesVisitors) {
+    public StateNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         super(nodesVisitors);
     }
 
@@ -59,12 +59,11 @@ public class StateNodeVisitor extends CompositeContextNodeVisitor {
     }
 
     @Override
-    public Stream<MethodCallExpr> visitCustomFields(CompositeContextNode node) {
-        StateNode stateNode = (StateNode) node;
-        if (stateNode.getConstraints() == null) {
+    public Stream<MethodCallExpr> visitCustomFields(StateNode node) {
+        if (node.getConstraints() == null) {
             return Stream.empty();
         }
-        return stateNode.getConstraints()
+        return node.getConstraints()
                 .entrySet()
                 .stream()
                 .map((e -> getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,

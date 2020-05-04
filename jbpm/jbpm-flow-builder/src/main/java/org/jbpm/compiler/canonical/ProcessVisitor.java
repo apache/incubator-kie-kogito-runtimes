@@ -86,7 +86,7 @@ public class ProcessVisitor extends AbstractVisitor {
 
     public static final String DEFAULT_VERSION = "1.0";
 
-    private Map<Class<?>, AbstractNodeVisitor> nodesVisitors = new HashMap<>();
+    private Map<Class<?>, AbstractNodeVisitor<? extends org.kie.api.definition.process.Node>> nodesVisitors = new HashMap<>();
 
     public ProcessVisitor(ClassLoader contextClassLoader) {
         this.nodesVisitors.put(StartNode.class, new StartNodeVisitor());

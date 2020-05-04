@@ -17,21 +17,27 @@ package org.jbpm.compiler.canonical;
 
 import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.kie.api.definition.process.Node;
 
 import java.util.Map;
 
-public abstract class AbstractCompositeNodeVisitor extends AbstractNodeVisitor {
+public abstract class AbstractCompositeNodeVisitor<T extends CompositeContextNode> extends AbstractNodeVisitor<T> {
 
-    protected Map<Class<?>, AbstractNodeVisitor> nodesVisitors;
+    protected Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors;
 
-    public AbstractCompositeNodeVisitor(Map<Class<?>, AbstractNodeVisitor> nodesVisitors) {
+    public AbstractCompositeNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         this.nodesVisitors = nodesVisitors;
     }
 
-    protected void visitNodes(String factoryField, Node[] nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        for (Node node : nodes) {
-            AbstractNodeVisitor visitor = nodesVisitors.get(node.getClass());
+    @Override
+    public void visitNode(T node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        super.visitNode(node, body, variableScope, metadata);
+    }
+
+    protected <U extends Node> void visitNodes(String factoryField, U[] nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        for (U node : nodes) {
+            AbstractNodeVisitor<U> visitor = (AbstractNodeVisitor<U>) nodesVisitors.get(node.getClass());
             if (visitor == null) {
                 continue;
             }

@@ -67,6 +67,8 @@ import java.util.stream.Stream;
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
 import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
+import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
+import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -195,7 +197,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             try {
                 if (expected.getActions(actionType) == null) {
                     assertNull(current.getActions(actionType));
-                } else /* if (!EVENT_NODE_ENTER.equals(actionType) && !EVENT_NODE_EXIT.equals(actionType))*/ {
+                } else if (!EVENT_NODE_ENTER.equals(actionType) && !EVENT_NODE_EXIT.equals(actionType)) {
                     assertNotNull(current.getActions(actionType));
                     // onEntry and onExit actions are not yet supported
 //                    assertEquals(expected.getActions(actionType).size(), current.getActions(actionType).size());

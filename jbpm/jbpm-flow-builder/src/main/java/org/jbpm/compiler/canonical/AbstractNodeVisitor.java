@@ -50,25 +50,25 @@ import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_DONE;
 import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_NAME;
 import static org.jbpm.ruleflow.core.factory.StateBasedNodeFactory.METHOD_TIMER;
 
-public abstract class AbstractNodeVisitor extends AbstractVisitor {
+public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisitor {
 
     protected static final String EVENT_TYPE_SIGNAL = "signal";
     protected static final String EVENT_TYPE_MESSAGE = "message";
 
     protected abstract String getNodeKey();
 
-    public void visitNode(Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+    public void visitNode(T node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         visitNode(FACTORY_FIELD_NAME, node, body, variableScope, metadata);
     }
 
-    protected String getNodeId(Node node) {
+    protected String getNodeId(T node) {
         return getNodeKey() + node.getId();
     }
 
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+    public void visitNode(String factoryField, T node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
     }
 
-    protected MethodCallExpr getNameMethod(Node node, String defaultName) {
+    protected MethodCallExpr getNameMethod(T node, String defaultName) {
         return getFactoryMethod(getNodeId(node), METHOD_NAME, new StringLiteralExpr(getOrDefault(node.getName(), defaultName)));
     }
 
@@ -170,18 +170,5 @@ public abstract class AbstractNodeVisitor extends AbstractVisitor {
         body.addStatement(getFactoryMethod(factoryField, "connection", new LongLiteralExpr(connection.getFrom().getId()),
                 new LongLiteralExpr(connection.getTo().getId()),
                 new StringLiteralExpr(getOrDefault((String) connection.getMetaData().get("UniqueId"), ""))));
-    }
-
-    protected void addTimers(BlockStmt body, StateBasedNode node) {
-        if (node.getTimers() != null) {
-            node.getTimers().forEach((timer, action) -> {
-                DroolsConsequenceAction droolsAction = (DroolsConsequenceAction) action;
-                body.addStatement(getFactoryMethod(getNodeId(node), METHOD_TIMER,
-                        new StringLiteralExpr(timer.getDelay()),
-                        getOrNullExpr(timer.getPeriod()),
-                        new StringLiteralExpr(droolsAction.getDialect()),
-                        new StringLiteralExpr(StringEscapeUtils.escapeJava(droolsAction.getConsequence()))));
-            });
-        }
     }
 }

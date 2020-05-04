@@ -30,7 +30,6 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.workflow.core.node.ActionNode;
-import org.kie.api.definition.process.Node;
 
 import java.util.Map;
 
@@ -39,7 +38,7 @@ import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
 
-public class ActionNodeVisitor extends AbstractNodeVisitor {
+public class ActionNodeVisitor extends AbstractNodeVisitor<ActionNode> {
 
     private static final String NODE_KEY = "actionNode";
     private static final String METHOD_ACTION = "action";
@@ -50,15 +49,13 @@ public class ActionNodeVisitor extends AbstractNodeVisitor {
     }
 
     @Override
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        ActionNode actionNode = (ActionNode) node;
-
-        body.addStatement(getAssignedFactoryMethod(factoryField, ActionNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(actionNode.getId())))
+    public void visitNode(String factoryField, ActionNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, ActionNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Script"));
 
         // if there is trigger defined on end event create TriggerMetaData for it
-        if (actionNode.getMetaData(TRIGGER_REF) != null) {
-            Map<String, Object> nodeMetaData = actionNode.getMetaData();
+        if (node.getMetaData(TRIGGER_REF) != null) {
+            Map<String, Object> nodeMetaData = node.getMetaData();
             TriggerMetaData triggerMetaData = new TriggerMetaData(
                     (String) nodeMetaData.get(TRIGGER_REF),
                     (String) nodeMetaData.get(TRIGGER_TYPE),
@@ -85,7 +82,7 @@ public class ActionNodeVisitor extends AbstractNodeVisitor {
 
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         } else {
-            if (actionNode.getAction().toString() == null || actionNode.getAction().toString().trim().isEmpty()) {
+            if (node.getAction().toString() == null || node.getAction().toString().trim().isEmpty()) {
                 throw new IllegalStateException("Action node " + node.getId() + " name " + node.getName() + " has not action defined");
             }
             BlockStmt actionBody = new BlockStmt();
@@ -97,11 +94,11 @@ public class ActionNodeVisitor extends AbstractNodeVisitor {
             for (Variable v : variableScope.getVariables()) {
                 actionBody.addStatement(makeAssignment(v));
             }
-            actionBody.addStatement(new NameExpr(actionNode.getAction().toString()));
+            actionBody.addStatement(new NameExpr(node.getAction().toString()));
 
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         }
-        visitMetaData(actionNode.getMetaData(), body, getNodeId(node));
+        visitMetaData(node.getMetaData(), body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }

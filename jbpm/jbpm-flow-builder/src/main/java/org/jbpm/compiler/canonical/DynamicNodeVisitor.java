@@ -16,12 +16,11 @@
 package org.jbpm.compiler.canonical;
 
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.utils.StringEscapeUtils;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.DynamicNodeFactory;
-import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.DynamicNode;
+import org.kie.api.definition.process.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,11 +31,11 @@ import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_ACTIVATIO
 import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_COMPLETION_EXPRESSION;
 import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_LANGUAGE;
 
-public class DynamicNodeVisitor extends CompositeContextNodeVisitor {
+public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode> {
 
     private static final String FACTORY_METHOD_NAME = "dynamicNode";
 
-    public DynamicNodeVisitor(Map<Class<?>, AbstractNodeVisitor> nodesVisitors) {
+    public DynamicNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         super(nodesVisitors);
     }
 
@@ -61,15 +60,14 @@ public class DynamicNodeVisitor extends CompositeContextNodeVisitor {
     }
 
     @Override
-    public Stream<MethodCallExpr> visitCustomFields(CompositeContextNode node) {
+    public Stream<MethodCallExpr> visitCustomFields(DynamicNode node) {
         Collection<MethodCallExpr> methods = new ArrayList<>();
-        DynamicNode dynamicNode = (DynamicNode) node;
-        methods.add(getFactoryMethod(getNodeId(node), METHOD_LANGUAGE, getOrNullExpr(dynamicNode.getLanguage())));
-        if (dynamicNode.getActivationExpression() != null) {
-            methods.add(getFactoryMethod(getNodeId(node), METHOD_ACTIVATION_EXPRESSION, getOrNullExpr(StringEscapeUtils.escapeJava(dynamicNode.getActivationExpression()))));
+        methods.add(getFactoryMethod(getNodeId(node), METHOD_LANGUAGE, getOrNullExpr(node.getLanguage())));
+        if (node.getActivationExpression() != null) {
+            methods.add(getFactoryMethod(getNodeId(node), METHOD_ACTIVATION_EXPRESSION, getOrNullExpr(StringEscapeUtils.escapeJava(node.getActivationExpression()))));
         }
-        if (dynamicNode.getCompletionExpression() != null) {
-            methods.add(getFactoryMethod(getNodeId(node), METHOD_COMPLETION_EXPRESSION, getOrNullExpr(StringEscapeUtils.escapeJava(dynamicNode.getCompletionExpression()))));
+        if (node.getCompletionExpression() != null) {
+            methods.add(getFactoryMethod(getNodeId(node), METHOD_COMPLETION_EXPRESSION, getOrNullExpr(StringEscapeUtils.escapeJava(node.getCompletionExpression()))));
         }
         return methods.stream();
     }

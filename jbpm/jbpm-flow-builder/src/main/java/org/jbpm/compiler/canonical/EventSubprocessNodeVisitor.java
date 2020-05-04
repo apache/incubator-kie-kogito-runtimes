@@ -20,11 +20,10 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory;
-import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.EventSubProcessNode;
+import org.kie.api.definition.process.Node;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -32,11 +31,11 @@ import java.util.stream.Stream;
 import static org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory.METHOD_EVENT;
 import static org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory.METHOD_KEEP_ACTIVE;
 
-public class EventSubprocessNodeVisitor extends CompositeContextNodeVisitor {
+public class EventSubprocessNodeVisitor extends CompositeContextNodeVisitor<EventSubProcessNode> {
 
     private static final String FACTORY_METHOD_NAME = "eventSubProcessNode";
 
-    public EventSubprocessNodeVisitor(Map<Class<?>, AbstractNodeVisitor> nodesVisitors) {
+    public EventSubprocessNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         super(nodesVisitors);
     }
 
@@ -61,12 +60,10 @@ public class EventSubprocessNodeVisitor extends CompositeContextNodeVisitor {
     }
 
     @Override
-    public Stream<MethodCallExpr> visitCustomFields(CompositeContextNode node) {
-        EventSubProcessNode eventSubProcessNode = (EventSubProcessNode) node;
+    public Stream<MethodCallExpr> visitCustomFields(EventSubProcessNode node) {
         Collection<MethodCallExpr> methods = new ArrayList<>();
-        methods.add(getFactoryMethod(getNodeId(node), METHOD_KEEP_ACTIVE, new BooleanLiteralExpr(eventSubProcessNode.isKeepActive())));
-        eventSubProcessNode.getEvents()
-                .stream()
+        methods.add(getFactoryMethod(getNodeId(node), METHOD_KEEP_ACTIVE, new BooleanLiteralExpr(node.isKeepActive())));
+        node.getEvents()
                 .forEach(e -> methods.add(getFactoryMethod(getNodeId(node), METHOD_EVENT, new StringLiteralExpr(e))));
         return methods.stream();
     }

@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 
 import static org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory.METHOD_VARIABLE;
 
-public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
+public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends AbstractCompositeNodeVisitor<T> {
 
     private static final String NODE_KEY = "compositeContextNode";
     private static final String FACTORY_METHOD_NAME = "compositeNode";
@@ -48,7 +48,7 @@ public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
         return NODE_KEY;
     }
 
-    public CompositeContextNodeVisitor(Map<Class<?>, AbstractNodeVisitor> nodesVisitors) {
+    public CompositeContextNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         super(nodesVisitors);
     }
 
@@ -61,32 +61,28 @@ public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
     }
 
     @Override
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        CompositeContextNode compositeContextNode = (CompositeContextNode) node;
-
-        body.addStatement(getAssignedFactoryMethod(factoryField, factoryClass(), getNodeId(node), factoryMethod(), new LongLiteralExpr(compositeContextNode.getId())))
+    public void visitNode(String factoryField, T node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, factoryClass(), getNodeId(node), factoryMethod(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, getDefaultName()));
-        visitMetaData(compositeContextNode.getMetaData(), body, getNodeId(node));
-        VariableScope variableScopeNode = (VariableScope) compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        visitMetaData(node.getMetaData(), body, getNodeId(node));
+        VariableScope variableScopeNode = (VariableScope) node.getDefaultContext(VariableScope.VARIABLE_SCOPE);
 
         if (variableScope != null) {
             visitVariableScope(getNodeId(node), variableScopeNode, body, new HashSet<>());
         }
 
-        visitCustomFields(compositeContextNode).forEach(body::addStatement);
+        visitCustomFields(node).forEach(body::addStatement);
 
         // visit nodes
-        visitNodes(getNodeId(node), compositeContextNode.getNodes(), body, ((VariableScope) compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);
         // composite context node might not have variable scope
         // in that case inherit it from parent
-        if (compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE) == null) {
-            visitNodes(getNodeId(node), compositeContextNode.getNodes(), body, variableScope, metadata);
+        if (node.getDefaultContext(VariableScope.VARIABLE_SCOPE) == null) {
+            visitNodes(getNodeId(node), node.getNodes(), body, variableScope, metadata);
         } else {
-            visitNodes(getNodeId(node), compositeContextNode.getNodes(), body, ((VariableScope) compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);
-
+            visitNodes(getNodeId(node), node.getNodes(), body, ((VariableScope) node.getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);
         }
 
-        visitConnections(getNodeId(node), compositeContextNode.getNodes(), body);
+        visitConnections(getNodeId(node), node.getNodes(), body);
         body.addStatement(getDoneMethod(getNodeId(node)));
     }
 
@@ -94,7 +90,7 @@ public class CompositeContextNodeVisitor extends AbstractCompositeNodeVisitor {
         return DEFAULT_NAME;
     }
 
-    protected Stream<MethodCallExpr> visitCustomFields(CompositeContextNode compositeContextNode) {
+    protected Stream<MethodCallExpr> visitCustomFields(T compositeContextNode) {
         return Stream.empty();
     }
 

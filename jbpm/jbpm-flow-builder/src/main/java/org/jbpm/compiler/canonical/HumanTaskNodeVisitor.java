@@ -22,9 +22,8 @@ import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.HumanTaskNodeFactory;
 import org.jbpm.workflow.core.node.HumanTaskNode;
-import org.kie.api.definition.process.Node;
 
-public class HumanTaskNodeVisitor extends WorkItemNodeVisitor {
+public class HumanTaskNodeVisitor extends WorkItemNodeVisitor<HumanTaskNode> {
 
     private static final String NODE_KEY = "humanTaskNode";
 
@@ -38,18 +37,17 @@ public class HumanTaskNodeVisitor extends WorkItemNodeVisitor {
     }
 
     @Override
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        HumanTaskNode humanTaskNode = (HumanTaskNode) node;
-        Work work = humanTaskNode.getWork();
+    public void visitNode(String factoryField, HumanTaskNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        Work work = node.getWork();
 
-        body.addStatement(getAssignedFactoryMethod(factoryField, HumanTaskNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(humanTaskNode.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, HumanTaskNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Task"));
 
         addWorkItemParameters(work, body, getNodeId(node));
-        addNodeMappings(humanTaskNode, body, getNodeId(node));
+        addNodeMappings(node, body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));
 
-        visitMetaData(humanTaskNode.getMetaData(), body, getNodeId(node));
+        visitMetaData(node.getMetaData(), body, getNodeId(node));
 
         metadata.getWorkItems().add(work.getName());
     }

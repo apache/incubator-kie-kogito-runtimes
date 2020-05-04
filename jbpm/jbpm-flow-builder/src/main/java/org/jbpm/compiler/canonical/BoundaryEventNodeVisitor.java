@@ -23,7 +23,6 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
-import org.kie.api.definition.process.Node;
 
 import java.util.Map;
 
@@ -36,7 +35,7 @@ import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_EVENT_TYPE;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_SCOPE;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_VARIABLE_NAME;
 
-public class BoundaryEventNodeVisitor extends AbstractNodeVisitor {
+public class BoundaryEventNodeVisitor extends AbstractNodeVisitor<BoundaryEventNode> {
 
     private static final String NODE_KEY = "boundaryEventNode";
 
@@ -46,33 +45,31 @@ public class BoundaryEventNodeVisitor extends AbstractNodeVisitor {
     }
 
     @Override
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        BoundaryEventNode boundaryEventNode = (BoundaryEventNode) node;
-
-        body.addStatement(getAssignedFactoryMethod(factoryField, BoundaryEventNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(boundaryEventNode.getId())))
+    public void visitNode(String factoryField, BoundaryEventNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, BoundaryEventNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "BoundaryEvent"))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_EVENT_TYPE, new StringLiteralExpr(boundaryEventNode.getType())))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_ATTACHED_TO, new StringLiteralExpr(boundaryEventNode.getAttachedToNodeId())))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_SCOPE, getOrNullExpr(boundaryEventNode.getScope())));
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_EVENT_TYPE, new StringLiteralExpr(node.getType())))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_ATTACHED_TO, new StringLiteralExpr(node.getAttachedToNodeId())))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_SCOPE, getOrNullExpr(node.getScope())));
 
         Variable variable = null;
-        if (boundaryEventNode.getVariableName() != null) {
-            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_VARIABLE_NAME, new StringLiteralExpr(boundaryEventNode.getVariableName())));
-            variable = variableScope.findVariable(boundaryEventNode.getVariableName());
+        if (node.getVariableName() != null) {
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_VARIABLE_NAME, new StringLiteralExpr(node.getVariableName())));
+            variable = variableScope.findVariable(node.getVariableName());
         }
 
-        if (EVENT_TYPE_SIGNAL.equals(boundaryEventNode.getMetaData(EVENT_TYPE))) {
-            metadata.getSignals().put(boundaryEventNode.getType(), variable != null ? variable.getType().getStringType() : null);
-        } else if (EVENT_TYPE_MESSAGE.equals(boundaryEventNode.getMetaData(EVENT_TYPE))) {
-            Map<String, Object> nodeMetaData = boundaryEventNode.getMetaData();
+        if (EVENT_TYPE_SIGNAL.equals(node.getMetaData(EVENT_TYPE))) {
+            metadata.getSignals().put(node.getType(), variable != null ? variable.getType().getStringType() : null);
+        } else if (EVENT_TYPE_MESSAGE.equals(node.getMetaData(EVENT_TYPE))) {
+            Map<String, Object> nodeMetaData = node.getMetaData();
             metadata.getTriggers().add(new TriggerMetaData((String) nodeMetaData.get(TRIGGER_REF),
                     (String) nodeMetaData.get(TRIGGER_TYPE),
                     (String) nodeMetaData.get(MESSAGE_TYPE),
-                    boundaryEventNode.getVariableName(),
+                    node.getVariableName(),
                     String.valueOf(node.getId())).validate());
         }
 
-        visitMetaData(boundaryEventNode.getMetaData(), body, getNodeId(node));
+        visitMetaData(node.getMetaData(), body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }
