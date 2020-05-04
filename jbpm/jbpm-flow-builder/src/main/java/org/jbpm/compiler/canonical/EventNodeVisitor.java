@@ -28,6 +28,10 @@ import org.kie.api.definition.process.Node;
 import java.text.MessageFormat;
 import java.util.Map;
 
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_EVENT_TYPE;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_VARIABLE_NAME;
 
@@ -54,14 +58,14 @@ public class EventNodeVisitor extends AbstractNodeVisitor {
             variable = variableScope.findVariable(eventNode.getVariableName());
         }
 
-        if (EVENT_TYPE_SIGNAL.equals(eventNode.getMetaData(METADATA_EVENT_TYPE))) {
+        if (EVENT_TYPE_SIGNAL.equals(eventNode.getMetaData(EVENT_TYPE))) {
             metadata.getSignals().put(eventNode.getType(), variable != null ? variable.getType().getStringType() : null);
-        } else if (EVENT_TYPE_MESSAGE.equals(eventNode.getMetaData(METADATA_EVENT_TYPE))) {
+        } else if (EVENT_TYPE_MESSAGE.equals(eventNode.getMetaData(EVENT_TYPE))) {
             Map<String, Object> nodeMetaData = eventNode.getMetaData();
             try {
-                TriggerMetaData triggerMetaData = new TriggerMetaData((String) nodeMetaData.get(METADATA_TRIGGER_REF),
-                        (String) nodeMetaData.get(METADATA_TRIGGER_TYPE),
-                        (String) nodeMetaData.get(METADATA_MESSAGE_TYPE),
+                TriggerMetaData triggerMetaData = new TriggerMetaData((String) nodeMetaData.get(TRIGGER_REF),
+                        (String) nodeMetaData.get(TRIGGER_TYPE),
+                        (String) nodeMetaData.get(MESSAGE_TYPE),
                         eventNode.getVariableName(),
                         String.valueOf(node.getId())).validate();
                 metadata.getTriggers().add(triggerMetaData);

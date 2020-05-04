@@ -52,13 +52,6 @@ import static org.jbpm.ruleflow.core.factory.StateBasedNodeFactory.METHOD_TIMER;
 
 public abstract class AbstractNodeVisitor extends AbstractVisitor {
 
-    public static final String METADATA_TRIGGER_REF = "TriggerRef";
-    public static final String METADATA_MESSAGE_TYPE = "MessageType";
-    public static final String METADATA_TRIGGER_TYPE = "TriggerType";
-    public static final String METADATA_TRIGGER_MAPPING = "TriggerMapping";
-    public static final String METADATA_MAPPING_VARIABLE = "MappingVariable";
-    public static final String METADATA_EVENT_TYPE = "EventType";
-
     protected static final String EVENT_TYPE_SIGNAL = "signal";
     protected static final String EVENT_TYPE_MESSAGE = "message";
 

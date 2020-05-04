@@ -48,7 +48,7 @@ public abstract class NodeImpl implements Node, Serializable, ContextResolver {
     private String name;
     private Map<String, List<Connection>> incomingConnections;
     private Map<String, List<Connection>> outgoingConnections;
-    private NodeContainer parentNodeContainer;
+    private NodeContainer parentContainer;
     private Map<String, Context> contexts = new HashMap<String, Context>();
     private Map<String, Object> metaData = new HashMap<String, Object>();
     
@@ -246,11 +246,11 @@ public abstract class NodeImpl implements Node, Serializable, ContextResolver {
     }
 
     public NodeContainer getParentContainer() {
-        return parentNodeContainer;
+        return parentContainer;
     }
     
-    public void setNodeContainer(NodeContainer nodeContainer) {
-        this.parentNodeContainer = nodeContainer;
+    public void setParentContainer(NodeContainer nodeContainer) {
+        this.parentContainer = nodeContainer;
     }
     
     public void setContext(String contextId, Context context) {
@@ -269,7 +269,7 @@ public abstract class NodeImpl implements Node, Serializable, ContextResolver {
                 return context;
             }
         }
-        return ((org.jbpm.workflow.core.NodeContainer) parentNodeContainer).resolveContext(contextId, param);
+        return ((org.jbpm.workflow.core.NodeContainer) parentContainer).resolveContext(contextId, param);
     }
     
     public void setMetaData(String name, Object value) {

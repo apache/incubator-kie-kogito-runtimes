@@ -30,6 +30,10 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 
+import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_TIMER;
+import static org.jbpm.ruleflow.core.Metadata.TIME_CYCLE;
+import static org.jbpm.ruleflow.core.Metadata.TIME_DURATION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -109,7 +113,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
     public void testBoundaryTimerTimeCycle() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("BoundaryTimerEvent",
                                                                                                             1);
-        String duration = "1s";
+        String timeCycle = "1s###5s";
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("org.jbpm.process");
         factory
                 // header
@@ -119,9 +123,9 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
                 .humanTaskNode(2).name("Task").actorId("john").taskName("MyTask").done()
                 .endNode(3).name("End1").terminate(false).done()
                 .boundaryEventNode(4).name("BoundaryTimerEvent").attachedTo(2)
-                    .metaData(BoundaryEventNodeFactory.METADATA_TIME_DURATION, duration)
-                    .metaData(BoundaryEventNodeFactory.METADATA_CANCEL_ACTIVITY, false)
-                    .eventType(BoundaryEventNodeFactory.EVENT_TYPE_TIMER, duration)
+                    .metaData(TIME_CYCLE, timeCycle)
+                    .metaData(CANCEL_ACTIVITY, false)
+                    .eventType(EVENT_TYPE_TIMER, timeCycle)
                     .done()
                 .endNode(5).name("End2").terminate(false).done()
                 // connections
@@ -163,7 +167,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
     public void testBoundaryTimerTimeDuration() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("BoundaryTimerEvent",
                                                                                                             1);
-        String timeCycle = "1s###5s";
+        String timeDuration = "1s";
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("org.jbpm.process");
         factory
                 // header
@@ -175,9 +179,9 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
                 .boundaryEventNode(4)
                     .name("BoundaryTimerEvent")
                     .attachedTo(2)
-                    .metaData(BoundaryEventNodeFactory.METADATA_TIME_CYCLE, timeCycle)
-                    .metaData(BoundaryEventNodeFactory.METADATA_CANCEL_ACTIVITY, false)
-                    .eventType(BoundaryEventNodeFactory.EVENT_TYPE_TIMER, timeCycle)
+                    .metaData(TIME_DURATION, timeDuration)
+                    .metaData(CANCEL_ACTIVITY, false)
+                    .eventType(EVENT_TYPE_TIMER, timeDuration)
                     .done()
                 .endNode(5).name("End2").terminate(false).done()
                 // connections

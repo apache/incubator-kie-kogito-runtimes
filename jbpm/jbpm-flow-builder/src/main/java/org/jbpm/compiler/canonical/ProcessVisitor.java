@@ -68,6 +68,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
+import static org.jbpm.ruleflow.core.Metadata.LINK_NODE_HIDDEN;
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_CONNECTION;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_DYNAMIC;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_GLOBAL;
@@ -82,10 +85,6 @@ import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VISIBILITY;
 public class ProcessVisitor extends AbstractVisitor {
 
     public static final String DEFAULT_VERSION = "1.0";
-
-    private static final String METADATA_HIDDEN = "hidden";
-    private static final String METADATA_UNIQUE_ID = "UniqueId";
-    private static final String METADATA_LINK_NODE_HIDDEN = "linkNodeHidden";
 
     private Map<Class<?>, AbstractNodeVisitor> nodesVisitors = new HashMap<>();
 
@@ -258,17 +257,17 @@ public class ProcessVisitor extends AbstractVisitor {
             return;
         }
         // if the connection is a hidden one (compensations), don't dump
-        Object hidden = ((ConnectionImpl) connection).getMetaData(METADATA_HIDDEN);
+        Object hidden = ((ConnectionImpl) connection).getMetaData(HIDDEN);
         if (hidden != null && ((Boolean) hidden)) {
             return;
         }
 
         body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_CONNECTION, new LongLiteralExpr(connection.getFrom().getId()),
                 new LongLiteralExpr(connection.getTo().getId()),
-                new StringLiteralExpr(getOrDefault((String) connection.getMetaData().get(METADATA_UNIQUE_ID), ""))));
+                new StringLiteralExpr(getOrDefault((String) connection.getMetaData().get(UNIQUE_ID), ""))));
     }
 
     private boolean isConnectionRepresentingLinkEvent(Connection connection) {
-        return connection.getMetaData().get(METADATA_LINK_NODE_HIDDEN) != null;
+        return connection.getMetaData().get(LINK_NODE_HIDDEN) != null;
     }
 }

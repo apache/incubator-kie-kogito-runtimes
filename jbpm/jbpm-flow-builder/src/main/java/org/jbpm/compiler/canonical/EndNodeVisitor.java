@@ -34,6 +34,10 @@ import org.kie.api.definition.process.Node;
 
 import java.util.Map;
 
+import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
+import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
 import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_ACTION;
 import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_TERMINATE;
 
@@ -55,12 +59,12 @@ public class EndNodeVisitor extends AbstractNodeVisitor {
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_TERMINATE, new BooleanLiteralExpr(endNode.isTerminate())));
 
         // if there is trigger defined on end event create TriggerMetaData for it
-        if (endNode.getMetaData(METADATA_TRIGGER_REF) != null) {
+        if (endNode.getMetaData(TRIGGER_REF) != null) {
             Map<String, Object> nodeMetaData = endNode.getMetaData();
-            TriggerMetaData triggerMetaData = new TriggerMetaData((String) nodeMetaData.get(METADATA_TRIGGER_REF),
-                    (String) nodeMetaData.get(METADATA_TRIGGER_TYPE),
-                    (String) nodeMetaData.get(METADATA_MESSAGE_TYPE),
-                    (String) nodeMetaData.get(METADATA_MAPPING_VARIABLE),
+            TriggerMetaData triggerMetaData = new TriggerMetaData((String) nodeMetaData.get(TRIGGER_REF),
+                    (String) nodeMetaData.get(TRIGGER_TYPE),
+                    (String) nodeMetaData.get(MESSAGE_TYPE),
+                    (String) nodeMetaData.get(MAPPING_VARIABLE),
                     String.valueOf(node.getId()))
                     .validate();
             metadata.getTriggers().add(triggerMetaData);

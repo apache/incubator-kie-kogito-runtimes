@@ -34,6 +34,11 @@ import org.kie.api.definition.process.Node;
 
 import java.util.Map;
 
+import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
+import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
+
 public class ActionNodeVisitor extends AbstractNodeVisitor {
 
     private static final String NODE_KEY = "actionNode";
@@ -52,13 +57,13 @@ public class ActionNodeVisitor extends AbstractNodeVisitor {
                 .addStatement(getNameMethod(node, "Script"));
 
         // if there is trigger defined on end event create TriggerMetaData for it
-        if (actionNode.getMetaData(METADATA_TRIGGER_REF) != null) {
+        if (actionNode.getMetaData(TRIGGER_REF) != null) {
             Map<String, Object> nodeMetaData = actionNode.getMetaData();
             TriggerMetaData triggerMetaData = new TriggerMetaData(
-                    (String) nodeMetaData.get(METADATA_TRIGGER_REF),
-                    (String) nodeMetaData.get(METADATA_TRIGGER_TYPE),
-                    (String) nodeMetaData.get(METADATA_MESSAGE_TYPE),
-                    (String) nodeMetaData.get(METADATA_MAPPING_VARIABLE),
+                    (String) nodeMetaData.get(TRIGGER_REF),
+                    (String) nodeMetaData.get(TRIGGER_TYPE),
+                    (String) nodeMetaData.get(MESSAGE_TYPE),
+                    (String) nodeMetaData.get(MAPPING_VARIABLE),
                     String.valueOf(node.getId()))
                     .validate();
             metadata.getTriggers().add(triggerMetaData);

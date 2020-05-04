@@ -49,6 +49,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.jbpm.ruleflow.core.Metadata.ACTION;
+
 public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
 
     public static final String METHOD_NAME = "name";
@@ -61,7 +63,6 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
     public static final String METHOD_GLOBAL = "global";
     public static final String METHOD_VARIABLE = "variable";
 
-    public static final String METADATA_ACTION = "Action";
 
     private static final Logger logger = LoggerFactory.getLogger(RuleFlowProcessFactory.class);
 
@@ -264,7 +265,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
                 actions = new ArrayList<>();
             }
             DroolsConsequenceAction cancelAction = new DroolsConsequenceAction("java", null);
-            cancelAction.setMetaData(METADATA_ACTION, new CancelNodeInstanceAction(attachedTo));
+            cancelAction.setMetaData(ACTION, new CancelNodeInstanceAction(attachedTo));
             actions.add(cancelAction);
             ((EventNode) node).setActions(EndNode.EVENT_NODE_EXIT, actions);
         }
@@ -278,7 +279,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
                 actions = new ArrayList<>();
             }
             DroolsConsequenceAction action = new DroolsConsequenceAction("java", null);
-            action.setMetaData(METADATA_ACTION, new CancelNodeInstanceAction(attachedTo));
+            action.setMetaData(ACTION, new CancelNodeInstanceAction(attachedTo));
             actions.add(action);
             ((EventNode) node).setActions(EndNode.EVENT_NODE_EXIT, actions);
         }

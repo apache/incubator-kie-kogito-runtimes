@@ -31,6 +31,10 @@ import org.kie.api.definition.process.Node;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
 import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_INTERRUPTING;
 import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_TIMER;
 import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_TRIGGER;
@@ -63,10 +67,10 @@ public class StartNodeVisitor extends AbstractNodeVisitor {
 
         } else if (startNode.getTriggers() != null && !startNode.getTriggers().isEmpty()) {
             Map<String, Object> nodeMetaData = startNode.getMetaData();
-            metadata.getTriggers().add(new TriggerMetaData((String) nodeMetaData.get(METADATA_TRIGGER_REF),
-                    (String) nodeMetaData.get(METADATA_TRIGGER_TYPE),
-                    (String) nodeMetaData.get(METADATA_MESSAGE_TYPE),
-                    (String) nodeMetaData.get(METADATA_TRIGGER_MAPPING),
+            metadata.getTriggers().add(new TriggerMetaData((String) nodeMetaData.get(TRIGGER_REF),
+                    (String) nodeMetaData.get(TRIGGER_TYPE),
+                    (String) nodeMetaData.get(MESSAGE_TYPE),
+                    (String) nodeMetaData.get(TRIGGER_MAPPING),
                     String.valueOf(node.getId())).validate());
 
             handleSignal(startNode, nodeMetaData, body, variableScope, metadata);
@@ -78,14 +82,14 @@ public class StartNodeVisitor extends AbstractNodeVisitor {
     }
 
     protected void handleSignal(StartNode startNode, Map<String, Object> nodeMetaData, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        if (EVENT_TYPE_SIGNAL.equalsIgnoreCase((String) startNode.getMetaData(METADATA_TRIGGER_TYPE))) {
+        if (EVENT_TYPE_SIGNAL.equalsIgnoreCase((String) startNode.getMetaData(TRIGGER_TYPE))) {
             Variable variable = null;
             Map<String, String> variableMapping = startNode.getOutMappings();
             if (variableMapping != null && !variableMapping.isEmpty()) {
                 Entry<String, String> varInfo = variableMapping.entrySet().iterator().next();
 
                 body.addStatement(getFactoryMethod(getNodeId(startNode), METHOD_TRIGGER,
-                        new StringLiteralExpr((String) nodeMetaData.get(METADATA_MESSAGE_TYPE)),
+                        new StringLiteralExpr((String) nodeMetaData.get(MESSAGE_TYPE)),
                         getOrNullExpr(varInfo.getKey()),
                         getOrNullExpr(varInfo.getValue())));
                 variable = variableScope.findVariable(varInfo.getKey());
@@ -97,15 +101,15 @@ public class StartNodeVisitor extends AbstractNodeVisitor {
                 }
             } else {
                 body.addStatement(getFactoryMethod(getNodeId(startNode), METHOD_TRIGGER,
-                        new StringLiteralExpr((String) nodeMetaData.get(METADATA_MESSAGE_TYPE)),
-                        new StringLiteralExpr(getOrDefault((String) nodeMetaData.get(METADATA_TRIGGER_MAPPING), ""))));
+                        new StringLiteralExpr((String) nodeMetaData.get(MESSAGE_TYPE)),
+                        new StringLiteralExpr(getOrDefault((String) nodeMetaData.get(TRIGGER_MAPPING), ""))));
             }
-            metadata.getSignals().put((String) nodeMetaData.get(METADATA_MESSAGE_TYPE), variable != null ? variable.getType().getStringType() : null);
+            metadata.getSignals().put((String) nodeMetaData.get(MESSAGE_TYPE), variable != null ? variable.getType().getStringType() : null);
         } else {
-            String triggerMapping = (String) nodeMetaData.get(METADATA_TRIGGER_MAPPING);
+            String triggerMapping = (String) nodeMetaData.get(TRIGGER_MAPPING);
             body.addStatement(getFactoryMethod(getNodeId(startNode), METHOD_TRIGGER,
-                    new StringLiteralExpr((String) nodeMetaData.get(METADATA_TRIGGER_REF)),
-                    new StringLiteralExpr(getOrDefault((String) nodeMetaData.get(METADATA_TRIGGER_MAPPING), "")),
+                    new StringLiteralExpr((String) nodeMetaData.get(TRIGGER_REF)),
+                    new StringLiteralExpr(getOrDefault((String) nodeMetaData.get(TRIGGER_MAPPING), "")),
                     new StringLiteralExpr(getOrDefault(startNode.getOutMapping(triggerMapping), ""))));
         }
     }

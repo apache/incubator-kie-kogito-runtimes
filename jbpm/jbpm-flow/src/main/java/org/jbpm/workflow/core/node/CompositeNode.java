@@ -88,7 +88,7 @@ public class CompositeNode extends StateBasedNode implements NodeContainer, Even
 	        ((org.jbpm.workflow.core.Node) node).setId(++id);
     	}
     	nodeContainer.addNode(node);
-        ((org.jbpm.workflow.core.Node) node).setNodeContainer(this);
+        ((org.jbpm.workflow.core.Node) node).setParentContainer(this);
     }
     
     protected void internalAddNode(Node node) {
@@ -97,7 +97,7 @@ public class CompositeNode extends StateBasedNode implements NodeContainer, Even
     
     public void removeNode(Node node) {
         nodeContainer.removeNode(node);
-        ((org.jbpm.workflow.core.Node) node).setNodeContainer(null);
+        ((org.jbpm.workflow.core.Node) node).setParentContainer(null);
     }
     
     protected void internalRemoveNode(Node node) {
