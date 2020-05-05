@@ -28,14 +28,11 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.utils.StringEscapeUtils;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
-import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
-import org.jbpm.workflow.core.node.StateBasedNode;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 
@@ -44,11 +41,11 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
 import static org.jbpm.ruleflow.core.factory.MappableNodeFactory.METHOD_IN_MAPPING;
 import static org.jbpm.ruleflow.core.factory.MappableNodeFactory.METHOD_OUT_MAPPING;
 import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_DONE;
 import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_NAME;
-import static org.jbpm.ruleflow.core.factory.StateBasedNodeFactory.METHOD_TIMER;
 
 public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisitor {
 
@@ -162,7 +159,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
 
     protected void visitConnection(String factoryField, Connection connection, BlockStmt body) {
         // if the connection is a hidden one (compensations), don't dump
-        Object hidden = ((ConnectionImpl) connection).getMetaData("hidden");
+        Object hidden = ((ConnectionImpl) connection).getMetaData(HIDDEN);
         if (hidden != null && ((Boolean) hidden)) {
             return;
         }

@@ -93,7 +93,7 @@ public class ProcessVisitor extends AbstractVisitor {
         this.nodesVisitors.put(ActionNode.class, new ActionNodeVisitor());
         this.nodesVisitors.put(EndNode.class, new EndNodeVisitor());
         this.nodesVisitors.put(HumanTaskNode.class, new HumanTaskNodeVisitor());
-        this.nodesVisitors.put(WorkItemNode.class, new WorkItemNodeVisitor(contextClassLoader));
+        this.nodesVisitors.put(WorkItemNode.class, new WorkItemNodeVisitor<>(contextClassLoader));
         this.nodesVisitors.put(SubProcessNode.class, new LambdaSubProcessNodeVisitor());
         this.nodesVisitors.put(Split.class, new SplitNodeVisitor());
         this.nodesVisitors.put(Join.class, new JoinNodeVisitor());
@@ -102,7 +102,7 @@ public class ProcessVisitor extends AbstractVisitor {
         this.nodesVisitors.put(BoundaryEventNode.class, new BoundaryEventNodeVisitor());
         this.nodesVisitors.put(EventNode.class, new EventNodeVisitor());
         this.nodesVisitors.put(ForEachNode.class, new ForEachNodeVisitor(nodesVisitors));
-        this.nodesVisitors.put(CompositeContextNode.class, new CompositeContextNodeVisitor(nodesVisitors));
+        this.nodesVisitors.put(CompositeContextNode.class, new CompositeContextNodeVisitor<>(nodesVisitors));
         this.nodesVisitors.put(EventSubProcessNode.class, new EventSubprocessNodeVisitor(nodesVisitors));
         this.nodesVisitors.put(TimerNode.class, new TimerNodeVisitor());
         this.nodesVisitors.put(MilestoneNode.class, new MilestoneNodeVisitor());
@@ -215,10 +215,9 @@ public class ProcessVisitor extends AbstractVisitor {
         return metaData;
     }
 
-    private void visitNodes(List<org.jbpm.workflow.core.Node> nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-
-        for (org.kie.api.definition.process.Node node : nodes) {
-            AbstractNodeVisitor visitor = nodesVisitors.get(node.getClass());
+    private <U extends org.kie.api.definition.process.Node> void visitNodes(List<U> nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        for (U node : nodes) {
+            AbstractNodeVisitor<U> visitor = (AbstractNodeVisitor<U>) nodesVisitors.get(node.getClass());
             if (visitor == null) {
                 throw new IllegalStateException("No visitor found for node " + node.getClass().getName());
             }
