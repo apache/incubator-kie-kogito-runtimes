@@ -159,13 +159,12 @@ public class UserTaskModelMetaData {
         staticFromMap.addStatement(new AssignExpr(nameField, new NameExpr("name"), AssignExpr.Operator.ASSIGN));
 
         for (Entry<String, String> entry : humanTaskNode.getInMappings().entrySet()) {
-            Variable variable = variableScope.findVariable(entry.getValue());
+
+            Variable variable = Optional.ofNullable(variableScope.findVariable(entry.getValue()))
+                    .orElse(processVariableScope.findVariable(entry.getValue()));
 
             if (variable == null) {
-                variable = processVariableScope.findVariable(entry.getValue());
-                if (variable == null) {
-                    throw new IllegalStateException("Task " + humanTaskNode.getName() +" (input) " + entry.getKey() + " reference not existing variable " + entry.getValue());
-                }
+                throw new IllegalStateException("Task " + humanTaskNode.getName() +" (input) " + entry.getKey() + " reference not existing variable " + entry.getValue());
             }
 
             FieldDeclaration fd = new FieldDeclaration().addVariable(
@@ -253,21 +252,20 @@ public class UserTaskModelMetaData {
             if (entry.getValue() == null || INTERNAL_FIELDS.contains(entry.getKey())) {
                 continue;
             }
-            Variable variable = variableScope.findVariable(entry.getValue());
+
+            Variable variable = Optional.ofNullable(variableScope.findVariable(entry.getValue()))
+                    .orElse(processVariableScope.findVariable(entry.getValue()));
 
             if (variable == null) {
-                variable = processVariableScope.findVariable(entry.getValue());
-                if (variable == null) {
-                    // check if given mapping is an expression
-                    Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(entry.getValue());
-                    if (matcher.find()) {
-                        Map<String, String> dataOutputs = (Map<String, String>) humanTaskNode.getMetaData("DataOutputs");
-                        variable = new Variable();
-                        variable.setName(entry.getKey());
-                        variable.setType(new ObjectDataType(dataOutputs.get(entry.getKey())));
-                    } else {
-                        throw new IllegalStateException("Task " + humanTaskNode.getName() +" (output) " + entry.getKey() + " reference not existing variable " + entry.getValue());
-                    }
+                // check if given mapping is an expression
+                Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(entry.getValue());
+                if (matcher.find()) {
+                    Map<String, String> dataOutputs = (Map<String, String>) humanTaskNode.getMetaData("DataOutputs");
+                    variable = new Variable();
+                    variable.setName(entry.getKey());
+                    variable.setType(new ObjectDataType(dataOutputs.get(entry.getKey())));
+                } else {
+                    throw new IllegalStateException("Task " + humanTaskNode.getName() +" (output) " + entry.getKey() + " reference not existing variable " + entry.getValue());
                 }
             }
 
