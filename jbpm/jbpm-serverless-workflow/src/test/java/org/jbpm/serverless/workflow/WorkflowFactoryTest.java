@@ -71,6 +71,9 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         assertThat(startNode.getMetaData().get("TriggerType")).isEqualTo("ConsumeMessage");
         assertThat(startNode.getMetaData().get("TriggerRef")).isEqualTo(eventDefinition.getSource());
         assertThat(startNode.getMetaData().get("MessageType")).isEqualTo("com.fasterxml.jackson.databind.JsonNode");
+
+        assertThat(startNode.getTriggers()).isNotNull();
+        assertThat(startNode.getTriggers().size()).isEqualTo(1);
     }
 
     @Test
@@ -96,7 +99,10 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         assertThat(endNode.getMetaData().get("TriggerRef")).isEqualTo("sampleSource");
         assertThat(endNode.getMetaData().get("TriggerType")).isEqualTo("ProduceMessage");
         assertThat(endNode.getMetaData().get("MessageType")).isEqualTo("com.fasterxml.jackson.databind.JsonNode");
-        assertThat(endNode.getMetaData().get("MappingVariable")).isEqualTo("sampleData");
+        assertThat(endNode.getMetaData().get("MappingVariable")).isEqualTo("workflowdata");
+
+        assertThat(endNode.getActions(ExtendedNodeImpl.EVENT_NODE_ENTER)).isNotNull();
+        assertThat(endNode.getActions(ExtendedNodeImpl.EVENT_NODE_ENTER).size()).isEqualTo(1);
     }
 
     @Test

@@ -55,7 +55,6 @@ public class ServerlessWorkflowFactory {
     public static final String DEFAULT_PACKAGE_NAME = "org.kie.kogito.serverless";
     public static final String DEFAULT_VISIBILITY = "Public";
     public static final String DEFAULT_DECISION = "decision";
-    public static final String DEFAULT_VAR = "Var";
     public static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     public static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
     public static final String UNIQUE_ID_PARAM = "UniqueId";
@@ -131,7 +130,7 @@ public class ServerlessWorkflowFactory {
         StartNode startNode = new StartNode();
         startNode.setId(id);
         startNode.setName(eventDefinition.getName());
-        startNode.setMetaData("TriggerMapping", eventDefinition.getSource() + DEFAULT_VAR);
+        startNode.setMetaData("TriggerMapping", DEFAULT_WORKFLOW_VAR);
         startNode.setMetaData("TriggerType", "ConsumeMessage");
         startNode.setMetaData("TriggerRef", eventDefinition.getSource());
         startNode.setMetaData("MessageType", JSON_NODE);
@@ -164,8 +163,8 @@ public class ServerlessWorkflowFactory {
         endNode.setMetaData("TriggerRef", eventDef.getSource());
         endNode.setMetaData("TriggerType", "ProduceMessage");
         endNode.setMetaData("MessageType", JSON_NODE);
-        endNode.setMetaData("MappingVariable", stateEnd.getProduceEvent().getData());
-        addMessageEndNodeAction(endNode, stateEnd.getProduceEvent().getData(), JSON_NODE);
+        endNode.setMetaData("MappingVariable", DEFAULT_WORKFLOW_VAR);
+        addMessageEndNodeAction(endNode, DEFAULT_WORKFLOW_VAR, JSON_NODE);
 
         nodeContainer.addNode(endNode);
 
