@@ -21,6 +21,9 @@ import javax.inject.Inject;
 
 import io.vertx.core.eventbus.EventBus;
 
+/**
+ * This class must always have exact FQCN as <code>org.kie.kogito.tracing.decision.KogitoDecisionTracingListener</code>
+ */
 @ApplicationScoped
 public final class KogitoDecisionTracingListener extends DecisionTracingListener {
 
