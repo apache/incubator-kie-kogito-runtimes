@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class QuarkusDecisionTracingTest {
+public class KogitoDecisionTracingTest {
 
     private static final String TEST_EXECUTION_ID = "7c50581e-6e5b-407b-91d6-2ffb1d47ebc0";
 
@@ -55,12 +55,12 @@ public class QuarkusDecisionTracingTest {
         final String modelName = "Traffic Violation";
 
         final DMNRuntime runtime = DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
-                QuarkusDecisionTracingTest.class.getResourceAsStream(modelResource)
+                KogitoDecisionTracingTest.class.getResourceAsStream(modelResource)
         ));
 
         EventBus eventBus = mock(EventBus.class);
 
-        QuarkusDecisionTracingListener listener = new QuarkusDecisionTracingListener(eventBus);
+        KogitoDecisionTracingListener listener = new KogitoDecisionTracingListener(eventBus);
         runtime.addListener(listener);
 
         final Map<String, Object> driver = new HashMap<>();
@@ -91,7 +91,7 @@ public class QuarkusDecisionTracingTest {
 
         TestSubscriber<String> subscriber = new TestSubscriber<>();
 
-        QuarkusDecisionTracingCollector collector = new QuarkusDecisionTracingCollector();
+        KogitoDecisionTracingCollector collector = new KogitoDecisionTracingCollector();
         collector.getEventPublisher().subscribe(subscriber);
         collector.onEvent(beforeEvent);
         collector.onEvent(afterEvent);

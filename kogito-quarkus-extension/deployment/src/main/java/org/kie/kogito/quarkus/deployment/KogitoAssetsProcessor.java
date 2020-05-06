@@ -74,7 +74,7 @@ public class KogitoAssetsProcessor {
     private final transient String appPackageName = "org.kie.kogito.app";
     private final transient String persistenceFactoryClass = "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
     private final transient String metricsClass = "org.kie.kogito.monitoring.rest.MetricsResource";
-    private final transient String tracingClass = "org.kie.kogito.tracing.decision.QuarkusDecisionTracingListener";
+    private final transient String tracingClass = "org.kie.kogito.tracing.decision.KogitoDecisionTracingListener";
 
     @BuildStep
     CapabilityBuildItem capability() {

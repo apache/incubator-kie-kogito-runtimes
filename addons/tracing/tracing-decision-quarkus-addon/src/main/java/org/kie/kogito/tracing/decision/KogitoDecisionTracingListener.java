@@ -22,10 +22,10 @@ import javax.inject.Inject;
 import io.vertx.core.eventbus.EventBus;
 
 @ApplicationScoped
-public final class QuarkusDecisionTracingListener extends DecisionTracingListener {
+public final class KogitoDecisionTracingListener extends DecisionTracingListener {
 
     @Inject
-    public QuarkusDecisionTracingListener(EventBus bus) {
+    public KogitoDecisionTracingListener(EventBus bus) {
         setEventConsumer(event ->
                 bus.send(String.format("kogito-tracing-decision_%s", event.getClass().getSimpleName()), event)
         );
