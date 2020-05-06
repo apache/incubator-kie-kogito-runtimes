@@ -589,33 +589,6 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
 		}
 	}
 
-    protected String getSignalExpression(NodeImpl node, String signalName, String variable) {
-        String signalExpression = RUNTIME_SIGNAL_EVENT;
-        String scope = (String) node.getMetaData("customScope");
-        if ("processInstance".equalsIgnoreCase(scope)) {
-            signalExpression = PROCESS_INSTANCE_SIGNAL_EVENT +  "org.jbpm.process.instance.impl.util.VariableUtil.resolveVariable(\""+ signalName + "\", kcontext.getNodeInstance()), " + (variable == null ? "null" : variable) + ");";
-        } else if ("runtimeManager".equalsIgnoreCase(scope) || "project".equalsIgnoreCase(scope)) {
-            signalExpression = RUNTIME_MANAGER_SIGNAL_EVENT + "org.jbpm.process.instance.impl.util.VariableUtil.resolveVariable(\""+ signalName + "\", kcontext.getNodeInstance()), " + (variable == null ? "null" : variable) + ");";
-        } else if ("external".equalsIgnoreCase(scope)) {
-            signalExpression = "org.drools.core.process.instance.impl.WorkItemImpl workItem = new org.drools.core.process.instance.impl.WorkItemImpl();" + EOL +
-            "workItem.setName(\"External Send Task\");" + EOL +
-            "workItem.setNodeInstanceId(kcontext.getNodeInstance().getId());" + EOL +
-            "workItem.setProcessInstanceId(kcontext.getProcessInstance().getId());" + EOL +
-            "workItem.setNodeId(kcontext.getNodeInstance().getNodeId());" + EOL +
-            "workItem.setDeploymentId((String) kcontext.getKnowledgeRuntime().getEnvironment().get(\"deploymentId\"));" + EOL +
-            "workItem.setParameter(\"Signal\", org.jbpm.process.instance.impl.util.VariableUtil.resolveVariable(\""+ signalName + "\", kcontext.getNodeInstance()));" + EOL +
-            "workItem.setParameter(\"SignalProcessInstanceId\", kcontext.getVariable(\"SignalProcessInstanceId\"));" + EOL +
-            "workItem.setParameter(\"SignalWorkItemId\", kcontext.getVariable(\"SignalWorkItemId\"));" + EOL +
-            "workItem.setParameter(\"SignalDeploymentId\", kcontext.getVariable(\"SignalDeploymentId\"));" + EOL +
-            (variable == null ? "" : "workItem.setParameter(\"Data\", " + variable + ");" + EOL) +
-            "((org.drools.core.process.instance.WorkItemManager) kcontext.getKnowledgeRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);";
-        } else {
-            signalExpression = signalExpression +  "org.jbpm.process.instance.impl.util.VariableUtil.resolveVariable(\""+ signalName + "\", kcontext.getNodeInstance()), " + (variable == null ? "null" : variable) + ");";
-        }
-
-        return signalExpression;
-    }
-
     private static final String SIGNAL_NAMES = "signalNames";
 
     protected String checkSignalAndConvertToRealSignalNam(ExtensibleXmlParser parser, String signalName) {
