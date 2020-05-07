@@ -38,7 +38,7 @@ public class MilestoneNodeVisitor extends AbstractNodeVisitor<MilestoneNode> {
 
     @Override
     public void visitNode(String factoryField, MilestoneNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, MilestoneNodeFactory.class, getNodeId(node), NODE_KEY,new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, MilestoneNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Milestone"))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT, new StringLiteralExpr(StringEscapeUtils.escapeJava(node.getConstraint()))));
         if (node.getMatchVariable() != null) {
