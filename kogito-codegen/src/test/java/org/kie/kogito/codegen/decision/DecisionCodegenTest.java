@@ -56,7 +56,7 @@ public class DecisionCodegenTest {
     }
 
     @Test
-    public void test20200507() throws Exception {
+    public void resilientToDuplicateDMNIDs() throws Exception {
         DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/test20200507").toAbsolutePath());
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
