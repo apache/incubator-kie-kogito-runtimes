@@ -31,11 +31,11 @@ import java.util.stream.Stream;
 import static org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory.METHOD_EVENT;
 import static org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory.METHOD_KEEP_ACTIVE;
 
-public class EventSubprocessNodeVisitor extends CompositeContextNodeVisitor<EventSubProcessNode> {
+public class EventSubProcessNodeVisitor extends CompositeContextNodeVisitor<EventSubProcessNode> {
 
     private static final String FACTORY_METHOD_NAME = "eventSubProcessNode";
 
-    public EventSubprocessNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
+    public EventSubProcessNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         super(nodesVisitors);
     }
 

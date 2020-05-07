@@ -103,7 +103,7 @@ public class ProcessVisitor extends AbstractVisitor {
         this.nodesVisitors.put(EventNode.class, new EventNodeVisitor());
         this.nodesVisitors.put(ForEachNode.class, new ForEachNodeVisitor(nodesVisitors));
         this.nodesVisitors.put(CompositeContextNode.class, new CompositeContextNodeVisitor<>(nodesVisitors));
-        this.nodesVisitors.put(EventSubProcessNode.class, new EventSubprocessNodeVisitor(nodesVisitors));
+        this.nodesVisitors.put(EventSubProcessNode.class, new EventSubProcessNodeVisitor(nodesVisitors));
         this.nodesVisitors.put(TimerNode.class, new TimerNodeVisitor());
         this.nodesVisitors.put(MilestoneNode.class, new MilestoneNodeVisitor());
         this.nodesVisitors.put(DynamicNode.class, new DynamicNodeVisitor(nodesVisitors));

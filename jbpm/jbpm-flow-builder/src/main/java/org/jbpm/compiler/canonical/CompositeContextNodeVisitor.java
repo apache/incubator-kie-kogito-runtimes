@@ -73,7 +73,6 @@ public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends
 
         visitCustomFields(node).forEach(body::addStatement);
 
-        // visit nodes
         // composite context node might not have variable scope
         // in that case inherit it from parent
         if (node.getDefaultContext(VariableScope.VARIABLE_SCOPE) == null) {
