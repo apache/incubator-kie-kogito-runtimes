@@ -72,7 +72,8 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         if (hasQuarkus) {
             return new QuarkusKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
         }
-        throw new IllegalStateException("Unable to determine Kogito runtime.");
+
+        return null;
     }
     
     protected boolean hasClassOnClasspath(MavenProject project, String className) {
