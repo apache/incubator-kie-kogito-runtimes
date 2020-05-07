@@ -15,7 +15,7 @@
  */
 
 
-package io.quarkus.it.kogito.drools.newunithotreloadtest;
+package io.quarkus.it.kogito.drools.newunit;
 
 public class Person {
 

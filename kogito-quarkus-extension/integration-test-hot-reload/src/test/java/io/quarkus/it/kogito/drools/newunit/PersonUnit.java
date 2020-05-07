@@ -15,7 +15,7 @@
  */
 
 
-package io.quarkus.it.kogito.drools.newunithotreloadtest;
+package io.quarkus.it.kogito.drools.newunit;
 
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;

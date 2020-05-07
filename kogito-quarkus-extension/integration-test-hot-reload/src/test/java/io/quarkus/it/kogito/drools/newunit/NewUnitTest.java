@@ -15,7 +15,7 @@
  */
 
 
-package io.quarkus.it.kogito.drools.newunithotreloadtest;
+package io.quarkus.it.kogito.drools.newunit;
 
 import java.util.List;
 
@@ -32,19 +32,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class NewUnitHotReloadTest {
+public class NewUnitTest {
 
-    private static final String PACKAGE = "io.quarkus.it.kogito.drools.newunithotreloadtest";
+    private static final String PACKAGE = "io.quarkus.it.kogito.drools.newunit";
     private static final String RESOURCE_FILE_PATH = PACKAGE.replace( '.', '/' );
     private static final String DRL_RESOURCE_FILE = RESOURCE_FILE_PATH + "/rules.drl";
 
     private static final String HTTP_TEST_PORT = "65535";
 
     private static final String DRL_SOURCE =
-            "package io.quarkus.it.kogito.drools.newunithotreloadtest;\n" +
+            "package io.quarkus.it.kogito.drools.newunit;\n" +
             "unit PersonUnit;\n" +
             "\n" +
-            "import io.quarkus.it.kogito.drools.newunithotreloadtest.Person;\n" +
+            "import io.quarkus.it.kogito.drools.newunit.Person;\n" +
             "\n" +
             "rule \"adult\"\n" +
             "when\n" +
@@ -60,6 +60,8 @@ public class NewUnitHotReloadTest {
     @RegisterExtension
     final static QuarkusDevModeTest test = new QuarkusDevModeTest().setArchiveProducer(
             () -> ShrinkWrap.create(JavaArchive.class)
+                    .addClass( Person.class )
+                    .addClass( PersonUnit.class )
                     .addAsResource("adult.txt", DRL_RESOURCE_FILE + ".dummy")); // add a dummy file only to enforce creation of reasource folder
 
     @Test
@@ -67,8 +69,6 @@ public class NewUnitHotReloadTest {
 
         String personsPayload = "{\"persons\":[{\"name\":\"Mario\",\"age\":45,\"adult\":false},{\"name\":\"Sofia\",\"age\":17,\"adult\":false}]}";
 
-        test.addSourceFile(Person.class);
-        test.addSourceFile(PersonUnit.class);
         test.addResourceFile(DRL_RESOURCE_FILE, DRL_SOURCE);
 
         List<String> names = given()
