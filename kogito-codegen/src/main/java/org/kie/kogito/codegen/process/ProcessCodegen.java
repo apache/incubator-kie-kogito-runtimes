@@ -84,7 +84,7 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCodegen.class);
 
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
-    public static final Set<String> SUPPORTED_BPMN_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bpmn", ".bpmn2", ".bpmn-cm")));
+    public static final Set<String> SUPPORTED_BPMN_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bpmn", ".bpmn2")));
     private static final String YAML_PARSER = "yml";
     private static final String JSON_PARSER = "json";
     public static final Map<String, String> SUPPORTED_SW_EXTENSIONS;
