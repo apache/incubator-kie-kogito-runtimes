@@ -16,22 +16,24 @@
 
 package org.jbpm.ruleflow.core;
 
-public interface Metadata {
+public class Metadata {
 
-    String ACTION = "Action";
-    String TRIGGER_REF = "TriggerRef";
-    String MESSAGE_TYPE = "MessageType";
-    String TRIGGER_TYPE = "TriggerType";
-    String TRIGGER_MAPPING = "TriggerMapping";
-    String MAPPING_VARIABLE = "MappingVariable";
-    String EVENT_TYPE = "EventType";
-    String EVENT_TYPE_TIMER = "Timer";
-    String ATTACHED_TO = "AttachedTo";
-    String TIME_CYCLE = "TimeCycle";
-    String TIME_DURATION = "TimeDuration";
-    String CANCEL_ACTIVITY = "CancelActivity";
-    String HIDDEN = "hidden";
-    String UNIQUE_ID = "UniqueId";
-    String LINK_NODE_HIDDEN = "linkNodeHidden";
+    public static final String ACTION = "Action";
+    public static final String TRIGGER_REF = "TriggerRef";
+    public static final String MESSAGE_TYPE = "MessageType";
+    public static final String TRIGGER_TYPE = "TriggerType";
+    public static final String TRIGGER_MAPPING = "TriggerMapping";
+    public static final String MAPPING_VARIABLE = "MappingVariable";
+    public static final String EVENT_TYPE = "EventType";
+    public static final String EVENT_TYPE_TIMER = "Timer";
+    public static final String ATTACHED_TO = "AttachedTo";
+    public static final String TIME_CYCLE = "TimeCycle";
+    public static final String TIME_DURATION = "TimeDuration";
+    public static final String CANCEL_ACTIVITY = "CancelActivity";
+    public static final String HIDDEN = "hidden";
+    public static final String UNIQUE_ID = "UniqueId";
+    public static final String LINK_NODE_HIDDEN = "linkNodeHidden";
 
+    private Metadata() {
+    }
 }

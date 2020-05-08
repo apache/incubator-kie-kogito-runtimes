@@ -49,12 +49,9 @@ import static org.jbpm.ruleflow.core.factory.SubProcessNodeFactory.METHOD_WAIT_F
 
 public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessNode> {
 
-    private static final String NODE_KEY = "subProcessNode";
-    private static final String FACTORY_NAME = "subProcessFactory";
-
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "subProcessNode";
     }
 
     @Override
@@ -64,12 +61,12 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         String name = node.getName();
         String subProcessId = node.getProcessId();
 
-        NodeValidator.of(NODE_KEY, name)
+        NodeValidator.of(getNodeKey(), name)
                 .notEmpty("subProcessId", subProcessId)
                 .validate();
 
 
-        body.addStatement(getAssignedFactoryMethod(factoryField, SubProcessNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, SubProcessNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Call Activity"))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_PROCESS_ID, new StringLiteralExpr(subProcessId)))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_PROCESS_NAME, new StringLiteralExpr(getOrDefault(node.getProcessName(), ""))))
@@ -101,9 +98,9 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         });
 
         if (retValue.isPresent()) {
-            body.addStatement(getFactoryMethod(getNodeId(node), FACTORY_NAME, retValue.get()));
+            body.addStatement(getFactoryMethod(getNodeId(node), getNodeKey(), retValue.get()));
         } else {
-            body.addStatement(getFactoryMethod(getNodeId(node), FACTORY_NAME));
+            body.addStatement(getFactoryMethod(getNodeId(node), getNodeKey()));
         }
 
         visitMetaData(node.getMetaData(), body, getNodeId(node));

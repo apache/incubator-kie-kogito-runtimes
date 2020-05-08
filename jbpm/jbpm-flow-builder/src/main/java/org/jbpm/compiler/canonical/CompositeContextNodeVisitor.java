@@ -39,17 +39,13 @@ import static org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory.METHOD_
 
 public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends AbstractCompositeNodeVisitor<T> {
 
-    private static final String NODE_KEY = "compositeContextNode";
-    private static final String FACTORY_METHOD_NAME = "compositeNode";
-    private static final String DEFAULT_NAME = "Composite";
+    public CompositeContextNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
+        super(nodesVisitors);
+    }
 
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
-    }
-
-    public CompositeContextNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
-        super(nodesVisitors);
+        return "compositeContextNode";
     }
 
     protected Class<? extends CompositeContextNodeFactory> factoryClass() {
@@ -57,7 +53,11 @@ public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends
     }
 
     protected String factoryMethod() {
-        return FACTORY_METHOD_NAME;
+        return getNodeKey();
+    }
+
+    protected String getDefaultName() {
+        return "Composite";
     }
 
     @Override
@@ -83,10 +83,6 @@ public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends
 
         visitConnections(getNodeId(node), node.getNodes(), body);
         body.addStatement(getDoneMethod(getNodeId(node)));
-    }
-
-    protected String getDefaultName() {
-        return DEFAULT_NAME;
     }
 
     protected Stream<MethodCallExpr> visitCustomFields(T compositeContextNode) {

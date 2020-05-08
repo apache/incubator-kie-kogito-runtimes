@@ -36,16 +36,14 @@ import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_VARIABLE_NA
 
 public class EventNodeVisitor extends AbstractNodeVisitor<EventNode> {
 
-    private static final String NODE_KEY = "eventNode";
-
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "eventNode";
     }
 
     @Override
     public void visitNode(String factoryField, EventNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, EventNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, EventNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Event"))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_EVENT_TYPE, new StringLiteralExpr(node.getType())));
 

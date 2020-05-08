@@ -26,7 +26,6 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.factory.StartNodeFactory;
 import org.jbpm.workflow.core.node.StartNode;
-import org.kie.api.definition.process.Node;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,16 +40,14 @@ import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_TRIGGER;
 
 public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
 
-    private static final String NODE_KEY = "startNode";
-
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "startNode";
     }
 
     @Override
     public void visitNode(String factoryField, StartNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, StartNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, StartNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Start"))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_INTERRUPTING, new BooleanLiteralExpr(node.isInterrupting())));
 

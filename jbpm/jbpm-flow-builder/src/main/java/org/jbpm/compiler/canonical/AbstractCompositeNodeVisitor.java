@@ -30,11 +30,6 @@ public abstract class AbstractCompositeNodeVisitor<T extends CompositeContextNod
         this.nodesVisitors = nodesVisitors;
     }
 
-    @Override
-    public void visitNode(T node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        super.visitNode(node, body, variableScope, metadata);
-    }
-
     protected <U extends Node> void visitNodes(String factoryField, U[] nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         for (U node : nodes) {
             AbstractNodeVisitor<U> visitor = (AbstractNodeVisitor<U>) nodesVisitors.get(node.getClass());

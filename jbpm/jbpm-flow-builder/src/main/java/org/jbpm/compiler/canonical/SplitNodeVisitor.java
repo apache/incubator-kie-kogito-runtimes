@@ -37,16 +37,14 @@ import static org.jbpm.ruleflow.core.factory.SplitFactory.METHOD_TYPE;
 
 public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
 
-    private static final String NODE_KEY = "splitNode";
-
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "splitNode";
     }
 
     @Override
     public void visitNode(String factoryField, Split node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, SplitFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, SplitFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Split"))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(node.getType())));
 

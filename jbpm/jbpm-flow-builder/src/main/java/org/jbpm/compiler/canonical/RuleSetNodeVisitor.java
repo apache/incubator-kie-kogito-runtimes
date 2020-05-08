@@ -51,8 +51,6 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
 
     public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
 
-    private static final String NODE_KEY = "ruleSetNode";
-
     private final ClassLoader contextClassLoader;
     private final AssignableChecker assignableChecker;
 
@@ -63,14 +61,14 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
 
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "ruleSetNode";
     }
 
     @Override
     public void visitNode(String factoryField, RuleSetNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         String nodeName = node.getName();
 
-        body.addStatement(getAssignedFactoryMethod(factoryField, RuleSetNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, RuleSetNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Rule"));
 
         RuleSetNode.RuleType ruleType = node.getRuleType();

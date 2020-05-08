@@ -27,16 +27,14 @@ import static org.jbpm.ruleflow.core.factory.JoinFactory.METHOD_TYPE;
 
 public class JoinNodeVisitor extends AbstractNodeVisitor<Join> {
 
-    private static final String NODE_KEY = "joinNode";
-
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "joinNode";
     }
 
     @Override
     public void visitNode(String factoryField, Join node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, JoinFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())));
+        body.addStatement(getAssignedFactoryMethod(factoryField, JoinFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())));
         body.addStatement(getNameMethod(node, "Join"));
         body.addStatement(getFactoryMethod(getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(node.getType())));
 

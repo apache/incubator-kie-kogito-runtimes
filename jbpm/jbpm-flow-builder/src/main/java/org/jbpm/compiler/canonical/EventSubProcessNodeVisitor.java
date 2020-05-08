@@ -33,8 +33,6 @@ import static org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory.METHOD_K
 
 public class EventSubProcessNodeVisitor extends CompositeContextNodeVisitor<EventSubProcessNode> {
 
-    private static final String FACTORY_METHOD_NAME = "eventSubProcessNode";
-
     public EventSubProcessNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         super(nodesVisitors);
     }
@@ -45,18 +43,13 @@ public class EventSubProcessNodeVisitor extends CompositeContextNodeVisitor<Even
     }
 
     @Override
-    protected String factoryMethod() {
-        return FACTORY_METHOD_NAME;
-    }
-
-    @Override
     protected String getNodeKey() {
-        return FACTORY_METHOD_NAME;
+        return "eventSubProcessNode";
     }
 
     @Override
     protected String getDefaultName() {
-        return "Event Subprocess";
+        return "EventSubProcess";
     }
 
     @Override

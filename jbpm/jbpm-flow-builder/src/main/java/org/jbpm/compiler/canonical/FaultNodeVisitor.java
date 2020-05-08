@@ -28,16 +28,14 @@ import static org.jbpm.ruleflow.core.factory.FaultNodeFactory.METHOD_FAULT_VARIA
 
 public class FaultNodeVisitor extends AbstractNodeVisitor<FaultNode> {
 
-    private static final String NODE_KEY = "faultNode";
-
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "faultNode";
     }
 
     @Override
     public void visitNode(String factoryField, FaultNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, FaultNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, FaultNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Error"));
         if (node.getFaultVariable() != null) {
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_FAULT_VARIABLE, new StringLiteralExpr(node.getFaultVariable())));

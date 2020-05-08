@@ -39,20 +39,18 @@ import static org.jbpm.ruleflow.core.factory.ForEachNodeFactory.METHOD_OUTPUT_VA
 
 public class ForEachNodeVisitor extends AbstractCompositeNodeVisitor<ForEachNode> {
 
-    private static final String NODE_KEY = "forEachNode";
-
     public ForEachNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         super(nodesVisitors);
     }
 
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "forEachNode";
     }
 
     @Override
     public void visitNode(String factoryField, ForEachNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, ForEachNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, ForEachNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "ForEach"));
         visitMetaData(node.getMetaData(), body, getNodeId(node));
 

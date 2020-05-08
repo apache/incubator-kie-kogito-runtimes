@@ -32,8 +32,6 @@ import static org.jbpm.ruleflow.core.factory.StateNodeFactory.METHOD_CONSTRAINT;
 
 public class StateNodeVisitor extends CompositeContextNodeVisitor<StateNode> {
 
-    private static final String FACTORY_METHOD_NAME = "stateNode";
-
     public StateNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         super(nodesVisitors);
     }
@@ -44,13 +42,8 @@ public class StateNodeVisitor extends CompositeContextNodeVisitor<StateNode> {
     }
 
     @Override
-    protected String factoryMethod() {
-        return FACTORY_METHOD_NAME;
-    }
-
-    @Override
     protected String getNodeKey() {
-        return FACTORY_METHOD_NAME;
+        return "stateNode";
     }
 
     @Override

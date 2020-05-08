@@ -28,6 +28,8 @@ import static org.jbpm.ruleflow.core.Metadata.ACTION;
 
 public class ActionNodeFactory extends ExtendedNodeFactory {
 
+    public static final String METHOD_ACTION = "action";
+
     public ActionNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
     }

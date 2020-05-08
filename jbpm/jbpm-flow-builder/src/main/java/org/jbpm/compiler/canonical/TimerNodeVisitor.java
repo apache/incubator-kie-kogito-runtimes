@@ -32,17 +32,15 @@ import static org.jbpm.ruleflow.core.factory.TimerNodeFactory.METHOD_TYPE;
 
 public class TimerNodeVisitor extends AbstractNodeVisitor<TimerNode> {
 
-    protected static final String NODE_KEY = "timerNode";
-
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "timerNode";
     }
 
     @Override
     public void visitNode(String factoryField, TimerNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, TimerNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
-        .addStatement(getNameMethod(node, "End"));
+        body.addStatement(getAssignedFactoryMethod(factoryField, TimerNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
+        .addStatement(getNameMethod(node,"Timer"));
 
         Timer timer = node.getTimer();
         body.addStatement(getFactoryMethod(getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(timer.getTimeType())));

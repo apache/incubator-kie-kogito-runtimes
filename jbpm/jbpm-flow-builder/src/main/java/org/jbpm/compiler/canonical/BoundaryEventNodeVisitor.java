@@ -37,16 +37,14 @@ import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_VARIABLE_NA
 
 public class BoundaryEventNodeVisitor extends AbstractNodeVisitor<BoundaryEventNode> {
 
-    private static final String NODE_KEY = "boundaryEventNode";
-
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "boundaryEventNode";
     }
 
     @Override
     public void visitNode(String factoryField, BoundaryEventNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, BoundaryEventNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, BoundaryEventNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "BoundaryEvent"))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_EVENT_TYPE, new StringLiteralExpr(node.getType())))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_ATTACHED_TO, new StringLiteralExpr(node.getAttachedToNodeId())))

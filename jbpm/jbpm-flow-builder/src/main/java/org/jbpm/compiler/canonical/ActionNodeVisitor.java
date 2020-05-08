@@ -17,69 +17,34 @@
 package org.jbpm.compiler.canonical;
 
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.workflow.core.node.ActionNode;
 
-import java.util.Map;
-
-import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
-import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
+import static org.jbpm.ruleflow.core.factory.ActionNodeFactory.METHOD_ACTION;
 
 public class ActionNodeVisitor extends AbstractNodeVisitor<ActionNode> {
 
-    private static final String NODE_KEY = "actionNode";
-    private static final String METHOD_ACTION = "action";
-
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "actionNode";
     }
 
     @Override
     public void visitNode(String factoryField, ActionNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, ActionNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, ActionNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Script"));
 
         // if there is trigger defined on end event create TriggerMetaData for it
         if (node.getMetaData(TRIGGER_REF) != null) {
-            Map<String, Object> nodeMetaData = node.getMetaData();
-            TriggerMetaData triggerMetaData = new TriggerMetaData(
-                    (String) nodeMetaData.get(TRIGGER_REF),
-                    (String) nodeMetaData.get(TRIGGER_TYPE),
-                    (String) nodeMetaData.get(MESSAGE_TYPE),
-                    (String) nodeMetaData.get(MAPPING_VARIABLE),
-                    String.valueOf(node.getId()))
-                    .validate();
-            metadata.getTriggers().add(triggerMetaData);
-
-            // and add trigger action
-            BlockStmt actionBody = new BlockStmt();
-            LambdaExpr lambda = new LambdaExpr(
-                    new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
-                    actionBody
-            );
-
-            CastExpr variable = new CastExpr(
-                    new ClassOrInterfaceType(null, triggerMetaData.getDataType()),
-                    new MethodCallExpr(new NameExpr(KCONTEXT_VAR), "getVariable")
-                            .addArgument(new StringLiteralExpr(triggerMetaData.getModelRef())));
-
-            MethodCallExpr producerMethodCall = new MethodCallExpr(new NameExpr("producer_" + node.getId()), "produce").addArgument(new MethodCallExpr(new NameExpr("kcontext"), "getProcessInstance")).addArgument(variable);
-            actionBody.addStatement(producerMethodCall);
-
+            LambdaExpr lambda = TriggerMetaData.buildLambdaExpr(node, metadata);
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         } else {
             if (node.getAction().toString() == null || node.getAction().toString().trim().isEmpty()) {

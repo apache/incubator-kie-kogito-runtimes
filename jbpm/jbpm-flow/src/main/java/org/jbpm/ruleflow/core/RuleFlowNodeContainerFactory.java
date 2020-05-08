@@ -105,7 +105,7 @@ public abstract class RuleFlowNodeContainerFactory {
         return new BoundaryEventNodeFactory(this, nodeContainer, id);
     }
 
-    public CompositeContextNodeFactory compositeNode(long id) {
+    public CompositeContextNodeFactory compositeContextNode(long id) {
         return new CompositeContextNodeFactory(this, nodeContainer, id);
     }
 

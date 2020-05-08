@@ -33,8 +33,6 @@ import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_LANGUAGE;
 
 public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode> {
 
-    private static final String FACTORY_METHOD_NAME = "dynamicNode";
-
     public DynamicNodeVisitor(Map<Class<?>, AbstractNodeVisitor<? extends Node>> nodesVisitors) {
         super(nodesVisitors);
     }
@@ -46,12 +44,7 @@ public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode>
 
     @Override
     protected String factoryMethod() {
-        return FACTORY_METHOD_NAME;
-    }
-
-    @Override
-    protected String getNodeKey() {
-        return FACTORY_METHOD_NAME;
+        return "dynamicNode";
     }
 
     @Override

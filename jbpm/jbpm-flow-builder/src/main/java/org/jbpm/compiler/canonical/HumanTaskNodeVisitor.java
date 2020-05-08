@@ -25,22 +25,20 @@ import org.jbpm.workflow.core.node.HumanTaskNode;
 
 public class HumanTaskNodeVisitor extends WorkItemNodeVisitor<HumanTaskNode> {
 
-    private static final String NODE_KEY = "humanTaskNode";
-
     public HumanTaskNodeVisitor() {
         super(null);
     }
 
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "humanTaskNode";
     }
 
     @Override
     public void visitNode(String factoryField, HumanTaskNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         Work work = node.getWork();
 
-        body.addStatement(getAssignedFactoryMethod(factoryField, HumanTaskNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, HumanTaskNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Task"));
 
         addWorkItemParameters(work, body, getNodeId(node));

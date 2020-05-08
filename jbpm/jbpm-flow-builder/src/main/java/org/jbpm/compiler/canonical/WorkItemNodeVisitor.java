@@ -56,8 +56,6 @@ import static org.jbpm.ruleflow.core.factory.WorkItemNodeFactory.METHOD_WORK_PAR
 
 public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVisitor<T> {
 
-    private static final String NODE_KEY = "workItemNode";
-
     private final ClassLoader contextClassLoader;
 
     public WorkItemNodeVisitor(ClassLoader contextClassLoader) {
@@ -66,14 +64,14 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
 
     @Override
     protected String getNodeKey() {
-        return NODE_KEY;
+        return "workItemNode";
     }
 
     @Override
     public void visitNode(String factoryField, T node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         Work work = node.getWork();
         String workName = workItemName(node, metadata);
-        body.addStatement(getAssignedFactoryMethod(factoryField, WorkItemNodeFactory.class, getNodeId(node), NODE_KEY, new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, WorkItemNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
         .addStatement(getNameMethod(node, work.getName()))
         .addStatement(getFactoryMethod(getNodeId(node), METHOD_WORK_NAME, new StringLiteralExpr(workName)));
 
@@ -104,7 +102,7 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
             String operationName = (String) workItemNode.getWork().getParameter("Operation");
             String type = (String) workItemNode.getWork().getParameter("ParameterType");
 
-            NodeValidator.of(NODE_KEY, workItemNode.getName())
+            NodeValidator.of(getNodeKey(), workItemNode.getName())
                     .notEmpty("interfaceName", interfaceName)
                     .notEmpty("operationName", operationName)
                     .validate();

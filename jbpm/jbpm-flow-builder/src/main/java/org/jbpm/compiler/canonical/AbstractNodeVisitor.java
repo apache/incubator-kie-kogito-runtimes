@@ -82,12 +82,10 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
             variableMethod.addArgument(arg);
         }
 
-        AssignExpr assignExpr = new AssignExpr(
+        return new AssignExpr(
                 new VariableDeclarationExpr(type, variableName),
                 variableMethod,
                 AssignExpr.Operator.ASSIGN);
-
-        return assignExpr;
     }
 
     public static Statement makeAssignment(Variable v) {
@@ -140,7 +138,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
 
     protected String extractVariableFromExpression(String variableExpression) {
         if (variableExpression.startsWith("#{")) {
-            return variableExpression.substring(2, variableExpression.indexOf("."));
+            return variableExpression.substring(2, variableExpression.indexOf('.'));
         }
         return variableExpression;
     }

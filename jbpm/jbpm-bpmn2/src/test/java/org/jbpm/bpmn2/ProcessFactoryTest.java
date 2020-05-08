@@ -81,7 +81,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
                 .startNode(1)
                     .name("Start")
                     .done()
-                .compositeNode(2)
+                .compositeContextNode(2)
                     .name("SubProcess")
                     .startNode(1)
                         .name("SubProcess Start")
