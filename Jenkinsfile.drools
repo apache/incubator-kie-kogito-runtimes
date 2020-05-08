@@ -16,6 +16,14 @@ pipeline {
         stage('Initialize') {
             steps {
                 sh 'printenv'
+                DROOLS_VERSION = sh (
+                    // query mvn to get the latest version
+                    script: '$(mvn versions:display-property-updates -DincludeProperties=version.org.kie7 -DallowSnapshots -N  | grep version.org.kie7| cut -d" " -f8))'
+                    returnStdout: true).trim()
+                echo "Latest kie7 verson is: ${DROOLS_VERSION}"
+                environment {
+                    MAVEN_EXTRA_ARGS="-Dversion.org.kie7=${DROOLS_VERSION}"
+                }
             }
         }
         stage('Build kogito-runtimes') {
@@ -23,7 +31,7 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: 'master']], browser: [$class: 'GithubWeb', repoUrl: 'git@github.com:kiegroup/kogito-runtimes.git'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kogito-runtimes']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'kie-ci-user-key', url: 'git@github.com:kiegroup/kogito-runtimes.git']]])
                 dir("kogito-runtimes") {
                     script {
-                        maven.runMavenWithSubmarineSettings('clean install -Dversion.org.kie7=7.37.0-SNAPSHOT', false)
+                        maven.runMavenWithSubmarineSettings("clean install ${MAVEN_EXTRA_ARGS}", false)
                     }
                 }
             }
@@ -33,7 +41,7 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: 'master']], browser: [$class: 'GithubWeb', repoUrl: 'git@github.com:kiegroup/kogito-examples.git'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kogito-examples']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'kie-ci-user-key', url: 'git@github.com:kiegroup/kogito-examples.git']]])
                 dir("kogito-examples") {
                     script {
-                         maven.runMavenWithSubmarineSettings('clean install -Dversion.org.kie7=7.37.0-SNAPSHOT', false)
+                         maven.runMavenWithSubmarineSettings("clean install ${MAVEN_EXTRA_ARGS}", false)
                     }
                 }
             }
