@@ -26,7 +26,6 @@ import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.serverless.workflow.api.branches.Branch;
 import org.jbpm.serverless.workflow.api.choices.DefaultChoice;
 import org.jbpm.serverless.workflow.api.end.End;
-import org.jbpm.serverless.workflow.api.events.EventDefinition;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.interfaces.Choice;
 import org.jbpm.serverless.workflow.api.interfaces.State;
