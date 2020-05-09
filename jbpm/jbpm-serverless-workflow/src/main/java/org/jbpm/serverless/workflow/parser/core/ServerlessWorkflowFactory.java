@@ -158,7 +158,7 @@ public class ServerlessWorkflowFactory {
         endNode.setId(id);
         endNode.setName(name);
 
-        EventDefinition eventDef = ServerlessWorkflowUtils.getWorkflowEventFor(workflow, stateEnd.getProduceEvent().getNameRef());
+        EventDefinition eventDef = ServerlessWorkflowUtils.getWorkflowEventFor(workflow, stateEnd.getProduceEvent().getEventRef());
 
         endNode.setMetaData("TriggerRef", eventDef.getSource());
         endNode.setMetaData("TriggerType", "ProduceMessage");
@@ -241,6 +241,20 @@ public class ServerlessWorkflowFactory {
         }
 
         startNode.addTrigger(trigger);
+    }
+
+    public ActionNode sendEventNode(long id, EventDefinition eventDefinition, NodeContainer nodeContainer) {
+        ActionNode sendEventNode = new ActionNode();
+        sendEventNode.setId(id);
+        sendEventNode.setName(eventDefinition.getName());
+        sendEventNode.setMetaData("TriggerType", "ProduceMessage");
+        sendEventNode.setMetaData("MappingVariable", DEFAULT_WORKFLOW_VAR);
+        sendEventNode.setMetaData("TriggerRef", eventDefinition.getSource());
+        sendEventNode.setMetaData("MessageType", JSON_NODE);
+
+        nodeContainer.addNode(sendEventNode);
+
+        return sendEventNode;
     }
 
     public ActionNode scriptNode(long id, String name, String script, NodeContainer nodeContainer) {

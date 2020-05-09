@@ -89,7 +89,7 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         TestNodeContainer nodeContainer = new TestNodeContainer();
 
         End endDef = new End().withKind(End.Kind.EVENT).withProduceEvent(
-                new ProduceEvent().withNameRef("sampleEvent").withData("sampleData"));
+                new ProduceEvent().withEventRef("sampleEvent").withData("sampleData"));
 
         EndNode endNode = testFactory.messageEndNode(1L, "End", eventDefOnlyWorkflow, endDef, nodeContainer);
 
@@ -132,7 +132,7 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     }
 
     @Test
-    public void testaAdMessageEndNodeAction() {
+    public void testMessageEndNodeAction() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
         EndNode endNode = testFactory.endNode(1L, "end", true, nodeContainer);
         assertThat(endNode).isNotNull();
@@ -347,4 +347,22 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
         assertThat(ruleSetNode.getOutMappings()).isNotNull();
         assertThat(ruleSetNode.getOutMappings().size()).isEqualTo(1);
     }
+
+    @Test
+    public void testSendEventNode() {
+        TestNodeContainer nodeContainer = new TestNodeContainer();
+
+        EventDefinition eventDefinition = new EventDefinition().withName("testEvent")
+                .withSource("testSource").withType("testType");
+
+        ActionNode actionNode = testFactory.sendEventNode(1L, eventDefinition, nodeContainer);
+        assertThat(actionNode).isNotNull();
+        assertThat(actionNode.getName()).isEqualTo("testEvent");
+        assertThat(actionNode.getMetaData("TriggerType")).isEqualTo("ProduceMessage");
+        assertThat(actionNode.getMetaData("MappingVariable")).isEqualTo("workflowdata");
+        assertThat(actionNode.getMetaData("TriggerRef")).isEqualTo("testSource");
+        assertThat(actionNode.getMetaData("MessageType")).isEqualTo("com.fasterxml.jackson.databind.JsonNode");
+
+    }
+
 }

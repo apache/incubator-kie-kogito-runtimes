@@ -26,6 +26,7 @@ import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.serverless.workflow.api.branches.Branch;
 import org.jbpm.serverless.workflow.api.choices.DefaultChoice;
 import org.jbpm.serverless.workflow.api.end.End;
+import org.jbpm.serverless.workflow.api.events.EventDefinition;
 import org.jbpm.serverless.workflow.api.functions.Function;
 import org.jbpm.serverless.workflow.api.interfaces.Choice;
 import org.jbpm.serverless.workflow.api.interfaces.State;
@@ -278,8 +279,14 @@ public class ServerlessWorkflowParser {
                 Long sourceId = nameToNodeId.get(state.getName()).get(NODETOID_END);
                 Long targetId = nameToNodeId.get(state.getTransition().getNextState()).get(NODETOID_START);
 
-                factory.connect(sourceId, targetId, sourceId + "_" + targetId, process);
-
+                if (transition.getProduceEvent() != null && transition.getProduceEvent().getEventRef() != null) {
+                    ActionNode sendEventNode = factory.sendEventNode(idCounter.getAndIncrement(),
+                            ServerlessWorkflowUtils.getWorkflowEventFor(workflow, transition.getProduceEvent().getEventRef()), process);
+                    factory.connect(sourceId, sendEventNode.getId(), sourceId + "_" + sendEventNode.getId(), process);
+                    factory.connect(sendEventNode.getId(), targetId, sendEventNode + "_" + targetId, process);
+                } else {
+                    factory.connect(sourceId, targetId, sourceId + "_" + targetId, process);
+                }
             }
         });
 
