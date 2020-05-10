@@ -240,7 +240,7 @@ public class ServerlessWorkflowFactory {
         eventFilter.setType(triggerEventType);
         trigger.addEventFilter(eventFilter);
 
-        String mapping = (String) startNode.getMetaData("TriggerMapping");
+        String mapping = (String) startNode.getMetaData(METADATA_TRIGGERMAPPING);
         if (mapping != null) {
             trigger.addInMapping(mapping, startNode.getOutMapping(mapping));
         }
