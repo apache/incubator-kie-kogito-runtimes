@@ -69,6 +69,11 @@ public class ServerlessWorkflowFactory {
     public static final String HTP_GROUPID = "groupid";
     public static final String HT_ACTORID = "actorid";
     public static final String RF_GROUP = "ruleflowgroup";
+    public static final String METADATA_TRIGGERREF = "TriggerRef";
+    public static final String METADATA_MESSAGETYPE = "MessageType";
+    public static final String METADATA_TRIGGERTYPE = "TriggerType";
+    public static final String METADATA_TRIGGERMAPPING = "TriggerMapping";
+    public static final String METADATA_MAPPINGVARIABLE = "MappingVariable";
 
     private WorkflowAppContext workflowAppContext;
 
@@ -130,10 +135,10 @@ public class ServerlessWorkflowFactory {
         StartNode startNode = new StartNode();
         startNode.setId(id);
         startNode.setName(eventDefinition.getName());
-        startNode.setMetaData("TriggerMapping", DEFAULT_WORKFLOW_VAR);
-        startNode.setMetaData("TriggerType", "ConsumeMessage");
-        startNode.setMetaData("TriggerRef", eventDefinition.getSource());
-        startNode.setMetaData("MessageType", JSON_NODE);
+        startNode.setMetaData(METADATA_TRIGGERMAPPING, DEFAULT_WORKFLOW_VAR);
+        startNode.setMetaData(METADATA_TRIGGERTYPE, "ConsumeMessage");
+        startNode.setMetaData(METADATA_TRIGGERREF, eventDefinition.getSource());
+        startNode.setMetaData(METADATA_MESSAGETYPE, JSON_NODE);
         addTriggerToStartNode(startNode, JSON_NODE);
 
         nodeContainer.addNode(startNode);
@@ -160,10 +165,10 @@ public class ServerlessWorkflowFactory {
 
         EventDefinition eventDef = ServerlessWorkflowUtils.getWorkflowEventFor(workflow, stateEnd.getProduceEvent().getEventRef());
 
-        endNode.setMetaData("TriggerRef", eventDef.getSource());
-        endNode.setMetaData("TriggerType", "ProduceMessage");
-        endNode.setMetaData("MessageType", JSON_NODE);
-        endNode.setMetaData("MappingVariable", DEFAULT_WORKFLOW_VAR);
+        endNode.setMetaData(METADATA_TRIGGERREF, eventDef.getSource());
+        endNode.setMetaData(METADATA_TRIGGERTYPE, "ProduceMessage");
+        endNode.setMetaData(METADATA_MESSAGETYPE, JSON_NODE);
+        endNode.setMetaData(METADATA_MAPPINGVARIABLE, DEFAULT_WORKFLOW_VAR);
         addMessageEndNodeAction(endNode, DEFAULT_WORKFLOW_VAR, JSON_NODE);
 
         nodeContainer.addNode(endNode);
@@ -247,10 +252,10 @@ public class ServerlessWorkflowFactory {
         ActionNode sendEventNode = new ActionNode();
         sendEventNode.setId(id);
         sendEventNode.setName(eventDefinition.getName());
-        sendEventNode.setMetaData("TriggerType", "ProduceMessage");
-        sendEventNode.setMetaData("MappingVariable", DEFAULT_WORKFLOW_VAR);
-        sendEventNode.setMetaData("TriggerRef", eventDefinition.getSource());
-        sendEventNode.setMetaData("MessageType", JSON_NODE);
+        sendEventNode.setMetaData(METADATA_TRIGGERTYPE, "ProduceMessage");
+        sendEventNode.setMetaData(METADATA_MAPPINGVARIABLE, DEFAULT_WORKFLOW_VAR);
+        sendEventNode.setMetaData(METADATA_TRIGGERREF, eventDefinition.getSource());
+        sendEventNode.setMetaData(METADATA_MESSAGETYPE, JSON_NODE);
 
         nodeContainer.addNode(sendEventNode);
 
