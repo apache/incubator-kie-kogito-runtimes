@@ -8,11 +8,15 @@ pipeline {
         maven 'kie-maven-3.6.2'
         jdk 'kie-jdk11'
     }
+    triggers {
+        cron ('H 10 * * *')
+    }
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')
         timeout(time: 90, unit: 'MINUTES')
     }
     environment {
+        KOGITO_CI_EMAIL_TO = credentials('KOGITO_CI_EMAIL_TO')
         // query mvn to get the latest version
         DROOLS_VERSION = """${sh (
             script: '$(mvn versions:display-property-updates -DincludeProperties=version.org.kie7 -DallowSnapshots -N  | grep version.org.kie7| cut -d" " -f8))'
@@ -44,7 +48,7 @@ pipeline {
             steps {
                 dir("kogito-apps") {
                     script {
-                        githubscm.checkoutIfExists('kogito-apps', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
+                        checkout([$class: 'GitSCM', branches: [[name: env.BRANCH_NAME]], browser: [$class: 'GithubWeb', repoUrl: 'git@github.com:kiegroup/kogito-apps.git'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kogito-apps']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'kie-ci-user-key', url: 'git@github.com:kiegroup/kogito-apps.git']]])
                         maven.runMavenWithSubmarineSettings("clean install ${MAVEN_EXTRA_ARGS}", false)
                     }
                 }
@@ -54,14 +58,14 @@ pipeline {
             steps {
                 dir("kogito-examples") {
                     script {
-                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
+                        checkout([$class: 'GitSCM', branches: [[name: env.BRANCH_NAME]], browser: [$class: 'GithubWeb', repoUrl: 'git@github.com:kiegroup/kogito-examples.git'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kogito-examples']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'kie-ci-user-key', url: 'git@github.com:kiegroup/kogito-examples.git']]])
                         maven.runMavenWithSubmarineSettings("clean install ${MAVEN_EXTRA_ARGS}", false)
                     }
                 }
                 // Use a separate dir for persistence to not overwrite the test results
                 dir("kogito-examples-persistence") {
                     script {
-                        githubscm.checkoutIfExists('kogito-examples', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
+                        checkout([$class: 'GitSCM', branches: [[name: env.BRANCH_NAME]], browser: [$class: 'GithubWeb', repoUrl: 'git@github.com:kiegroup/kogito-examples.git'], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kogito-examples']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'kie-ci-user-key', url: 'git@github.com:kiegroup/kogito-examples.git']]])
                         // Don't run with tests so far, see: https://github.com/quarkusio/quarkus/issues/6885
                         maven.runMavenWithSubmarineSettings("clean install ${MAVEN_EXTRA_ARGS} -Ppersistence", true)
                     }
