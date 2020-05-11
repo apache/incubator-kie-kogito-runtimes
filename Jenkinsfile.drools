@@ -52,7 +52,7 @@ pipeline {
         failure {
             emailext body: 'Kogito daily Drools #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\n' +
                     'Please look here: ${BUILD_URL} ',
-                     subject: 'Kogito daily snapshot deploy #${BRANCH_NAME}',
+                     subject: 'Kogito daily Drools #${BRANCH_NAME}',
                      to: env.KOGITO_CI_EMAIL_TO
         }
         unstable {
