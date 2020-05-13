@@ -28,9 +28,9 @@ public class GreetingsTest {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body("{}")
-                .when()
+            .when()
                 .post("/greetings")
-                .then()
+            .then()
                 .statusCode(200)
                 .body("id", notNullValue());
     }

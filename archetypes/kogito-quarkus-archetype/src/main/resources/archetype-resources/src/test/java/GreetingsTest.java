@@ -21,6 +21,7 @@ public class GreetingsTest {
         .when()
             .post("/greetings")
         .then()
+            .statusCode(200)
             .body("id", notNullValue());    
     }
 
