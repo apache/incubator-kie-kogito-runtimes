@@ -57,7 +57,7 @@ public class DMNRestResourceGenerator {
     private final String appCanonicalName;
     private DependencyInjectionAnnotator annotator;
     private boolean useMonitoring;
-    private boolean isTypeSafeInput = false;
+    private boolean isStronglyTyped = false;
 
     public DMNRestResourceGenerator(DMNModel model, String appCanonicalName) {
         this.dmnModel = model;
@@ -135,7 +135,7 @@ public class DMNRestResourceGenerator {
     }
 
     private void interpolateInputType(ClassOrInterfaceDeclaration template) {
-        String inputType = isTypeSafeInput ? "InputSet" : "java.util.Map<String, Object>";
+        String inputType = isStronglyTyped ? "InputSet" : "java.util.Map<String, Object>";
         template.findAll(ClassOrInterfaceType.class, t -> t.asString().equals("INPUT_TYPE"))
                 .forEach(type -> type.setName(inputType));
     }
@@ -219,8 +219,8 @@ public class DMNRestResourceGenerator {
         return this.annotator != null;
     }
 
-    public DMNRestResourceGenerator withTypeSafeInput(boolean typeSafeInput) {
-        this.isTypeSafeInput = typeSafeInput;
+    public DMNRestResourceGenerator withStronglyTyped(boolean stronglyTyped) {
+        this.isStronglyTyped = stronglyTyped;
         return this;
     }
 }

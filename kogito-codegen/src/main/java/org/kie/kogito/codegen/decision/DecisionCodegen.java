@@ -166,18 +166,18 @@ public class DecisionCodegen extends AbstractGenerator {
                 throw new RuntimeException("Model name should not be empty");
             }
 
-            boolean stronglyEnabled = Optional.ofNullable(context())
+            boolean stronglyTypedEnabled = Optional.ofNullable(context())
                     .flatMap(c -> c.getApplicationProperty(OPEN_API_CONFIGURATION_KEY))
                     .map(Boolean::parseBoolean)
                     .orElse(false);
 
-            if(stronglyEnabled) {
-                tryGenerateTypeSafeInput(model);
+            if(stronglyTypedEnabled) {
+                tryGenerateStronglyTypedInput(model);
             }
             DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(model, applicationCanonicalName)
                     .withDependencyInjection(annotator)
                     .withMonitoring(useMonitoring)
-                    .withTypeSafeInput(stronglyEnabled);
+                    .withStronglyTyped(stronglyTypedEnabled);
             rgs.add(resourceGenerator);
         }
 
@@ -192,7 +192,7 @@ public class DecisionCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private void tryGenerateTypeSafeInput(DMNModel model) {
+    private void tryGenerateStronglyTypedInput(DMNModel model) {
         try {
             DMNTypeSafePackageName.Factory factory = m -> new DMNTypeSafePackageName("", m.getNamespace(), "");
             DMNAllTypesIndex index = new DMNAllTypesIndex(factory, model);
@@ -209,7 +209,7 @@ public class DecisionCodegen extends AbstractGenerator {
                     })
                     .forEach(generatedFiles::add);
         } catch(Exception e) {
-            logger.error("Unable to generate typesafe Input for: {} {}", model.getNamespace(), model.getName());
+            logger.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
         }
     }
 
