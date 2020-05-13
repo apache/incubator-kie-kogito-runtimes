@@ -210,6 +210,7 @@ public class DecisionCodegen extends AbstractGenerator {
                     .forEach(generatedFiles::add);
         } catch(Exception e) {
             logger.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
+            throw e;
         }
     }
 

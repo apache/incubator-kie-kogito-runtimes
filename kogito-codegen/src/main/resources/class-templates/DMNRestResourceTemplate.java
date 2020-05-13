@@ -17,8 +17,6 @@ import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.DMNEvaluationErrorException;
 import org.kie.kogito.dmn.rest.DMNResult;
 
-import org.kie.dmn.api.core.FEELPropertyAccessible;
-
 @Path("/$nameURL$")
 public class DMNRestResourceTemplate {
 
