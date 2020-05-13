@@ -113,17 +113,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
     }
 
     private void generateModel() throws MojoExecutionException, IOException {
-        // if unspecified, then default to checking for file type existence
-        // if not null, the property has been overridden, and we should use the specified value
-        boolean genProcesses = generateProcesses == null ? processesExist() : Boolean.parseBoolean(generateProcesses);
-        boolean genRules = generateRules == null ? rulesExist() : Boolean.parseBoolean(generateRules);
-        boolean genDecisions = generateDecisions == null ? decisionsExist() : Boolean.parseBoolean(generateDecisions);
-
         project.addCompileSourceRoot(generatedSources.getPath());
 
         setSystemProperties(properties);
 
-        ApplicationGenerator appGen = createApplicationGenerator(genProcesses, genRules, genDecisions);
+        ApplicationGenerator appGen = createApplicationGenerator();
 
         Collection<GeneratedFile> generatedFiles;
         if (generatePartial) {
@@ -139,6 +133,18 @@ public class GenerateModelMojo extends AbstractKieMojo {
         if (!keepSources) {
             deleteDrlFiles();
         }
+    }
+
+    private boolean generateDecisions() throws IOException {
+        return generateDecisions == null ? decisionsExist() : Boolean.parseBoolean(generateDecisions);
+    }
+
+    private boolean generateRules() throws IOException {
+        return generateRules == null ? rulesExist() : Boolean.parseBoolean(generateRules);
+    }
+
+    private boolean generateProcesses() throws IOException {
+        return generateProcesses == null ? processesExist() : Boolean.parseBoolean(generateProcesses);
     }
 
     private boolean decisionsExist() throws IOException {
@@ -165,10 +171,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
     }
 
-    private ApplicationGenerator createApplicationGenerator(
-            boolean generateProcesses,
-            boolean generateRuleUnits,
-            boolean generateDecisions) throws IOException, MojoExecutionException {
+    private ApplicationGenerator createApplicationGenerator() throws IOException, MojoExecutionException {
         String appPackageName = project.getGroupId();
 
         // safe guard to not generate application classes that would clash with interfaces
@@ -196,21 +199,27 @@ public class GenerateModelMojo extends AbstractKieMojo {
                         .withClassLoader(projectClassLoader)
                         .withGeneratorContext(context);
 
-        if (generateProcesses) {
+        // if unspecified, then default to checking for file type existence
+        // if not null, the property has been overridden, and we should use the specified value
+
+        if (generateProcesses()) {
             appGen.withGenerator(ProcessCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withPersistence(usePersistence)
                     .withClassLoader(projectClassLoader);
         }
 
-        if (generateRuleUnits) {
+        if (generateRules()) {
+            boolean useWebServices = hasClassOnClasspath(project, "javax.ws.rs.Path");
             appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withKModule(getKModuleModel())
                     .withClassLoader(projectClassLoader)
-                    .withMonitoring(useMonitoring);
+                    .withMonitoring(useMonitoring)
+                    .withWebServices(useWebServices);
         }
 
-        if (generateDecisions) {
-            appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()).withTracing(useTracing))
+        if (generateDecisions()) {
+            appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()))
+                    .withTracing(useTracing)
                     .withMonitoring(useMonitoring);
         }
 

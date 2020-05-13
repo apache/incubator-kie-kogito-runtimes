@@ -45,37 +45,39 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     }
 
     protected DependencyInjectionAnnotator discoverDependencyInjectionAnnotator(boolean dependencyInjection, MavenProject project) {
-        if (!dependencyInjection) {
-            return null;
+        if (dependencyInjection) {
+            if ( hasSpring( project ) ) {
+                return new SpringDependencyInjectionAnnotator();
+            }
+
+            if ( hasQuarkus( project ) ) {
+                return new CDIDependencyInjectionAnnotator();
+            }
         }
 
-        boolean hasSpring = project.getDependencies().stream().anyMatch(d -> d.getArtifactId().contains("spring"));
-        if (hasSpring) {
-            return new SpringDependencyInjectionAnnotator();
-        }
-
-        boolean hasQuarkus = project.getDependencies().stream().anyMatch(d -> d.getArtifactId().contains("quarkus"));
-        if (hasQuarkus) {
-            return new CDIDependencyInjectionAnnotator();
-        }
-
-        throw new IllegalStateException("Unable to find dependency injection annotator");
+        return null;
     }
 
     protected KogitoBuildContext discoverKogitoRuntimeContext(MavenProject project)  {
-        boolean hasSpring = project.getDependencies().stream().anyMatch(d -> d.getArtifactId().contains("spring"));
-        if (hasSpring) {
+        if ( hasSpring( project ) ) {
             return new SpringBootKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
         }
 
-        boolean hasQuarkus = project.getDependencies().stream().anyMatch(d -> d.getArtifactId().contains("quarkus"));
-        if (hasQuarkus) {
+        if ( hasQuarkus( project ) ) {
             return new QuarkusKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
         }
 
         return null;
     }
-    
+
+    private boolean hasQuarkus( MavenProject project ) {
+        return project.getDependencies().stream().anyMatch( d -> d.getArtifactId().contains( "quarkus" ) );
+    }
+
+    private boolean hasSpring( MavenProject project ) {
+        return project.getDependencies().stream().anyMatch( d -> d.getArtifactId().contains( "spring" ) );
+    }
+
     protected boolean hasClassOnClasspath(MavenProject project, String className) {
         try {
             Set<Artifact> elements = project.getArtifacts();
