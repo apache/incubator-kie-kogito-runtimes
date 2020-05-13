@@ -20,7 +20,6 @@ import io.quarkus.bootstrap.BootstrapDependencyProcessingException;
 import io.quarkus.bootstrap.model.AppDependency;
 import io.quarkus.bootstrap.model.AppModel;
 import io.quarkus.builder.item.BuildItem;
-import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.ArchiveRootBuildItem;
@@ -128,7 +127,7 @@ public class KogitoAssetsProcessor {
 
         if (!generatedFiles.isEmpty()) {
             MemoryFileSystem trgMfs = new MemoryFileSystem();
-            CompilationResult result = compile(root, trgMfs, curateOutcomeBuildItem.getEffectiveModel(), generatedFiles);
+            CompilationResult result = compile(root, trgMfs, curateOutcomeBuildItem.getEffectiveModel(), generatedFiles, launchMode.getLaunchMode(), root.getArchiveLocation());
             register(trgMfs, generatedBeans, (className, data) -> new GeneratedBeanBuildItem(className, data),
                     launchMode.getLaunchMode(), result, root.getArchiveLocation());
         }
@@ -188,7 +187,7 @@ public class KogitoAssetsProcessor {
             Set<DotName> kogitoIndex = new HashSet<>();
 
             MemoryFileSystem trgMfs = new MemoryFileSystem();
-            CompilationResult result = compile(root, trgMfs, curateOutcomeBuildItem.getEffectiveModel(), javaFiles);
+            CompilationResult result = compile(root, trgMfs, curateOutcomeBuildItem.getEffectiveModel(), javaFiles, launchMode.getLaunchMode(), targetClassesPath);
             register(trgMfs, generatedBeans, (className, data) -> {
 
                 IndexingUtil.indexClass(className, kogitoIndexer, combinedIndexBuildItem.getIndex(), kogitoIndex,
@@ -272,8 +271,9 @@ public class KogitoAssetsProcessor {
     }
 
     private CompilationResult compile(ArchiveRootBuildItem root, MemoryFileSystem trgMfs,
-            AppModel appModel,
-            Collection<GeneratedFile> generatedFiles) {
+                                      AppModel appModel, Collection<GeneratedFile> generatedFiles,
+                                      LaunchMode launchMode, Path projectPath)
+            throws IOException, BootstrapDependencyProcessingException {
 
         JavaCompiler javaCompiler = JavaParserCompiler.getCompiler();
         JavaCompilerSettings compilerSettings = javaCompiler.createDefaultSettings();
@@ -295,6 +295,13 @@ public class KogitoAssetsProcessor {
             sources[index++] = fileName;
 
             srcMfs.write(fileName, entry.contents());
+
+            String location = generatedClassesDir;
+            if (launchMode == LaunchMode.DEVELOPMENT) {
+                location = Paths.get(projectPath.toString()).toString();
+            }
+
+            writeGeneratedFile(entry, location);
         }
 
         return javaCompiler.compile(sources, srcMfs, trgMfs,
