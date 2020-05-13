@@ -46,5 +46,15 @@ under the License.
         <include>**/*.xml</include>
       </includes>
     </fileSet>
+    <fileSet filtered="true" packaged="false" encoding="UTF-8">
+      <directory>src/test/resources</directory>
+      <includes>
+        <include>**/*.bpmn2</include>
+        <include>**/*.properties</include>
+        <include>**/*.md</include>
+        <include>**/*.xml</include>
+      </includes>
+    </fileSet>
+
   </fileSets>
 </archetype-descriptor>
