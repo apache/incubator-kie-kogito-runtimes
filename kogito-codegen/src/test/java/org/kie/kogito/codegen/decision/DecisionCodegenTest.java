@@ -61,7 +61,7 @@ public class DecisionCodegenTest {
 
     private GeneratorContext stronglyTypedContext() {
         Properties properties = new Properties();
-        properties.put(DecisionCodegen.OPEN_API_CONFIGURATION_KEY, Boolean.TRUE.toString());
+        properties.put(DecisionCodegen.STRONGLY_TYPED_CONFIGURATION_KEY, Boolean.TRUE.toString());
         return GeneratorContext.ofProperties(properties);
     }
 

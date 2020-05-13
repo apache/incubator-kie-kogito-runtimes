@@ -136,7 +136,7 @@ public class DMNRestResourceGenerator {
 
     private void interpolateInputType(ClassOrInterfaceDeclaration template) {
         String inputType = isStronglyTyped ? "InputSet" : "java.util.Map<String, Object>";
-        template.findAll(ClassOrInterfaceType.class, t -> t.asString().equals("INPUT_TYPE"))
+        template.findAll(ClassOrInterfaceType.class, t -> t.asString().equals("$inputType$"))
                 .forEach(type -> type.setName(inputType));
     }
 

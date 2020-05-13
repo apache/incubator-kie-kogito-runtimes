@@ -63,7 +63,7 @@ import static org.kie.kogito.codegen.ApplicationGenerator.logger;
 
 public class DecisionCodegen extends AbstractGenerator {
 
-    public static String OPEN_API_CONFIGURATION_KEY = "quarkus.kogito.dmn.openapi";
+    public static String STRONGLY_TYPED_CONFIGURATION_KEY = "kogito.decisions.stronglytyped";
 
     public static DecisionCodegen ofJar(Path jarPath) throws IOException {
         List<Resource> resources = new ArrayList<>();
@@ -167,7 +167,7 @@ public class DecisionCodegen extends AbstractGenerator {
             }
 
             boolean stronglyTypedEnabled = Optional.ofNullable(context())
-                    .flatMap(c -> c.getApplicationProperty(OPEN_API_CONFIGURATION_KEY))
+                    .flatMap(c -> c.getApplicationProperty(STRONGLY_TYPED_CONFIGURATION_KEY))
                     .map(Boolean::parseBoolean)
                     .orElse(false);
 
