@@ -37,7 +37,7 @@ public class DecisionCodegenTest {
     @Test
     public void generateAllFiles() throws Exception {
 
-        GeneratorContext context = stronglyContext();
+        GeneratorContext context = stronglyTypedContext();
 
         DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath());
         codeGenerator.setContext(context);
@@ -59,9 +59,9 @@ public class DecisionCodegenTest {
         assertNotNull(classDeclaration);
     }
 
-    private GeneratorContext stronglyContext() {
+    private GeneratorContext stronglyTypedContext() {
         Properties properties = new Properties();
-        properties.put(DecisionCodegen.STRONGLY_CONFIGURATION_KEY, Boolean.TRUE.toString());
+        properties.put(DecisionCodegen.OPEN_API_CONFIGURATION_KEY, Boolean.TRUE.toString());
         return GeneratorContext.ofProperties(properties);
     }
 
@@ -71,7 +71,7 @@ public class DecisionCodegenTest {
 
     @Test
     public void doNotGenerateTypesafeInfo() throws Exception {
-        GeneratorContext context = stronglyContext();
+        GeneratorContext context = stronglyTypedContext();
 
         DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/allTypes").toAbsolutePath());
         codeGenerator.setContext(context);

@@ -43,14 +43,14 @@ public class DMNTest {
     public void allTypes() {
 
         String payload = "{\n" +
-                "  \"InputBoolean\": true,\n" +
-                "  \"InputDTDuration\": \"P1D\",\n" +
-                "  \"InputDate\": \"2020-04-17\",\n" +
-                "  \"InputDateAndTime\": \"2020-04-17T10:03:51.615Z\",\n" +
-                "  \"InputNumber\": 0,\n" +
-                "  \"InputString\": \"string\",\n" +
-                "  \"InputTime\": \"13:45\",\n" +
-                "  \"InputYMDuration\": \"P1M\"\n" +
+                "  \"inputBoolean\": true,\n" +
+                "  \"inputDTDuration\": \"P1D\",\n" +
+                "  \"inputDate\": \"2020-04-17\",\n" +
+                "  \"inputDateAndTime\": \"2020-04-17T10:03:51.615Z\",\n" +
+                "  \"inputNumber\": 0,\n" +
+                "  \"inputString\": \"string\",\n" +
+                "  \"inputTime\": \"13:45\",\n" +
+                "  \"inputYMDuration\": \"P1M\"\n" +
                 "}";
 
         RestAssured.given()
