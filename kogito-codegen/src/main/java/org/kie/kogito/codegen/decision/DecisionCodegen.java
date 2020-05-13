@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -61,6 +62,8 @@ import static org.kie.kogito.codegen.ApplicationGenerator.log;
 import static org.kie.kogito.codegen.ApplicationGenerator.logger;
 
 public class DecisionCodegen extends AbstractGenerator {
+
+    public static String STRONGLY_CONFIGURATION_KEY = "quarkus.org.kie.dmn.strongly";
 
     public static DecisionCodegen ofJar(Path jarPath) throws IOException {
         List<Resource> resources = new ArrayList<>();
@@ -163,16 +166,18 @@ public class DecisionCodegen extends AbstractGenerator {
                 throw new RuntimeException("Model name should not be empty");
             }
 
-            String property = System.getProperty("dmn.typesafe");
-            boolean typeSafeInput = property != null && Boolean.parseBoolean(property);
-            if(typeSafeInput) {
+            boolean stronglyEnabled = Optional.ofNullable(context())
+                    .flatMap(c -> c.getApplicationProperty(STRONGLY_CONFIGURATION_KEY))
+                    .map(Boolean::parseBoolean)
+                    .orElse(false);
+
+            if(stronglyEnabled) {
                 tryGenerateTypeSafeInput(model);
             }
-
             DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(model, applicationCanonicalName)
                     .withDependencyInjection(annotator)
                     .withMonitoring(useMonitoring)
-                    .withTypeSafeInput(typeSafeInput);
+                    .withTypeSafeInput(stronglyEnabled);
             rgs.add(resourceGenerator);
         }
 

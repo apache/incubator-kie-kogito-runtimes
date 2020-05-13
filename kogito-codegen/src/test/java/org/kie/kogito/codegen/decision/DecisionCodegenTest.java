@@ -18,12 +18,14 @@ package org.kie.kogito.codegen.decision;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.grafana.JGrafana;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,17 +36,20 @@ public class DecisionCodegenTest {
 
     @Test
     public void generateAllFiles() throws Exception {
+
+        GeneratorContext context = stronglyContext();
+
         DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath());
+        codeGenerator.setContext(context);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(6, generatedFiles.size());
+        assertEquals(5, generatedFiles.size());
 
         assertIterableEquals(Arrays.asList(
                 "decision/InputSet.java",
                 "decision/TEmployee.java",
                 "decision/TAddress.java",
                 "decision/TPayroll.java",
-                "decision/BirthDate.java",
                 "decision/VacationsResource.java"
                              ),
                              fileNames(generatedFiles)
@@ -54,13 +59,22 @@ public class DecisionCodegenTest {
         assertNotNull(classDeclaration);
     }
 
+    private GeneratorContext stronglyContext() {
+        Properties properties = new Properties();
+        properties.put(DecisionCodegen.STRONGLY_CONFIGURATION_KEY, Boolean.TRUE.toString());
+        return GeneratorContext.ofProperties(properties);
+    }
+
     private List<String> fileNames(List<GeneratedFile> generatedFiles) {
         return generatedFiles.stream().map(GeneratedFile::relativePath).collect(Collectors.toList());
     }
 
     @Test
     public void doNotGenerateTypesafeInfo() throws Exception {
+        GeneratorContext context = stronglyContext();
+
         DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/allTypes").toAbsolutePath());
+        codeGenerator.setContext(context);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertEquals(2, generatedFiles.size());
