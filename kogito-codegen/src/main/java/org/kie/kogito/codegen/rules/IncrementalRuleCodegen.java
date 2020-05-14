@@ -178,7 +178,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private KieModuleModel kieModuleModel;
     private boolean hotReloadMode = false;
     private boolean useMonitoring = false;
-    private boolean useWebServices = true;
+    private boolean useRestServices = true;
     private String packageName;
     private final boolean decisionTableSupported;
     private final Map<String, RuleUnitConfig> configs;
@@ -350,7 +350,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
             ruleUnit.pojo().ifPresent(p -> generatedFiles.add(p.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE)));
 
-            if (useWebServices) {
+            if ( useRestServices ) {
                 contextChecker = generateQueriesEndpoint( errors, generatedFiles, contextChecker, ruleUnit );
             }
         }
@@ -479,8 +479,8 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return this;
     }
 
-    public IncrementalRuleCodegen withWebServices(boolean useWebServices) {
-        this.useWebServices = useWebServices;
+    public IncrementalRuleCodegen withRestServices(boolean useRestServices) {
+        this.useRestServices = useRestServices;
         return this;
     }
 }

@@ -209,12 +209,12 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
 
         if (generateRules()) {
-            boolean useWebServices = hasClassOnClasspath(project, "javax.ws.rs.Path");
+            boolean useRestServices = hasClassOnClasspath(project, "javax.ws.rs.Path");
             appGen.withGenerator(IncrementalRuleCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withKModule(getKModuleModel())
                     .withClassLoader(projectClassLoader)
                     .withMonitoring(useMonitoring)
-                    .withWebServices(useWebServices);
+                    .withRestServices(useRestServices);
         }
 
         if (generateDecisions()) {
