@@ -370,7 +370,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 checker = contextChecker;
             }
 
-            generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnitDesc, checker ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
+            generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnitDesc, checker ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.DTO) );
 
             for (QueryEndpointGenerator query : queries) {
                 generateQueryEndpoint( errors, generatedFiles, query );
