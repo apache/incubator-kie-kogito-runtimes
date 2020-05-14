@@ -16,7 +16,10 @@
 
 package org.kie.kogito.tracing.decision;
 
-import org.kie.kogito.tracing.decision.event.EvaluateEvent;
+import org.kie.kogito.Application;
+import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
+import org.kie.kogito.tracing.decision.modelsupplier.ApplicationModelSupplier;
+import org.kie.kogito.tracing.decision.modelsupplier.ModelSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -29,15 +32,20 @@ public class SpringBootDecisionTracingCollector {
 
     private final DecisionTracingCollector collector;
 
+    public SpringBootDecisionTracingCollector(ModelSupplier modelSupplier, KafkaTemplate<String, String> template, String kafkaTopicName) {
+        collector = new DecisionTracingCollector((payload) -> template.send(kafkaTopicName, payload), modelSupplier);
+    }
+
     @Autowired
     public SpringBootDecisionTracingCollector(
+            Application application,
             KafkaTemplate<String, String> template,
             @Value(value = "${kogito.addon.tracing.decision.kafka.topic.name:kogito-tracing-decision}") String kafkaTopicName
     ) {
-        collector = new DecisionTracingCollector((payload) -> template.send(kafkaTopicName, payload));
+        this(new ApplicationModelSupplier(application), template, kafkaTopicName);
     }
 
-    @Async
+    @Async("kogitoTracingDecisionAddonTaskExecutor")
     @EventListener
     public void onApplicationEvent(EvaluateEvent event) {
         collector.addEvent(event);

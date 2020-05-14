@@ -20,18 +20,28 @@ import java.util.Collections;
 import java.util.List;
 
 import io.cloudevents.v1.CloudEventImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.tracing.decision.event.AfterEvaluateAllEvent;
-import org.kie.kogito.tracing.decision.event.EvaluateEvent;
+import org.kie.dmn.api.core.DMNModel;
+import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
+import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.afterEvaluateAllEvent;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.beforeEvaluateAllEvent;
+import static org.kie.kogito.tracing.decision.mock.MockUtils.mockedModel;
 
 public class DefaultAggregatorTest {
 
     private static final String TEST_EXECUTION_ID = "4ac4c69f-4925-4221-b67e-4b14ce47bef8";
+
+    private static DMNModel mockedModel;
+
+    @BeforeAll
+    public static void initMockedModel() {
+        mockedModel = mockedModel();
+    }
 
     @Test
     public void test_Aggregate_ValidList_Working() {
@@ -40,30 +50,29 @@ public class DefaultAggregatorTest {
                 beforeEvaluateAllEvent(TEST_EXECUTION_ID),
                 afterEvaluateAllEvent(TEST_EXECUTION_ID)
         );
-        CloudEventImpl<AfterEvaluateAllEvent> cloudEvent = aggregator.aggregate(TEST_EXECUTION_ID, events);
+        CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, events);
         assertEquals(TEST_EXECUTION_ID, cloudEvent.getAttributes().getId());
-        assertEquals(AfterEvaluateAllEvent.class.getName(), cloudEvent.getAttributes().getType());
+        assertEquals(TraceEvent.class.getName(), cloudEvent.getAttributes().getType());
     }
 
     @Test
     public void test_Aggregate_NullList_ExceptionThrown() {
         final DefaultAggregator aggregator = new DefaultAggregator();
-        assertThrows(IllegalStateException.class, () -> aggregator.aggregate(TEST_EXECUTION_ID, null));
+        assertThrows(AggregatorException.class, () -> aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, null));
     }
 
     @Test
     public void test_Aggregate_EmptyList_ExceptionThrown() {
         final DefaultAggregator aggregator = new DefaultAggregator();
-        assertThrows(IllegalStateException.class, () -> aggregator.aggregate(TEST_EXECUTION_ID, Collections.emptyList()));
+        assertThrows(AggregatorException.class, () -> aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, Collections.emptyList()));
     }
 
     @Test
-    public void test_Aggregate_ListWithoutAfterEvaluateAllEvent_ExceptionThrown() {
+    public void test_Aggregate_ListWithoutTraceEvent_ExceptionThrown() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = List.of(
                 beforeEvaluateAllEvent(TEST_EXECUTION_ID)
         );
-        assertThrows(IllegalStateException.class, () -> aggregator.aggregate(TEST_EXECUTION_ID, events));
+        assertThrows(AggregatorException.class, () -> aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, events));
     }
-
 }

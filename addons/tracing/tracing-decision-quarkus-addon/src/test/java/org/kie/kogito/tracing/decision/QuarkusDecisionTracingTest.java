@@ -27,11 +27,12 @@ import io.vertx.core.eventbus.EventBus;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNRuntime;
+import org.kie.kogito.Application;
 import org.kie.kogito.decision.DecisionModel;
+import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.tracing.decision.event.AfterEvaluateAllEvent;
-import org.kie.kogito.tracing.decision.event.BeforeEvaluateAllEvent;
+import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class QuarkusDecisionTracingTest {
 
@@ -79,19 +81,24 @@ public class QuarkusDecisionTracingTest {
 
         verify(eventBus, times(2)).send(anyString(), any());
 
-        ArgumentCaptor<BeforeEvaluateAllEvent> beforeCaptor = ArgumentCaptor.forClass(BeforeEvaluateAllEvent.class);
-        ArgumentCaptor<AfterEvaluateAllEvent> afterCaptor = ArgumentCaptor.forClass(AfterEvaluateAllEvent.class);
+        ArgumentCaptor<EvaluateEvent> beforeCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
+        ArgumentCaptor<EvaluateEvent> afterCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
 
         InOrder inOrder = inOrder(eventBus);
-        inOrder.verify(eventBus).send(eq("kogito-tracing-decision_BeforeEvaluateAllEvent"), beforeCaptor.capture());
-        inOrder.verify(eventBus).send(eq("kogito-tracing-decision_AfterEvaluateAllEvent"), afterCaptor.capture());
+        inOrder.verify(eventBus).send(eq("kogito-tracing-decision_EvaluateAllEvent"), beforeCaptor.capture());
+        inOrder.verify(eventBus).send(eq("kogito-tracing-decision_EvaluateAllEvent"), afterCaptor.capture());
 
-        BeforeEvaluateAllEvent beforeEvent = beforeCaptor.getValue();
-        AfterEvaluateAllEvent afterEvent = afterCaptor.getValue();
+        EvaluateEvent beforeEvent = beforeCaptor.getValue();
+        EvaluateEvent afterEvent = afterCaptor.getValue();
 
         TestSubscriber<String> subscriber = new TestSubscriber<>();
 
-        QuarkusDecisionTracingCollector collector = new QuarkusDecisionTracingCollector();
+        final DecisionModels mockedDecisionModels = mock(DecisionModels.class);
+        when(mockedDecisionModels.getDecisionModel(modelNamespace, modelName)).thenReturn(model);
+        final Application mockedApplication = mock(Application.class);
+        when(mockedApplication.decisionModels()).thenReturn(mockedDecisionModels);
+
+        QuarkusDecisionTracingCollector collector = new QuarkusDecisionTracingCollector(mockedApplication);
         collector.getEventPublisher().subscribe(subscriber);
         collector.onEvent(beforeEvent);
         collector.onEvent(afterEvent);
