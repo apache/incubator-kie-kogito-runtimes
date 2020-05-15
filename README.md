@@ -37,7 +37,9 @@ Requirements
 Getting Started
 ---------------
 
-The [Kogito Examples repository](https://github.com/kiegroup/kogito-examples) module contains a number of examples that you can take a look at and try out yourself.
+The [Kogito Examples repository](https://github.com/kiegroup/kogito-examples) module contains a number of examples that you can take a look at and try out yourself or
+deploy examples on Openshift (CRC) with Ansible [README.md](https://github.com/kiegroup/kie-docs/tree/master/doc-content/kogito-ansible-docs/README.md)
+
  Please take a look at the readme of each individual example for more details on how the example works and how to run it yourself (either locally or on Kubernetes):
 - Process + Quarkus: [README.md](https://github.com/kiegroup/kogito-examples/tree/master/process-quarkus-example/README.md)
 - Process + Spring Boot: [README.md](https://github.com/kiegroup/kogito-examples/tree/master/process-springboot-example/README.md)
