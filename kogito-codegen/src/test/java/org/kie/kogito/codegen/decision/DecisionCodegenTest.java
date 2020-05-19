@@ -49,7 +49,7 @@ public class DecisionCodegenTest {
 
         List<GeneratedFile> dashboards =  generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.RESOURCE).collect(Collectors.toList());
 
-        assertEquals(2,dashboards.size());
+        assertEquals(4,dashboards.size());
 
         JGrafana vacationDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("Vacations.json")).findFirst().get().contents()));
 

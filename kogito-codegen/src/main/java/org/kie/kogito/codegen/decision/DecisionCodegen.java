@@ -53,6 +53,7 @@ import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
+import static org.kie.kogito.codegen.ApplicationGenerator.logger;
 
 public class DecisionCodegen extends AbstractGenerator {
 
@@ -104,7 +105,9 @@ public class DecisionCodegen extends AbstractGenerator {
         return dmnRuntime.getModels();
     }
 
-    private static final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
+    private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
+    private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
+
     private String packageName;
     private String applicationCanonicalName;
     private DependencyInjectionAnnotator annotator;
@@ -159,7 +162,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
         for (DMNRestResourceGenerator resourceGenerator : rgs) {
             if (useMonitoring) {
-                generateAndStoreGrafanaDashboard(resourceGenerator);
+                generateAndStoreGrafanaDashboards(resourceGenerator);
             }
 
             storeFile(GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
@@ -168,16 +171,29 @@ public class DecisionCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private void generateAndStoreGrafanaDashboard(DMNRestResourceGenerator resourceGenerator) {
+    private void generateAndStoreGrafanaDashboards(DMNRestResourceGenerator resourceGenerator) {
         Definitions definitions = resourceGenerator.getDmnModel().getDefinitions();
         List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect(Collectors.toList());
 
-        String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(grafanaTemplatePath, resourceGenerator.getNameURL(), decisions);
+        String operationalDashboard = null;
+        String domainDashboard = null;
+
+        try {
+            operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, resourceGenerator.getNameURL());
+            domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(domainDashboardDmnTemplate, resourceGenerator.getNameURL(), decisions);
+        } catch (IOException e) {
+            logger.warn("Could not create the grafana dashboards for the endpoint " + resourceGenerator.getNameURL(), e);
+            return;
+        }
+
+        generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile( org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
+                                                                     "dashboards/operational-dashboard-" + resourceGenerator.getNameURL() + ".json",
+                                                                     operationalDashboard));
         generatedFiles.add(
                 new org.kie.kogito.codegen.GeneratedFile(
                         org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
-                        "dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
-                        dashboard));
+                        "dashboards/domain-dashboard-" + resourceGenerator.getNameURL() + ".json",
+                        domainDashboard));
     }
 
     @Override
