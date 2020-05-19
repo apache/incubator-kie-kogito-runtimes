@@ -34,14 +34,14 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
 @EnableAsync
-public class KogitoDecisionTracingConfiguration {
+public class SpringBootDecisionTracingConfiguration {
 
     private final String kafkaBootstrapAddress;
     private final String kafkaTopicName;
     private final int kafkaTopicPartitions;
     private final short kafkaTopicReplicationFactor;
 
-    public KogitoDecisionTracingConfiguration(
+    public SpringBootDecisionTracingConfiguration(
             @Value(value = "${kogito.addon.tracing.decision.kafka.bootstrapAddress}") String kafkaBootstrapAddress,
             @Value(value = "${kogito.addon.tracing.decision.kafka.topic.name:kogito-tracing-decision}") String kafkaTopicName,
             @Value(value = "${kogito.addon.tracing.decision.kafka.topic.partitions:1}") int kafkaTopicPartitions,

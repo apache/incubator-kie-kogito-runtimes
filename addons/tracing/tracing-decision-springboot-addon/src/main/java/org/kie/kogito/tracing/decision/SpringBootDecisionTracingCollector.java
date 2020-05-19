@@ -25,12 +25,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
-public class KogitoDecisionTracingCollector {
+public class SpringBootDecisionTracingCollector {
 
     private final DecisionTracingCollector collector;
 
     @Autowired
-    public KogitoDecisionTracingCollector(
+    public SpringBootDecisionTracingCollector(
             KafkaTemplate<String, String> template,
             @Value(value = "${kogito.addon.tracing.decision.kafka.topic.name:kogito-tracing-decision}") String kafkaTopicName
     ) {

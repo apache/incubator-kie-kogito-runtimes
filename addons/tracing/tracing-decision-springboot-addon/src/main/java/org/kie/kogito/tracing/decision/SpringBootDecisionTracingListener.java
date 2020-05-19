@@ -21,13 +21,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
- * This class must always have exact FQCN as <code>org.kie.kogito.tracing.decision.KogitoDecisionTracingListener</code>
+ * This class must always extend <code>org.kie.kogito.tracing.decision.DecisionTracingListener</code>
+ * for code generation plugins to correctly detect if this addon is enabled.
  */
 @Component
-public final class KogitoDecisionTracingListener extends DecisionTracingListener {
+public final class SpringBootDecisionTracingListener extends DecisionTracingListener {
 
     @Autowired
-    public KogitoDecisionTracingListener(ApplicationEventPublisher eventPublisher) {
+    public SpringBootDecisionTracingListener(ApplicationEventPublisher eventPublisher) {
         setEventConsumer(eventPublisher::publishEvent);
     }
 
