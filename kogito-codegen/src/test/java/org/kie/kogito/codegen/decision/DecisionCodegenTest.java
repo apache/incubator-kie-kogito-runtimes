@@ -73,7 +73,7 @@ public class DecisionCodegenTest {
     public void doNotGenerateTypesafeInfo() throws Exception {
         GeneratorContext context = stronglyTypedContext();
 
-        DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/allTypes").toAbsolutePath());
+        DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/alltypes/").toAbsolutePath());
         codeGenerator.setContext(context);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
