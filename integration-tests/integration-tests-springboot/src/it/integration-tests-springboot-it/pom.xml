@@ -41,12 +41,10 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- Manually ovverride to 3.3.0 because Spring boot uses rest-assured-common@3.3.0
-         Otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
-      <version>3.3.0</version>
+      <version>${version.io.restassured.springboot}</version> <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common internally -->
       <scope>test</scope>
     </dependency>
   </dependencies>

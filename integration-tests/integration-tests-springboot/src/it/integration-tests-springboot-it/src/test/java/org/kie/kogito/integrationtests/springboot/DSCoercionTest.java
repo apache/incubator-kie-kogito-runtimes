@@ -19,10 +19,12 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -122,14 +124,14 @@ public class DSCoercionTest {
         assertThat(DSdtd, is(Duration.parse("PT1H")));
     }
 
-    // DROOLS-5344
-    //    @Test
-    //    public void testDSymd() {
-    //        Period DSymd = given().contentType(ContentType.JSON)
-    //                              .when()
-    //                              .post("/DScoercion/DSymd")
-    //                              .getBody().as(Period.class);
-    //        assertThat(DSymd, is(Period.parse("P3Y")));
-    //    }
+    @Disabled("DROOLS-5344")
+    @Test
+    public void testDSymd() {
+        Period DSymd = given().contentType(ContentType.JSON)
+                              .when()
+                              .post("/DScoercion/DSymd")
+                              .getBody().as(Period.class);
+        assertThat(DSymd, is(Period.parse("P3Y")));
+    }
 
 }
