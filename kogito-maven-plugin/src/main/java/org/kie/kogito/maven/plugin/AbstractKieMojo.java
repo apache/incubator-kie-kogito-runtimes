@@ -46,12 +46,12 @@ public abstract class AbstractKieMojo extends AbstractMojo {
 
     protected DependencyInjectionAnnotator discoverDependencyInjectionAnnotator(boolean dependencyInjection, MavenProject project) {
         if (dependencyInjection) {
-            if ( hasSpring( project ) ) {
-                return new SpringDependencyInjectionAnnotator();
-            }
-
             if ( hasQuarkus( project ) ) {
                 return new CDIDependencyInjectionAnnotator();
+            }
+
+            if ( hasSpring( project ) ) {
+                return new SpringDependencyInjectionAnnotator();
             }
         }
 
@@ -59,12 +59,12 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     }
 
     protected KogitoBuildContext discoverKogitoRuntimeContext(MavenProject project)  {
-        if ( hasSpring( project ) ) {
-            return new SpringBootKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
-        }
-
         if ( hasQuarkus( project ) ) {
             return new QuarkusKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
+        }
+
+        if ( hasSpring( project ) ) {
+            return new SpringBootKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
         }
 
         return null;
