@@ -182,6 +182,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private KieModuleModel kieModuleModel;
     private boolean hotReloadMode = false;
     private boolean useMonitoring = false;
+    private boolean useRestServices = true;
     private String packageName;
     private final boolean decisionTableSupported;
     private final Map<String, RuleUnitConfig> configs;
@@ -353,26 +354,33 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
             ruleUnit.pojo().ifPresent(p -> generatedFiles.add(p.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE)));
 
-            List<QueryEndpointGenerator> queries = ruleUnit.queries();
-            if (!queries.isEmpty()) {
-                RuleUnitDescription ruleUnitDesc = ruleUnit.getRuleUnitDescription();
-                AssignableChecker checker;
-                if (ruleUnitDesc instanceof ReflectiveRuleUnitDescription ) {
-                    checker = (( ReflectiveRuleUnitDescription ) ruleUnitDesc).getAssignableChecker();
-                } else {
-                    if (contextChecker == null) {
-                        contextChecker = AssignableChecker.create(contextClassLoader, hotReloadMode);
-                    }
-                    checker = contextChecker;
-                }
-
-                generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnitDesc, checker ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
-
-                for (QueryEndpointGenerator query : queries) {
-                    generateQueryEndpoint( errors, generatedFiles, query );
-                }
+            if ( useRestServices ) {
+                contextChecker = generateQueriesEndpoint( errors, generatedFiles, contextChecker, ruleUnit );
             }
         }
+    }
+
+    private AssignableChecker generateQueriesEndpoint( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, AssignableChecker contextChecker, RuleUnitGenerator ruleUnit ) {
+        List<QueryEndpointGenerator> queries = ruleUnit.queries();
+        if (!queries.isEmpty()) {
+            RuleUnitDescription ruleUnitDesc = ruleUnit.getRuleUnitDescription();
+            AssignableChecker checker;
+            if (ruleUnitDesc instanceof ReflectiveRuleUnitDescription ) {
+                checker = (( ReflectiveRuleUnitDescription ) ruleUnitDesc).getAssignableChecker();
+            } else {
+                if (contextChecker == null) {
+                    contextChecker = AssignableChecker.create(contextClassLoader, hotReloadMode);
+                }
+                checker = contextChecker;
+            }
+
+            generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnitDesc, checker ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.DTO) );
+
+            for (QueryEndpointGenerator query : queries) {
+                generateQueryEndpoint( errors, generatedFiles, query );
+            }
+        }
+        return contextChecker;
     }
 
     private void generateQueryEndpoint( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, QueryEndpointGenerator query ) {
@@ -472,6 +480,11 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     public IncrementalRuleCodegen withMonitoring(boolean useMonitoring) {
         this.useMonitoring = useMonitoring;
+        return this;
+    }
+
+    public IncrementalRuleCodegen withRestServices(boolean useRestServices) {
+        this.useRestServices = useRestServices;
         return this;
     }
 }

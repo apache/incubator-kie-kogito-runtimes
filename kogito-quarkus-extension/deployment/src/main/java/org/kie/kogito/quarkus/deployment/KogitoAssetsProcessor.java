@@ -69,6 +69,9 @@ import org.slf4j.LoggerFactory;
 
 public class KogitoAssetsProcessor {
 
+    private static final String generatedResourcesDir = System.getProperty("kogito.codegen.sources.directory", "target/generated-resources/kogito");
+    private static final String generatedSourcesDir = System.getProperty("kogito.codegen.resources.directory", "target/generated-sources/kogito/");
+    private static final String generatedRestSourcesDir = System.getProperty("kogito.codegen.rest.directory", "target/generated-sources/kogito/");
     private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
     private final transient String generatedClassesDir = System.getProperty("quarkus.debug.generated-classes-dir");
     private final transient String appPackageName = "org.kie.kogito.app";
@@ -182,15 +185,8 @@ public class KogitoAssetsProcessor {
         ApplicationGenerator appGen = createApplicationGenerator(appPaths, combinedIndexBuildItem);
         Collection<GeneratedFile> generatedFiles = appGen.generate();
 
-        Collection<GeneratedFile> resourceFiles = generatedFiles.stream()
-                .filter( f -> f.getType() == GeneratedFile.Type.RESOURCE )
-                .collect( Collectors.toList() );
-
-        writeResourceFiles(appPaths, resourceFiles);
-
-        Collection<GeneratedFile> javaFiles = generatedFiles.stream()
-                .filter( f -> f.relativePath().endsWith( ".java" ) )
-                .collect( Collectors.toList() );
+        Collection<GeneratedFile> javaFiles = generatedFiles.stream().filter( f -> f.relativePath().endsWith( ".java" ) ).collect( Collectors.toCollection( ArrayList::new ));
+        writeGeneratedFiles(appPaths, generatedFiles);
 
         if (!javaFiles.isEmpty()) {
 
@@ -238,23 +234,32 @@ public class KogitoAssetsProcessor {
         }
     }
 
+    private void writeGeneratedFiles(AppPaths appPaths, Collection<GeneratedFile> resourceFiles) {
+        for (Path projectPath : appPaths.projectPaths) {
+            String restResourcePath = projectPath.resolve( generatedRestSourcesDir ).toString();
+            String resourcePath = projectPath.resolve( generatedResourcesDir ).toString();
+            String sourcePath = projectPath.resolve( generatedSourcesDir ).toString();
+
+            for (GeneratedFile f : resourceFiles) {
+                try {
+                    if ( f.getType() == GeneratedFile.Type.RESOURCE ) {
+                        writeGeneratedFile( f, resourcePath );
+                    } else if ( f.getType().isCustomizable() ) {
+                        writeGeneratedFile( f, restResourcePath );
+                    } else {
+                        writeGeneratedFile( f, sourcePath );
+                    }
+                } catch (IOException e) {
+                    logger.warn( String.format( "Could not write file '%s'", f.toString() ), e );
+                }
+            }
+        }
+    }
+
     private GeneratedBeanBuildItem generateBeanBuildItem( CombinedIndexBuildItem combinedIndexBuildItem, Indexer kogitoIndexer, Set<DotName> kogitoIndex, String className, byte[] data ) {
         IndexingUtil.indexClass(className, kogitoIndexer, combinedIndexBuildItem.getIndex(), kogitoIndex,
                 Thread.currentThread().getContextClassLoader(), data);
         return new GeneratedBeanBuildItem(className, data);
-    }
-
-    private void writeResourceFiles(AppPaths appPaths, Collection<GeneratedFile> resourceFiles) {
-        for (Path projectPath : appPaths.projectPaths) {
-            String stringPath = projectPath.toString();
-            resourceFiles.forEach( f -> {
-                try {
-                    writeGeneratedFile( f, stringPath );
-                } catch (IOException e) {
-                    logger.warn( String.format( "Could not write resource file %s", f.toString() ), e );
-                }
-            } );
-        }
     }
 
     private CompilationResult compile(AppPaths appPaths, MemoryFileSystem trgMfs,
