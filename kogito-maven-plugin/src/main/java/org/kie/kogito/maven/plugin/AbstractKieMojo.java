@@ -44,38 +44,38 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         }
     }
 
-    protected DependencyInjectionAnnotator discoverDependencyInjectionAnnotator(boolean dependencyInjection, MavenProject project) {
-        if (dependencyInjection) {
-            if ( hasQuarkus( project ) ) {
-                return new CDIDependencyInjectionAnnotator();
-            }
-
-            if ( hasSpring( project ) ) {
-                return new SpringDependencyInjectionAnnotator();
-            }
+    protected DependencyInjectionAnnotator discoverDependencyInjectionAnnotator(MavenProject project) {
+        switch (discoverFramework(project)) {
+            case QUARKUS: return new CDIDependencyInjectionAnnotator();
+            case SPRING: return new SpringDependencyInjectionAnnotator();
+            default: return null;
         }
-
-        return null;
     }
 
     protected KogitoBuildContext discoverKogitoRuntimeContext(MavenProject project)  {
-        if ( hasQuarkus( project ) ) {
-            return new QuarkusKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
+        switch (discoverFramework(project)) {
+            case QUARKUS: return new QuarkusKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
+            case SPRING: return new SpringBootKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
+            default: return null;
         }
-
-        if ( hasSpring( project ) ) {
-            return new SpringBootKogitoBuildContext(fqcn -> hasClassOnClasspath(project, fqcn));
-        }
-
-        return null;
     }
 
-    private boolean hasQuarkus( MavenProject project ) {
-        return project.getDependencies().stream().anyMatch( d -> d.getArtifactId().contains( "quarkus" ) );
+    private enum Framework { QUARKUS, SPRING, NONE }
+
+    private Framework discoverFramework(MavenProject project) {
+        if ( hasDependency( project, "quarkus" ) ) {
+            return Framework.QUARKUS;
+        }
+
+        if ( hasDependency( project, "spring" ) ) {
+            return Framework.SPRING;
+        }
+
+        return Framework.NONE;
     }
 
-    private boolean hasSpring( MavenProject project ) {
-        return project.getDependencies().stream().anyMatch( d -> d.getArtifactId().contains( "spring" ) );
+    private boolean hasDependency( MavenProject project, String dependency ) {
+        return project.getDependencies().stream().anyMatch( d -> d.getArtifactId().contains( dependency ) );
     }
 
     protected boolean hasClassOnClasspath(MavenProject project, String className) {
