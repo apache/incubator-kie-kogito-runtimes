@@ -23,6 +23,7 @@ import java.time.Period;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
@@ -125,6 +126,7 @@ public class DSCoercionTest {
     }
 
     @Disabled("DROOLS-5344")
+    @Ignore("DROOLS-5344")
     @Test
     public void testDSymd() {
         Period DSymd = given().contentType(ContentType.JSON)
