@@ -127,7 +127,7 @@ public class KogitoAssetsProcessor {
 
         Collection<GeneratedFile> generatedFiles = new ArrayList<>();
 
-        for (Path projectPath : appPaths.classesPaths) {
+        for (Path projectPath : appPaths.projectPaths) {
             PersistenceGenerator persistenceGenerator = new PersistenceGenerator( new File( projectPath.toFile(), "target" ),
                     modelClasses, usePersistence,
                     new JandexProtoGenerator( index, createDotName( Generated.class.getCanonicalName() ),
