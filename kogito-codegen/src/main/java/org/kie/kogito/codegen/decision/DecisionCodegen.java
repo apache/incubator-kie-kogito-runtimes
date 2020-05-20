@@ -60,15 +60,15 @@ public class DecisionCodegen extends AbstractGenerator {
     public static DecisionCodegen ofJar(Path jarPath) throws IOException {
         List<Resource> resources = new ArrayList<>();
 
-        try (ZipFile zipFile = new ZipFile( jarPath.toFile() )) {
-            Enumeration< ? extends ZipEntry> entries = zipFile.entries();
-            while ( entries.hasMoreElements() ) {
+        try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 ResourceType resourceType = determineResourceType(entry.getName());
                 if (resourceType == ResourceType.DMN) {
-                    InternalResource resource = new ByteArrayResource( readBytesFromInputStream( zipFile.getInputStream( entry ) ) );
-                    resource.setResourceType( resourceType );
-                    resource.setSourcePath( entry.getName() );
+                    InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
+                    resource.setResourceType(resourceType);
+                    resource.setSourcePath(entry.getName());
                     resources.add(resource);
                 }
             }
@@ -98,10 +98,10 @@ public class DecisionCodegen extends AbstractGenerator {
 
     private static List<DMNModel> parseDecisions(Collection<Resource> resources) throws IOException {
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                                                 .setRootClassLoader(null)
-                                                 .buildConfiguration()
-                                                 .fromResources(resources)
-                                                 .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
+                .setRootClassLoader(null)
+                .buildConfiguration()
+                .fromResources(resources)
+                .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
         return dmnRuntime.getModels();
     }
 
@@ -175,25 +175,15 @@ public class DecisionCodegen extends AbstractGenerator {
         Definitions definitions = resourceGenerator.getDmnModel().getDefinitions();
         List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect(Collectors.toList());
 
-        String operationalDashboard = null;
-        String domainDashboard = null;
+        String operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, resourceGenerator.getNameURL());
+        String domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(domainDashboardDmnTemplate, resourceGenerator.getNameURL(), decisions);
 
-        try {
-            operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, resourceGenerator.getNameURL());
-            domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(domainDashboardDmnTemplate, resourceGenerator.getNameURL(), decisions);
-        } catch (IOException e) {
-            logger.warn("Could not create the grafana dashboards for the endpoint " + resourceGenerator.getNameURL(), e);
-            return;
-        }
-
-        generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile( org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
-                                                                     "dashboards/operational-dashboard-" + resourceGenerator.getNameURL() + ".json",
-                                                                     operationalDashboard));
-        generatedFiles.add(
-                new org.kie.kogito.codegen.GeneratedFile(
-                        org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
-                        "dashboards/domain-dashboard-" + resourceGenerator.getNameURL() + ".json",
-                        domainDashboard));
+        generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
+                                                                    "dashboards/operational-dashboard-" + resourceGenerator.getNameURL() + ".json",
+                                                                    operationalDashboard));
+        generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
+                                                                    "dashboards/domain-dashboard-" + resourceGenerator.getNameURL() + ".json",
+                                                                    domainDashboard));
     }
 
     @Override
@@ -204,7 +194,7 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private void storeFile(GeneratedFile.Type type, String path, String source) {
-        generatedFiles.add(new GeneratedFile(type, path, log( source ).getBytes( StandardCharsets.UTF_8 )));
+        generatedFiles.add(new GeneratedFile(type, path, log(source).getBytes(StandardCharsets.UTF_8)));
     }
 
     public List<GeneratedFile> getGeneratedFiles() {
@@ -225,5 +215,4 @@ public class DecisionCodegen extends AbstractGenerator {
         this.moduleGenerator.withTracing(useTracing);
         return this;
     }
-
 }

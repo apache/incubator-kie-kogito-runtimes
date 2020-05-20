@@ -47,13 +47,23 @@ public class GrafanaConfigurationWriter {
      * @param handlerName:  The name of the endpoint.
      * @return: The template customized for the endpoint.
      */
-    public static String generateOperationalDashboard(String templatePath, String handlerName) throws IOException {
+    public static String generateOperationalDashboard(String templatePath, String handlerName) {
         String template = readStandardDashboard(templatePath);
         template = customizeTemplate(template, handlerName);
         JGrafana jgrafana;
-        jgrafana = JGrafana.parse(template).setTitle(String.format("%s endpoint operational dashboard", handlerName));
+        try {
+            jgrafana = JGrafana.parse(template).setTitle(String.format("%s - Operational Dashboard", handlerName));
+        } catch (IOException e) {
+            logger.error(String.format("Could not parse the grafana template for the endpoint %s", handlerName), e);
+            throw new IllegalArgumentException("Could not parse the dashboard template.", e);
+        }
 
-        return jgrafana.serialize();
+        try {
+            return jgrafana.serialize();
+        } catch (IOException e) {
+            logger.error(String.format("Could not serialize the grafana dashboard for the endpoint %s", handlerName), e);
+            throw new RuntimeException("Could not serialize the grafana dashboard.", e);
+        }
     }
 
     /**
@@ -64,26 +74,41 @@ public class GrafanaConfigurationWriter {
      * @param decisions:    The decisions in the DMN model.
      * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the arguments.
      */
-    public static String generateDomainSpecificDMNDashboard(String templatePath, String endpoint, List<Decision> decisions) throws IOException {
+    public static String generateDomainSpecificDMNDashboard(String templatePath, String endpoint, List<Decision> decisions) {
         String template = readStandardDashboard(templatePath);
         template = customizeTemplate(template, endpoint);
 
-        JGrafana jgrafana = JGrafana.parse(template).setTitle(String.format("%s endpoint domain specific dashboard", endpoint));
+        JGrafana jgrafana = null;
+        try {
+            jgrafana = JGrafana.parse(template).setTitle(String.format("%s - Domain Dashboard", endpoint));
+        } catch (IOException e) {
+            logger.error(String.format("Could not parse the grafana template for the endpoint %s", endpoint), e);
+            throw new IllegalArgumentException("Could not parse the dashboard template.", e);
+        }
 
         for (Decision decision : decisions) {
             QName type = decision.getVariable().getTypeRef();
-            if (type != null && SupportedDecisionTypes.isSupported(type.getLocalPart())) {
-                jgrafana.addPanel(PanelType.GRAPH,
-                                  "Decision " + decision.getName(),
-                                  String.format("%s_dmn_result{endpoint = \"%s\", decision = \"%s\"}",
-                                                type,
-                                                endpoint,
-                                                decision.getName()),
-                                  SupportedDecisionTypes.getGrafanaFunction(type.getLocalPart()));
+            if (type == null) {
+                logger.warn(String.format("DMN typeref for the decision \"%s\" with node id \"%s\" is null.", decision.getName(), decision.getId()));
+            } else {
+                if (SupportedDecisionTypes.isSupported(type.getLocalPart())) {
+                    jgrafana.addPanel(PanelType.GRAPH,
+                                      "Decision " + decision.getName(),
+                                      String.format("%s_dmn_result{endpoint = \"%s\", decision = \"%s\"}",
+                                                    type,
+                                                    endpoint,
+                                                    decision.getName()),
+                                      SupportedDecisionTypes.getGrafanaFunction(type.getLocalPart()));
+                }
             }
         }
 
-        return jgrafana.serialize();
+        try {
+            return jgrafana.serialize();
+        } catch (IOException e) {
+            logger.error(String.format("Could not serialize the grafana dashboard for the endpoint %s", endpoint), e);
+            throw new RuntimeException("Could not serialize the grafana dashboard.", e);
+        }
     }
 
     private static String readStandardDashboard(String templatePath) {
