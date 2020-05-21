@@ -33,14 +33,14 @@ To contribute, use GitHub Pull Requests, from your **own** fork.
 
 - PRs should be always related to an open JIRA issue. If there is none, you should create one.
 - Try to fix only one issue per PRs
-- Make sure to create a new branch. Usually branches are named after the JIRA ticket they are addressing. E.g. for ticket *KOGITO-XYZ An example issue* your branch should be at least prefixed with `KOGITO-XYZ`. E.g.:
+- Make sure to create a new branch. Usually branches are named after the JIRA ticket they are addressing. E.g. for ticket "KOGITO-XYZ An example issue" your branch should be at least prefixed with `KOGITO-XYZ`. E.g.:
 
         git checkout -b KOGITO-XYZ
         # or
         git checkout -b KOGITO-XYZ-my-fix
 
 - When you submit your PR, make sure to include the ticket ID, and its title; e.g., "KOGITO-XYZ An example issue"
-- The description of your PR should describe the code you wrote. The issues that is solved should be at least properly described in the corresponding JIRA ticket. 
+- The description of your PR should describe the code you wrote. The issue that is solved should be at least described properly in the corresponding JIRA ticket. 
 - If your contribution spans across multiple repositories, 
   use the same branch name (e.g. `KOGITO-XYZ`) in each PR so that our CI (Jenkins) can build them all at once.
 - If your contribution spans across multiple repositories, make sure to list all the related PRs 
@@ -51,12 +51,12 @@ We decided to disallow `@author` tags in the Javadoc: they are hard to maintain,
 
 ### Tests and Documentation 
 
-Don't forget to include tests in your pull requests, and documentation (reference documentation, javadoc...). Guides and reference documentation should be submitted to the [Kogito Docs repository](https://github.com/kiegroup/kie-docs/tree/master-kogito).
+Don't forget to include tests in your pull requests, and documentation (reference documentation, javadoc...). Guides and reference documentation should be submitted to the [Kogito Docs Repository](https://github.com/kiegroup/kie-docs/tree/master-kogito).
 If you are contributing a new feature, we strongly advise submitting an [Example](https://github.com/kiegroup/kogito-examples). 
 
 ### Code Reviews and Continuous Integration
 
-All submissions, including submissions by project members, need to be reviewed by others before being merged. Our CI, Jenkins, should successfully execute your PR, marking the GitHub check as green
+All submissions, including those by project members, need to be reviewed by others before being merged. Our CI, Jenkins, should successfully execute your PR, marking the GitHub check as green
 
 ## Feature Proposals
 
