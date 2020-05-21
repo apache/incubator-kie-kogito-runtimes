@@ -16,6 +16,7 @@ pipeline {
         timeout(time: 90, unit: 'MINUTES')
     }
     environment {
+        KOGITO_CI_EMAIL_TO = credentials('KOGITO_CI_EMAIL_TO')
         SONARCLOUD_TOKEN = credentials('SONARCLOUD_TOKEN')
         MAVEN_OPTS = '-Xms512m -Xmx3g'
     }
@@ -42,6 +43,10 @@ pipeline {
     }
     post {
         failure {
+            emailext body: 'Kogito Runtimes daily Sonar #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\n' +
+                            'Please look here: ${BUILD_URL} ',
+                     subject: 'Kogito Runtimes daily Sonar #${BRANCH_NAME}',
+                     to: env.KOGITO_CI_EMAIL_TO
             script {
                 mailer.sendEmailFailure()
             }
