@@ -56,7 +56,7 @@ If you are contributing a new feature, we strongly advise submitting an [Example
 
 ### Code Reviews and Continuous Integration
 
-All submissions, including submissions by project members, need to be reviewed before being merged. Our CI, Jenkins, should be green.
+All submissions, including submissions by project members, need to be reviewed by others before being merged. Our CI, Jenkins, should successfully execute your PR, marking the GitHub check as green
 
 ## Feature Proposals
 
@@ -72,7 +72,7 @@ If you have not done so on this machine, you need to:
 * Install Java SDK (OpenJDK recommended)
 * For Native Image, follow Quarkus instructions at [GraalVM](https://quarkus.io/guides/building-native-image)
 
-Docker is not strictly necessary: it is used to run the test the persistence backend: it is a recommended install if you plan to work on this component.
+Docker is not strictly necessary, but it is a required to run some of the integration tests. We recommend to install it to run these tests locally.
 
 * Check [the installation guide](https://docs.docker.com/install/), and [the MacOS installation guide](https://docs.docker.com/docker-for-mac/install/)
 * If you just install docker, be sure that your current user can run a container (no root required). 
@@ -85,8 +85,7 @@ On Linux, check [the post-installation guide](https://docs.docker.com/install/li
 
 ```bash
 git clone https://github.com/kiegroup/kogito-runtimes.git
-cd quarkus
-export MAVEN_OPTS="-Xmx1563m"
+cd kogito-runtimes
 ./mvnw clean install -DskipTests -DskipITs 
 # Wait... success!
 ```
