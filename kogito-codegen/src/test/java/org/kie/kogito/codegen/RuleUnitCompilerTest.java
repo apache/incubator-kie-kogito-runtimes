@@ -69,7 +69,7 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
 
         sofia.setAge( 22 );
         adults.getPersons().update( dhSofia, sofia );
-        assertEquals( 1, instance.fire() );
+        assertEquals( 10, instance.fire() );
         assertTrue( adults.getResults().getResults().containsAll( asList("Mario", "Marilena", "Sofia") ) );
     }
 
