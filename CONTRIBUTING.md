@@ -7,7 +7,7 @@ But first, read this page (including the small print at the end).
 
 ## Legal
 
-All original contributions to Quarkus are licensed under the
+All original contributions to Kogito are licensed under the
 [ASL - Apache License](https://www.apache.org/licenses/LICENSE-2.0),
 version 2.0 or later, or, if another license is specified as governing the file or directory being
 modified, such other license.
@@ -72,7 +72,8 @@ If you have not done so on this machine, you need to:
 * Install Java SDK (OpenJDK recommended)
 * For Native Image, follow Quarkus instructions at [GraalVM](https://quarkus.io/guides/building-native-image)
 
-Docker is not strictly necessary, but it is a required to run some of the integration tests. We recommend to install it to run these tests locally.
+Docker is not strictly necessary, but it is a required to run some of the integration tests. 
+These tests can be skipped (see the [Build](#build) section), but we recommend to install it to run these tests locally.
 
 * Check [the installation guide](https://docs.docker.com/install/), and [the MacOS installation guide](https://docs.docker.com/docker-for-mac/install/)
 * If you just install docker, be sure that your current user can run a container (no root required). 

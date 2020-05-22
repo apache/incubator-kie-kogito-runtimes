@@ -19,9 +19,9 @@ Quick Links
 
 **Homepage:** http://kogito.kie.org
 
-**Documentation:** https://github.com/kiegroup/kie-docs/tree/master-kogito
+**Guides and Documentation:** https://kogito.kie.org/guides/
 
-**JIRA:** https://issues.jboss.org/projects/KOGITO
+**JIRA Issues:** https://issues.jboss.org/projects/KOGITO
 
 Requirements
 ------------
@@ -38,10 +38,14 @@ The [Kogito Examples repository](https://github.com/kiegroup/kogito-examples) mo
 Guides
 --------------------
 
-Here are some of the most notable ones for quick reference:
+The official guides for Kogito can be found at our main website, these include guides for Quarkus and Spring Boot.
 
-- [Quarkus - Using Kogito to add business automation capabilities to an application](https://quarkus.io/guides/kogito-guide) - This guide demonstrates how your Quarkus application can use Kogito to add business automation to power it up with business processes and rules.
+- [Kogito Guides](https://kogito.kie.org/guides/).
+
+If you want to read more about Quarkus:
+
 - [Quarkus - Getting Started](https://quarkus.io/get-started/) - Quarkus Getting Started guide
+- [Quarkus - Using Kogito to add business automation capabilities to an application](https://quarkus.io/guides/kogito) - A simple quick start hosted on the Quarkus web site.
 
 
 
