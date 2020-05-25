@@ -20,13 +20,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.context.AbstractContext;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 
-/**
- * 
- */
 public class VariableScope extends AbstractContext {
 	
 	private static boolean variableStrictEnabled = Boolean.parseBoolean(System.getProperty("org.jbpm.variable.strict", "false"));
@@ -40,7 +37,7 @@ public class VariableScope extends AbstractContext {
     private List<Variable> variables;
     
     public VariableScope() {
-        this.variables = new ArrayList<Variable>();
+        this.variables = new ArrayList<>();
     }
     
     public String getType() {
@@ -60,10 +57,8 @@ public class VariableScope extends AbstractContext {
 
     public String[] getVariableNames() {
         final String[] result = new String[this.variables.size()];
-        if (this.variables != null) {
-            for ( int i = 0; i < this.variables.size(); i++ ) {
-                result[i] = ((Variable) this.variables.get( i )).getName();
-            }
+        for ( int i = 0; i < this.variables.size(); i++ ) {
+            result[i] = this.variables.get(i).getName();
         }
         return result;
     }
@@ -74,7 +69,7 @@ public class VariableScope extends AbstractContext {
                 return variable;
             }
         }
-        if (variableName.startsWith(CASE_FILE_PREFIX) && variableName.indexOf(".") == -1) {
+        if (variableName.startsWith(CASE_FILE_PREFIX) && variableName.contains(".")) {
             Variable caseVariable = new Variable();
             caseVariable.setName(CASE_FILE_PREFIX+variableName);
             caseVariable.setType(new ObjectDataType());
@@ -141,5 +136,9 @@ public class VariableScope extends AbstractContext {
             return v.getTags();
         }
         return Collections.emptyList();
+    }
+
+    public void addVariable(Variable variable) {
+	    this.variables.add(variable);
     }
 }

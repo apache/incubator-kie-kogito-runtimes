@@ -18,7 +18,14 @@ package org.kie.kogito.process.casemgmt;
 
 public class Milestone extends ItemDescription {
 
-    public Milestone(String id, String name, Status status) {
+    private final String condition;
+
+    public Milestone(String id, String name, Status status, String condition) {
         super(id, name, status);
+        this.condition = condition;
+    }
+
+    public String getCondition() {
+        return condition;
     }
 }

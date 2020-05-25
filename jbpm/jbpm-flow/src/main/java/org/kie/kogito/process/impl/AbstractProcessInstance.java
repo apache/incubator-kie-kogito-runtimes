@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,7 +33,10 @@ import java.util.stream.Stream;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
+import org.jbpm.workflow.core.node.BoundaryEventNode;
+import org.jbpm.workflow.core.node.DynamicNode;
 import org.jbpm.workflow.core.node.MilestoneNode;
+import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
@@ -58,8 +62,10 @@ import org.kie.kogito.process.ProcessInstanceDuplicatedException;
 import org.kie.kogito.process.ProcessInstanceNotFoundException;
 import org.kie.kogito.process.Signal;
 import org.kie.kogito.process.WorkItem;
+import org.kie.kogito.process.casemgmt.AdHocFragment;
 import org.kie.kogito.process.casemgmt.ItemDescription.Status;
 import org.kie.kogito.process.casemgmt.Milestone;
+import org.kie.kogito.process.casemgmt.Stage;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
 import org.kie.kogito.services.uow.ProcessInstanceWorkUnit;
@@ -381,10 +387,30 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public Collection<Milestone> milestones() {
         return getNodes(MilestoneNode.class)
+                .map(MilestoneNode.class::cast)
                 .map(n -> {
                     String uid = (String) n.getMetaData().get(UNIQUE_ID);
-                    return new Milestone(uid, n.getName(), getStatus(uid));
+                    return new Milestone(uid, n.getName(), getStatus(uid), n.getConstraint());
                 })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Stage> stages() {
+        return getNodes(DynamicNode.class)
+                .map(DynamicNode.class::cast)
+                .map(n -> {
+                    String uid = (String) n.getMetaData().get(UNIQUE_ID);
+                    return new Stage(uid, n.getName(), getStatus(uid), n.getActivationExpression(), n.getCompletionExpression(), n.isAutoComplete(), collectAdHocFragments(n));
+                })
+                .collect(Collectors.toList());
+    }
+
+    private Collection<AdHocFragment> collectAdHocFragments(DynamicNode node) {
+        return Stream.of(node.getNodeContainer().getNodes())
+                .filter(n -> !StartNode.class.isInstance(n) && !BoundaryEventNode.class.isInstance(n))
+                .filter(n -> n.getIncomingConnections().isEmpty())
+                .map(AdHocFragment::new)
                 .collect(Collectors.toList());
     }
 

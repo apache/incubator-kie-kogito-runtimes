@@ -18,33 +18,31 @@ package org.kie.kogito.process.casemgmt;
 
 import java.io.Serializable;
 
-public abstract class ItemDescription implements Serializable {
+import org.kie.api.definition.process.Node;
 
-    public enum Status {
-        AVAILABLE,
-        ACTIVE,
-        COMPLETED
-    }
+public class AdHocFragment implements Serializable {
 
-    private final String id;
     private final String name;
-    private final Status status;
+    private final String type;
 
-    ItemDescription(String id, String name, Status status) {
-        this.id = id;
-        this.name = name;
-        this.status = status;
-    }
-
-    public String getId() {
-        return id;
+    public AdHocFragment(Node node) {
+        this.name = node.getName();
+        this.type = node.getClass().getSimpleName();
     }
 
     public String getName() {
         return name;
     }
 
-    public Status getStatus() {
-        return status;
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return "AdHocFragment{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                '}';
     }
 }

@@ -16,6 +16,7 @@
 
 package org.kie.api.runtime.process;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ import org.kie.kogito.process.workitem.Policy;
  * @see org.kie.api.runtime.process.WorkItemHandler
  * @see org.kie.api.runtime.process.WorkItemManager
  */
-public interface WorkItem {
+public interface WorkItem extends Serializable {
 
     int PENDING   = 0;
     int ACTIVE    = 1;

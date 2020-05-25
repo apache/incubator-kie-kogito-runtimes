@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.process.casemgmt.ItemDescription.Status.AVAILABLE;
 import static org.kie.kogito.process.casemgmt.ItemDescription.Status.COMPLETED;
+import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
 
 class MilestoneTest extends AbstractCodegenTest {
 
@@ -70,10 +71,4 @@ class MilestoneTest extends AbstractCodegenTest {
         assertThat(legacyProcessInstance.getCompletedNodeIds()).contains(milestoneId.get());
     }
 
-    private void assertState(ProcessInstance<?> processInstance, int state) {
-        assertThat(processInstance).isInstanceOf(AbstractProcessInstance.class);
-        AbstractProcessInstance<?> abstractProcessInstance = (AbstractProcessInstance<?>) processInstance;
-        assertThat(abstractProcessInstance.status).isEqualTo(state);
-        assertThat(abstractProcessInstance.legacyProcessInstance.getState()).isEqualTo(state);
-    }
 }

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.kie.api.runtime.process.WorkItemNotFoundException;
 import org.kie.kogito.process.casemgmt.Milestone;
+import org.kie.kogito.process.casemgmt.Stage;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
 
@@ -172,4 +173,10 @@ public interface ProcessInstance<T> {
      * @return All the process milestones with their current status
      */
     Collection<Milestone> milestones();
+
+    /**
+     * Returns the process stages
+     * @return All the process stages with their current status
+     */
+    Collection<Stage> stages();
 }

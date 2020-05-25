@@ -16,7 +16,6 @@
 
 package org.drools.core.process.instance.impl;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,15 +25,15 @@ import org.drools.core.process.instance.WorkItem;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 
-public class WorkItemImpl implements WorkItem, Serializable {
+public class WorkItemImpl implements WorkItem {
 
     private static final long serialVersionUID = 510l;
 
     private String id;
     private String name;
     private int state = 0;
-    private Map<String, Object> parameters = new HashMap<String, Object>();
-    private Map<String, Object> results = new HashMap<String, Object>();
+    private Map<String, Object> parameters = new HashMap<>();
+    private Map<String, Object> results = new HashMap<>();
     private String processInstanceId;
     private String deploymentId;
     private String nodeInstanceId;

@@ -16,6 +16,8 @@
 
 package org.jbpm.compiler.canonical;
 
+import java.util.List;
+
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
@@ -25,6 +27,7 @@ import com.github.javaparser.ast.type.UnknownType;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
+import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.node.ActionNode;
 
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
@@ -48,22 +51,31 @@ public class ActionNodeVisitor extends AbstractNodeVisitor<ActionNode> {
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         } else {
             if (node.getAction().toString() == null || node.getAction().toString().trim().isEmpty()) {
-                throw new IllegalStateException("Action node " + node.getId() + " name " + node.getName() + " has not action defined");
+                throw new IllegalStateException("Action node " + node.getId() + " name " + node.getName() + " has no action defined");
             }
             BlockStmt actionBody = new BlockStmt();
+            List<Variable> variables = variableScope.getVariables();
+            variables.stream()
+                    .filter(v -> isVarPresent(v, node.getAction()))
+                    .map(ActionNodeVisitor::makeAssignment)
+                    .forEach(actionBody::addStatement);
+
+            actionBody.addStatement(new NameExpr(node.getAction().toString()));
+
             LambdaExpr lambda = new LambdaExpr(
                     new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
                     actionBody
             );
-
-            for (Variable v : variableScope.getVariables()) {
-                actionBody.addStatement(makeAssignment(v));
-            }
-            actionBody.addStatement(new NameExpr(node.getAction().toString()));
-
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         }
         visitMetaData(node.getMetaData(), body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));
+    }
+
+    private boolean isVarPresent(Variable v, DroolsAction action) {
+        if(action == null) {
+            return false;
+        }
+        return action.toString().contains(v.getName());
     }
 }

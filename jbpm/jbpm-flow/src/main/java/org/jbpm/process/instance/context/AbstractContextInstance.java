@@ -16,14 +16,12 @@
 
 package org.jbpm.process.instance.context;
 
-import java.io.Serializable;
-
 import org.jbpm.process.core.Context;
 import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.ProcessInstance;
 
-public abstract class AbstractContextInstance implements ContextInstance, Serializable {
+public abstract class AbstractContextInstance implements ContextInstance {
 
     private long contextId;
     private ContextInstanceContainer contextInstanceContainer;

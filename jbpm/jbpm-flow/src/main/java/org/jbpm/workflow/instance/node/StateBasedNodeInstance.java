@@ -61,6 +61,8 @@ import org.kie.services.time.TimerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
+
 public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl implements EventBasedNodeInstanceInterface,
                                                                                          EventListener {
 
@@ -98,7 +100,6 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
         if (getEventBasedNode().getBoundaryEvents() != null) {
 
             for (String name : getEventBasedNode().getBoundaryEvents()) {
-
                 boolean isActive = ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda())
                         .isRuleActiveInRuleFlowGroup("DROOLS_SYSTEM", name, getProcessInstance().getId());
                 if (isActive) {
@@ -329,7 +330,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
     }
 
     public void triggerCompleted() {
-        triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, true);
+        triggerCompleted(CONNECTION_DEFAULT_TYPE, true);
     }
 
     @Override

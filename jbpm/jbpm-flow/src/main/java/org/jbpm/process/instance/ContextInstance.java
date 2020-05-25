@@ -16,21 +16,20 @@
 
 package org.jbpm.process.instance;
 
+import java.io.Serializable;
+
 import org.jbpm.process.core.Context;
 
-/**
- * 
- */
-public interface ContextInstance {
-    
+public interface ContextInstance extends Serializable {
+
     String getContextType();
-    
+
     long getContextId();
-    
+
     ContextInstanceContainer getContextInstanceContainer();
-    
+
     Context getContext();
-    
+
     ProcessInstance getProcessInstance();
-    
+
 }
