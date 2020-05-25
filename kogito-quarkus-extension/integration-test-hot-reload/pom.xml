@@ -28,7 +28,6 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-deployment</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
 
