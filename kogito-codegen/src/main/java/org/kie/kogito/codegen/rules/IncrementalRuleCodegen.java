@@ -172,7 +172,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private final Collection<Resource> resources;
     private RuleUnitContainerGenerator moduleGenerator;
 
-    private boolean dependencyInjection;
     private DependencyInjectionAnnotator annotator;
     /**
      * used for type-resolving during codegen/type-checking
@@ -342,6 +341,11 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private void generateRuleUnits( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles ) {
         AssignableChecker contextChecker = null;
 
+        if (annotator != null) {
+            generatedFiles.add( new org.kie.kogito.codegen.GeneratedFile( org.kie.kogito.codegen.GeneratedFile.Type.REST,
+                    packageName.replace('.', '/') + "/KogitoObjectMapper.java", annotator.objectMapperInjectorSource(packageName) ) );
+        }
+
         for (RuleUnitGenerator ruleUnit : moduleGenerator.getRuleUnits()) {
             // add the label id of the rule unit with value set to `rules` as resource type
             this.addLabel(ruleUnit.label(), "rules");
@@ -374,7 +378,9 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 checker = contextChecker;
             }
 
-            generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnitDesc, checker ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.DTO) );
+            if (annotator == null) {
+                generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnitDesc, checker ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.DTO) );
+            }
 
             for (QueryEndpointGenerator query : queries) {
                 generateQueryEndpoint( errors, generatedFiles, query );
@@ -457,10 +463,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     @Override
     public void updateConfig(ConfigGenerator cfg) {
         cfg.withRuleConfig(new RuleConfigGenerator());
-    }
-
-    public void setDependencyInjection(boolean di) {
-        this.dependencyInjection = di;
     }
 
     public IncrementalRuleCodegen withKModule(KieModuleModel model) {
