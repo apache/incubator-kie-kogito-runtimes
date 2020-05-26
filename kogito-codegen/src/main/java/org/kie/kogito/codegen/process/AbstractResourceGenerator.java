@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.process;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
+import org.drools.core.rule.Collect;
 import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -57,7 +60,6 @@ public abstract class AbstractResourceGenerator {
 
     private final GeneratorContext context;
     private WorkflowProcess process;
-    private final String packageName;
     private final String resourceClazzName;
     private final String processClazzName;
     private String processId;
@@ -70,6 +72,7 @@ public abstract class AbstractResourceGenerator {
     private boolean startable;
     private List<UserTaskModelMetaData> userTasks;
     private Map<String, String> signals;
+    private Collection<String> flexibleProcessMethods;
 
     public AbstractResourceGenerator(
             GeneratorContext context,
@@ -79,16 +82,16 @@ public abstract class AbstractResourceGenerator {
             String appCanonicalName) {
         this.context = context;
         this.process = process;
-        this.packageName = process.getPackageName();
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
         this.appCanonicalName = appCanonicalName;
         String classPrefix = StringUtils.capitalize(processName);
         this.resourceClazzName = classPrefix + "Resource";
-        this.relativePath = packageName.replace(".", "/") + "/" + resourceClazzName + ".java";
+        this.relativePath = process.getPackageName().replace(".", "/") + "/" + resourceClazzName + ".java";
         this.modelfqcn = modelfqcn;
         this.dataClazzName = modelfqcn.substring(modelfqcn.lastIndexOf('.') + 1);
         this.processClazzName = processfqcn;
+        this.flexibleProcessMethods = Arrays.asList("getMilestones_" + processName, "getStages_" + processName);
     }
 
     public AbstractResourceGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
@@ -231,9 +234,14 @@ public abstract class AbstractResourceGenerator {
         // if triggers are not empty remove createResource method as there is another trigger to start process instances
         if (!startable || !isPublic()) {
             Optional<MethodDeclaration> createResourceMethod = template.findFirst(MethodDeclaration.class).filter(md -> md.getNameAsString().equals("createResource_" + processName));
-            if (createResourceMethod.isPresent()) {
-                template.remove(createResourceMethod.get());
-            }
+            createResourceMethod.ifPresent(template::remove);
+        }
+
+        if(!(process instanceof org.jbpm.workflow.core.WorkflowProcess) || !((org.jbpm.workflow.core.WorkflowProcess) process).isDynamic()) {
+            template.findAll(MethodDeclaration.class)
+                    .stream()
+                    .filter(md -> flexibleProcessMethods.contains(md.getNameAsString()))
+                    .forEach(template::remove);
         }
 
         if (useInjection()) {

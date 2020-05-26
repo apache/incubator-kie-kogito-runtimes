@@ -16,6 +16,7 @@
 
 package com.myspace.demo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -128,6 +129,22 @@ public class $Type$Resource {
                 .findById(id)
                 .map(pi -> pi.workItems(policies(user, groups)))
                 .map(l -> l.stream().collect(Collectors.toMap(WorkItem::getId, WorkItem::getName)))
+                .orElse(null);
+    }
+
+    @GetMapping(value = "/{id}/stages", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Collection<org.kie.kogito.process.casemgmt.Stage> getStages_$name$(@PathVariable("id") String id) {
+        return process.instances()
+                .findById(id)
+                .map(pi -> pi.stages())
+                .orElse(null);
+    }
+
+    @GetMapping(value = "/{id}/milestones", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Collection<org.kie.kogito.process.casemgmt.Milestone> getMilestones_$name$(@PathVariable("id") String id) {
+        return process.instances()
+                .findById(id)
+                .map(pi -> pi.milestones())
                 .orElse(null);
     }
 

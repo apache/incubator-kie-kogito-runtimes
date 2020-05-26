@@ -1,5 +1,6 @@
 package com.myspace.demo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -126,7 +127,27 @@ public class $Type$Resource {
                 .map(l -> l.stream().collect(Collectors.toMap(WorkItem::getId, WorkItem::getName)))
                 .orElse(null);
     }
-    
+
+    @GET()
+    @Path("/{id}/stages")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Collection<org.kie.kogito.process.casemgmt.Stage> getStages_$name$(@PathParam("id") String id) {
+         return process.instances()
+                 .findById(id)
+                 .map(pi -> pi.stages())
+                 .orElse(null);
+    }
+
+    @GET()
+    @Path("/{id}/milestones")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Collection<org.kie.kogito.process.casemgmt.Milestone> getMilestones_$name$(@PathParam("id") String id) {
+        return process.instances()
+                .findById(id)
+                .map(pi -> pi.milestones())
+                .orElse(null);
+    }
+
     protected $Type$Output getModel(ProcessInstance<$Type$> pi) {
         if (pi.status() == ProcessInstance.STATE_ERROR && pi.error().isPresent()) {
             throw new ProcessInstanceExecutionException(pi.id(), pi.error().get().failedNodeId(), pi.error().get().errorMessage());

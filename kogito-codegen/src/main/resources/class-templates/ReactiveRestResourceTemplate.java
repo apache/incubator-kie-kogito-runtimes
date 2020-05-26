@@ -1,5 +1,6 @@
 package com.myspace.demo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -134,6 +135,30 @@ public class $Type$ReactiveResource {
                     .findById(id)
                     .map(pi -> pi.workItems(policies(user, groups)))
                     .map(l -> l.stream().collect(Collectors.toMap(WorkItem::getId, WorkItem::getName)))
+                    .orElse(null);
+        });
+    }
+
+    @GET()
+    @Path("/{id}/stages")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CompletionStage<Collection<org.kie.kogito.process.casemgmt.Stage>> getStages_$name$(@PathParam("id") String id) {
+        return CompletableFuture.supplyAsync(() -> {
+            return process.instances()
+                    .findById(id)
+                    .map(pi -> pi.stages())
+                    .orElse(null);
+        });
+    }
+
+    @GET()
+    @Path("/{id}/milestones")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CompletionStage<Collection<org.kie.kogito.process.casemgmt.Milestone>> getMilestones_$name$(@PathParam("id") String id) {
+        return CompletableFuture.supplyAsync(() -> {
+            return process.instances()
+                    .findById(id)
+                    .map(pi -> pi.milestones())
                     .orElse(null);
         });
     }
