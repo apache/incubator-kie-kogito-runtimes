@@ -25,7 +25,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,7 +61,6 @@ import org.kie.kogito.process.ProcessInstanceDuplicatedException;
 import org.kie.kogito.process.ProcessInstanceNotFoundException;
 import org.kie.kogito.process.Signal;
 import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.casemgmt.AdHocFragment;
 import org.kie.kogito.process.casemgmt.ItemDescription.Status;
 import org.kie.kogito.process.casemgmt.Milestone;
 import org.kie.kogito.process.casemgmt.Stage;
@@ -401,17 +399,21 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 .map(DynamicNode.class::cast)
                 .map(n -> {
                     String uid = (String) n.getMetaData().get(UNIQUE_ID);
-                    return new Stage(uid, n.getName(), getStatus(uid), n.getActivationExpression(), n.getCompletionExpression(), n.isAutoComplete(), collectAdHocFragments(n));
+                    Stage.Builder builder = new Stage.Builder(uid)
+                            .withName(n.getName())
+                            .withStatus(getStatus(uid))
+                            .withActivationExpression(n.getActivationExpression())
+                    .withCompletionExpression(n.getCompletionExpression()).withAutoComplete(n.isAutoComplete());
+                    getAdHocNodes(n).forEach(builder::withFragment);
+                    return builder.build();
                 })
                 .collect(Collectors.toList());
     }
 
-    private Collection<AdHocFragment> collectAdHocFragments(DynamicNode node) {
+    private Stream<Node> getAdHocNodes(DynamicNode node) {
         return Stream.of(node.getNodeContainer().getNodes())
-                .filter(n -> !StartNode.class.isInstance(n) && !BoundaryEventNode.class.isInstance(n))
-                .filter(n -> n.getIncomingConnections().isEmpty())
-                .map(AdHocFragment::new)
-                .collect(Collectors.toList());
+                .filter(n -> !(n instanceof StartNode) && !(n instanceof BoundaryEventNode))
+                .filter(n -> n.getIncomingConnections().isEmpty());
     }
 
     private Stream<Node> getNodes(Class<? extends Node> nodeClass) {

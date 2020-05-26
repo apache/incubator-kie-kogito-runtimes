@@ -17,15 +17,12 @@ package org.kie.kogito.process.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.HumanTaskNode;
 import org.junit.jupiter.api.Test;
@@ -37,7 +34,6 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.casemgmt.AdHocFragment;
-import org.kie.kogito.process.casemgmt.ItemDescription.Status;
 import org.kie.kogito.process.casemgmt.Stage;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.services.identity.StaticIdentityProvider;
@@ -68,7 +64,7 @@ class StageTest extends AbstractCodegenTest {
 
         HumanTaskNode task = new HumanTaskNode();
         task.setName("Update driver name");
-        Stage expected = new StageBuilder("_866F4F98-8810-42FE-8398-6E7E272523D9")
+        Stage expected = new Stage.Builder("_866F4F98-8810-42FE-8398-6E7E272523D9")
                 .withName("Sub-process")
                 .withStatus(AVAILABLE)
                 .withAutoComplete(true)
@@ -90,7 +86,7 @@ class StageTest extends AbstractCodegenTest {
         assertThat(((Model) processInstance.variables()).toMap().get("driver")).isEqualTo("Paul");
         assertThat(processInstance.workItems().size()).isEqualTo(0);
         assertState(processInstance, ProcessInstance.STATE_COMPLETED);
-        expected = new StageBuilder(expected).withStatus(COMPLETED).build();
+        expected = new Stage.Builder(expected).withStatus(COMPLETED).build();
         assertContainsStage(expected, processInstance.stages());
     }
 
@@ -118,15 +114,15 @@ class StageTest extends AbstractCodegenTest {
         assertThat(((Model) processInstance.variables()).toMap().get("caseFile_currentStage")).isEqualTo(3);
         assertThat(processInstance.workItems().size()).isEqualTo(0);
         assertState(processInstance, ProcessInstance.STATE_COMPLETED);
-        expected = expected.stream().map(s -> new StageBuilder(s).withStatus(COMPLETED).build()).collect(Collectors.toList());
+        expected = expected.stream().map(s -> new Stage.Builder(s).withStatus(COMPLETED).build()).collect(Collectors.toList());
         expected.forEach(eStage -> assertContainsStage(eStage, processInstance.stages()));
     }
 
     private Collection<Stage> buildExpectedMultipleAdHoc() {
         Collection<Stage> expected = new ArrayList<>();
-        expected.add(new StageBuilder("_4A154E74-F085-4ECA-93F1-DE452E624FB1").withName("Stage 1").withStatus(AVAILABLE).withAutoComplete(true).withFragment(new ActionNode(), "Task1").build());
-        expected.add(new StageBuilder("_168F4098-8ACA-4E81-9F97-5EAAC0782574").withName("Stage 2").withStatus(AVAILABLE).withAutoComplete(true).withFragment(new ActionNode(), "Task2").build());
-        expected.add(new StageBuilder("_E2F977AC-205A-4314-A406-00CEA619CDF9").withName("Stage 3").withStatus(AVAILABLE).withAutoComplete(true).withFragment(new ActionNode(), "Task3").build());
+        expected.add(new Stage.Builder("_4A154E74-F085-4ECA-93F1-DE452E624FB1").withName("Stage 1").withStatus(AVAILABLE).withAutoComplete(true).withFragment(new ActionNode(), "Task1").build());
+        expected.add(new Stage.Builder("_168F4098-8ACA-4E81-9F97-5EAAC0782574").withName("Stage 2").withStatus(AVAILABLE).withAutoComplete(true).withFragment(new ActionNode(), "Task2").build());
+        expected.add(new Stage.Builder("_E2F977AC-205A-4314-A406-00CEA619CDF9").withName("Stage 3").withStatus(AVAILABLE).withAutoComplete(true).withFragment(new ActionNode(), "Task3").build());
         return expected;
     }
 
@@ -144,10 +140,12 @@ class StageTest extends AbstractCodegenTest {
         m.fromMap(parameters);
 
         ProcessInstance<?> processInstance = p.createInstance(m);
-        ActionNode task = new ActionNode();
-        task.setName("Sub process update");
-        Collection<AdHocFragment> fragments = Collections.singletonList(new AdHocFragment(task));
-        Stage expected = new StageBuilder("_E9418F90-1D23-4A0D-B8C5-A7939C34EB79").withName("Sub-process").withStatus(AVAILABLE).withAutoComplete(true).withFragment(new ActionNode(), "Sub process update").build();
+        Stage expected = new Stage.Builder("_E9418F90-1D23-4A0D-B8C5-A7939C34EB79")
+                .withName("Sub-process")
+                .withStatus(AVAILABLE)
+                .withAutoComplete(true)
+                .withFragment(new ActionNode(), "Sub process update")
+                .build();
 
         Collection<Stage> stages = processInstance.stages();
         assertThat(stages.size()).isEqualTo(1);
@@ -161,7 +159,7 @@ class StageTest extends AbstractCodegenTest {
         assertThat(((Model) processInstance.variables()).toMap().get("caseFile_name")).isEqualTo("Foo-process-subprocess");
         assertState(processInstance, ProcessInstance.STATE_COMPLETED);
 
-        expected = new StageBuilder(expected).withStatus(COMPLETED).build();
+        expected = new Stage.Builder(expected).withStatus(COMPLETED).build();
         stages = processInstance.stages();
         assertThat(stages.size()).isEqualTo(1);
         assertContainsStage(expected, stages);
@@ -190,8 +188,8 @@ class StageTest extends AbstractCodegenTest {
 
         expected = expected.stream()
                 .map(s -> {
-                    if(s.getName().equals("Sub-process 1")) {
-                        return new StageBuilder(s).withStatus(COMPLETED).build();
+                    if (s.getName().equals("Sub-process 1")) {
+                        return new Stage.Builder(s).withStatus(COMPLETED).build();
                     }
                     return s;
                 }).collect(Collectors.toList());
@@ -203,20 +201,20 @@ class StageTest extends AbstractCodegenTest {
         processInstance.completeWorkItem(workItem.getId(), variables, securityPolicy);
 
         assertThat(((Model) processInstance.variables()).toMap().get("caseFile_name")).isEqualTo("jane");
-        expected = expected.stream().map(s -> new StageBuilder(s).withStatus(COMPLETED).build()).collect(Collectors.toList());
+        expected = expected.stream().map(s -> new Stage.Builder(s).withStatus(COMPLETED).build()).collect(Collectors.toList());
         expected.forEach(eStage -> assertContainsStage(eStage, processInstance.stages()));
     }
 
     private Collection<Stage> buildExpectedManualAdHoc() {
         Collection<Stage> expected = new ArrayList<>();
-        expected.add(new StageBuilder("_242BDE71-71A1-4354-BBBE-BF2F34A61E14")
+        expected.add(new Stage.Builder("_242BDE71-71A1-4354-BBBE-BF2F34A61E14")
                 .withName("Sub-process 1")
                 .withStatus(AVAILABLE)
                 .withAutoComplete(false)
                 .withCompletionExpression("caseFile_name.equals(\"joe\")")
                 .withFragment(new HumanTaskNode(), "Task 1")
                 .build());
-        expected.add(new StageBuilder("_852C704B-2FCA-4B87-8292-C9CA1634F19E")
+        expected.add(new Stage.Builder("_852C704B-2FCA-4B87-8292-C9CA1634F19E")
                 .withName("Sub-process 2")
                 .withStatus(AVAILABLE)
                 .withAutoComplete(true)
@@ -267,67 +265,5 @@ class StageTest extends AbstractCodegenTest {
                 current.stream().anyMatch(c -> c.getName().equals(e.getName()) && c.getType().equals(e.getType())),
                 "Expected: " + e.toString() + ", Got: " + current.toString())
         );
-    }
-
-    private static class StageBuilder {
-        private String id;
-        private String name;
-        private Status status;
-        private String activationExpression;
-        private String completionExpression;
-        private Boolean autoComplete;
-        private Collection<AdHocFragment> fragments;
-
-        public StageBuilder(String id) {
-            this.id = id;
-        }
-
-        public StageBuilder(Stage stage) {
-            this.id = stage.getId();
-            this.name = stage.getName();
-            this.status = stage.getStatus();
-            this.activationExpression = stage.getActivationExpression();
-            this.completionExpression = stage.getCompletionExpression();
-            this.autoComplete = stage.getAutoComplete();
-            this.fragments = stage.getAdHocFragments();
-        }
-
-        StageBuilder withName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        StageBuilder withStatus(Status status) {
-            this.status = status;
-            return this;
-        }
-
-        StageBuilder withActivationExpression(String activationExpression) {
-            this.activationExpression = activationExpression;
-            return this;
-        }
-
-        StageBuilder withCompletionExpression(String completionExpression) {
-            this.completionExpression = completionExpression;
-            return this;
-        }
-
-        StageBuilder withAutoComplete(Boolean autoComplete) {
-            this.autoComplete = autoComplete;
-            return this;
-        }
-
-        StageBuilder withFragment(NodeImpl node, String name) {
-            if (this.fragments == null) {
-                this.fragments = new ArrayList<>();
-            }
-            node.setName(name);
-            this.fragments.add(new AdHocFragment(node));
-            return this;
-        }
-
-        Stage build() {
-            return new Stage(id, name, status, activationExpression, completionExpression, autoComplete, fragments);
-        }
     }
 }

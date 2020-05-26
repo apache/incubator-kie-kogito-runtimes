@@ -22,27 +22,31 @@ import org.kie.api.definition.process.Node;
 
 public class AdHocFragment implements Serializable {
 
-    private final String name;
     private final String type;
+    private final String name;
 
     public AdHocFragment(Node node) {
-        this.name = node.getName();
-        this.type = node.getClass().getSimpleName();
+        this(node.getClass().getSimpleName(), node.getName());
     }
 
-    public String getName() {
-        return name;
+    public AdHocFragment(String type, String name) {
+        this.type = type;
+        this.name = name;
     }
 
     public String getType() {
         return type;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return "AdHocFragment{" +
-                "name='" + name + '\'' +
-                ", type='" + type + '\'' +
+                "type='" + type + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }
