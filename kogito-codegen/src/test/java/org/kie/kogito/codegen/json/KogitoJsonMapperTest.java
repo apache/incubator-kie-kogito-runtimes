@@ -28,13 +28,15 @@ import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataProcessor;
 import org.kie.kogito.rules.DataStore;
+import org.kie.kogito.rules.SingletonStore;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class KogitoJsonMapperTest {
 
     @Test
-    public void testPojo() throws JsonProcessingException {
+    public void testDataStore() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new KogitoModule());
 
         List<Person> input = Arrays.asList(new Person("Mario", 46), new Person("Sofia", 8));
@@ -64,7 +66,8 @@ public class KogitoJsonMapperTest {
             }
         } );
 
-        assertEquals( input, output );
+        assertEquals( input.size(), output.size() );
+        assertTrue( input.containsAll( output ) );
     }
 
     public static class MyUnit {
@@ -81,6 +84,57 @@ public class KogitoJsonMapperTest {
         }
 
         public void setStore( DataStore<Person> store ) {
+            this.store = store;
+        }
+    }
+
+    @Test
+    public void testSingletonStore() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new KogitoModule());
+
+        Person input = new Person("Mario", 46);
+        String text = objectMapper.writeValueAsString( input );
+        text = "{\"store\":" + text + "}";
+
+        AnotherUnit myUnit = objectMapper.readValue( text, AnotherUnit.class );
+
+        List<Person> output = new ArrayList<>();
+
+        myUnit.store.subscribe( new DataProcessor() {
+            @Override
+            public FactHandle insert( DataHandle handle, Object object ) {
+                output.add((Person) object);
+                return null;
+            }
+
+            @Override
+            public void update( DataHandle handle, Object object ) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void delete( DataHandle handle ) {
+                throw new UnsupportedOperationException();
+            }
+        } );
+
+        assertEquals( input, output.get(0) );
+    }
+
+    public static class AnotherUnit {
+        private SingletonStore<Person> store;
+
+        public AnotherUnit() { }
+
+        public AnotherUnit( SingletonStore<Person> store ) {
+            this.store = store;
+        }
+
+        public SingletonStore<Person> getStore() {
+            return store;
+        }
+
+        public void setStore( SingletonStore<Person> store ) {
             this.store = store;
         }
     }

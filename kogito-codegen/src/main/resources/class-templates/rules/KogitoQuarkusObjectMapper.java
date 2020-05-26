@@ -5,6 +5,7 @@ import java.util.List;
 import java.io.IOException;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JavaType;
 import javax.inject.Singleton;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -17,8 +18,10 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
+import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;
+import org.kie.kogito.rules.SingletonStore;
 
 import io.quarkus.jackson.ObjectMapperCustomizer;
 
@@ -42,6 +45,7 @@ public class KogitoObjectMapper implements ObjectMapperCustomizer {
         private void addDefaultDeserializers() {
             addDeserializer( DataStream.class, new DataStreamDeserializer() );
             addDeserializer( DataStore.class, new DataStoreDeserializer() );
+            addDeserializer( SingletonStore.class, new SingletonStoreDeserializer() );
         }
 
         public static class DataStreamDeserializer extends JsonDeserializer<DataStream<?>> implements ContextualDeserializer {
@@ -50,7 +54,7 @@ public class KogitoObjectMapper implements ObjectMapperCustomizer {
 
             @Override
             public DataStream deserialize( JsonParser jp, DeserializationContext ctxt) throws IOException {
-                DataStream stream = org.kie.kogito.rules.DataSource.createStream();
+                DataStream stream = DataSource.createStream();
                 List list = ctxt.readValue( jp, collectionType );
                 list.forEach( stream::append );
                 return stream;
@@ -71,7 +75,7 @@ public class KogitoObjectMapper implements ObjectMapperCustomizer {
 
             @Override
             public DataStore deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-                DataStore store = org.kie.kogito.rules.DataSource.createStore();
+                DataStore store = DataSource.createStore();
                 List list = ctxt.readValue( jp, collectionType );
                 list.forEach( store::add );
                 return store;
@@ -82,6 +86,26 @@ public class KogitoObjectMapper implements ObjectMapperCustomizer {
                 CollectionType collectionType = ctxt.getTypeFactory().constructCollectionType(List.class, property.getType().containedType(0));
                 DataStoreDeserializer deserializer = new DataStoreDeserializer();
                 deserializer.collectionType = collectionType;
+                return deserializer;
+            }
+        }
+
+        public static class SingletonStoreDeserializer extends JsonDeserializer<SingletonStore<?>> implements ContextualDeserializer {
+
+            private JavaType javaType ;
+
+            @Override
+            public SingletonStore deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+                SingletonStore store = DataSource.createSingleton();
+                store.set( ctxt.readValue( jp, javaType ) );
+                return store;
+            }
+
+            @Override
+            public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
+                JavaType javaType = property.getType().containedType(0);
+                SingletonStoreDeserializer deserializer = new KogitoModule.SingletonStoreDeserializer();
+                deserializer.javaType = javaType;
                 return deserializer;
             }
         }
