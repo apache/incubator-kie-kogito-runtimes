@@ -569,7 +569,6 @@ public class KogitoAssetsProcessor {
         }
 
         private PathType getPathType(Path archiveLocation) {
-            System.out.println("GOT PATH: " + archiveLocation);
             String path = archiveLocation.toString();
             if (path.endsWith("target" + File.separator + "classes")) {
                 return PathType.CLASSES;
