@@ -339,7 +339,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     }
 
     private void generateRuleUnits( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles ) {
-        AssignableChecker contextChecker = null;
+        RuleUnitHelper ruleUnitHelper = new RuleUnitHelper();
 
         if (annotator != null) {
             generatedFiles.add( new org.kie.kogito.codegen.GeneratedFile( org.kie.kogito.codegen.GeneratedFile.Type.REST,
@@ -347,46 +347,46 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
 
         for (RuleUnitGenerator ruleUnit : moduleGenerator.getRuleUnits()) {
+            initRuleUnitHelper( ruleUnitHelper, ruleUnit.getRuleUnitDescription() );
+
             // add the label id of the rule unit with value set to `rules` as resource type
             this.addLabel(ruleUnit.label(), "rules");
             ruleUnit.setApplicationPackageName(packageName);
 
             generatedFiles.add( ruleUnit.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
 
-            RuleUnitInstanceGenerator ruleUnitInstance = ruleUnit.instance();
+            RuleUnitInstanceGenerator ruleUnitInstance = ruleUnit.instance(ruleUnitHelper);
             generatedFiles.add( ruleUnitInstance.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
 
-            ruleUnit.pojo().ifPresent(p -> generatedFiles.add(p.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE)));
+            ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE)));
 
             if ( useRestServices ) {
-                contextChecker = generateQueriesEndpoint( errors, generatedFiles, contextChecker, ruleUnit );
+                generateQueriesEndpoint( errors, generatedFiles, ruleUnitHelper, ruleUnit );
             }
         }
     }
 
-    private AssignableChecker generateQueriesEndpoint( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, AssignableChecker contextChecker, RuleUnitGenerator ruleUnit ) {
+    private void generateQueriesEndpoint( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit ) {
         List<QueryEndpointGenerator> queries = ruleUnit.queries();
         if (!queries.isEmpty()) {
-            RuleUnitDescription ruleUnitDesc = ruleUnit.getRuleUnitDescription();
-            AssignableChecker checker;
-            if (ruleUnitDesc instanceof ReflectiveRuleUnitDescription ) {
-                checker = (( ReflectiveRuleUnitDescription ) ruleUnitDesc).getAssignableChecker();
-            } else {
-                if (contextChecker == null) {
-                    contextChecker = AssignableChecker.create(contextClassLoader, hotReloadMode);
-                }
-                checker = contextChecker;
-            }
-
             if (annotator == null) {
-                generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnitDesc, checker ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.DTO) );
+                generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription(), ruleUnitHelper ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.DTO) );
             }
 
             for (QueryEndpointGenerator query : queries) {
                 generateQueryEndpoint( errors, generatedFiles, query );
             }
         }
-        return contextChecker;
+    }
+
+    private void initRuleUnitHelper( RuleUnitHelper ruleUnitHelper, RuleUnitDescription ruleUnitDesc ) {
+        if (ruleUnitDesc instanceof ReflectiveRuleUnitDescription ) {
+            ruleUnitHelper.setAssignableChecker( ( ( ReflectiveRuleUnitDescription ) ruleUnitDesc).getAssignableChecker() );
+        } else {
+            if (ruleUnitHelper.getAssignableChecker() == null) {
+                ruleUnitHelper.setAssignableChecker( AssignableChecker.create(contextClassLoader, hotReloadMode) );
+            }
+        }
     }
 
     private void generateQueryEndpoint( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, QueryEndpointGenerator query ) {

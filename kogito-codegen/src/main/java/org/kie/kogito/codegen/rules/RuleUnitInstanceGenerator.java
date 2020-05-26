@@ -41,9 +41,6 @@ import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.conf.DefaultEntryPoint;
 import org.kie.kogito.conf.EntryPoint;
 import org.kie.kogito.rules.DataSource;
-import org.kie.kogito.rules.DataStore;
-import org.kie.kogito.rules.DataStream;
-import org.kie.kogito.rules.SingletonStore;
 import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
 import org.kie.kogito.rules.units.EntryPointDataProcessor;
 
@@ -53,16 +50,18 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
     private final String targetCanonicalName;
     private final String generatedFilePath;
     private final RuleUnitDescription ruleUnitDescription;
+    private final RuleUnitHelper ruleUnitHelper;
 
     public static String qualifiedName(String packageName, String typeName) {
         return packageName + "." + typeName + "RuleUnitInstance";
     }
 
-    public RuleUnitInstanceGenerator(RuleUnitDescription ruleUnitDescription) {
+    public RuleUnitInstanceGenerator(RuleUnitDescription ruleUnitDescription, RuleUnitHelper ruleUnitHelper) {
         this.ruleUnitDescription = ruleUnitDescription;
         this.targetTypeName = ruleUnitDescription.getSimpleName() + "RuleUnitInstance";
         this.targetCanonicalName = ruleUnitDescription.getPackageName() + "." + targetTypeName;
         this.generatedFilePath = targetCanonicalName.replace('.', '/') + ".java";
+        this.ruleUnitHelper = ruleUnitHelper;
     }
 
     @Override
@@ -104,7 +103,8 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
 
                     if (m.setter() != null) { // if writable and DataSource is null create and set a new one
                         Expression nullCheck = new BinaryExpr(new MethodCallExpr(new NameExpr("value"), methodName), new NullLiteralExpr(), BinaryExpr.Operator.EQUALS);
-                        Expression dataSourceSetter = new MethodCallExpr(new NameExpr("value"), m.setter(), new NodeList<>(createDataSourceExpr(m.getBoxedVarType())));
+                        Expression createDataSourceExpr = new MethodCallExpr(new NameExpr(DataSource.class.getCanonicalName()), ruleUnitHelper.createDataSourceMethodName(m.getBoxedVarType()));
+                        Expression dataSourceSetter = new MethodCallExpr(new NameExpr("value"), m.setter(), new NodeList<>(createDataSourceExpr));
                         methodBlock.addStatement( new IfStmt( nullCheck, new BlockStmt().addStatement( dataSourceSetter ), null ) );
                     }
 
@@ -136,24 +136,6 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
 
         return methodDeclaration;
     }
-
-    private Expression createDataSourceExpr(Class<?> dsClass) {
-        return new MethodCallExpr(new NameExpr(DataSource.class.getCanonicalName()), getCreateDataSourceMethodName(dsClass));
-    }
-
-    private String getCreateDataSourceMethodName(Class<?> dsClass) {
-        if ( DataStream.class.isAssignableFrom( dsClass ) ) {
-            return "createStream";
-        }
-        if ( DataStore.class.isAssignableFrom( dsClass ) ) {
-            return "createStore";
-        }
-        if ( SingletonStore.class.isAssignableFrom( dsClass ) ) {
-            return "createSingleton";
-        }
-        throw new UnsupportedOperationException( "Unknown DataSOurce class: " + dsClass );
-    }
-
 
     private String getEntryPointName( RuleUnitDescription ruleUnitDescription, String propertyName ) {
         Class<?> ruleUnitClass = ruleUnitDescription.getRuleUnitClass();
