@@ -174,7 +174,7 @@ public class DecisionCodegen extends AbstractGenerator {
                     .orElse(false);
 
             if(stronglyTypedEnabled) {
-                tryGenerateStronglyTypedInput(model);
+                generateStronglyTypedInput(model);
             }
             DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(model, applicationCanonicalName)
                     .withDependencyInjection(annotator)
@@ -194,7 +194,7 @@ public class DecisionCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private void tryGenerateStronglyTypedInput(DMNModel model) {
+    private void generateStronglyTypedInput(DMNModel model) {
         try {
             DMNTypeSafePackageName.Factory factory = m -> new DMNTypeSafePackageName("", m.getNamespace(), "");
             DMNAllTypesIndex index = new DMNAllTypesIndex(factory, model);
@@ -202,6 +202,8 @@ public class DecisionCodegen extends AbstractGenerator {
             Map<String, String> allTypesSourceCode = new DMNTypeSafeTypeGenerator(
                     model,
                     index, factory )
+                    .withJacksonAnnotation()
+                    .processTypes()
                     .generateSourceCodeOfAllTypes();
 
             allTypesSourceCode.entrySet().stream()
