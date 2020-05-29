@@ -275,24 +275,6 @@ public class ServerlessWorkflowFactory {
 
         nodeContainer.addNode(eventNode);
 
-        /**
-         * org.jbpm.ruleflow.core.factory.EventNodeFactory eventNode3 = factory.eventNode(3);
-         *         eventNode3.name("visasrejected");
-         *         eventNode3.eventType("Message-visasrejected");
-         *         eventNode3.variableName("visaApplication");
-         *         eventNode3.metaData("UniqueId", "_E611283E-30B0-46B9-8305-768A002C7518");
-         *         eventNode3.metaData("elementname", "visasrejected");
-         *         eventNode3.metaData("TriggerType", "ConsumeMessage");
-         *         eventNode3.metaData("EventType", "message");
-         *         eventNode3.metaData("x", 799);
-         *         eventNode3.metaData("width", 56);
-         *         eventNode3.metaData("y", 169);
-         *         eventNode3.metaData("TriggerRef", "visasrejected");
-         *         eventNode3.metaData("MessageType", "org.acme.travels.VisaApplication");
-         *         eventNode3.metaData("height", 56);
-         *         eventNode3.done();
-         */
-
         return eventNode;
     }
 
