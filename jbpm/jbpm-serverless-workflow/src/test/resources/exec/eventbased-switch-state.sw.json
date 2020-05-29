@@ -1,0 +1,79 @@
+{
+  "id": "eventswitchworkflow",
+  "name": "event-switch-wf",
+  "version": "1.0",
+  "events": [
+    {
+      "name": "visaApprovedEvent",
+      "source": "visaapproved",
+      "type": "kafka"
+    },
+    {
+      "name": "visaDeniedEvent",
+      "source": "visadenied",
+      "type": "kafka"
+    },
+    {
+      "name": "sendVisaApplicationEvent",
+      "source": "visaapplication",
+      "type": "kafka"
+    }
+  ],
+  "states":[
+    {
+      "name":"AddRandomInfo",
+      "type": "inject",
+      "start": {
+        "kind": "default"
+      },
+      "inject": {
+        "name": "john",
+        "age": "20"
+      },
+      "transition": {
+        "nextState": "ChooseOnEvent",
+        "produceEvent": {
+          "eventRef": "sendVisaApplicationEvent"
+        }
+      }
+    },
+    {
+      "name": "ChooseOnEvent",
+      "type": "switch",
+      "eventConditions": [
+        {
+          "eventRef": "visaApprovedEvent",
+          "transition": {
+            "nextState": "ApprovedVisa"
+          }
+        },
+        {
+          "eventRef": "visaDeniedEvent",
+          "transition": {
+            "nextState": "DeniedVisa"
+          }
+        }
+      ]
+    },
+    {
+      "name":"ApprovedVisa",
+      "type":"inject",
+      "inject": {
+        "decision": "Approved"
+      },
+      "end": {
+        "kind": "default"
+      }
+    },
+    {
+      "name":"DeniedVisa",
+      "type":"inject",
+      "inject": {
+        "decision": "Denied"
+      },
+      "end": {
+        "kind": "default"
+      }
+    }
+  ]
+}
