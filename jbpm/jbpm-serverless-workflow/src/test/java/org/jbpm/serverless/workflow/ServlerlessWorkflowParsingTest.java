@@ -542,16 +542,16 @@ public class ServlerlessWorkflowParsingTest extends BaseServerlessTest {
 
         Split split = (Split) process.getNodes()[4];
         assertEquals("ChooseOnEvent", split.getName());
-        assertEquals(split.getType(), Split.TYPE_XAND);
+        assertEquals(Split.TYPE_XAND, split.getType());
 
         EventNode firstEventNode = (EventNode) process.getNodes()[8];
-        assertEquals(firstEventNode.getName(), "visaApprovedEvent");
-        assertEquals(firstEventNode.getVariableName(), "workflowdata");
+        assertEquals("visaApprovedEvent", firstEventNode.getName());
+        assertEquals("workflowdata", firstEventNode.getVariableName());
 
 
         EventNode secondEventNode = (EventNode) process.getNodes()[9];
-        assertEquals(secondEventNode.getName(), "visaDeniedEvent");
-        assertEquals(secondEventNode.getVariableName(), "workflowdata");
+        assertEquals("visaDeniedEvent", secondEventNode.getName());
+        assertEquals("workflowdata", secondEventNode.getVariableName());
 
     }
 

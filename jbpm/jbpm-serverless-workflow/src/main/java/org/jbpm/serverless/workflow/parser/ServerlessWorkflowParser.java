@@ -230,7 +230,7 @@ public class ServerlessWorkflowParser {
                 SwitchState switchState = (SwitchState) state;
 
                 // check if data-based or event-based switch state
-                if (switchState.getDataConditions() != null && switchState.getDataConditions().size() > 0) {
+                if (switchState.getDataConditions() != null && !switchState.getDataConditions().isEmpty()) {
                     // data-based switch state
                     Split splitNode = factory.splitNode(idCounter.getAndIncrement(), switchState.getName(), Split.TYPE_XOR, process);
 
@@ -243,7 +243,7 @@ public class ServerlessWorkflowParser {
                     startEndMap.put(NODETOID_START, splitNode.getId());
                     startEndMap.put(NODETOID_END, splitNode.getId());
                     nameToNodeId.put(state.getName(), startEndMap);
-                } else if (switchState.getEventConditions() != null && switchState.getEventConditions().size() > 0) {
+                } else if (switchState.getEventConditions() != null && !switchState.getEventConditions().isEmpty()) {
                     // event-based switch state
                     Split splitNode = factory.eventBasedSplit(idCounter.getAndIncrement(), switchState.getName(), process);
                     if (state.getStart() != null) {
@@ -314,7 +314,7 @@ public class ServerlessWorkflowParser {
             for (State state : switchStates) {
                 SwitchState switchState = (SwitchState) state;
 
-                if (switchState.getDataConditions() != null && switchState.getDataConditions().size() > 0) {
+                if (switchState.getDataConditions() != null && !switchState.getDataConditions().isEmpty()) {
                     finalizeDataBasedSwitchState(switchState, nameToNodeId, process);
                 } else {
                     finalizeEventBasedSwitchState(switchState, nameToNodeId, process, workflow);
@@ -334,7 +334,7 @@ public class ServerlessWorkflowParser {
 
             List<EventCondition> conditions = switchState.getEventConditions();
 
-            if (conditions != null && conditions.size() > 0) {
+            if (conditions != null && !conditions.isEmpty()) {
                 for (EventCondition eventCondition : conditions) {
                     EventDefinition eventDefinition = ServerlessWorkflowUtils.getWorkflowEventFor(workflow, eventCondition.getEventRef());
                     long targetId = nameToNodeId.get(eventCondition.getTransition().getNextState()).get(NODETOID_START);
@@ -367,7 +367,7 @@ public class ServerlessWorkflowParser {
 
             List<DataCondition> conditions = switchState.getDataConditions();
 
-            if (conditions != null && conditions.size() > 0) {
+            if (conditions != null && !conditions.isEmpty()) {
                 for (DataCondition condition : conditions) {
                     // connect
                     long targetId = nameToNodeId.get(condition.getTransition().getNextState()).get(NODETOID_START);
