@@ -8,13 +8,13 @@ states:
     type: inject
     start:
       kind: default
-    inject:
+    data:
       result: Hello
     transition:
       nextState: World
   - name: World
     type: inject
-    inject:
+    data:
       result: " World!"
     stateDataFilter:
       dataOutputPath: "$.result"

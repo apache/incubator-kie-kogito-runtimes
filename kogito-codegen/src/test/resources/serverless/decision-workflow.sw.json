@@ -59,7 +59,7 @@
     {
       "name":"Approve",
       "type":"inject",
-      "inject": {
+      "data": {
         "decision": "Approved"
       },
       "end": {
@@ -69,7 +69,7 @@
     {
       "name":"Deny",
       "type":"inject",
-      "inject": {
+      "data": {
         "decision": "Denied"
       },
       "end": {

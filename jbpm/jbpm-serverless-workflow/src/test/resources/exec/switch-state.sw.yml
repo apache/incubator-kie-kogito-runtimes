@@ -7,7 +7,7 @@ states:
     type: inject
     start:
       kind: default
-    inject:
+    data:
       name: john
       age: '20'
     transition:
@@ -29,13 +29,13 @@ states:
       nextState: Approve
   - name: Approve
     type: inject
-    inject:
+    data:
       decision: Approve
     end:
       kind: default
   - name: Deny
     type: inject
-    inject:
+    data:
       decision: Denied
     end:
       kind: default

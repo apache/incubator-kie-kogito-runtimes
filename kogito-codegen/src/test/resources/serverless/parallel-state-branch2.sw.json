@@ -9,7 +9,7 @@
       "start": {
         "kind": "default"
       },
-      "inject": {
+      "data": {
         "branch2data" : "testBranch2Data"
       },
       "end": {

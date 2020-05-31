@@ -184,7 +184,7 @@ public class ServerlessWorkflowParser {
 
                 ActionNode actionNode;
 
-                JsonNode toInjectNode = injectState.getInject();
+                JsonNode toInjectNode = injectState.getData();
 
                 if (toInjectNode != null) {
                     actionNode = factory.scriptNode(idCounter.getAndIncrement(), injectState.getName(), ServerlessWorkflowUtils.getInjectScript(toInjectNode), process);

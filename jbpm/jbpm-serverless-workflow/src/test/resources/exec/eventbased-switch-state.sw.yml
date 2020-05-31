@@ -17,7 +17,7 @@ states:
     type: inject
     start:
       kind: default
-    inject:
+    data:
       name: john
       age: '20'
     transition:
@@ -35,13 +35,13 @@ states:
           nextState: DeniedVisa
   - name: ApprovedVisa
     type: inject
-    inject:
+    data:
       decision: Approved
     end:
       kind: default
   - name: DeniedVisa
     type: inject
-    inject:
+    data:
       decision: Denied
     end:
       kind: default

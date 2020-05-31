@@ -9,7 +9,7 @@
       "start": {
         "kind": "default"
       },
-      "inject": {
+      "data": {
         "name": "john",
         "age": "25"
       },
@@ -45,7 +45,7 @@
     {
       "name":"Approve",
       "type":"inject",
-      "inject": {
+      "data": {
         "decision": "Approved"
       },
       "end": {
@@ -55,7 +55,7 @@
     {
       "name":"Deny",
       "type":"inject",
-      "inject": {
+      "data": {
         "decision": "Denied"
       },
       "end": {

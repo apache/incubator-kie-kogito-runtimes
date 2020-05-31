@@ -10,7 +10,7 @@
       "start": {
         "kind": "default"
       },
-      "inject": {
+      "data": {
         "result": "Hello"
       },
       "transition": {
@@ -20,7 +20,7 @@
     {
       "name":"World",
       "type":"inject",
-      "inject": {
+      "data": {
         "result": " World!"
       },
       "stateDataFilter": {
