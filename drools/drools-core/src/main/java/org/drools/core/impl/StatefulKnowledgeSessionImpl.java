@@ -127,7 +127,7 @@ import org.kie.api.event.rule.RuleRuntimeEventListener;
 import org.kie.api.internal.runtime.beliefs.Mode;
 import org.kie.api.marshalling.Marshaller;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
-import org.kie.api.runtime.Calendars;
+import org.kie.api.time.Calendars;
 import org.kie.api.runtime.Channel;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.EnvironmentName;
@@ -153,7 +153,7 @@ import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.Application;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.services.time.TimerService;
+import org.kie.kogito.timer.TimerService;
 
 import static java.util.stream.Collectors.toList;
 
