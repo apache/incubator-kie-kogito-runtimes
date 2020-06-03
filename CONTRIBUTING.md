@@ -27,23 +27,23 @@ Sometimes a bug has been fixed in the `master` branch of Kogito and you want to 
 
 If you are interested in having more details, refer to the [Build section](#build) and the [Usage section](#usage).
 
-## Creating a Pull Request
+## Creating a Pull Request (PR)
 
 To contribute, use GitHub Pull Requests, from your **own** fork. 
 
 - PRs should be always related to an open JIRA issue. If there is none, you should create one.
-- Try to fix only one issue per PRs
+- Try to fix only one issue per PR.
 - Make sure to create a new branch. Usually branches are named after the JIRA ticket they are addressing. E.g. for ticket "KOGITO-XYZ An example issue" your branch should be at least prefixed with `KOGITO-XYZ`. E.g.:
 
         git checkout -b KOGITO-XYZ
         # or
         git checkout -b KOGITO-XYZ-my-fix
 
-- When you submit your PR, make sure to include the ticket ID, and its title; e.g., "KOGITO-XYZ An example issue"
+- When you submit your PR, make sure to include the ticket ID, and its title; e.g., "KOGITO-XYZ An example issue".
 - The description of your PR should describe the code you wrote. The issue that is solved should be at least described properly in the corresponding JIRA ticket. 
 - If your contribution spans across multiple repositories, 
   use the same branch name (e.g. `KOGITO-XYZ`) in each PR so that our CI (Jenkins) can build them all at once.
-- If your contribution spans across multiple repositories, make sure to list all the related PRs 
+- If your contribution spans across multiple repositories, make sure to list all the related PRs.
 
 ### Coding Guidelines
 
@@ -56,13 +56,13 @@ If you are contributing a new feature, we strongly advise submitting an [Example
 
 ### Code Reviews and Continuous Integration
 
-All submissions, including those by project members, need to be reviewed by others before being merged. Our CI, Jenkins, should successfully execute your PR, marking the GitHub check as green
+All submissions, including those by project members, need to be reviewed by others before being merged. Our CI, Jenkins, should successfully execute your PR, marking the GitHub check as green.
 
 ## Feature Proposals
 
 If you would like to see some feature in Kogito, start with an email to [our mailing list](https://groups.google.com/forum/#!forum/kogito-development) or just [pop into our Zulip chat](https://kie.zulipchat.com/) and tell us what you would like to see. 
 
-Great feature proposals should include a short **Description** of the feature, the **Motivation** tha makes that feature necessary and the **Goals** that are achieved by realizing it. If the feature is deemed worthy, then an [**Epic**](https://issues.redhat.com/issues/?filter=12347334) will be created.
+Great feature proposals should include a short **Description** of the feature, the **Motivation** that makes that feature necessary and the **Goals** that are achieved by realizing it. If the feature is deemed worthy, then an [**Epic**](https://issues.redhat.com/issues/?filter=12347334) will be created.
 
 ## Setup
 
@@ -82,7 +82,7 @@ On Linux, check [the post-installation guide](https://docs.docker.com/install/li
 
 ## Build
 
-* Clone the repository,  Navigate to the directory, invoke `./mvnw clean install -DskipTests -DskipITs` from the root directory.
+* Clone the repository, navigate to the directory, invoke `./mvnw clean install -DskipTests -DskipITs` from the root directory.
 
 ```bash
 git clone https://github.com/kiegroup/kogito-runtimes.git
@@ -91,16 +91,16 @@ cd kogito-runtimes
 # Wait... success!
 ```
 
-This build skipped all the tests. 
+This build skipped all the tests:
+- `-DskipTests` skips unit tests
+- `-DskipITs` skips integration tests
 
-Removing the `-DskipTests -DskipITs` flags enables the tests. 
+By removing the flags, you will run the corresponding tests. 
 It will take much longer to build but will give you more guarantees on your code. 
 
 ## Usage
 
-After the build was successful, the artifacts are available in your local Maven repository.
-
-To include them into your project a few things have to be changed.
+After the build is successful, the artifacts are available in your local Maven repository.
 
 ### Test Coverage
 
