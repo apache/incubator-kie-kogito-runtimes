@@ -81,6 +81,8 @@ import static org.kie.kogito.codegen.ApplicationGenerator.log;
  */
 public class ProcessCodegen extends AbstractGenerator {
 
+    // Test change
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCodegen.class);
 
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
