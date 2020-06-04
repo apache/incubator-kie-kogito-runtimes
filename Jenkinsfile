@@ -26,15 +26,18 @@ pipeline {
         }
         stage('Build kogito-runtimes') {
             steps {
-                script {
-                    maven.runMavenWithSubmarineSettings('clean install -Prun-code-coverage', false)
-                    /*
-                       The analysis must happen before the other stages as these clone different projects into a root
-                       directory of kogito-runtimes and are by mistake incorporated in a test coverage report.
-                     */
-                    maven.runMavenWithSubmarineSettings('-e -nsu validate -Psonarcloud-analysis', false)
+                dir("kogito-runtimes") {
+                    script {
+                        githubscm.checkoutIfExists('kogito-runtimes', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET", true)
+                        maven.runMavenWithSubmarineSettings('clean install -Prun-code-coverage', false)
+                        /*
+                           The analysis must happen before the other stages as these clone different projects into a root
+                           directory of kogito-runtimes and are by mistake incorporated in a test coverage report.
+                         */
+                        maven.runMavenWithSubmarineSettings('-e -nsu validate -Psonarcloud-analysis', false)
+                    }
                 }
-            }
+             }
         }
         stage('Build kogito-apps') {
             steps {
