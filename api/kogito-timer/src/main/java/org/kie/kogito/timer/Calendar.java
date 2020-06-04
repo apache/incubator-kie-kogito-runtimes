@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.kie.api.time;
+package org.kie.kogito.timer;
 
 public interface Calendar {
     boolean isTimeIncluded(long timestamp);

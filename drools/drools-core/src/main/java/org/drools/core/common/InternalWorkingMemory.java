@@ -34,7 +34,7 @@ import org.drools.core.runtime.process.InternalProcessRuntime;
 import org.drools.core.spi.Activation;
 import org.drools.core.spi.FactHandleFactory;
 import org.kie.kogito.timer.TimerService;
-import org.kie.api.time.Calendars;
+import org.kie.kogito.timer.Calendars;
 import org.kie.api.runtime.Channel;
 import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.runtime.rule.FactHandle;

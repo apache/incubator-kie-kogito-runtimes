@@ -32,7 +32,7 @@ import org.drools.core.spi.Tuple;
 import org.kie.kogito.timer.Trigger;
 import org.kie.kogito.timer.impl.CompositeMaxDurationTrigger;
 import org.kie.kogito.timer.impl.DefaultJobHandle;
-import org.kie.api.time.Calendars;
+import org.kie.kogito.timer.Calendars;
 
 /**
  * While a rule might have multiple DurationTimers, due to LHS CEP rules, there can only ever

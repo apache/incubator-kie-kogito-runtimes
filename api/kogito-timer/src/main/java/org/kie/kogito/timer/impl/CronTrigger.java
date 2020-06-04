@@ -20,7 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.kie.api.time.Calendars;
+import org.kie.kogito.timer.Calendars;
 import org.kie.kogito.timer.Trigger;
 
 public class CronTrigger
@@ -352,7 +352,7 @@ public class CronTrigger
             boolean included = true;
             for ( String calName : this.calendarNames ) {
                 // all calendars must not block, as soon as one blocks break, so we can check next time slot
-                org.kie.api.time.Calendar cal = this.calendars.get(calName );
+                org.kie.kogito.timer.Calendar cal = this.calendars.get(calName );
                 if ( cal != null && !cal.isTimeIncluded( this.nextFireTime.getTime() ) ) {
                     included = false;
                     break;

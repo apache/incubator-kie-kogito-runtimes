@@ -21,8 +21,8 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
 
-import org.kie.api.time.Calendar;
-import org.kie.api.time.Calendars;
+import org.kie.kogito.timer.Calendar;
+import org.kie.kogito.timer.Calendars;
 import org.kie.kogito.timer.Trigger;
 
 public class PointInTimeTrigger

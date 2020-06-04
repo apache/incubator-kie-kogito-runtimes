@@ -33,7 +33,7 @@ import org.drools.core.spi.Tuple;
 import org.kie.kogito.timer.Trigger;
 import org.kie.kogito.timer.impl.DefaultJobHandle;
 import org.kie.kogito.timer.impl.IntervalTrigger;
-import org.kie.api.time.Calendars;
+import org.kie.kogito.timer.Calendars;
 
 public class    IntervalTimer extends BaseTimer
     implements

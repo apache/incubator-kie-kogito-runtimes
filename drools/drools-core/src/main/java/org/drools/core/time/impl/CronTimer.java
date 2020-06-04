@@ -34,7 +34,7 @@ import org.kie.kogito.timer.Trigger;
 import org.kie.kogito.timer.impl.CronExpression;
 import org.kie.kogito.timer.impl.CronTrigger;
 import org.kie.kogito.timer.impl.DefaultJobHandle;
-import org.kie.api.time.Calendars;
+import org.kie.kogito.timer.Calendars;
 
 public class CronTimer extends BaseTimer
     implements

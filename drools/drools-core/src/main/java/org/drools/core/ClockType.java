@@ -18,7 +18,7 @@ package org.drools.core;
 
 import org.kie.kogito.timer.impl.JDKTimerService;
 import org.drools.core.time.impl.PseudoClockScheduler;
-import org.kie.api.time.SessionClock;
+import org.kie.kogito.timer.SessionClock;
 
 /**
  * This enum represents all engine supported clocks

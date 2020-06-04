@@ -34,6 +34,7 @@ import org.kie.kogito.timer.InternalSchedulerService;
 import org.kie.kogito.timer.Job;
 import org.kie.kogito.timer.JobContext;
 import org.kie.kogito.timer.JobHandle;
+import org.kie.kogito.timer.SessionClock;
 import org.kie.kogito.timer.TimerService;
 import org.kie.kogito.timer.Trigger;
 import org.kie.kogito.timer.impl.DefaultJobHandle;
@@ -104,7 +105,7 @@ public class PseudoClockScheduler
     /**
      * @inheritDoc
      * 
-     * @see org.kie.api.time.SessionClock#getCurrentTime()
+     * @see SessionClock#getCurrentTime()
      */
     public long getCurrentTime() {
         return this.timer.get();

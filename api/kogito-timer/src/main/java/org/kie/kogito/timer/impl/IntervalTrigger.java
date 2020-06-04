@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.kie.api.time.Calendars;
+import org.kie.kogito.timer.Calendars;
 import org.kie.kogito.timer.Trigger;
 
 public class IntervalTrigger
@@ -254,7 +254,7 @@ public class IntervalTrigger
             boolean included = true;
             for ( String calName : this.calendarNames ) {
                 // all calendars must not block, as soon as one blocks break
-                org.kie.api.time.Calendar cal = this.calendars.get(calName );
+                org.kie.kogito.timer.Calendar cal = this.calendars.get(calName );
                 if ( cal != null && !cal.isTimeIncluded( this.nextFireTime.getTime() ) ) {
                     included = false;
                     break;

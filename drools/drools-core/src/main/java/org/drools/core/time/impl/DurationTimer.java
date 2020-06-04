@@ -32,7 +32,7 @@ import org.kie.kogito.timer.Trigger;
 import org.kie.kogito.timer.impl.DefaultJobHandle;
 import org.kie.kogito.timer.impl.PointInTimeTrigger;
 import org.drools.core.util.NumberUtils;
-import org.kie.api.time.Calendars;
+import org.kie.kogito.timer.Calendars;
 
 public class DurationTimer extends BaseTimer
     implements

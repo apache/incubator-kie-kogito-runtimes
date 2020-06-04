@@ -24,7 +24,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.kie.api.time.SessionClock;
+import org.kie.kogito.timer.SessionClock;
 import org.kie.kogito.timer.InternalSchedulerService;
 import org.kie.kogito.timer.Job;
 import org.kie.kogito.timer.JobContext;
