@@ -336,6 +336,18 @@
         <version>${project.version}</version>
       </dependency>
 
+      <!-- Kogito Apps Storage -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-storage-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-storage-infinispan</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- Management Console -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
