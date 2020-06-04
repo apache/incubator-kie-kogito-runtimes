@@ -37,7 +37,7 @@ pipeline {
                         maven.runMavenWithSubmarineSettings('-e -nsu validate -Psonarcloud-analysis', false)
                     }
                 }
-             }
+            }
         }
         stage('Build kogito-apps') {
             steps {
