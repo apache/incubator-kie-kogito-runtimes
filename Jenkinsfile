@@ -1,5 +1,9 @@
 @Library('jenkins-pipeline-shared-libraries')_
 
+def CHANGE_AUTHOR = "$ghprbPullAuthorLogin"
+def CHANGE_BRANCH = "$ghprbSourceBranch"
+def CHANGE_TARGET = "$ghprbTargetBranch"
+
 pipeline {
     agent {
         label 'kie-rhel7 && kie-mem16g'
