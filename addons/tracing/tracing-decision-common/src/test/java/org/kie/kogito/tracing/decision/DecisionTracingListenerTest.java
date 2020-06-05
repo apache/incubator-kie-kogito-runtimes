@@ -38,7 +38,9 @@ import org.kie.kogito.tracing.decision.mock.MockAfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.mock.MockBeforeEvaluateAllEvent;
 import org.mockito.ArgumentCaptor;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAME;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAMESPACE;
 import static org.mockito.Mockito.mock;
@@ -87,6 +89,7 @@ public class DecisionTracingListenerTest {
         runtime.addListener(listener);
 
         final Map<String, Object> driver = new HashMap<>();
+        driver.put("Age", 25);
         driver.put("Points", 10);
         final Map<String, Object> violation = new HashMap<>();
         violation.put("Type", "speed");
@@ -101,28 +104,24 @@ public class DecisionTracingListenerTest {
         model.evaluateAll(context);
 
         ArgumentCaptor<EvaluateEvent> eventCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
-        verify(eventConsumer, times(2)).accept(eventCaptor.capture());
+        verify(eventConsumer, times(14)).accept(eventCaptor.capture());
 
         assertEvaluateEvents(eventCaptor.getAllValues(), modelNamespace, modelName, TEST_EXECUTION_ID_2);
     }
 
     private static void assertEvaluateEvents(List<EvaluateEvent> evaluateEvents, String modelNamespace, String modelName, String executionId) {
-        fail();
-//        assertEquals(2, evaluateEvents.size());
-//        assertTrue(evaluateEvents.get(0) instanceof org.kie.kogito.tracing.decision.event.evaluate.BeforeEvaluateAllEvent);
-//        assertTrue(evaluateEvents.get(1) instanceof org.kie.kogito.tracing.decision.event.evaluate.AfterEvaluateAllEvent);
-//
-//        org.kie.kogito.tracing.decision.event.evaluate.BeforeEvaluateAllEvent beforeEvaluateAllEvent =
-//                (org.kie.kogito.tracing.decision.event.evaluate.BeforeEvaluateAllEvent) evaluateEvents.get(0);
-//        assertEquals(executionId, beforeEvaluateAllEvent.getExecutionId());
-//        assertEquals(modelName, beforeEvaluateAllEvent.getModelName());
-//        assertEquals(modelNamespace, beforeEvaluateAllEvent.getModelNamespace());
-//
-//        org.kie.kogito.tracing.decision.event.evaluate.AfterEvaluateAllEvent afterEvaluateAllEvent =
-//                (org.kie.kogito.tracing.decision.event.evaluate.AfterEvaluateAllEvent) evaluateEvents.get(1);
-//        assertEquals(executionId, afterEvaluateAllEvent.getExecutionId());
-//        assertEquals(modelName, afterEvaluateAllEvent.getModelName());
-//        assertEquals(modelNamespace, afterEvaluateAllEvent.getModelNamespace());
-    }
+        assertTrue(evaluateEvents.size() >= 2);
 
+        EvaluateEvent beforeEvaluateAllEvent = evaluateEvents.get(0);
+        assertSame(EvaluateEvent.Type.BEFORE_EVALUATE_ALL, beforeEvaluateAllEvent.getType());
+        assertEquals(executionId, beforeEvaluateAllEvent.getExecutionId());
+        assertEquals(modelName, beforeEvaluateAllEvent.getModelName());
+        assertEquals(modelNamespace, beforeEvaluateAllEvent.getModelNamespace());
+
+        EvaluateEvent afterEvaluateAllEvent = evaluateEvents.get(evaluateEvents.size() - 1);
+        assertSame(EvaluateEvent.Type.AFTER_EVALUATE_ALL, afterEvaluateAllEvent.getType());
+        assertEquals(executionId, afterEvaluateAllEvent.getExecutionId());
+        assertEquals(modelName, afterEvaluateAllEvent.getModelName());
+        assertEquals(modelNamespace, afterEvaluateAllEvent.getModelNamespace());
+    }
 }

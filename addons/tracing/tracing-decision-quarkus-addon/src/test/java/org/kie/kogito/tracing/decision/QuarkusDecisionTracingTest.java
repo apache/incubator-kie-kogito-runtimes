@@ -34,13 +34,9 @@ import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,6 +62,7 @@ public class QuarkusDecisionTracingTest {
         runtime.addListener(listener);
 
         final Map<String, Object> driver = new HashMap<>();
+        driver.put("Age", 25);
         driver.put("Points", 10);
         final Map<String, Object> violation = new HashMap<>();
         violation.put("Type", "speed");
@@ -79,17 +76,9 @@ public class QuarkusDecisionTracingTest {
         final DMNContext context = model.newContext(contextVariables);
         model.evaluateAll(context);
 
-        verify(eventBus, times(2)).send(anyString(), any());
+        ArgumentCaptor<EvaluateEvent> eventCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
 
-        ArgumentCaptor<EvaluateEvent> beforeCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
-        ArgumentCaptor<EvaluateEvent> afterCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
-
-        InOrder inOrder = inOrder(eventBus);
-        inOrder.verify(eventBus).send(eq("kogito-tracing-decision_EvaluateAllEvent"), beforeCaptor.capture());
-        inOrder.verify(eventBus).send(eq("kogito-tracing-decision_EvaluateAllEvent"), afterCaptor.capture());
-
-        EvaluateEvent beforeEvent = beforeCaptor.getValue();
-        EvaluateEvent afterEvent = afterCaptor.getValue();
+        verify(eventBus, times(14)).send(eq("kogito-tracing-decision_EvaluateEvent"), eventCaptor.capture());
 
         TestSubscriber<String> subscriber = new TestSubscriber<>();
 
@@ -100,8 +89,7 @@ public class QuarkusDecisionTracingTest {
 
         QuarkusDecisionTracingCollector collector = new QuarkusDecisionTracingCollector(mockedApplication);
         collector.getEventPublisher().subscribe(subscriber);
-        collector.onEvent(beforeEvent);
-        collector.onEvent(afterEvent);
+        eventCaptor.getAllValues().forEach(collector::onEvent);
 
         subscriber.assertValueCount(1);
 

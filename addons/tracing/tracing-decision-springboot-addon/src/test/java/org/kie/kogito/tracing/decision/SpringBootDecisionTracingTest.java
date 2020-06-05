@@ -36,7 +36,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -63,6 +62,7 @@ public class SpringBootDecisionTracingTest {
         runtime.addListener(listener);
 
         final Map<String, Object> driver = new HashMap<>();
+        driver.put("Age", 25);
         driver.put("Points", 10);
         final Map<String, Object> violation = new HashMap<>();
         violation.put("Type", "speed");
@@ -77,13 +77,7 @@ public class SpringBootDecisionTracingTest {
         model.evaluateAll(context);
 
         ArgumentCaptor<EvaluateEvent> eventCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
-        verify(eventPublisher, times(2)).publishEvent(eventCaptor.capture());
-
-        assertSame(EvaluateEvent.Type.BEFORE_EVALUATE_ALL, eventCaptor.getAllValues().get(0).getType());
-        assertSame(EvaluateEvent.Type.AFTER_EVALUATE_ALL, eventCaptor.getAllValues().get(1).getType());
-
-        EvaluateEvent beforeEvent = eventCaptor.getAllValues().get(0);
-        EvaluateEvent afterEvent = eventCaptor.getAllValues().get(1);
+        verify(eventPublisher, times(14)).publishEvent(eventCaptor.capture());
 
         final DecisionModels mockedDecisionModels = mock(DecisionModels.class);
         when(mockedDecisionModels.getDecisionModel(modelNamespace, modelName)).thenReturn(model);
@@ -93,8 +87,7 @@ public class SpringBootDecisionTracingTest {
         KafkaTemplate<String, String> template = mock(KafkaTemplate.class);
 
         SpringBootDecisionTracingCollector collector = new SpringBootDecisionTracingCollector(mockedApplication, template, TEST_TOPIC);
-        collector.onApplicationEvent(beforeEvent);
-        collector.onApplicationEvent(afterEvent);
+        eventCaptor.getAllValues().forEach(collector::onApplicationEvent);
 
         ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
