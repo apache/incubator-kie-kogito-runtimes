@@ -347,6 +347,11 @@
         <artifactId>kogito-storage-commons-infinispan</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-storage-commons-protobuf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- Management Console -->
       <dependency>
