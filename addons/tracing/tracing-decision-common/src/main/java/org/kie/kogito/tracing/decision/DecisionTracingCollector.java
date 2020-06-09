@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import io.cloudevents.json.Json;
@@ -29,7 +30,6 @@ import org.kie.kogito.tracing.decision.aggregator.Aggregator;
 import org.kie.kogito.tracing.decision.aggregator.AggregatorException;
 import org.kie.kogito.tracing.decision.aggregator.DefaultAggregator;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
-import org.kie.kogito.tracing.decision.modelsupplier.ModelSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,16 +38,16 @@ public class DecisionTracingCollector {
     private static final Logger LOG = LoggerFactory.getLogger(DecisionTracingCollector.class);
 
     private final Map<String, List<EvaluateEvent>> cacheMap;
-    private final Map<String, Counter> openEventsCounterMap;
+    private final Map<String, AtomicInteger> openEventsCounterMap;
     private final Aggregator<?> aggregator;
     private final Consumer<String> payloadConsumer;
-    private final ModelSupplier modelSupplier;
+    private final BiFunction<String, String, DMNModel> modelSupplier;
 
-    public DecisionTracingCollector(Consumer<String> payloadConsumer, ModelSupplier modelSupplier) {
+    public DecisionTracingCollector(Consumer<String> payloadConsumer, BiFunction<String, String, DMNModel> modelSupplier) {
         this(new DefaultAggregator(), payloadConsumer, modelSupplier);
     }
 
-    public DecisionTracingCollector(Aggregator<?> aggregator, Consumer<String> payloadConsumer, ModelSupplier modelSupplier) {
+    public DecisionTracingCollector(Aggregator<?> aggregator, Consumer<String> payloadConsumer, BiFunction<String, String, DMNModel> modelSupplier) {
         this.cacheMap = new HashMap<>();
         this.openEventsCounterMap = new HashMap<>();
         this.aggregator = aggregator;
@@ -62,24 +62,24 @@ public class DecisionTracingCollector {
         if (cacheMap.containsKey(evaluationId)) {
             cacheMap.get(evaluationId).add(event);
             if (event.getType().isBefore()) {
-                openEventsCounterMap.get(evaluationId).increment();
+                openEventsCounterMap.get(evaluationId).incrementAndGet();
             } else {
-                openEventsCounterMap.get(evaluationId).decrement();
+                openEventsCounterMap.get(evaluationId).decrementAndGet();
             }
         } else {
             List<EvaluateEvent> list = new LinkedList<>();
             list.add(event);
             cacheMap.put(evaluationId, list);
-            openEventsCounterMap.put(evaluationId, new Counter(1));
+            openEventsCounterMap.put(evaluationId, new AtomicInteger(1));
             LOG.trace("Added evaluation {} to cache (current size: {})", evaluationId, cacheMap.size());
         }
 
-        if (openEventsCounterMap.get(evaluationId).getValue() == 0) {
-            Optional<DMNModel> optModel = modelSupplier.get(event.getModelNamespace(), event.getModelName());
+        if (openEventsCounterMap.get(evaluationId).get() == 0) {
+            DMNModel dmnModel = modelSupplier.apply(event.getModelNamespace(), event.getModelName());
 
-            if (optModel.isPresent()) {
+            if (dmnModel != null) {
                 try {
-                    String payload = aggregate(optModel.get(), evaluationId, cacheMap.get(evaluationId));
+                    String payload = aggregate(dmnModel, evaluationId, cacheMap.get(evaluationId));
                     payloadConsumer.accept(payload);
                     LOG.debug("Generated aggregated event for evaluation {} (length {})", evaluationId, payload.length());
                 } catch (AggregatorException e) {
@@ -98,24 +98,4 @@ public class DecisionTracingCollector {
         return Json.encode(aggregator.aggregate(model, evaluationId, events));
     }
 
-    private static class Counter {
-
-        private int value;
-
-        public Counter(int initialValue) {
-            this.value = initialValue;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public void increment() {
-            value++;
-        }
-
-        public void decrement() {
-            value--;
-        }
-    }
 }

@@ -16,13 +16,12 @@
 
 package org.kie.kogito.tracing.decision.modelsupplier;
 
-import java.util.Optional;
+import java.util.function.BiFunction;
 
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.kogito.Application;
-import org.kie.kogito.decision.DecisionModel;
 
-public class ApplicationModelSupplier implements ModelSupplier {
+public class ApplicationModelSupplier implements BiFunction<String, String, DMNModel> {
 
     private final Application application;
 
@@ -31,14 +30,11 @@ public class ApplicationModelSupplier implements ModelSupplier {
     }
 
     @Override
-    public Optional<DMNModel> get(String namespace, String name) {
+    public DMNModel apply(String namespace, String name) {
         if (namespace == null || name == null) {
-            return Optional.empty();
+            return null;
         }
-        return Optional.ofNullable(application)
-                .map(Application::decisionModels)
-                .map(dm -> dm.getDecisionModel(namespace, name))
-                .map(DecisionModel::getDMNModel);
+        return application.decisionModels().getDecisionModel(namespace, name).getDMNModel();
     }
 
 }

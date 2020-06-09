@@ -16,10 +16,11 @@
 
 package org.kie.kogito.tracing.decision;
 
+import java.util.function.BiFunction;
+
 import org.kie.kogito.Application;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.modelsupplier.ApplicationModelSupplier;
-import org.kie.kogito.tracing.decision.modelsupplier.ModelSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -32,7 +33,7 @@ public class SpringBootDecisionTracingCollector {
 
     private final DecisionTracingCollector collector;
 
-    public SpringBootDecisionTracingCollector(ModelSupplier modelSupplier, KafkaTemplate<String, String> template, String kafkaTopicName) {
+    public SpringBootDecisionTracingCollector(BiFunction<String, String, org.kie.dmn.api.core.DMNModel> modelSupplier, KafkaTemplate<String, String> template, String kafkaTopicName) {
         collector = new DecisionTracingCollector((payload) -> template.send(kafkaTopicName, payload), modelSupplier);
     }
 

@@ -61,9 +61,6 @@ public class DefaultAggregatorStackEntry {
     }
 
     public boolean isValidAfterEvent(EvaluateEvent afterEvent) {
-        if (!afterEvent.getType().isAfter()) {
-            return false;
-        }
         switch (afterEvent.getType()) {
             case AFTER_EVALUATE_CONTEXT_ENTRY:
                 return beforeEvent.getType() == EvaluateEvent.Type.BEFORE_EVALUATE_CONTEXT_ENTRY
@@ -88,8 +85,10 @@ public class DefaultAggregatorStackEntry {
             case AFTER_INVOKE_BKM:
                 return beforeEvent.getType() == EvaluateEvent.Type.BEFORE_INVOKE_BKM
                         && stringEquals(beforeEvent.getNodeId(), afterEvent.getNodeId());
+
+            default:
+                return false;
         }
-        return false;
     }
 
     public static boolean isValidBeforeEvent(EvaluateEvent beforeEvent) {
@@ -101,8 +100,10 @@ public class DefaultAggregatorStackEntry {
             case BEFORE_EVALUATE_BKM:
             case BEFORE_INVOKE_BKM:
                 return true;
+
+            default:
+                return false;
         }
-        return false;
     }
 
     private static TraceExecutionStep.Type stepTypeFromEventType(EvaluateEvent.Type type) {
@@ -130,8 +131,10 @@ public class DefaultAggregatorStackEntry {
             case BEFORE_INVOKE_BKM:
             case AFTER_INVOKE_BKM:
                 return TraceExecutionStep.Type.DMN_BKM_INVOCATION;
+
+            default:
+                return null;
         }
-        return null;
     }
 
     private static boolean stringEquals(String s1, String s2) {

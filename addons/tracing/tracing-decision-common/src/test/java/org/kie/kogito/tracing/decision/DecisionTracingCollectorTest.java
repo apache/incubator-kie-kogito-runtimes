@@ -18,7 +18,6 @@ package org.kie.kogito.tracing.decision;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import io.cloudevents.json.Json;
@@ -50,7 +49,7 @@ public class DecisionTracingCollectorTest {
         MockDefaultAggregator aggregator = new MockDefaultAggregator();
         Consumer<String> payloadConsumer = mock(Consumer.class);
 
-        DecisionTracingCollector collector = new DecisionTracingCollector(aggregator, payloadConsumer, (namespace, name) -> Optional.of(mockedModel()));
+        DecisionTracingCollector collector = new DecisionTracingCollector(aggregator, payloadConsumer, (namespace, name) -> mockedModel());
 
         collector.addEvent(beforeEvaluateAllEvent(TEST_EXECUTION_ID_1));
         collector.addEvent(beforeEvaluateAllEvent(TEST_EXECUTION_ID_2));

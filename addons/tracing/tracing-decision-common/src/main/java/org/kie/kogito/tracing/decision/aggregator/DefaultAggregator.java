@@ -19,13 +19,14 @@ package org.kie.kogito.tracing.decision.aggregator;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -87,7 +88,7 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
 
         // execution steps
         List<TraceExecutionStep> executionSteps = new ArrayList<>(events.size() / 2);
-        Stack<DefaultAggregatorStackEntry> stack = new Stack<>();
+        Deque<DefaultAggregatorStackEntry> stack = new ArrayDeque<>(events.size() / 2);
         for (int i = 1; i < events.size() - 1; i++) {
             EvaluateEvent event = events.get(i);
             LOG.trace("Started aggregating event {} (execution steps: {}, stack size: {})", event.getType(), executionSteps.size(), stack.size());

@@ -102,15 +102,4 @@ public class DecisionTracingListener implements DMNRuntimeEventListener {
         eventConsumer.accept(EvaluateEvent.from(event));
     }
 
-    @Override
-    public void beforeInvokeBKM(org.kie.dmn.api.core.event.BeforeInvokeBKMEvent event) {
-        // TODO: uncomment the line below after DROOLS-5409 is fixed
-        // eventConsumer.accept(EvaluateEvent.from(event));
-    }
-
-    @Override
-    public void afterInvokeBKM(org.kie.dmn.api.core.event.AfterInvokeBKMEvent event) {
-        // TODO: uncomment the line below after DROOLS-5409 is fixed
-        // eventConsumer.accept(EvaluateEvent.from(event));
-    }
 }

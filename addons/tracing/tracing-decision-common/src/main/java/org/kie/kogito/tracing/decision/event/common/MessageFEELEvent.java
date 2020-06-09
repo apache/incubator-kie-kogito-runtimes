@@ -73,14 +73,18 @@ public class MessageFEELEvent {
     }
 
     public static class PositiveIntegerFilter {
+
         @Override
-        public boolean equals(Object other) {
-            // Trick required to be compliant with the Jackson Custom attribute processing
-            if (other == null) {
-                return true;
+        public boolean equals(Object o) {
+            if (o instanceof Integer) {
+                return (Integer) o < 0;
             }
-            int value = (Integer)other;
-            return value < 0;
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
         }
     }
 }
