@@ -20,13 +20,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
-public class MessageException {
+public class MessageExceptionField {
+
     private final String className;
     private final String message;
     @JsonInclude(NON_NULL)
-    private final MessageException cause;
+    private final MessageExceptionField cause;
 
-    public MessageException(String className, String message, MessageException cause) {
+    public MessageExceptionField(String className, String message, MessageExceptionField cause) {
         this.className = className;
         this.message = message;
         this.cause = cause;
@@ -40,14 +41,14 @@ public class MessageException {
         return message;
     }
 
-    public MessageException getCause() {
+    public MessageExceptionField getCause() {
         return cause;
     }
 
-    public static MessageException from(Throwable throwable) {
+    public static MessageExceptionField from(Throwable throwable) {
         if (throwable == null) {
             return null;
         }
-        return new MessageException(throwable.getClass().getName(), throwable.getMessage(), from(throwable.getCause()));
+        return new MessageExceptionField(throwable.getClass().getName(), throwable.getMessage(), from(throwable.getCause()));
     }
 }

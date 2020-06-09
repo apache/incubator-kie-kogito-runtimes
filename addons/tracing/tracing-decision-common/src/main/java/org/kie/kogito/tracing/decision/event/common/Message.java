@@ -25,18 +25,20 @@ import org.kie.dmn.api.core.DMNMessage;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+@JsonInclude(NON_NULL)
 public class Message {
+
     private final Level level;
+    private final MessageCategory category;
     private final String type;
     private final String sourceId;
     private final String text;
-    @JsonInclude(NON_NULL)
     private final MessageFEELEvent feelEvent;
-    @JsonInclude(NON_NULL)
-    private final MessageException exception;
+    private final MessageExceptionField exception;
 
-    public Message(Level level, String type, String sourceId, String text, MessageFEELEvent feelEvent, MessageException exception) {
+    public Message(Level level, MessageCategory category, String type, String sourceId, String text, MessageFEELEvent feelEvent, MessageExceptionField exception) {
         this.level = level;
+        this.category = category;
         this.type = type;
         this.sourceId = sourceId;
         this.text = text;
@@ -46,6 +48,10 @@ public class Message {
 
     public Level getLevel() {
         return level;
+    }
+
+    public MessageCategory getCategory() {
+        return category;
     }
 
     public String getType() {
@@ -64,7 +70,7 @@ public class Message {
         return feelEvent;
     }
 
-    public MessageException getException() {
+    public MessageExceptionField getException() {
         return exception;
     }
 
@@ -74,11 +80,12 @@ public class Message {
         }
         return new Message(
                 message.getLevel(),
-                String.format("DMN_%s", message.getMessageType().name()),
+                MessageCategory.DMN,
+                message.getMessageType().name(),
                 message.getSourceId(),
                 message.getText(),
                 MessageFEELEvent.from(message.getFeelEvent()),
-                MessageException.from(message.getException())
+                MessageExceptionField.from(message.getException())
         );
     }
 
@@ -87,5 +94,20 @@ public class Message {
             return null;
         }
         return messages.stream().map(Message::from).collect(Collectors.toList());
+    }
+
+    public static Message from(InternalMessageType message) {
+        if (message == null) {
+            return null;
+        }
+        return new Message(
+                message.getLevel(),
+                MessageCategory.INTERNAL,
+                message.name(),
+                null,
+                message.getText(),
+                null,
+                null
+        );
     }
 }

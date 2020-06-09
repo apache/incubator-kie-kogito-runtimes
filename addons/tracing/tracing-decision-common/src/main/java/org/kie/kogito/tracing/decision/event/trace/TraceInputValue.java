@@ -23,7 +23,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.kie.kogito.tracing.decision.event.common.Message;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+@JsonInclude(NON_NULL)
 public class TraceInputValue {
 
     private final String id;

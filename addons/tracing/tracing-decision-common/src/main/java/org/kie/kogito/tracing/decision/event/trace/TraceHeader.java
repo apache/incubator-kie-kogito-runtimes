@@ -21,18 +21,20 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.kie.kogito.tracing.decision.event.common.Message;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 public class TraceHeader {
 
-    private final TraceEvent.Type type;
+    private final TraceEventType type;
     private final String executionId;
+    @JsonInclude(NON_DEFAULT)
     private final long duration;
     private final TraceModel resourceId;
     @JsonInclude(NON_EMPTY)
     private final List<Message> messages;
 
-    public TraceHeader(TraceEvent.Type type, String executionId, long duration, TraceModel resourceId, List<Message> messages) {
+    public TraceHeader(TraceEventType type, String executionId, long duration, TraceModel resourceId, List<Message> messages) {
         this.type = type;
         this.executionId = executionId;
         this.duration = duration;
@@ -40,7 +42,7 @@ public class TraceHeader {
         this.messages = messages;
     }
 
-    public TraceEvent.Type getType() {
+    public TraceEventType getType() {
         return type;
     }
 

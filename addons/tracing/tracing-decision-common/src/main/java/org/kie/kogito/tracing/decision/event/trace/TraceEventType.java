@@ -16,29 +16,6 @@
 
 package org.kie.kogito.tracing.decision.event.trace;
 
-import org.kie.dmn.api.core.DMNModel;
-
-public class TraceModel {
-    private final String modelNamespace;
-    private final String modelName;
-
-    public TraceModel(String modelNamespace, String modelName) {
-        this.modelNamespace = modelNamespace;
-        this.modelName = modelName;
-    }
-
-    public String getModelNamespace() {
-        return modelNamespace;
-    }
-
-    public String getModelName() {
-        return modelName;
-    }
-
-    public static TraceModel from(DMNModel model) {
-        if (model == null) {
-            return null;
-        }
-        return new TraceModel(model.getNamespace(), model.getName());
-    }
+public enum TraceEventType {
+    DMN
 }

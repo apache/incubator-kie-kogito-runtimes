@@ -20,10 +20,6 @@ import java.util.List;
 
 public class TraceEvent {
 
-    public enum Type {
-        DMN
-    }
-
     private final TraceHeader header;
     private final List<TraceInputValue> inputs;
     private final List<TraceOutputValue> outputs;

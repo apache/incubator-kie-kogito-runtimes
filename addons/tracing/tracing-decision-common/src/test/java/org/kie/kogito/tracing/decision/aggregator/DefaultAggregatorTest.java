@@ -22,12 +22,17 @@ import java.util.List;
 import io.cloudevents.v1.CloudEventImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.kie.api.builder.Message;
 import org.kie.dmn.api.core.DMNModel;
+import org.kie.kogito.tracing.decision.event.common.InternalMessageType;
+import org.kie.kogito.tracing.decision.event.common.MessageCategory;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
+import org.kie.kogito.tracing.decision.event.trace.TraceEventType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.afterEvaluateAllEvent;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.beforeEvaluateAllEvent;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.mockedModel;
@@ -51,28 +56,70 @@ public class DefaultAggregatorTest {
                 afterEvaluateAllEvent(TEST_EXECUTION_ID)
         );
         CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, events);
-        assertEquals(TEST_EXECUTION_ID, cloudEvent.getAttributes().getId());
-        assertEquals(TraceEvent.class.getName(), cloudEvent.getAttributes().getType());
+        assertValidCloudEventAndGetData(cloudEvent);
     }
 
     @Test
-    public void test_Aggregate_NullList_ExceptionThrown() {
+    public void test_Aggregate_NullModel_DmnModelNotFound() {
         final DefaultAggregator aggregator = new DefaultAggregator();
-        assertThrows(AggregatorException.class, () -> aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, null));
+        final List<EvaluateEvent> events = List.of(
+                beforeEvaluateAllEvent(TEST_EXECUTION_ID),
+                afterEvaluateAllEvent(TEST_EXECUTION_ID)
+        );
+        CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(null, TEST_EXECUTION_ID, events);
+        TraceEvent traceEvent = assertValidCloudEventAndGetData(cloudEvent);
+        assertSame(TraceEventType.DMN, traceEvent.getHeader().getType());
+        assertTrue(traceEvent.getHeader().getMessages().stream().anyMatch(
+                m -> m.getLevel() == Message.Level.ERROR && m.getCategory() == MessageCategory.INTERNAL && InternalMessageType.DMN_MODEL_NOT_FOUND.name().equals(m.getType())
+        ));
     }
 
     @Test
-    public void test_Aggregate_EmptyList_ExceptionThrown() {
+    public void test_Aggregate_NullList_NotEnoughData() {
         final DefaultAggregator aggregator = new DefaultAggregator();
-        assertThrows(AggregatorException.class, () -> aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, Collections.emptyList()));
+        CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, null);
+        TraceEvent traceEvent = assertValidCloudEventAndGetData(cloudEvent);
+        assertSame(TraceEventType.DMN, traceEvent.getHeader().getType());
+        assertSame(0L, traceEvent.getHeader().getDuration());
+        assertTrue(traceEvent.getHeader().getMessages().stream().anyMatch(
+                m -> m.getLevel() == Message.Level.ERROR && m.getCategory() == MessageCategory.INTERNAL && InternalMessageType.NOT_ENOUGH_DATA.name().equals(m.getType())
+        ));
+        assertTrue(traceEvent.getInputs().isEmpty());
+        assertTrue(traceEvent.getOutputs().isEmpty());
+        assertTrue(traceEvent.getExecutionSteps().isEmpty());
     }
 
     @Test
-    public void test_Aggregate_ListWithoutTraceEvent_ExceptionThrown() {
+    public void test_Aggregate_EmptyList_NotEnoughData() {
+        final DefaultAggregator aggregator = new DefaultAggregator();
+        CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, Collections.emptyList());
+        TraceEvent traceEvent = assertValidCloudEventAndGetData(cloudEvent);
+        assertSame(TraceEventType.DMN, traceEvent.getHeader().getType());
+        assertSame(0L, traceEvent.getHeader().getDuration());
+        assertTrue(traceEvent.getHeader().getMessages().stream().anyMatch(
+                m -> m.getLevel() == Message.Level.ERROR && m.getCategory() == MessageCategory.INTERNAL && InternalMessageType.NOT_ENOUGH_DATA.name().equals(m.getType())
+        ));
+        assertTrue(traceEvent.getInputs().isEmpty());
+        assertTrue(traceEvent.getOutputs().isEmpty());
+        assertTrue(traceEvent.getExecutionSteps().isEmpty());
+    }
+
+    @Test
+    public void test_Aggregate_ListWithoutTraceEvent_NoExecutionSteps() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = List.of(
                 beforeEvaluateAllEvent(TEST_EXECUTION_ID)
         );
-        assertThrows(AggregatorException.class, () -> aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, events));
+        CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(mockedModel, TEST_EXECUTION_ID, events);
+        TraceEvent traceEvent = assertValidCloudEventAndGetData(cloudEvent);
+        assertSame(TraceEventType.DMN, traceEvent.getHeader().getType());
+        assertTrue(traceEvent.getExecutionSteps().isEmpty());
+    }
+
+    private static TraceEvent assertValidCloudEventAndGetData(CloudEventImpl<TraceEvent> cloudEvent) {
+        assertEquals(TEST_EXECUTION_ID, cloudEvent.getAttributes().getId());
+        assertEquals(TraceEvent.class.getName(), cloudEvent.getAttributes().getType());
+        assertTrue(cloudEvent.getData().isPresent());
+        return cloudEvent.getData().get();
     }
 }

@@ -29,9 +29,9 @@ public class MessageFEELEvent {
     @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = PositiveIntegerFilter.class)
     private final int column;
     @JsonInclude(NON_NULL)
-    private final MessageException sourceException;
+    private final MessageExceptionField sourceException;
 
-    public MessageFEELEvent(FEELEvent.Severity severity, String message, int line, int column, MessageException sourceException) {
+    public MessageFEELEvent(FEELEvent.Severity severity, String message, int line, int column, MessageExceptionField sourceException) {
         this.severity = severity;
         this.message = message;
         this.line = line;
@@ -55,7 +55,7 @@ public class MessageFEELEvent {
         return column;
     }
 
-    public MessageException getSourceException() {
+    public MessageExceptionField getSourceException() {
         return sourceException;
     }
 
@@ -68,7 +68,7 @@ public class MessageFEELEvent {
                 feelEvent.getMessage(),
                 feelEvent.getLine(),
                 feelEvent.getColumn(),
-                MessageException.from(feelEvent.getSourceException())
+                MessageExceptionField.from(feelEvent.getSourceException())
         );
     }
 

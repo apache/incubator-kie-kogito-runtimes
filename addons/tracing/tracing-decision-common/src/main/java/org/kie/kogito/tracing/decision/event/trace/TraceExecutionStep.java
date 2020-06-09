@@ -22,22 +22,17 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.kie.kogito.tracing.decision.event.common.Message;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 public class TraceExecutionStep {
 
-    public enum Type {
-        DMN_BKM_EVALUATION,
-        DMN_BKM_INVOCATION,
-        DMN_CONTEXT_ENTRY,
-        DMN_DECISION,
-        DMN_DECISION_SERVICE,
-        DMN_DECISION_TABLE
-    }
-
-    private final Type type;
+    @JsonInclude(NON_NULL)
+    private final TraceExecutionStepType type;
+    @JsonInclude(NON_DEFAULT)
     private final long duration;
+    @JsonInclude(NON_NULL)
     private final String name;
     @JsonInclude(NON_NULL)
     private final Object result;
@@ -48,7 +43,7 @@ public class TraceExecutionStep {
     @JsonInclude(NON_EMPTY)
     private final List<TraceExecutionStep> children;
 
-    public TraceExecutionStep(Type type, long duration, String name, Object result, List<Message> messages, Map<String, Object> additionalData, List<TraceExecutionStep> children) {
+    public TraceExecutionStep(TraceExecutionStepType type, long duration, String name, Object result, List<Message> messages, Map<String, Object> additionalData, List<TraceExecutionStep> children) {
         this.type = type;
         this.duration = duration;
         this.name = name;
@@ -58,7 +53,7 @@ public class TraceExecutionStep {
         this.children = children;
     }
 
-    public Type getType() {
+    public TraceExecutionStepType getType() {
         return type;
     }
 

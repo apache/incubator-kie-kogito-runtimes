@@ -14,23 +14,9 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.aggregator;
+package org.kie.kogito.tracing.decision.event.common;
 
-public class AggregatorException extends RuntimeException {
-
-    public AggregatorException() {
-    }
-
-    public AggregatorException(String message) {
-        super(message);
-    }
-
-    public AggregatorException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public AggregatorException(Throwable cause) {
-        super(cause);
-    }
-
+public enum MessageCategory {
+    DMN,
+    INTERNAL
 }

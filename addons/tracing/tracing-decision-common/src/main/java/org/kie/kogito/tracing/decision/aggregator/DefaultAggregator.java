@@ -26,8 +26,11 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.cloudevents.json.Json;
@@ -36,11 +39,15 @@ import io.cloudevents.v1.CloudEventImpl;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.ast.DecisionNode;
 import org.kie.dmn.api.core.ast.InputDataNode;
+import org.kie.dmn.feel.util.Pair;
+import org.kie.kogito.tracing.decision.event.common.InternalMessageType;
 import org.kie.kogito.tracing.decision.event.common.Message;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateDecisionResult;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
+import org.kie.kogito.tracing.decision.event.trace.TraceEventType;
 import org.kie.kogito.tracing.decision.event.trace.TraceExecutionStep;
+import org.kie.kogito.tracing.decision.event.trace.TraceExecutionStepType;
 import org.kie.kogito.tracing.decision.event.trace.TraceHeader;
 import org.kie.kogito.tracing.decision.event.trace.TraceInputValue;
 import org.kie.kogito.tracing.decision.event.trace.TraceModel;
@@ -55,62 +62,58 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
 
     @Override
     public CloudEventImpl<TraceEvent> aggregate(DMNModel model, String evaluationId, List<EvaluateEvent> events) {
-        if (events == null) {
-            throw new AggregatorException("Event list is null");
-        }
-        if (events.size() < 2) {
-            throw new AggregatorException("Event list contains less than 2 elements");
-        }
+        return events == null || events.isEmpty()
+                ? buildNotEnoughDataCloudEvent(model, evaluationId)
+                : buildDefaultCloudEvent(model, evaluationId, events);
+    }
 
+    private static CloudEventImpl<TraceEvent> buildNotEnoughDataCloudEvent(DMNModel model, String evaluationId) {
+        TraceHeader header = new TraceHeader(
+                TraceEventType.DMN,
+                evaluationId,
+                0L,
+                TraceModel.from(model),
+                Stream.of(
+                        Message.from(InternalMessageType.NOT_ENOUGH_DATA),
+                        model == null ? Message.from(InternalMessageType.DMN_MODEL_NOT_FOUND) : null
+                ).filter(Objects::nonNull).collect(Collectors.toList())
+        );
+
+        TraceEvent event = new TraceEvent(header, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+
+        return CloudEventBuilder.<TraceEvent>builder()
+                .withType(TraceEvent.class.getName())
+                .withId(evaluationId)
+                .withSource(URI.create(URLEncoder.encode("__UNKNOWN_SOURCE__", StandardCharsets.UTF_8)))
+                .withData(event)
+                .build();
+    }
+
+    private static CloudEventImpl<TraceEvent> buildDefaultCloudEvent(DMNModel model, String evaluationId, List<EvaluateEvent> events) {
         EvaluateEvent firstEvent = events.get(0);
         EvaluateEvent lastEvent = events.get(events.size() - 1);
 
-        // header
+        List<TraceInputValue> inputs = buildTraceInputValues(model, firstEvent);
+
+        List<TraceOutputValue> outputs = buildTraceOutputValues(model, lastEvent);
+
+        Pair<List<TraceExecutionStep>, List<Message>> executionStepsPair = buildTraceExecutionSteps(model, evaluationId, events);
+
         TraceHeader header = new TraceHeader(
-                TraceEvent.Type.DMN,
+                TraceEventType.DMN,
                 evaluationId,
                 lastEvent.getNanoTime() - firstEvent.getNanoTime(),
                 TraceModel.from(model),
-                lastEvent.getResult().getMessages().stream()
-                        .filter(m -> m.getSourceId() == null || m.getSourceId().isBlank())
-                        .collect(Collectors.toList())
+                Stream.of(
+                        model == null ? Stream.of(Message.from(InternalMessageType.DMN_MODEL_NOT_FOUND)) : Stream.<Message>empty(),
+                        executionStepsPair.getRight().stream(),
+                        lastEvent.getResult().getMessages().stream()
+                                .filter(m -> m.getSourceId() == null || m.getSourceId().isBlank())
+                ).flatMap(Function.identity()).collect(Collectors.toList())
         );
 
-        // inputs
-        List<TraceInputValue> inputs = model.getInputs().stream()
-                .map(i -> traceInputFrom(i, firstEvent.getContext()))
-                .collect(Collectors.toList());
-
-        // outputs
-        List<TraceOutputValue> outputs = lastEvent.getResult().getDecisionResults().stream()
-                .map(dr -> traceOutputFrom(dr, model))
-                .collect(Collectors.toList());
-
-        // execution steps
-        List<TraceExecutionStep> executionSteps = new ArrayList<>(events.size() / 2);
-        Deque<DefaultAggregatorStackEntry> stack = new ArrayDeque<>(events.size() / 2);
-        for (int i = 1; i < events.size() - 1; i++) {
-            EvaluateEvent event = events.get(i);
-            LOG.trace("Started aggregating event {} (execution steps: {}, stack size: {})", event.getType(), executionSteps.size(), stack.size());
-            if (event.getType().isBefore()) {
-                stack.push(new DefaultAggregatorStackEntry(event));
-            } else {
-                if (stack.isEmpty() || !stack.peek().isValidAfterEvent(event)) {
-                    throw new AggregatorException(String.format("Can't match %s \"after\" event with corresponding \"before\" event", event.getType()));
-                }
-                DefaultAggregatorStackEntry stackEntry = stack.pop();
-                TraceExecutionStep step = buildTraceExecutionStep(model, stackEntry, event);
-                if (stack.isEmpty()) {
-                    executionSteps.add(step);
-                } else {
-                    stack.peek().addChild(step);
-                }
-            }
-            LOG.trace("Finished aggregating event {} (execution steps: {}, stack size: {})", event.getType(), executionSteps.size(), stack.size());
-        }
-
         // complete event
-        TraceEvent event = new TraceEvent(header, inputs, outputs, executionSteps);
+        TraceEvent event = new TraceEvent(header, inputs, outputs, executionStepsPair.getLeft());
 
         return CloudEventBuilder.<TraceEvent>builder()
                 .withType(TraceEvent.class.getName())
@@ -120,49 +123,102 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 .build();
     }
 
-    private static TraceExecutionStep buildTraceExecutionStep(DMNModel model, DefaultAggregatorStackEntry stackEntry, EvaluateEvent afterEvent) {
-        switch (stackEntry.getType()) {
-            case DMN_BKM_EVALUATION:
-                return buildDmnBkmEvaluationTraceExecutionStep(model, stackEntry, afterEvent);
-            case DMN_BKM_INVOCATION:
-                return buildDmnBkmInvocationTraceExecutionStep(model, stackEntry, afterEvent);
-            case DMN_CONTEXT_ENTRY:
-                return buildDmnContextEntryTraceExecutionStep(model, stackEntry, afterEvent);
-            case DMN_DECISION:
-                return buildDmnDecisionTraceExecutionStep(model, stackEntry, afterEvent);
-            case DMN_DECISION_SERVICE:
-                return buildDmnDecisionServiceTraceExecutionStep(model, stackEntry, afterEvent);
-            case DMN_DECISION_TABLE:
-                return buildDmnDecisionTableTraceExecutionStep(model, stackEntry, afterEvent);
+    private static List<TraceInputValue> buildTraceInputValues(DMNModel model, EvaluateEvent firstEvent) {
+        return model != null
+                ? model.getInputs().stream().map(i -> traceInputFrom(i, firstEvent.getContext())).collect(Collectors.toList())
+                : firstEvent.getContext().entrySet().stream().map(DefaultAggregator::traceInputFrom).collect(Collectors.toList());
+    }
+
+    private static List<TraceOutputValue> buildTraceOutputValues(DMNModel model, EvaluateEvent lastEvent) {
+        return lastEvent.getResult().getDecisionResults().stream()
+                .map(dr -> traceOutputFrom(dr, model))
+                .collect(Collectors.toList());
+    }
+
+    private static Pair<List<TraceExecutionStep>, List<Message>> buildTraceExecutionSteps(DMNModel model, String evaluationId, List<EvaluateEvent> events) {
+        try {
+            return new Pair<>(buildTraceExecutionStepsHierarchy(model, events), Collections.emptyList());
+        } catch (IllegalStateException e) {
+            LOG.error(String.format("IllegalStateException during aggregation of evaluation %s", evaluationId), e);
+            return new Pair<>(buildTraceExecutionStepsList(model, events), List.of(Message.from(InternalMessageType.NO_EXECUTION_STEP_HIERARCHY)));
         }
-        // this should never happen
-        throw new AggregatorException("Can't build trace execution step");
     }
 
-    private static TraceExecutionStep buildDmnBkmEvaluationTraceExecutionStep(DMNModel model, DefaultAggregatorStackEntry stackEntry, EvaluateEvent afterEvent) {
-        // TODO: implement complete construction of TraceExecutionStep
-        long duration = afterEvent.getNanoTime() - stackEntry.getBeforeEvent().getNanoTime();
+    private static List<TraceExecutionStep> buildTraceExecutionStepsHierarchy(DMNModel model, List<EvaluateEvent> events) {
+        List<TraceExecutionStep> executionSteps = new ArrayList<>(events.size() / 2);
+        Deque<DefaultAggregatorStackEntry> stack = new ArrayDeque<>(events.size() / 2);
+        for (int i = 1; i < events.size() - 1; i++) {
+            EvaluateEvent event = events.get(i);
+            LOG.trace("Started aggregating event {} (execution steps: {}, stack size: {})", event.getType(), executionSteps.size(), stack.size());
+            if (event.getType().isBefore()) {
+                stack.push(new DefaultAggregatorStackEntry(event));
+            } else {
+                if (stack.isEmpty() || !stack.peek().isValidAfterEvent(event)) {
+                    throw new IllegalStateException(String.format("Can't match %s \"after\" event with corresponding \"before\" event", event.getType()));
+                }
+                DefaultAggregatorStackEntry stackEntry = stack.pop();
+                TraceExecutionStep step = buildTraceExecutionStep(model, stackEntry, event);
+                if (step == null) {
+                    throw new IllegalStateException(String.format("Can't build TraceExecutionStep for a %s event", event.getType()));
+                }
+                if (stack.isEmpty()) {
+                    executionSteps.add(step);
+                } else {
+                    stack.peek().addChild(step);
+                }
+            }
+            LOG.trace("Finished aggregating event {} (execution steps: {}, stack size: {})", event.getType(), executionSteps.size(), stack.size());
+        }
+        return executionSteps;
+    }
 
+    private static List<TraceExecutionStep> buildTraceExecutionStepsList(DMNModel model, List<EvaluateEvent> events) {
+        return events.stream()
+                .filter(e -> e.getType().isAfter())
+                .map(e -> buildTraceExecutionStep(model, null, e))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private static TraceExecutionStep buildTraceExecutionStep(DMNModel model, DefaultAggregatorStackEntry stackEntry, EvaluateEvent afterEvent) {
+        TraceExecutionStepType type = TraceExecutionStepType.from(afterEvent.getType());
+        if (type == null) {
+            return null;
+        }
+
+        long duration = Optional.ofNullable(stackEntry)
+                .map(DefaultAggregatorStackEntry::getBeforeEvent)
+                .map(beforeEvent -> afterEvent.getNanoTime() - beforeEvent.getNanoTime())
+                .orElse(0L);
+
+        List<TraceExecutionStep> children = Optional.ofNullable(stackEntry)
+                .map(DefaultAggregatorStackEntry::getChildren)
+                .orElse(Collections.emptyList());
+
+        switch (type) {
+            case DMN_BKM_EVALUATION:
+            case DMN_DECISION_SERVICE:
+            case DMN_BKM_INVOCATION:
+                return buildDefaultTraceExecutionStep(duration, afterEvent, children, type);
+            case DMN_CONTEXT_ENTRY:
+                return buildDmnContextEntryTraceExecutionStep(duration, afterEvent, children, model);
+            case DMN_DECISION:
+                return buildDmnDecisionTraceExecutionStep(duration, afterEvent, children);
+            case DMN_DECISION_TABLE:
+                return buildDmnDecisionTableTraceExecutionStep(duration, afterEvent, children, model);
+            default:
+                return null;
+        }
+    }
+
+    private static TraceExecutionStep buildDefaultTraceExecutionStep(long duration, EvaluateEvent afterEvent, List<TraceExecutionStep> children, TraceExecutionStepType type) {
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("nodeId", afterEvent.getNodeId());
 
-        return new TraceExecutionStep(stackEntry.getType(), duration, afterEvent.getNodeName(), null, Collections.emptyList(), additionalData, stackEntry.getChildren());
+        return new TraceExecutionStep(type, duration, afterEvent.getNodeName(), null, Collections.emptyList(), additionalData, children);
     }
 
-    private static TraceExecutionStep buildDmnBkmInvocationTraceExecutionStep(DMNModel model, DefaultAggregatorStackEntry stackEntry, EvaluateEvent afterEvent) {
-        // TODO: implement complete construction of TraceExecutionStep
-        long duration = afterEvent.getNanoTime() - stackEntry.getBeforeEvent().getNanoTime();
-
-        Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put("nodeId", afterEvent.getNodeId());
-
-        return new TraceExecutionStep(stackEntry.getType(), duration, afterEvent.getNodeName(), null, Collections.emptyList(), additionalData, stackEntry.getChildren());
-    }
-
-    private static TraceExecutionStep buildDmnContextEntryTraceExecutionStep(DMNModel model, DefaultAggregatorStackEntry stackEntry, EvaluateEvent afterEvent) {
-        // TODO: implement complete construction of TraceExecutionStep
-        long duration = afterEvent.getNanoTime() - stackEntry.getBeforeEvent().getNanoTime();
-
+    private static TraceExecutionStep buildDmnContextEntryTraceExecutionStep(long duration, EvaluateEvent afterEvent, List<TraceExecutionStep> children, DMNModel model) {
         Object result = afterEvent.getContextEntryResult().getExpressionResult();
 
         Map<String, Object> additionalData = new HashMap<>();
@@ -170,13 +226,10 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
         additionalData.put("nodeId", model.getDecisionByName(afterEvent.getNodeName()).getId());
         additionalData.put("variableId", afterEvent.getContextEntryResult().getVariableId());
 
-        return new TraceExecutionStep(stackEntry.getType(), duration, afterEvent.getContextEntryResult().getVariableName(), result, Collections.emptyList(), additionalData, stackEntry.getChildren());
+        return new TraceExecutionStep(TraceExecutionStepType.DMN_CONTEXT_ENTRY, duration, afterEvent.getContextEntryResult().getVariableName(), result, Collections.emptyList(), additionalData, children);
     }
 
-    private static TraceExecutionStep buildDmnDecisionTraceExecutionStep(DMNModel model, DefaultAggregatorStackEntry stackEntry, EvaluateEvent afterEvent) {
-        // TODO: implement complete construction of TraceExecutionStep
-        long duration = afterEvent.getNanoTime() - stackEntry.getBeforeEvent().getNanoTime();
-
+    private static TraceExecutionStep buildDmnDecisionTraceExecutionStep(long duration, EvaluateEvent afterEvent, List<TraceExecutionStep> children) {
         List<Message> messages = afterEvent.getResult().getMessages().stream()
                 .filter(m -> afterEvent.getNodeId().equals(m.getSourceId()))
                 .collect(Collectors.toList());
@@ -190,29 +243,16 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("nodeId", afterEvent.getNodeId());
 
-        return new TraceExecutionStep(stackEntry.getType(), duration, afterEvent.getNodeName(), result, messages, additionalData, stackEntry.getChildren());
+        return new TraceExecutionStep(TraceExecutionStepType.DMN_DECISION, duration, afterEvent.getNodeName(), result, messages, additionalData, children);
     }
 
-    private static TraceExecutionStep buildDmnDecisionServiceTraceExecutionStep(DMNModel model, DefaultAggregatorStackEntry stackEntry, EvaluateEvent afterEvent) {
-        // TODO: implement complete construction of TraceExecutionStep
-        long duration = afterEvent.getNanoTime() - stackEntry.getBeforeEvent().getNanoTime();
-
-        Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put("nodeId", afterEvent.getNodeId());
-
-        return new TraceExecutionStep(stackEntry.getType(), duration, afterEvent.getNodeName(), null, Collections.emptyList(), additionalData, stackEntry.getChildren());
-    }
-
-    private static TraceExecutionStep buildDmnDecisionTableTraceExecutionStep(DMNModel model, DefaultAggregatorStackEntry stackEntry, EvaluateEvent afterEvent) {
-        // TODO: implement complete construction of TraceExecutionStep
-        long duration = afterEvent.getNanoTime() - stackEntry.getBeforeEvent().getNanoTime();
-
+    private static TraceExecutionStep buildDmnDecisionTableTraceExecutionStep(long duration, EvaluateEvent afterEvent, List<TraceExecutionStep> children, DMNModel model) {
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("matches", afterEvent.getDecisionTableResult().getMatches());
         additionalData.put("nodeId", model.getDecisionByName(afterEvent.getNodeName()).getId());
         additionalData.put("selected", afterEvent.getDecisionTableResult().getSelected());
 
-        return new TraceExecutionStep(stackEntry.getType(), duration, afterEvent.getDecisionTableResult().getDecisionTableName(), null, Collections.emptyList(), additionalData, stackEntry.getChildren());
+        return new TraceExecutionStep(TraceExecutionStepType.DMN_DECISION_TABLE, duration, afterEvent.getDecisionTableResult().getDecisionTableName(), null, Collections.emptyList(), additionalData, children);
     }
 
     private static TraceInputValue traceInputFrom(InputDataNode node, Map<String, Object> context) {
@@ -225,6 +265,16 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 node.getName(),
                 TraceType.from(node.getType()),
                 value,
+                Collections.emptyList()
+        );
+    }
+
+    private static TraceInputValue traceInputFrom(Map.Entry<String, Object> contextEntry) {
+        return new TraceInputValue(
+                null,
+                contextEntry.getKey(),
+                null,
+                Json.MAPPER.valueToTree(contextEntry.getValue()),
                 Collections.emptyList()
         );
     }

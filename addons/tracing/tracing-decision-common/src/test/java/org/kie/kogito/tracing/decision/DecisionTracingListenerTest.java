@@ -34,6 +34,7 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
+import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType;
 import org.kie.kogito.tracing.decision.mock.MockAfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.mock.MockBeforeEvaluateAllEvent;
 import org.mockito.ArgumentCaptor;
@@ -113,13 +114,13 @@ public class DecisionTracingListenerTest {
         assertTrue(evaluateEvents.size() >= 2);
 
         EvaluateEvent beforeEvaluateAllEvent = evaluateEvents.get(0);
-        assertSame(EvaluateEvent.Type.BEFORE_EVALUATE_ALL, beforeEvaluateAllEvent.getType());
+        assertSame(EvaluateEventType.BEFORE_EVALUATE_ALL, beforeEvaluateAllEvent.getType());
         assertEquals(executionId, beforeEvaluateAllEvent.getExecutionId());
         assertEquals(modelName, beforeEvaluateAllEvent.getModelName());
         assertEquals(modelNamespace, beforeEvaluateAllEvent.getModelNamespace());
 
         EvaluateEvent afterEvaluateAllEvent = evaluateEvents.get(evaluateEvents.size() - 1);
-        assertSame(EvaluateEvent.Type.AFTER_EVALUATE_ALL, afterEvaluateAllEvent.getType());
+        assertSame(EvaluateEventType.AFTER_EVALUATE_ALL, afterEvaluateAllEvent.getType());
         assertEquals(executionId, afterEvaluateAllEvent.getExecutionId());
         assertEquals(modelName, afterEvaluateAllEvent.getModelName());
         assertEquals(modelNamespace, afterEvaluateAllEvent.getModelNamespace());

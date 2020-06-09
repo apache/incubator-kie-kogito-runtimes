@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 import io.cloudevents.json.Json;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.kogito.tracing.decision.aggregator.Aggregator;
-import org.kie.kogito.tracing.decision.aggregator.AggregatorException;
 import org.kie.kogito.tracing.decision.aggregator.DefaultAggregator;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.slf4j.Logger;
@@ -76,19 +75,9 @@ public class DecisionTracingCollector {
 
         if (openEventsCounterMap.get(evaluationId).get() == 0) {
             DMNModel dmnModel = modelSupplier.apply(event.getModelNamespace(), event.getModelName());
-
-            if (dmnModel != null) {
-                try {
-                    String payload = aggregate(dmnModel, evaluationId, cacheMap.get(evaluationId));
-                    payloadConsumer.accept(payload);
-                    LOG.debug("Generated aggregated event for evaluation {} (length {})", evaluationId, payload.length());
-                } catch (AggregatorException e) {
-                    LOG.error("Aggregator exception. Evaluation with id " + evaluationId + " will be discarded.", e);
-                }
-            } else {
-                LOG.error("Can't find model (namespace={}, name={}). Evaluation with id {} will be discarded.", event.getModelNamespace(), event.getModelName(), evaluationId);
-            }
-
+            String payload = aggregate(dmnModel, evaluationId, cacheMap.get(evaluationId));
+            payloadConsumer.accept(payload);
+            LOG.debug("Generated aggregated event for evaluation {} (length {})", evaluationId, payload.length());
             cacheMap.remove(evaluationId);
             LOG.trace("Removed evaluation {} from cache (current size: {})", evaluationId, cacheMap.size());
         }

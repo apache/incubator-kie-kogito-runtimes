@@ -24,6 +24,7 @@ import org.kie.dmn.core.impl.DMNModelImpl;
 import org.kie.dmn.core.impl.DMNResultImpl;
 import org.kie.kogito.decision.DecisionExecutionIdUtils;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
+import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -39,7 +40,7 @@ public class MockUtils {
         DecisionExecutionIdUtils.inject(context, () -> id);
         DMNResultImpl result = new DMNResultImpl(new DMNModelImpl());
         result.setContext(context);
-        return new EvaluateEvent(EvaluateEvent.Type.BEFORE_EVALUATE_ALL, System.nanoTime(), result, TEST_MODEL_NAMESPACE, TEST_MODEL_NAME);
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_ALL, System.nanoTime(), result, TEST_MODEL_NAMESPACE, TEST_MODEL_NAME);
     }
 
     public static EvaluateEvent afterEvaluateAllEvent(String id) {
@@ -47,7 +48,7 @@ public class MockUtils {
         DecisionExecutionIdUtils.inject(context, () -> id);
         DMNResultImpl result = new DMNResultImpl(new DMNModelImpl());
         result.setContext(context);
-        return new EvaluateEvent(EvaluateEvent.Type.AFTER_EVALUATE_ALL, System.nanoTime(), result, TEST_MODEL_NAMESPACE, TEST_MODEL_NAME);
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_ALL, System.nanoTime(), result, TEST_MODEL_NAMESPACE, TEST_MODEL_NAME);
     }
 
     public static DMNModel mockedModel() {

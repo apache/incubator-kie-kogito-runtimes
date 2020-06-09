@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
+import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType;
 import org.kie.kogito.tracing.decision.event.trace.TraceExecutionStep;
 
 /**
@@ -31,7 +32,6 @@ import org.kie.kogito.tracing.decision.event.trace.TraceExecutionStep;
  */
 public class DefaultAggregatorStackEntry {
 
-    private final TraceExecutionStep.Type type;
     private final EvaluateEvent beforeEvent;
     private final List<TraceExecutionStep> children;
 
@@ -39,13 +39,8 @@ public class DefaultAggregatorStackEntry {
         if (!beforeEvent.getType().isBefore()) {
             throw new IllegalStateException(String.format("%s is not a valid \"before\" event", beforeEvent.getType().name()));
         }
-        this.type = stepTypeFromEventType(beforeEvent.getType());
         this.beforeEvent = beforeEvent;
         this.children = new LinkedList<>();
-    }
-
-    public TraceExecutionStep.Type getType() {
-        return type;
     }
 
     public EvaluateEvent getBeforeEvent() {
@@ -63,27 +58,27 @@ public class DefaultAggregatorStackEntry {
     public boolean isValidAfterEvent(EvaluateEvent afterEvent) {
         switch (afterEvent.getType()) {
             case AFTER_EVALUATE_CONTEXT_ENTRY:
-                return beforeEvent.getType() == EvaluateEvent.Type.BEFORE_EVALUATE_CONTEXT_ENTRY
+                return beforeEvent.getType() == EvaluateEventType.BEFORE_EVALUATE_CONTEXT_ENTRY
                         && stringEquals(beforeEvent.getNodeName(), afterEvent.getNodeName());
 
             case AFTER_EVALUATE_DECISION_TABLE:
-                return beforeEvent.getType() == EvaluateEvent.Type.BEFORE_EVALUATE_DECISION_TABLE
+                return beforeEvent.getType() == EvaluateEventType.BEFORE_EVALUATE_DECISION_TABLE
                         && stringEquals(beforeEvent.getNodeName(), afterEvent.getNodeName());
 
             case AFTER_EVALUATE_DECISION:
-                return beforeEvent.getType() == EvaluateEvent.Type.BEFORE_EVALUATE_DECISION
+                return beforeEvent.getType() == EvaluateEventType.BEFORE_EVALUATE_DECISION
                         && stringEquals(beforeEvent.getNodeId(), afterEvent.getNodeId());
 
             case AFTER_EVALUATE_DECISION_SERVICE:
-                return beforeEvent.getType() == EvaluateEvent.Type.BEFORE_EVALUATE_DECISION_SERVICE
+                return beforeEvent.getType() == EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE
                         && stringEquals(beforeEvent.getNodeId(), afterEvent.getNodeId());
 
             case AFTER_EVALUATE_BKM:
-                return beforeEvent.getType() == EvaluateEvent.Type.BEFORE_EVALUATE_BKM
+                return beforeEvent.getType() == EvaluateEventType.BEFORE_EVALUATE_BKM
                         && stringEquals(beforeEvent.getNodeId(), afterEvent.getNodeId());
 
             case AFTER_INVOKE_BKM:
-                return beforeEvent.getType() == EvaluateEvent.Type.BEFORE_INVOKE_BKM
+                return beforeEvent.getType() == EvaluateEventType.BEFORE_INVOKE_BKM
                         && stringEquals(beforeEvent.getNodeId(), afterEvent.getNodeId());
 
             default:
@@ -103,37 +98,6 @@ public class DefaultAggregatorStackEntry {
 
             default:
                 return false;
-        }
-    }
-
-    private static TraceExecutionStep.Type stepTypeFromEventType(EvaluateEvent.Type type) {
-        switch (type) {
-            case BEFORE_EVALUATE_CONTEXT_ENTRY:
-            case AFTER_EVALUATE_CONTEXT_ENTRY:
-                return TraceExecutionStep.Type.DMN_CONTEXT_ENTRY;
-
-            case BEFORE_EVALUATE_DECISION:
-            case AFTER_EVALUATE_DECISION:
-                return TraceExecutionStep.Type.DMN_DECISION;
-
-            case BEFORE_EVALUATE_DECISION_SERVICE:
-            case AFTER_EVALUATE_DECISION_SERVICE:
-                return TraceExecutionStep.Type.DMN_DECISION_SERVICE;
-
-            case BEFORE_EVALUATE_DECISION_TABLE:
-            case AFTER_EVALUATE_DECISION_TABLE:
-                return TraceExecutionStep.Type.DMN_DECISION_TABLE;
-
-            case BEFORE_EVALUATE_BKM:
-            case AFTER_EVALUATE_BKM:
-                return TraceExecutionStep.Type.DMN_BKM_EVALUATION;
-
-            case BEFORE_INVOKE_BKM:
-            case AFTER_INVOKE_BKM:
-                return TraceExecutionStep.Type.DMN_BKM_INVOCATION;
-
-            default:
-                return null;
         }
     }
 
