@@ -73,9 +73,7 @@
                 <artifactId>quarkus-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
+                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>
