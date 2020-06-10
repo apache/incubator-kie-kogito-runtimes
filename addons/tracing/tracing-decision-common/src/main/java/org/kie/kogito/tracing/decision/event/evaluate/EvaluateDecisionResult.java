@@ -26,12 +26,12 @@ import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventUtils.
 
 public class EvaluateDecisionResult {
 
-    private final String decisionId;
-    private final String decisionName;
-    private final DecisionEvaluationStatus evaluationStatus;
-    private final Object result;
-    private final List<Message> messages;
-    private final boolean errors;
+    private String decisionId;
+    private String decisionName;
+    private DecisionEvaluationStatus evaluationStatus;
+    private Object result;
+    private List<Message> messages;
+    private boolean errors;
 
     public EvaluateDecisionResult(String decisionId, String decisionName, DecisionEvaluationStatus evaluationStatus, Object result, List<Message> messages, boolean errors) {
         this.decisionId = decisionId;
@@ -40,6 +40,9 @@ public class EvaluateDecisionResult {
         this.result = result;
         this.messages = messages;
         this.errors = errors;
+    }
+
+    private EvaluateDecisionResult() {
     }
 
     public String getDecisionId() {

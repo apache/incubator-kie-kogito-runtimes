@@ -25,12 +25,15 @@ import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventUtils.
 
 public class EvaluateResult {
 
-    private final List<EvaluateDecisionResult> decisionResults;
-    private final List<Message> messages;
+    private List<EvaluateDecisionResult> decisionResults;
+    private List<Message> messages;
 
     public EvaluateResult(List<EvaluateDecisionResult> decisionResults, List<Message> messages) {
         this.decisionResults = decisionResults;
         this.messages = messages;
+    }
+
+    private EvaluateResult() {
     }
 
     public List<EvaluateDecisionResult> getDecisionResults() {

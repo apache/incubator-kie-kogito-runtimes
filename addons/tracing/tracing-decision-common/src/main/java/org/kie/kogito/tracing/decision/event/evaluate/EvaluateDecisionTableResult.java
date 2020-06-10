@@ -23,14 +23,17 @@ import org.kie.dmn.api.core.event.BeforeEvaluateDecisionTableEvent;
 
 public class EvaluateDecisionTableResult {
 
-    private final String decisionTableName;
-    private final List<Integer> matches;
-    private final List<Integer> selected;
+    private String decisionTableName;
+    private List<Integer> matches;
+    private List<Integer> selected;
 
     private EvaluateDecisionTableResult(String decisionTableName, List<Integer> matches, List<Integer> selected) {
         this.decisionTableName = decisionTableName;
         this.matches = matches;
         this.selected = selected;
+    }
+
+    private EvaluateDecisionTableResult() {
     }
 
     public String getDecisionTableName() {

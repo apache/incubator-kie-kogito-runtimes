@@ -110,4 +110,19 @@ public class Message {
                 null
         );
     }
+
+    public static Message from(InternalMessageType message, Throwable throwable) {
+        if (message == null) {
+            return null;
+        }
+        return new Message(
+                message.getLevel(),
+                MessageCategory.INTERNAL,
+                message.name(),
+                null,
+                message.getText(),
+                null,
+                MessageExceptionField.from(throwable)
+        );
+    }
 }

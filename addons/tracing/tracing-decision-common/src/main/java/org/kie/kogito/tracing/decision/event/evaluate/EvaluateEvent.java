@@ -16,8 +16,10 @@
 
 package org.kie.kogito.tracing.decision.event.evaluate;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.dmn.api.core.ast.DMNNode;
 import org.kie.dmn.api.core.event.AfterEvaluateAllEvent;
@@ -34,21 +36,22 @@ import org.kie.dmn.api.core.event.BeforeEvaluateDecisionEvent;
 import org.kie.dmn.api.core.event.BeforeEvaluateDecisionServiceEvent;
 import org.kie.dmn.api.core.event.BeforeEvaluateDecisionTableEvent;
 import org.kie.dmn.api.core.event.BeforeInvokeBKMEvent;
+import org.kie.dmn.feel.runtime.FEELFunction;
 import org.kie.kogito.decision.DecisionExecutionIdUtils;
 
 public class EvaluateEvent {
 
-    private final EvaluateEventType type;
-    private final long nanoTime;
-    private final String executionId;
-    private final String modelNamespace;
-    private final String modelName;
-    private final String nodeId;
-    private final String nodeName;
-    private final Map<String, Object> context;
-    private final EvaluateResult result;
-    private final EvaluateContextEntryResult contextEntryResult;
-    private final EvaluateDecisionTableResult decisionTableResult;
+    private EvaluateEventType type;
+    private long nanoTime;
+    private String executionId;
+    private String modelNamespace;
+    private String modelName;
+    private String nodeId;
+    private String nodeName;
+    private Map<String, Object> context;
+    private EvaluateResult result;
+    private EvaluateContextEntryResult contextEntryResult;
+    private EvaluateDecisionTableResult decisionTableResult;
 
     public EvaluateEvent(EvaluateEventType type, long nanoTime, DMNResult result, String modelNamespace, String modelName) {
         this.type = type;
@@ -58,7 +61,7 @@ public class EvaluateEvent {
         this.modelName = modelName;
         this.nodeId = null;
         this.nodeName = null;
-        this.context = result.getContext().clone().getAll();
+        this.context = extractContext(result.getContext());
         this.result = EvaluateResult.from(result);
         this.contextEntryResult = null;
         this.decisionTableResult = null;
@@ -72,7 +75,7 @@ public class EvaluateEvent {
         this.modelName = node.getModelName();
         this.nodeId = node.getId();
         this.nodeName = node.getName();
-        this.context = result.getContext().clone().getAll();
+        this.context = extractContext(result.getContext());
         this.result = EvaluateResult.from(result);
         this.contextEntryResult = null;
         this.decisionTableResult = null;
@@ -86,7 +89,7 @@ public class EvaluateEvent {
         this.modelName = null;
         this.nodeId = null;
         this.nodeName = nodeName;
-        this.context = result.getContext().clone().getAll();
+        this.context = extractContext(result.getContext());
         this.result = EvaluateResult.from(result);
         this.contextEntryResult = contextEntryResult;
         this.decisionTableResult = null;
@@ -100,10 +103,13 @@ public class EvaluateEvent {
         this.modelName = null;
         this.nodeId = null;
         this.nodeName = nodeName;
-        this.context = result.getContext().clone().getAll();
+        this.context = extractContext(result.getContext());
         this.result = EvaluateResult.from(result);
         this.contextEntryResult = null;
         this.decisionTableResult = decisionTableResult;
+    }
+
+    private EvaluateEvent() {
     }
 
     public EvaluateEventType getType() {
@@ -204,5 +210,12 @@ public class EvaluateEvent {
 
     public static EvaluateEvent from(AfterInvokeBKMEvent event) {
         return new EvaluateEvent(EvaluateEventType.AFTER_INVOKE_BKM, System.nanoTime(), event.getResult(), event.getBusinessKnowledgeModel());
+    }
+
+    private static Map<String, Object> extractContext(DMNContext context) {
+        return context.getAll().entrySet().stream()
+                .filter(e -> !(e.getValue() instanceof FEELFunction))
+                // This collect method avoids this bug (https://bugs.openjdk.java.net/browse/JDK-8148463) on variables with null value
+                .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll);
     }
 }

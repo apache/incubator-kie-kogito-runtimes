@@ -140,7 +140,7 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
             return new Pair<>(buildTraceExecutionStepsHierarchy(model, events), Collections.emptyList());
         } catch (IllegalStateException e) {
             LOG.error(String.format("IllegalStateException during aggregation of evaluation %s", evaluationId), e);
-            return new Pair<>(buildTraceExecutionStepsList(model, events), List.of(Message.from(InternalMessageType.NO_EXECUTION_STEP_HIERARCHY)));
+            return new Pair<>(buildTraceExecutionStepsList(model, events), List.of(Message.from(InternalMessageType.NO_EXECUTION_STEP_HIERARCHY, e)));
         }
     }
 
@@ -154,7 +154,7 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 stack.push(new DefaultAggregatorStackEntry(event));
             } else {
                 if (stack.isEmpty() || !stack.peek().isValidAfterEvent(event)) {
-                    throw new IllegalStateException(String.format("Can't match %s \"after\" event with corresponding \"before\" event", event.getType()));
+                    throw new IllegalStateException(String.format("Can't match %s after event with corresponding before event", event.getType()));
                 }
                 DefaultAggregatorStackEntry stackEntry = stack.pop();
                 TraceExecutionStep step = buildTraceExecutionStep(model, stackEntry, event);
@@ -168,6 +168,9 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 }
             }
             LOG.trace("Finished aggregating event {} (execution steps: {}, stack size: {})", event.getType(), executionSteps.size(), stack.size());
+        }
+        if (!stack.isEmpty()) {
+            throw new IllegalStateException("Can't match all after events with corresponding before events");
         }
         return executionSteps;
     }
@@ -223,8 +226,14 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
 
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("expressionId", afterEvent.getContextEntryResult().getExpressionId());
-        additionalData.put("nodeId", model.getDecisionByName(afterEvent.getNodeName()).getId());
         additionalData.put("variableId", afterEvent.getContextEntryResult().getVariableId());
+        Optional.ofNullable(model)
+                .map(m -> m.getDecisionByName(afterEvent.getNodeName()))
+                .map(DecisionNode::getId)
+                .ifPresentOrElse(
+                        id -> additionalData.put("nodeId", id),
+                        () -> additionalData.put("nodeName", afterEvent.getNodeName())
+                );
 
         return new TraceExecutionStep(TraceExecutionStepType.DMN_CONTEXT_ENTRY, duration, afterEvent.getContextEntryResult().getVariableName(), result, Collections.emptyList(), additionalData, children);
     }
@@ -249,8 +258,14 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
     private static TraceExecutionStep buildDmnDecisionTableTraceExecutionStep(long duration, EvaluateEvent afterEvent, List<TraceExecutionStep> children, DMNModel model) {
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("matches", afterEvent.getDecisionTableResult().getMatches());
-        additionalData.put("nodeId", model.getDecisionByName(afterEvent.getNodeName()).getId());
         additionalData.put("selected", afterEvent.getDecisionTableResult().getSelected());
+        Optional.ofNullable(model)
+                .map(m -> m.getDecisionByName(afterEvent.getNodeName()))
+                .map(DecisionNode::getId)
+                .ifPresentOrElse(
+                        id -> additionalData.put("nodeId", id),
+                        () -> additionalData.put("nodeName", afterEvent.getNodeName())
+                );
 
         return new TraceExecutionStep(TraceExecutionStepType.DMN_DECISION_TABLE, duration, afterEvent.getDecisionTableResult().getDecisionTableName(), null, Collections.emptyList(), additionalData, children);
     }

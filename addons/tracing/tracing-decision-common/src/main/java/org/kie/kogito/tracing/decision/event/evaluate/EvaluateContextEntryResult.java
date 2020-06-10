@@ -25,16 +25,19 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 public class EvaluateContextEntryResult {
 
     @JsonInclude(NON_NULL)
-    private final String variableId;
-    private final String variableName;
-    private final String expressionId;
-    private final Object expressionResult;
+    private String variableId;
+    private String variableName;
+    private String expressionId;
+    private Object expressionResult;
 
     public EvaluateContextEntryResult(String variableId, String variableName, String expressionId, Object expressionResult) {
         this.variableId = variableId;
         this.variableName = variableName;
         this.expressionId = expressionId;
         this.expressionResult = expressionResult;
+    }
+
+    private EvaluateContextEntryResult() {
     }
 
     public String getVariableId() {

@@ -77,6 +77,49 @@ public class DecisionTracingListenerTest {
 
     @Test
     public void test_Listener_UseRealEvents_Working() {
+        final Map<String, Object> driver = new HashMap<>();
+        driver.put("Age", 25);
+        driver.put("Points", 10);
+        final Map<String, Object> violation = new HashMap<>();
+        violation.put("Type", "speed");
+        violation.put("Actual Speed", 115);
+        violation.put("Speed Limit", 100);
+        final Map<String, Object> contextVariables = new HashMap<>();
+        contextVariables.put("Driver", driver);
+        contextVariables.put("Violation", violation);
+
+        testWithRealEvents(contextVariables, 14);
+    }
+
+    @Test
+    public void test_Listener_UseRealEventsWithWarnMessage_Working() {
+        final Map<String, Object> driver = new HashMap<>();
+        driver.put("Age", 25);
+        driver.put("Points", 10);
+        final Map<String, Object> violation = new HashMap<>();
+        violation.put("Type", "speed");
+        violation.put("Actual Speed", 105);
+        violation.put("Speed Limit", 100);
+        final Map<String, Object> contextVariables = new HashMap<>();
+        contextVariables.put("Driver", driver);
+        contextVariables.put("Violation", violation);
+
+        testWithRealEvents(contextVariables, 14);
+    }
+
+    @Test
+    public void test_Listener_UseRealEventsWithErrorMessage_Working() {
+        final Map<String, Object> violation = new HashMap<>();
+        violation.put("Type", "speed");
+        violation.put("Actual Speed", 105);
+        violation.put("Speed Limit", 100);
+        final Map<String, Object> contextVariables = new HashMap<>();
+        contextVariables.put("Violation", violation);
+
+        testWithRealEvents(contextVariables, 10);
+    }
+
+    private static void testWithRealEvents(Map<String, Object> contextVariables, int expectedEvents) {
         final String modelResource = "/Traffic Violation.dmn";
         final String modelNamespace = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
         final String modelName = "Traffic Violation";
@@ -89,23 +132,12 @@ public class DecisionTracingListenerTest {
         DecisionTracingListener listener = new DecisionTracingListener(eventConsumer);
         runtime.addListener(listener);
 
-        final Map<String, Object> driver = new HashMap<>();
-        driver.put("Age", 25);
-        driver.put("Points", 10);
-        final Map<String, Object> violation = new HashMap<>();
-        violation.put("Type", "speed");
-        violation.put("Actual Speed", 105);
-        violation.put("Speed Limit", 100);
-        final Map<String, Object> contextVariables = new HashMap<>();
-        contextVariables.put("Driver", driver);
-        contextVariables.put("Violation", violation);
-
         final DecisionModel model = new DmnDecisionModel(runtime, modelNamespace, modelName, () -> TEST_EXECUTION_ID_2);
         final DMNContext context = model.newContext(contextVariables);
         model.evaluateAll(context);
 
         ArgumentCaptor<EvaluateEvent> eventCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
-        verify(eventConsumer, times(14)).accept(eventCaptor.capture());
+        verify(eventConsumer, times(expectedEvents)).accept(eventCaptor.capture());
 
         assertEvaluateEvents(eventCaptor.getAllValues(), modelNamespace, modelName, TEST_EXECUTION_ID_2);
     }
