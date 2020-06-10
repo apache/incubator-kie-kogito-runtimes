@@ -39,11 +39,13 @@ import io.cloudevents.v1.CloudEventImpl;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.ast.DecisionNode;
 import org.kie.dmn.api.core.ast.InputDataNode;
+import org.kie.dmn.core.ast.DecisionServiceNodeImpl;
 import org.kie.dmn.feel.util.Pair;
 import org.kie.kogito.tracing.decision.event.common.InternalMessageType;
 import org.kie.kogito.tracing.decision.event.common.Message;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateDecisionResult;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
+import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType;
 import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
 import org.kie.kogito.tracing.decision.event.trace.TraceEventType;
 import org.kie.kogito.tracing.decision.event.trace.TraceExecutionStep;
@@ -124,9 +126,30 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
     }
 
     private static List<TraceInputValue> buildTraceInputValues(DMNModel model, EvaluateEvent firstEvent) {
-        return model != null
-                ? model.getInputs().stream().map(i -> traceInputFrom(i, firstEvent.getContext())).collect(Collectors.toList())
-                : firstEvent.getContext().entrySet().stream().map(DefaultAggregator::traceInputFrom).collect(Collectors.toList());
+        if (model == null) {
+            return firstEvent.getContext().entrySet().stream()
+                    .map(DefaultAggregator::traceInputFrom)
+                    .collect(Collectors.toList());
+        }
+        if (firstEvent.getType() == EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE) {
+            // cast to DecisionServiceNodeImpl here is required to have access to getInputParameters method
+            Optional<DecisionServiceNodeImpl> optNode = model.getDecisionServices().stream()
+                    .filter(ds -> ds.getId().equals(firstEvent.getNodeId()))
+                    .findFirst()
+                    .filter(DecisionServiceNodeImpl.class::isInstance)
+                    .map(DecisionServiceNodeImpl.class::cast);
+
+            if (optNode.isPresent()) {
+                return optNode.get().getInputParameters().values().stream()
+                        .filter(InputDataNode.class::isInstance)
+                        .map(InputDataNode.class::cast)
+                        .map(i -> traceInputFrom(i, firstEvent.getContext()))
+                        .collect(Collectors.toList());
+            }
+        }
+        return model.getInputs().stream()
+                .map(i -> traceInputFrom(i, firstEvent.getContext()))
+                .collect(Collectors.toList());
     }
 
     private static List<TraceOutputValue> buildTraceOutputValues(DMNModel model, EvaluateEvent lastEvent) {
