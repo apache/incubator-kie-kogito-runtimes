@@ -16,6 +16,7 @@
 
 package org.kie.kogito.timer;
 
-public interface Job {
-    void execute(JobContext ctx);
+public interface Job<T extends JobContext> {
+
+    void execute(T ctx);
 }

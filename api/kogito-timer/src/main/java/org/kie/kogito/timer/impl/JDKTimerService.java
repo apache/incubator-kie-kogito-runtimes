@@ -142,9 +142,7 @@ public class JDKTimerService
         return this.scheduler.remove((Runnable) jdkJobHandle.getFuture());
     }
 
-    public static class JDKJobHandle extends DefaultJobHandle
-            implements
-            JobHandle {
+    public static class JDKJobHandle extends DefaultJobHandle {
 
         private static final long     serialVersionUID = 510l;
 
