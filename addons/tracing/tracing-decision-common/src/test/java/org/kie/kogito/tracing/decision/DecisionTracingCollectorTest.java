@@ -23,7 +23,9 @@ import java.util.function.Supplier;
 
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.feel.util.Pair;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
@@ -39,16 +41,20 @@ import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_ALL_EXE
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_ALL_JSON_RESOURCE;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_JSON_RESOURCE;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.buildDMNModel;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.readEvaluateEventsFromJsonResource;
-import static org.kie.kogito.tracing.decision.mock.MockUtils.mockedModel;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class DecisionTracingCollectorTest {
 
-//    private static final String TEST_EXECUTION_ID_1 = "c91da8ec-05f7-4dbd-adf4-c7aa88f7888b";
-//    private static final String EVALUATE_DECISION_SERVICE_EXECUTION_ID = "550e2947-0952-4225-81a0-ea6e1064efd2";
+    private static DMNModel model;
+
+    @BeforeAll
+    public static void initModel() {
+        model = buildDMNModel();
+    }
 
     @Test
     public void test_Collector_InterleavedEvaluations_BoundariesDetector_Working() {
@@ -67,7 +73,7 @@ public class DecisionTracingCollectorTest {
         DecisionTracingCollector collector = new DecisionTracingCollector(
                 aggregator,
                 payloadConsumer,
-                (namespace, name) -> mockedModel(),
+                (namespace, name) -> model,
                 terminationDetectorSupplier
         );
 

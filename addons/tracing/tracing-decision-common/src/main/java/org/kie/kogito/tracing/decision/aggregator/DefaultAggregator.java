@@ -74,6 +74,8 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 TraceEventType.DMN,
                 executionId,
                 0L,
+                0L,
+                0L,
                 TraceModel.from(model),
                 Stream.of(
                         Message.from(InternalMessageType.NOT_ENOUGH_DATA),
@@ -104,6 +106,8 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
         TraceHeader header = new TraceHeader(
                 TraceEventType.DMN,
                 executionId,
+                firstEvent.getTimestamp(),
+                lastEvent.getTimestamp(),
                 lastEvent.getNanoTime() - firstEvent.getNanoTime(),
                 TraceModel.from(model),
                 Stream.of(

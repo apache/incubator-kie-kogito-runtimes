@@ -47,13 +47,14 @@ import static org.kie.kogito.tracing.decision.DecisionTestUtils.DECISION_SERVICE
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.MODEL_NAME;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.MODEL_NAMESPACE;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.buildDMNRuntime;
-import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAME;
-import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAMESPACE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class DecisionTracingListenerTest {
+
+    public static final String MOCKED_MODEL_NAME = "mockedModelName";
+    public static final String MOCKED_MODEL_NAMESPACE = "mockedModelNamespace";
 
     private static final String TEST_EXECUTION_ID_1 = "e3140fbb-49fd-4835-bb2e-682bbe02d862";
     private static final String TEST_EXECUTION_ID_2 = "77408667-f218-40b0-a355-1bab047a3e9e";
@@ -66,8 +67,8 @@ public class DecisionTracingListenerTest {
         DMNResultImpl result = new DMNResultImpl(new DMNModelImpl());
         result.setContext(context);
 
-        BeforeEvaluateAllEvent beforeEvent = new MockBeforeEvaluateAllEvent(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, result);
-        AfterEvaluateAllEvent afterEvent = new MockAfterEvaluateAllEvent(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, result);
+        BeforeEvaluateAllEvent beforeEvent = new MockBeforeEvaluateAllEvent(MOCKED_MODEL_NAMESPACE, MOCKED_MODEL_NAME, result);
+        AfterEvaluateAllEvent afterEvent = new MockAfterEvaluateAllEvent(MOCKED_MODEL_NAMESPACE, MOCKED_MODEL_NAME, result);
 
         Consumer<EvaluateEvent> eventConsumer = mock(Consumer.class);
         DecisionTracingListener listener = new DecisionTracingListener(eventConsumer);
@@ -77,7 +78,7 @@ public class DecisionTracingListenerTest {
         ArgumentCaptor<EvaluateEvent> eventCaptor = ArgumentCaptor.forClass(EvaluateEvent.class);
         verify(eventConsumer, times(2)).accept(eventCaptor.capture());
 
-        assertEvaluateAllEvents(eventCaptor.getAllValues(), TEST_MODEL_NAMESPACE, TEST_MODEL_NAME, TEST_EXECUTION_ID_1);
+        assertEvaluateAllEvents(eventCaptor.getAllValues(), MOCKED_MODEL_NAMESPACE, MOCKED_MODEL_NAME, TEST_EXECUTION_ID_1);
     }
 
     @Test

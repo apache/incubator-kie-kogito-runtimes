@@ -29,14 +29,20 @@ public class TraceHeader {
     private final TraceEventType type;
     private final String executionId;
     @JsonInclude(NON_DEFAULT)
+    private final long startTimestamp;
+    @JsonInclude(NON_DEFAULT)
+    private final long endTimestamp;
+    @JsonInclude(NON_DEFAULT)
     private final long duration;
     private final TraceModel resourceId;
     @JsonInclude(NON_EMPTY)
     private final List<Message> messages;
 
-    public TraceHeader(TraceEventType type, String executionId, long duration, TraceModel resourceId, List<Message> messages) {
+    public TraceHeader(TraceEventType type, String executionId, long startTs, long endTs, long duration, TraceModel resourceId, List<Message> messages) {
         this.type = type;
         this.executionId = executionId;
+        this.startTimestamp = startTs;
+        this.endTimestamp = endTs;
         this.duration = duration;
         this.resourceId = resourceId;
         this.messages = messages;
@@ -48,6 +54,14 @@ public class TraceHeader {
 
     public String getExecutionId() {
         return executionId;
+    }
+
+    public long getStartTimestamp() {
+        return startTimestamp;
+    }
+
+    public long getEndTimestamp() {
+        return endTimestamp;
     }
 
     public long getDuration() {
