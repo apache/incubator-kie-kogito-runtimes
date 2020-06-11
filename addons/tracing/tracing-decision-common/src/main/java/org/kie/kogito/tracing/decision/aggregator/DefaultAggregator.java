@@ -63,16 +63,16 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAggregator.class);
 
     @Override
-    public CloudEventImpl<TraceEvent> aggregate(DMNModel model, String evaluationId, List<EvaluateEvent> events) {
+    public CloudEventImpl<TraceEvent> aggregate(DMNModel model, String executionId, List<EvaluateEvent> events) {
         return events == null || events.isEmpty()
-                ? buildNotEnoughDataCloudEvent(model, evaluationId)
-                : buildDefaultCloudEvent(model, evaluationId, events);
+                ? buildNotEnoughDataCloudEvent(model, executionId)
+                : buildDefaultCloudEvent(model, executionId, events);
     }
 
-    private static CloudEventImpl<TraceEvent> buildNotEnoughDataCloudEvent(DMNModel model, String evaluationId) {
+    private static CloudEventImpl<TraceEvent> buildNotEnoughDataCloudEvent(DMNModel model, String executionId) {
         TraceHeader header = new TraceHeader(
                 TraceEventType.DMN,
-                evaluationId,
+                executionId,
                 0L,
                 TraceModel.from(model),
                 Stream.of(
@@ -85,13 +85,13 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
 
         return CloudEventBuilder.<TraceEvent>builder()
                 .withType(TraceEvent.class.getName())
-                .withId(evaluationId)
+                .withId(executionId)
                 .withSource(URI.create(URLEncoder.encode("__UNKNOWN_SOURCE__", StandardCharsets.UTF_8)))
                 .withData(event)
                 .build();
     }
 
-    private static CloudEventImpl<TraceEvent> buildDefaultCloudEvent(DMNModel model, String evaluationId, List<EvaluateEvent> events) {
+    private static CloudEventImpl<TraceEvent> buildDefaultCloudEvent(DMNModel model, String executionId, List<EvaluateEvent> events) {
         EvaluateEvent firstEvent = events.get(0);
         EvaluateEvent lastEvent = events.get(events.size() - 1);
 
@@ -99,11 +99,11 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
 
         List<TraceOutputValue> outputs = buildTraceOutputValues(model, lastEvent);
 
-        Pair<List<TraceExecutionStep>, List<Message>> executionStepsPair = buildTraceExecutionSteps(model, evaluationId, events);
+        Pair<List<TraceExecutionStep>, List<Message>> executionStepsPair = buildTraceExecutionSteps(model, executionId, events);
 
         TraceHeader header = new TraceHeader(
                 TraceEventType.DMN,
-                evaluationId,
+                executionId,
                 lastEvent.getNanoTime() - firstEvent.getNanoTime(),
                 TraceModel.from(model),
                 Stream.of(
@@ -119,7 +119,7 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
 
         return CloudEventBuilder.<TraceEvent>builder()
                 .withType(TraceEvent.class.getName())
-                .withId(evaluationId)
+                .withId(executionId)
                 .withSource(URI.create(URLEncoder.encode(lastEvent.getModelName(), StandardCharsets.UTF_8)))
                 .withData(event)
                 .build();
@@ -158,11 +158,11 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 .collect(Collectors.toList());
     }
 
-    private static Pair<List<TraceExecutionStep>, List<Message>> buildTraceExecutionSteps(DMNModel model, String evaluationId, List<EvaluateEvent> events) {
+    private static Pair<List<TraceExecutionStep>, List<Message>> buildTraceExecutionSteps(DMNModel model, String executionId, List<EvaluateEvent> events) {
         try {
             return new Pair<>(buildTraceExecutionStepsHierarchy(model, events), Collections.emptyList());
         } catch (IllegalStateException e) {
-            LOG.error(String.format("IllegalStateException during aggregation of evaluation %s", evaluationId), e);
+            LOG.error(String.format("IllegalStateException during aggregation of evaluation %s", executionId), e);
             return new Pair<>(buildTraceExecutionStepsList(model, events), List.of(Message.from(InternalMessageType.NO_EXECUTION_STEP_HIERARCHY, e)));
         }
     }

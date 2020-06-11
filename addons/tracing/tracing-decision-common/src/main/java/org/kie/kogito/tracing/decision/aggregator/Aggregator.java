@@ -25,6 +25,6 @@ import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 @FunctionalInterface
 public interface Aggregator<T> {
 
-    CloudEventImpl<T> aggregate(DMNModel model, String evaluationId, List<EvaluateEvent> events);
+    CloudEventImpl<T> aggregate(DMNModel model, String executionId, List<EvaluateEvent> events);
 
 }

@@ -32,7 +32,6 @@ import org.kie.dmn.core.impl.DMNModelImpl;
 import org.kie.dmn.core.impl.DMNResultImpl;
 import org.kie.kogito.decision.DecisionExecutionIdUtils;
 import org.kie.kogito.decision.DecisionModel;
-import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType;
@@ -43,6 +42,11 @@ import org.mockito.ArgumentCaptor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.DECISION_SERVICE_NODE_ID;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.MODEL_NAME;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.MODEL_NAMESPACE;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.buildDMNRuntime;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAME;
 import static org.kie.kogito.tracing.decision.mock.MockUtils.TEST_MODEL_NAMESPACE;
 import static org.mockito.Mockito.mock;
@@ -50,12 +54,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class DecisionTracingListenerTest {
-
-    private static final String REAL_DECISION_SERVICE_NODE_ID = "_073E3815-F30F-4835-A5CF-A9B354444E09";
-    private static final String REAL_DECISION_SERVICE_NODE_NAME = "FineService";
-    private static final String REAL_MODEL_RESOURCE = "/Traffic Violation.dmn";
-    private static final String REAL_MODEL_NAMESPACE = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
-    private static final String REAL_MODEL_NAME = "Traffic Violation";
 
     private static final String TEST_EXECUTION_ID_1 = "e3140fbb-49fd-4835-bb2e-682bbe02d862";
     private static final String TEST_EXECUTION_ID_2 = "77408667-f218-40b0-a355-1bab047a3e9e";
@@ -158,24 +156,22 @@ public class DecisionTracingListenerTest {
 
     private static void testWithRealEvaluateAll(Map<String, Object> contextVariables, int expectedEvents) {
         List<EvaluateEvent> events = testWithRealRuntime(contextVariables, expectedEvents, DecisionModel::evaluateAll);
-        assertEvaluateAllEvents(events, REAL_MODEL_NAMESPACE, REAL_MODEL_NAME, TEST_EXECUTION_ID_2);
+        assertEvaluateAllEvents(events, MODEL_NAMESPACE, MODEL_NAME, TEST_EXECUTION_ID_2);
     }
 
     private static void testWithRealEvaluateDecisionService(Map<String, Object> contextVariables, int expectedEvents) {
-        List<EvaluateEvent> events = testWithRealRuntime(contextVariables, expectedEvents, (model, context) -> model.evaluateDecisionService(context, REAL_DECISION_SERVICE_NODE_NAME));
-        assertEvaluateDecisionServiceEvents(events, REAL_MODEL_NAMESPACE, REAL_MODEL_NAME, TEST_EXECUTION_ID_2);
+        List<EvaluateEvent> events = testWithRealRuntime(contextVariables, expectedEvents, (model, context) -> model.evaluateDecisionService(context, DECISION_SERVICE_NODE_NAME));
+        assertEvaluateDecisionServiceEvents(events, MODEL_NAMESPACE, MODEL_NAME, TEST_EXECUTION_ID_2);
     }
 
     private static List<EvaluateEvent> testWithRealRuntime(Map<String, Object> contextVariables, int expectedEvents, BiConsumer<DecisionModel, DMNContext> modelConsumer) {
-        final DMNRuntime runtime = DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
-                DecisionTracingListenerTest.class.getResourceAsStream(REAL_MODEL_RESOURCE)
-        ));
+        final DMNRuntime runtime = buildDMNRuntime();
 
         Consumer<EvaluateEvent> eventConsumer = mock(Consumer.class);
         DecisionTracingListener listener = new DecisionTracingListener(eventConsumer);
         runtime.addListener(listener);
 
-        final DecisionModel model = new DmnDecisionModel(runtime, REAL_MODEL_NAMESPACE, REAL_MODEL_NAME, () -> TEST_EXECUTION_ID_2);
+        final DecisionModel model = new DmnDecisionModel(runtime, MODEL_NAMESPACE, MODEL_NAME, () -> TEST_EXECUTION_ID_2);
         final DMNContext context = model.newContext(contextVariables);
         modelConsumer.accept(model, context);
 
@@ -204,13 +200,13 @@ public class DecisionTracingListenerTest {
 
         EvaluateEvent beforeEvent = evaluateEvents.get(0);
         assertSame(EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE, beforeEvent.getType());
-        assertEquals(REAL_DECISION_SERVICE_NODE_ID, beforeEvent.getNodeId());
-        assertEquals(REAL_DECISION_SERVICE_NODE_NAME, beforeEvent.getNodeName());
+        assertEquals(DECISION_SERVICE_NODE_ID, beforeEvent.getNodeId());
+        assertEquals(DECISION_SERVICE_NODE_NAME, beforeEvent.getNodeName());
 
         EvaluateEvent afterEvent = evaluateEvents.get(evaluateEvents.size() - 1);
         assertSame(EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE, afterEvent.getType());
-        assertEquals(REAL_DECISION_SERVICE_NODE_ID, afterEvent.getNodeId());
-        assertEquals(REAL_DECISION_SERVICE_NODE_NAME, afterEvent.getNodeName());
+        assertEquals(DECISION_SERVICE_NODE_ID, afterEvent.getNodeId());
+        assertEquals(DECISION_SERVICE_NODE_NAME, afterEvent.getNodeName());
     }
 
     private static void assertEventMatches(String modelNamespace, String modelName, String executionId, EvaluateEvent event) {

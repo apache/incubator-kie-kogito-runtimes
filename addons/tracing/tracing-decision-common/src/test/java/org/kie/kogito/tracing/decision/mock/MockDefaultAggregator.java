@@ -36,9 +36,9 @@ public class MockDefaultAggregator extends DefaultAggregator {
     }
 
     @Override
-    public CloudEventImpl<TraceEvent> aggregate(DMNModel model, String evaluationId, List<EvaluateEvent> events) {
-        CloudEventImpl<TraceEvent> result = super.aggregate(model, evaluationId, events);
-        calls.put(evaluationId, new Pair<>(events, result));
+    public CloudEventImpl<TraceEvent> aggregate(DMNModel model, String executionId, List<EvaluateEvent> events) {
+        CloudEventImpl<TraceEvent> result = super.aggregate(model, executionId, events);
+        calls.put(executionId, new Pair<>(events, result));
         return result;
     }
 
