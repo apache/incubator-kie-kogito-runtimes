@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ import org.drools.core.common.EventFactHandle;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.core.common.InternalUnitRuntime;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.InternalWorkingMemoryEntryPoint;
 import org.drools.core.common.Memory;
@@ -135,7 +136,6 @@ import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.LiveQuery;
-import org.kie.api.runtime.rule.UnitRuntime;
 import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.kie.api.time.SessionClock;
 import org.kie.internal.event.rule.RuleEventListener;
@@ -152,7 +152,7 @@ import static org.drools.core.base.ClassObjectType.InitialFact_ObjectType;
 import static org.drools.core.common.PhreakPropagationContextFactory.createPropagationContextForFact;
 import static org.drools.core.reteoo.PropertySpecificUtil.allSetButTraitBitMask;
 
-public class UnitRuntimeImpl extends AbstractRuntime implements UnitRuntime, InternalWorkingMemory {
+public class UnitRuntimeImpl extends AbstractRuntime implements InternalUnitRuntime {
 
     public static final String ERRORMSG = "Illegal method call. This session was previously disposed.";
 
@@ -247,13 +247,13 @@ public class UnitRuntimeImpl extends AbstractRuntime implements UnitRuntime, Int
     }
 
 
-    public UnitRuntimeImpl( final long id,
-                            final InternalKnowledgeBase kBase) {
-        this(id,
+    public UnitRuntimeImpl( Application application, InternalKnowledgeBase kBase, SessionConfiguration config ) {
+        this(kBase.nextWorkingMemoryCounter(),
              kBase,
              true,
-             kBase.getSessionConfiguration(),
+             config,
              EnvironmentFactory.newEnvironment());
+        setApplication( application );
     }
 
     public UnitRuntimeImpl( final long id,
@@ -273,27 +273,6 @@ public class UnitRuntimeImpl extends AbstractRuntime implements UnitRuntime, Int
              new RuleEventListenerSupport(),
              null);
     }
-
-    public UnitRuntimeImpl( final long id,
-                            final InternalKnowledgeBase kBase,
-                            final FactHandleFactory handleFactory,
-                            final long propagationContext,
-                            final SessionConfiguration config,
-                            final InternalAgenda agenda,
-                            final Environment environment) {
-        this(id,
-             kBase,
-             handleFactory,
-             false,
-             propagationContext,
-             config,
-             environment,
-             new RuleRuntimeEventSupport(),
-             new AgendaEventSupport(),
-             new RuleEventListenerSupport(),
-             agenda);
-    }
-
 
     private UnitRuntimeImpl( final long id,
                              final InternalKnowledgeBase kBase,
@@ -1912,7 +1891,7 @@ public class UnitRuntimeImpl extends AbstractRuntime implements UnitRuntime, Int
 
     @Override
     public InternalKnowledgeRuntime getKnowledgeRuntime() {
-        throw new UnsupportedOperationException();
+        return this;
     }
 
     public SessionClock getSessionClock() {
@@ -2189,5 +2168,10 @@ public class UnitRuntimeImpl extends AbstractRuntime implements UnitRuntime, Int
         public JobsService getJobsService() {
             throw new UnsupportedOperationException( );
         }
+    }
+
+    @Override
+    public JobsService getJobsService() {
+        return null;
     }
 }

@@ -73,6 +73,18 @@ public class KieModuleModelMethod {
                 "    }\n";
     }
 
+    public String toNewUnitRuntimeMethods() {
+        return
+                "    @Override\n" +
+                "    public UnitRuntime newUnitRuntime(Application application, String unitName) {\n" +
+                "        KieBase kbase = getKieBaseForSession(unitName);\n" +
+                "        if (kbase == null) {\n" +
+                "            throw new RuntimeException(\"Unknown UnitRuntime with name '\" + unitName + \"'\");\n" +
+                "        }\n" +
+                "        return new org.kie.kogito.rules.units.impl.UnitRuntimeImpl( application, (org.drools.core.impl.InternalKnowledgeBase) kbase, (org.drools.core.SessionConfiguration) getConfForSession(unitName) );\n" +
+                "    }";
+    }
+
     public String toNewKieSessionMethods() {
         return
                 "    @Override\n" +

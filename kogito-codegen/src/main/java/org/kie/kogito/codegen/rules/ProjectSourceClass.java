@@ -5,6 +5,8 @@ import org.drools.modelcompiler.builder.KieBaseBuilder;
 import org.kie.api.KieBase;
 import org.kie.api.builder.model.KieBaseModel;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.UnitRuntime;
+import org.kie.kogito.Application;
 import org.kie.kogito.rules.KieRuntimeBuilder;
 
 public class ProjectSourceClass {
@@ -32,6 +34,8 @@ public class ProjectSourceClass {
                         "import " + KieBase.class.getCanonicalName()  + ";\n" +
                         "import " + KieBaseModel.class.getCanonicalName()  + ";\n" +
                         "import " + KieSession.class.getCanonicalName()  + ";\n" +
+                        "import " + UnitRuntime.class.getCanonicalName()  + ";\n" +
+                        "import " + Application.class.getCanonicalName()  + ";\n" +
                         "import " + KieBaseBuilder.class.getCanonicalName()  + ";\n" +
                         "\n" +
                         dependencyInjection + "\n"+
@@ -43,6 +47,8 @@ public class ProjectSourceClass {
         sb.append(modelMethod.toGetKieBaseMethods());
         sb.append("\n");
         sb.append(modelMethod.toNewKieSessionMethods());
+        sb.append("\n");
+        sb.append(modelMethod.toNewUnitRuntimeMethods());
         sb.append("\n");
         sb.append(modelMethod.toGetKieBaseForSessionMethod());
         sb.append("\n");

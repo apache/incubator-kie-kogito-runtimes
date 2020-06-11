@@ -19,6 +19,7 @@ import org.drools.core.common.EventSupport;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.core.common.InternalUnitRuntime;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.InternalWorkingMemoryActions;
 import org.drools.core.common.Memory;
@@ -70,6 +71,7 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.FactHandle.State;
 import org.kie.api.runtime.rule.LiveQuery;
 import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.UnitRuntime;
 import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.kie.api.time.SessionClock;
 import org.kie.internal.event.rule.RuleEventListener;
@@ -88,11 +90,11 @@ public final class WrappedStatefulKnowledgeSessionForRHS
                    KieRuntime,
                    Externalizable {
 
-    private StatefulKnowledgeSessionImpl delegate;
+    private InternalWorkingMemory delegate;
 
     public WrappedStatefulKnowledgeSessionForRHS(WorkingMemory workingMemory) {
         super();
-        this.delegate = (StatefulKnowledgeSessionImpl) workingMemory;
+        this.delegate = (InternalWorkingMemory) workingMemory;
     }
 
     /**
@@ -113,113 +115,113 @@ public final class WrappedStatefulKnowledgeSessionForRHS
 
     @Override
     public QueryResults getQueryResults(String queryName, Object... arguments) {
-        return delegate.getQueryResultsFromRHS(queryName, arguments);
+        return ((StatefulKnowledgeSessionImpl) delegate).getQueryResultsFromRHS(queryName, arguments);
     }
 
     // -- then just delegate
 
     public KieRuntimeLogger getLogger() {
-        return delegate.getLogger();
+        return ((StatefulKnowledgeSessionImpl) delegate).getLogger();
     }
 
     public void setLogger(KieRuntimeLogger logger) {
-        delegate.setLogger(logger);
+        ((StatefulKnowledgeSessionImpl) delegate).setLogger(logger);
     }
 
     public <T> T getKieRuntime(Class<T> cls) {
-        return delegate.getKieRuntime(cls);
+        return ((StatefulKnowledgeSessionImpl) delegate).getKieRuntime(cls);
     }
 
     public <T> T createRuntimeService(Class<T> cls) {
-        return delegate.createRuntimeService(cls);
+        return ((StatefulKnowledgeSessionImpl) delegate).createRuntimeService(cls);
     }
 
     public Map<String, WorkingMemoryEntryPoint> getEntryPointMap() {
-        return delegate.getEntryPointMap();
+        return ((StatefulKnowledgeSessionImpl) delegate).getEntryPointMap();
     }
 
     public void addEventListener(ProcessEventListener listener) {
-        delegate.addEventListener(listener);
+        ((StatefulKnowledgeSessionImpl) delegate).addEventListener(listener);
     }
 
     public Collection<ProcessEventListener> getProcessEventListeners() {
-        return delegate.getProcessEventListeners();
+        return ((StatefulKnowledgeSessionImpl) delegate).getProcessEventListeners();
     }
 
     public void removeEventListener(ProcessEventListener listener) {
-        delegate.removeEventListener(listener);
+        ((StatefulKnowledgeSessionImpl) delegate).removeEventListener(listener);
     }
 
     public KieBase getKieBase() {
-        return delegate.getKieBase();
+        return ((StatefulKnowledgeSessionImpl) delegate).getKieBase();
     }
 
     public boolean isAlive() {
-        return delegate.isAlive();
+        return ((StatefulKnowledgeSessionImpl) delegate).isAlive();
     }
 
     public void destroy() {
-        delegate.destroy();
+        ((StatefulKnowledgeSessionImpl) delegate).destroy();
     }
 
     public void update(FactHandle factHandle) {
-        delegate.update(factHandle);
+        ((StatefulKnowledgeSessionImpl) delegate).update(factHandle);
     }
 
     public void abortProcessInstance(String id) {
-        delegate.abortProcessInstance(id);
+        ((StatefulKnowledgeSessionImpl) delegate).abortProcessInstance(id);
     }
 
     public void signalEvent(String type, Object event) {
-        delegate.signalEvent(type, event);
+        ((StatefulKnowledgeSessionImpl) delegate).signalEvent(type, event);
     }
 
     public void signalEvent(String type, Object event, String processInstanceId) {
-        delegate.signalEvent(type, event, processInstanceId);
+        ((StatefulKnowledgeSessionImpl) delegate).signalEvent(type, event, processInstanceId);
     }
 
     public Globals getGlobals() {
-        return delegate.getGlobals();
+        return ((StatefulKnowledgeSessionImpl) delegate).getGlobals();
     }
 
     public <T> T execute(Command<T> command) {
-        return delegate.execute(command);
+        return ((StatefulKnowledgeSessionImpl) delegate).execute(command);
     }
 
     public void initInitialFact(InternalKnowledgeBase kBase, MarshallerReaderContext context) {
-        delegate.initInitialFact(kBase, context);
+        ((StatefulKnowledgeSessionImpl) delegate).initInitialFact(kBase, context);
     }
 
     public LiveQuery openLiveQuery(String query, Object[] arguments, ViewChangedEventListener listener) {
-        return delegate.openLiveQuery(query, arguments, listener);
+        return ((StatefulKnowledgeSessionImpl) delegate).openLiveQuery(query, arguments, listener);
     }
 
     public void reset(int handleId, long handleCounter, long propagationCounter) {
-        delegate.reset(handleId, handleCounter, propagationCounter);
+        ((StatefulKnowledgeSessionImpl) delegate).reset(handleId, handleCounter, propagationCounter);
     }
 
     public void addEventListener(RuleEventListener listener) {
-        delegate.addEventListener(listener);
+        ((StatefulKnowledgeSessionImpl) delegate).addEventListener(listener);
     }
 
     public void removeEventListener(RuleEventListener listener) {
-        delegate.removeEventListener(listener);
+        ((StatefulKnowledgeSessionImpl) delegate).removeEventListener(listener);
     }
 
     public int getId() {
-        return delegate.getId();
+        return ((StatefulKnowledgeSessionImpl) delegate).getId();
     }
 
     public void fireUntilHalt() {
-        delegate.fireUntilHalt();
+        ((StatefulKnowledgeSessionImpl) delegate).fireUntilHalt();
     }
 
     public void fireUntilHalt(AgendaFilter agendaFilter) {
-        delegate.fireUntilHalt(agendaFilter);
+        ((StatefulKnowledgeSessionImpl) delegate).fireUntilHalt(agendaFilter);
     }
 
     public void executeQueuedActions() {
-        delegate.executeQueuedActions();
+        ((StatefulKnowledgeSessionImpl) delegate).executeQueuedActions();
     }
 
     public RuleRuntimeEventSupport getRuleRuntimeEventSupport() {
@@ -236,24 +238,24 @@ public final class WrappedStatefulKnowledgeSessionForRHS
     }
 
     public long getPropagationIdCounter() {
-        return delegate.getPropagationIdCounter();
+        return ((StatefulKnowledgeSessionImpl) delegate).getPropagationIdCounter();
     }
 
     public ProcessInstance createProcessInstance(String processId, Map<String, Object> parameters) {
-        return delegate.createProcessInstance(processId, parameters);
+        return ((StatefulKnowledgeSessionImpl) delegate).createProcessInstance(processId, parameters);
     }
 
     public ProcessInstance startProcessInstance(String processInstanceId) {
-        return delegate.startProcessInstance(processInstanceId);
+        return ((StatefulKnowledgeSessionImpl) delegate).startProcessInstance(processInstanceId);
     }
 
     public ProcessInstance startProcessInstance(String processInstanceId, String trigger) {
-        return delegate.startProcessInstance(processInstanceId, trigger);
+        return ((StatefulKnowledgeSessionImpl) delegate).startProcessInstance(processInstanceId, trigger);
     }
 
     public ProcessInstance createProcessInstance(String processId, CorrelationKey correlationKey,
                                                  Map<String, Object> parameters) {
-        return delegate.createProcessInstance(processId, correlationKey, parameters);
+        return ((StatefulKnowledgeSessionImpl) delegate).createProcessInstance(processId, correlationKey, parameters);
     }
 
     public boolean equals(Object obj) {
@@ -261,19 +263,19 @@ public final class WrappedStatefulKnowledgeSessionForRHS
     }
 
     public ProcessInstance getProcessInstance(CorrelationKey correlationKey) {
-        return delegate.getProcessInstance(correlationKey);
+        return ((StatefulKnowledgeSessionImpl) delegate).getProcessInstance(correlationKey);
     }
 
     public Map<String, WorkingMemoryEntryPoint> getWorkingMemoryEntryPoints() {
-        return delegate.getWorkingMemoryEntryPoints();
+        return ((StatefulKnowledgeSessionImpl) delegate).getWorkingMemoryEntryPoints();
     }
 
     public long getLastIdleTimestamp() {
-        return delegate.getLastIdleTimestamp();
+        return ((StatefulKnowledgeSessionImpl) delegate).getLastIdleTimestamp();
     }
 
     public Entry[] getActivationParameters(long activationId) {
-        return delegate.getActivationParameters(activationId);
+        return ((StatefulKnowledgeSessionImpl) delegate).getActivationParameters(activationId);
     }
 
     public int hashCode() {
@@ -282,19 +284,19 @@ public final class WrappedStatefulKnowledgeSessionForRHS
 
     public ProcessInstance startProcess(String processId, CorrelationKey correlationKey,
                                         Map<String, Object> parameters) {
-        return delegate.startProcess(processId, correlationKey, parameters);
+        return ((StatefulKnowledgeSessionImpl) delegate).startProcess(processId, correlationKey, parameters);
     }
 
     public void registerChannel(String name, Channel channel) {
-        delegate.registerChannel(name, channel);
+        ((StatefulKnowledgeSessionImpl) delegate).registerChannel(name, channel);
     }
 
     public void unregisterChannel(String name) {
-        delegate.unregisterChannel(name);
+        ((StatefulKnowledgeSessionImpl) delegate).unregisterChannel(name);
     }
 
     public void setEndOperationListener(EndOperationListener listener) {
-        delegate.setEndOperationListener(listener);
+        ((StatefulKnowledgeSessionImpl) delegate).setEndOperationListener(listener);
     }
 
     public String toString() {
@@ -302,15 +304,15 @@ public final class WrappedStatefulKnowledgeSessionForRHS
     }
 
     public List iterateObjectsToList() {
-        return delegate.iterateObjectsToList();
+        return ((StatefulKnowledgeSessionImpl) delegate).iterateObjectsToList();
     }
 
     public List iterateNonDefaultEntryPointObjectsToList() {
-        return delegate.iterateNonDefaultEntryPointObjectsToList();
+        return ((StatefulKnowledgeSessionImpl) delegate).iterateNonDefaultEntryPointObjectsToList();
     }
 
     public Map getActivationParameters(Activation activation) {
-        return delegate.getActivationParameters(activation);
+        return ((StatefulKnowledgeSessionImpl) delegate).getActivationParameters(activation);
     }
 
     public void addEventListener(KieBaseEventListener listener) {
@@ -322,7 +324,7 @@ public final class WrappedStatefulKnowledgeSessionForRHS
     }
 
     public void submit(AtomicAction action) {
-        delegate.submit(action);
+        ((StatefulKnowledgeSessionImpl) delegate).submit(action);
     }
 
     public void removeEventListener(KieBaseEventListener listener) {
@@ -359,7 +361,7 @@ public final class WrappedStatefulKnowledgeSessionForRHS
 
     @Override
     public FactHandle insert(Object object, boolean dynamic, RuleImpl rule, TerminalNode terminalNode) {
-        return delegate.insert(object, dynamic, rule, terminalNode);
+        return ((StatefulKnowledgeSessionImpl) delegate).insert(object, dynamic, rule, terminalNode);
     }
 
     @Override
@@ -412,7 +414,7 @@ public final class WrappedStatefulKnowledgeSessionForRHS
     }
 
     public void updateTraits(InternalFactHandle h, BitMask mask, Class<?> modifiedClass, Activation activation) {
-        delegate.updateTraits(h, mask, modifiedClass, activation);
+        ((StatefulKnowledgeSessionImpl) delegate).updateTraits(h, mask, modifiedClass, activation);
     }
 
     public void update(FactHandle handle, Object object) {
@@ -437,7 +439,7 @@ public final class WrappedStatefulKnowledgeSessionForRHS
 
     public <T, K, X extends TraitableBean> Thing<K> shed(Activation activation, TraitableBean<K, X> core,
                                                          Class<T> trait) {
-        return delegate.shed(activation, core, trait);
+        return ((StatefulKnowledgeSessionImpl) delegate).shed(activation, core, trait);
     }
 
     public <T extends Memory> T getNodeMemory(MemoryFactory<T> node) {
@@ -458,7 +460,7 @@ public final class WrappedStatefulKnowledgeSessionForRHS
 
     public <T, K> T don(Activation activation, K core, Collection<Class<? extends Thing>> traits, boolean b,
                         Mode[] modes) {
-        return delegate.don(activation, core, traits, b, modes);
+        return ((StatefulKnowledgeSessionImpl) delegate).don(activation, core, traits, b, modes);
     }
 
     public NodeMemories getNodeMemories() {
@@ -474,7 +476,7 @@ public final class WrappedStatefulKnowledgeSessionForRHS
     }
 
     public <T, K> T don(Activation activation, K core, Class<T> trait, boolean b, Mode[] modes) {
-        return delegate.don(activation, core, trait, b, modes);
+        return ((StatefulKnowledgeSessionImpl) delegate).don(activation, core, trait, b, modes);
     }
 
     public void queueWorkingMemoryAction(WorkingMemoryAction action) {
@@ -782,11 +784,11 @@ public final class WrappedStatefulKnowledgeSessionForRHS
     }
 
     public Application getApplication() {
-        return delegate.getApplication();
+        return delegate instanceof UnitRuntime ? (( InternalUnitRuntime ) delegate).getApplication() : ((StatefulKnowledgeSessionImpl) delegate).getApplication();
     }
     
     @Override
     public JobsService getJobsService() {
-        return delegate.getJobsService();
+        return ((StatefulKnowledgeSessionImpl) delegate).getJobsService();
     }
 }
