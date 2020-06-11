@@ -16,8 +16,6 @@
 
 package org.drools.core.common;
 
-import static org.drools.core.common.ClassAwareObjectStore.getActualClass;
-
 import java.util.Iterator;
 
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
@@ -25,13 +23,14 @@ import org.drools.core.beliefsystem.BeliefSet;
 import org.drools.core.beliefsystem.BeliefSystem;
 import org.drools.core.beliefsystem.simple.SimpleMode;
 import org.drools.core.definitions.rule.impl.RuleImpl;
-import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.reteoo.ObjectTypeConf;
 import org.drools.core.spi.Activation;
 import org.drools.core.spi.PropagationContext;
 import org.drools.core.util.ObjectHashMap;
 import org.kie.api.internal.runtime.beliefs.Mode;
 import org.kie.api.runtime.rule.FactHandle;
+
+import static org.drools.core.common.ClassAwareObjectStore.getActualClass;
 
 /**
  * The Truth Maintenance System is responsible for tracking two things. Firstly
@@ -54,7 +53,7 @@ public class TruthMaintenanceSystem {
 
     public TruthMaintenanceSystem() {}
 
-    public TruthMaintenanceSystem(StatefulKnowledgeSessionImpl wm,
+    public TruthMaintenanceSystem(InternalWorkingMemory wm,
                                   InternalWorkingMemoryEntryPoint ep) {
         this.ep = ep;
 

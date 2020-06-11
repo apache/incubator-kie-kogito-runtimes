@@ -33,7 +33,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.UnitRuntime;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
@@ -87,7 +87,7 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
         methodDeclaration.setName("bind")
                 .addAnnotation( "Override" )
                 .addModifier(Modifier.Keyword.PROTECTED)
-                .addParameter(KieSession.class.getCanonicalName(), "runtime")
+                .addParameter(UnitRuntime.class.getCanonicalName(), "runtime")
                 .addParameter(ruleUnitDescription.getRuleUnitName(), "value")
                 .setType(void.class)
                 .setBody(methodBlock);
@@ -168,12 +168,12 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
                 .addConstructor(Modifier.Keyword.PUBLIC)
                 .addParameter(RuleUnitGenerator.ruleUnitType(canonicalName), "unit")
                 .addParameter(canonicalName, "value")
-                .addParameter(KieSession.class.getCanonicalName(), "session")
+                .addParameter(UnitRuntime.class.getCanonicalName(), "runtime")
                 .setBody(new BlockStmt().addStatement(new MethodCallExpr(
                         "super",
                         new NameExpr("unit"),
                         new NameExpr("value"),
-                        new NameExpr("session")
+                        new NameExpr("runtime")
                 )));
         classDecl.addMember(bindMethod());
         classDecl.getMembers().sort(new BodyDeclarationComparator());

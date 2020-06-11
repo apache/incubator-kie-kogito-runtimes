@@ -17,6 +17,8 @@ package org.kie.kogito.rules;
 
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.UnitRuntime;
+import org.kie.kogito.Application;
 
 public interface KieRuntimeBuilder {
     KieBase getKieBase();
@@ -32,5 +34,11 @@ public interface KieRuntimeBuilder {
 
     default KieSession newKieSession(Class<? extends RuleUnitData> ruleUnit) {
         return newKieSession(ruleUnit.getName().replace( '.', '$' ) + "KieSession");
+    }
+
+    UnitRuntime newUnitRuntime(Application application, String unitName);
+
+    default UnitRuntime newUnitRuntime(Application application, Class<? extends RuleUnitData> ruleUnit) {
+        return newUnitRuntime(application, ruleUnit.getName().replace( '.', '$' ) + "KieSession");
     }
 }

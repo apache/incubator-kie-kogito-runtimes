@@ -34,7 +34,6 @@ import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.factmodel.traits.TraitProxy;
 import org.drools.core.factmodel.traits.TraitableBean;
 import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.impl.StatefulKnowledgeSessionImpl.ObjectStoreWrapper;
 import org.drools.core.reteoo.EntryPointNode;
 import org.drools.core.reteoo.ObjectTypeConf;
@@ -78,7 +77,7 @@ public class NamedEntryPoint
     protected EntryPointId     entryPoint;
     protected EntryPointNode entryPointNode;
 
-    protected final StatefulKnowledgeSessionImpl wm;
+    protected final InternalWorkingMemory wm;
 
     protected FactHandleFactory         handleFactory;
     protected PropagationContextFactory pctxFactory;
@@ -91,7 +90,7 @@ public class NamedEntryPoint
 
     public NamedEntryPoint(EntryPointId entryPoint,
                            EntryPointNode entryPointNode,
-                           StatefulKnowledgeSessionImpl wm) {
+                           InternalWorkingMemory wm) {
         this(entryPoint,
              entryPointNode,
              wm,
@@ -100,7 +99,7 @@ public class NamedEntryPoint
 
     public NamedEntryPoint(EntryPointId entryPoint,
                            EntryPointNode entryPointNode,
-                           StatefulKnowledgeSessionImpl wm,
+                           InternalWorkingMemory wm,
                            ReentrantLock lock) {
         this.entryPoint = entryPoint;
         this.entryPointNode = entryPointNode;
@@ -110,11 +109,10 @@ public class NamedEntryPoint
         this.handleFactory = this.wm.getFactHandleFactory();
         this.pctxFactory = kBase.getConfiguration().getComponentFactory().getPropagationContextFactory();
         this.objectStore = new ClassAwareObjectStore(this.kBase.getConfiguration(), this.lock);
-        this.traitHelper = new TraitHelper( wm, this );
     }
 
     protected NamedEntryPoint( EntryPointId entryPoint,
-                               StatefulKnowledgeSessionImpl wm,
+                               InternalWorkingMemory wm,
                                FactHandleFactory handleFactory,
                                ReentrantLock lock,
                                ObjectStore objectStore ) {
@@ -123,7 +121,6 @@ public class NamedEntryPoint
         this.handleFactory = handleFactory;
         this.lock = lock;
         this.objectStore = objectStore;
-        this.traitHelper = new TraitHelper( wm, this );
     }
 
      public void lock() {
@@ -404,7 +401,7 @@ public class NamedEntryPoint
 
                 if (handle.isTraitable() && object != originalObject
                         && object instanceof TraitableBean && originalObject instanceof TraitableBean) {
-                    this.traitHelper.replaceCore(handle, object, originalObject, propagationContext.getModificationMask(), object.getClass(), activation);
+                    getTraitHelper().replaceCore(handle, object, originalObject, propagationContext.getModificationMask(), object.getClass(), activation);
                 }
 
                 update(handle, object, originalObject, typeConf, propagationContext);
@@ -499,7 +496,7 @@ public class NamedEntryPoint
         }
 
         if ( handle.isTraitable() ) {
-            traitHelper.deleteWMAssertedTraitProxies( handle, rule, terminalNode );
+            getTraitHelper().deleteWMAssertedTraitProxies( handle, rule, terminalNode );
         }
 
         final Object object = handle.getObject();
@@ -560,7 +557,7 @@ public class NamedEntryPoint
         if ( handle.isTraiting() && handle.getObject() instanceof TraitProxy ) {
             (( (TraitProxy) handle.getObject() ).getObject()).removeTrait( ( (TraitProxy) handle.getObject() )._getTypeCode() );
         } else if ( handle.isTraitable() ) {
-            traitHelper.deleteWMAssertedTraitProxies( handle, rule, terminalNode );
+            getTraitHelper().deleteWMAssertedTraitProxies( handle, rule, terminalNode );
         }
 
         this.objectStore.removeHandle( handle );
@@ -772,6 +769,9 @@ public class NamedEntryPoint
     }
 
     public TraitHelper getTraitHelper() {
+        if (this.traitHelper == null) {
+            this.traitHelper = new TraitHelper( (InternalWorkingMemoryActions) wm, this );
+        }
         return traitHelper;
     }
 

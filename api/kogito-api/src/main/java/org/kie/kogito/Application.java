@@ -15,8 +15,10 @@
 
 package org.kie.kogito;
 
+import org.kie.api.runtime.rule.UnitRuntime;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnits;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
@@ -49,6 +51,10 @@ public interface Application {
      */
     default RuleUnits ruleUnits() {
         return null;
+    }
+
+    default UnitRuntime unitRuntime(Class<? extends RuleUnitData > ruleUnit) {
+        return ruleUnits().ruleRuntimeBuilder().newUnitRuntime(this, ruleUnit);
     }
     
     /**
