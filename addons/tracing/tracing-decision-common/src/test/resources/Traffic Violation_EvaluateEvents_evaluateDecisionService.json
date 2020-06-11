@@ -1,7 +1,8 @@
 [
   {
     "type": "BEFORE_EVALUATE_DECISION_SERVICE",
-    "nanoTime": 123837246542522,
+    "timestamp": 1591883871157,
+    "nanoTime": 173954162875132,
     "executionId": "77408667-f218-40b0-a355-1bab047a3e9e",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -9,9 +10,9 @@
     "nodeName": "FineService",
     "context": {
       "Violation": {
+        "Actual Speed": 115,
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Speed Limit": 100
       }
     },
     "result": {
@@ -23,7 +24,8 @@
   },
   {
     "type": "BEFORE_EVALUATE_DECISION",
-    "nanoTime": 123837269600752,
+    "timestamp": 1591883871174,
+    "nanoTime": 173954179919229,
     "executionId": "77408667-f218-40b0-a355-1bab047a3e9e",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -31,9 +33,9 @@
     "nodeName": "Fine",
     "context": {
       "Violation": {
+        "Actual Speed": 115,
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Speed Limit": 100
       }
     },
     "result": {
@@ -60,7 +62,8 @@
   },
   {
     "type": "BEFORE_EVALUATE_DECISION_TABLE",
-    "nanoTime": 123837271743233,
+    "timestamp": 1591883871176,
+    "nanoTime": 173954181703073,
     "executionId": "77408667-f218-40b0-a355-1bab047a3e9e",
     "modelNamespace": null,
     "modelName": null,
@@ -68,9 +71,9 @@
     "nodeName": "Fine",
     "context": {
       "Violation": {
+        "Actual Speed": 115,
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Speed Limit": 100
       }
     },
     "result": {
@@ -101,7 +104,8 @@
   },
   {
     "type": "AFTER_EVALUATE_DECISION_TABLE",
-    "nanoTime": 123837288824675,
+    "timestamp": 1591883871187,
+    "nanoTime": 173954193204919,
     "executionId": "77408667-f218-40b0-a355-1bab047a3e9e",
     "modelNamespace": null,
     "modelName": null,
@@ -109,9 +113,9 @@
     "nodeName": "Fine",
     "context": {
       "Violation": {
+        "Actual Speed": 115,
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Speed Limit": 100
       }
     },
     "result": {
@@ -146,7 +150,8 @@
   },
   {
     "type": "AFTER_EVALUATE_DECISION",
-    "nanoTime": 123837289836476,
+    "timestamp": 1591883871188,
+    "nanoTime": 173954194294989,
     "executionId": "77408667-f218-40b0-a355-1bab047a3e9e",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -154,9 +159,9 @@
     "nodeName": "Fine",
     "context": {
       "Violation": {
+        "Actual Speed": 115,
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Speed Limit": 100
       },
       "Fine": {
         "Points": 3,
@@ -190,7 +195,8 @@
   },
   {
     "type": "AFTER_EVALUATE_DECISION_SERVICE",
-    "nanoTime": 123837290942929,
+    "timestamp": 1591883871189,
+    "nanoTime": 173954195347529,
     "executionId": "77408667-f218-40b0-a355-1bab047a3e9e",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -198,9 +204,9 @@
     "nodeName": "FineService",
     "context": {
       "Violation": {
+        "Actual Speed": 115,
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Speed Limit": 100
       },
       "Fine": {
         "Points": 3,

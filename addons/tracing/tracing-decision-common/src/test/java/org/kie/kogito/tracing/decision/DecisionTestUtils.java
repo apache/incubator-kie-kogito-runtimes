@@ -17,6 +17,7 @@
 package org.kie.kogito.tracing.decision;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.cloudevents.json.Json;
@@ -46,14 +47,54 @@ public class DecisionTestUtils {
     private static final TypeReference<List<EvaluateEvent>> EVALUATE_EVENT_LIST_TYPE = new TypeReference<>() {
     };
 
-    public static DMNRuntime buildDMNRuntime() {
+    public static DMNRuntime createDMNRuntime() {
         return DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
                 DecisionTestUtils.class.getResourceAsStream(MODEL_RESOURCE)
         ));
     }
 
-    public static DMNModel buildDMNModel() {
-        return buildDMNRuntime().getModel(MODEL_NAMESPACE, MODEL_NAME);
+    public static DMNModel createDMNModel() {
+        return createDMNRuntime().getModel(MODEL_NAMESPACE, MODEL_NAME);
+    }
+
+    public static Map<String, Object> getEvaluateAllContext() {
+        return Map.of(
+                "Driver", getDriver(25, 10),
+                "Violation", getViolation("speed", 115, 100)
+        );
+    }
+
+    public static Map<String, Object> getEvaluateAllContextForWarning() {
+        return Map.of(
+                "Driver", getDriver(25, 10),
+                "Violation", getViolation("speed", 95, 100)
+        );
+    }
+
+    public static Map<String, Object> getEvaluateAllContextForError() {
+        return Map.of(
+                "Violation", getViolation("speed", 115, 100)
+        );
+    }
+
+    public static Map<String, Object> getEvaluateDecisionServiceContext() {
+        return Map.of(
+                "Violation", getViolation("speed", 115, 100)
+        );
+    }
+
+    public static Map<String, Object> getEvaluateDecisionServiceContextForWarning() {
+        return Map.of(
+                "Violation", getViolation("speed", 95, 100)
+        );
+    }
+
+    public static Map<String, Object> getDriver(int age, int points) {
+        return Map.of("Age", age, "Points", points);
+    }
+
+    public static Map<String, Object> getViolation(String type, int actualSpeed, int speedLimit) {
+        return Map.of("Type", type, "Actual Speed", actualSpeed, "Speed Limit", speedLimit);
     }
 
     public static List<EvaluateEvent> readEvaluateEventsFromJsonResource(String resourceName) {

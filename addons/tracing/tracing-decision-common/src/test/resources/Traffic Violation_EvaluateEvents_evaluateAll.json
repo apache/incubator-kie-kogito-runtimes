@@ -1,7 +1,8 @@
 [
   {
     "type": "BEFORE_EVALUATE_ALL",
-    "nanoTime": 105519165833507,
+    "timestamp": 1591883831168,
+    "nanoTime": 173914173657398,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -10,8 +11,8 @@
     "context": {
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "Driver": {
         "Points": 10,
@@ -42,7 +43,8 @@
   },
   {
     "type": "BEFORE_EVALUATE_DECISION",
-    "nanoTime": 105519205928855,
+    "timestamp": 1591883831208,
+    "nanoTime": 173914214116635,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -51,8 +53,8 @@
     "context": {
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "Driver": {
         "Points": 10,
@@ -83,7 +85,8 @@
   },
   {
     "type": "BEFORE_EVALUATE_DECISION_TABLE",
-    "nanoTime": 105519208819404,
+    "timestamp": 1591883831213,
+    "nanoTime": 173914219065788,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": null,
     "modelName": null,
@@ -92,8 +95,8 @@
     "context": {
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "Driver": {
         "Points": 10,
@@ -128,7 +131,8 @@
   },
   {
     "type": "AFTER_EVALUATE_DECISION_TABLE",
-    "nanoTime": 105519224367039,
+    "timestamp": 1591883831245,
+    "nanoTime": 173914250428644,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": null,
     "modelName": null,
@@ -137,8 +141,8 @@
     "context": {
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "Driver": {
         "Points": 10,
@@ -177,7 +181,8 @@
   },
   {
     "type": "AFTER_EVALUATE_DECISION",
-    "nanoTime": 105519225810282,
+    "timestamp": 1591883831246,
+    "nanoTime": 173914251477652,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -186,16 +191,16 @@
     "context": {
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
-      },
-      "Fine": {
-        "Points": 3,
-        "Amount": 500
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "Driver": {
         "Points": 10,
         "Age": 25
+      },
+      "Fine": {
+        "Points": 3,
+        "Amount": 500
       }
     },
     "result": {
@@ -225,7 +230,8 @@
   },
   {
     "type": "BEFORE_EVALUATE_DECISION",
-    "nanoTime": 105519226311749,
+    "timestamp": 1591883831246,
+    "nanoTime": 173914251922122,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -234,16 +240,16 @@
     "context": {
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
-      },
-      "Fine": {
-        "Points": 3,
-        "Amount": 500
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "Driver": {
         "Points": 10,
         "Age": 25
+      },
+      "Fine": {
+        "Points": 3,
+        "Amount": 500
       }
     },
     "result": {
@@ -273,7 +279,8 @@
   },
   {
     "type": "BEFORE_EVALUATE_BKM",
-    "nanoTime": 105519229459175,
+    "timestamp": 1591883831247,
+    "nanoTime": 173914253050380,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -282,16 +289,16 @@
     "context": {
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
-      },
-      "Fine": {
-        "Points": 3,
-        "Amount": 500
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "Driver": {
         "Points": 10,
         "Age": 25
+      },
+      "Fine": {
+        "Points": 3,
+        "Amount": 500
       }
     },
     "result": {
@@ -321,7 +328,8 @@
   },
   {
     "type": "AFTER_EVALUATE_BKM",
-    "nanoTime": 105519231949208,
+    "timestamp": 1591883831250,
+    "nanoTime": 173914256019311,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
@@ -330,16 +338,16 @@
     "context": {
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
-      },
-      "Fine": {
-        "Points": 3,
-        "Amount": 500
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "Driver": {
         "Points": 10,
         "Age": 25
+      },
+      "Fine": {
+        "Points": 3,
+        "Amount": 500
       }
     },
     "result": {
@@ -369,7 +377,8 @@
   },
   {
     "type": "BEFORE_EVALUATE_CONTEXT_ENTRY",
-    "nanoTime": 105519233930245,
+    "timestamp": 1591883831252,
+    "nanoTime": 173914257645232,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": null,
     "modelName": null,
@@ -378,16 +387,16 @@
     "context": {
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
-      },
-      "Fine": {
-        "Points": 3,
-        "Amount": 500
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "Driver": {
         "Points": 10,
         "Age": 25
+      },
+      "Fine": {
+        "Points": 3,
+        "Amount": 500
       }
     },
     "result": {
@@ -422,27 +431,28 @@
   },
   {
     "type": "AFTER_EVALUATE_CONTEXT_ENTRY",
-    "nanoTime": 105519245136831,
+    "timestamp": 1591883831263,
+    "nanoTime": 173914269200193,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": null,
     "modelName": null,
     "nodeId": null,
     "nodeName": "Should the driver be suspended?",
     "context": {
+      "Violation": {
+        "Type": "speed",
+        "Actual Speed": 115,
+        "Speed Limit": 100
+      },
       "Driver": {
         "Points": 10,
         "Age": 25
       },
-      "Total Points": 13,
-      "Violation": {
-        "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
-      },
       "Fine": {
         "Points": 3,
         "Amount": 500
-      }
+      },
+      "Total Points": 13
     },
     "result": {
       "decisionResults": [
@@ -476,27 +486,28 @@
   },
   {
     "type": "BEFORE_EVALUATE_CONTEXT_ENTRY",
-    "nanoTime": 105519245671081,
+    "timestamp": 1591883831266,
+    "nanoTime": 173914272062181,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": null,
     "modelName": null,
     "nodeId": null,
     "nodeName": "Should the driver be suspended?",
     "context": {
+      "Violation": {
+        "Type": "speed",
+        "Actual Speed": 115,
+        "Speed Limit": 100
+      },
       "Driver": {
         "Points": 10,
         "Age": 25
       },
-      "Total Points": 13,
-      "Violation": {
-        "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
-      },
       "Fine": {
         "Points": 3,
         "Amount": 500
-      }
+      },
+      "Total Points": 13
     },
     "result": {
       "decisionResults": [
@@ -529,28 +540,29 @@
   },
   {
     "type": "AFTER_EVALUATE_CONTEXT_ENTRY",
-    "nanoTime": 105519246136991,
+    "timestamp": 1591883831268,
+    "nanoTime": 173914273633260,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": null,
     "modelName": null,
     "nodeId": null,
     "nodeName": "Should the driver be suspended?",
     "context": {
-      "Total Points": 13,
-      "Fine": {
-        "Points": 3,
-        "Amount": 500
-      },
       "Violation": {
         "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
+        "Actual Speed": 115,
+        "Speed Limit": 100
       },
       "__RESULT__": "No",
       "Driver": {
         "Points": 10,
         "Age": 25
-      }
+      },
+      "Fine": {
+        "Points": 3,
+        "Amount": 500
+      },
+      "Total Points": 13
     },
     "result": {
       "decisionResults": [
@@ -583,27 +595,28 @@
   },
   {
     "type": "AFTER_EVALUATE_DECISION",
-    "nanoTime": 105519247913916,
+    "timestamp": 1591883831269,
+    "nanoTime": 173914274425870,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
     "nodeId": "_8A408366-D8E9-4626-ABF3-5F69AA01F880",
     "nodeName": "Should the driver be suspended?",
     "context": {
+      "Violation": {
+        "Type": "speed",
+        "Actual Speed": 115,
+        "Speed Limit": 100
+      },
       "Driver": {
         "Points": 10,
         "Age": 25
       },
-      "Should the driver be suspended?": "No",
-      "Violation": {
-        "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
-      },
       "Fine": {
         "Points": 3,
         "Amount": 500
-      }
+      },
+      "Should the driver be suspended?": "No"
     },
     "result": {
       "decisionResults": [
@@ -632,27 +645,28 @@
   },
   {
     "type": "AFTER_EVALUATE_ALL",
-    "nanoTime": 105519249044999,
+    "timestamp": 1591883831270,
+    "nanoTime": 173914275474799,
     "executionId": "4ac4c69f-4925-4221-b67e-4b14ce47bef8",
     "modelNamespace": "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF",
     "modelName": "Traffic Violation",
     "nodeId": null,
     "nodeName": null,
     "context": {
+      "Violation": {
+        "Type": "speed",
+        "Actual Speed": 115,
+        "Speed Limit": 100
+      },
       "Driver": {
         "Points": 10,
         "Age": 25
       },
-      "Should the driver be suspended?": "No",
-      "Violation": {
-        "Type": "speed",
-        "Speed Limit": 100,
-        "Actual Speed": 115
-      },
       "Fine": {
         "Points": 3,
         "Amount": 500
-      }
+      },
+      "Should the driver be suspended?": "No"
     },
     "result": {
       "decisionResults": [

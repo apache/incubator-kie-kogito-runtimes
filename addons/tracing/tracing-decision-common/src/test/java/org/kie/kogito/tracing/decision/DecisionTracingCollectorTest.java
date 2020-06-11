@@ -41,7 +41,7 @@ import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_ALL_EXE
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_ALL_JSON_RESOURCE;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_JSON_RESOURCE;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.buildDMNModel;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.createDMNModel;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.readEvaluateEventsFromJsonResource;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -53,7 +53,7 @@ public class DecisionTracingCollectorTest {
 
     @BeforeAll
     public static void initModel() {
-        model = buildDMNModel();
+        model = createDMNModel();
     }
 
     @Test

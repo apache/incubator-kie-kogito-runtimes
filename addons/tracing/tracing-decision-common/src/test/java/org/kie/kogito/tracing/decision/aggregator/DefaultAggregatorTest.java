@@ -42,7 +42,7 @@ import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_DECISIO
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_JSON_RESOURCE;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.FIRST_DECISION_NODE_ID;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.LAST_DECISION_NODE_ID;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.buildDMNModel;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.createDMNModel;
 
 public class DefaultAggregatorTest {
 
@@ -50,7 +50,7 @@ public class DefaultAggregatorTest {
 
     @BeforeAll
     public static void initModel() {
-        model = buildDMNModel();
+        model = createDMNModel();
     }
 
     @Test
@@ -208,6 +208,8 @@ public class DefaultAggregatorTest {
     private static void assertTraceEventWithNotEnoughData(TraceEvent traceEvent) {
         assertTraceEvent(traceEvent, 0, 0, 0);
         assertTraceEventInternalMessage(traceEvent, InternalMessageType.NOT_ENOUGH_DATA);
+        assertSame(0L, traceEvent.getHeader().getStartTimestamp());
+        assertSame(0L, traceEvent.getHeader().getEndTimestamp());
         assertSame(0L, traceEvent.getHeader().getDuration());
     }
 

@@ -46,7 +46,12 @@ import static org.kie.kogito.tracing.decision.DecisionTestUtils.DECISION_SERVICE
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.MODEL_NAME;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.MODEL_NAMESPACE;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.buildDMNRuntime;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.createDMNRuntime;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.getEvaluateAllContext;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.getEvaluateAllContextForError;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.getEvaluateAllContextForWarning;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.getEvaluateDecisionServiceContext;
+import static org.kie.kogito.tracing.decision.DecisionTestUtils.getEvaluateDecisionServiceContextForWarning;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -83,70 +88,27 @@ public class DecisionTracingListenerTest {
 
     @Test
     public void test_Listener_RealEvaluateAll_Working() {
-        final Map<String, Object> driver = new HashMap<>();
-        driver.put("Age", 25);
-        driver.put("Points", 10);
-        final Map<String, Object> violation = new HashMap<>();
-        violation.put("Type", "speed");
-        violation.put("Actual Speed", 115);
-        violation.put("Speed Limit", 100);
-        final Map<String, Object> contextVariables = new HashMap<>();
-        contextVariables.put("Driver", driver);
-        contextVariables.put("Violation", violation);
-
-        testWithRealEvaluateAll(contextVariables, 14);
+        testWithRealEvaluateAll(getEvaluateAllContext(), 14);
     }
 
     @Test
     public void test_Listener_RealEvaluateAllWithWarnMessage_Working() {
-        final Map<String, Object> driver = new HashMap<>();
-        driver.put("Age", 25);
-        driver.put("Points", 10);
-        final Map<String, Object> violation = new HashMap<>();
-        violation.put("Type", "speed");
-        violation.put("Actual Speed", 105);
-        violation.put("Speed Limit", 100);
-        final Map<String, Object> contextVariables = new HashMap<>();
-        contextVariables.put("Driver", driver);
-        contextVariables.put("Violation", violation);
-
-        testWithRealEvaluateAll(contextVariables, 14);
+        testWithRealEvaluateAll(getEvaluateAllContextForWarning(), 14);
     }
 
     @Test
     public void test_Listener_RealEvaluateAllWithErrorMessage_Working() {
-        final Map<String, Object> violation = new HashMap<>();
-        violation.put("Type", "speed");
-        violation.put("Actual Speed", 105);
-        violation.put("Speed Limit", 100);
-        final Map<String, Object> contextVariables = new HashMap<>();
-        contextVariables.put("Violation", violation);
-
-        testWithRealEvaluateAll(contextVariables, 10);
+        testWithRealEvaluateAll(getEvaluateAllContextForError(), 10);
     }
 
     @Test
     public void test_Listener_RealEvaluateDecisionService_Working() {
-        final Map<String, Object> violation = new HashMap<>();
-        violation.put("Type", "speed");
-        violation.put("Actual Speed", 115);
-        violation.put("Speed Limit", 100);
-        final Map<String, Object> contextVariables = new HashMap<>();
-        contextVariables.put("Violation", violation);
-
-        testWithRealEvaluateDecisionService(contextVariables, 6);
+        testWithRealEvaluateDecisionService(getEvaluateDecisionServiceContext(), 6);
     }
 
     @Test
     public void test_Listener_RealEvaluateDecisionServiceWithWarnMessage_Working() {
-        final Map<String, Object> violation = new HashMap<>();
-        violation.put("Type", "speed");
-        violation.put("Actual Speed", 105);
-        violation.put("Speed Limit", 100);
-        final Map<String, Object> contextVariables = new HashMap<>();
-        contextVariables.put("Violation", violation);
-
-        testWithRealEvaluateDecisionService(contextVariables, 6);
+        testWithRealEvaluateDecisionService(getEvaluateDecisionServiceContextForWarning(), 6);
     }
 
     @Test
@@ -166,7 +128,7 @@ public class DecisionTracingListenerTest {
     }
 
     private static List<EvaluateEvent> testWithRealRuntime(Map<String, Object> contextVariables, int expectedEvents, BiConsumer<DecisionModel, DMNContext> modelConsumer) {
-        final DMNRuntime runtime = buildDMNRuntime();
+        final DMNRuntime runtime = createDMNRuntime();
 
         Consumer<EvaluateEvent> eventConsumer = mock(Consumer.class);
         DecisionTracingListener listener = new DecisionTracingListener(eventConsumer);
