@@ -52,11 +52,14 @@ import org.kie.kogito.tracing.decision.event.trace.TraceExecutionStep;
 import org.kie.kogito.tracing.decision.event.trace.TraceExecutionStepType;
 import org.kie.kogito.tracing.decision.event.trace.TraceHeader;
 import org.kie.kogito.tracing.decision.event.trace.TraceInputValue;
-import org.kie.kogito.tracing.decision.event.trace.TraceModel;
 import org.kie.kogito.tracing.decision.event.trace.TraceOutputValue;
+import org.kie.kogito.tracing.decision.event.trace.TraceResourceId;
 import org.kie.kogito.tracing.decision.event.trace.TraceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE;
+import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE;
 
 public class DefaultAggregator implements Aggregator<TraceEvent> {
 
@@ -76,7 +79,7 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 0L,
                 0L,
                 0L,
-                TraceModel.from(model),
+                TraceResourceId.from(model),
                 Stream.of(
                         Message.from(InternalMessageType.NOT_ENOUGH_DATA),
                         model == null ? Message.from(InternalMessageType.DMN_MODEL_NOT_FOUND) : null
@@ -109,7 +112,7 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 firstEvent.getTimestamp(),
                 lastEvent.getTimestamp(),
                 lastEvent.getNanoTime() - firstEvent.getNanoTime(),
-                TraceModel.from(model),
+                TraceResourceId.from(firstEvent),
                 Stream.of(
                         model == null ? Stream.of(Message.from(InternalMessageType.DMN_MODEL_NOT_FOUND)) : Stream.<Message>empty(),
                         executionStepsPair.getRight().stream(),
@@ -124,9 +127,15 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
         return CloudEventBuilder.<TraceEvent>builder()
                 .withType(TraceEvent.class.getName())
                 .withId(executionId)
-                .withSource(URI.create(URLEncoder.encode(lastEvent.getModelName(), StandardCharsets.UTF_8)))
+                .withSource(buildSource(firstEvent))
                 .withData(event)
                 .build();
+    }
+
+    private static URI buildSource(EvaluateEvent event) {
+        return event.getType() == BEFORE_EVALUATE_DECISION_SERVICE || event.getType() == AFTER_EVALUATE_DECISION_SERVICE
+               ? URI.create(String.format("%s/%s", urlEncode(event.getModelName()), urlEncode(event.getNodeName())))
+               : URI.create(urlEncode(event.getModelName()));
     }
 
     private static List<TraceInputValue> buildTraceInputValues(DMNModel model, EvaluateEvent firstEvent) {
@@ -342,4 +351,7 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
         );
     }
 
+    private static String urlEncode(String input) {
+        return URLEncoder.encode(input, StandardCharsets.UTF_8);
+    }
 }

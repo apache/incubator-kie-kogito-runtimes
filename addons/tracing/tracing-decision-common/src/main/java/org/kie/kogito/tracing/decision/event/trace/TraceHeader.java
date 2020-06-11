@@ -34,11 +34,11 @@ public class TraceHeader {
     private final long endTimestamp;
     @JsonInclude(NON_DEFAULT)
     private final long duration;
-    private final TraceModel resourceId;
+    private final TraceResourceId resourceId;
     @JsonInclude(NON_EMPTY)
     private final List<Message> messages;
 
-    public TraceHeader(TraceEventType type, String executionId, long startTs, long endTs, long duration, TraceModel resourceId, List<Message> messages) {
+    public TraceHeader(TraceEventType type, String executionId, long startTs, long endTs, long duration, TraceResourceId resourceId, List<Message> messages) {
         this.type = type;
         this.executionId = executionId;
         this.startTimestamp = startTs;
@@ -68,7 +68,7 @@ public class TraceHeader {
         return duration;
     }
 
-    public TraceModel getResourceId() {
+    public TraceResourceId getResourceId() {
         return resourceId;
     }
 
