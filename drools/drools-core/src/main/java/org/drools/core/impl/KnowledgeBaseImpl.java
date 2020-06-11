@@ -152,7 +152,7 @@ public class KnowledgeBaseImpl
 
     private KieBaseEventSupport eventSupport = new KieBaseEventSupport(this);
 
-    private final transient Set<StatefulKnowledgeSessionImpl> statefulSessions = ConcurrentHashMap.newKeySet();
+    private final transient Set<InternalWorkingMemory> statefulSessions = ConcurrentHashMap.newKeySet();
 
     // lock for entire rulebase, used for dynamic updates
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -386,7 +386,7 @@ public class KnowledgeBaseImpl
     }
 
     public Collection<? extends KieSession> getKieSessions() {
-        return Collections.unmodifiableSet( statefulSessions );
+        return (Collection<? extends KieSession>) (Collection) Collections.unmodifiableSet( statefulSessions );
     }
 
     public StatelessKieSession newStatelessKieSession(KieSessionConfiguration conf) {
@@ -630,10 +630,10 @@ public class KnowledgeBaseImpl
         return this.id;
     }
 
-    public void disposeStatefulSession(StatefulKnowledgeSessionImpl statefulSession) {
+    public void disposeStatefulSession(InternalWorkingMemory statefulSession) {
         this.statefulSessions.remove(statefulSession);
-        if (kieContainer != null) {
-            kieContainer.disposeSession( statefulSession );
+        if (kieContainer != null && statefulSession instanceof KieSession) {
+            kieContainer.disposeSession( (KieSession) statefulSession );
         }
     }
 

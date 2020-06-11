@@ -18,6 +18,7 @@ package org.kie.api.runtime;
 
 import org.kie.api.runtime.process.StatefulProcessSession;
 import org.kie.api.runtime.rule.StatefulRuleSession;
+import org.kie.api.runtime.rule.UnitRuntime;
 
 /**
  * KieSession is the most common way to interact with the engine. A KieSession
@@ -92,7 +93,8 @@ public interface KieSession
         StatefulRuleSession,
         StatefulProcessSession,
         CommandExecutor,
-        KieRuntime {
+        KieRuntime,
+        UnitRuntime {
 
     /**
      * Deprecated. use {@link #getIdentifier()} instead

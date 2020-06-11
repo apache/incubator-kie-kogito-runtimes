@@ -92,7 +92,7 @@ public interface InternalKnowledgeBase extends KieBase {
 
     ClassLoader getRootClassLoader();
 
-    void disposeStatefulSession(StatefulKnowledgeSessionImpl statefulSession);
+    void disposeStatefulSession(InternalWorkingMemory statefulSession);
 
     TripleStore getTripleStore();
 
