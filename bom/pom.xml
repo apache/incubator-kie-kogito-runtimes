@@ -339,18 +339,21 @@
       <!-- Kogito Apps Storage -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-storage-commons-api</artifactId>
+        <artifactId>kogito-persistence-commons-api</artifactId>
         <version>${project.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-storage-commons-infinispan</artifactId>
+        <artifactId>kogito-persistence-commons-infinispan</artifactId>
         <version>${project.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-storage-commons-protobuf</artifactId>
+        <artifactId>kogito-persistence-commons-protobuf</artifactId>
         <version>${project.version}</version>
+        <classifier>sources</classifier>
       </dependency>
 
       <!-- Management Console -->
