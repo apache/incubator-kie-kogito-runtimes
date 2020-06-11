@@ -1,0 +1,20 @@
+{
+  "id": "singleinject",
+  "name": "test-wf",
+  "version": "1.0",
+  "states":[
+    {
+      "name":"SimpleInject",
+      "type":"inject",
+      "start": {
+        "kind": "default"
+      },
+      "data": {
+        "name": "john"
+      },
+      "end": {
+        "kind": "terminate"
+      }
+    }
+  ]
+}

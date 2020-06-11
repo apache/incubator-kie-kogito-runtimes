@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -40,6 +42,9 @@ import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.dmn.model.api.Decision;
 import org.kie.dmn.model.api.Definitions;
+import org.kie.dmn.typesafe.DMNAllTypesIndex;
+import org.kie.dmn.typesafe.DMNTypeSafePackageName;
+import org.kie.dmn.typesafe.DMNTypeSafeTypeGenerator;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
@@ -54,21 +59,24 @@ import static java.util.stream.Collectors.toList;
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
+import static org.kie.kogito.codegen.ApplicationGenerator.logger;
 
 public class DecisionCodegen extends AbstractGenerator {
+
+    public static String STRONGLY_TYPED_CONFIGURATION_KEY = "kogito.decisions.stronglytyped";
 
     public static DecisionCodegen ofJar(Path jarPath) throws IOException {
         List<Resource> resources = new ArrayList<>();
 
-        try (ZipFile zipFile = new ZipFile( jarPath.toFile() )) {
-            Enumeration< ? extends ZipEntry> entries = zipFile.entries();
-            while ( entries.hasMoreElements() ) {
+        try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 ResourceType resourceType = determineResourceType(entry.getName());
                 if (resourceType == ResourceType.DMN) {
-                    InternalResource resource = new ByteArrayResource( readBytesFromInputStream( zipFile.getInputStream( entry ) ) );
-                    resource.setResourceType( resourceType );
-                    resource.setSourcePath( entry.getName() );
+                    InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
+                    resource.setResourceType(resourceType);
+                    resource.setSourcePath(entry.getName());
                     resources.add(resource);
                 }
             }
@@ -113,7 +121,9 @@ public class DecisionCodegen extends AbstractGenerator {
         return dmnRuntime.getModels().stream().map( model -> new DMNResource( model, path )).collect( toList() );
     }
 
-    private static final String grafanaTemplatePath = "/grafana-dashboard-template/dashboard-template.json";
+    private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
+    private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
+
     private String packageName;
     private String applicationCanonicalName;
     private DependencyInjectionAnnotator annotator;
@@ -157,13 +167,25 @@ public class DecisionCodegen extends AbstractGenerator {
             if (model.getName() == null || model.getName().isEmpty()) {
                 throw new RuntimeException("Model name should not be empty");
             }
-            DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(model, applicationCanonicalName).withDependencyInjection(annotator).withMonitoring(useMonitoring);
+
+            boolean stronglyTypedEnabled = Optional.ofNullable(context())
+                    .flatMap(c -> c.getApplicationProperty(STRONGLY_TYPED_CONFIGURATION_KEY))
+                    .map(Boolean::parseBoolean)
+                    .orElse(false);
+
+            if(stronglyTypedEnabled) {
+                tryGenerateStronglyTypedInput(model);
+            }
+            DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(model, applicationCanonicalName)
+                    .withDependencyInjection(annotator)
+                    .withMonitoring(useMonitoring)
+                    .withStronglyTyped(stronglyTypedEnabled);
             rgs.add(resourceGenerator);
         }
 
         for (DMNRestResourceGenerator resourceGenerator : rgs) {
             if (useMonitoring) {
-                generateAndStoreGrafanaDashboard(resourceGenerator);
+                generateAndStoreGrafanaDashboards(resourceGenerator);
             }
 
             storeFile(GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
@@ -172,16 +194,41 @@ public class DecisionCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private void generateAndStoreGrafanaDashboard(DMNRestResourceGenerator resourceGenerator) {
+    private void tryGenerateStronglyTypedInput(DMNModel model) {
+        try {
+            DMNTypeSafePackageName.Factory factory = m -> new DMNTypeSafePackageName("", m.getNamespace(), "");
+            DMNAllTypesIndex index = new DMNAllTypesIndex(factory, model);
+
+            Map<String, String> allTypesSourceCode = new DMNTypeSafeTypeGenerator(
+                    model,
+                    index, factory )
+                    .generateSourceCodeOfAllTypes();
+
+            allTypesSourceCode.entrySet().stream()
+                    .map(kv -> {
+                        String key = kv.getKey().replace(".", "/") + ".java";
+                        return new GeneratedFile(GeneratedFile.Type.CLASS, key, kv.getValue());
+                    })
+                    .forEach(generatedFiles::add);
+        } catch(Exception e) {
+            logger.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
+            throw e;
+        }
+    }
+
+    private void generateAndStoreGrafanaDashboards(DMNRestResourceGenerator resourceGenerator) {
         Definitions definitions = resourceGenerator.getDmnModel().getDefinitions();
         List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect( toList());
 
-        String dashboard = GrafanaConfigurationWriter.generateDashboardForDMNEndpoint(grafanaTemplatePath, resourceGenerator.getNameURL(), decisions);
-        generatedFiles.add(
-                new org.kie.kogito.codegen.GeneratedFile(
-                        org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
-                        "dashboards/dashboard-endpoint-" + resourceGenerator.getNameURL() + ".json",
-                        dashboard));
+        String operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, resourceGenerator.getNameURL());
+        String domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(domainDashboardDmnTemplate, resourceGenerator.getNameURL(), decisions);
+
+        generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
+                                                                    "dashboards/operational-dashboard-" + resourceGenerator.getNameURL() + ".json",
+                                                                    operationalDashboard));
+        generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
+                                                                    "dashboards/domain-dashboard-" + resourceGenerator.getNameURL() + ".json",
+                                                                    domainDashboard));
     }
 
     @Override
@@ -192,7 +239,7 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private void storeFile(GeneratedFile.Type type, String path, String source) {
-        generatedFiles.add(new GeneratedFile(type, path, log( source ).getBytes( StandardCharsets.UTF_8 )));
+        generatedFiles.add(new GeneratedFile(type, path, log(source).getBytes(StandardCharsets.UTF_8)));
     }
 
     public List<GeneratedFile> getGeneratedFiles() {
@@ -213,5 +260,4 @@ public class DecisionCodegen extends AbstractGenerator {
         this.moduleGenerator.withTracing(useTracing);
         return this;
     }
-
 }
