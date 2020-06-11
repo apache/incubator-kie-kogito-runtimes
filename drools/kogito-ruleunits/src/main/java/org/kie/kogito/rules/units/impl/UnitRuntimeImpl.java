@@ -242,69 +242,25 @@ public class UnitRuntimeImpl extends AbstractRuntime implements InternalUnitRunt
     // Constructors
     // ------------------------------------------------------------
 
-    public UnitRuntimeImpl() {
-
-    }
-
+    public UnitRuntimeImpl() { }
 
     public UnitRuntimeImpl( Application application, InternalKnowledgeBase kBase, SessionConfiguration config ) {
-        this(kBase.nextWorkingMemoryCounter(),
-             kBase,
-             true,
-             config,
-             EnvironmentFactory.newEnvironment());
-        setApplication( application );
-    }
+        this.id = (long) kBase.nextWorkingMemoryCounter();
+        this.application = application;
+        this.handleFactory = kBase.newFactHandleFactory();
+        this.ruleRuntimeEventSupport = new RuleRuntimeEventSupport();
+        this.agendaEventSupport = new AgendaEventSupport();
+        this.ruleEventListenerSupport = new RuleEventListenerSupport();
+        this.environment = EnvironmentFactory.newEnvironment();
+        this.propagationIdCounter = new AtomicLong(1);
 
-    public UnitRuntimeImpl( final long id,
-                            final InternalKnowledgeBase kBase,
-                            boolean initInitFactHandle,
-                            final SessionConfiguration config,
-                            final Environment environment) {
-        this(id,
-             kBase,
-             kBase != null ? kBase.newFactHandleFactory() : null,
-             initInitFactHandle,
-             1,
-             config,
-             environment,
-             new RuleRuntimeEventSupport(),
-             new AgendaEventSupport(),
-             new RuleEventListenerSupport(),
-             null);
-    }
-
-    private UnitRuntimeImpl( final long id,
-                             final InternalKnowledgeBase kBase,
-                             final FactHandleFactory handleFactory,
-                             final boolean initInitFactHandle,
-                             final long propagationContext,
-                             final SessionConfiguration config,
-                             final Environment environment,
-                             final RuleRuntimeEventSupport workingMemoryEventSupport,
-                             final AgendaEventSupport agendaEventSupport,
-                             final RuleEventListenerSupport ruleEventListenerSupport,
-                             final InternalAgenda agenda) {
-        this.id = id;
-        this.handleFactory = handleFactory;
-        this.ruleRuntimeEventSupport = workingMemoryEventSupport;
-        this.agendaEventSupport = agendaEventSupport;
-        this.ruleEventListenerSupport = ruleEventListenerSupport;
-
-        this.propagationIdCounter = new AtomicLong(propagationContext);
-        init( config, environment, propagationContext );
-        if (kBase != null) {
-            bindRuleBase( kBase, agenda, initInitFactHandle );
-        }
+        init( config, environment );
+        bindRuleBase( kBase, agenda, true );
     }
 
     public UnitRuntimeImpl setStateless( boolean stateless ) {
         this.stateless = stateless;
         return this;
-    }
-
-    public void setApplication( Application application ) {
-        this.application = application;
     }
 
     public Application getApplication() {
