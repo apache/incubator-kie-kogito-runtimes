@@ -341,19 +341,16 @@
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-persistence-commons-api</artifactId>
         <version>${project.version}</version>
-        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-persistence-commons-infinispan</artifactId>
         <version>${project.version}</version>
-        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-persistence-commons-protobuf</artifactId>
         <version>${project.version}</version>
-        <classifier>sources</classifier>
       </dependency>
 
       <!-- Management Console -->
