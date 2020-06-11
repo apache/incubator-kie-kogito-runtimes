@@ -52,6 +52,14 @@ public class TraceResourceId {
         return modelName;
     }
 
+    public String getDecisionServiceId() {
+        return decisionServiceId;
+    }
+
+    public String getDecisionServiceName() {
+        return decisionServiceName;
+    }
+
     public static TraceResourceId from(DMNModel model) {
         if (model == null) {
             return null;
