@@ -17,10 +17,8 @@
 package org.kie.kogito.rules.units;
 
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.UnitRuntime;
 import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
-import org.kie.kogito.rules.units.EntryPointDataProcessor;
-import org.kie.kogito.rules.units.SessionData;
 
 public class SessionRuleUnitInstance extends AbstractRuleUnitInstance<SessionData> {
 
@@ -28,7 +26,8 @@ public class SessionRuleUnitInstance extends AbstractRuleUnitInstance<SessionDat
         super( unit, memory, kieSession );
     }
 
-    protected void bind( KieSession runtime, SessionData memory ) {
-        memory.getDataSource().subscribe(new EntryPointDataProcessor( runtime ));
+    @Override
+    protected void bind( UnitRuntime runtime, SessionData memory ) {
+        memory.getDataSource().subscribe(new EntryPointDataProcessor( (KieSession) runtime ));
     }
 }
