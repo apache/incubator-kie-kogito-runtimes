@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * The purpose of this test is ensure that the structure of {@link DMNRuntimeEventListener} remains
  * aligned with our {@link EvaluateEventType} enum that maps {@link DMNEvent} to {@link EvaluateEvent}.
  */
-public class EvaluateEventTypeTest {
+class EvaluateEventTypeTest {
 
     private static final Map<EvaluateEventType, Pair<String, Class<?>>> CHECK_MAP = new HashMap<>() {{
         put(EvaluateEventType.BEFORE_EVALUATE_ALL, new Pair<>("beforeEvaluateAll", BeforeEvaluateAllEvent.class));
@@ -65,7 +65,7 @@ public class EvaluateEventTypeTest {
     }};
 
     @Test
-    public void test() {
+    void test() {
         for (EvaluateEventType t : EvaluateEventType.values()) {
             assertTrue(CHECK_MAP.containsKey(t), () -> String.format("Missing test entry for %s", t));
         }

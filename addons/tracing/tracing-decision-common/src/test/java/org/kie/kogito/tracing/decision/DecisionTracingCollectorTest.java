@@ -47,22 +47,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class DecisionTracingCollectorTest {
+class DecisionTracingCollectorTest {
 
     private static DMNModel model;
 
     @BeforeAll
-    public static void initModel() {
+    static void initModel() {
         model = createDMNModel();
     }
 
     @Test
-    public void test_Collector_InterleavedEvaluations_BoundariesDetector_Working() {
+    void test_Collector_InterleavedEvaluations_BoundariesDetector_Working() {
         testInterleavedEvaluations(BoundariesTerminationDetector::new);
     }
 
     @Test
-    public void test_Collector_InterleavedEvaluations_CounterDetector_Working() {
+    void test_Collector_InterleavedEvaluations_CounterDetector_Working() {
         testInterleavedEvaluations(CounterTerminationDetector::new);
     }
 

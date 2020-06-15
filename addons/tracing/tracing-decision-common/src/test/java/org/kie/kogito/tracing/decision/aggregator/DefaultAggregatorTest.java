@@ -45,17 +45,17 @@ import static org.kie.kogito.tracing.decision.DecisionTestUtils.FIRST_DECISION_N
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.LAST_DECISION_NODE_ID;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.createDMNModel;
 
-public class DefaultAggregatorTest {
+class DefaultAggregatorTest {
 
     private static DMNModel model;
 
     @BeforeAll
-    public static void initModel() {
+    static void initModel() {
         model = createDMNModel();
     }
 
     @Test
-    public void test_Aggregate_NullList_NotEnoughData() {
+    void test_Aggregate_NullList_NotEnoughData() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(model, EVALUATE_ALL_EXECUTION_ID, null);
         TraceEvent traceEvent = assertValidCloudEventAndGetData(cloudEvent, EVALUATE_ALL_EXECUTION_ID);
@@ -63,7 +63,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EmptyList_NotEnoughData() {
+    void test_Aggregate_EmptyList_NotEnoughData() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(model, EVALUATE_ALL_EXECUTION_ID, Collections.emptyList());
         TraceEvent traceEvent = assertValidCloudEventAndGetData(cloudEvent, EVALUATE_ALL_EXECUTION_ID);
@@ -71,7 +71,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateAll_ValidList_Working() {
+    void test_Aggregate_EvaluateAll_ValidList_Working() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE);
         CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(model, EVALUATE_ALL_EXECUTION_ID, events);
@@ -80,7 +80,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateAll_NullModel_DmnModelNotFound() {
+    void test_Aggregate_EvaluateAll_NullModel_DmnModelNotFound() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE);
         CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(null, EVALUATE_ALL_EXECUTION_ID, events);
@@ -90,7 +90,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateAll_ListWithOnlyFirstEvent_NoExecutionSteps() {
+    void test_Aggregate_EvaluateAll_ListWithOnlyFirstEvent_NoExecutionSteps() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE).stream()
                 .limit(1).collect(Collectors.toList());
@@ -100,7 +100,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateAll_ListWithMissingFirstBeforeEvaluateDecisionEvent_NoExecutionStepHierarchy() {
+    void test_Aggregate_EvaluateAll_ListWithMissingFirstBeforeEvaluateDecisionEvent_NoExecutionStepHierarchy() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE).stream()
                 .filter(e -> !(e.getType() == EvaluateEventType.BEFORE_EVALUATE_DECISION && FIRST_DECISION_NODE_ID.equals(e.getNodeId())))
@@ -111,7 +111,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateAll_ListWithMissingFirstAfterEvaluateDecisionEvent_NoExecutionStepHierarchy() {
+    void test_Aggregate_EvaluateAll_ListWithMissingFirstAfterEvaluateDecisionEvent_NoExecutionStepHierarchy() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE).stream()
                 .filter(e -> !(e.getType() == EvaluateEventType.AFTER_EVALUATE_DECISION && FIRST_DECISION_NODE_ID.equals(e.getNodeId())))
@@ -122,7 +122,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateAll_ListWithMissingLastBeforeEvaluateDecisionEvent_NoExecutionStepHierarchy() {
+    void test_Aggregate_EvaluateAll_ListWithMissingLastBeforeEvaluateDecisionEvent_NoExecutionStepHierarchy() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE).stream()
                 .filter(e -> !(e.getType() == EvaluateEventType.BEFORE_EVALUATE_DECISION && LAST_DECISION_NODE_ID.equals(e.getNodeId())))
@@ -133,7 +133,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateAll_ListWithMissingLastAfterEvaluateDecisionEvent_NoExecutionStepHierarchy() {
+    void test_Aggregate_EvaluateAll_ListWithMissingLastAfterEvaluateDecisionEvent_NoExecutionStepHierarchy() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE).stream()
                 .filter(e -> !(e.getType() == EvaluateEventType.AFTER_EVALUATE_DECISION && LAST_DECISION_NODE_ID.equals(e.getNodeId())))
@@ -144,7 +144,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateDecisionService_ValidList_Working() {
+    void test_Aggregate_EvaluateDecisionService_ValidList_Working() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_DECISION_SERVICE_JSON_RESOURCE);
         CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(model, EVALUATE_DECISION_SERVICE_EXECUTION_ID, events);
@@ -153,7 +153,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateDecisionService_NullModel_DmnModelNotFound() {
+    void test_Aggregate_EvaluateDecisionService_NullModel_DmnModelNotFound() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_DECISION_SERVICE_JSON_RESOURCE);
         CloudEventImpl<TraceEvent> cloudEvent = aggregator.aggregate(null, EVALUATE_DECISION_SERVICE_EXECUTION_ID, events);
@@ -163,7 +163,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateDecisionService_ListWithOnlyFirstEvent_NoExecutionSteps() {
+    void test_Aggregate_EvaluateDecisionService_ListWithOnlyFirstEvent_NoExecutionSteps() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_DECISION_SERVICE_JSON_RESOURCE).stream()
                 .limit(1).collect(Collectors.toList());
@@ -173,7 +173,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateDecisionService_ListWithMissingBeforeEvaluateDecisionEvent_NoExecutionStepHierarchy() {
+    void test_Aggregate_EvaluateDecisionService_ListWithMissingBeforeEvaluateDecisionEvent_NoExecutionStepHierarchy() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_DECISION_SERVICE_JSON_RESOURCE).stream()
                 .filter(e -> !(e.getType() == EvaluateEventType.BEFORE_EVALUATE_DECISION && DECISION_SERVICE_DECISION_ID.equals(e.getNodeId())))
@@ -184,7 +184,7 @@ public class DefaultAggregatorTest {
     }
 
     @Test
-    public void test_Aggregate_EvaluateDecisionService_ListWithMissingAfterEvaluateDecisionEvent_NoExecutionStepHierarchy() {
+    void test_Aggregate_EvaluateDecisionService_ListWithMissingAfterEvaluateDecisionEvent_NoExecutionStepHierarchy() {
         final DefaultAggregator aggregator = new DefaultAggregator();
         final List<EvaluateEvent> events = DecisionTestUtils.readEvaluateEventsFromJsonResource(EVALUATE_DECISION_SERVICE_JSON_RESOURCE).stream()
                 .filter(e -> !(e.getType() == EvaluateEventType.AFTER_EVALUATE_DECISION && DECISION_SERVICE_DECISION_ID.equals(e.getNodeId())))

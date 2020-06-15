@@ -56,16 +56,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class DecisionTracingListenerTest {
+class DecisionTracingListenerTest {
 
-    public static final String MOCKED_MODEL_NAME = "mockedModelName";
-    public static final String MOCKED_MODEL_NAMESPACE = "mockedModelNamespace";
+    static final String MOCKED_MODEL_NAME = "mockedModelName";
+    static final String MOCKED_MODEL_NAMESPACE = "mockedModelNamespace";
 
-    private static final String TEST_EXECUTION_ID_1 = "e3140fbb-49fd-4835-bb2e-682bbe02d862";
-    private static final String TEST_EXECUTION_ID_2 = "77408667-f218-40b0-a355-1bab047a3e9e";
+    static final String TEST_EXECUTION_ID_1 = "e3140fbb-49fd-4835-bb2e-682bbe02d862";
+    static final String TEST_EXECUTION_ID_2 = "77408667-f218-40b0-a355-1bab047a3e9e";
 
     @Test
-    public void test_Listener_MockedEvents_Working() {
+    void test_Listener_MockedEvents_Working() {
         DMNContextImpl context = new DMNContextImpl();
         DecisionExecutionIdUtils.inject(context, () -> TEST_EXECUTION_ID_1);
 
@@ -87,32 +87,32 @@ public class DecisionTracingListenerTest {
     }
 
     @Test
-    public void test_Listener_RealEvaluateAll_Working() {
+    void test_Listener_RealEvaluateAll_Working() {
         testWithRealEvaluateAll(getEvaluateAllContext(), 14);
     }
 
     @Test
-    public void test_Listener_RealEvaluateAllWithWarnMessage_Working() {
+    void test_Listener_RealEvaluateAllWithWarnMessage_Working() {
         testWithRealEvaluateAll(getEvaluateAllContextForWarning(), 14);
     }
 
     @Test
-    public void test_Listener_RealEvaluateAllWithErrorMessage_Working() {
+    void test_Listener_RealEvaluateAllWithErrorMessage_Working() {
         testWithRealEvaluateAll(getEvaluateAllContextForError(), 10);
     }
 
     @Test
-    public void test_Listener_RealEvaluateDecisionService_Working() {
+    void test_Listener_RealEvaluateDecisionService_Working() {
         testWithRealEvaluateDecisionService(getEvaluateDecisionServiceContext(), 6);
     }
 
     @Test
-    public void test_Listener_RealEvaluateDecisionServiceWithWarnMessage_Working() {
+    void test_Listener_RealEvaluateDecisionServiceWithWarnMessage_Working() {
         testWithRealEvaluateDecisionService(getEvaluateDecisionServiceContextForWarning(), 6);
     }
 
     @Test
-    public void test_Listener_RealEvaluateDecisionServiceWithEmptyContext_Working() {
+    void test_Listener_RealEvaluateDecisionServiceWithEmptyContext_Working() {
         final Map<String, Object> contextVariables = new HashMap<>();
         testWithRealEvaluateDecisionService(contextVariables, 6);
     }

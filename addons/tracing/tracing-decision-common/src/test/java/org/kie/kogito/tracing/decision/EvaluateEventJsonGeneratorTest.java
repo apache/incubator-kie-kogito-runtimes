@@ -56,30 +56,30 @@ import static org.mockito.Mockito.verify;
 
 /**
  * This is not a real test and should always be annotated with {@link Disabled}.
- *
+ * <p>
  * Its purpose is to demonstrate how to generate the content of the test JSON resources representing
  * the list of {@link EvaluateEvent} produced when calling {@link DMNRuntime#evaluateAll(DMNModel, DMNContext)}
  * or {@link DMNRuntime#evaluateDecisionService(DMNModel, DMNContext, String)} in case they need to be updated
  * (e.g. when adding/changing fields to the events).
  */
 @Disabled
-public class EvaluateEventJsonGeneratorTest {
+class EvaluateEventJsonGeneratorTest {
 
-    public static final ObjectMapper MAPPER = new ObjectMapper()
+    static final ObjectMapper MAPPER = new ObjectMapper()
             .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, false)
             .registerModule(new Jdk8Module())
             .registerModule(new SimpleModule()
-                    .addSerializer(ZonedDateTime .class, new ZonedDateTimeSerializer())
+                    .addSerializer(ZonedDateTime.class, new ZonedDateTimeSerializer())
                     .addDeserializer(ZonedDateTime.class, new ZonedDateTimeDeserializer()))
             .setDefaultPrettyPrinter(new TestPrettyPrinter());
 
     @Test
-    public void generateEvaluateAll() throws JsonProcessingException {
+    void generateEvaluateAll() throws JsonProcessingException {
         generate(EVALUATE_ALL_EXECUTION_ID, getEvaluateAllContext(), DecisionModel::evaluateAll, 14);
     }
 
     @Test
-    public void generateEvaluateDecisionService() throws JsonProcessingException {
+    void generateEvaluateDecisionService() throws JsonProcessingException {
         generate(EVALUATE_DECISION_SERVICE_EXECUTION_ID, getEvaluateDecisionServiceContext(), (model, context) -> model.evaluateDecisionService(context, DECISION_SERVICE_NODE_NAME), 6);
     }
 
@@ -100,7 +100,7 @@ public class EvaluateEventJsonGeneratorTest {
         System.out.println(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(eventCaptor.getAllValues()));
     }
 
-    public static class TestPrettyPrinter extends DefaultPrettyPrinter {
+    static class TestPrettyPrinter extends DefaultPrettyPrinter {
 
         public TestPrettyPrinter() {
             _arrayIndenter = DefaultIndenter.SYSTEM_LINEFEED_INSTANCE;

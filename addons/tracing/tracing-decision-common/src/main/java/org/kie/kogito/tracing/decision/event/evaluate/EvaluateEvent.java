@@ -54,64 +54,52 @@ public class EvaluateEvent {
     private EvaluateContextEntryResult contextEntryResult;
     private EvaluateDecisionTableResult decisionTableResult;
 
-    public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String modelNamespace, String modelName) {
+    private EvaluateEvent(
+            EvaluateEventType type,
+            long timestamp,
+            long nanoTime,
+            String executionId,
+            String modelNamespace,
+            String modelName,
+            String nodeId,
+            String nodeName,
+            Map<String, Object> context,
+            EvaluateResult result,
+            EvaluateContextEntryResult contextEntryResult,
+            EvaluateDecisionTableResult decisionTableResult
+    ) {
         this.type = type;
         this.timestamp = timestamp;
         this.nanoTime = nanoTime;
-        this.executionId = DecisionExecutionIdUtils.get(result.getContext());
+        this.executionId = executionId;
         this.modelNamespace = modelNamespace;
         this.modelName = modelName;
-        this.nodeId = null;
-        this.nodeName = null;
-        this.context = extractContext(result.getContext());
-        this.result = EvaluateResult.from(result);
-        this.contextEntryResult = null;
-        this.decisionTableResult = null;
+        this.nodeId = nodeId;
+        this.nodeName = nodeName;
+        this.context = context;
+        this.result = result;
+        this.contextEntryResult = contextEntryResult;
+        this.decisionTableResult = decisionTableResult;
+    }
+
+    public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String modelNamespace, String modelName) {
+        this(type, timestamp, nanoTime, DecisionExecutionIdUtils.get(result.getContext()), modelNamespace, modelName,
+                null, null, extractContext(result.getContext()), EvaluateResult.from(result), null, null);
     }
 
     public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, DMNNode node) {
-        this.type = type;
-        this.timestamp = timestamp;
-        this.nanoTime = nanoTime;
-        this.executionId = DecisionExecutionIdUtils.get(result.getContext());
-        this.modelNamespace = node.getModelNamespace();
-        this.modelName = node.getModelName();
-        this.nodeId = node.getId();
-        this.nodeName = node.getName();
-        this.context = extractContext(result.getContext());
-        this.result = EvaluateResult.from(result);
-        this.contextEntryResult = null;
-        this.decisionTableResult = null;
+        this(type, timestamp, nanoTime, DecisionExecutionIdUtils.get(result.getContext()), node.getModelNamespace(), node.getModelName(),
+                node.getId(), node.getName(), extractContext(result.getContext()), EvaluateResult.from(result), null, null);
     }
 
     public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String nodeName, EvaluateContextEntryResult contextEntryResult) {
-        this.type = type;
-        this.timestamp = timestamp;
-        this.nanoTime = nanoTime;
-        this.executionId = DecisionExecutionIdUtils.get(result.getContext());
-        this.modelNamespace = null;
-        this.modelName = null;
-        this.nodeId = null;
-        this.nodeName = nodeName;
-        this.context = extractContext(result.getContext());
-        this.result = EvaluateResult.from(result);
-        this.contextEntryResult = contextEntryResult;
-        this.decisionTableResult = null;
+        this(type, timestamp, nanoTime, DecisionExecutionIdUtils.get(result.getContext()), null, null, null,
+                nodeName, extractContext(result.getContext()), EvaluateResult.from(result), contextEntryResult, null);
     }
 
     public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String nodeName, EvaluateDecisionTableResult decisionTableResult) {
-        this.type = type;
-        this.timestamp = timestamp;
-        this.nanoTime = nanoTime;
-        this.executionId = DecisionExecutionIdUtils.get(result.getContext());
-        this.modelNamespace = null;
-        this.modelName = null;
-        this.nodeId = null;
-        this.nodeName = nodeName;
-        this.context = extractContext(result.getContext());
-        this.result = EvaluateResult.from(result);
-        this.contextEntryResult = null;
-        this.decisionTableResult = decisionTableResult;
+        this(type, timestamp, nanoTime, DecisionExecutionIdUtils.get(result.getContext()), null, null,
+                null, nodeName, extractContext(result.getContext()), EvaluateResult.from(result), null, decisionTableResult);
     }
 
     private EvaluateEvent() {
