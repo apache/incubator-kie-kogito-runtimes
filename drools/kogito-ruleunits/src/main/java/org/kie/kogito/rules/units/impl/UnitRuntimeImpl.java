@@ -66,6 +66,7 @@ import org.drools.core.common.ObjectStore;
 import org.drools.core.common.ObjectTypeConfigurationRegistry;
 import org.drools.core.common.PropagationContextFactory;
 import org.drools.core.common.TruthMaintenanceSystem;
+import org.drools.core.common.UnitAgenda;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.definitions.rule.impl.RuleImpl;
@@ -251,11 +252,9 @@ public class UnitRuntimeImpl extends AbstractRuntime implements InternalUnitRunt
         this.ruleRuntimeEventSupport = new RuleRuntimeEventSupport();
         this.agendaEventSupport = new AgendaEventSupport();
         this.ruleEventListenerSupport = new RuleEventListenerSupport();
-        this.environment = EnvironmentFactory.newEnvironment();
-        this.propagationIdCounter = new AtomicLong(1);
 
-        init( config, environment );
-        bindRuleBase( kBase, agenda, true );
+        init( config, EnvironmentFactory.newEnvironment(), 1 );
+        bindRuleBase( kBase );
     }
 
     public UnitRuntimeImpl setStateless( boolean stateless ) {
@@ -265,10 +264,6 @@ public class UnitRuntimeImpl extends AbstractRuntime implements InternalUnitRunt
 
     public Application getApplication() {
         return application;
-    }
-
-    protected void init( SessionConfiguration config, Environment environment) {
-        init( config, environment, 1 );
     }
 
     private void init( SessionConfiguration config, Environment environment, long propagationContext ) {
@@ -308,7 +303,7 @@ public class UnitRuntimeImpl extends AbstractRuntime implements InternalUnitRunt
         }
     }
 
-    protected void bindRuleBase( InternalKnowledgeBase kBase, InternalAgenda agenda, boolean initInitFactHandle ) {
+    private void bindRuleBase( InternalKnowledgeBase kBase ) {
         this.kBase = kBase;
 
         this.nodeMemories = new ConcurrentNodeMemories(kBase, DEFAULT_RULE_UNIT);
@@ -316,21 +311,14 @@ public class UnitRuntimeImpl extends AbstractRuntime implements InternalUnitRunt
 
         this.pctxFactory = kBase.getConfiguration().getComponentFactory().getPropagationContextFactory();
 
-        if (agenda == null) {
-            this.agenda = kBase.getConfiguration().getComponentFactory().getAgendaFactory().createAgenda(kBase);
-        } else {
-            this.agenda = agenda;
-        }
-        this.agenda.setWorkingMemory(this);
+        this.agenda = new UnitAgenda( this );
 
         RuleBaseConfiguration conf = kBase.getConfiguration();
         this.sequential = conf.isSequential();
 
         initDefaultEntryPoint();
         updateEntryPointsCache();
-        if (initInitFactHandle) {
-            this.initialFactHandle = initInitialFact(kBase, null);
-        }
+        this.initialFactHandle = initInitialFact(kBase, null);
     }
 
     @Override
@@ -1201,14 +1189,6 @@ public class UnitRuntimeImpl extends AbstractRuntime implements InternalUnitRunt
 
     public InternalAgenda getAgenda() {
         return this.agenda;
-    }
-
-    public void clearAgenda() {
-        this.agenda.clearAndCancel();
-    }
-
-    public void clearAgendaGroup(final String group) {
-        this.agenda.clearAndCancelAgendaGroup(group);
     }
 
     public void clearActivationGroup(final String group) {

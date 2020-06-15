@@ -15,9 +15,6 @@
 
 package org.drools.compiler.integrationtests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,6 +44,9 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.utils.KieHelper;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ExecutionFlowControlTest extends CommonTestMethodBase {
 
@@ -453,14 +453,14 @@ public class ExecutionFlowControlTest extends CommonTestMethodBase {
         ruleItem1.getRuleExecutor().evaluateNetwork(wm.getAgenda());
         assertEquals(3, ruleItem1.getRuleExecutor().getLeftTupleList().size());
 
-        agenda.fireNextItem( null, 0, 0 );
+        agenda.fireAllRules( null, 0 );
         assertEquals( 1, group1.size() );
-        assertEquals( 2, ruleItem1.getRuleExecutor().getLeftTupleList().size() );
+        assertEquals( 3, ruleItem1.getRuleExecutor().getLeftTupleList().size() );
 
         ksession.update( brieHandle, brie );
         assertEquals( 1, group1.size() );
         ruleItem1.getRuleExecutor().evaluateNetwork(wm.getAgenda());
-        assertEquals(2, ruleItem1.getRuleExecutor().getLeftTupleList().size());
+        assertEquals(3, ruleItem1.getRuleExecutor().getLeftTupleList().size());
 
         AgendaGroup group2 = agenda.getAgendaGroup( "group2" );
         agenda.setFocus( group2);
@@ -469,13 +469,13 @@ public class ExecutionFlowControlTest extends CommonTestMethodBase {
         ruleItem2.getRuleExecutor().evaluateNetwork(wm.getAgenda());
         assertEquals(3, ruleItem2.getRuleExecutor().getLeftTupleList().size());
 
-        agenda.fireNextItem( null, 0, 0 );
+        agenda.fireAllRules( null, 0 );
         assertEquals( 1, group2.size() );
-        assertEquals( 2, ruleItem2.getRuleExecutor().getLeftTupleList().size() );
+        assertEquals( 3, ruleItem2.getRuleExecutor().getLeftTupleList().size() );
 
         ksession.update( brieHandle, brie );
         assertEquals( 1, group2.size() );
-        assertEquals( 2, ruleItem2.getRuleExecutor().getLeftTupleList().size() );
+        assertEquals( 3, ruleItem2.getRuleExecutor().getLeftTupleList().size() );
     }
 
     @Test

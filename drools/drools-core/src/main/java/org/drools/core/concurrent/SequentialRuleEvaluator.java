@@ -16,7 +16,7 @@
 
 package org.drools.core.concurrent;
 
-import org.drools.core.common.DefaultAgenda;
+import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalAgendaGroup;
 import org.drools.core.phreak.RuleAgendaItem;
 import org.drools.core.spi.KnowledgeHelper;
@@ -28,7 +28,7 @@ public class SequentialRuleEvaluator extends AbstractRuleEvaluator implements Ru
 
     private final KnowledgeHelper knowledgeHelper;
 
-    public SequentialRuleEvaluator( DefaultAgenda agenda ) {
+    public SequentialRuleEvaluator( InternalAgenda agenda ) {
         super(agenda);
         sequential = agenda.getWorkingMemory().getKnowledgeBase().getConfiguration().isSequential();
         knowledgeHelper = newKnowledgeHelper();

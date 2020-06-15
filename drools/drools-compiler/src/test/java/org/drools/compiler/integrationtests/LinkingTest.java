@@ -21,7 +21,6 @@ import java.util.List;
 import org.drools.core.base.ClassObjectType;
 import org.drools.core.common.AgendaItem;
 import org.drools.core.common.InternalAgenda;
-import org.drools.core.common.InternalAgendaGroup;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.MemoryFactory;
 import org.drools.core.impl.InternalKnowledgeBase;
@@ -1684,8 +1683,7 @@ public class LinkingTest {
         wm.flushPropagations();
 
         InternalAgenda agenda = ( InternalAgenda ) wm.getAgenda();
-        InternalAgendaGroup group = (InternalAgendaGroup) agenda.getNextFocus();
-        AgendaItem item = (AgendaItem) group.remove();
+        AgendaItem item = agenda.peekNextRule();
         RuleExecutor ruleExecutor = ((RuleAgendaItem)item).getRuleExecutor();
         int count = ruleExecutor.evaluateNetworkAndFire(wm, null, 0, -1);
         //assertEquals(3, count );

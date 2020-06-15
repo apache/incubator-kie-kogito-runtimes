@@ -210,16 +210,6 @@ public interface WorkingMemory extends WorkingMemoryEventManager, WorkingMemoryE
     void setAsyncExceptionHandler(AsyncExceptionHandler handler);
 
     /**
-     * Clear the Agenda. Iterates over each AgendaGroup cancalling all Activations.
-     */
-    void clearAgenda();
-
-    /**
-     * Clear the Agenda Group, cancelling all its Activations.
-     */
-    void clearAgendaGroup(String group);
-
-    /**
      * Clears the Activation Group, cancellings all its Activations
      * @param group
      */

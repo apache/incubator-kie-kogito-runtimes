@@ -731,14 +731,6 @@ public final class WrappedStatefulKnowledgeSessionForRHS
         delegate.cancelActivation(activation, declarativeAgenda);
     }
 
-    public void clearAgenda() {
-        delegate.clearAgenda();
-    }
-
-    public void clearAgendaGroup(String group) {
-        delegate.clearAgendaGroup(group);
-    }
-
     public void clearActivationGroup(String group) {
         delegate.clearActivationGroup(group);
     }

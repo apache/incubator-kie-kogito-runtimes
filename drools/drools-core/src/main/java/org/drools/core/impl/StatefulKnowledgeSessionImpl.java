@@ -1284,14 +1284,6 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
         return this.agenda;
     }
 
-    public void clearAgenda() {
-        this.agenda.clearAndCancel();
-    }
-
-    public void clearAgendaGroup(final String group) {
-        this.agenda.clearAndCancelAgendaGroup(group);
-    }
-
     public void clearActivationGroup(final String group) {
         this.agenda.clearAndCancelActivationGroup(group);
     }

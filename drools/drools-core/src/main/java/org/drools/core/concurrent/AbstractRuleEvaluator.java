@@ -17,15 +17,15 @@
 package org.drools.core.concurrent;
 
 import org.drools.core.RuleBaseConfiguration;
-import org.drools.core.common.DefaultAgenda;
+import org.drools.core.common.InternalAgenda;
 import org.drools.core.phreak.RuleAgendaItem;
 import org.drools.core.spi.KnowledgeHelper;
 import org.kie.api.runtime.rule.AgendaFilter;
 
 public class AbstractRuleEvaluator {
-    private final DefaultAgenda agenda;
+    private final InternalAgenda agenda;
 
-    public AbstractRuleEvaluator( DefaultAgenda agenda ) {
+    public AbstractRuleEvaluator( InternalAgenda agenda ) {
         this.agenda = agenda;
     }
 

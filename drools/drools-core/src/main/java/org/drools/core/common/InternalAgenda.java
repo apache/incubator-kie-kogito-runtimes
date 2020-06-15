@@ -79,17 +79,6 @@ public interface InternalAgenda
      */
     void deactivateRuleFlowGroup(String name);
 
-    AgendaGroup[] getAgendaGroups();
-
-    AgendaGroup[] getStack();
-
-    /**
-     * Iterates all the <code>AgendGroup<code>s in the focus stack returning the total number of <code>Activation</code>s
-     * @return
-     *      total number of <code>Activation</code>s on the focus stack
-     */
-    int focusStackSize();
-
     /**
      * Iterates all the modules in the focus stack returning the total number of <code>Activation</code>s
      * @return
@@ -98,11 +87,6 @@ public interface InternalAgenda
     int agendaSize();
 
     Activation[] getActivations();
-
-    /**
-     * Clears all Activations from the Agenda
-     */
-    void clearAndCancel();
 
     /**
      * Clears all Activations from an Agenda Group. Any Activations that are also in an Xor Group are removed the
@@ -136,8 +120,6 @@ public interface InternalAgenda
      */
     String getFocusName();
 
-    int fireNextItem(AgendaFilter filter, int fireCount, int fireLimit);
-
     AgendaItem createAgendaItem(RuleTerminalNodeLeftTuple rtnLeftTuple,
                                 int salience,
                                 PropagationContext context,
@@ -155,8 +137,6 @@ public interface InternalAgenda
      * @return true if the activation was really added, and not ignored in cases of lock-on-active or no-loop
      */
     void modifyActivation(final AgendaItem activation, boolean previouslyActive);
-
-    void addAgendaGroup(final AgendaGroup agendaGroup);
 
     boolean isDeclarativeAgenda();
 
@@ -263,10 +243,9 @@ public interface InternalAgenda
     void addAgendaGroupOnStack(AgendaGroup agendaGroup);
 
     void evaluateEagerList();
+    void evaluateQueriesForRule(RuleAgendaItem item);
 
     Map<String,InternalActivationGroup> getActivationGroupsMap();
-
-    InternalAgendaGroup getNextFocus();
 
     LinkedList<AgendaGroup> getStackList();
 

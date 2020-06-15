@@ -462,16 +462,6 @@ public class DummyWorkingMemory implements InternalWorkingMemory,
     }
 
     @Override
-    public void clearAgenda() {
-
-    }
-
-    @Override
-    public void clearAgendaGroup(String group) {
-
-    }
-
-    @Override
     public void clearActivationGroup(String group) {
 
     }
