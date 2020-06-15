@@ -21,29 +21,29 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.kie.kogito.tracing.decision.event.common.Message;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 public class TraceHeader {
 
     private final TraceEventType type;
     private final String executionId;
-    @JsonInclude(NON_DEFAULT)
-    private final long startTimestamp;
-    @JsonInclude(NON_DEFAULT)
-    private final long endTimestamp;
-    @JsonInclude(NON_DEFAULT)
-    private final long duration;
+    @JsonInclude(NON_NULL)
+    private final Long startTimestamp;
+    @JsonInclude(NON_NULL)
+    private final Long endTimestamp;
+    @JsonInclude(NON_NULL)
+    private final Long duration;
     private final TraceResourceId resourceId;
     @JsonInclude(NON_EMPTY)
     private final List<Message> messages;
 
-    public TraceHeader(TraceEventType type, String executionId, long startTs, long endTs, long duration, TraceResourceId resourceId, List<Message> messages) {
+    public TraceHeader(TraceEventType type, String executionId, Long startTs, Long endTs, Long duration, TraceResourceId resourceId, List<Message> messages) {
         this.type = type;
         this.executionId = executionId;
-        this.startTimestamp = startTs;
-        this.endTimestamp = endTs;
-        this.duration = duration;
+        this.startTimestamp = startTs == null || startTs <= 0 ? null : startTs;
+        this.endTimestamp = endTs == null || endTs <= 0 ? null : endTs;
+        this.duration = duration == null || duration <= 0 ? null : duration;
         this.resourceId = resourceId;
         this.messages = messages;
     }
@@ -56,15 +56,15 @@ public class TraceHeader {
         return executionId;
     }
 
-    public long getStartTimestamp() {
+    public Long getStartTimestamp() {
         return startTimestamp;
     }
 
-    public long getEndTimestamp() {
+    public Long getEndTimestamp() {
         return endTimestamp;
     }
 
-    public long getDuration() {
+    public Long getDuration() {
         return duration;
     }
 

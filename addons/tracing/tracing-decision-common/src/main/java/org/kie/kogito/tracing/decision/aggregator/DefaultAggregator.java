@@ -76,9 +76,9 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
         TraceHeader header = new TraceHeader(
                 TraceEventType.DMN,
                 executionId,
-                0L,
-                0L,
-                0L,
+                null,
+                null,
+                null,
                 TraceResourceId.from(model),
                 Stream.of(
                         Message.from(InternalMessageType.NOT_ENOUGH_DATA),

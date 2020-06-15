@@ -33,6 +33,7 @@ import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
 import org.kie.kogito.tracing.decision.event.trace.TraceEventType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.tracing.decision.DecisionTestUtils.DECISION_SERVICE_DECISION_ID;
@@ -208,9 +209,9 @@ public class DefaultAggregatorTest {
     private static void assertTraceEventWithNotEnoughData(TraceEvent traceEvent) {
         assertTraceEvent(traceEvent, 0, 0, 0);
         assertTraceEventInternalMessage(traceEvent, InternalMessageType.NOT_ENOUGH_DATA);
-        assertSame(0L, traceEvent.getHeader().getStartTimestamp());
-        assertSame(0L, traceEvent.getHeader().getEndTimestamp());
-        assertSame(0L, traceEvent.getHeader().getDuration());
+        assertNull(traceEvent.getHeader().getStartTimestamp());
+        assertNull(traceEvent.getHeader().getEndTimestamp());
+        assertNull(traceEvent.getHeader().getDuration());
     }
 
     private static void assertTraceEvent(TraceEvent traceEvent, int inputsSize, int outputsSize, int executionStepsSize) {
