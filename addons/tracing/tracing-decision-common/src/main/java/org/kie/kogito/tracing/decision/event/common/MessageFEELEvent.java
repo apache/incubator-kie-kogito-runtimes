@@ -22,20 +22,21 @@ import org.kie.dmn.api.feel.runtime.events.FEELEvent;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 public class MessageFEELEvent {
+
     private final FEELEvent.Severity severity;
     private final String message;
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = PositiveIntegerFilter.class)
-    private final int line;
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = PositiveIntegerFilter.class)
-    private final int column;
+    @JsonInclude(NON_NULL)
+    private final Integer line;
+    @JsonInclude(NON_NULL)
+    private final Integer column;
     @JsonInclude(NON_NULL)
     private final MessageExceptionField sourceException;
 
-    public MessageFEELEvent(FEELEvent.Severity severity, String message, int line, int column, MessageExceptionField sourceException) {
+    public MessageFEELEvent(FEELEvent.Severity severity, String message, Integer line, Integer column, MessageExceptionField sourceException) {
         this.severity = severity;
         this.message = message;
-        this.line = line;
-        this.column = column;
+        this.line = line == null || line < 0 ? null : line;
+        this.column = column == null || column < 0 ? null : column;
         this.sourceException = sourceException;
     }
 
@@ -47,11 +48,11 @@ public class MessageFEELEvent {
         return message;
     }
 
-    public int getLine() {
+    public Integer getLine() {
         return line;
     }
 
-    public int getColumn() {
+    public Integer getColumn() {
         return column;
     }
 
@@ -70,21 +71,5 @@ public class MessageFEELEvent {
                 feelEvent.getColumn(),
                 MessageExceptionField.from(feelEvent.getSourceException())
         );
-    }
-
-    public static class PositiveIntegerFilter {
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof Integer) {
-                return (Integer) o < 0;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return 0;
-        }
     }
 }
