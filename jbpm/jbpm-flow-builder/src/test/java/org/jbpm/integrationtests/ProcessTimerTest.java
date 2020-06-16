@@ -37,7 +37,7 @@ public class ProcessTimerTest extends AbstractBaseTest {
     private static final Logger logger = LoggerFactory.getLogger(ProcessTimerTest.class);
 
     @Test
-	public void testIncorrectTimerNode() {
+	void testIncorrectTimerNode() {
 		Reader source = new StringReader(
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 			"<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
@@ -68,7 +68,7 @@ public class ProcessTimerTest extends AbstractBaseTest {
 	}
 
     @Test
-	public void testOnEntryTimerWorkItemExecuted() {
+	void testOnEntryTimerWorkItemExecuted() {
 		Reader source = new StringReader(
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 			"<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +

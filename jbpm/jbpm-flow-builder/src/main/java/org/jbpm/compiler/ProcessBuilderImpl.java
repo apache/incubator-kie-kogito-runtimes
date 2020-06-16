@@ -320,11 +320,8 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
         //Migrate v4 ruleflows to v5
         String xml = RuleFlowMigrator.convertReaderToString(reader);
 
-        if (RuleFlowMigrator.needToMigrateRFM(xml)) {
-            // Not a current version RFM convert it.
-            xml = RuleFlowMigrator.portRFMToCurrentVersion(xml);
-        } else if (RuleFlowMigrator.needToMigrateRF(xml)) {
-            // Not a current version RF convert it.
+        if (RuleFlowMigrator.needToMigrateRFM(xml) || RuleFlowMigrator.needToMigrateRF(xml)) {
+            // Not a current version RFM or RF convert it.
             xml = RuleFlowMigrator.portRFMToCurrentVersion(xml);
         }
         //

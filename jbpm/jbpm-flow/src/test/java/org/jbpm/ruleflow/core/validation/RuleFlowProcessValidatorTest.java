@@ -51,7 +51,7 @@ public class RuleFlowProcessValidatorTest {
     }
 
     @Test
-    public void testAddErrorMessage() {
+    void testAddErrorMessage() {
         when(node.getName()).thenReturn("nodeName");
         when(node.getId()).thenReturn(Long.MAX_VALUE);
         validator.addErrorMessage(process,
@@ -65,7 +65,7 @@ public class RuleFlowProcessValidatorTest {
     }
 
     @Test
-    public void testDynamicNodeValidationInNotDynamicProcess() {
+    void testDynamicNodeValidationInNotDynamicProcess() {
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process");
         process.setName("Dynamic Node Process");
@@ -100,7 +100,7 @@ public class RuleFlowProcessValidatorTest {
     }
 
     @Test
-    public void testDynamicNodeValidationInDynamicProcess() {
+    void testDynamicNodeValidationInDynamicProcess() {
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process");
         process.setName("Dynamic Node Process");
@@ -138,7 +138,7 @@ public class RuleFlowProcessValidatorTest {
     }
 
     @Test
-    public void testEmptyPackageName() {
+    void testEmptyPackageName() {
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process");
         process.setName("Empty Package Name Process");
@@ -152,7 +152,7 @@ public class RuleFlowProcessValidatorTest {
     }
 
     @Test
-    public void testNoPackageName() {
+    void testNoPackageName() {
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process");
         process.setName("No Package Name Process");
@@ -165,7 +165,7 @@ public class RuleFlowProcessValidatorTest {
     }
 
     @Test
-    public void testCompositeNodeNoStart() {
+    void testCompositeNodeNoStart() {
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process.process");
         process.setName("Process");

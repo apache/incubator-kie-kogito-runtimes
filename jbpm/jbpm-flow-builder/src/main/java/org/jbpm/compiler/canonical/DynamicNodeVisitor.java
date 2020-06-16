@@ -66,10 +66,10 @@ public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode>
     }
 
     private MethodCallExpr getActivationConditionStatement(DynamicNode node, VariableScope scope) {
-        return getFactoryMethod(getNodeId(node), METHOD_ACTIVATION_EXPRESSION, createLambdaExpr((String) node.getActivationCondition(), scope));
+        return getFactoryMethod(getNodeId(node), METHOD_ACTIVATION_EXPRESSION, createLambdaExpr(node.getActivationCondition(), scope));
     }
 
     private MethodCallExpr getCompletionConditionStatement(DynamicNode node, VariableScope scope) {
-        return getFactoryMethod(getNodeId(node), METHOD_COMPLETION_EXPRESSION, createLambdaExpr((String) node.getCompletionCondition(), scope));
+        return getFactoryMethod(getNodeId(node), METHOD_COMPLETION_EXPRESSION, createLambdaExpr(node.getCompletionCondition(), scope));
     }
 }

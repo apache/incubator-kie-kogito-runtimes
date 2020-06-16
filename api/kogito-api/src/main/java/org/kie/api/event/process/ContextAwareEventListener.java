@@ -26,10 +26,12 @@ public class ContextAwareEventListener extends DefaultProcessEventListener {
         this.action = action;
     }
 
+    @Override
     public void afterNodeLeft(ProcessNodeLeftEvent event) {
         action.accept(this);
     }
 
+    @Override
     public void afterVariableChanged(ProcessVariableChangedEvent event) {
         action.accept(this);
     }

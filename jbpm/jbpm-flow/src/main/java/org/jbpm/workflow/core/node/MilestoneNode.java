@@ -55,29 +55,28 @@ public class MilestoneNode extends StateBasedNode implements Constrainable {
     public void validateAddIncomingConnection(final String type, final Connection connection) {
         super.validateAddIncomingConnection(type, connection);
         if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
-            throw new IllegalArgumentException(
-                    "This type of node [" + connection.getTo().getMetaData().get(UNIQUE_ID) + ", " + connection.getTo().getName()
-                            + "] only accepts default incoming connection type!");
+            throwValidationException(connection, "only accepts default incoming connection type!");
         }
-        if (getFrom() != null && !"true".equals(System.getProperty("jbpm.enable.multi.con"))) {
-            throw new IllegalArgumentException(
-                    "This type of node [" + connection.getTo().getMetaData().get(UNIQUE_ID) + ", " + connection.getTo().getName()
-                            + "] cannot have more than one incoming connection!");
+        if (getFrom() != null && !Boolean.parseBoolean(System.getProperty("jbpm.enable.multi.con"))) {
+            throwValidationException(connection, "cannot have more than one incoming connection!");
         }
     }
 
     public void validateAddOutgoingConnection(final String type, final Connection connection) {
         super.validateAddOutgoingConnection(type, connection);
         if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
-            throw new IllegalArgumentException(
-                    "This type of node [" + connection.getFrom().getMetaData().get(UNIQUE_ID) + ", " + connection.getFrom().getName()
-                            + "] only accepts default outgoing connection type!");
+            throwValidationException(connection, "only accepts default outgoing connection type!");
         }
-        if (getTo() != null && !"true".equals(System.getProperty("jbpm.enable.multi.con"))) {
-            throw new IllegalArgumentException(
-                    "This type of node [" + connection.getFrom().getMetaData().get(UNIQUE_ID) + ", " + connection.getFrom().getName()
-                            + "] cannot have more than one outgoing connection!");
+        if (getTo() != null && !Boolean.parseBoolean(System.getProperty("jbpm.enable.multi.con"))) {
+            throwValidationException(connection, "cannot have more than one outgoing connection!");
         }
+    }
+
+    private static void throwValidationException(Connection connection, String msg) {
+        throw new IllegalArgumentException("This type of node ["
+                + connection.getFrom().getMetaData().get(UNIQUE_ID) + ", "
+                + connection.getFrom().getName() + "] "
+                + msg);
     }
 
 }
