@@ -120,7 +120,7 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 executionId,
                 firstEvent.getTimestamp(),
                 lastEvent.getTimestamp(),
-                lastEvent.getNanoTime() - firstEvent.getNanoTime(),
+                computeDurationMillis(firstEvent, lastEvent),
                 TraceResourceId.from(firstEvent),
                 Stream.of(
                         model == null ? Stream.of(Message.from(InternalMessageType.DMN_MODEL_NOT_FOUND)) : Stream.<Message>empty(),
@@ -239,7 +239,7 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
 
         long duration = Optional.ofNullable(stackEntry)
                 .map(DefaultAggregatorStackEntry::getBeforeEvent)
-                .map(beforeEvent -> afterEvent.getNanoTime() - beforeEvent.getNanoTime())
+                .map(beforeEvent -> computeDurationMillis(beforeEvent, afterEvent))
                 .orElse(0L);
 
         List<TraceExecutionStep> children = Optional.ofNullable(stackEntry)
@@ -316,6 +316,10 @@ public class DefaultAggregator implements Aggregator<TraceEvent> {
                 );
 
         return new TraceExecutionStep(TraceExecutionStepType.DMN_DECISION_TABLE, duration, afterEvent.getDecisionTableResult().getDecisionTableName(), null, Collections.emptyList(), additionalData, children);
+    }
+
+    private static long computeDurationMillis(EvaluateEvent beginEvent, EvaluateEvent endEvent) {
+        return Math.round((endEvent.getNanoTime() - beginEvent.getNanoTime()) / 1000000.0);
     }
 
     private static TraceInputValue traceInputFrom(InputDataNode node, Map<String, Object> context) {
