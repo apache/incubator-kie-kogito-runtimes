@@ -16,7 +16,6 @@ package org.kie.kogito.codegen;
 
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.stream.Stream;
 
@@ -80,9 +79,8 @@ public class JsonSchemaGeneratorTest {
     }
 
     @Test
-    public void testJsonSchemaGenerator() throws IOException
-    {
-        Collection<GeneratedFile> files = new JsonSchemaGenerator(Stream.of(PersonInputParams.class, PersonOutputParams.class, IgnoredClass.class)).generate();
+    public void testJsonSchemaGenerator() throws IOException {
+        Collection<GeneratedFile> files = new JsonSchemaGenerator.Builder(Stream.of(PersonInputParams.class, PersonOutputParams.class, IgnoredClass.class)).build().generate();
         assertEquals(1, files.size());
         GeneratedFile file = files.iterator().next();
         assertEquals("test_test.json", file.relativePath());
@@ -91,7 +89,7 @@ public class JsonSchemaGeneratorTest {
 
     @Test
     public void testJsonSchemaGeneratorInputOutput() throws IOException {
-        Collection<GeneratedFile> files = new JsonSchemaGenerator(Stream.of(PersonInputOutputParams.class)).generate();
+        Collection<GeneratedFile> files = new JsonSchemaGenerator.Builder(Stream.of(PersonInputOutputParams.class)).build().generate();
         assertEquals(1, files.size());
         GeneratedFile file = files.iterator().next();
         assertEquals("InputOutput_test.json", file.relativePath());
@@ -112,15 +110,10 @@ public class JsonSchemaGeneratorTest {
         assertEquals("string", address.get("properties").get("street").get("type").asText());
     }
 
-    @Test
-    void testStreamPathToClass() throws IOException {
-        assertEquals(JsonSchemaGenerator.class, CodegenUtils.getGeneratedClassesStream(Paths.get("target", "classes"), JsonSchemaGenerator.class.getClassLoader()).filter(JsonSchemaGenerator.class::isAssignableFrom)
-                                                            .findFirst().get());
-    }
 
     @Test
     public void testNothingToDo() throws IOException {
-        Collection<GeneratedFile> files = new JsonSchemaGenerator(Stream.of(IgnoredClass.class)).generate();
+        Collection<GeneratedFile> files = new JsonSchemaGenerator.Builder(Stream.of(IgnoredClass.class)).build().generate();
         assertTrue(files.isEmpty());
     }
 }

@@ -7,7 +7,6 @@
           <goal>generateDeclaredTypes</goal>
           <goal>generateModel</goal>
           <goal>process-model-classes</goal>
-          <goal>generate-json-schema</goal>
         </goals>
       </pluginExecutionFilter>
       <action>

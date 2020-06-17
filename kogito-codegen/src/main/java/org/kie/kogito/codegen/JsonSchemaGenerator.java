@@ -45,19 +45,41 @@ public class JsonSchemaGenerator {
     private Function<? super Class<?>, String> getSchemaName;
     private Predicate<? super Class<?>> shouldGenSchema;
 
-    public JsonSchemaGenerator(Stream<Class<?>> stream) {
-        this(stream, JsonSchemaGenerator::getKey, JsonSchemaGenerator::isUserTaskClass);
+    public static class Builder {
+
+        private Stream<Class<?>> stream;
+        private Function<? super Class<?>, String> getSchemaName;
+        private Predicate<? super Class<?>> shouldGenSchema;
+
+        public Builder(Stream<Class<?>> stream) {
+            this.stream = stream;
+        }
+
+        public Builder withSchemaNameFunction(Function<? super Class<?>, String> getSchemaName) {
+            this.getSchemaName = getSchemaName;
+            return this;
+        }
+
+        public Builder withGenSchemaPredicate(Predicate<? super Class<?>> shouldGenSchema) {
+            this.shouldGenSchema = shouldGenSchema;
+            return this;
+        }
+
+        public JsonSchemaGenerator build() {
+            JsonSchemaGenerator instance = new JsonSchemaGenerator(stream);
+            instance.getSchemaName = getSchemaName != null ? getSchemaName : JsonSchemaGenerator::getKey;
+            instance.shouldGenSchema = shouldGenSchema != null ? shouldGenSchema : JsonSchemaGenerator::isUserTaskClass;
+            return instance;
+        }
     }
 
-    public JsonSchemaGenerator(Stream<Class<?>> stream, Function<Class<?>, String> getSchemaName, Predicate<Class<?>> shouldGenSchema) {
+    private JsonSchemaGenerator(Stream<Class<?>> stream) {
         this.stream = stream;
-        this.getSchemaName = getSchemaName;
-        this.shouldGenSchema = shouldGenSchema;
     }
 
     public Collection<GeneratedFile> generate() throws IOException {
         SchemaGeneratorConfigBuilder builder = new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2019_09, OptionPreset.PLAIN_JSON);
-        builder.forFields().withIgnoreCheck(this::isNotUserTaskParam);
+        builder.forFields().withIgnoreCheck(JsonSchemaGenerator::isNotUserTaskParam);
         SchemaGenerator generator = new SchemaGenerator(builder.build());
         ObjectWriter writer = new ObjectMapper().writer();
         Map<String, List<Class<?>>> map = stream.filter(shouldGenSchema).collect(Collectors.groupingBy(getSchemaName));
@@ -80,7 +102,6 @@ public class JsonSchemaGenerator {
         return files;
     }
 
-
     private static String getKey(Class<?> c) {
         UserTask userTask = c.getAnnotation(UserTask.class);
         return userTask.processName() + "_" + userTask.taskName();
@@ -90,7 +111,7 @@ public class JsonSchemaGenerator {
         return c.isAnnotationPresent(UserTask.class);
     }
 
-    private boolean isNotUserTaskParam(FieldScope fieldScope) {
+    private static boolean isNotUserTaskParam(FieldScope fieldScope) {
         return fieldScope.getDeclaringType().getErasedType().isAnnotationPresent(UserTask.class) && fieldScope.getAnnotation(UserTaskParam.class) == null;
     }
 }

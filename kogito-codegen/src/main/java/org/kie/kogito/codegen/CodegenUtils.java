@@ -15,13 +15,8 @@
 
 package org.kie.kogito.codegen;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
@@ -135,27 +130,4 @@ public class CodegenUtils {
         return extractMethod;
     }
 
-    public static final Stream<Class<?>> getGeneratedClassesStream(Path parentPath, ClassLoader cl) throws IOException {
-        return Files.walk(parentPath).filter(p -> p.toString().endsWith(".class")).map(parentPath::relativize).map(p -> {
-            try {
-                return cl.loadClass(getClassNameFromPath(p));
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("Unexpected error in class loader" + e);
-            }
-        });
-    }
-
-    private static String getClassNameFromPath(Path path) {
-        StringBuilder className = new StringBuilder();
-        Iterator<Path> iter = path.iterator();
-        while (iter.hasNext()) {
-            String str = iter.next().toString();
-            if (iter.hasNext()) {
-                className.append(str).append('.');
-            } else {
-                className.append(str, 0, str.length() - ".class".length());
-            }
-        }
-        return className.toString();
-    }
 }

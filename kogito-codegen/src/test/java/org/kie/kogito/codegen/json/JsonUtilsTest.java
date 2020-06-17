@@ -25,11 +25,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class JSonUtilsTest {
+public class JsonUtilsTest {
 
     @Test
-    public void testMerge()
-    {
+    public void testMerge() {
         ObjectMapper mapper = new ObjectMapper();
         
         JsonNode node1 = createJson (mapper, createJson(mapper,"numbers",Arrays.asList(1,2,3)));
