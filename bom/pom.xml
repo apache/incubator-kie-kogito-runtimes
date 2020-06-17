@@ -336,7 +336,7 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!-- Kogito Apps Storage -->
+      <!-- Kogito Apps Persistence -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>persistence-commons-api</artifactId>
@@ -344,20 +344,21 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>persistence-commons-infinispan</artifactId>
+        <artifactId>persistence-commons-api</artifactId>
         <version>${project.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>persistence-commons-protobuf</artifactId>
+        <artifactId>persistence-commons-api</artifactId>
         <version>${project.version}</version>
+        <classifier>javadoc</classifier>
       </dependency>
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>persistence-commons-api</artifactId>
+        <artifactId>persistence-commons-infinispan</artifactId>
         <version>${project.version}</version>
-        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -367,22 +368,21 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>persistence-commons-protobuf</artifactId>
+        <artifactId>persistence-commons-infinispan</artifactId>
         <version>${project.version}</version>
-        <classifier>sources</classifier>
+        <classifier>javadoc</classifier>
       </dependency>
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>persistence-commons-api</artifactId>
+        <artifactId>persistence-commons-protobuf</artifactId>
         <version>${project.version}</version>
-        <classifier>javadoc</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>persistence-commons-infinispan</artifactId>
+        <artifactId>persistence-commons-protobuf</artifactId>
         <version>${project.version}</version>
-        <classifier>javadoc</classifier>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -390,7 +390,7 @@
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
       </dependency>
-      
+
       <!-- Management Console -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
