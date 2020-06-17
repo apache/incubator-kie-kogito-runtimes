@@ -64,6 +64,7 @@ public class ServerlessWorkflowFactory {
     public static final String SERVICE_INTERFACE_KEY = "interface";
     public static final String SERVICE_OPERATION_KEY = "operation";
     public static final String SERVICE_IMPL_KEY = "implementation";
+    public static final String SERVICE_ENDPOINT = "endpoint";
     public static final String DEFAULT_HT_TASKNAME = "workflowhtask";
     public static final String DEFAULT_HT_SKIPPABLE = "true";
     public static final String HT_TASKNAME = "taskname";
@@ -290,6 +291,35 @@ public class ServerlessWorkflowFactory {
         nodeContainer.addNode(scriptNode);
 
         return scriptNode;
+    }
+
+    public WorkItemNode camelRouteServiceNode(long id, String name, Function function, NodeContainer nodeContainer) {
+        WorkItemNode workItemNode = new WorkItemNode();
+        workItemNode.setId(id);
+        workItemNode.setName(name);
+        workItemNode.setMetaData("Type", "Service Task");
+
+        Work work = new WorkImpl();
+        workItemNode.setWork(work);
+
+        work.setName("org.apache.camel.ProducerTemplate.requestBody");
+        work.setParameter("endpoint", ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_ENDPOINT, workflowAppContext));
+        work.setParameter("Interface", "org.apache.camel.ProducerTemplate");
+        work.setParameter("Operation", "requestBody");
+        work.setParameter("interfaceImplementationRef", "org.apache.camel.ProducerTemplate");
+
+        String metaImpl = ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_IMPL_KEY, workflowAppContext);
+        if (metaImpl == null || metaImpl.isEmpty()) {
+            metaImpl = DEFAULT_SERVICE_IMPL;
+        }
+        work.setParameter(SERVICE_IMPL_KEY, metaImpl);
+
+        workItemNode.addInMapping("body", DEFAULT_WORKFLOW_VAR);
+        workItemNode.addOutMapping("result", DEFAULT_WORKFLOW_VAR);
+
+        nodeContainer.addNode(workItemNode);
+
+        return workItemNode;
     }
 
     public WorkItemNode serviceNode(long id, String name, Function function, NodeContainer nodeContainer) {
