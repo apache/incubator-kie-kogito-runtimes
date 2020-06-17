@@ -16,8 +16,10 @@
 
 package org.kie.kogito.tracing.decision.event.evaluate;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.event.AfterEvaluateAllEvent;
@@ -63,19 +65,35 @@ class EvaluateEventTypeTest {
         put(EvaluateEventType.BEFORE_INVOKE_BKM, new Pair<>("beforeInvokeBKM", BeforeInvokeBKMEvent.class));
         put(EvaluateEventType.AFTER_INVOKE_BKM, new Pair<>("afterInvokeBKM", AfterInvokeBKMEvent.class));
     }};
+    private static final Class<DMNRuntimeEventListener> LISTENER_CLASS = DMNRuntimeEventListener.class;
 
     @Test
-    void test() {
-        for (EvaluateEventType t : EvaluateEventType.values()) {
-            assertTrue(CHECK_MAP.containsKey(t), () -> String.format("Missing test entry for %s", t));
-        }
-
-        Class<DMNRuntimeEventListener> listenerClass = DMNRuntimeEventListener.class;
+    void testExistingEvents() {
         CHECK_MAP.forEach((type, checkPair) ->
                 assertDoesNotThrow(
-                        () -> listenerClass.getDeclaredMethod(checkPair.getLeft(), checkPair.getRight()),
-                        () -> String.format("Method %s(%s) not found for EvaluateEventType.%s", checkPair.getLeft(), checkPair.getRight().getSimpleName(), type)
+                        () -> LISTENER_CLASS.getDeclaredMethod(checkPair.getLeft(), checkPair.getRight()),
+                        () -> String.format("Listener method \"%s(%s)\" not found for EvaluateEventType.%s", checkPair.getLeft(), checkPair.getRight().getSimpleName(), type)
                 )
         );
+    }
+
+    @Test
+    void testNotManagedEvents() {
+        for (Method listenerMethod : LISTENER_CLASS.getMethods()) {
+            Optional<Map.Entry<EvaluateEventType, Pair<String, Class<?>>>> optEntry = CHECK_MAP.entrySet().stream()
+                    .filter(e -> e.getValue().getLeft().equals(listenerMethod.getName()))
+                    .findAny();
+            assertTrue(
+                    optEntry.isPresent(),
+                    () -> String.format("No EvaluateEventType for listener method \"%s\"", listenerMethod.getName())
+            );
+        }
+    }
+
+    @Test
+    void testNotManagedTypes() {
+        for (EvaluateEventType t : EvaluateEventType.values()) {
+            assertTrue(CHECK_MAP.containsKey(t), () -> String.format("No test entry for EvaluateEventType.%s", t));
+        }
     }
 }
