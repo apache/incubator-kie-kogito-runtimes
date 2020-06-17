@@ -72,6 +72,7 @@ public class ServerlessWorkflowFactory {
     public static final String HTP_GROUPID = "groupid";
     public static final String HT_ACTORID = "actorid";
     public static final String RF_GROUP = "ruleflowgroup";
+    public static final String SERVICE_TASK_TYPE = "Service Task";
 
     private WorkflowAppContext workflowAppContext;
 
@@ -297,13 +298,13 @@ public class ServerlessWorkflowFactory {
         WorkItemNode workItemNode = new WorkItemNode();
         workItemNode.setId(id);
         workItemNode.setName(name);
-        workItemNode.setMetaData("Type", "Service Task");
+        workItemNode.setMetaData("Type", SERVICE_TASK_TYPE);
 
         Work work = new WorkImpl();
         workItemNode.setWork(work);
 
         work.setName("org.apache.camel.ProducerTemplate.requestBody");
-        work.setParameter("endpoint", ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_ENDPOINT, workflowAppContext));
+        work.setParameter(SERVICE_ENDPOINT, ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_ENDPOINT, workflowAppContext));
         work.setParameter("Interface", "org.apache.camel.ProducerTemplate");
         work.setParameter("Operation", "requestBody");
         work.setParameter("interfaceImplementationRef", "org.apache.camel.ProducerTemplate");
@@ -326,12 +327,12 @@ public class ServerlessWorkflowFactory {
         WorkItemNode workItemNode = new WorkItemNode();
         workItemNode.setId(id);
         workItemNode.setName(name);
-        workItemNode.setMetaData("Type", "Service Task");
+        workItemNode.setMetaData("Type", SERVICE_TASK_TYPE);
 
         Work work = new WorkImpl();
         workItemNode.setWork(work);
 
-        work.setName("Service Task");
+        work.setName(SERVICE_TASK_TYPE);
         work.setParameter("Interface", ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_INTERFACE_KEY, workflowAppContext));
         work.setParameter("Operation", ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_OPERATION_KEY, workflowAppContext));
         work.setParameter("interfaceImplementationRef", ServerlessWorkflowUtils.resolveFunctionMetadata(function, SERVICE_INTERFACE_KEY, workflowAppContext));
