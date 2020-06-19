@@ -43,7 +43,7 @@ public class TraceHeader {
         this.executionId = executionId;
         this.startTimestamp = startTs == null || startTs <= 0 ? null : startTs;
         this.endTimestamp = endTs == null || endTs <= 0 ? null : endTs;
-        this.duration = duration == null || duration <= 0 ? null : duration;
+        this.duration = duration == null || duration < 0 ? null : duration;
         this.resourceId = resourceId;
         this.messages = messages;
     }
