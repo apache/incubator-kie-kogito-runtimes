@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import static java.util.stream.Collectors.joining;
 import static org.jbpm.ruleflow.core.factory.WorkItemNodeFactory.METHOD_WORK_NAME;
 import static org.jbpm.ruleflow.core.factory.WorkItemNodeFactory.METHOD_WORK_PARAMETER;
 
@@ -100,8 +101,8 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
         Work work = node.getWork();
         String workName = workItemName(node, metadata);
         body.addStatement(getAssignedFactoryMethod(factoryField, WorkItemNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
-        .addStatement(getNameMethod(node, work.getName()))
-        .addStatement(getFactoryMethod(getNodeId(node), METHOD_WORK_NAME, new StringLiteralExpr(workName)));
+                .addStatement(getNameMethod(node, work.getName()))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_WORK_NAME, new StringLiteralExpr(workName)));
 
         addWorkItemParameters(work, body, getNodeId(node));
         addNodeMappings(node, body, getNodeId(node));
@@ -159,8 +160,6 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
                     .notEmpty("operationName", operationName)
                     .validate();
 
-            workName = interfaceName + "." + operationName;
-
             Map<String, String> parameters = null;
             if (type != null) {
                 if (isDefaultParameterType(type)) {
@@ -176,12 +175,30 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
                 }
             }
 
-            CompilationUnit handlerClass = generateHandlerClassForService(interfaceName, operationName, parameters, workItemNode.getOutAssociations());
+            String uniqueHandlerName = mangledHandlerName(interfaceName, operationName, parameters);
 
-            metadata.getGeneratedHandlers().put(workName, handlerClass);
+            CompilationUnit handlerClass = generateHandlerClassForService(
+                    uniqueHandlerName, interfaceName, operationName, parameters, workItemNode.getOutAssociations());
+
+            metadata.getGeneratedHandlers().put(uniqueHandlerName, handlerClass);
+
+            return uniqueHandlerName;
         }
 
         return workName;
+    }
+
+    private String mangledHandlerName(String interfaceName, String operationName, Map<String, String> parameters) {
+        String simpleName = interfaceName.substring(interfaceName.lastIndexOf(".") + 1);
+
+        // mangle dotted identifiers foo.bar.Baz into foo$bar$Baz
+        // then concatenate the collection with $$
+        // e.g. List.of("foo.bar.Baz", "qux.Quux") -> "foo$bar$Baz$$qux$Quux"
+        String mangledParameterTypes =
+                parameters.values().stream().map(s -> s.replace('.', '$'))
+                        .collect(joining("$$"));
+
+        return String.format("%s_%s_%s_Handler", simpleName, operationName, mangledParameterTypes);
     }
 
     // assume 1 single arg as above
@@ -203,17 +220,17 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
         return type.equals("java.lang.Object") || type.equals("Object");
     }
 
-    protected CompilationUnit generateHandlerClassForService(String interfaceName, String operation, Map<String, String> parameters, List<DataAssociation> outAssociations) {
+    protected CompilationUnit generateHandlerClassForService(String mangledHandlerName, String interfaceName, String operation, Map<String, String> parameters, List<DataAssociation> outAssociations) {
         CompilationUnit compilationUnit = new CompilationUnit("org.kie.kogito.handlers");
 
-        compilationUnit.getTypes().add(classDeclaration(interfaceName, operation, parameters, outAssociations));
+        compilationUnit.getTypes().add(classDeclaration(mangledHandlerName, interfaceName, operation, parameters, outAssociations));
 
         return compilationUnit;
     }
 
-    public ClassOrInterfaceDeclaration classDeclaration(String interfaceName, String operation, Map<String, String> parameters, List<DataAssociation> outAssociations) {
+    public ClassOrInterfaceDeclaration classDeclaration(String mangledHandlerName, String interfaceName, String operation, Map<String, String> parameters, List<DataAssociation> outAssociations) {
         ClassOrInterfaceDeclaration cls = new ClassOrInterfaceDeclaration()
-                .setName(interfaceName.substring(interfaceName.lastIndexOf(".") + 1) + "_" + operation + "Handler")
+                .setName(mangledHandlerName)
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .addImplementedType(WorkItemHandler.class.getCanonicalName());
         ClassOrInterfaceType serviceType = new ClassOrInterfaceType(null, interfaceName);
@@ -231,9 +248,7 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
                 .addParameter(WorkItem.class.getCanonicalName(), "workItem")
                 .addParameter(WorkItemManager.class.getCanonicalName(), "workItemManager");
 
-
         MethodCallExpr callService = new MethodCallExpr(new NameExpr("service"), operation);
-
 
         for (Entry<String, String> paramEntry : parameters.entrySet()) {
             MethodCallExpr getParamMethod = new MethodCallExpr(new NameExpr("workItem"), "getParameter").addArgument(new StringLiteralExpr(paramEntry.getKey()));
@@ -244,7 +259,6 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
 
             executeWorkItemBody.addStatement(callService);
             results = new NullLiteralExpr();
-
         } else {
             VariableDeclarationExpr resultField = new VariableDeclarationExpr()
                     .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), "result", callService));
@@ -271,7 +285,6 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
                 .setBody(abortWorkItemBody)
                 .addParameter(WorkItem.class.getCanonicalName(), "workItem")
                 .addParameter(WorkItemManager.class.getCanonicalName(), "workItemManager");
-
 
         // getName method
         MethodDeclaration getName = new MethodDeclaration()
