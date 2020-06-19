@@ -18,10 +18,12 @@ package org.jbpm.compiler.canonical;
 
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -49,6 +51,7 @@ import org.kie.api.runtime.process.WorkItemManager;
 import static java.util.stream.Collectors.joining;
 
 public class ServiceTaskDescriptor {
+
     private final ClassLoader contextClassLoader;
     private final String interfaceName;
     private final String operationName;
@@ -77,12 +80,20 @@ public class ServiceTaskDescriptor {
         return mangledName;
     }
 
+    private String signature() {
+        String parameterList = parameters.entrySet().stream().map(e -> e.getValue() + " " + e.getKey()).collect(joining(", "));
+        return String.format("%s#%s(%s)",
+                             interfaceName,
+                             operationName,
+                             parameterList);
+    }
+
     private Map<String, String> serviceTaskParameters() {
         String type = (String) workItemNode.getWork().getParameter("ParameterType");
         Map<String, String> parameters = null;
         if (type != null) {
             if (isDefaultParameterType(type)) {
-                type = inferParameterType(workItemNode.getName(), interfaceName, operationName, type);
+                type = inferParameterType();
             }
 
             parameters = Collections.singletonMap("Parameter", type);
@@ -96,20 +107,32 @@ public class ServiceTaskDescriptor {
         return parameters;
     }
 
-
     // assume 1 single arg as above
-    private String inferParameterType(String nodeName, String interfaceName, String operationName, String defaultType) {
-        try {
-            Class<?> i = contextClassLoader.loadClass(interfaceName);
-            for (Method m : i.getMethods()) {
-                if (m.getName().equals(operationName) && m.getParameterCount() == 1) {
-                    return m.getParameterTypes()[0].getCanonicalName();
-                }
+    private String inferParameterType() {
+        loadClass();
+        for (Method m : cls.getMethods()) {
+            if (m.getName().equals(operationName) && m.getParameterCount() == 1) {
+                return m.getParameterTypes()[0].getCanonicalName();
             }
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException(MessageFormat.format("Invalid work item \"{0}\": class not found for interfaceName \"{1}\"", nodeName, interfaceName));
         }
-        throw new IllegalArgumentException(MessageFormat.format("Invalid work item \"{0}\": could not find a method called \"{1}\" in class \"{2}\"", nodeName, operationName, interfaceName));
+        throw new IllegalArgumentException(
+                MessageFormat.format(
+                        "Invalid work item \"{0}\": could not find a method called \"{1}\" in class \"{2}\"",
+                        workItemNode.getName(), operationName, interfaceName));
+    }
+
+    private void loadClass() {
+        if (cls != null) {
+            return;
+        }
+        try {
+            cls = contextClassLoader.loadClass(interfaceName);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(
+                    MessageFormat.format(
+                            "Invalid work item \"{0}\": class not found for interfaceName \"{1}\"",
+                            workItemNode.getName(), interfaceName));
+        }
     }
 
     private boolean isDefaultParameterType(String type) {
@@ -129,7 +152,6 @@ public class ServiceTaskDescriptor {
         return String.format("%s_%s_%s_Handler", simpleName, operationName, mangledParameterTypes);
     }
 
-
     public CompilationUnit generateHandlerClassForService() {
         CompilationUnit compilationUnit = new CompilationUnit("org.kie.kogito.handlers");
 
@@ -137,7 +159,6 @@ public class ServiceTaskDescriptor {
 
         return compilationUnit;
     }
-
 
     public ClassOrInterfaceDeclaration classDeclaration() {
         ClassOrInterfaceDeclaration cls = new ClassOrInterfaceDeclaration()
@@ -165,26 +186,7 @@ public class ServiceTaskDescriptor {
             MethodCallExpr getParamMethod = new MethodCallExpr(new NameExpr("workItem"), "getParameter").addArgument(new StringLiteralExpr(paramEntry.getKey()));
             callService.addArgument(new CastExpr(new ClassOrInterfaceType(null, paramEntry.getValue()), getParamMethod));
         }
-        Expression results = null;
-        List<DataAssociation> outAssociations = workItemNode.getOutAssociations();
-        if (outAssociations.isEmpty()) {
-
-            executeWorkItemBody.addStatement(callService);
-            results = new NullLiteralExpr();
-        } else {
-            VariableDeclarationExpr resultField = new VariableDeclarationExpr()
-                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), "result", callService));
-
-            executeWorkItemBody.addStatement(resultField);
-
-            results = new MethodCallExpr(new NameExpr("java.util.Collections"), "singletonMap")
-                    .addArgument(new StringLiteralExpr(outAssociations.get(0).getSources().get(0)))
-                    .addArgument(new NameExpr("result"));
-        }
-
-        MethodCallExpr completeWorkItem = new MethodCallExpr(new NameExpr("workItemManager"), "completeWorkItem")
-                .addArgument(new MethodCallExpr(new NameExpr("workItem"), "getId"))
-                .addArgument(results);
+        MethodCallExpr completeWorkItem = completeWorkItem(executeWorkItemBody, callService);
 
         executeWorkItemBody.addStatement(completeWorkItem);
 
@@ -211,4 +213,45 @@ public class ServiceTaskDescriptor {
         return cls;
     }
 
+    private MethodCallExpr completeWorkItem(BlockStmt executeWorkItemBody, MethodCallExpr callService) {
+        loadClass();
+        Method m = findMethod();
+        Expression results = null;
+        List<DataAssociation> outAssociations = workItemNode.getOutAssociations();
+        if (outAssociations.isEmpty()) {
+            executeWorkItemBody.addStatement(callService);
+            results = new NullLiteralExpr();
+        } else {
+            VariableDeclarationExpr resultField = new VariableDeclarationExpr()
+                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), "result", callService));
+
+            executeWorkItemBody.addStatement(resultField);
+
+            results = new MethodCallExpr(new NameExpr("java.util.Collections"), "singletonMap")
+                    .addArgument(new StringLiteralExpr(outAssociations.get(0).getSources().get(0)))
+                    .addArgument(new NameExpr("result"));
+        }
+
+        MethodCallExpr completeWorkItem = new MethodCallExpr(new NameExpr("workItemManager"), "completeWorkItem")
+                .addArgument(new MethodCallExpr(new NameExpr("workItem"), "getId"))
+                .addArgument(results);
+        return completeWorkItem;
+    }
+
+    private Method findMethod() {
+        int nParams = parameters.size();
+        List<Method> candidates = Arrays.stream(cls.getMethods())
+                .filter(m -> m.getName().equals(operationName) && m.getParameterCount() == nParams)
+                .collect(Collectors.toList());
+        switch (candidates.size()) {
+            case 0:
+                throw new IllegalArgumentException("Could not find any candidate for signature: %s" + signature());
+            case 1:
+                return candidates.get(0);
+            default:
+                String candidateList = candidates.stream().map(Method::toString).collect(joining("\n"));
+                throw new UnsupportedOperationException(
+                        String.format("Found more than one candidate for signature: %s: \n%s", signature(), candidateList));
+        }
+    }
 }
