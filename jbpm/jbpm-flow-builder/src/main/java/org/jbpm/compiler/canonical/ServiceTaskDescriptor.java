@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.StaticJavaParser;
@@ -31,17 +32,21 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.UnknownType;
 import org.jbpm.process.core.ParameterDefinition;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.WorkItemNode;
@@ -165,15 +170,9 @@ public class ServiceTaskDescriptor {
                 .addParameter(WorkItem.class.getCanonicalName(), "workItem")
                 .addParameter(WorkItemManager.class.getCanonicalName(), "workItemManager");
 
-        MethodCallExpr callService = new MethodCallExpr(new NameExpr("service"), operationName);
-
-        for (Map.Entry<String, String> paramEntry : parameters.entrySet()) {
-            MethodCallExpr getParamMethod = new MethodCallExpr(new NameExpr("workItem"), "getParameter").addArgument(new StringLiteralExpr(paramEntry.getKey()));
-            callService.addArgument(new CastExpr(new ClassOrInterfaceType(null, paramEntry.getValue()), getParamMethod));
-        }
-        MethodCallExpr completeWorkItem = completeWorkItem(executeWorkItemBody, callService);
-
+        BlockStmt completeWorkItem = completeWorkItem();
         executeWorkItemBody.addStatement(completeWorkItem);
+
 
         // abortWorkItem method
         BlockStmt abortWorkItemBody = new BlockStmt();
@@ -198,27 +197,96 @@ public class ServiceTaskDescriptor {
         return cls;
     }
 
-    private MethodCallExpr completeWorkItem(BlockStmt executeWorkItemBody, MethodCallExpr callService) {
-        Expression results = null;
-        List<DataAssociation> outAssociations = workItemNode.getOutAssociations();
-        if (outAssociations.isEmpty()) {
-            executeWorkItemBody.addStatement(callService);
-            results = new NullLiteralExpr();
-        } else {
-            VariableDeclarationExpr resultField = new VariableDeclarationExpr()
-                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), "result", callService));
+    private MethodCallExpr callService() {
+        MethodCallExpr callService = new MethodCallExpr(new NameExpr("service"), operationName);
 
-            executeWorkItemBody.addStatement(resultField);
-
-            results = new MethodCallExpr(new NameExpr("java.util.Collections"), "singletonMap")
-                    .addArgument(new StringLiteralExpr(outAssociations.get(0).getSources().get(0)))
-                    .addArgument(new NameExpr("result"));
+        for (Map.Entry<String, String> paramEntry : parameters.entrySet()) {
+            MethodCallExpr getParamMethod = new MethodCallExpr(new NameExpr("workItem"), "getParameter").addArgument(new StringLiteralExpr(paramEntry.getKey()));
+            callService.addArgument(new CastExpr(new ClassOrInterfaceType(null, paramEntry.getValue()), getParamMethod));
         }
+        return callService;
+    }
 
+    private BlockStmt completeWorkItem() {
+        loadClass();
+
+        BlockStmt resultBody = new BlockStmt();
+        BlockStmt completeWorkItemBody = new BlockStmt();
+        Method m = findMethod();
+        MethodCallExpr callService = callService();
+
+        // workItemManager.completeWorkItem(workItem.getId(), result)
         MethodCallExpr completeWorkItem = new MethodCallExpr(new NameExpr("workItemManager"), "completeWorkItem")
                 .addArgument(new MethodCallExpr(new NameExpr("workItem"), "getId"))
-                .addArgument(results);
-        return completeWorkItem;
+                .addArgument(new NameExpr("result"));
+
+        List<DataAssociation> outAssociations = workItemNode.getOutAssociations();
+
+        VariableDeclarator resultVarDecl = new VariableDeclarator(
+                new ClassOrInterfaceType(null, Map.class.getCanonicalName()),
+                "result");
+        VariableDeclarationExpr resultVar = new VariableDeclarationExpr().addVariable(resultVarDecl);
+
+        if (outAssociations.isEmpty()) {
+            resultVarDecl.setInitializer(new NullLiteralExpr());
+            completeWorkItemBody.addStatement(resultVar);
+            completeWorkItemBody.addStatement(completeWorkItem);
+        } else {
+            resultVarDecl.setInitializer(new MethodCallExpr(new NameExpr("java.util.Collections"), "singletonMap")
+                                                 .addArgument(new StringLiteralExpr(outAssociations.get(0).getSources().get(0)))
+                                                 .addArgument(new NameExpr("value")));
+            completeWorkItemBody.addStatement(resultVar);
+            completeWorkItemBody.addStatement(completeWorkItem);
+        }
+
+        if (CompletionStage.class.isAssignableFrom(m.getReturnType())) {
+            // complete async
+            MethodCallExpr whenCompleteAsync = new MethodCallExpr(callService, "whenCompleteAsync")
+                    .addArgument(new LambdaExpr()
+                                         .setEnclosingParameters(true)
+                                         .addParameter(new UnknownType(), "value")
+                                         .addParameter(new UnknownType(), "exception")
+                                         .setBody(completeWorkItemBody));
+            resultBody.addStatement(whenCompleteAsync);
+        } else {
+            if (!void.class.isAssignableFrom(m.getReturnType())) {
+                VariableDeclarator varDecl = new VariableDeclarator(
+                        new ClassOrInterfaceType(null, Object.class.getCanonicalName()),
+                        "value").setInitializer(callService);
+                VariableDeclarationExpr valueVar = new VariableDeclarationExpr().addVariable(varDecl);
+                resultBody.addStatement(valueVar);
+            }
+
+            resultBody.addStatement(completeWorkItemBody);
+        }
+
+        return resultBody;
+    }
+
+
+    private Method findMethod() {
+        int nParams = parameters.size();
+        List<Method> candidates = Arrays.stream(cls.getMethods())
+                .filter(m -> m.getName().equals(operationName) && m.getParameterCount() == nParams)
+                .collect(Collectors.toList());
+        switch (candidates.size()) {
+            case 0:
+                throw new IllegalArgumentException("Could not find any candidate for signature: %s" + signature());
+            case 1:
+                return candidates.get(0);
+            default:
+                String candidateList = candidates.stream().map(Method::toString).collect(joining("\n"));
+                throw new UnsupportedOperationException(
+                        String.format("Found more than one candidate for signature: %s: \n%s", signature(), candidateList));
+        }
+    }
+
+    private String signature() {
+        String parameterList = parameters.entrySet().stream().map(e -> e.getValue() + " " + e.getKey()).collect(joining(", "));
+        return String.format("%s#%s(%s)",
+                             interfaceName,
+                             operationName,
+                             parameterList);
     }
 
 }

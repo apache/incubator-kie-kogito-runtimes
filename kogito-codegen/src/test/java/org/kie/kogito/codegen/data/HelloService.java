@@ -16,6 +16,10 @@
 
 package org.kie.kogito.codegen.data;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CountDownLatch;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -67,7 +71,26 @@ public class HelloService {
     }
 
     public void doSomething(String str1, String str2) {
+        // check for overloading
+    }
 
+    public CompletionStage<String> helloLater(String name, CountDownLatch latch) {
+
+        System.out.println("test");
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                System.out.println("begin");
+
+                return "Hello, " + name;
+            } finally {
+
+            }
+        }).thenApplyAsync(r -> {
+            System.out.println("end");
+            latch.countDown();
+
+            return r;
+        });
     }
 
 }
