@@ -26,6 +26,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
@@ -96,6 +97,7 @@ public class DecisionRestResourceGenerator {
         }
 
         MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
+        template.addMember(cloneForDMNResult(dmnMethod, "dmn_dmnresult", "dmnresult"));
         for (DecisionService ds : dmnModel.getDefinitions().getDecisionService()) {
             if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
                 continue;
@@ -121,6 +123,7 @@ public class DecisionRestResourceGenerator {
             }
 
             template.addMember(clonedMethod);
+            template.addMember(cloneForDMNResult(clonedMethod, name + "_dmnresult", ds.getName() + "/dmnresult"));
         }
 
         if (addonsConfig.useMonitoring()) {
@@ -133,6 +136,17 @@ public class DecisionRestResourceGenerator {
 
         template.getMembers().sort(new BodyDeclarationComparator());
         return clazz.toString();
+    }
+
+    private MethodDeclaration cloneForDMNResult(MethodDeclaration dmnMethod, String name, String pathName) {
+        MethodDeclaration clonedDmnMethod = dmnMethod.clone();
+        clonedDmnMethod.setName(name);
+        final Name jaxrsPathAnnName = new Name("javax.ws.rs.Path");
+        clonedDmnMethod.getAnnotations().removeIf(ae -> ae.getName().equals(jaxrsPathAnnName));
+        clonedDmnMethod.addAnnotation(new SingleMemberAnnotationExpr(jaxrsPathAnnName, new StringLiteralExpr(pathName)));
+        ReturnStmt returnStmt = clonedDmnMethod.findFirst(ReturnStmt.class).orElseThrow(() -> new RuntimeException("Template was modified!"));
+        returnStmt.setExpression(new NameExpr("result"));
+        return clonedDmnMethod;
     }
 
     private void interpolateInputType(ClassOrInterfaceDeclaration template) {
