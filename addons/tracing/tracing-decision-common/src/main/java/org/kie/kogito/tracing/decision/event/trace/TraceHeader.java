@@ -41,9 +41,9 @@ public class TraceHeader {
     public TraceHeader(TraceEventType type, String executionId, Long startTs, Long endTs, Long duration, TraceResourceId resourceId, List<Message> messages) {
         this.type = type;
         this.executionId = executionId;
-        this.startTimestamp = startTs == null || startTs <= 0 ? null : startTs;
-        this.endTimestamp = endTs == null || endTs <= 0 ? null : endTs;
-        this.duration = duration == null || duration < 0 ? null : duration;
+        this.startTimestamp = startTs;
+        this.endTimestamp = endTs;
+        this.duration = duration;
         this.resourceId = resourceId;
         this.messages = messages;
     }
