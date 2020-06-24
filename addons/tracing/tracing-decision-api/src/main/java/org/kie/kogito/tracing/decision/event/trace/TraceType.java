@@ -23,9 +23,13 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonInclude(NON_NULL)
 public class TraceType {
-    private final String id;
-    private final String namespace;
-    private final String name;
+
+    private String id;
+    private String namespace;
+    private String name;
+
+    private TraceType() {
+    }
 
     public TraceType(String id, String namespace, String name) {
         this.id = id;

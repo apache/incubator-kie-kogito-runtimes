@@ -20,10 +20,13 @@ import java.util.List;
 
 public class TraceEvent {
 
-    private final TraceHeader header;
-    private final List<TraceInputValue> inputs;
-    private final List<TraceOutputValue> outputs;
-    private final List<TraceExecutionStep> executionSteps;
+    private TraceHeader header;
+    private List<TraceInputValue> inputs;
+    private List<TraceOutputValue> outputs;
+    private List<TraceExecutionStep> executionSteps;
+
+    private TraceEvent() {
+    }
 
     public TraceEvent(TraceHeader header, List<TraceInputValue> inputs, List<TraceOutputValue> outputs, List<TraceExecutionStep> executionSteps) {
         this.header = header;

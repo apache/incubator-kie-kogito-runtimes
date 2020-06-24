@@ -28,13 +28,16 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @JsonInclude(NON_NULL)
 public class Message {
 
-    private final Level level;
-    private final MessageCategory category;
-    private final String type;
-    private final String sourceId;
-    private final String text;
-    private final MessageFEELEvent feelEvent;
-    private final MessageExceptionField exception;
+    private Level level;
+    private MessageCategory category;
+    private String type;
+    private String sourceId;
+    private String text;
+    private MessageFEELEvent feelEvent;
+    private MessageExceptionField exception;
+
+    private Message() {
+    }
 
     public Message(Level level, MessageCategory category, String type, String sourceId, String text, MessageFEELEvent feelEvent, MessageExceptionField exception) {
         this.level = level;

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.kie.kogito.tracing.decision.event.common.Message;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
@@ -29,21 +30,24 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 public class TraceExecutionStep {
 
     @JsonInclude(NON_NULL)
-    private final TraceExecutionStepType type;
+    private TraceExecutionStepType type;
     @JsonInclude(NON_DEFAULT)
-    private final long duration;
+    private long duration;
     @JsonInclude(NON_NULL)
-    private final String name;
+    private String name;
     @JsonInclude(NON_NULL)
-    private final Object result;
+    private JsonNode result;
     @JsonInclude(NON_EMPTY)
-    private final List<Message> messages;
+    private List<Message> messages;
     @JsonInclude(NON_EMPTY)
-    private final Map<String, Object> additionalData;
+    private Map<String, String> additionalData;
     @JsonInclude(NON_EMPTY)
-    private final List<TraceExecutionStep> children;
+    private List<TraceExecutionStep> children;
 
-    public TraceExecutionStep(TraceExecutionStepType type, long duration, String name, Object result, List<Message> messages, Map<String, Object> additionalData, List<TraceExecutionStep> children) {
+    private TraceExecutionStep() {
+    }
+
+    public TraceExecutionStep(TraceExecutionStepType type, long duration, String name, JsonNode result, List<Message> messages, Map<String, String> additionalData, List<TraceExecutionStep> children) {
         this.type = type;
         this.duration = duration;
         this.name = name;
@@ -65,7 +69,7 @@ public class TraceExecutionStep {
         return name;
     }
 
-    public Object getResult() {
+    public JsonNode getResult() {
         return result;
     }
 
@@ -73,7 +77,7 @@ public class TraceExecutionStep {
         return messages;
     }
 
-    public Map<String, Object> getAdditionalData() {
+    public Map<String, String> getAdditionalData() {
         return additionalData;
     }
 

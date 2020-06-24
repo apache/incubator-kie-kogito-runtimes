@@ -30,17 +30,20 @@ public class TraceHeader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TraceHeader.class);
 
-    private final TraceEventType type;
-    private final String executionId;
+    private TraceEventType type;
+    private String executionId;
     @JsonInclude(NON_NULL)
-    private final Long startTimestamp;
+    private Long startTimestamp;
     @JsonInclude(NON_NULL)
-    private final Long endTimestamp;
+    private Long endTimestamp;
     @JsonInclude(NON_NULL)
-    private final Long duration;
-    private final TraceResourceId resourceId;
+    private Long duration;
+    private TraceResourceId resourceId;
     @JsonInclude(NON_EMPTY)
-    private final List<Message> messages;
+    private List<Message> messages;
+
+    private TraceHeader() {
+    }
 
     public TraceHeader(TraceEventType type, String executionId, Long startTs, Long endTs, Long duration, TraceResourceId resourceId, List<Message> messages) {
         checkAndLogInvalidTimestamp(startTs, "startTimestamp", executionId);

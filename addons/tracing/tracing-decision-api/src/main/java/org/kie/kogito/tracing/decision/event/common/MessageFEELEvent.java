@@ -23,14 +23,17 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 public class MessageFEELEvent {
 
-    private final FEELEvent.Severity severity;
-    private final String message;
+    private FEELEvent.Severity severity;
+    private String message;
     @JsonInclude(NON_NULL)
-    private final Integer line;
+    private Integer line;
     @JsonInclude(NON_NULL)
-    private final Integer column;
+    private Integer column;
     @JsonInclude(NON_NULL)
-    private final MessageExceptionField sourceException;
+    private MessageExceptionField sourceException;
+
+    private MessageFEELEvent() {
+    }
 
     public MessageFEELEvent(FEELEvent.Severity severity, String message, Integer line, Integer column, MessageExceptionField sourceException) {
         this.severity = severity;
