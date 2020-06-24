@@ -140,8 +140,6 @@ public class ServiceTaskDescriptor {
     }
 
     private String mangledHandlerName(String interfaceName, String operationName, Map<String, String> parameters) {
-        String simpleName = interfaceName.substring(interfaceName.lastIndexOf(".") + 1);
-
         // mangle dotted identifiers foo.bar.Baz into foo$bar$Baz
         // then concatenate the collection with $$
         // e.g. List.of("foo.bar.Baz", "qux.Quux") -> "foo$bar$Baz$$qux$Quux"
@@ -149,7 +147,7 @@ public class ServiceTaskDescriptor {
                 parameters.values().stream().map(s -> s.replace('.', '$'))
                         .collect(joining("$$"));
 
-        return String.format("%s_%s_%s_Handler", simpleName, operationName, mangledParameterTypes);
+        return String.format("%s_%s_%s_Handler", interfaceName, operationName, mangledParameterTypes);
     }
 
     public CompilationUnit generateHandlerClassForService() {
