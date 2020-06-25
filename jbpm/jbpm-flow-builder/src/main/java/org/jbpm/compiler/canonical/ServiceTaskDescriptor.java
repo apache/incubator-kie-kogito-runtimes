@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -140,6 +141,8 @@ public class ServiceTaskDescriptor {
     }
 
     private String mangledHandlerName(String interfaceName, String operationName, Map<String, String> parameters) {
+        String simpleName = interfaceName.substring(interfaceName.lastIndexOf(".") + 1);
+
         // mangle dotted identifiers foo.bar.Baz into foo$bar$Baz
         // then concatenate the collection with $$
         // e.g. List.of("foo.bar.Baz", "qux.Quux") -> "foo$bar$Baz$$qux$Quux"
@@ -147,7 +150,7 @@ public class ServiceTaskDescriptor {
                 parameters.values().stream().map(s -> s.replace('.', '$'))
                         .collect(joining("$$"));
 
-        return String.format("%s_%s_%s_Handler", interfaceName, operationName, mangledParameterTypes);
+        return String.format("%s_%s_%s_Handler", simpleName, operationName, mangledParameterTypes);
     }
 
     public CompilationUnit generateHandlerClassForService() {
@@ -160,7 +163,7 @@ public class ServiceTaskDescriptor {
 
     public ClassOrInterfaceDeclaration classDeclaration() {
         ClassOrInterfaceDeclaration cls = new ClassOrInterfaceDeclaration()
-                .setName(mangledName)
+                .setName(StaticJavaParser.parseName(mangledName).removeQualifier().asString())
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .addImplementedType(WorkItemHandler.class.getCanonicalName());
         ClassOrInterfaceType serviceType = new ClassOrInterfaceType(null, interfaceName);
