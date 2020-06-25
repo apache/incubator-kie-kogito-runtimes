@@ -478,7 +478,7 @@ public class ProcessCodegen extends AbstractGenerator {
     public void updateConfig(ConfigGenerator cfg) {
         if (!processes.isEmpty()) {
             cfg.withProcessConfig(
-                    new ProcessConfigGenerator());
+                    new ProcessConfigGenerator(packageName));
         }
     }
 

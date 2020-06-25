@@ -118,7 +118,7 @@ public class ConfigGenerator {
                 .orElseThrow(() -> new RuntimeException("ApplicationConfig template class not found"));
 
         if (processConfig != null) {
-            processConfig.members().forEach(cls::addMember);
+//            processConfig.members().forEach(cls::addMember);
         }
 
         if (ruleConfig != null) {
@@ -132,15 +132,15 @@ public class ConfigGenerator {
         // add found addons
         cls.addMember(generateAddonsMethod());
 
-        // init method
-        MethodDeclaration initMethod = generateInitMethod();
-        if (useInjection()) {
-            annotator.withSingletonComponent(cls);
-            initMethod.addAnnotation("javax.annotation.PostConstruct");
-        } else {
-            cls.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt().addStatement(new MethodCallExpr(new ThisExpr(), "init")));
-        }
-        cls.addMember(initMethod);
+//        // init method
+//        MethodDeclaration initMethod = generateInitMethod();
+//        if (useInjection()) {
+//            annotator.withSingletonComponent(cls);
+//            initMethod.addAnnotation("javax.annotation.PostConstruct");
+//        } else {
+//            cls.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt().addStatement(new MethodCallExpr(new ThisExpr(), "init")));
+//        }
+//        cls.addMember(initMethod);
 
         cls.getMembers().sort(new BodyDeclarationComparator());
         return compilationUnit;

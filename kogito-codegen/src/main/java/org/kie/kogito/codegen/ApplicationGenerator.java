@@ -47,6 +47,7 @@ import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.Labeler;
 import org.kie.kogito.codegen.metadata.MetaDataWriter;
 import org.kie.kogito.codegen.metadata.PrometheusLabeler;
+import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.event.EventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,6 +211,11 @@ public class ApplicationGenerator {
         generatedFiles.add(generateApplicationDescriptor());
         generatedFiles.addAll(generateApplicationSections());
         generatedFiles.add(generateApplicationConfigDescriptor());
+        ProcessConfigGenerator processConfigGenerator = new ProcessConfigGenerator(packageName);
+        generatedFiles.add(new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
+                                             processConfigGenerator.generatedFilePath(),
+                                             log(processConfigGenerator.compilationUnit().toString()).getBytes(StandardCharsets.UTF_8)));
+
         if (useInjection()) {
             generators.stream().filter(gen -> gen.section() != null)
                     .forEach(gen -> generateSectionClass(gen.section(), generatedFiles));
