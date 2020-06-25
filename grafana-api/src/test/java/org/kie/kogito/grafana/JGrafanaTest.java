@@ -118,7 +118,7 @@ public class JGrafanaTest {
         grafanaObj.addPanel(PanelType.TABLE, "My Graph 2", "api_http_stacktrace_exceptions");
         SortedMap<Integer, GrafanaFunction> map = new TreeMap();
         map.put(1, new SumFunction());
-        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 3", "api_http_response_code{handler=\"world\"}", map);
+        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 3", "api_http_response_code{handler=\"world\"}", map, null);
         grafanaObj.removePanelByTitle("My Graph 2");
 
         // Assert

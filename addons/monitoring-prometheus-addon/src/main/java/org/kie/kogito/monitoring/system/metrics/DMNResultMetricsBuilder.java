@@ -16,6 +16,8 @@
 package org.kie.kogito.monitoring.system.metrics;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ import org.kie.kogito.dmn.rest.DMNResult;
 import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BooleanHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalDateTimeHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.StringHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.TypeHandler;
 import org.slf4j.Logger;
@@ -44,6 +47,7 @@ public class DMNResultMetricsBuilder {
         handlers.put(String.class, new StringHandler(SupportedDecisionTypes.fromInternalToStandard(String.class)));
         handlers.put(Boolean.class, new BooleanHandler(SupportedDecisionTypes.fromInternalToStandard(Boolean.class)));
         handlers.put(BigDecimal.class, new BigDecimalHandler(SupportedDecisionTypes.fromInternalToStandard(BigDecimal.class)));
+        handlers.put(LocalDateTime.class, new LocalDateTimeHandler(SupportedDecisionTypes.fromInternalToStandard(LocalDateTime.class)));
         return handlers;
     }
 
