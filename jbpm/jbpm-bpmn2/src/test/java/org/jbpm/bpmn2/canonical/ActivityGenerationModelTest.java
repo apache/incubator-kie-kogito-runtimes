@@ -444,7 +444,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         assertThat(metaData.getWorkItems())
         .hasSize(1)
-        .contains("org.jbpm.bpmn2.objects.HelloService.hello");
+        .contains("org.jbpm.bpmn2.objects.HelloService_hello_java$lang$String_Handler");
     }
     
     @SuppressWarnings("unchecked")
