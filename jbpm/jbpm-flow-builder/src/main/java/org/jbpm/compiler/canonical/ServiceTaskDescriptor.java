@@ -162,8 +162,9 @@ public class ServiceTaskDescriptor {
     }
 
     public ClassOrInterfaceDeclaration classDeclaration() {
+        String unqualifiedName = StaticJavaParser.parseName(mangledName).removeQualifier().asString();
         ClassOrInterfaceDeclaration cls = new ClassOrInterfaceDeclaration()
-                .setName(StaticJavaParser.parseName(mangledName).removeQualifier().asString())
+                .setName(unqualifiedName)
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .addImplementedType(WorkItemHandler.class.getCanonicalName());
         ClassOrInterfaceType serviceType = new ClassOrInterfaceType(null, interfaceName);
