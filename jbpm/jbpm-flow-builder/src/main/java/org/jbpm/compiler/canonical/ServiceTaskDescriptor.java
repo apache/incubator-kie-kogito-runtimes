@@ -190,7 +190,7 @@ public class ServiceTaskDescriptor {
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .setType(String.class)
                 .setName("getName")
-                .setBody(new BlockStmt().addStatement(new ReturnStmt(new StringLiteralExpr(interfaceName + "." + operationName))));
+                .setBody(new BlockStmt().addStatement(new ReturnStmt(new StringLiteralExpr(mangledName))));
         cls.addMember(executeWorkItem)
                 .addMember(abortWorkItem)
                 .addMember(getName);
