@@ -456,13 +456,32 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl
     @Override
     public String toString() {
         return new StringBuilder("WorkflowProcessInstance")
+                .append(" [Id=")
                 .append(getId())
-                .append(" [processId=")
+                .append(", processId=")
                 .append(getProcessId())
-                .append(",state=")
+                .append(", state=")
                 .append(getState())
                 .append("]")
                 .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof WorkflowProcessInstanceImpl)) {
+            return false;
+        }
+        WorkflowProcessInstanceImpl that = (WorkflowProcessInstanceImpl) o;
+        return getId().equals(that.getId()) &&
+                getState() == that.getState();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getState());
     }
 
     @Override
