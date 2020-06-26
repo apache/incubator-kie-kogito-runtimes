@@ -18,6 +18,8 @@ package org.kie.kogito.grafana;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -27,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.grafana.model.functions.SumFunction;
 import org.kie.kogito.grafana.model.panel.PanelType;
+import org.kie.kogito.grafana.model.panel.common.YAxis;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -134,6 +137,22 @@ public class JGrafanaTest {
         // Act
         grafanaObj.addPanel(PanelType.GRAPH, "My Graph 1", "api_http_response_code{handler=\"world\"}");
         grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2", "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
+
+        // Assert
+        assertThrows(NoSuchElementException.class, () -> {
+            grafanaObj.getPanelByTitle("Hello");
+        });
+    }
+
+    @Test
+    public void GivenAYAxesObject_WhenAPanelIsAdded_ThenTheYAxesIsSet() {
+        JGrafana grafanaObj = new JGrafana("My Dashboard");
+        List<YAxis> yaxes = new ArrayList<>();
+        yaxes.add(new YAxis("ms", true));
+        yaxes.add(new YAxis("sc", false));
+
+        // Act
+        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 1", "api_http_response_code{handler=\"world\"}", new TreeMap<>(), yaxes);
 
         // Assert
         assertThrows(NoSuchElementException.class, () -> {

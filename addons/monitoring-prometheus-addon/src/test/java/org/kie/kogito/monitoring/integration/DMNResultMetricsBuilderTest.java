@@ -18,6 +18,7 @@ package org.kie.kogito.monitoring.integration;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,10 +61,12 @@ public class DMNResultMetricsBuilderTest {
         decisions.add(new DMNDecisionResultMock("BooleanDecision", true));
         // LocalDateTime type
         decisions.add(new DMNDecisionResultMock("LocalDateTimeDecision", LocalDateTime.now()));
-        // Duration type
-        decisions.add(new DMNDecisionResultMock("DurationDecision", Duration.ofSeconds(1)));
+        // Days And Time Duration type
+        decisions.add(new DMNDecisionResultMock("DaysAndTimeDurationDecision", Duration.ofSeconds(1)));
         // BigDecimal Type
         decisions.add(new DMNDecisionResultMock("BigDecimalDecision", new BigDecimal(1)));
+        // Years And Months Duration type
+        decisions.add(new DMNDecisionResultMock("YearsAndMonthsDecision", Period.ofMonths(12)));
 
         dmnResult.setDecisionResults(decisions);
 
@@ -85,9 +88,11 @@ public class DMNResultMetricsBuilderTest {
         // LocalDateTime Time
         assertTrue(getQuantile("LocalDateTimeDecision", SupportedDecisionTypes.fromInternalToStandard(LocalDateTime.class), ENDPOINT_NAME, 0.1) >= 0);
         // Duration type
-        assertTrue(getQuantile("DurationDecision", SupportedDecisionTypes.fromInternalToStandard(Duration.class), ENDPOINT_NAME, 0.1) >= 0);
+        assertTrue(getQuantile("DaysAndTimeDurationDecision", SupportedDecisionTypes.fromInternalToStandard(Duration.class), ENDPOINT_NAME, 0.1) >= 0);
         // BigDecimal type
         assertTrue(getQuantile("BigDecimalDecision", SupportedDecisionTypes.fromInternalToStandard(BigDecimal.class), ENDPOINT_NAME, 0.1) >= 0);
+        // Years And Months Duration type
+        assertTrue(getQuantile("YearsAndMonthsDecision", SupportedDecisionTypes.fromInternalToStandard(Period.class), ENDPOINT_NAME, 0.1) >= 0);
     }
 
     // Keep aligned the mapping of types between kogito-codegen and prometheus-addon.

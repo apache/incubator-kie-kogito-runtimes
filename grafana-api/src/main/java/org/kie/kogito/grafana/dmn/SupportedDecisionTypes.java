@@ -40,7 +40,8 @@ public class SupportedDecisionTypes {
         supportedDmnTypes.add(new NumberType());
         supportedDmnTypes.add(new StringType());
         supportedDmnTypes.add(new TimeAndDateType());
-        supportedDmnTypes.add(new DurationType());
+        supportedDmnTypes.add(new DaysAndTimeDurationType());
+        supportedDmnTypes.add(new YearsAndMonthsDurationType());
         supportedDmnTypes.stream().forEach(x -> dmnInternalClassToDmnStandardMap.put(x.getInternalClass(), x.getDmnType()));
     }
 

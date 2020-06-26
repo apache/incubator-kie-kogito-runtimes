@@ -21,17 +21,17 @@ import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DaysAndTimeDurationHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DurationHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DurationHandlerTest extends AbstractQuantilesTest<DurationHandler> {
+public class DaysAndTimeDurationHandlerTest extends AbstractQuantilesTest<DaysAndTimeDurationHandler> {
 
     @BeforeEach
     public void setUp() {
         registry = new CollectorRegistry();
-        handler = new DurationHandler("hello", registry);
+        handler = new DaysAndTimeDurationHandler("hello", registry);
     }
 
     @AfterEach
