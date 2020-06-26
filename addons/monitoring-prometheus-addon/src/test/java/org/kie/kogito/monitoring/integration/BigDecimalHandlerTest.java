@@ -30,18 +30,7 @@ import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BigDecimalHandlerTest {
-
-    private static final String ENDPOINT_NAME = "hello";
-    private static final String[] INTERNAL_PROMETHEUS_LABELS =
-            new String[]{
-                    DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS[0],
-                    DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS[1],
-                    "quantile"
-            };
-
-    CollectorRegistry registry;
-    BigDecimalHandler handler;
+public class BigDecimalHandlerTest extends AbstractQuantilesTest<BigDecimalHandler> {
 
     @BeforeEach
     public void setUp() {
@@ -72,9 +61,5 @@ public class BigDecimalHandlerTest {
         for (Double key : expectedQuantiles.keySet()) {
             assertEquals(expectedQuantiles.get(key), getQuantile("decision", ENDPOINT_NAME + DecisionConstants.DECISIONS_NAME_SUFFIX, ENDPOINT_NAME, key), 5);
         }
-    }
-
-    private double getQuantile(String decision, String name, String labelValue, double q) {
-        return registry.getSampleValue(name, INTERNAL_PROMETHEUS_LABELS, new String[]{decision, labelValue, Collector.doubleToGoString(q)}).doubleValue();
     }
 }

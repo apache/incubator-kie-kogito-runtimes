@@ -15,26 +15,23 @@
 
 package org.kie.kogito.monitoring.integration;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.stream.IntStream;
+import java.time.Duration;
 
-import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalDateTimeHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DurationHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LocalDateTimeHandlerTest extends AbstractQuantilesTest<LocalDateTimeHandler> {
+public class DurationHandlerTest extends AbstractQuantilesTest<DurationHandler>{
 
     @BeforeEach
     public void setUp() {
         registry = new CollectorRegistry();
-        handler = new LocalDateTimeHandler("hello", registry);
+        handler = new DurationHandler("hello", registry);
     }
 
     @AfterEach
@@ -43,14 +40,14 @@ public class LocalDateTimeHandlerTest extends AbstractQuantilesTest<LocalDateTim
     }
 
     @Test
-    public void GivenLocalDateTimeMetrics_WhenMetricsAreStored_ThenTheQuantilesAreCorrect() {
+    public void GivenDurationMetrics_WhenMetricsAreStored_ThenTheQuantilesAreCorrect() {
         // Arrange
-        LocalDateTime now = LocalDateTime.now();
-        Long expectedValue = now.toInstant(ZoneOffset.UTC).toEpochMilli();
+        Integer expectedValue = 10000;
+        Duration duration = Duration.ofMillis(expectedValue);
         Double[] quantiles = new Double[]{0.1, 0.25, 0.5, 0.75, 0.9, 0.99};
 
         // Act
-        handler.record("decision", ENDPOINT_NAME, now);
+        handler.record("decision", ENDPOINT_NAME, duration);
 
         // Assert
         for (Double key : quantiles) {
