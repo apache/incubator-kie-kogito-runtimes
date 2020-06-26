@@ -17,7 +17,6 @@ package org.kie.kogito.monitoring.system.metrics;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;

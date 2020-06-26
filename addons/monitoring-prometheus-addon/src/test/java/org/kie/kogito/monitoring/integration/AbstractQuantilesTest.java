@@ -22,14 +22,13 @@ import org.kie.kogito.monitoring.system.metrics.dmnhandlers.TypeHandler;
 
 public abstract class AbstractQuantilesTest<T extends TypeHandler> {
 
-    protected static final String ENDPOINT_NAME = "hello";
-    protected static final String[] INTERNAL_PROMETHEUS_LABELS =
+    public static final String[] INTERNAL_PROMETHEUS_LABELS =
             new String[]{
                     DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS[0],
                     DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS[1],
                     "quantile"
             };
-
+    protected static final String ENDPOINT_NAME = "hello";
     protected CollectorRegistry registry;
     protected T handler;
 

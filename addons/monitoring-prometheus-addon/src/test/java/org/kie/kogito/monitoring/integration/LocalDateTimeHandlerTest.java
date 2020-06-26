@@ -17,9 +17,7 @@ package org.kie.kogito.monitoring.integration;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.stream.IntStream;
 
-import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

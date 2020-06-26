@@ -20,7 +20,6 @@ import java.math.MathContext;
 import java.util.HashMap;
 
 import ch.obermuhlner.math.big.stream.BigDecimalStream;
-import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

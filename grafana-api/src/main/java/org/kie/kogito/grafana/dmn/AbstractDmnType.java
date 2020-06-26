@@ -40,7 +40,7 @@ public class AbstractDmnType {
         this.grafanaFunctionsToApply = grafanaFunctionsToApply;
     }
 
-    protected void setYAxes(List<YAxis> yaxes){
+    protected void setYAxes(List<YAxis> yaxes) {
         this.yaxes = yaxes;
     }
 
@@ -52,7 +52,7 @@ public class AbstractDmnType {
         return grafanaFunctionsToApply;
     }
 
-    public List<YAxis> getYaxes(){
+    public List<YAxis> getYaxes() {
         return yaxes;
     }
 

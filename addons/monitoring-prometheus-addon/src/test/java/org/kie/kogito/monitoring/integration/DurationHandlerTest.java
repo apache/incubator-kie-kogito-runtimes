@@ -26,7 +26,7 @@ import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DurationHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DurationHandlerTest extends AbstractQuantilesTest<DurationHandler>{
+public class DurationHandlerTest extends AbstractQuantilesTest<DurationHandler> {
 
     @BeforeEach
     public void setUp() {

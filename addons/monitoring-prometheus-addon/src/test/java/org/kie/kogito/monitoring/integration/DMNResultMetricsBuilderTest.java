@@ -26,26 +26,18 @@ import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.mocks.DMNDecisionResultMock;
-import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.kie.kogito.dmn.rest.DMNResult;
+import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
+import org.kie.kogito.monitoring.mocks.DMNDecisionResultMock;
 import org.kie.kogito.monitoring.system.metrics.DMNResultMetricsBuilder;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DMNResultMetricsBuilderTest {
 
-    private static final String[] INTERNAL_PROMETHEUS_LABELS =
-            new String[]{
-                    DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS[0],
-                    DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS[1],
-                    "quantile"
-    };
     private static final String ENDPOINT_NAME = "hello";
     CollectorRegistry registry;
 
@@ -55,14 +47,14 @@ public class DMNResultMetricsBuilderTest {
     }
 
     @Test
-    public void GivenADMNResult_WhenMetricsAreStored_ThenTheCollectorsAreProperlyWorking(){
+    public void GivenADMNResult_WhenMetricsAreStored_ThenTheCollectorsAreProperlyWorking() {
         // Arrange
         DMNResult dmnResult = new DMNResult();
         List<DMNDecisionResultMock> decisions = new ArrayList<>();
         // String type
         decisions.add(new DMNDecisionResultMock("AlphabetDecision", "A"));
-        decisions.add(new DMNDecisionResultMock("DictionaryDecision","Hello"));
-        decisions.add(new DMNDecisionResultMock("DictionaryDecision","Hello"));
+        decisions.add(new DMNDecisionResultMock("DictionaryDecision", "Hello"));
+        decisions.add(new DMNDecisionResultMock("DictionaryDecision", "Hello"));
         decisions.add(new DMNDecisionResultMock("DictionaryDecision", "World"));
         // Boolean type
         decisions.add(new DMNDecisionResultMock("BooleanDecision", true));
@@ -100,7 +92,7 @@ public class DMNResultMetricsBuilderTest {
 
     // Keep aligned the mapping of types between kogito-codegen and prometheus-addon.
     @Test
-    public void alighmentWithKogitoCodegenIsOk(){
+    public void alighmentWithKogitoCodegenIsOk() {
         List addonSupportedTypes = DMNResultMetricsBuilder.getHandlers().values().stream().map(x -> x.getDmnType()).collect(Collectors.toList());
         assertTrue(addonSupportedTypes.containsAll(SupportedDecisionTypes.getSupportedDMNTypes()));
         assertTrue(SupportedDecisionTypes.getSupportedDMNTypes().containsAll(addonSupportedTypes));
@@ -116,9 +108,7 @@ public class DMNResultMetricsBuilderTest {
         return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS, new String[]{decisionName, ENDPOINT_NAME, labelValue});
     }
 
-
     private double getQuantile(String decision, String name, String labelValue, double q) {
-        return registry.getSampleValue(name.replace(" ", "_") + DecisionConstants.DECISIONS_NAME_SUFFIX, INTERNAL_PROMETHEUS_LABELS, new String[]{decision, labelValue, Collector.doubleToGoString(q)}).doubleValue();
+        return registry.getSampleValue(name.replace(" ", "_") + DecisionConstants.DECISIONS_NAME_SUFFIX, AbstractQuantilesTest.INTERNAL_PROMETHEUS_LABELS, new String[]{decision, labelValue, Collector.doubleToGoString(q)});
     }
-
 }
