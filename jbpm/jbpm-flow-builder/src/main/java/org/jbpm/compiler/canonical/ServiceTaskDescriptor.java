@@ -74,19 +74,11 @@ public class ServiceTaskDescriptor {
 
         parameters = serviceTaskParameters();
 
-        mangledName = mangledHandlerName(interfaceName, operationName, parameters);
+        mangledName = mangledHandlerName(interfaceName, operationName, String.valueOf(workItemNode.getId()));
     }
 
     public String mangledName() {
         return mangledName;
-    }
-
-    private String signature() {
-        String parameterList = parameters.entrySet().stream().map(e -> e.getValue() + " " + e.getKey()).collect(joining(", "));
-        return String.format("%s#%s(%s)",
-                             interfaceName,
-                             operationName,
-                             parameterList);
     }
 
     private Map<String, String> serviceTaskParameters() {
@@ -140,15 +132,8 @@ public class ServiceTaskDescriptor {
         return type.equals("java.lang.Object") || type.equals("Object");
     }
 
-    private String mangledHandlerName(String interfaceName, String operationName, Map<String, String> parameters) {
-        // mangle dotted identifiers foo.bar.Baz into foo$bar$Baz
-        // then concatenate the collection with $$
-        // e.g. List.of("foo.bar.Baz", "qux.Quux") -> "foo$bar$Baz$$qux$Quux"
-        String mangledParameterTypes =
-                parameters.values().stream().map(s -> s.replace('.', '$'))
-                        .collect(joining("$$"));
-
-        return String.format("%s_%s_%s_Handler", interfaceName, operationName, mangledParameterTypes);
+    private String mangledHandlerName(String interfaceName, String operationName, String nodeName) {
+        return String.format("%s_%s_%s_Handler", interfaceName, operationName, nodeName);
     }
 
     public CompilationUnit generateHandlerClassForService() {
@@ -214,8 +199,6 @@ public class ServiceTaskDescriptor {
     }
 
     private MethodCallExpr completeWorkItem(BlockStmt executeWorkItemBody, MethodCallExpr callService) {
-        loadClass();
-        Method m = findMethod();
         Expression results = null;
         List<DataAssociation> outAssociations = workItemNode.getOutAssociations();
         if (outAssociations.isEmpty()) {
@@ -238,20 +221,4 @@ public class ServiceTaskDescriptor {
         return completeWorkItem;
     }
 
-    private Method findMethod() {
-        int nParams = parameters.size();
-        List<Method> candidates = Arrays.stream(cls.getMethods())
-                .filter(m -> m.getName().equals(operationName) && m.getParameterCount() == nParams)
-                .collect(Collectors.toList());
-        switch (candidates.size()) {
-            case 0:
-                throw new IllegalArgumentException("Could not find any candidate for signature: %s" + signature());
-            case 1:
-                return candidates.get(0);
-            default:
-                String candidateList = candidates.stream().map(Method::toString).collect(joining("\n"));
-                throw new UnsupportedOperationException(
-                        String.format("Found more than one candidate for signature: %s: \n%s", signature(), candidateList));
-        }
-    }
 }
