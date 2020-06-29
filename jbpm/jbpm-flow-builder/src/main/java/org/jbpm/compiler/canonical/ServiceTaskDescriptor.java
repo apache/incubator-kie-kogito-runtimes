@@ -53,10 +53,14 @@ import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.joining;
 
 public class ServiceTaskDescriptor {
+
+    public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
 
     private final ClassLoader contextClassLoader;
     private final String interfaceName;
@@ -65,6 +69,7 @@ public class ServiceTaskDescriptor {
     private final WorkItemNode workItemNode;
     private final String mangledName;
     Class<?> cls;
+    private Method method;
 
     ServiceTaskDescriptor(WorkItemNode workItemNode, ClassLoader contextClassLoader) {
         this.workItemNode = workItemNode;
@@ -80,6 +85,17 @@ public class ServiceTaskDescriptor {
         parameters = serviceTaskParameters();
 
         mangledName = mangledHandlerName(interfaceName, operationName, String.valueOf(workItemNode.getId()));
+
+        initializeReflectiveFields();
+    }
+
+    private void initializeReflectiveFields() {
+        try {
+            loadClass();
+            findMethod();
+        } catch (IllegalArgumentException e) {
+            logger.warn("Could not initialize reflective fields. Will try to infer service from parameters.", e);
+        }
     }
 
     public String mangledName() {
@@ -208,11 +224,9 @@ public class ServiceTaskDescriptor {
     }
 
     private BlockStmt completeWorkItem() {
-        loadClass();
 
         BlockStmt resultBody = new BlockStmt();
         BlockStmt completeWorkItemBody = new BlockStmt();
-        Method m = findMethod();
         MethodCallExpr callService = callService();
 
         // workItemManager.completeWorkItem(workItem.getId(), result)
@@ -239,7 +253,7 @@ public class ServiceTaskDescriptor {
             completeWorkItemBody.addStatement(completeWorkItem);
         }
 
-        if (CompletionStage.class.isAssignableFrom(m.getReturnType())) {
+        if (isCompletionStage()) {
             // complete async
             MethodCallExpr whenCompleteAsync = new MethodCallExpr(callService, "whenCompleteAsync")
                     .addArgument(new LambdaExpr()
@@ -249,7 +263,7 @@ public class ServiceTaskDescriptor {
                                          .setBody(completeWorkItemBody));
             resultBody.addStatement(whenCompleteAsync);
         } else {
-            if (!void.class.isAssignableFrom(m.getReturnType())) {
+            if (!isVoidType()) {
                 VariableDeclarator varDecl = new VariableDeclarator(
                         new ClassOrInterfaceType(null, Object.class.getCanonicalName()),
                         "value").setInitializer(callService);
@@ -263,8 +277,17 @@ public class ServiceTaskDescriptor {
         return resultBody;
     }
 
+    private boolean isVoidType() {
+        return method == null ?
+                !workItemNode.getOutMappings().isEmpty()
+                : void.class.isAssignableFrom(method.getReturnType());
+    }
 
-    private Method findMethod() {
+    private boolean isCompletionStage() {
+        return method != null && CompletionStage.class.isAssignableFrom(method.getReturnType());
+    }
+
+    private void findMethod() {
         int nParams = parameters.size();
         List<Method> candidates = Arrays.stream(cls.getMethods())
                 .filter(m -> m.getName().equals(operationName) && m.getParameterCount() == nParams)
@@ -273,7 +296,7 @@ public class ServiceTaskDescriptor {
             case 0:
                 throw new IllegalArgumentException("Could not find any candidate for signature: %s" + signature());
             case 1:
-                return candidates.get(0);
+                this.method = candidates.get(0);
             default:
                 String candidateList = candidates.stream().map(Method::toString).collect(joining("\n"));
                 throw new UnsupportedOperationException(
