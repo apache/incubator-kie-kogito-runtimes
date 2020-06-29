@@ -39,8 +39,8 @@ public class HotReloadTest {
             () -> ShrinkWrap.create(JavaArchive.class)
                     .addAsResource("orders.txt", PACKAGE_FOLDER + "/orders.bpmn")
                     .addAsResource("orderItems.txt", PACKAGE_FOLDER + "/orderItems.bpmn")
-                    .addAsResource("CalculationService.txt", PACKAGE_FOLDER + "/CalculationService.java")
-                    .addAsResource("Order.txt", PACKAGE_FOLDER + "/Order.java")
+//                    .addAsResource("CalculationService.txt", PACKAGE_FOLDER + "/CalculationService.java")
+//                    .addAsResource("Order.txt", PACKAGE_FOLDER + "/Order.java")
                     .addAsResource("OrdersProcessService.txt", PACKAGE_FOLDER + "/OrdersProcessService.java")
                     .addAsResource("text-process.txt", RESOURCE_FILE)
                     .addAsResource("JbpmHotReloadTestHelper.txt", PACKAGE_FOLDER + "/JbpmHotReloadTestHelper.java"));

@@ -215,7 +215,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // set default package name
         setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
-        contextClassLoader = Thread.currentThread().getContextClassLoader();
+        contextClassLoader = getClass().getClassLoader();
 
         //FIXME: once all endpoint generators are implemented it should be changed to ResourceGeneratorFactory, to
         // consider Spring generators.
