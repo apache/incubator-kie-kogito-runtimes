@@ -17,7 +17,9 @@ package org.kie.kogito.monitoring.integration;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +69,10 @@ public class DMNResultMetricsBuilderTest {
         decisions.add(new DMNDecisionResultMock("BigDecimalDecision", new BigDecimal(1)));
         // Years And Months Duration type
         decisions.add(new DMNDecisionResultMock("YearsAndMonthsDecision", Period.ofMonths(12)));
+        // LocalDate type
+        decisions.add(new DMNDecisionResultMock("LocalDateDecision", LocalDate.of(2020, 1, 1)));
+        // LocalTime type
+        decisions.add(new DMNDecisionResultMock("LocalTimeDecision", LocalTime.of(12, 0)));
 
         dmnResult.setDecisionResults(decisions);
 
@@ -93,6 +99,10 @@ public class DMNResultMetricsBuilderTest {
         assertTrue(getQuantile("BigDecimalDecision", SupportedDecisionTypes.fromInternalToStandard(BigDecimal.class), ENDPOINT_NAME, 0.1) >= 0);
         // Years And Months Duration type
         assertTrue(getQuantile("YearsAndMonthsDecision", SupportedDecisionTypes.fromInternalToStandard(Period.class), ENDPOINT_NAME, 0.1) >= 0);
+        // LocalDate type
+        assertTrue(getQuantile("LocalDateDecision", SupportedDecisionTypes.fromInternalToStandard(LocalDate.class), ENDPOINT_NAME, 0.1) >= 0);
+        // LocalTime type
+        assertTrue(getQuantile("LocalTimeDecision", SupportedDecisionTypes.fromInternalToStandard(LocalTime.class), ENDPOINT_NAME, 0.1) >= 0);
     }
 
     // Keep aligned the mapping of types between kogito-codegen and prometheus-addon.

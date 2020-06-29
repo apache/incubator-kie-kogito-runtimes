@@ -17,7 +17,9 @@ package org.kie.kogito.monitoring.system.metrics;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +31,9 @@ import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BooleanHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DaysAndTimeDurationHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalDateHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalDateTimeHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalTimeHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.StringHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.TypeHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.YearsAndMonthsDurationHandler;
@@ -53,6 +57,8 @@ public class DMNResultMetricsBuilder {
         handlers.put(LocalDateTime.class, new LocalDateTimeHandler(SupportedDecisionTypes.fromInternalToStandard(LocalDateTime.class)));
         handlers.put(Duration.class, new DaysAndTimeDurationHandler(SupportedDecisionTypes.fromInternalToStandard(Duration.class)));
         handlers.put(Period.class, new YearsAndMonthsDurationHandler(SupportedDecisionTypes.fromInternalToStandard(Period.class)));
+        handlers.put(LocalDate.class, new LocalDateHandler(SupportedDecisionTypes.fromInternalToStandard(LocalDate.class)));
+        handlers.put(LocalTime.class, new LocalTimeHandler(SupportedDecisionTypes.fromInternalToStandard(LocalTime.class)));
 
         return handlers;
     }

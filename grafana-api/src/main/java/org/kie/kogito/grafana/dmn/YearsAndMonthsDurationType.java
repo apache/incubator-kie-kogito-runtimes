@@ -16,20 +16,12 @@
 package org.kie.kogito.grafana.dmn;
 
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeMap;
-
-import org.kie.kogito.grafana.model.panel.common.YAxis;
 
 public class YearsAndMonthsDurationType extends AbstractDmnType {
 
     public YearsAndMonthsDurationType() {
         super(Period.class, "years and months duration");
         addFunctions(new TreeMap<>());
-        List<YAxis> yaxes = new ArrayList<>();
-        yaxes.add(new YAxis("dtdurationms", true));
-        yaxes.add(new YAxis("ms", false));
-        setYAxes(yaxes);
     }
 }

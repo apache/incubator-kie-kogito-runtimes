@@ -42,6 +42,8 @@ public class SupportedDecisionTypes {
         supportedDmnTypes.add(new TimeAndDateType());
         supportedDmnTypes.add(new DaysAndTimeDurationType());
         supportedDmnTypes.add(new YearsAndMonthsDurationType());
+        supportedDmnTypes.add(new LocalDateType());
+        supportedDmnTypes.add(new LocalTimeType());
         supportedDmnTypes.stream().forEach(x -> dmnInternalClassToDmnStandardMap.put(x.getInternalClass(), x.getDmnType()));
     }
 
