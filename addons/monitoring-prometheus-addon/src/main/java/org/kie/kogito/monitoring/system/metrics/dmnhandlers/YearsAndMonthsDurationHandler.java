@@ -28,7 +28,7 @@ public class YearsAndMonthsDurationHandler extends TypeHandlerWithSummary<Period
 
     public YearsAndMonthsDurationHandler(String dmnType, CollectorRegistry registry) {
         this.dmnType = dmnType;
-        this.summary = initializeDefaultCounter(dmnType, registry);
+        this.summary = initializeDefaultSummary(dmnType, registry);
     }
 
     public YearsAndMonthsDurationHandler(String dmnType) {

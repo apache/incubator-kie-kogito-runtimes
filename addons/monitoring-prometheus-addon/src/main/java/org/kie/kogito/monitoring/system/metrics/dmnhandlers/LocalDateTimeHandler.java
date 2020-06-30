@@ -29,7 +29,7 @@ public class LocalDateTimeHandler extends TypeHandlerWithSummary<LocalDateTime> 
 
     public LocalDateTimeHandler(String dmnType, CollectorRegistry registry) {
         this.dmnType = dmnType;
-        this.summary = initializeDefaultCounter(dmnType, registry);
+        this.summary = initializeDefaultSummary(dmnType, registry);
     }
 
     public LocalDateTimeHandler(String dmnType) {

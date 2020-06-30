@@ -28,7 +28,7 @@ public class LocalTimeHandler extends TypeHandlerWithSummary<LocalTime> {
 
     public LocalTimeHandler(String dmnType, CollectorRegistry registry) {
         this.dmnType = dmnType;
-        this.summary = initializeDefaultCounter(dmnType, registry);
+        this.summary = initializeDefaultSummary(dmnType, registry);
     }
 
     public LocalTimeHandler(String dmnType) {
