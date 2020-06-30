@@ -16,6 +16,7 @@
 package org.kie.kogito.monitoring.integration;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
@@ -40,10 +41,10 @@ public class LocalDateHandlerTest extends AbstractQuantilesTest<LocalDateHandler
     }
 
     @Test
-    public void GivenLocalDateTimeMetrics_WhenMetricsAreStored_ThenTheQuantilesAreCorrect() {
+    public void GivenLocalDateMetrics_WhenMetricsAreStored_ThenTheQuantilesAreCorrect() {
         // Arrange
         LocalDate now = LocalDate.now();
-        Long expectedValue = now.toEpochDay();
+        Long expectedValue = now.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
         Double[] quantiles = new Double[]{0.1, 0.25, 0.5, 0.75, 0.9, 0.99};
 
         // Act
