@@ -265,7 +265,9 @@ public class ServiceTaskDescriptor {
                                          .setBody(completeWorkItemBody));
             resultBody.addStatement(whenCompleteAsync);
         } else {
-            if (!isVoidType()) {
+            if (isVoidType()) {
+                resultBody.addStatement(callService);
+            } else {
                 VariableDeclarator varDecl = new VariableDeclarator(
                         new ClassOrInterfaceType(null, Object.class.getCanonicalName()),
                         "value").setInitializer(callService);
