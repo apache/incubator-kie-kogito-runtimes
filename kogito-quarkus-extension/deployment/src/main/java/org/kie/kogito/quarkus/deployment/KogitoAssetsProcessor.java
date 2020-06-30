@@ -336,7 +336,7 @@ public class KogitoAssetsProcessor {
                 errorInfo.append("\n");
                 logger.error(compilationProblem.toString());
             }
-            Arrays.stream(result.getErrors()).forEach(cp -> errorInfo.append(cp.toString()));
+            Arrays.stream(result.getErrors()).forEach(cp -> errorInfo.append(cp.toString()).append("\n"));
             throw new IllegalStateException(errorInfo.toString());
         }
 

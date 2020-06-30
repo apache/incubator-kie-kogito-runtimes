@@ -94,7 +94,9 @@ public class ServiceTaskDescriptor {
             loadClass();
             findMethod();
         } catch (IllegalArgumentException e) {
-            logger.warn("Could not initialize reflective fields. Will try to infer service from parameters.", e);
+            logger.warn("Could not initialize reflective fields. Will try to infer service from parameters. " +
+                                "Work Item: {}, method: {}.{}",
+                                workItemNode.getName(), interfaceName,  operationName);
         }
     }
 
@@ -279,7 +281,7 @@ public class ServiceTaskDescriptor {
 
     private boolean isVoidType() {
         return method == null ?
-                !workItemNode.getOutMappings().isEmpty()
+                workItemNode.getOutMappings().isEmpty()
                 : void.class.isAssignableFrom(method.getReturnType());
     }
 
