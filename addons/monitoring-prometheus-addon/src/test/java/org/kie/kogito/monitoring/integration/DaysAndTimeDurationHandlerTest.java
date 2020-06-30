@@ -40,7 +40,7 @@ public class DaysAndTimeDurationHandlerTest extends AbstractQuantilesTest<DaysAn
     }
 
     @Test
-    public void GivenDurationMetrics_WhenMetricsAreStored_ThenTheQuantilesAreCorrect() {
+    public void givenDurationMetricsWhenMetricsAreStoredThenTheQuantilesAreCorrect() {
         // Arrange
         Integer expectedValue = 10000;
         Duration duration = Duration.ofMillis(expectedValue);

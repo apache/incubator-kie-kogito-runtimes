@@ -50,7 +50,7 @@ public class DMNResultMetricsBuilderTest {
     }
 
     @Test
-    public void GivenADMNResult_WhenMetricsAreStored_ThenTheCollectorsAreProperlyWorking() {
+    public void givenADMNResultWhenMetricsAreStoredThenTheCollectorsAreProperlyWorking() {
         // Arrange
         DMNResult dmnResult = new DMNResult();
         List<DMNDecisionResultMock> decisions = new ArrayList<>();
@@ -114,7 +114,7 @@ public class DMNResultMetricsBuilderTest {
     }
 
     @Test
-    public void GivenANullDMNResult_WhenMetricsAreRegistered_ThenTheSampleIsDiscarded() {
+    public void givenANullDMNResultWhenMetricsAreRegisteredThenTheSampleIsDiscarded() {
         // Assert
         assertDoesNotThrow(() -> DMNResultMetricsBuilder.generateMetrics(null, ENDPOINT_NAME));
     }

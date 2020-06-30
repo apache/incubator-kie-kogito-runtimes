@@ -43,7 +43,7 @@ public class BigDecimalHandlerTest extends AbstractQuantilesTest<BigDecimalHandl
     }
 
     @Test
-    public void GivenSomeSamples_WhenQuantilesAreCalculated_ThenTheQuantilesAreCorrect() {
+    public void givenSomeSamplesWhenQuantilesAreCalculatedThenTheQuantilesAreCorrect() {
         // Arrange
         HashMap<Double, Double> expectedQuantiles = new HashMap<>();
         expectedQuantiles.put(0.1, 999.0);

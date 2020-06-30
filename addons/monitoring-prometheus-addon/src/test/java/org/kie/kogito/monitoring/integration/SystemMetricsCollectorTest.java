@@ -37,7 +37,7 @@ public class SystemMetricsCollectorTest {
     }
 
     @Test
-    public void GivenAStatusCode_WhenRegisterStatusCodeRequestIsCalled_ThenTheStatusCodeIsExportedToPrometheus() {
+    public void givenAStatusCodeWhenRegisterStatusCodeRequestIsCalledThenTheStatusCodeIsExportedToPrometheus() {
         // Arrange
         HashMap<String, Integer> mapCodeRepetition = new HashMap<>();
         mapCodeRepetition.put("400", 100);
@@ -53,7 +53,7 @@ public class SystemMetricsCollectorTest {
     }
 
     @Test
-    public void GivenAnException_WhenRegisterExceptionIsCalled_ThenTheStatusCodeIsExportedToPrometheus() {
+    public void givenAnExceptionWhenRegisterExceptionIsCalledThenTheStatusCodeIsExportedToPrometheus() {
         // Arrange
         HashMap<String, Integer> mapExceptionRepetition = new HashMap<>();
         mapExceptionRepetition.put("NoSuchElement", 10);
@@ -69,7 +69,7 @@ public class SystemMetricsCollectorTest {
     }
 
     @Test
-    public void GivenAnElapsedTimeSample_WhenRegisterElapsedTimeSampleMetrics_ThenTheStatusCodeIsExportedToPrometheus() {
+    public void givenAnElapsedTimeSampleWhenRegisterElapsedTimeSampleMetricsThenTheStatusCodeIsExportedToPrometheus() {
         // Arrange
         HashMap<Double, Double> expectedQuantiles = new HashMap<>();
         expectedQuantiles.put(0.1, 999.0);

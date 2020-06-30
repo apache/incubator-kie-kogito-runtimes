@@ -40,7 +40,7 @@ public class LocalTimeHandlerTest extends AbstractQuantilesTest<LocalTimeHandler
     }
 
     @Test
-    public void GivenLocalTimeMetrics_WhenMetricsAreStored_ThenTheQuantilesAreCorrect() {
+    public void givenLocalTimeMetricsWhenMetricsAreStoredThenTheQuantilesAreCorrect() {
         // Arrange
         LocalTime now = LocalTime.now();
         int expectedValue = now.toSecondOfDay();

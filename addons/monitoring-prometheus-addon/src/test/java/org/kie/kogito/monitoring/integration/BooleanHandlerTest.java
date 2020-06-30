@@ -45,7 +45,7 @@ public class BooleanHandlerTest {
     }
 
     @Test
-    public void GivenSomeBooleanMetrics_WhenMetricsAreStored_ThenTheCountIsCorrect() {
+    public void givenSomeBooleanMetricsWhenMetricsAreStoredThenTheCountIsCorrect() {
         // Arrange
         Double expectedTrue = 3.0;
         Double expectedFalse = 2.0;

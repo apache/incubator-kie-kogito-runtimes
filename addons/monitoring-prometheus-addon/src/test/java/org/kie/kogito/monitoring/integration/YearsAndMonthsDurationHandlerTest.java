@@ -40,7 +40,7 @@ public class YearsAndMonthsDurationHandlerTest extends AbstractQuantilesTest<Yea
     }
 
     @Test
-    public void GivenYearsAndMonthsMetrics_WhenMetricsAreStored_ThenTheQuantilesAreCorrect() {
+    public void givenYearsAndMonthsMetricsWhenMetricsAreStoredThenTheQuantilesAreCorrect() {
         // Arrange
         Integer expectedValue = 12;
         Period period = Period.ofMonths(expectedValue);

@@ -41,7 +41,7 @@ public class LocalDateHandlerTest extends AbstractQuantilesTest<LocalDateHandler
     }
 
     @Test
-    public void GivenLocalDateMetrics_WhenMetricsAreStored_ThenTheQuantilesAreCorrect() {
+    public void givenLocalDateMetricsWhenMetricsAreStoredThenTheQuantilesAreCorrect() {
         // Arrange
         LocalDate now = LocalDate.now();
         Long expectedValue = now.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
