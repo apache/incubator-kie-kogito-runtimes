@@ -16,6 +16,7 @@
 package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Summary;
@@ -37,7 +38,7 @@ public class LocalDateHandler extends TypeHandlerWithSummary<LocalDate> {
 
     @Override
     public void record(String type, String endpointName, LocalDate sample) {
-        summary.labels(type, endpointName).observe(sample.toEpochDay());
+        summary.labels(type, endpointName).observe(sample.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
     }
 
     @Override
