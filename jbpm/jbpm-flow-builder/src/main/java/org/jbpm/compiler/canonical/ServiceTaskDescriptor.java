@@ -297,6 +297,7 @@ public class ServiceTaskDescriptor {
                 throw new IllegalArgumentException("Could not find any candidate for signature: %s" + signature());
             case 1:
                 this.method = candidates.get(0);
+                return;
             default:
                 String candidateList = candidates.stream().map(Method::toString).collect(joining("\n"));
                 throw new UnsupportedOperationException(
