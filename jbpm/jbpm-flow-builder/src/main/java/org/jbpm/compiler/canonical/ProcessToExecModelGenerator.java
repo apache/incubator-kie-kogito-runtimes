@@ -70,10 +70,10 @@ public class ProcessToExecModelGenerator {
                 processClazz.getNameAsString());
 
         Optional<MethodDeclaration> processMethod = parsedClazzFile.findFirst(MethodDeclaration.class, sl -> sl.getName().asString().equals("process"));
+        metadata.setGeneratedClassModel(parsedClazzFile);
 
         processVisitor.visitProcess(process, processMethod.get(), metadata);
 
-        metadata.setGeneratedClassModel(parsedClazzFile);
         return metadata;
     }
 

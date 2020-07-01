@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import javax.lang.model.SourceVersion;
 
@@ -51,6 +52,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.core.util.StringUtils;
+import org.kie.kogito.Application;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.TriggerMetaData;
@@ -263,25 +265,39 @@ public class ProcessGenerator {
                     String clazzName = clazz.getName().toString();
                     
                     MethodCallExpr workItemManager = new MethodCallExpr(new NameExpr("services"), "getWorkItemManager");            
-                    MethodCallExpr registerHandler = new MethodCallExpr(workItemManager, "registerWorkItemHandler").addArgument(new StringLiteralExpr(name)).addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, packageName + "." + clazzName), NodeList.nodeList()));
+                    MethodCallExpr registerHandler = new MethodCallExpr(workItemManager, "registerWorkItemHandler")
+                            .addArgument(new StringLiteralExpr(name))
+                            .addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, packageName + "." + clazzName), NodeList.nodeList(new NameExpr("app"))));
                     
                     body.addStatement(registerHandler);
                 }
                 // annotate for injection or add constructor for initialization
-                handler.findAll(FieldDeclaration.class).forEach(fd -> {
-                    if (useInjection()) {
-                        annotator.withInjection(fd);
-                    } else {
-                        BlockStmt constructorBody = new BlockStmt();
-                        AssignExpr assignExpr = new AssignExpr(
-                                                               new FieldAccessExpr(new ThisExpr(), fd.getVariable(0).getNameAsString()),
-                                                               new ObjectCreationExpr().setType(fd.getVariable(0).getType().toString()),
-                                                               AssignExpr.Operator.ASSIGN);
-                        
-                        constructorBody.addStatement(assignExpr);
-                        clazz.addConstructor(Keyword.PUBLIC).setBody(constructorBody);
+                List<FieldDeclaration> fields = handler.findAll(FieldDeclaration.class).stream().collect(Collectors.toList());
+                if (useInjection()) {
+                    fields.forEach(annotator::withInjection);
+                } else {
+                    ConstructorDeclaration constructorDeclaration = clazz.addConstructor(Keyword.PUBLIC);
+                    BlockStmt constructorBody = constructorDeclaration.getBody();
+                    for (FieldDeclaration fd : fields) {
+                        if (fd.getVariable(0).getNameAsString().equals("app")) {
+                            AssignExpr app = new AssignExpr(
+                                    new FieldAccessExpr(new ThisExpr(), "app"),
+                                    new NameExpr("app"),
+                                    AssignExpr.Operator.ASSIGN);
+                            constructorDeclaration
+                                    .addParameter(Application.class.getCanonicalName(), "app");
+                            constructorBody.addStatement(app);
+
+                        } else {
+                            AssignExpr serviceInitExpr = new AssignExpr(
+                                    new FieldAccessExpr(new ThisExpr(), fd.getVariable(0).getNameAsString()),
+                                    new ObjectCreationExpr().setType(fd.getVariable(0).getType().toString()),
+                                    AssignExpr.Operator.ASSIGN);
+                            constructorBody.addStatement(serviceInitExpr);
+                        }
                     }
-                });
+
+                }
                 
                 
                 additionalClasses.add(handler);

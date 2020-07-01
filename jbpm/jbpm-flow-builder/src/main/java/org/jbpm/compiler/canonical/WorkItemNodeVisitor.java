@@ -102,7 +102,7 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
         String workName = node.getWork().getName();
 
         if (workName.equals("Service Task")) {
-            ServiceTaskDescriptor d = new ServiceTaskDescriptor(node, contextClassLoader);
+            ServiceTaskDescriptor d = new ServiceTaskDescriptor(node, metadata.getProcessId(), contextClassLoader);
             String mangledName = d.mangledName();
             CompilationUnit generatedHandler = d.generateHandlerClassForService();
             metadata.getGeneratedHandlers().put(mangledName, generatedHandler);

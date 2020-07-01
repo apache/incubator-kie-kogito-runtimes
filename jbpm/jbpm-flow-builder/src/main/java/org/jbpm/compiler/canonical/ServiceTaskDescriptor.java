@@ -32,10 +32,8 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.CastExpr;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -43,8 +41,8 @@ import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
 import org.jbpm.process.core.ParameterDefinition;
@@ -56,12 +54,14 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.github.javaparser.StaticJavaParser.parseStatement;
 import static java.util.stream.Collectors.joining;
 
 public class ServiceTaskDescriptor {
 
     public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
 
+    private final String processId;
     private final ClassLoader contextClassLoader;
     private final String interfaceName;
     private final String operationName;
@@ -71,10 +71,11 @@ public class ServiceTaskDescriptor {
     Class<?> cls;
     private Method method;
 
-    ServiceTaskDescriptor(WorkItemNode workItemNode, ClassLoader contextClassLoader) {
+    ServiceTaskDescriptor(WorkItemNode workItemNode, String processId, ClassLoader contextClassLoader) {
         this.workItemNode = workItemNode;
         interfaceName = (String) workItemNode.getWork().getParameter("Interface");
         operationName = (String) workItemNode.getWork().getParameter("Operation");
+        this.processId = processId;
         this.contextClassLoader = contextClassLoader;
 
         NodeValidator.of("workItemNode", workItemNode.getName())
@@ -96,7 +97,7 @@ public class ServiceTaskDescriptor {
         } catch (IllegalArgumentException e) {
             logger.warn("Could not initialize reflective fields. Will try to infer service from parameters. " +
                                 "Work Item: {}, method: {}.{}",
-                                workItemNode.getName(), interfaceName,  operationName);
+                        workItemNode.getName(), interfaceName, operationName);
         }
     }
 
@@ -174,9 +175,16 @@ public class ServiceTaskDescriptor {
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .addImplementedType(WorkItemHandler.class.getCanonicalName());
         ClassOrInterfaceType serviceType = new ClassOrInterfaceType(null, interfaceName);
+
         FieldDeclaration serviceField = new FieldDeclaration()
                 .addVariable(new VariableDeclarator(serviceType, "service"));
         cls.addMember(serviceField);
+
+        ClassOrInterfaceType processType =
+                new ClassOrInterfaceType(null, org.kie.kogito.Application.class.getCanonicalName());
+        FieldDeclaration processField = new FieldDeclaration()
+                .addVariable(new VariableDeclarator(processType, "app"));
+        cls.addMember(processField);
 
         // executeWorkItem method
         BlockStmt executeWorkItemBody = new BlockStmt();
@@ -190,7 +198,6 @@ public class ServiceTaskDescriptor {
 
         BlockStmt completeWorkItem = completeWorkItem();
         executeWorkItemBody.addStatement(completeWorkItem);
-
 
         // abortWorkItem method
         BlockStmt abortWorkItemBody = new BlockStmt();
@@ -232,9 +239,31 @@ public class ServiceTaskDescriptor {
         MethodCallExpr callService = callService();
 
         // workItemManager.completeWorkItem(workItem.getId(), result)
-        MethodCallExpr completeWorkItem = new MethodCallExpr(new NameExpr("workItemManager"), "completeWorkItem")
-                .addArgument(new MethodCallExpr(new NameExpr("workItem"), "getId"))
-                .addArgument(new NameExpr("result"));
+//        MethodCallExpr completeWorkItem = new MethodCallExpr(new NameExpr("workItemManager"), "completeWorkItem")
+//                .addArgument(new MethodCallExpr(new NameExpr("workItem"), "getId"))
+//                .addArgument(new NameExpr("result"));
+
+        VariableDeclarationExpr pid = new VariableDeclarationExpr(
+                new VariableDeclarator()
+                        .setType(String.class)
+                        .setName("pid")
+                        .setInitializer(new StringLiteralExpr(processId)));
+
+        VariableDeclarationExpr piid = new VariableDeclarationExpr(
+                new VariableDeclarator()
+                        .setType(String.class)
+                        .setName("piid")
+                        .setInitializer(new MethodCallExpr(new NameExpr("workItem"), "getProcessInstanceId")));
+
+        Statement completeWorkItemInvoke =
+                parseStatement("app.processes().processById(pid).instances().findById(piid)" +
+                                       ".orElseThrow(() -> new IllegalArgumentException(piid))" +
+                                       ".completeWorkItem(piid, result);");
+
+        BlockStmt completeWorkItem = new BlockStmt()
+                .addStatement(pid)
+                .addStatement(piid)
+                .addStatement(completeWorkItemInvoke);
 
         List<DataAssociation> outAssociations = workItemNode.getOutAssociations();
 
@@ -316,5 +345,4 @@ public class ServiceTaskDescriptor {
                              operationName,
                              parameterList);
     }
-
 }
