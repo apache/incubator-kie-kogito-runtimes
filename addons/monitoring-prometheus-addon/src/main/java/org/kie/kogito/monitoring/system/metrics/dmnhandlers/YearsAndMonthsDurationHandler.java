@@ -20,7 +20,7 @@ import java.time.Period;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Summary;
 
-public class YearsAndMonthsDurationHandler extends TypeHandlerWithSummary<Period> {
+public class YearsAndMonthsDurationHandler implements TypeHandlerWithSummary<Period> {
 
     private final Summary summary;
 

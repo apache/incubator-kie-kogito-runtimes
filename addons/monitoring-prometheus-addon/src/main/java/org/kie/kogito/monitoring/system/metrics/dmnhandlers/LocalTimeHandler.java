@@ -20,7 +20,7 @@ import java.time.LocalTime;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Summary;
 
-public class LocalTimeHandler extends TypeHandlerWithSummary<LocalTime> {
+public class LocalTimeHandler implements TypeHandlerWithSummary<LocalTime> {
 
     private final Summary summary;
 

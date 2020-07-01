@@ -18,8 +18,8 @@ package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Summary;
 
-public abstract class TypeHandlerWithSummary<T> implements TypeHandler<T> {
-    protected Summary initializeDefaultSummary(String dmnType, CollectorRegistry registry) {
+public interface TypeHandlerWithSummary<T> extends TypeHandler<T> {
+    default Summary initializeDefaultSummary(String dmnType, CollectorRegistry registry) {
         Summary.Builder builder = Summary.build() // Calculate quantiles over a sliding window of time - default = 10 minutes
                 .quantile(0.1, 0.01)   // Add 10th percentile with 1% tolerated error
                 .quantile(0.25, 0.05)

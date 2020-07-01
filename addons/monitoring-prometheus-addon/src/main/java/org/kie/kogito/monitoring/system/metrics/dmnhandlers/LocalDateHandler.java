@@ -21,7 +21,7 @@ import java.time.ZoneOffset;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Summary;
 
-public class LocalDateHandler extends TypeHandlerWithSummary<LocalDate> {
+public class LocalDateHandler implements TypeHandlerWithSummary<LocalDate> {
 
     private final Summary summary;
 

@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Summary;
 
-public class BigDecimalHandler extends TypeHandlerWithSummary<BigDecimal> {
+public class BigDecimalHandler implements TypeHandlerWithSummary<BigDecimal> {
 
     private final Summary summary;
 
