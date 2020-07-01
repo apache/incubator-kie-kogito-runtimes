@@ -30,6 +30,7 @@ import org.kie.kogito.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.grafana.model.functions.SumFunction;
 import org.kie.kogito.grafana.model.panel.PanelType;
 import org.kie.kogito.grafana.model.panel.common.YAxis;
+import org.kie.kogito.grafana.model.panel.graph.GraphPanel;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -155,9 +156,7 @@ public class JGrafanaTest {
         grafanaObj.addPanel(PanelType.GRAPH, "My Graph 1", "api_http_response_code{handler=\"world\"}", new TreeMap<>(), yaxes);
 
         // Assert
-        assertThrows(NoSuchElementException.class, () -> {
-            grafanaObj.getPanelByTitle("Hello");
-        });
+        assertEquals(2, ((GraphPanel) grafanaObj.getPanelByTitle("My Graph 1")).yaxes.size());
     }
 
     @Test
