@@ -53,7 +53,7 @@ public class AbstractRuleUnitInstance<T extends RuleUnitData> implements RuleUni
     }
 
     @Override
-    public <Q> List<Q> executeQuery(Class<? extends RuleUnitQuery<Q>> query) {
+    public <Q> Q executeQuery(Class<? extends RuleUnitQuery<Q>> query) {
         return createRuleUnitQuery( query ).execute();
     }
 

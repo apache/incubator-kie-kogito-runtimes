@@ -7,7 +7,7 @@ import org.kie.kogito.rules.RuleUnitInstance;
 
 import static java.util.stream.Collectors.toList;
 
-public class $unit$Query$name$ implements org.kie.kogito.rules.RuleUnitQuery<$ReturnType$> {
+public class $unit$Query$name$ implements org.kie.kogito.rules.RuleUnitQuery<List<$ReturnType$>> {
 
     private final RuleUnitInstance<$UnitType$> instance;
 

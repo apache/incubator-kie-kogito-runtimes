@@ -91,7 +91,7 @@ public class QueryGenerator implements FileGenerator {
         setGeneric(ruleUnitDeclaration.getElementType(), ruleUnit);
 
         String returnType = getReturnType(clazz);
-        setGeneric( clazz.getImplementedTypes( 0 ), returnType );
+        setGeneric( clazz.getImplementedTypes( 0 ).getTypeArguments().get().get(0), returnType );
         generateConstructors(clazz);
         generateQueryMethod(cu, clazz, returnType);
         clazz.getMembers().sort(new BodyDeclarationComparator());
