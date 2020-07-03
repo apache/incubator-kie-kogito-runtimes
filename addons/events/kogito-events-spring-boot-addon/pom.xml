@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>events</artifactId>
-    <version>0.11.0</version>
+    <version>0.11.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-events-spring-boot-addon</artifactId>
   <name>Kogito :: Add-Ons :: Events :: SprintBoot</name>
