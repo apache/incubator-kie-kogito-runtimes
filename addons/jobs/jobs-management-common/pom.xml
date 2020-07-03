@@ -21,7 +21,7 @@
   <parent>
     <artifactId>jobs</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>0.11.0</version>
+    <version>0.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
