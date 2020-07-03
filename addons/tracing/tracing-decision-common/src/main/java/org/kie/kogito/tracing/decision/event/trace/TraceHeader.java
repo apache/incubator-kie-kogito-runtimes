@@ -84,8 +84,8 @@ public class TraceHeader {
     }
 
     private void checkAndLogInvalidTimestamp(Long timestamp, String property, String executionId){
-        if (timestamp < 0){
-            LOGGER.warn(String.format("The TraceHeader timestamp property %s of the execution %s is negative %d", property, executionId, timestamp));
+        if (timestamp == null || timestamp < 0){
+            LOGGER.warn(String.format("The TraceHeader timestamp property %s of the execution %s is null or negative: %d", property, executionId, timestamp));
         }
     }
 }
