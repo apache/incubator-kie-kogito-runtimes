@@ -104,23 +104,25 @@ public class ProcessCodegen extends AbstractGenerator {
     private ClassLoader contextClassLoader;
     private ResourceGeneratorFactory resourceGeneratorFactory;
 
-    public static ProcessCodegen ofJar(Path jarPath) {
+    public static ProcessCodegen ofJar(Path... jarPaths) {
         List<Process> processes = new ArrayList<>();
 
-        try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                ResourceType resourceType = determineResourceType(entry.getName());
-                if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(entry.getName()::endsWith)) {
-                    InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
-                    resource.setResourceType(resourceType);
-                    resource.setSourcePath(entry.getName());
-                    processes.addAll(parseProcessFile(resource));
+        for (Path jarPath : jarPaths) {
+            try (ZipFile zipFile = new ZipFile( jarPath.toFile() )) {
+                Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+                    ResourceType resourceType = determineResourceType( entry.getName() );
+                    if ( SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch( entry.getName()::endsWith ) ) {
+                        InternalResource resource = new ByteArrayResource( readBytesFromInputStream( zipFile.getInputStream( entry ) ) );
+                        resource.setResourceType( resourceType );
+                        resource.setSourcePath( entry.getName() );
+                        processes.addAll( parseProcessFile( resource ) );
+                    }
                 }
+            } catch (IOException e) {
+                throw new UncheckedIOException( e );
             }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
         }
 
         return ofProcesses(processes);
@@ -463,10 +465,10 @@ public class ProcessCodegen extends AbstractGenerator {
             storeFile(Type.PROCESS_INSTANCE, pi.generatedFilePath(), pi.generate());
         }
 
-        for (ProcessExecutableModelGenerator legacyProcessGenerator : processExecutableModelGenerators) {
-            if (legacyProcessGenerator.isPublic()) {
-                publicProcesses.add(legacyProcessGenerator.extractedProcessId());
-                this.addLabel(legacyProcessGenerator.label(), "process"); // add the label id of the process with value set to process as resource type
+        for (ProcessExecutableModelGenerator processGenerator : processExecutableModelGenerators) {
+            if (processGenerator.isPublic()) {
+                publicProcesses.add(processGenerator.extractedProcessId());
+                this.addLabel(processGenerator.label(), "process"); // add the label id of the process with value set to process as resource type
             }
         }
 
