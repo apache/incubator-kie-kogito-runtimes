@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public class RuleSetNodeFactory extends StateBasedNodeFactory implements MappableNodeFactory {
 
     public static final String METHOD_DECISION = "decision";
-    public static final String MEHTOD_PARAMETER = "parameter";
+    public static final String METHOD_PARAMETER = "parameter";
 
     public RuleSetNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
