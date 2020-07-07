@@ -25,3 +25,7 @@ end
 query FindAdultNames
     /persons[ adult, $name : name ]
 end
+
+query FindAdults
+    $p: /persons[ adult ]
+end
