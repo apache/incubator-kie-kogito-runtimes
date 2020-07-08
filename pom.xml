@@ -140,7 +140,8 @@
     <version.org.keycloak.image>8.0.1</version.org.keycloak.image>
     <version.org.mockito>3.3.3</version.org.mockito>
     <version.org.mvel>2.4.7.Final</version.org.mvel>
-    <version.org.kie7>7.41.0-SNAPSHOT</version.org.kie7>
+    <version.org.kie7>7.39.0.Final</version.org.kie7>
+    <version.org.pmml>7.41.0-SNAPSHOT</version.org.pmml>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
     <version.testcontainers>1.14.3</version.testcontainers>
@@ -282,7 +283,7 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-pmml-dependencies</artifactId>
-        <version>${version.org.kie7}</version>
+        <version>${version.org.pmml}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
