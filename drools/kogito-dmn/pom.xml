@@ -63,6 +63,13 @@
       </exclusions>
     </dependency>
 
+    <!-- PMML -->
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-pmml-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-api</artifactId>

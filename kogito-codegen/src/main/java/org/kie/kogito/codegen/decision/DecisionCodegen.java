@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.io.internal.InternalResource;
@@ -53,6 +54,10 @@ import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.grafana.GrafanaConfigurationWriter;
+
+import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
+import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
+import org.kie.pmml.evaluator.core.service.PMMLRuntimeImpl;
 
 import static java.util.stream.Collectors.toList;
 
@@ -117,8 +122,9 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private static List<DMNResource> parseDecisions(Path path, List<Resource> resources) throws IOException {
+        PMMLRuntime pmmlRuntime = new PMMLRuntimeImpl(new KnowledgeBaseImpl("DMNPMML", null), new PMMLModelEvaluatorFinderImpl());
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                                                 .setRootClassLoader(null)
+                                                 .setPMMLRuntime(pmmlRuntime)
                                                  .buildConfiguration()
                                                  .fromResources(resources)
                                                  .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));

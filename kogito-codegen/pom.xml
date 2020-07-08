@@ -101,6 +101,13 @@
       <artifactId>grafana-api</artifactId>
     </dependency>
 
+    <!-- PMML -->
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-pmml-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+
     <!-- marshallers -->
     <dependency>
       <groupId>org.infinispan.protostream</groupId>

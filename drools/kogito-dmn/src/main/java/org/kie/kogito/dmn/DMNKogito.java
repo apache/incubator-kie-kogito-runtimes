@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.core.io.impl.ReaderResource;
 import org.kie.api.io.Resource;
 import org.kie.dmn.api.core.DMNModel;
@@ -31,6 +32,9 @@ import org.kie.dmn.core.internal.utils.DMNEvaluationUtils.DMNEvaluationResult;
 import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.DMNResult;
+import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
+import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
+import org.kie.pmml.evaluator.core.service.PMMLRuntimeImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +56,9 @@ public class DMNKogito {
      */
     public static DMNRuntime createGenericDMNRuntime(Reader... readers) {
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
+        PMMLRuntime pmmlRuntime = new PMMLRuntimeImpl(new KnowledgeBaseImpl("DMNPMML", null), new PMMLModelEvaluatorFinderImpl());
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                                                 .setRootClassLoader(null)
+                                                 .setPMMLRuntime(pmmlRuntime)
                                                  .buildConfiguration()
                                                  .fromResources(resources)
                                                  .getOrElseThrow(e -> new RuntimeException("Error initalizing DMNRuntime", e));
