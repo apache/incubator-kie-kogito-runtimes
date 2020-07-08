@@ -246,6 +246,7 @@
     <module>archetypes</module>
     <module>grafana-api</module>
     <module>integration-tests</module>
+    <module>jenkins-tests</module>
   </modules>
 
   <dependencyManagement>
@@ -777,7 +778,6 @@
         <artifactId>json-schema-validator</artifactId>
         <version>${version.io.restassured}</version>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 
