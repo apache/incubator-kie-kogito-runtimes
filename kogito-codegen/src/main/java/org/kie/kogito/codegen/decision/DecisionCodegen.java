@@ -36,8 +36,12 @@ import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.io.internal.InternalResource;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
@@ -54,13 +58,11 @@ import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.grafana.GrafanaConfigurationWriter;
-
 import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
 import org.kie.pmml.evaluator.core.service.PMMLRuntimeImpl;
 
 import static java.util.stream.Collectors.toList;
-
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
@@ -122,13 +124,21 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private static List<DMNResource> parseDecisions(Path path, List<Resource> resources) throws IOException {
-        PMMLRuntime pmmlRuntime = new PMMLRuntimeImpl(new KnowledgeBaseImpl("DMNPMML", null), new PMMLModelEvaluatorFinderImpl());
+//        PMMLRuntime pmmlRuntime = getPMMLRuntime("DMNPMML");
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                                                 .setPMMLRuntime(pmmlRuntime)
+                                                 .setPMMLRuntime(null)
                                                  .buildConfiguration()
                                                  .fromResources(resources)
                                                  .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
         return dmnRuntime.getModels().stream().map( model -> new DMNResource( model, path )).collect( toList() );
+    }
+
+    private static PMMLRuntime getPMMLRuntime(String kbaseName) {
+        KieServices kieServices = KieServices.get();
+        KieContainer kieContainer = kieServices.newKieClasspathContainer();
+        KieBase kieBase = kieContainer.getKieBase(kbaseName);
+        KieRuntimeFactory kieRuntimeFactory = KieRuntimeFactory.of(kieBase);
+        return kieRuntimeFactory.get(PMMLRuntime.class);
     }
 
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";

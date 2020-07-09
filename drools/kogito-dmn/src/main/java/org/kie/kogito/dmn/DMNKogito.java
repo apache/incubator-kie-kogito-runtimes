@@ -22,9 +22,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.core.io.impl.ReaderResource;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
 import org.kie.api.io.Resource;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.dmn.core.internal.utils.DMNEvaluationUtils;
@@ -33,14 +36,13 @@ import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.DMNResult;
 import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
-import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
-import org.kie.pmml.evaluator.core.service.PMMLRuntimeImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Internal Utility class.<br/>
- * Use {@link Application#decisionModels()} of Kogito API to programmatically access DMN assets and evaluate DMN decisions.
+ * Use {@link Application#decisionModels()} of Kogito API to programmatically access DMN assets and evaluate DMN
+ * decisions.
  */
 public class DMNKogito {
 
@@ -52,21 +54,23 @@ public class DMNKogito {
 
     /**
      * Internal Utility class.<br/>
-     * Use {@link Application#decisionModels()} of Kogito API to programmatically access DMN assets and evaluate DMN decisions.
+     * Use {@link Application#decisionModels()} of Kogito API to programmatically access DMN assets and evaluate DMN
+     * decisions.
      */
     public static DMNRuntime createGenericDMNRuntime(Reader... readers) {
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
-        PMMLRuntime pmmlRuntime = new PMMLRuntimeImpl(new KnowledgeBaseImpl("DMNPMML", null), new PMMLModelEvaluatorFinderImpl());
+        PMMLRuntime pmmlRuntime = getPMMLRuntime("DMNPMML");
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                                                 .setPMMLRuntime(pmmlRuntime)
-                                                 .buildConfiguration()
-                                                 .fromResources(resources)
-                                                 .getOrElseThrow(e -> new RuntimeException("Error initalizing DMNRuntime", e));
+                .setPMMLRuntime(pmmlRuntime)
+                .buildConfiguration()
+                .fromResources(resources)
+                .getOrElseThrow(e -> new RuntimeException("Error initalizing DMNRuntime", e));
         return dmnRuntime;
     }
 
     public static DMNModel modelByName(DMNRuntime dmnRuntime, String modelName) {
-        List<DMNModel> modelsWithName = dmnRuntime.getModels().stream().filter(m -> modelName.equals(m.getName())).collect(Collectors.toList());
+        List<DMNModel> modelsWithName =
+                dmnRuntime.getModels().stream().filter(m -> modelName.equals(m.getName())).collect(Collectors.toList());
         if (modelsWithName.size() == 1) {
             return modelsWithName.get(0);
         } else {
@@ -78,7 +82,8 @@ public class DMNKogito {
         return evaluate(dmnRuntime, modelByName(dmnRuntime, modelName).getNamespace(), modelName, dmnContext);
     }
 
-    public static DMNResult evaluate(DMNRuntime dmnRuntime, String modelNamespace, String modelName, Map<String, Object> dmnContext) {
+    public static DMNResult evaluate(DMNRuntime dmnRuntime, String modelNamespace, String modelName, Map<String,
+            Object> dmnContext) {
         DMNEvaluationResult evaluationResult = DMNEvaluationUtils.evaluate(dmnRuntime,
                                                                            modelNamespace,
                                                                            modelName,
@@ -89,4 +94,11 @@ public class DMNKogito {
         return new DMNResult(modelNamespace, modelName, evaluationResult.result);
     }
 
+    private static PMMLRuntime getPMMLRuntime(String kbaseName) {
+        KieServices kieServices = KieServices.get();
+        KieContainer kieContainer = kieServices.newKieClasspathContainer();
+        KieBase kieBase = kieContainer.getKieBase();
+        KieRuntimeFactory kieRuntimeFactory = KieRuntimeFactory.of(kieBase);
+        return kieRuntimeFactory.get(PMMLRuntime.class);
+    }
 }
