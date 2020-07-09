@@ -45,13 +45,22 @@ public class ChangePojoTest {
                     .addAsResource("drl1.txt", RESOURCE_FILE));
 
     @Test
-    public void testServletChange() throws InterruptedException {
+    public void test1Change() throws InterruptedException {
+        doTest(true);
+    }
+
+    @Test
+    public void test2Changes() throws InterruptedException {
+        doTest(false);
+    }
+
+    private void doTest(boolean allChangesAtOnce) {
         String personsPayload1 = "{\"persons\":[{\"name\":\"Mario\",\"age\":45,\"adult\":false},{\"name\":\"Sofia\",\"age\":17,\"adult\":false}]}";
         String personsPayload2 = "{\"persons\":[{\"name\":\"Mario\",\"surname\":\"Fusco\",\"age\":45,\"adult\":false},{\"name\":\"Sofia\",\"surname\":\"Fusco\",\"age\":17,\"adult\":false}]}";
 
         List<Map> persons = given()
                 .baseUri("http://localhost:" + HTTP_TEST_PORT)
-                .contentType(ContentType.JSON)
+                .contentType( ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(personsPayload1)
                 .when()
@@ -64,22 +73,24 @@ public class ChangePojoTest {
         assertEquals(1, persons.size());
         assertEquals("Mario", persons.get(0).get("name"));
 
-        test.modifySourceFile(Person.class, s -> POJO2 );
+        test.modifySourceFile( Person.class, s -> POJO2 );
 
-        persons = given()
-                .baseUri("http://localhost:" + HTTP_TEST_PORT)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body(personsPayload2)
-                .when()
-                .post("/find-adults")
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(List.class);
+        if (!allChangesAtOnce) {
+            persons = given()
+                    .baseUri( "http://localhost:" + HTTP_TEST_PORT )
+                    .contentType( ContentType.JSON )
+                    .accept( ContentType.JSON )
+                    .body( personsPayload2 )
+                    .when()
+                    .post( "/find-adults" )
+                    .then()
+                    .statusCode( 200 )
+                    .extract()
+                    .as( List.class );
 
-        assertEquals(1, persons.size());
-        assertEquals("Mario", persons.get(0).get("name"));
+            assertEquals( 1, persons.size() );
+            assertEquals( "Mario", persons.get( 0 ).get( "name" ) );
+        }
 
         test.modifyResourceFile( RESOURCE_FILE, s -> DRL2 );
 
