@@ -124,10 +124,10 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
         RuleUnit<AdultUnit> unit = application.ruleUnits().create(AdultUnit.class);
         RuleUnitInstance<AdultUnit> instance = unit.createInstance(adults);
 
-        Class<?> queryClass = application.getClass().getClassLoader().loadClass( "org.kie.kogito.codegen.unit.AdultUnitQueryFindAdults" );
-        RuleUnitQuery<List<String>> query = (RuleUnitQuery<List<String>>)queryClass.getConstructor( RuleUnitInstance.class ).newInstance( instance );
-
-        List<String> results = query.execute();
+        Class<? extends RuleUnitQuery<List<String>>> queryClass = (Class<? extends RuleUnitQuery<List<String>>>) application.getClass()
+                .getClassLoader().loadClass( "org.kie.kogito.codegen.unit.AdultUnitQueryFindAdults" );
+        
+        List<String> results = instance.executeQuery( queryClass );
 
         assertEquals( 2, results.size() );
         assertTrue( results.containsAll( asList("Mario", "Marilena") ) );
