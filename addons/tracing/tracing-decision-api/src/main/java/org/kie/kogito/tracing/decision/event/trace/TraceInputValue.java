@@ -18,20 +18,32 @@ package org.kie.kogito.tracing.decision.event.trace;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kie.kogito.tracing.decision.event.common.Message;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
 public class TraceInputValue {
 
+    @JsonProperty("id")
     private String id;
+
+    @JsonProperty("name")
     private String name;
+
+    @JsonProperty("type")
     private TraceType type;
+
+    @JsonProperty("value")
     private JsonNode value;
+
+    @JsonProperty("messages")
     @JsonInclude(NON_EMPTY)
     private List<Message> messages;
 

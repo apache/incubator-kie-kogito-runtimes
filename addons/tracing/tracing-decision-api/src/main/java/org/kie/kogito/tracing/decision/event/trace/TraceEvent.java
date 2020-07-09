@@ -18,11 +18,22 @@ package org.kie.kogito.tracing.decision.event.trace;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TraceEvent {
 
+    @JsonProperty("header")
     private TraceHeader header;
+
+    @JsonProperty("inputs")
     private List<TraceInputValue> inputs;
+
+    @JsonProperty("outputs")
     private List<TraceOutputValue> outputs;
+
+    @JsonProperty("executionSteps")
     private List<TraceExecutionStep> executionSteps;
 
     private TraceEvent() {
@@ -50,5 +61,4 @@ public class TraceEvent {
     public List<TraceExecutionStep> getExecutionSteps() {
         return executionSteps;
     }
-
 }

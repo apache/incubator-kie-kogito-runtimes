@@ -16,16 +16,24 @@
 
 package org.kie.kogito.tracing.decision.event.trace;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kie.dmn.api.core.DMNType;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
 public class TraceType {
 
+    @JsonProperty("id")
     private String id;
+
+    @JsonProperty("namespace")
     private String namespace;
+
+    @JsonProperty("name")
     private String name;
 
     private TraceType() {

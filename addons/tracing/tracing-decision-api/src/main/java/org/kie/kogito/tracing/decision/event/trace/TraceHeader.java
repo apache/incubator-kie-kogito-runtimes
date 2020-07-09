@@ -18,7 +18,9 @@ package org.kie.kogito.tracing.decision.event.trace;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kie.kogito.tracing.decision.event.common.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,19 +28,33 @@ import org.slf4j.LoggerFactory;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TraceHeader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TraceHeader.class);
 
+    @JsonProperty("type")
     private TraceEventType type;
+
+    @JsonProperty("executionId")
     private String executionId;
+
+    @JsonProperty("startTimestamp")
     @JsonInclude(NON_NULL)
     private Long startTimestamp;
+
+    @JsonProperty("endTimestamp")
     @JsonInclude(NON_NULL)
     private Long endTimestamp;
+
+    @JsonProperty("duration")
     @JsonInclude(NON_NULL)
     private Long duration;
+
+    @JsonProperty("resourceId")
     private TraceResourceId resourceId;
+
+    @JsonProperty("messages")
     @JsonInclude(NON_EMPTY)
     private List<Message> messages;
 
