@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ChangePojoTest {
 
@@ -94,8 +95,7 @@ public class ChangePojoTest {
                         as(List.class);
 
         assertEquals(2, persons.size());
-//        assertTrue(persons.contains( "Mario" ));
-//        assertTrue(persons.contains( "Sofia" ));
+        assertTrue( persons.stream().map(p -> p.get("name")).allMatch( n -> n.equals( "Mario" ) || n.equals( "Sofia" ) ) );
     }
 
     private static String POJO2 =
