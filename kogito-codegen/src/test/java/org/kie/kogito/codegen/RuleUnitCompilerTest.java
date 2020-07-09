@@ -37,6 +37,7 @@ import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitInstance;
+import org.kie.kogito.rules.RuleUnitQuery;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -123,11 +124,10 @@ public class RuleUnitCompilerTest extends AbstractCodegenTest {
         RuleUnit<AdultUnit> unit = application.ruleUnits().create(AdultUnit.class);
         RuleUnitInstance<AdultUnit> instance = unit.createInstance(adults);
 
-        List<String> results = instance.executeQuery( "FindAdults" )
-                .stream()
-                .map( m -> m.get("$name") )
-                .map( String.class::cast )
-                .collect( toList() );
+        Class<?> queryClass = application.getClass().getClassLoader().loadClass( "org.kie.kogito.codegen.unit.AdultUnitQueryFindAdults" );
+        RuleUnitQuery<List<String>> query = (RuleUnitQuery<List<String>>)queryClass.getConstructor( RuleUnitInstance.class ).newInstance( instance );
+
+        List<String> results = query.execute();
 
         assertEquals( 2, results.size() );
         assertTrue( results.containsAll( asList("Mario", "Marilena") ) );
