@@ -46,6 +46,7 @@
     <module>drools-decisiontables</module>
     <module>kogito-drools</module>
     <module>kogito-scenario-simulation</module>
+    <module>kogito-pmml</module>
   </modules>
 
   <build>
