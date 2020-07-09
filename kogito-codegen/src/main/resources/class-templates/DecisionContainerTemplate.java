@@ -12,8 +12,16 @@ public class DecisionModels implements org.kie.kogito.decision.DecisionModels {
         app.config().decision().decisionEventListeners().listeners().forEach(dmnRuntime::addListener);
     }
 
+    public java.util.List<org.kie.kogito.decision.DecisionModels.DecisionModelResource> resources() {
+        return this.resources;
+    }
+
     public org.kie.kogito.decision.DecisionModel getDecisionModel(java.lang.String namespace, java.lang.String name) {
         return new org.kie.kogito.dmn.DmnDecisionModel(dmnRuntime, namespace, name, execIdSupplier);
     }
 
+    private final static java.util.List<org.kie.kogito.decision.DecisionModels.DecisionModelResource> getResources() {
+        java.util.List<org.kie.kogito.decision.DecisionModels.DecisionModelResource> resourcePaths = new java.util.ArrayList<>();
+        return resourcePaths;
+    }
 }

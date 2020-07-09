@@ -15,8 +15,113 @@
 
 package org.kie.kogito.decision;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.function.Supplier;
+
+import org.kie.api.management.GAV;
+
 public interface DecisionModels {
 
-    DecisionModel getDecisionModel(String namespace, String name);
+    interface DecisionModelResource extends Supplier<String> {
 
+        GAV getGav();
+
+        String getPath();
+
+        String getNamespace();
+
+        String getModelName();
+
+        String getIdentifier();
+
+        DecisionModelType getModelType();
+
+        InputStream getInputStream();
+    }
+
+    abstract class BaseDecisionModelResource implements DecisionModelResource {
+
+        protected final GAV gav;
+        protected final String path;
+        protected final String namespace;
+        protected final String modelName;
+        protected final String identifier;
+        protected final DecisionModelType type;
+
+        protected BaseDecisionModelResource(GAV gav,
+                                            String path,
+                                            String namespace,
+                                            String modelName,
+                                            String identifier,
+                                            DecisionModelType type) {
+            this.gav = gav;
+            this.path = path;
+            this.namespace = namespace;
+            this.modelName = modelName;
+            this.identifier = identifier;
+            this.type = type;
+        }
+
+        @Override
+        public GAV getGav() {
+            return gav;
+        }
+
+        @Override
+        public String getPath() {
+            return path;
+        }
+
+        @Override
+        public String getNamespace() {
+            return namespace;
+        }
+
+        @Override
+        public String getModelName() {
+            return modelName;
+        }
+
+        @Override
+        public String getIdentifier() {
+            return identifier;
+        }
+
+        @Override
+        public DecisionModelType getModelType() {
+            return type;
+        }
+
+        @Override
+        public String get() {
+            try (InputStream is = getInputStream()) {
+                return load(is);
+            } catch (IOException ioe) {
+                System.out.println(ioe.getMessage());
+            }
+            throw new RuntimeException("Failed to get model");
+        }
+
+        private String load(InputStream is) {
+            StringBuilder sb = new StringBuilder();
+            try (InputStreamReader isr = new java.io.InputStreamReader(is, StandardCharsets.UTF_8);
+                 BufferedReader reader = new BufferedReader(isr)) {
+                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                    sb.append(line).append("\n");
+                }
+            } catch (IOException ioe) {
+                System.out.println(ioe.getMessage());
+            }
+            return sb.toString();
+        }
+    }
+
+    List<DecisionModelResource> resources();
+
+    DecisionModel getDecisionModel(String namespace, String name);
 }

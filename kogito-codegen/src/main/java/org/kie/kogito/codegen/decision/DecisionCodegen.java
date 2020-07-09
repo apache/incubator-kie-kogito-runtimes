@@ -70,20 +70,20 @@ public class DecisionCodegen extends AbstractGenerator {
 
         for (Path jarPath : jarPaths) {
             List<Resource> resources = new ArrayList<>();
-            try (ZipFile zipFile = new ZipFile( jarPath.toFile() )) {
+            try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
-                    ResourceType resourceType = determineResourceType( entry.getName() );
-                    if ( resourceType == ResourceType.DMN ) {
-                        InternalResource resource = new ByteArrayResource( readBytesFromInputStream( zipFile.getInputStream( entry ) ) );
-                        resource.setResourceType( resourceType );
-                        resource.setSourcePath( entry.getName() );
-                        resources.add( resource );
+                    ResourceType resourceType = determineResourceType(entry.getName());
+                    if (resourceType == ResourceType.DMN) {
+                        InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
+                        resource.setResourceType(resourceType);
+                        resource.setSourcePath(entry.getName());
+                        resources.add(resource);
                     }
                 }
             }
-            dmnResources.addAll( parseDecisions(jarPath, resources) );
+            dmnResources.addAll(parseDecisions(jarPath, resources));
         }
 
         return ofDecisions(dmnResources);
@@ -92,12 +92,12 @@ public class DecisionCodegen extends AbstractGenerator {
     public static DecisionCodegen ofPath(Path... paths) throws IOException {
         List<DMNResource> resources = new ArrayList<>();
         for (Path path : paths) {
-            Path srcPath = Paths.get( path.toString() );
-            try (Stream<Path> filesStream = Files.walk( srcPath )) {
-                List<File> files = filesStream.filter( p -> p.toString().endsWith( ".dmn" ) )
-                        .map( Path::toFile )
-                        .collect( Collectors.toList() );
-                resources.addAll( parseFiles( srcPath, files ) );
+            Path srcPath = Paths.get(path.toString());
+            try (Stream<Path> filesStream = Files.walk(srcPath)) {
+                List<File> files = filesStream.filter(p -> p.toString().endsWith(".dmn"))
+                        .map(Path::toFile)
+                        .collect(Collectors.toList());
+                resources.addAll(parseFiles(srcPath, files));
             }
         }
 
@@ -105,7 +105,7 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     public static DecisionCodegen ofFiles(Path basePath, List<File> files) {
-        return ofDecisions( parseFiles(basePath, files) );
+        return ofDecisions(parseFiles(basePath, files));
     }
 
     private static DecisionCodegen ofDecisions(List<DMNResource> resources) {
@@ -113,15 +113,15 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private static List<DMNResource> parseFiles(Path path, List<File> files) {
-        return parseDecisions(path, files.stream().map(FileSystemResource::new).collect( toList() ));
+        return parseDecisions(path, files.stream().map(FileSystemResource::new).collect(toList()));
     }
 
     private static List<DMNResource> parseDecisions(Path path, List<Resource> resources) {
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                                                 .buildConfiguration()
-                                                 .fromResources(resources)
-                                                 .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
-        return dmnRuntime.getModels().stream().map( model -> new DMNResource( model, path )).collect( toList() );
+                .buildConfiguration()
+                .fromResources(resources)
+                .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
+        return dmnRuntime.getModels().stream().map(model -> new DMNResource(model, path)).collect(toList());
     }
 
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
@@ -154,16 +154,12 @@ public class DecisionCodegen extends AbstractGenerator {
         this.annotator = annotator;
     }
 
-    public DecisionContainerGenerator moduleGenerator() {
-        return moduleGenerator;
-    }
-
     public List<GeneratedFile> generate() {
         if (resources.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<DMNRestResourceGenerator> rgs = new ArrayList<>(); // REST resources
+        List<DecisionRestResourceGenerator> rgs = new ArrayList<>(); // REST resources
 
         for (DMNResource resource : resources) {
             DMNModel model = resource.getDmnModel();
@@ -176,17 +172,17 @@ public class DecisionCodegen extends AbstractGenerator {
                     .map(Boolean::parseBoolean)
                     .orElse(false);
 
-            if(stronglyTypedEnabled) {
+            if (stronglyTypedEnabled) {
                 generateStronglyTypedInput(model);
             }
-            DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(model, applicationCanonicalName)
+            DecisionRestResourceGenerator resourceGenerator = new DecisionRestResourceGenerator(model, applicationCanonicalName)
                     .withDependencyInjection(annotator)
                     .withAddons(addonsConfig)
                     .withStronglyTyped(stronglyTypedEnabled);
             rgs.add(resourceGenerator);
         }
 
-        for (DMNRestResourceGenerator resourceGenerator : rgs) {
+        for (DecisionRestResourceGenerator resourceGenerator : rgs) {
             if (addonsConfig.useMonitoring()) {
                 generateAndStoreGrafanaDashboards(resourceGenerator);
             }
@@ -204,22 +200,21 @@ public class DecisionCodegen extends AbstractGenerator {
 
             Map<String, String> allTypesSourceCode = new DMNTypeSafeTypeGenerator(
                     model,
-                    index, factory )
+                    index, factory)
                     .withJacksonAnnotation()
                     .processTypes()
                     .generateSourceCodeOfAllTypes();
 
-            allTypesSourceCode.forEach((k,v) -> storeFile(GeneratedFile.Type.CLASS, k.replace(".", "/") + ".java", v));
-            
-        } catch(Exception e) {
+            allTypesSourceCode.forEach((k, v) -> storeFile(GeneratedFile.Type.CLASS, k.replace(".", "/") + ".java", v));
+        } catch (Exception e) {
             logger.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
             throw e;
         }
     }
 
-    private void generateAndStoreGrafanaDashboards(DMNRestResourceGenerator resourceGenerator) {
+    private void generateAndStoreGrafanaDashboards(DecisionRestResourceGenerator resourceGenerator) {
         Definitions definitions = resourceGenerator.getDmnModel().getDefinitions();
-        List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect( toList());
+        List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect(toList());
 
         String operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, resourceGenerator.getNameURL(), addonsConfig.useTracing());
         String domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(domainDashboardDmnTemplate, resourceGenerator.getNameURL(), decisions, addonsConfig.useTracing());
