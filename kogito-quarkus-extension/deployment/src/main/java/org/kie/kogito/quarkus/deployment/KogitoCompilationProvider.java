@@ -36,6 +36,10 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
 
     @Override
     public final void compile(Set<File> filesToCompile, Context context) {
+        // This classloader reads from the file system all the project dependencies, plus the quarkus output directory
+        // containing all the latest class definitions of user's pojos, eventually recompiled also during the latest
+        // hot reload round. It is also necessary to use a null as a parent classloader otherwise this classloader
+        // could load the old definition of a class from the parent instead of getting the latest one from the output directory
         final URLClassLoader cl = new URLClassLoader( getClasspathUrls( context ), null );
 
         File outputDirectory = context.getOutputDirectory();
