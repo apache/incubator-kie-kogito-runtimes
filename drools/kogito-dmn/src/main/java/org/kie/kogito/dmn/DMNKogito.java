@@ -16,25 +16,26 @@
 
 package org.kie.kogito.dmn;
 
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.drools.core.io.impl.ReaderResource;
-import org.kie.api.KieBase;
-import org.kie.api.KieServices;
 import org.kie.api.io.Resource;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNRuntime;
+import org.kie.dmn.core.impl.DMNRuntimeImpl;
 import org.kie.dmn.core.internal.utils.DMNEvaluationUtils;
 import org.kie.dmn.core.internal.utils.DMNEvaluationUtils.DMNEvaluationResult;
 import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.DMNResult;
+import org.kie.kogito.pmml.PMMLKogito;
 import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +60,18 @@ public class DMNKogito {
      */
     public static DMNRuntime createGenericDMNRuntime(Reader... readers) {
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
-        PMMLRuntime pmmlRuntime = getPMMLRuntime("DMNPMML");
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                .setPMMLRuntime(pmmlRuntime)
                 .buildConfiguration()
                 .fromResources(resources)
-                .getOrElseThrow(e -> new RuntimeException("Error initalizing DMNRuntime", e));
+                .getOrElseThrow(e -> new RuntimeException("Error initializing DMNRuntime", e));
+        List<String> importedPmmls = new ArrayList<>();
+        dmnRuntime.getModels().forEach(dmnModel -> dmnModel.getDefinitions().getImport().forEach(anImport -> {
+            if (anImport.getLocationURI().endsWith("pmml")) {
+                importedPmmls.add(anImport.getLocationURI());
+            }
+        }));
+        PMMLRuntime pmmlRuntime = getPMMLRuntime(importedPmmls);
+        ((DMNRuntimeImpl) dmnRuntime).setPMMLRuntime(pmmlRuntime);
         return dmnRuntime;
     }
 
@@ -94,11 +101,11 @@ public class DMNKogito {
         return new DMNResult(modelNamespace, modelName, evaluationResult.result);
     }
 
-    private static PMMLRuntime getPMMLRuntime(String kbaseName) {
-        KieServices kieServices = KieServices.get();
-        KieContainer kieContainer = kieServices.newKieClasspathContainer();
-        KieBase kieBase = kieContainer.getKieBase();
-        KieRuntimeFactory kieRuntimeFactory = KieRuntimeFactory.of(kieBase);
-        return kieRuntimeFactory.get(PMMLRuntime.class);
+    private static PMMLRuntime getPMMLRuntime(List<String> importedPmmls) {
+        List<Reader> readers = new ArrayList<>();
+        for (String importedPmml : importedPmmls) {
+            readers.add(new InputStreamReader(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream(importedPmml))));
+        }
+        return PMMLKogito.createGenericPMMLRuntime(readers.toArray(new Reader[0]));
     }
 }
