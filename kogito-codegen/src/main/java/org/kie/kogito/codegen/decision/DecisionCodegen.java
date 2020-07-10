@@ -55,7 +55,6 @@ import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 
 import static java.util.stream.Collectors.toList;
-
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
@@ -104,7 +103,7 @@ public class DecisionCodegen extends AbstractGenerator {
         return ofDecisions(resources);
     }
 
-    public static DecisionCodegen ofFiles(Path basePath, List<File> files) throws IOException {
+    public static DecisionCodegen ofFiles(Path basePath, List<File> files) {
         return ofDecisions( parseFiles(basePath, files) );
     }
 
@@ -112,11 +111,11 @@ public class DecisionCodegen extends AbstractGenerator {
         return new DecisionCodegen(resources);
     }
 
-    private static List<DMNResource> parseFiles(Path path, List<File> files) throws IOException {
+    private static List<DMNResource> parseFiles(Path path, List<File> files) {
         return parseDecisions(path, files.stream().map(FileSystemResource::new).collect( toList() ));
     }
 
-    private static List<DMNResource> parseDecisions(Path path, List<Resource> resources) throws IOException {
+    private static List<DMNResource> parseDecisions(Path path, List<Resource> resources) {
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
                                                  .setRootClassLoader(null)
                                                  .buildConfiguration()
