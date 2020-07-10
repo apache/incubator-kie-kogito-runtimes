@@ -12,17 +12,17 @@ import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
 import org.kie.pmml.evaluator.core.PMMLContextImpl;
 import org.kie.pmml.evaluator.core.utils.PMMLRequestDataBuilder;
 
-public class PmmlDecisionModel implements PredictionModel {
+public class PmmlPredictionModel implements PredictionModel {
 
     private final PMMLRuntime pmmlRuntime;
     private final ExecutionIdSupplier execIdSupplier;
     private final KiePMMLModel pmmlModel;
 
-    public PmmlDecisionModel(PMMLRuntime pmmlRuntime, String modelName) {
+    public PmmlPredictionModel(PMMLRuntime pmmlRuntime, String modelName) {
         this(pmmlRuntime, modelName, null);
     }
 
-    public PmmlDecisionModel(PMMLRuntime pmmlRuntime, String modelName, ExecutionIdSupplier execIdSupplier) {
+    public PmmlPredictionModel(PMMLRuntime pmmlRuntime, String modelName, ExecutionIdSupplier execIdSupplier) {
         this.pmmlRuntime = pmmlRuntime;
         this.execIdSupplier = execIdSupplier;
         this.pmmlModel = pmmlRuntime.getModel(modelName).orElseThrow(() -> new IllegalStateException("PMML model '" + modelName + "' not found in the inherent PMMLRuntime."));
