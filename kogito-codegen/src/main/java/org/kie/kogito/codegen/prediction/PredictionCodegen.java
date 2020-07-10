@@ -97,7 +97,7 @@ public class PredictionCodegen extends AbstractGenerator {
         return ofPredictions(resources);
     }
 
-    public static PredictionCodegen ofFiles(Path basePath, List<File> files) throws IOException {
+    public static PredictionCodegen ofFiles(Path basePath, List<File> files) {
         return ofPredictions(parseFiles(basePath, files) );
     }
 
@@ -105,11 +105,11 @@ public class PredictionCodegen extends AbstractGenerator {
         return new PredictionCodegen(resources);
     }
 
-    private static List<PMMLResource> parseFiles(Path path, List<File> files) throws IOException {
+    private static List<PMMLResource> parseFiles(Path path, List<File> files) {
         return parsePredictions(path, files.stream().map(FileSystemResource::new).collect(toList() ));
     }
 
-    private static List<PMMLResource> parsePredictions(Path path, List<Resource> resources) throws IOException {
+    private static List<PMMLResource> parsePredictions(Path path, List<Resource> resources) {
         final InternalKnowledgeBase knowledgeBase = new KnowledgeBaseImpl();
         KnowledgeBuilderImpl kbuilderImpl = new KnowledgeBuilderImpl(knowledgeBase);
         List<KiePMMLModel> kiePMMLModels = new ArrayList<>();
