@@ -12,6 +12,7 @@ import org.kie.pmml.evaluator.core.PMMLContextImpl;
 import org.kie.pmml.evaluator.core.utils.PMMLRequestDataBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,7 +42,7 @@ class PMMLKogitoTest {
         inputData.put("fld3", "y");
         final PMMLRequestData pmmlRequestData = getPMMLRequestData(MODEL_NAME, inputData);
         PMML4Result retrieved =  pmmlRuntime.evaluate(MODEL_NAME, new PMMLContextImpl(pmmlRequestData));
-        assertNull(retrieved);
+        assertNotNull(retrieved);
     }
 
     private PMMLRequestData getPMMLRequestData(String modelName, Map<String, Object> parameters) {
