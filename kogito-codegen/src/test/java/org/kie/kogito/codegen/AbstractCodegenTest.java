@@ -24,7 +24,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,12 +163,12 @@ public class AbstractCodegenTest {
                         .withRuleUnits(hasRuleUnit)
                         .withDependencyInjection(null);
 
-        for (Entry<TYPE, List<String>> entry : resourcesTypeMap.entrySet()) {
-            if (!entry.getValue().isEmpty()) {
-                appGen.withGenerator(generatorTypeMap.get(entry.getKey()).apply(entry.getValue()));
-            }
-         }
 
+        for (TYPE type :  TYPE.values()) {
+            if (resourcesTypeMap.containsKey(type) && !resourcesTypeMap.get(type).isEmpty()) {
+                appGen.withGenerator(generatorTypeMap.get(type).apply(resourcesTypeMap.get(type)));
+            }
+        }
 
         Collection<GeneratedFile> generatedFiles = appGen.generate();
 

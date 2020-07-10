@@ -97,7 +97,7 @@ public class PublishEventTest extends AbstractCodegenTest {
     @Test
     public void testBusinessRuleProcessStartToEnd() throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTask.bpmn"));
+        resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTask.bpmn2"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/BusinessRuleTask.drl"));
         Application app = generateCode(resourcesTypeMap, false);
         assertThat(app).isNotNull();
@@ -324,7 +324,7 @@ public class PublishEventTest extends AbstractCodegenTest {
     @Test
     public void testBusinessRuleProcessStartToEndAbortOfUoW() throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTask.bpmn"));
+        resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTask.bpmn2"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/BusinessRuleTask.drl"));
         Application app = generateCode(resourcesTypeMap, false);
         assertThat(app).isNotNull();
@@ -474,7 +474,7 @@ public class PublishEventTest extends AbstractCodegenTest {
     @Test
     public void testBusinessRuleProcessStartToEndWithVariableTracked() throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTaskVariableTags.bpmn"));
+        resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTaskVariableTags.bpmn2"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/BusinessRuleTask.drl"));
         Application app = generateCode(resourcesTypeMap, false);
         assertThat(app).isNotNull();

@@ -302,7 +302,7 @@ public class BusinessRuleUnitTest extends AbstractCodegenTest {
     public void wrongVariableNameInGeneratedRuleUnit() {
         assertThatExceptionOfType(ProcessCodegenException.class).isThrownBy(() -> {
             Map<AbstractCodegenTest.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-            resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/ExampleGenerated.bpmn"));
+            resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/ExampleGeneratedWrong.bpmn"));
             resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/Generated.drl"));
             Application app = generateCode(resourcesTypeMap, false);
         }).withCauseInstanceOf(UndefinedGeneratedRuleUnitVariable.class);
