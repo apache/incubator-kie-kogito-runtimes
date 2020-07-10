@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.drools.compiler.commons.jci.compilers.CompilationResult;
@@ -42,6 +43,7 @@ import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
+import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.slf4j.Logger;
@@ -50,42 +52,105 @@ import org.slf4j.LoggerFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractCodegenTest {
-    
+
+
+    protected enum TYPE {
+        PROCESS,
+        RULES,
+        DECISION,
+        JAVA,
+        PREDICTION
+    }
+
+    private static class TestClassLoader extends URLClassLoader {
+
+        private final Map<String, byte[]> extraClassDefs;
+
+        public TestClassLoader(ClassLoader parent, Map<String, byte[]> extraClassDefs) {
+            super(new URL[0], parent);
+            this.extraClassDefs = new HashMap<>();
+
+            for (Entry<String, byte[]> entry : extraClassDefs.entrySet()) {
+                this.extraClassDefs.put(entry.getKey().replaceAll("/", ".").replaceFirst("\\.class", ""),
+                                        entry.getValue());
+            }
+        }
+
+        @Override
+        protected Class<?> findClass(final String name) throws ClassNotFoundException {
+            byte[] classBytes = this.extraClassDefs.remove(name);
+            if (classBytes != null) {
+                return defineClass(name, classBytes, 0, classBytes.length);
+            }
+            return super.findClass(name);
+        }
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(AbstractCodegenTest.class);
-    
+    private static final JavaCompiler JAVA_COMPILER =
+            JavaCompilerFactory.INSTANCE.loadCompiler(JavaDialectConfiguration.CompilerType.NATIVE, "11");
+
+    private static final String TEST_JAVA = "src/test/java/";
+    private static final String TEST_RESOURCES = "src/test/resources";
+    private static final Map<TYPE, Function<List<String>, Generator>> generatorTypeMap = new HashMap<>();
+
+    static {
+        generatorTypeMap.put(TYPE.PROCESS, strings -> ProcessCodegen.ofFiles(strings
+                                                                                     .stream()
+                                                                                     .map(resource -> new File(TEST_RESOURCES, resource))
+                                                                                     .collect(Collectors.toList())));
+        generatorTypeMap.put(TYPE.RULES, strings -> IncrementalRuleCodegen.ofFiles(strings
+                                                                                           .stream()
+                                                                                           .map(resource -> new File(
+                                                                                                   TEST_RESOURCES, resource))
+                                                                                           .collect(Collectors.toList())));
+        generatorTypeMap.put(TYPE.DECISION,
+                             strings -> DecisionCodegen.ofFiles(Paths.get(TEST_RESOURCES).toAbsolutePath(),
+                                                                strings
+                .stream()
+                .map(resource -> new File(TEST_RESOURCES, resource))
+                .collect(Collectors.toList())));
+
+        generatorTypeMap.put(TYPE.JAVA, strings -> IncrementalRuleCodegen.ofJavaFiles(strings
+                                                                                              .stream()
+                                                                                              .map(resource -> new File(TEST_JAVA, resource))
+                                                                                              .collect(Collectors.toList())));
+        generatorTypeMap.put(TYPE.PREDICTION,
+                             strings -> PredictionCodegen.ofFiles(Paths.get(TEST_RESOURCES).toAbsolutePath(),
+                                                                  strings
+                .stream()
+                .map(resource -> new File(TEST_JAVA, resource))
+                .collect(Collectors.toList())));
+    }
+
     private TestClassLoader classloader;
-
-    private static final JavaCompiler JAVA_COMPILER = JavaCompilerFactory.INSTANCE.loadCompiler(JavaDialectConfiguration.CompilerType.NATIVE, "11");
-
     private boolean withSpringContext;
 
-    public void withSpringContext(boolean withSpringContext){
+    public void withSpringContext(boolean withSpringContext) {
         this.withSpringContext = withSpringContext;
     }
 
     protected Application generateCodeProcessesOnly(String... processes) throws Exception {
-        return generateCode(Arrays.asList(processes), Collections.emptyList());
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.PROCESS, Arrays.asList(processes));
+        return generateCode(resourcesTypeMap, false);
     }
 
     protected Application generateCodeRulesOnly(String... rules) throws Exception {
-        return generateCode( Collections.emptyList(), Arrays.asList(rules), Collections.emptyList(), Collections.emptyList(), true );
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.RULES, Arrays.asList(rules));
+        return generateCode(resourcesTypeMap, true);
     }
 
     protected Application generateRulesFromJava(String... javaSourceCode) throws Exception {
-        return generateCode(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Arrays.asList(javaSourceCode), true);
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.JAVA, Arrays.asList(javaSourceCode));
+        return generateCode(resourcesTypeMap, true);
     }
 
-    protected Application generateCode(List<String> processResources, List<String> rulesResources ) throws Exception {
-        return generateCode( processResources, rulesResources, Collections.emptyList(), Collections.emptyList(), false );
-    }
-
-    protected Application generateCode(
-            List<String> processResources,
-            List<String> rulesResources,
-            List<String> decisionResources,
-            List<String> javaRulesResources,
+    protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap,
             boolean hasRuleUnit) throws Exception {
-        GeneratorContext context = GeneratorContext.ofResourcePath(new File("src/test/resources"));
+        GeneratorContext context = GeneratorContext.ofResourcePath(new File(TEST_RESOURCES));
 
         //Testing based on Quarkus as Default
         context.withBuildContext(Optional.ofNullable(withSpringContext)
@@ -99,34 +164,12 @@ public class AbstractCodegenTest {
                         .withRuleUnits(hasRuleUnit)
                         .withDependencyInjection(null);
 
-        if (!processResources.isEmpty()) {
-            appGen.withGenerator(ProcessCodegen.ofFiles(processResources
-                                                                .stream()
-                                                                .map(resource -> new File("src/test/resources", resource))
-                                                                .collect(Collectors.toList())));
-        }
+        for (Entry<TYPE, List<String>> entry : resourcesTypeMap.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                appGen.withGenerator(generatorTypeMap.get(entry.getKey()).apply(entry.getValue()));
+            }
+         }
 
-        if (!rulesResources.isEmpty()) {
-            appGen.withGenerator(IncrementalRuleCodegen.ofFiles(rulesResources
-                                                                   .stream()
-                                                                   .map(resource -> new File("src/test/resources", resource))
-                                                                   .collect(Collectors.toList())));
-        }
-
-
-        if (!decisionResources.isEmpty()) {
-            appGen.withGenerator(DecisionCodegen.ofFiles(Paths.get("src/test/resources").toAbsolutePath(), decisionResources
-                                                                    .stream()
-                                                                    .map(resource -> new File("src/test/resources", resource))
-                                                                    .collect(Collectors.toList())));
-        }
-
-        if (!javaRulesResources.isEmpty()) {
-            appGen.withGenerator(IncrementalRuleCodegen.ofJavaFiles(javaRulesResources
-                                                                            .stream()
-                                                                            .map(resource -> new File("src/test/java/", resource))
-                                                                            .collect(Collectors.toList())));
-        }
 
         Collection<GeneratedFile> generatedFiles = appGen.generate();
 
@@ -136,10 +179,10 @@ public class AbstractCodegenTest {
         List<String> sources = new ArrayList<>();
         for (GeneratedFile entry : generatedFiles) {
             String fileName = entry.relativePath();
-            if (!fileName.endsWith( ".java" )) {
+            if (!fileName.endsWith(".java")) {
                 continue;
             }
-            sources.add( fileName );
+            sources.add(fileName);
             srcMfs.write(fileName, entry.contents());
             log(new String(entry.contents()));
         }
@@ -154,49 +197,30 @@ public class AbstractCodegenTest {
             }
         }
 
-        CompilationResult result = JAVA_COMPILER.compile(sources.toArray( new String[sources.size()] ), srcMfs, trgMfs, this.getClass().getClassLoader());
+        CompilationResult result = JAVA_COMPILER.compile(sources.toArray(new String[sources.size()]), srcMfs, trgMfs,
+                                                         this.getClass().getClassLoader());
         assertThat(result).isNotNull();
         assertThat(result.getErrors()).as(Arrays.toString(result.getErrors())).hasSize(0);
 
         classloader = new TestClassLoader(this.getClass().getClassLoader(), trgMfs.getMap());
 
         @SuppressWarnings("unchecked")
-        Class<Application> app = (Class<Application>) Class.forName(this.getClass().getPackage().getName() + ".Application", true, classloader);
+        Class<Application> app = (Class<Application>) Class.forName(this.getClass().getPackage().getName() +
+                                                                            ".Application", true, classloader);
 
         Application application = app.getDeclaredConstructor().newInstance();
         app.getMethod("setup").invoke(application);
         return application;
+
+
     }
-    
+
     protected ClassLoader testClassLoader() {
         return classloader;
     }
-    
+
     protected void log(String content) {
         logger.debug(content);
     }
 
-    private static class TestClassLoader extends URLClassLoader {
-
-        private final Map<String, byte[]> extraClassDefs;
-
-        public TestClassLoader(ClassLoader parent, Map<String, byte[]> extraClassDefs) {
-            super(new URL[0], parent);
-            this.extraClassDefs = new HashMap<>();
-
-            for (Entry<String, byte[]> entry : extraClassDefs.entrySet()) {
-                this.extraClassDefs.put(entry.getKey().replaceAll("/", ".").replaceFirst("\\.class", ""), entry.getValue());
-            }
-        }
-
-        @Override
-        protected Class<?> findClass(final String name) throws ClassNotFoundException {
-            byte[] classBytes = this.extraClassDefs.remove(name);
-            if (classBytes != null) {
-                return defineClass(name, classBytes, 0, classBytes.length);
-            }
-            return super.findClass(name);
-        }
-
-    }
 }
