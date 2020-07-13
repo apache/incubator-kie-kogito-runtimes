@@ -26,7 +26,9 @@ public interface RuleUnitInstance<T extends RuleUnitData> {
 
     int fire();
 
-    List<Map<String, Object>> executeQuery(String query, Object... arguments);
+    List<Map<String, Object>> executeQuery(String query);
+
+    <Q> Q executeQuery(Class<? extends RuleUnitQuery<Q>> query);
 
     <T extends SessionClock> T getClock();
 }

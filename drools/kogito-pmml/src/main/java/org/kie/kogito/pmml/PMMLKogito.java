@@ -66,8 +66,8 @@ public class PMMLKogito {
         }
     }
 
-    public static PMML4Result evaluate(PMMLRuntime pmmlRuntime, String modelName, Map<String, Object> dmnContext) {
-        final PMMLRequestData pmmlRequestData = getPMMLRequestData(modelName, dmnContext);
+    public static PMML4Result evaluate(PMMLRuntime pmmlRuntime, String modelName, Map<String, Object> pmmlContext) {
+        final PMMLRequestData pmmlRequestData = getPMMLRequestData(modelName, pmmlContext);
         return pmmlRuntime.evaluate(modelName, new PMMLContextImpl(pmmlRequestData));
     }
 

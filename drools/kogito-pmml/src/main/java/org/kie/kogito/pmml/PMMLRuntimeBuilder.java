@@ -60,7 +60,6 @@ public class PMMLRuntimeBuilder {
                 pmmlPkg.addAll(Collections.singletonList(kiePMMLModel));
             }
         });
-
         return new PMMLRuntimeImpl(knowledgeBase, pmmlModelExecutorFinder);
     }
 }

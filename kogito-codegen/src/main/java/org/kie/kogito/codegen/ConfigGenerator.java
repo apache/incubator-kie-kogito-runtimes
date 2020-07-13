@@ -42,6 +42,7 @@ import org.drools.core.util.StringUtils;
 import org.kie.kogito.Addons;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.slf4j.Logger;
@@ -60,6 +61,7 @@ public class ConfigGenerator {
     private ProcessConfigGenerator processConfig;
     private RuleConfigGenerator ruleConfig;
     private DecisionConfigGenerator decisionConfig;
+    private PredictionConfigGenerator predictionConfig;
     
     private String packageName;
     private final String sourceFilePath;
@@ -95,6 +97,14 @@ public class ConfigGenerator {
         this.decisionConfig = cfg;
         if (this.decisionConfig != null) {
             this.decisionConfig.withDependencyInjection(annotator);
+        }
+        return this;
+    }
+
+    public ConfigGenerator withPredictionConfig(PredictionConfigGenerator cfg) {
+        this.predictionConfig = cfg;
+        if (this.predictionConfig != null) {
+            this.predictionConfig.withDependencyInjection(annotator);
         }
         return this;
     }

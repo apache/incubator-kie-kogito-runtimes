@@ -16,12 +16,15 @@
 package org.kie.kogito.codegen.prediction;
 
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Properties;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class PredictionCodegenTest {
@@ -34,18 +37,8 @@ public class PredictionCodegenTest {
         PredictionCodegen codeGenerator = PredictionCodegen.ofPath(Paths.get("src/test/resources/prediction/test_regression.pmml").toAbsolutePath());
         codeGenerator.setContext(context);
 
-//        List<GeneratedFile> generatedFiles = codeGenerator.generate();
-//        assertEquals(5, generatedFiles.size());
-
-//        assertIterableEquals(Arrays.asList(
-//                "decision/InputSet.java",
-//                "decision/TEmployee.java",
-//                "decision/TAddress.java",
-//                "decision/TPayroll.java",
-//                "decision/VacationsResource.java"
-//                             ),
-//                             fileNames(generatedFiles)
-//        );
+        List<GeneratedFile> generatedFiles = codeGenerator.generate();
+        assertEquals(3, generatedFiles.size());
 
         ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
         assertNotNull(classDeclaration);
