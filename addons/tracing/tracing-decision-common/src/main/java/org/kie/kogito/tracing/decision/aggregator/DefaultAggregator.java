@@ -41,6 +41,7 @@ import org.kie.dmn.api.core.ast.InputDataNode;
 import org.kie.dmn.core.ast.DecisionServiceNodeImpl;
 import org.kie.dmn.feel.util.Pair;
 import org.kie.kogito.tracing.decision.event.CloudEventUtils;
+import org.kie.kogito.tracing.decision.event.EventUtils;
 import org.kie.kogito.tracing.decision.event.common.InternalMessageType;
 import org.kie.kogito.tracing.decision.event.common.Message;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateDecisionResult;
@@ -53,7 +54,6 @@ import org.kie.kogito.tracing.decision.event.trace.TraceExecutionStepType;
 import org.kie.kogito.tracing.decision.event.trace.TraceHeader;
 import org.kie.kogito.tracing.decision.event.trace.TraceInputValue;
 import org.kie.kogito.tracing.decision.event.trace.TraceOutputValue;
-import org.kie.kogito.tracing.decision.event.trace.TraceResourceId;
 import org.kie.kogito.tracing.decision.event.trace.TraceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,10 +88,10 @@ public class DefaultAggregator implements Aggregator {
                 null,
                 null,
                 null,
-                TraceResourceId.from(model),
+                EventUtils.traceResourceIdFrom(model),
                 Stream.of(
-                        Message.from(InternalMessageType.NOT_ENOUGH_DATA),
-                        model == null ? Message.from(InternalMessageType.DMN_MODEL_NOT_FOUND) : null
+                        EventUtils.messageFrom(InternalMessageType.NOT_ENOUGH_DATA),
+                        model == null ? EventUtils.messageFrom(InternalMessageType.DMN_MODEL_NOT_FOUND) : null
                 ).filter(Objects::nonNull).collect(Collectors.toList())
         );
 
@@ -118,7 +118,7 @@ public class DefaultAggregator implements Aggregator {
                 computeDurationMillis(firstEvent, lastEvent),
                 firstEvent.toTraceResourceId(),
                 Stream.of(
-                        model == null ? Stream.of(Message.from(InternalMessageType.DMN_MODEL_NOT_FOUND)) : Stream.<Message>empty(),
+                        model == null ? Stream.of(EventUtils.messageFrom(InternalMessageType.DMN_MODEL_NOT_FOUND)) : Stream.<Message>empty(),
                         executionStepsPair.getRight().stream(),
                         lastEvent.getResult().getMessages().stream()
                                 .filter(m -> m.getSourceId() == null || m.getSourceId().isBlank())
@@ -175,7 +175,7 @@ public class DefaultAggregator implements Aggregator {
             return new Pair<>(buildTraceExecutionStepsHierarchy(model, events), Collections.emptyList());
         } catch (IllegalStateException e) {
             LOG.error(String.format("IllegalStateException during aggregation of evaluation %s", executionId), e);
-            return new Pair<>(buildTraceExecutionStepsList(model, events), List.of(Message.from(InternalMessageType.NO_EXECUTION_STEP_HIERARCHY, e)));
+            return new Pair<>(buildTraceExecutionStepsList(model, events), List.of(EventUtils.messageFrom(InternalMessageType.NO_EXECUTION_STEP_HIERARCHY, e)));
         }
     }
 
@@ -321,7 +321,7 @@ public class DefaultAggregator implements Aggregator {
         return new TraceInputValue(
                 node.getId(),
                 node.getName(),
-                TraceType.from(node.getType()),
+                EventUtils.traceTypeFrom(node.getType()),
                 value,
                 Collections.emptyList()
         );
@@ -341,7 +341,7 @@ public class DefaultAggregator implements Aggregator {
         TraceType type = Optional.ofNullable(model)
                 .map(m -> m.getDecisionById(decisionResult.getDecisionId()))
                 .map(DecisionNode::getResultType)
-                .map(TraceType::from)
+                .map(EventUtils::traceTypeFrom)
                 .orElse(null);
 
         JsonNode value = Optional.ofNullable(decisionResult.getResult())
