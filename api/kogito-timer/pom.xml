@@ -25,6 +25,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-timer</artifactId>
+  <name>Kogito :: API :: Timer</name>
+  <description>Timer API to schedule jobs</description>
 
   <dependencies>
     <dependency>
