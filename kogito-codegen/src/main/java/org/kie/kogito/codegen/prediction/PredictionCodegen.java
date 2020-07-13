@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -44,8 +44,9 @@ import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
+import org.kie.pmml.commons.model.HasSourcesMap;
 import org.kie.pmml.commons.model.KiePMMLModel;
 
 import static java.util.stream.Collectors.toList;
@@ -155,80 +156,28 @@ public class PredictionCodegen extends AbstractGenerator {
         if (resources.isEmpty()) {
             return Collections.emptyList();
         }
-//
-//        List<DMNRestResourceGenerator> rgs = new ArrayList<>(); // REST resources
-//
+
         for (PMMLResource resource : resources) {
             KiePMMLModel model = resource.getPmml();
             if (model.getName() == null || model.getName().isEmpty()) {
                 throw new RuntimeException("Model name should not be empty");
             }
-
-            boolean stronglyTypedEnabled = Optional.ofNullable(context())
-                    .flatMap(c -> c.getApplicationProperty(STRONGLY_TYPED_CONFIGURATION_KEY))
-                    .map(Boolean::parseBoolean)
-                    .orElse(false);
-
-//            if(stronglyTypedEnabled) {
-//                generateStronglyTypedInput(model);
-//            }
-//            DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(model, applicationCanonicalName)
-//                    .withDependencyInjection(annotator)
-//                    .withMonitoring(useMonitoring)
-//                    .withStronglyTyped(stronglyTypedEnabled);
-//            rgs.add(resourceGenerator);
+            if (!(model instanceof HasSourcesMap)) {
+                throw new RuntimeException("Expecting HasSourcesMap instance, retrieved " + model.getClass().getName());
+            }
+            Map<String, String> sourceMap = ((HasSourcesMap)model).getSourcesMap();
+            for (Map.Entry<String, String> sourceMapEntry : sourceMap.entrySet()) {
+                String path = sourceMapEntry.getKey().replace('.', File.separatorChar);
+                storeFile(GeneratedFile.Type.PMML, path, sourceMapEntry.getValue());
+            }
         }
-//
-//        for (DMNRestResourceGenerator resourceGenerator : rgs) {
-//            if (useMonitoring) {
-//                generateAndStoreGrafanaDashboards(resourceGenerator);
-//            }
-//
-//            storeFile(GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
-//        }
-//
         return generatedFiles;
     }
-
-//    private void generateStronglyTypedInput(DMNModel model) {
-//        try {
-//            DMNTypeSafePackageName.Factory factory = m -> new DMNTypeSafePackageName("", m.getNamespace(), "");
-//            DMNAllTypesIndex index = new DMNAllTypesIndex(factory, model);
-//
-//            Map<String, String> allTypesSourceCode = new DMNTypeSafeTypeGenerator(
-//                    model,
-//                    index, factory )
-//                    .withJacksonAnnotation()
-//                    .processTypes()
-//                    .generateSourceCodeOfAllTypes();
-//
-//            allTypesSourceCode.forEach((k,v) -> storeFile(GeneratedFile.Type.CLASS, k.replace(".", "/") + ".java", v));
-//
-//        } catch(Exception e) {
-//            logger.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
-//            throw e;
-//        }
-//    }
-
-//    private void generateAndStoreGrafanaDashboards(DMNRestResourceGenerator resourceGenerator) {
-//        Definitions definitions = resourceGenerator.getDmnModel().getDefinitions();
-//        List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect( toList());
-//
-//        String operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, resourceGenerator.getNameURL());
-//        String domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(domainDashboardDmnTemplate, resourceGenerator.getNameURL(), decisions);
-//
-//        generatedFiles.add(new GeneratedFile(GeneratedFile.Type.RESOURCE,
-//                                             "dashboards/operational-dashboard-" + resourceGenerator.getNameURL() + ".json",
-//                                             operationalDashboard));
-//        generatedFiles.add(new GeneratedFile(GeneratedFile.Type.RESOURCE,
-//                                             "dashboards/domain-dashboard-" + resourceGenerator.getNameURL() + ".json",
-//                                             domainDashboard));
-//    }
 
     @Override
     public void updateConfig(ConfigGenerator cfg) {
         if (!resources.isEmpty()) {
-            cfg.withDecisionConfig(new DecisionConfigGenerator());
+            cfg.withPredictionConfig(new PredictionConfigGenerator());
         }
     }
 
