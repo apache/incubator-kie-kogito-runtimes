@@ -53,6 +53,11 @@ public class AbstractCodegenTest {
     
     private static final Logger logger = LoggerFactory.getLogger(AbstractCodegenTest.class);
 
+    /**
+     * Order matters here because inside {@link AbstractCodegenTest#generateCode(Map, boolean)} it is the order used to invoke
+     * 
+     * {@link ApplicationGenerator#withGenerator(Generator) }
+     */
     protected enum TYPE {
         PROCESS,
         RULES,
