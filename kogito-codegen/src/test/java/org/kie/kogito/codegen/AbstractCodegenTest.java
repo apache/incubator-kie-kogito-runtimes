@@ -42,7 +42,6 @@ import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
-import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.slf4j.Logger;
@@ -51,7 +50,8 @@ import org.slf4j.LoggerFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractCodegenTest {
-
+    
+    private static final Logger logger = LoggerFactory.getLogger(AbstractCodegenTest.class);
 
     protected enum TYPE {
         PROCESS,
@@ -61,36 +61,12 @@ public class AbstractCodegenTest {
         PREDICTION
     }
 
-    private static class TestClassLoader extends URLClassLoader {
+    private TestClassLoader classloader;
 
-        private final Map<String, byte[]> extraClassDefs;
-
-        public TestClassLoader(ClassLoader parent, Map<String, byte[]> extraClassDefs) {
-            super(new URL[0], parent);
-            this.extraClassDefs = new HashMap<>();
-
-            for (Entry<String, byte[]> entry : extraClassDefs.entrySet()) {
-                this.extraClassDefs.put(entry.getKey().replaceAll("/", ".").replaceFirst("\\.class", ""),
-                                        entry.getValue());
-            }
-        }
-
-        @Override
-        protected Class<?> findClass(final String name) throws ClassNotFoundException {
-            byte[] classBytes = this.extraClassDefs.remove(name);
-            if (classBytes != null) {
-                return defineClass(name, classBytes, 0, classBytes.length);
-            }
-            return super.findClass(name);
-        }
-    }
-
-    private static final Logger logger = LoggerFactory.getLogger(AbstractCodegenTest.class);
-    private static final JavaCompiler JAVA_COMPILER =
-            JavaCompilerFactory.INSTANCE.loadCompiler(JavaDialectConfiguration.CompilerType.NATIVE, "11");
-
+    private static final JavaCompiler JAVA_COMPILER = JavaCompilerFactory.INSTANCE.loadCompiler(JavaDialectConfiguration.CompilerType.NATIVE, "11");
     private static final String TEST_JAVA = "src/test/java/";
     private static final String TEST_RESOURCES = "src/test/resources";
+
     private static final Map<TYPE, Function<List<String>, Generator>> generatorTypeMap = new HashMap<>();
 
     static {
@@ -106,26 +82,19 @@ public class AbstractCodegenTest {
         generatorTypeMap.put(TYPE.DECISION,
                              strings -> DecisionCodegen.ofFiles(Paths.get(TEST_RESOURCES).toAbsolutePath(),
                                                                 strings
-                .stream()
-                .map(resource -> new File(TEST_RESOURCES, resource))
-                .collect(Collectors.toList())));
+                                                                        .stream()
+                                                                        .map(resource -> new File(TEST_RESOURCES, resource))
+                                                                        .collect(Collectors.toList())));
 
         generatorTypeMap.put(TYPE.JAVA, strings -> IncrementalRuleCodegen.ofJavaFiles(strings
                                                                                               .stream()
                                                                                               .map(resource -> new File(TEST_JAVA, resource))
                                                                                               .collect(Collectors.toList())));
-        generatorTypeMap.put(TYPE.PREDICTION,
-                             strings -> PredictionCodegen.ofFiles(Paths.get(TEST_RESOURCES).toAbsolutePath(),
-                                                                  strings
-                .stream()
-                .map(resource -> new File(TEST_JAVA, resource))
-                .collect(Collectors.toList())));
     }
 
-    private TestClassLoader classloader;
     private boolean withSpringContext;
 
-    public void withSpringContext(boolean withSpringContext) {
+    public void withSpringContext(boolean withSpringContext){
         this.withSpringContext = withSpringContext;
     }
 
@@ -178,10 +147,10 @@ public class AbstractCodegenTest {
         List<String> sources = new ArrayList<>();
         for (GeneratedFile entry : generatedFiles) {
             String fileName = entry.relativePath();
-            if (!fileName.endsWith(".java")) {
+            if (!fileName.endsWith( ".java" )) {
                 continue;
             }
-            sources.add(fileName);
+            sources.add( fileName );
             srcMfs.write(fileName, entry.contents());
             log(new String(entry.contents()));
         }
@@ -196,30 +165,49 @@ public class AbstractCodegenTest {
             }
         }
 
-        CompilationResult result = JAVA_COMPILER.compile(sources.toArray(new String[sources.size()]), srcMfs, trgMfs,
-                                                         this.getClass().getClassLoader());
+        CompilationResult result = JAVA_COMPILER.compile(sources.toArray( new String[sources.size()] ), srcMfs, trgMfs, this.getClass().getClassLoader());
         assertThat(result).isNotNull();
         assertThat(result.getErrors()).as(Arrays.toString(result.getErrors())).hasSize(0);
 
         classloader = new TestClassLoader(this.getClass().getClassLoader(), trgMfs.getMap());
 
         @SuppressWarnings("unchecked")
-        Class<Application> app = (Class<Application>) Class.forName(this.getClass().getPackage().getName() +
-                                                                            ".Application", true, classloader);
+        Class<Application> app = (Class<Application>) Class.forName(this.getClass().getPackage().getName() + ".Application", true, classloader);
 
         Application application = app.getDeclaredConstructor().newInstance();
         app.getMethod("setup").invoke(application);
         return application;
-
-
     }
-
+    
     protected ClassLoader testClassLoader() {
         return classloader;
     }
-
+    
     protected void log(String content) {
         logger.debug(content);
     }
 
+    private static class TestClassLoader extends URLClassLoader {
+
+        private final Map<String, byte[]> extraClassDefs;
+
+        public TestClassLoader(ClassLoader parent, Map<String, byte[]> extraClassDefs) {
+            super(new URL[0], parent);
+            this.extraClassDefs = new HashMap<>();
+
+            for (Entry<String, byte[]> entry : extraClassDefs.entrySet()) {
+                this.extraClassDefs.put(entry.getKey().replaceAll("/", ".").replaceFirst("\\.class", ""), entry.getValue());
+            }
+        }
+
+        @Override
+        protected Class<?> findClass(final String name) throws ClassNotFoundException {
+            byte[] classBytes = this.extraClassDefs.remove(name);
+            if (classBytes != null) {
+                return defineClass(name, classBytes, 0, classBytes.length);
+            }
+            return super.findClass(name);
+        }
+
+    }
 }

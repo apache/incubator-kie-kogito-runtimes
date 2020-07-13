@@ -81,7 +81,7 @@
     <version.shade.plugin>3.0.0</version.shade.plugin>
     <version.sonar.plugin>3.6.1.1688</version.sonar.plugin>
     <version.source.plugin>3.0.1</version.source.plugin>
-    <version.surefire.plugin>2.22.1</version.surefire.plugin> <!-- minimum required by JUnit 5 -->
+    <version.surefire.plugin>2.22.2</version.surefire.plugin> <!-- minimum required by JUnit 5 -->
     <version.surefire.report.plugin>2.6</version.surefire.report.plugin>
     <version.swagger.plugin>2.1.0</version.swagger.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
@@ -255,6 +255,16 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-dmn-core</artifactId>
+        <version>${version.org.kie7}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-dmn-validation</artifactId>
+        <version>${version.org.kie7}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-dmn-jpmml</artifactId>
         <version>${version.org.kie7}</version>
       </dependency>
       <dependency>
@@ -792,11 +802,17 @@
         <version>${version.io.cloudevents}</version>
       </dependency>
       
+      <!--  Json Schema -->
        <dependency>
          <groupId>com.github.victools</groupId>
          <artifactId>jsonschema-generator</artifactId>
          <version>${version.com.github.victools}</version>
       </dependency>
+      <dependency>
+        <groupId>io.rest-assured</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>${version.io.restassured}</version>
+    </dependency>
       
     </dependencies>
   </dependencyManagement>
