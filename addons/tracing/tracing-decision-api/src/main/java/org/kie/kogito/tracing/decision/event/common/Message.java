@@ -16,19 +16,14 @@
 
 package org.kie.kogito.tracing.decision.event.common;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.kie.api.builder.Message.Level;
-import org.kie.dmn.api.core.DMNMessage;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonInclude(NON_NULL)
 public class Message {
 
-    private Level level;
+    private MessageLevel level;
     private MessageCategory category;
     private String type;
     private String sourceId;
@@ -39,7 +34,7 @@ public class Message {
     private Message() {
     }
 
-    public Message(Level level, MessageCategory category, String type, String sourceId, String text, MessageFEELEvent feelEvent, MessageExceptionField exception) {
+    public Message(MessageLevel level, MessageCategory category, String type, String sourceId, String text, MessageFEELEvent feelEvent, MessageExceptionField exception) {
         this.level = level;
         this.category = category;
         this.type = type;
@@ -49,7 +44,7 @@ public class Message {
         this.exception = exception;
     }
 
-    public Level getLevel() {
+    public MessageLevel getLevel() {
         return level;
     }
 
@@ -75,57 +70,5 @@ public class Message {
 
     public MessageExceptionField getException() {
         return exception;
-    }
-
-    public static Message from(DMNMessage message) {
-        if (message == null) {
-            return null;
-        }
-        return new Message(
-                message.getLevel(),
-                MessageCategory.DMN,
-                message.getMessageType().name(),
-                message.getSourceId(),
-                message.getText(),
-                MessageFEELEvent.from(message.getFeelEvent()),
-                MessageExceptionField.from(message.getException())
-        );
-    }
-
-    public static List<Message> from(List<DMNMessage> messages) {
-        if (messages == null) {
-            return null;
-        }
-        return messages.stream().map(Message::from).collect(Collectors.toList());
-    }
-
-    public static Message from(InternalMessageType message) {
-        if (message == null) {
-            return null;
-        }
-        return new Message(
-                message.getLevel(),
-                MessageCategory.INTERNAL,
-                message.name(),
-                null,
-                message.getText(),
-                null,
-                null
-        );
-    }
-
-    public static Message from(InternalMessageType message, Throwable throwable) {
-        if (message == null) {
-            return null;
-        }
-        return new Message(
-                message.getLevel(),
-                MessageCategory.INTERNAL,
-                message.name(),
-                null,
-                message.getText(),
-                null,
-                MessageExceptionField.from(throwable)
-        );
     }
 }

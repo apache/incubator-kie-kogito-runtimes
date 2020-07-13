@@ -47,11 +47,4 @@ public class MessageExceptionField {
     public MessageExceptionField getCause() {
         return cause;
     }
-
-    public static MessageExceptionField from(Throwable throwable) {
-        if (throwable == null) {
-            return null;
-        }
-        return new MessageExceptionField(throwable.getClass().getName(), throwable.getMessage(), from(throwable.getCause()));
-    }
 }

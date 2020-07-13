@@ -19,7 +19,6 @@ package org.kie.kogito.tracing.decision.event.trace;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.kie.dmn.api.core.DMNModel;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -68,12 +67,5 @@ public class TraceResourceId {
 
     public String getDecisionServiceName() {
         return decisionServiceName;
-    }
-
-    public static TraceResourceId from(DMNModel model) {
-        if (model == null) {
-            return null;
-        }
-        return new TraceResourceId(model.getNamespace(), model.getName());
     }
 }

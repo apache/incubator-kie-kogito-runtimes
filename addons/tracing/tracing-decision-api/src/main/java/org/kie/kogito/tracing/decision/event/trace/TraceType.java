@@ -19,7 +19,6 @@ package org.kie.kogito.tracing.decision.event.trace;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.kie.dmn.api.core.DMNType;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -55,9 +54,5 @@ public class TraceType {
 
     public String getName() {
         return name;
-    }
-
-    public static TraceType from(DMNType dmnType) {
-        return new TraceType(dmnType.getId(), dmnType.getNamespace(), dmnType.getName());
     }
 }
