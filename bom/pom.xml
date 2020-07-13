@@ -708,6 +708,26 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- PMML -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-pmml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-pmml</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-pmml</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+
       <!-- spring boot starter -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
