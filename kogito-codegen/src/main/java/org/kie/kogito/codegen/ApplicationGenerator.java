@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import javax.lang.model.SourceVersion;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -72,7 +73,6 @@ public class ApplicationGenerator {
     private List<Labeler> labelers = new ArrayList<>();
 
     private GeneratorContext context;
-    private boolean persistence;       
 
     public ApplicationGenerator(String packageName, File targetDirectory) {
         if (packageName == null) {
@@ -192,17 +192,12 @@ public class ApplicationGenerator {
         return this;
     }
 
-   public ApplicationGenerator withPersistence(boolean persistence) {
-       this.persistence = persistence;
-       return this;
-   }
-
-   public ApplicationGenerator withMonitoring(boolean monitoring) {
-       if (monitoring) {
-           this.labelers.add(new PrometheusLabeler());
-       }
-       return this;
-   }
+    public ApplicationGenerator withAddons(AddonsConfig addonsConfig) {
+        if (addonsConfig.useMonitoring()) {
+            this.labelers.add(new PrometheusLabeler());
+        }
+        return this;
+    }
 
     public Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = generateComponents();
