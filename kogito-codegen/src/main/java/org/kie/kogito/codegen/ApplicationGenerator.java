@@ -20,7 +20,9 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,7 +72,7 @@ public class ApplicationGenerator {
     private final List<BodyDeclaration<?>> factoryMethods;
     private ConfigGenerator configGenerator;
     private List<Generator> generators = new ArrayList<>();
-    private List<Labeler> labelers = new ArrayList<>();
+    private Map<Class, Labeler> labelers = new HashMap<>();
 
     private GeneratorContext context;
 
@@ -194,7 +196,7 @@ public class ApplicationGenerator {
 
     public ApplicationGenerator withAddons(AddonsConfig addonsConfig) {
         if (addonsConfig.useMonitoring()) {
-            this.labelers.add(new PrometheusLabeler());
+            this.labelers.put(PrometheusLabeler.class, new PrometheusLabeler());
         }
         return this;
     }
@@ -212,7 +214,7 @@ public class ApplicationGenerator {
             generators.stream().filter(gen -> gen.section() != null)
                     .forEach(gen -> generateSectionClass(gen.section(), generatedFiles));
         }
-        this.labelers.forEach(l -> MetaDataWriter.writeLabelsImageMetadata(targetDirectory, l.generateLabels()));
+        this.labelers.values().forEach(l -> MetaDataWriter.writeLabelsImageMetadata(targetDirectory, l.generateLabels()));
         return generatedFiles;
     }
 
