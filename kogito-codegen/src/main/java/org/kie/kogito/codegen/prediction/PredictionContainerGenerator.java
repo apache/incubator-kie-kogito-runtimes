@@ -72,7 +72,7 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
             StringLiteralExpr getResAsStream = getReadResourceMethod(resource );
             Optional<FieldDeclaration> pmmlRuntimeField = typeDeclaration.getFieldByName("pmmlRuntime");
             Expression initializer = pmmlRuntimeField.flatMap(x -> x.getVariable(0).getInitializer()).orElseThrow(() -> new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified."));
-            initializer.asMethodCallExpr().setArguments(NodeList.nodeList(getResAsStream));
+            initializer.asMethodCallExpr().addArgument(getResAsStream);
         }
         if (useTracing) {
             VariableDeclarator execIdSupplierVariable = typeDeclaration.getFieldByName("execIdSupplier")

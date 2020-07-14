@@ -32,6 +32,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
+import org.drools.compiler.lang.descr.PackageDescr;
+import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.core.io.impl.ByteArrayResource;
@@ -48,6 +50,7 @@ import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.pmml.commons.model.HasSourcesMap;
 import org.kie.pmml.commons.model.KiePMMLModel;
+import org.kie.pmml.models.drools.commons.model.KiePMMLDroolsModelWithSources;
 
 import static java.util.stream.Collectors.toList;
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
@@ -98,7 +101,6 @@ public class PredictionCodegen extends AbstractGenerator {
             }
             pmmlResources.addAll(parsePredictions(jarPath, resources));
         }
-
         return ofPredictions(pmmlResources);
     }
 
@@ -130,7 +132,7 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     private static List<PMMLResource> parsePredictions(Path path, List<Resource> resources) {
-        final InternalKnowledgeBase knowledgeBase = new KnowledgeBaseImpl();
+        final InternalKnowledgeBase knowledgeBase = new KnowledgeBaseImpl("PMML", null);
         KnowledgeBuilderImpl kbuilderImpl = new KnowledgeBuilderImpl(knowledgeBase);
         List<PMMLResource> toReturn = new ArrayList<>();
         resources.forEach(resource -> {
@@ -159,7 +161,6 @@ public class PredictionCodegen extends AbstractGenerator {
         if (resources.isEmpty()) {
             return Collections.emptyList();
         }
-
         for (PMMLResource resource : resources) {
             List<KiePMMLModel> kiepmmlModels = resource.getKiePmmlModels();
             for (KiePMMLModel model : kiepmmlModels) {
@@ -173,6 +174,11 @@ public class PredictionCodegen extends AbstractGenerator {
                 for (Map.Entry<String, String> sourceMapEntry : sourceMap.entrySet()) {
                     String path = sourceMapEntry.getKey().replace('.', File.separatorChar) + ".java";
                     storeFile(GeneratedFile.Type.PMML, path, sourceMapEntry.getValue());
+                }
+                if (model instanceof KiePMMLDroolsModelWithSources) {
+                    // TODO {gcardosi} find a common way to extract sources from packagedescr
+                    PackageDescr packageDescr = ((KiePMMLDroolsModelWithSources)model).getPackageDescr();
+                    String packageDescrString = packageDescr.toString();
                 }
             }
         }
