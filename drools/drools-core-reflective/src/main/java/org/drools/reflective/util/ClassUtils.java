@@ -648,14 +648,6 @@ public abstract class ClassUtils {
             return Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
         }
         return null;
-
-        if (!methodName.startsWith("set") || methodName.length() < 4) {
-            return null;
-        }
-        if (methodName.length() > 4 && Character.isUpperCase( methodName.charAt( 4 ) )) {
-            return methodName.substring(3);
-        }
-        return Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
     }
 
 
