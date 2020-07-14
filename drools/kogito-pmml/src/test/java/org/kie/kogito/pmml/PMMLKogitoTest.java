@@ -1,9 +1,10 @@
 package org.kie.kogito.pmml;
 
-import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.api.pmml.PMML4Result;
 import org.kie.api.pmml.PMMLRequestData;
@@ -19,22 +20,30 @@ class PMMLKogitoTest {
 
     private static final String SOURCE = "test_regression.pmml";
     private static final String MODEL_NAME = "LinReg";
+    private static String SOURCE_PATH;
+
+    @BeforeAll
+    public static void setup() {
+        URL sourceUrl = PMMLKogitoTest.class.getResource(SOURCE);
+        assertNotNull(sourceUrl);
+        SOURCE_PATH = sourceUrl.getPath();
+    }
 
     @Test
     void createGenericPMMLRuntime() {
-        PMMLRuntime pmmlRuntime = PMMLKogito.createGenericPMMLRuntime(new InputStreamReader(PMMLKogitoTest.class.getResourceAsStream(SOURCE)));
+        PMMLRuntime pmmlRuntime = PMMLKogito.createGenericPMMLRuntime(SOURCE_PATH);
         assertEquals(1, pmmlRuntime.getModels().size());
     }
 
     @Test
     void modelByName() {
-        PMMLRuntime pmmlRuntime = PMMLKogito.createGenericPMMLRuntime(new InputStreamReader(PMMLKogitoTest.class.getResourceAsStream(SOURCE)));
+        PMMLRuntime pmmlRuntime = PMMLKogito.createGenericPMMLRuntime(SOURCE_PATH);
         assertTrue(pmmlRuntime.getModel(MODEL_NAME).isPresent());
     }
 
     @Test
     void evaluate() {
-        PMMLRuntime pmmlRuntime = PMMLKogito.createGenericPMMLRuntime(new InputStreamReader(PMMLKogitoTest.class.getResourceAsStream(SOURCE)));
+        PMMLRuntime pmmlRuntime = PMMLKogito.createGenericPMMLRuntime(SOURCE_PATH);
         Map<String, Object> inputData = new HashMap<>();
         inputData.put("fld1", 35.3);
         inputData.put("fld2", 16.3);

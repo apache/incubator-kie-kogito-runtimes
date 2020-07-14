@@ -16,18 +16,24 @@
 package org.kie.kogito.codegen.prediction;
 
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.Application;
+import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class PredictionCodegenTest {
+public class PredictionCodegenTest extends AbstractCodegenTest {
 
     @Test
     public void generateAllFiles() throws Exception {
@@ -42,6 +48,14 @@ public class PredictionCodegenTest {
 
         ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
         assertNotNull(classDeclaration);
+    }
+
+    @Test
+    public void generateCode() throws Exception {
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.PREDICTION, Collections.singletonList("prediction/test_regression.pmml"));
+        Application app = generateCode(resourcesTypeMap, false);
+        assertThat(app).isNotNull();
     }
 
     private GeneratorContext stronglyTypedContext() {

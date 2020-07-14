@@ -16,23 +16,30 @@
 package org.kie.kogito.codegen.prediction;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import org.kie.pmml.commons.model.KiePMMLModel;
 
 public class PMMLResource {
-    private final KiePMMLModel pmml;
+    private final List<KiePMMLModel> kiePmmlModels;
     private final Path path;
+    private final String modelPath;
 
-    public PMMLResource(KiePMMLModel pmml, Path path ) {
-        this.pmml = pmml;
+    public PMMLResource(List<KiePMMLModel> kiePmmlModels, Path path , String modelPath) {
+        this.kiePmmlModels = kiePmmlModels;
         this.path = path;
+        this.modelPath = modelPath;
     }
 
-    public KiePMMLModel getPmml() {
-        return pmml;
+    public List<KiePMMLModel> getKiePmmlModels() {
+        return kiePmmlModels;
     }
 
     public Path getPath() {
         return path;
+    }
+
+    public String getModelPath() {
+        return modelPath;
     }
 }

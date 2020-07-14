@@ -65,6 +65,7 @@ import org.kie.kogito.codegen.JsonSchemaGenerator;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
+import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
@@ -392,6 +393,7 @@ public class KogitoAssetsProcessor {
 
         addProcessGenerator(appPaths, usePersistence, appGen);
         addRuleGenerator(appPaths, appGen, useMonitoring);
+        addPredictionGenerator(appPaths, appGen, useMonitoring, useTracing);
         addDecisionGenerator(appPaths, appGen, useMonitoring, useTracing);
 
         return appGen;
@@ -430,6 +432,15 @@ public class KogitoAssetsProcessor {
         appGen.withGenerator( generator )
                 .withPersistence(usePersistence)
                 .withClassLoader(Thread.currentThread().getContextClassLoader());
+    }
+
+    private void addPredictionGenerator( AppPaths appPaths, ApplicationGenerator appGen, boolean useMonitoring, boolean useTracing ) throws IOException {
+        PredictionCodegen generator = appPaths.isJar ?
+                PredictionCodegen.ofJar(appPaths.getJarPath()) :
+                PredictionCodegen.ofPath(appPaths.getResourcePaths());
+
+        appGen.withGenerator(generator.withTracing(useTracing))
+                .withMonitoring(useMonitoring);
     }
 
     private void addDecisionGenerator( AppPaths appPaths, ApplicationGenerator appGen, boolean useMonitoring, boolean useTracing ) throws IOException {

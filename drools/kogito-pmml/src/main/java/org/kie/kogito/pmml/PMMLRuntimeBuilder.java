@@ -46,10 +46,9 @@ public class PMMLRuntimeBuilder {
         final InternalKnowledgeBase knowledgeBase = new KnowledgeBaseImpl("PMML", null);
         KnowledgeBuilderImpl kbuilderImpl = new KnowledgeBuilderImpl(knowledgeBase);
         resources.forEach(resource -> {
-            resource.setSourcePath("org/kie/kogito/pmml/test_regression.pmml");
             List<KiePMMLModel> toAdd = getKiePMMLModelsLoadedFromResource(kbuilderImpl, resource);
             if (toAdd.isEmpty()) {
-                toAdd = getKiePMMLModelsCompiledFromResource(kbuilderImpl, resource);
+                throw new RuntimeException("Failed to retrieve compiled models");
             }
             for (KiePMMLModel kiePMMLModel : toAdd) {
                 PackageDescr pkgDescr = new PackageDescr(kiePMMLModel.getKModulePackageName());

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.io.impl.ReaderResource;
 import org.kie.api.io.Resource;
 import org.kie.api.pmml.PMML4Result;
@@ -51,8 +52,8 @@ public class PMMLKogito {
      * Internal Utility class.<br/>
      * Use {@link Application#predictionModels()} of Kogito API to programmatically access PMML assets and evaluate PMML decisions.
      */
-    public static PMMLRuntime createGenericPMMLRuntime(Reader... readers) {
-        List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
+    public static PMMLRuntime createGenericPMMLRuntime(String... pmmlPaths) {
+        List<Resource> resources = Stream.of(pmmlPaths).map(FileSystemResource::new).collect(Collectors.toList());
         PMMLRuntime pmmlRuntime = PMMLRuntimeBuilder.fromResources(resources, new PMMLModelEvaluatorFinderImpl());
         return pmmlRuntime;
     }

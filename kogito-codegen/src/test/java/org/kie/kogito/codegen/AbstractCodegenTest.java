@@ -42,6 +42,7 @@ import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
+import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.slf4j.Logger;
@@ -53,6 +54,11 @@ public class AbstractCodegenTest {
     
     private static final Logger logger = LoggerFactory.getLogger(AbstractCodegenTest.class);
 
+    /**
+     * Order matters here because inside {@link AbstractCodegenTest#generateCode(Map, boolean)} it is the order used to invoke
+     *
+     * {@link ApplicationGenerator#withGenerator(Generator) }
+     */
     protected enum TYPE {
         PROCESS,
         RULES,
@@ -90,6 +96,12 @@ public class AbstractCodegenTest {
                                                                                               .stream()
                                                                                               .map(resource -> new File(TEST_JAVA, resource))
                                                                                               .collect(Collectors.toList())));
+        generatorTypeMap.put(TYPE.PREDICTION,
+                             strings -> PredictionCodegen.ofFiles(Paths.get(TEST_RESOURCES).toAbsolutePath(),
+                                                                  strings
+                                                                          .stream()
+                                                                          .map(resource -> new File(TEST_RESOURCES, resource))
+                                                                          .collect(Collectors.toList())));
     }
 
     private boolean withSpringContext;
