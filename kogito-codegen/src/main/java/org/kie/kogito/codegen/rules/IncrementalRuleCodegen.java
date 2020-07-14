@@ -184,7 +184,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     private KieModuleModel kieModuleModel;
     private boolean hotReloadMode = false;
-    private AddonsConfig addonsConfig = new AddonsConfig();
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     private boolean useRestServices = true;
     private String packageName;
     private final boolean decisionTableSupported;

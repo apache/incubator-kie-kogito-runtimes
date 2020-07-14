@@ -57,7 +57,7 @@ public class DMNRestResourceGenerator {
     private final String resourceClazzName;
     private final String appCanonicalName;
     private DependencyInjectionAnnotator annotator;
-    private AddonsConfig addonsConfig = new AddonsConfig();
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     private boolean isStronglyTyped = false;
 
     public DMNRestResourceGenerator(DMNModel model, String appCanonicalName) {

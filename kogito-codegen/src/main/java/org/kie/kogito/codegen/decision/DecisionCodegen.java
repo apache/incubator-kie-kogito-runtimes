@@ -136,7 +136,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
     private final List<DMNResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
-    private AddonsConfig addonsConfig = new AddonsConfig();
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public DecisionCodegen(List<DMNResource> resources) {
         this.resources = resources;
