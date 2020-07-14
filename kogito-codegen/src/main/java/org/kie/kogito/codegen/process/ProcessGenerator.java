@@ -84,7 +84,7 @@ public class ProcessGenerator {
     private final String appCanonicalName;
     private String targetTypeName;
     private DependencyInjectionAnnotator annotator;
-    private AddonsConfig addonsConfig = new AddonsConfig();
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     private List<CompilationUnit> additionalClasses = new ArrayList<>();
 

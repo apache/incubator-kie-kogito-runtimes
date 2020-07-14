@@ -56,7 +56,7 @@ public class RuleUnitGenerator implements FileGenerator {
     private DependencyInjectionAnnotator annotator;
     private Collection<QueryModel> queries;
     private String applicationPackageName;
-    private AddonsConfig addonsConfig = new AddonsConfig();
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public RuleUnitGenerator(RuleUnitDescription ruleUnit, String generatedSourceFile) {
         this.ruleUnit = ruleUnit;

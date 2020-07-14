@@ -16,34 +16,40 @@
 package org.kie.kogito.codegen;
 
 public class AddonsConfig {
-    private boolean usePersistence = false;
-    private boolean useTracing = false;
-    private boolean useMonitoring = false;
 
-    public AddonsConfig withPersistence(boolean usePersistence){
+    public static final AddonsConfig DEFAULT = new AddonsConfig()
+            .withPersistence(false)
+            .withTracing(false)
+            .withMonitoring(false);
+
+    private boolean usePersistence;
+    private boolean useTracing;
+    private boolean useMonitoring;
+
+    public AddonsConfig withPersistence(boolean usePersistence) {
         this.usePersistence = usePersistence;
         return this;
     }
 
-    public AddonsConfig withTracing(boolean useTracing){
+    public AddonsConfig withTracing(boolean useTracing) {
         this.useTracing = useTracing;
         return this;
     }
 
-    public AddonsConfig withMonitoring(boolean useMonitoring){
+    public AddonsConfig withMonitoring(boolean useMonitoring) {
         this.useMonitoring = useMonitoring;
         return this;
     }
 
-    public boolean usePersistence(){
+    public boolean usePersistence() {
         return usePersistence;
     }
 
-    public boolean useTracing(){
+    public boolean useTracing() {
         return useTracing;
     }
 
-    public boolean useMonitoring(){
+    public boolean useMonitoring() {
         return useMonitoring;
     }
 }

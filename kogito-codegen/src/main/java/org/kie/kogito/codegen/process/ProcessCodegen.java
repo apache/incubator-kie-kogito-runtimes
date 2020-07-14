@@ -205,7 +205,7 @@ public class ProcessCodegen extends AbstractGenerator {
     private final Map<String, WorkflowProcess> processes;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
 
-    private AddonsConfig addonsConfig = new AddonsConfig();
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public ProcessCodegen(Collection<? extends Process> processes) {
         this.processes = new HashMap<>();

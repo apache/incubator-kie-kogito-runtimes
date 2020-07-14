@@ -56,7 +56,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
 
     private String applicationCanonicalName;
     private final List<DMNResource> resources;
-    private AddonsConfig addonsConfig = new AddonsConfig();
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public DecisionContainerGenerator(String applicationCanonicalName, List<DMNResource> resources) {
         super("DecisionModels", "decisionModels", DecisionModels.class);
