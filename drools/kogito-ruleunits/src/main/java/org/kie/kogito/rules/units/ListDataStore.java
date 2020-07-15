@@ -31,7 +31,7 @@ import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataProcessor;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.units.impl.DataHandleImpl;
-import org.kogito.KogitoInternalFactHandle;
+import org.drools.core.kogito.factory.KogitoInternalFactHandle;
 
 public class ListDataStore<T> implements DataStore<T>,
                                          InternalStoreCallback {

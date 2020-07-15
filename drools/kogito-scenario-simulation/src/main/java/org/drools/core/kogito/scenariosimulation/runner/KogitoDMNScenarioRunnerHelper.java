@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kogito.scenariosimulation.runner;
+package org.drools.core.kogito.scenariosimulation.runner;
 
 import java.io.IOException;
 import java.nio.file.Files;

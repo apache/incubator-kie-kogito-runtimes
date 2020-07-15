@@ -61,7 +61,7 @@ import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
-import org.kie.services.jobs.impl.InMemoryJobService;
+import org.drools.core.kogito.jobs.InMemoryJobService;
 
 public class LightProcessRuntime implements InternalProcessRuntime {
 

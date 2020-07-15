@@ -29,7 +29,7 @@ import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataProcessor;
-import org.kogito.KogitoInternalFactHandle;
+import org.drools.core.kogito.factory.KogitoInternalFactHandle;
 
 public class EntryPointDataProcessor implements DataProcessor {
     private final EntryPoint entryPoint;

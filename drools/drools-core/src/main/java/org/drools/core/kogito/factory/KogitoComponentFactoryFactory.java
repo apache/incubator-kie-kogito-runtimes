@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2005 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package org.kogito;
+package org.drools.core.kogito.factory;
 
-import org.drools.core.common.InternalFactHandle;
-import org.drools.core.ruleunit.InternalStoreCallback;
-import org.kie.kogito.rules.DataHandle;
+import org.drools.core.reteoo.KieComponentFactory;
+import org.drools.core.reteoo.KieComponentFactoryFactory;
 
-public interface KogitoInternalFactHandle
-    extends
-    InternalFactHandle {
+public class KogitoComponentFactoryFactory implements KieComponentFactoryFactory {
 
-    DataHandle getDataHandle();
-    void setDataHandle( DataHandle dataHandle );
-
-    InternalStoreCallback getDataStore();
-    void setDataStore( InternalStoreCallback dataStore );
+    @Override
+    public KieComponentFactory createKieComponentFactory() {
+        return new KogitoKieComponentFactory();
+    }
 }

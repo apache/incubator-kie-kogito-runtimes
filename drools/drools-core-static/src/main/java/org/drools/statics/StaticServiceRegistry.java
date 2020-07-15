@@ -62,7 +62,7 @@ public class StaticServiceRegistry implements ServiceRegistry {
 
         registerService("org.drools.compiler.kie.builder.impl.InternalKieModuleProvider", "org.drools.modelcompiler.CanonicalKieModuleProvider", true);
         registerService("org.drools.compiler.compiler.DecisionTableProvider", "org.drools.decisiontable.DecisionTableProviderImpl", false);
-        registerService("org.drools.core.reteoo.KieComponentFactoryFactory", "org.kogito.KogitoComponentFactoryFactory", true);
+        registerService("org.drools.core.reteoo.KieComponentFactoryFactory", "org.drools.core.kogito.factory.KogitoComponentFactoryFactory", true);
 
         constructorMap.put("TimerService", SimpleInstanceCreator.constructor("org.kie.kogito.timer.impl.JDKTimerService"));
 

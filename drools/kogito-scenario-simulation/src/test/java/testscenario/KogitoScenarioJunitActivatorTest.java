@@ -20,6 +20,6 @@ package testscenario;
  * This activator class, when executed, will load all scesim files available in the project and run them.
  * Each row of the scenario will generate a test JUnit result.
  */
-@org.junit.runner.RunWith(org.kogito.scenariosimulation.runner.KogitoJunitActivator.class)
+@org.junit.runner.RunWith(org.drools.core.kogito.scenariosimulation.runner.KogitoJunitActivator.class)
 public class KogitoScenarioJunitActivatorTest {
 }

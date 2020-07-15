@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.services.jobs.impl;
+package org.drools.core.kogito.jobs;
 
 import java.time.Duration;
 import java.time.Instant;

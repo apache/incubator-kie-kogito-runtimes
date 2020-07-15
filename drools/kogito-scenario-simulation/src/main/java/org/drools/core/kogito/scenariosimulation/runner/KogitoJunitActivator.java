@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kogito.scenariosimulation.runner;
+package org.drools.core.kogito.scenariosimulation.runner;
 
 import org.drools.scenariosimulation.backend.runner.ScenarioJunitActivator;
 import org.drools.scenariosimulation.backend.runner.model.ScenarioRunnerDTO;

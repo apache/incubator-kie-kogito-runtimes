@@ -1,4 +1,4 @@
-package org.kogito;
+package org.drools.core.kogito.factory;
 
 import org.drools.core.WorkingMemoryEntryPoint;
 import org.drools.core.common.DefaultFactHandle;

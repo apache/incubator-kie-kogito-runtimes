@@ -29,7 +29,7 @@ import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataProcessor;
 import org.kie.kogito.rules.SingletonStore;
 import org.kie.kogito.rules.units.impl.DataHandleImpl;
-import org.kogito.KogitoInternalFactHandle;
+import org.drools.core.kogito.factory.KogitoInternalFactHandle;
 
 public class FieldDataStore<T> implements SingletonStore<T>,
                                           InternalStoreCallback {

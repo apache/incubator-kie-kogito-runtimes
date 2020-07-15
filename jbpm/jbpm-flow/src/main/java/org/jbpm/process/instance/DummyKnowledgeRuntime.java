@@ -30,7 +30,11 @@ import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.kie.kogito.timer.SessionClock;
 import org.kie.kogito.jobs.JobsService;
+<<<<<<< HEAD
 import org.kie.kogito.timer.TimerService;
+=======
+import org.drools.core.time.TimerService;
+>>>>>>> use drools timers
 
 /**
  * A severely limited implementation of the WorkingMemory interface.
