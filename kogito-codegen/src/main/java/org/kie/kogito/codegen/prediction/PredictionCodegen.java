@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -31,31 +32,42 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
+import org.drools.compiler.compiler.DroolsError;
+import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.lang.descr.PackageDescr;
-import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.core.io.impl.ByteArrayResource;
+import org.drools.core.io.impl.DescrResource;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.io.internal.InternalResource;
+import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
+import org.kie.internal.builder.CompositeKnowledgeBuilder;
+import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
+import org.kie.kogito.codegen.rules.RuleCodegenError;
+import org.kie.kogito.codegen.rules.RuleUnitGenerator;
 import org.kie.pmml.commons.model.HasSourcesMap;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.models.drools.commons.model.KiePMMLDroolsModelWithSources;
 
 import static java.util.stream.Collectors.toList;
+
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
+import static org.kie.kogito.codegen.ApplicationGenerator.logger;
 import static org.kie.pmml.evaluator.assembler.service.PMMLCompilerService.getKiePMMLModelsFromResourceFromPlugin;
 
 public class PredictionCodegen extends AbstractGenerator {
@@ -161,6 +173,11 @@ public class PredictionCodegen extends AbstractGenerator {
         if (resources.isEmpty()) {
             return Collections.emptyList();
         }
+
+        ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<>( KogitoPackageSources::dumpSources,
+                new KnowledgeBuilderConfigurationImpl(getClass().getClassLoader()), new ReleaseIdImpl("dummy:dummy:0.0.0"), true, false );
+        CompositeKnowledgeBuilder batch = modelBuilder.batch();
+
         for (PMMLResource resource : resources) {
             List<KiePMMLModel> kiepmmlModels = resource.getKiePmmlModels();
             for (KiePMMLModel model : kiepmmlModels) {
@@ -176,13 +193,62 @@ public class PredictionCodegen extends AbstractGenerator {
                     storeFile(GeneratedFile.Type.PMML, path, sourceMapEntry.getValue());
                 }
                 if (model instanceof KiePMMLDroolsModelWithSources) {
-                    // TODO {gcardosi} find a common way to extract sources from packagedescr
                     PackageDescr packageDescr = ((KiePMMLDroolsModelWithSources)model).getPackageDescr();
-                    String packageDescrString = packageDescr.toString();
+                    batch.add( new DescrResource( packageDescr ), ResourceType.DESCR );
                 }
             }
         }
+
+        generatedFiles.addAll( generateRules(modelBuilder, batch) );
+
         return generatedFiles;
+    }
+
+    private List<GeneratedFile> generateRules(ModelBuilderImpl<KogitoPackageSources> modelBuilder, CompositeKnowledgeBuilder batch) {
+        try {
+            batch.build();
+        } catch (RuntimeException e) {
+            for (DroolsError error : modelBuilder.getErrors().getErrors()) {
+                logger.error(error.toString());
+            }
+            logger.error(e.getMessage());
+            throw new RuleCodegenError(e, modelBuilder.getErrors().getErrors());
+        }
+
+        if (modelBuilder.hasErrors()) {
+            for (DroolsError error : modelBuilder.getErrors().getErrors()) {
+                logger.error(error.toString());
+            }
+            throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
+        }
+
+        return generateModels( modelBuilder ).stream().map(f -> new org.kie.kogito.codegen.GeneratedFile(
+                        org.kie.kogito.codegen.GeneratedFile.Type.RULE,
+                        f.getPath(), f.getData())).collect(toList());
+    }
+
+    private List<org.drools.modelcompiler.builder.GeneratedFile> generateModels( ModelBuilderImpl<KogitoPackageSources> modelBuilder) {
+        List<org.drools.modelcompiler.builder.GeneratedFile> modelFiles = new ArrayList<>();
+        for (KogitoPackageSources pkgSources : modelBuilder.getPackageSources()) {
+
+            pkgSources.collectGeneratedFiles( modelFiles );
+
+            org.drools.modelcompiler.builder.GeneratedFile reflectConfigSource = pkgSources.getReflectConfigSource();
+            if (reflectConfigSource != null) {
+                modelFiles.add(new org.drools.modelcompiler.builder.GeneratedFile( org.drools.modelcompiler.builder.GeneratedFile.Type.RULE, "../../classes/" + reflectConfigSource.getPath(), new String(reflectConfigSource.getData(), StandardCharsets.UTF_8)));
+            }
+
+            Collection<RuleUnitDescription> ruleUnits = pkgSources.getRuleUnits();
+            if (!ruleUnits.isEmpty()) {
+                for (RuleUnitDescription ruleUnit : ruleUnits) {
+                    RuleUnitGenerator ruSource = new RuleUnitGenerator(ruleUnit, pkgSources.getRulesFileName())
+                            .withDependencyInjection(annotator)
+                            .withQueries( pkgSources.getQueriesInRuleUnit( ruleUnit.getCanonicalName() ) )
+                            .withMonitoring(useMonitoring);
+                }
+            }
+        }
+        return modelFiles;
     }
 
     @Override
