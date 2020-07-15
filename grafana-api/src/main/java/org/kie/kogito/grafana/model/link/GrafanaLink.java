@@ -27,6 +27,12 @@ public class GrafanaLink {
     @JsonProperty("tags")
     public List<String> tags;
 
+    @JsonProperty("includeVars")
+    public boolean includeVars = true;
+
+    @JsonProperty("keepTime")
+    public boolean keepTime = true;
+
     @JsonProperty("targetBlank")
     public boolean targetBlank = true;
 
