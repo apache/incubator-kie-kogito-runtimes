@@ -117,7 +117,7 @@ public class ApplicationGeneratorTest {
     public void generate() {
         final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, new File("target"));
         final Collection<GeneratedFile> generatedFiles = appGenerator.generate();
-        assertGeneratedFiles(generatedFiles, appGenerator.compilationUnit().toString().getBytes(StandardCharsets.UTF_8), 3);
+        assertGeneratedFiles(generatedFiles, appGenerator.compilationUnit().toString().getBytes(StandardCharsets.UTF_8), 2);
     }
     
     @Test
@@ -178,7 +178,7 @@ public class ApplicationGeneratorTest {
 
         final Collection<GeneratedFile> generatedFiles = appGenerator.generate();
         final CompilationUnit compilationUnit = appGenerator.compilationUnit();
-        assertGeneratedFiles(generatedFiles, compilationUnit.toString().getBytes(StandardCharsets.UTF_8), 5);
+        assertGeneratedFiles(generatedFiles, compilationUnit.toString().getBytes(StandardCharsets.UTF_8), 4);
 
         assertCompilationUnit(compilationUnit, false, 6);
         final TypeDeclaration mainAppClass = compilationUnit.getTypes().get(0);

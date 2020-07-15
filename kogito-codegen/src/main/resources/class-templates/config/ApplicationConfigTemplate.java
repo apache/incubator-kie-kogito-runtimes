@@ -11,43 +11,9 @@ import org.kie.kogito.process.impl.StaticProcessConfig;
 
 public class ApplicationConfig implements org.kie.kogito.Config {
 
-    protected org.kie.kogito.process.ProcessConfig processConfig;
-    protected org.kie.kogito.rules.RuleConfig ruleConfig;
-    protected org.kie.kogito.decision.DecisionConfig decisionConfig;
-
-    public ApplicationConfig() {
-        this(new StaticProcessConfig(),
-             new StaticRuleConfig(),
-             new StaticDecisionConfig());
-    }
-
-    public ApplicationConfig(
-            org.kie.kogito.process.ProcessConfig processConfig,
-            org.kie.kogito.rules.RuleConfig ruleConfig,
-            org.kie.kogito.decision.DecisionConfig decisionConfig) {
-        this.processConfig = processConfig;
-        this.ruleConfig = ruleConfig;
-        this.decisionConfig = decisionConfig;
-    }
-
-    @javax.inject.Inject
-    public ApplicationConfig(
-            javax.enterprise.inject.Instance<org.kie.kogito.process.ProcessConfig> processConfig,
-            javax.enterprise.inject.Instance<org.kie.kogito.rules.RuleConfig> ruleConfig,
-            javax.enterprise.inject.Instance<org.kie.kogito.decision.DecisionConfig> decisionConfig) {
-        this(orDefault(processConfig, StaticProcessConfig::new),
-             orDefault(ruleConfig, StaticRuleConfig::new),
-             orDefault(decisionConfig, StaticDecisionConfig::new));
-    }
-
-    private static <T> T orDefault(javax.enterprise.inject.Instance<T> instance, Supplier<T> supplier) {
-        if (instance.isUnsatisfied()) {
-            return supplier.get();
-        } else {
-            return instance.get();
-        }
-    }
-
+    private org.kie.kogito.process.ProcessConfig processConfig = new StaticProcessConfig();
+    private org.kie.kogito.rules.RuleConfig ruleConfig = new StaticRuleConfig();
+    private org.kie.kogito.decision.DecisionConfig decisionConfig = new StaticDecisionConfig();
 
     @Override
     public org.kie.kogito.process.ProcessConfig process() {

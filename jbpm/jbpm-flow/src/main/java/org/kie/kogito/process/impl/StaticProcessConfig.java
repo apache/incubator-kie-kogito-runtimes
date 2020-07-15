@@ -19,13 +19,10 @@ import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessEventListenerConfig;
 import org.kie.kogito.process.WorkItemHandlerConfig;
-import org.kie.kogito.services.event.impl.BaseEventManager;
-import org.kie.kogito.services.uow.CollectingUnitOfWork;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.signal.SignalManagerHub;
 import org.kie.kogito.uow.UnitOfWorkManager;
-import org.kie.services.jobs.impl.InMemoryJobService;
 import org.kie.services.signal.DefaultSignalManagerHub;
 
 public class StaticProcessConfig implements ProcessConfig {
