@@ -29,6 +29,7 @@ import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataProcessor;
 import org.kie.kogito.rules.SingletonStore;
 import org.kie.kogito.rules.units.impl.DataHandleImpl;
+import org.kogito.KogitoInternalFactHandle;
 
 public class FieldDataStore<T> implements SingletonStore<T>,
                                           InternalStoreCallback {
@@ -92,14 +93,14 @@ public class FieldDataStore<T> implements SingletonStore<T>,
 
     @Override
     public void update(InternalFactHandle fh, Object obj, BitMask mask, Class<?> modifiedClass, Activation activation) {
-        DataHandle dh = fh.getDataHandle();
+        DataHandle dh = ((KogitoInternalFactHandle)fh).getDataHandle();
         entryPointSubscribers.forEach(s -> s.update(dh, obj, mask, modifiedClass, activation));
         subscribers.forEach(s -> s.update(dh, (T) obj));
     }
 
     @Override
     public void delete(InternalFactHandle fh, RuleImpl rule, TerminalNode terminalNode, FactHandle.State fhState) {
-        DataHandle dh = fh.getDataHandle();
+        DataHandle dh = ((KogitoInternalFactHandle)fh).getDataHandle();
         if (dh != this.handle) {
             throw new IllegalArgumentException("The given handle is not contained in this DataStore");
         }
@@ -111,8 +112,8 @@ public class FieldDataStore<T> implements SingletonStore<T>,
     private void internalInsert(DataHandle dh, DataProcessor processor) {
         FactHandle fh = processor.insert(dh, dh == null ? null : dh.getObject());
         if (fh != null) {
-            ((InternalFactHandle) fh).setDataStore(this);
-            ((InternalFactHandle) fh).setDataHandle(dh);
+            ((KogitoInternalFactHandle) fh).setDataStore(this);
+            ((KogitoInternalFactHandle) fh).setDataHandle(dh);
         }
     }
 }
