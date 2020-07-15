@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import javax.enterprise.inject.Instance;
 
+import org.kie.dmn.api.core.event.DMNRuntimeEventListener;
 import org.kie.kogito.decision.DecisionEventListenerConfig;
 import org.kie.kogito.dmn.config.AbstractDecisionConfig;
 import org.kie.kogito.rules.RuleEventListenerConfig;
@@ -16,8 +17,8 @@ class DecisionConfig extends AbstractDecisionConfig {
 
     @javax.inject.Inject
     public DecisionConfig(
-            Instance<org.kie.kogito.decision.DecisionEventListenerConfig> decisionEventListenerConfigs,
-            Instance<org.kie.dmn.api.core.event.DMNRuntimeEventListener> dmnRuntimeEventListeners) {
+            Instance<DecisionEventListenerConfig> decisionEventListenerConfigs,
+            Instance<DMNRuntimeEventListener> dmnRuntimeEventListeners) {
         super(decisionEventListenerConfigs, dmnRuntimeEventListeners);
     }
 

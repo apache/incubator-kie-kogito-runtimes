@@ -15,6 +15,7 @@
 
 package org.kie.kogito.process.impl;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
@@ -23,10 +24,13 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.kie.api.event.process.ProcessEventListener;
+import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessEventListenerConfig;
 import org.kie.kogito.process.WorkItemHandlerConfig;
+import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
+import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.signal.SignalManagerHub;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.services.signal.DefaultSignalManagerHub;
@@ -40,18 +44,18 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
     private final JobsService jobsService;
 
     protected AbstractProcessConfig(
-            Iterable<org.kie.kogito.process.WorkItemHandlerConfig> workItemHandlerConfig,
-            Iterable<org.kie.kogito.process.ProcessEventListenerConfig> processEventListenerConfigs,
-            Iterable<org.kie.api.event.process.ProcessEventListener> processEventListeners,
-            Iterable<org.kie.kogito.uow.UnitOfWorkManager> unitOfWorkManager,
-            Iterable<org.kie.kogito.jobs.JobsService> jobsService,
-            Iterable<org.kie.kogito.event.EventPublisher> eventPublishers) {
+            Iterable<WorkItemHandlerConfig> workItemHandlerConfig,
+            Iterable<ProcessEventListenerConfig> processEventListenerConfigs,
+            Iterable<ProcessEventListener> processEventListeners,
+            Iterable<UnitOfWorkManager> unitOfWorkManager,
+            Iterable<JobsService> jobsService,
+            Iterable<EventPublisher> eventPublishers) {
 
-        this.workItemHandlerConfig = orDefault(workItemHandlerConfig, org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig::new);
+        this.workItemHandlerConfig = orDefault(workItemHandlerConfig, DefaultWorkItemHandlerConfig::new);
         this.processEventListenerConfig = merge(processEventListenerConfigs, processEventListeners);
         this.unitOfWorkManager = orDefault(unitOfWorkManager,
-                                           () -> new org.kie.kogito.services.uow.DefaultUnitOfWorkManager(
-                                                   new org.kie.kogito.services.uow.CollectingUnitOfWorkFactory()));
+                                           () -> new DefaultUnitOfWorkManager(
+                                                   new CollectingUnitOfWorkFactory()));
         this.jobsService = orDefault(jobsService, () -> null);
 
         eventPublishers.forEach(publisher -> unitOfWorkManager().eventManager().addPublisher(publisher));
@@ -83,7 +87,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
     }
 
     public org.kie.kogito.Addons addons() {
-        return new org.kie.kogito.Addons(java.util.Arrays.asList());
+        return new org.kie.kogito.Addons(Arrays.asList());
     }
 
     static <T> T orDefault(Iterable<T> instance, Supplier<? extends T> supplier) {
@@ -95,7 +99,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
         }
     }
 
-    static org.kie.kogito.process.ProcessEventListenerConfig merge(
+    static ProcessEventListenerConfig merge(
             Iterable<ProcessEventListenerConfig> processEventListenerConfigs,
             Iterable<ProcessEventListener> processEventListeners) {
         List<ProcessEventListenerConfig> l1 = StreamSupport.stream(processEventListenerConfigs.spliterator(), false).collect(Collectors.toList());
@@ -104,7 +108,8 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
         Stream<ProcessEventListener> processEventListenerStream = l1.stream().flatMap(c -> c.listeners().stream());
         Stream<ProcessEventListener> eventListenerStream = l2.stream();
 
-        return new org.kie.kogito.process.impl.CachedProcessEventListenerConfig(
-                Stream.concat(processEventListenerStream, eventListenerStream).collect(Collectors.toList()));
+        return new CachedProcessEventListenerConfig(
+                Stream.concat(processEventListenerStream, eventListenerStream)
+                        .collect(Collectors.toList()));
     }
 }

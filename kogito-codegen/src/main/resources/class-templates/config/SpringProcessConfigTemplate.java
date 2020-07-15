@@ -1,4 +1,7 @@
 import java.util.List;
+
+import org.kie.api.event.process.ProcessEventListener;
+import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessEventListenerConfig;
 import org.kie.kogito.process.WorkItemHandlerConfig;
@@ -11,12 +14,12 @@ public class ProcessConfig extends org.kie.kogito.process.impl.AbstractProcessCo
 
     @org.springframework.beans.factory.annotation.Autowired
     public ProcessConfig(
-            List<org.kie.kogito.process.WorkItemHandlerConfig> workItemHandlerConfig,
-            List<org.kie.kogito.uow.UnitOfWorkManager> unitOfWorkManager,
-            List<org.kie.kogito.jobs.JobsService> jobsService,
-            List<org.kie.kogito.process.ProcessEventListenerConfig> processEventListenerConfigs,
-            List<org.kie.api.event.process.ProcessEventListener> processEventListeners,
-            List<org.kie.kogito.event.EventPublisher> eventPublishers) {
+            List<WorkItemHandlerConfig> workItemHandlerConfig,
+            List<UnitOfWorkManager> unitOfWorkManager,
+            List<JobsService> jobsService,
+            List<ProcessEventListenerConfig> processEventListenerConfigs,
+            List<ProcessEventListener> processEventListeners,
+            List<EventPublisher> eventPublishers) {
 
         super(workItemHandlerConfig,
               processEventListenerConfigs,

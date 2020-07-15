@@ -6,27 +6,30 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.drools.core.config.StaticRuleConfig;
+import org.kie.kogito.decision.DecisionConfig;
 import org.kie.kogito.dmn.config.StaticDecisionConfig;
+import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.impl.StaticProcessConfig;
+import org.kie.kogito.rules.RuleConfig;
 
 public class ApplicationConfig implements org.kie.kogito.Config {
 
-    private org.kie.kogito.process.ProcessConfig processConfig = new StaticProcessConfig();
-    private org.kie.kogito.rules.RuleConfig ruleConfig = new StaticRuleConfig();
-    private org.kie.kogito.decision.DecisionConfig decisionConfig = new StaticDecisionConfig();
+    private ProcessConfig processConfig = new StaticProcessConfig();
+    private RuleConfig ruleConfig = new StaticRuleConfig();
+    private DecisionConfig decisionConfig = new StaticDecisionConfig();
 
     @Override
-    public org.kie.kogito.process.ProcessConfig process() {
+    public ProcessConfig process() {
         return processConfig;
     }
 
     @Override
-    public org.kie.kogito.rules.RuleConfig rule() {
+    public RuleConfig rule() {
         return ruleConfig;
     }
 
     @Override
-    public org.kie.kogito.decision.DecisionConfig decision() {
+    public DecisionConfig decision() {
         return decisionConfig;
     }
 

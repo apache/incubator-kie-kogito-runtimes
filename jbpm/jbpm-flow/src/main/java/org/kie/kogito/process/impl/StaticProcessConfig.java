@@ -33,20 +33,23 @@ public class StaticProcessConfig implements ProcessConfig {
     private final UnitOfWorkManager unitOfWorkManager;
     private final JobsService jobsService;
 
-    public StaticProcessConfig() {
-        this.workItemHandlerConfig = new DefaultWorkItemHandlerConfig();
-        this.unitOfWorkManager = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
-        this.processEventListenerConfig = new DefaultProcessEventListenerConfig();
-        this.signalManager = new DefaultSignalManagerHub();
-        this.jobsService = null;
-    }
-
-    public StaticProcessConfig(WorkItemHandlerConfig workItemHandlerConfig, ProcessEventListenerConfig processEventListenerConfig, UnitOfWorkManager unitOfWorkManager, JobsService jobsService) {
+    public StaticProcessConfig(
+            WorkItemHandlerConfig workItemHandlerConfig,
+            ProcessEventListenerConfig processEventListenerConfig,
+            UnitOfWorkManager unitOfWorkManager,
+            JobsService jobsService) {
         this.unitOfWorkManager = unitOfWorkManager;
         this.workItemHandlerConfig = workItemHandlerConfig;
         this.processEventListenerConfig = processEventListenerConfig;
         this.signalManager = new DefaultSignalManagerHub();
         this.jobsService = jobsService;
+    }
+
+    public StaticProcessConfig() {
+        this(new DefaultWorkItemHandlerConfig(),
+             new DefaultProcessEventListenerConfig(),
+             new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()),
+             null);
     }
 
     @Override
