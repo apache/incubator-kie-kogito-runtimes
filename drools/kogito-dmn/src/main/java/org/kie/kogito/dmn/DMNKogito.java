@@ -57,10 +57,10 @@ public class DMNKogito {
         return createGenericDMNRuntime(null, readers);
     }
 
-    public static DMNRuntime createGenericDMNRuntime(PMMLRuntime pmmlRuntime, Reader... readers) {
+    public static DMNRuntime createGenericDMNRuntime(Map<String, PMMLRuntime> pmmlRuntimes, Reader... readers) {
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                .setPMMLRuntime(pmmlRuntime)
+                .setPMMLRuntimes(pmmlRuntimes)
                 .buildConfiguration()
                 .fromResources(resources)
                 .getOrElseThrow(e -> new RuntimeException("Error initializing DMNRuntime", e));

@@ -70,7 +70,7 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
         ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
         for (PMMLResource resource : resources) {
             StringLiteralExpr getResAsStream = getReadResourceMethod(resource );
-            Optional<FieldDeclaration> pmmlRuntimeField = typeDeclaration.getFieldByName("pmmlRuntime");
+            Optional<FieldDeclaration> pmmlRuntimeField = typeDeclaration.getFieldByName("pmmlRuntimes");
             Expression initializer = pmmlRuntimeField.flatMap(x -> x.getVariable(0).getInitializer()).orElseThrow(() -> new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified."));
             initializer.asMethodCallExpr().addArgument(getResAsStream);
         }

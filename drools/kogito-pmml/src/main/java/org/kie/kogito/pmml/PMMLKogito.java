@@ -16,14 +16,12 @@
 
 package org.kie.kogito.pmml;
 
-import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.drools.core.io.impl.FileSystemResource;
-import org.drools.core.io.impl.ReaderResource;
 import org.kie.api.io.Resource;
 import org.kie.api.pmml.PMML4Result;
 import org.kie.api.pmml.PMMLRequestData;
@@ -32,13 +30,15 @@ import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
 import org.kie.pmml.evaluator.core.PMMLContextImpl;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
+import org.kie.pmml.evaluator.core.service.PMMLRuntimeImpl;
 import org.kie.pmml.evaluator.core.utils.PMMLRequestDataBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Internal Utility class.<br/>
- * Use {@link Application#predictionModels()} of Kogito API to programmatically access PMML assets and evaluate PMML predictions.
+ * Use {@link Application#predictionModels()} of Kogito API to programmatically access PMML assets and evaluate PMML
+ * predictions.
  */
 public class PMMLKogito {
 
@@ -50,16 +50,17 @@ public class PMMLKogito {
 
     /**
      * Internal Utility class.<br/>
-     * Use {@link Application#predictionModels()} of Kogito API to programmatically access PMML assets and evaluate PMML decisions.
+     * Use {@link Application#predictionModels()} of Kogito API to programmatically access PMML assets and evaluate
+     * PMML decisions.
      */
-    public static PMMLRuntime createGenericPMMLRuntime(String... pmmlPaths) {
+    public static Map<String, PMMLRuntime> createPMMLRuntimes(String... pmmlPaths) {
         List<Resource> resources = Stream.of(pmmlPaths).map(FileSystemResource::new).collect(Collectors.toList());
-        PMMLRuntime pmmlRuntime = PMMLRuntimeBuilder.fromResources(resources, new PMMLModelEvaluatorFinderImpl());
-        return pmmlRuntime;
+        return PMMLRuntimeBuilder.fromResources(resources, new PMMLModelEvaluatorFinderImpl());
     }
 
     public static KiePMMLModel modelByName(PMMLRuntime pmmlRuntime, String modelName) {
-        List<KiePMMLModel> modelsWithName = pmmlRuntime.getModels().stream().filter(m -> modelName.equals(m.getName())).collect(Collectors.toList());
+        List<KiePMMLModel> modelsWithName =
+                pmmlRuntime.getModels().stream().filter(m -> modelName.equals(m.getName())).collect(Collectors.toList());
         if (modelsWithName.size() == 1) {
             return modelsWithName.get(0);
         } else {
@@ -72,7 +73,6 @@ public class PMMLKogito {
         return pmmlRuntime.evaluate(modelName, new PMMLContextImpl(pmmlRequestData));
     }
 
-
     private static PMMLRequestData getPMMLRequestData(String modelName, Map<String, Object> parameters) {
         String correlationId = "CORRELATION_ID";
         PMMLRequestDataBuilder pmmlRequestDataBuilder = new PMMLRequestDataBuilder(correlationId, modelName);
@@ -83,5 +83,4 @@ public class PMMLKogito {
         }
         return pmmlRequestDataBuilder.build();
     }
-
 }

@@ -31,25 +31,27 @@ class PMMLKogitoTest {
 
     @Test
     void createGenericPMMLRuntime() {
-        PMMLRuntime pmmlRuntime = PMMLKogito.createGenericPMMLRuntime(SOURCE_PATH);
-        assertEquals(1, pmmlRuntime.getModels().size());
+        Map<String, PMMLRuntime> pmmlRuntimes = PMMLKogito.createPMMLRuntimes(SOURCE_PATH);
+        assertEquals(1, pmmlRuntimes.size());
+        assertEquals(1, pmmlRuntimes.values().iterator().next().getModels().size());
     }
 
     @Test
     void modelByName() {
-        PMMLRuntime pmmlRuntime = PMMLKogito.createGenericPMMLRuntime(SOURCE_PATH);
-        assertTrue(pmmlRuntime.getModel(MODEL_NAME).isPresent());
+        Map<String, PMMLRuntime> pmmlRuntimes = PMMLKogito.createPMMLRuntimes(SOURCE_PATH);
+        assertTrue(pmmlRuntimes.values().iterator().next().getModel(MODEL_NAME).isPresent());
     }
 
     @Test
     void evaluate() {
-        PMMLRuntime pmmlRuntime = PMMLKogito.createGenericPMMLRuntime(SOURCE_PATH);
+        Map<String, PMMLRuntime> pmmlRuntimes = PMMLKogito.createPMMLRuntimes(SOURCE_PATH);
         Map<String, Object> inputData = new HashMap<>();
         inputData.put("fld1", 35.3);
         inputData.put("fld2", 16.3);
         inputData.put("fld3", "y");
         final PMMLRequestData pmmlRequestData = getPMMLRequestData(MODEL_NAME, inputData);
-        PMML4Result retrieved =  pmmlRuntime.evaluate(MODEL_NAME, new PMMLContextImpl(pmmlRequestData));
+        PMML4Result retrieved = pmmlRuntimes.values().iterator().next().evaluate(MODEL_NAME,
+                                                                                 new PMMLContextImpl(pmmlRequestData));
         assertNotNull(retrieved);
     }
 
