@@ -229,8 +229,8 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         Assumptions.assumeThat(
                 new ScriptEngineManager().getEngineByName("JavaScript")
                         .getClass().getSimpleName())
-                .isNotEqualTo("GraalJSScriptEngine")
-                .describedAs("GraalJS is not supported.");
+                .describedAs("GraalJS is not supported.")
+                .isNotEqualTo("GraalJSScriptEngine");
 
         KieBase kbase = createKnowledgeBase("BPMN2-ScriptTaskJS.bpmn2");
         ksession = createKnowledgeSession(kbase);
