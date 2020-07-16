@@ -522,6 +522,16 @@ public class DummyWorkingMemory implements InternalWorkingMemory,
     }
 
     @Override
+    public ProcessInstance getProcessInstance(long id) {
+        throw new UnsupportedOperationException("Do not use this in kogito");
+    }
+
+    @Override
+    public ProcessInstance getProcessInstance(long id, boolean readOnly) {
+        throw new UnsupportedOperationException("Do not use this in kogito");
+    }
+
+    @Override
     public ProcessInstance getProcessInstance(String id) {
         return getProcessRuntime().getProcessInstance(id);
     }
