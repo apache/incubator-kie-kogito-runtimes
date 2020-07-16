@@ -16,46 +16,36 @@
 package org.kie.kogito.codegen.prediction;
 
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.Application;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class PredictionCodegenTest extends AbstractCodegenTest {
+
+    private static final String SOURCE = "prediction/test_regression.pmml";
+    private static final String FULL_SOURCE = "src/test/resources/" + SOURCE;
 
     @Test
     public void generateAllFiles() throws Exception {
 
         GeneratorContext context = stronglyTypedContext();
 
-        PredictionCodegen codeGenerator = PredictionCodegen.ofPath(Paths.get("src/test/resources/prediction/test_regression.pmml").toAbsolutePath());
+        PredictionCodegen codeGenerator = PredictionCodegen.ofPath(Paths.get(FULL_SOURCE).toAbsolutePath());
         codeGenerator.setContext(context);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(3, generatedFiles.size());
+        assertEquals(4, generatedFiles.size());
 
         ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
         assertNotNull(classDeclaration);
-    }
-
-    @Test
-    public void generateCode() throws Exception {
-        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.PREDICTION, Collections.singletonList("prediction/test_regression.pmml"));
-        Application app = generateCode(resourcesTypeMap, false);
-        assertThat(app).isNotNull();
     }
 
     private GeneratorContext stronglyTypedContext() {

@@ -56,6 +56,7 @@ import org.kie.kogito.codegen.decision.DMNRestResourceGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.rules.RuleCodegenError;
+import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.pmml.commons.model.HasSourcesMap;
 import org.kie.pmml.commons.model.KiePMMLFactoryModel;
 import org.kie.pmml.commons.model.KiePMMLModel;
@@ -124,7 +125,6 @@ public class PredictionCodegen extends AbstractGenerator {
                 resources.addAll(parseFiles(srcPath, files));
             }
         }
-
         return ofPredictions(resources);
     }
 

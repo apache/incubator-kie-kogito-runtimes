@@ -15,9 +15,6 @@
 
 package org.kie.kogito.codegen.prediction;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +46,8 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
 
     private static final String TEMPLATE_JAVA = "/class-templates/PMMLApplicationClassDeclTemplate.java";
 
+    private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION = new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
+
     private String applicationCanonicalName;
     private final List<PMMLResource> resources;
     private boolean useTracing = false;
@@ -71,7 +70,7 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
         for (PMMLResource resource : resources) {
             StringLiteralExpr getResAsStream = getReadResourceMethod(resource );
             Optional<FieldDeclaration> pmmlRuntimeField = typeDeclaration.getFieldByName("pmmlRuntimes");
-            Expression initializer = pmmlRuntimeField.flatMap(x -> x.getVariable(0).getInitializer()).orElseThrow(() -> new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified."));
+            Expression initializer = pmmlRuntimeField.flatMap(x -> x.getVariable(0).getInitializer()).orElseThrow(() -> MODIFIED_TEMPLATE_EXCEPTION);
             initializer.asMethodCallExpr().addArgument(getResAsStream);
         }
         if (useTracing) {
