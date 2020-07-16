@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 
 import org.drools.core.command.impl.CommandBasedStatefulKnowledgeSession;
 import org.drools.core.event.ProcessEventSupport;
+import org.drools.core.impl.KogitoStatefulKnowledgeSessionImpl;
 import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.process.instance.WorkItemManager;
 import org.drools.core.process.instance.impl.WorkItemImpl;
@@ -290,8 +291,10 @@ public class DynamicUtils {
                                                                    processInstance.getId());
             ((ProcessInstanceImpl) subProcessInstance).setParentProcessInstanceId(processInstance.getId());
 
-            subProcessInstance = (ProcessInstance) ksession.startProcessInstance(subProcessInstance.getId());
-            subProcessNodeInstance.internalSetProcessInstanceId(subProcessInstance.getId());
+            KogitoStatefulKnowledgeSessionImpl kogitoSession = (KogitoStatefulKnowledgeSessionImpl) ksession;
+            String subProcessInstanceId = subProcessInstance.getId();
+            subProcessInstance = (ProcessInstance) kogitoSession.startProcessInstance(subProcessInstanceId);
+            subProcessNodeInstance.internalSetProcessInstanceId(subProcessInstanceId);
 
             eventSupport.fireAfterNodeTriggered(subProcessNodeInstance,
                                                 ksession);
@@ -302,7 +305,7 @@ public class DynamicUtils {
                 subProcessNodeInstance.addEventListeners();
             }
 
-            return subProcessInstance.getId();
+            return subProcessInstanceId;
         }
     }
 
