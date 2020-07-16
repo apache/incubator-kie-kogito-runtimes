@@ -52,10 +52,12 @@ import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.KogitoPackageSources;
+import org.kie.kogito.codegen.decision.DMNRestResourceGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.rules.RuleCodegenError;
 import org.kie.pmml.commons.model.HasSourcesMap;
+import org.kie.pmml.commons.model.KiePMMLFactoryModel;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.models.drools.commons.model.KiePMMLDroolsModelWithSources;
 
@@ -215,6 +217,12 @@ public class PredictionCodegen extends AbstractGenerator {
                 if (model instanceof KiePMMLDroolsModelWithSources) {
                     PackageDescr packageDescr = ((KiePMMLDroolsModelWithSources)model).getPackageDescr();
                     batch.add( new DescrResource( packageDescr ), ResourceType.DESCR );
+                }
+                if (!(model instanceof KiePMMLFactoryModel)) {
+                    PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(model, applicationCanonicalName)
+                            .withDependencyInjection(annotator)
+                            .withMonitoring(useMonitoring);
+                    storeFile(GeneratedFile.Type.PMML, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
                 }
             }
         }

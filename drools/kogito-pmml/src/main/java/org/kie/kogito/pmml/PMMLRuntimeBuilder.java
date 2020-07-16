@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
+import org.drools.compiler.compiler.PackageRegistry;
+import org.drools.compiler.lang.descr.PackageDescr;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.model.Model;
@@ -58,14 +60,20 @@ public class PMMLRuntimeBuilder {
                 throw new RuntimeException("Failed to retrieve compiled models");
             }
             for (KiePMMLModel kiePMMLModel : toAdd) {
-                final InternalKnowledgePackage internalKnowledgePackage =
+                InternalKnowledgePackage internalKnowledgePackage =
                         kbuilderImpl.getKnowledgeBase().getPackage(factoryClassNamePackageName[1]);
-                if (internalKnowledgePackage != null) {
-                    PMMLPackage pmmlPkg = internalKnowledgePackage.getResourceTypePackages().computeIfAbsent(ResourceType.PMML, rtp -> new PMMLPackageImpl());
-                    pmmlPkg.addAll(Collections.singletonList(kiePMMLModel));
+                if (internalKnowledgePackage == null) {
+                    PackageDescr pkgDescr = new PackageDescr(kiePMMLModel.getKModulePackageName());
+                    PackageRegistry pkgReg = kbuilderImpl.getOrCreatePackageRegistry(pkgDescr);
+                    internalKnowledgePackage = pkgReg.getPackage();
                 }
+                PMMLPackage pmmlPkg =
+                        internalKnowledgePackage.getResourceTypePackages().computeIfAbsent(ResourceType.PMML,
+                                                                                           rtp -> new PMMLPackageImpl());
+                pmmlPkg.addAll(Collections.singletonList(kiePMMLModel));
             }
-            toReturn.put(resource.getSourcePath(), new PMMLRuntimeImpl(kbuilderImpl.getKnowledgeBase(), pmmlModelExecutorFinder));
+            toReturn.put(resource.getSourcePath(), new PMMLRuntimeImpl(kbuilderImpl.getKnowledgeBase(),
+                                                                       pmmlModelExecutorFinder));
         });
         return toReturn;
     }

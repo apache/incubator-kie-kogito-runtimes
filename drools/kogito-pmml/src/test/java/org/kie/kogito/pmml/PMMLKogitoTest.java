@@ -30,7 +30,7 @@ class PMMLKogitoTest {
     }
 
     @Test
-    void createGenericPMMLRuntime() {
+    void createPMMLRuntimes() {
         Map<String, PMMLRuntime> pmmlRuntimes = PMMLKogito.createPMMLRuntimes(SOURCE_PATH);
         assertEquals(1, pmmlRuntimes.size());
         assertEquals(1, pmmlRuntimes.values().iterator().next().getModels().size());
