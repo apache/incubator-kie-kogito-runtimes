@@ -16,10 +16,6 @@
 
 package org.jbpm.bpmn2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,6 +60,10 @@ import org.kie.internal.command.RegistryContext;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
@@ -2718,7 +2718,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         String changeProcessInstanceId = instances.remove(0);
         Map<String, Object> updatedVariables = new HashMap<>();
         updatedVariables.put("fatherId", "999");
-        ksession.execute(new SetProcessInstanceVariablesCommand(changeProcessInstanceId, updatedVariables));
+        ksession.execute(new SetProcessInstanceVariablesCommand(Long.parseLong( changeProcessInstanceId ), updatedVariables));
         
         // now complete user task to signal all child instances to stop
         WorkItem workItem = handler.getWorkItem();
@@ -2776,7 +2776,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         String changeProcessInstanceId = instances.remove(0);
         Map<String, Object> updatedVariables = new HashMap<>();
         updatedVariables.put("fatherId", "999");
-        ksession.execute(new SetProcessInstanceVariablesCommand(changeProcessInstanceId, updatedVariables));
+        ksession.execute(new SetProcessInstanceVariablesCommand(Long.parseLong( changeProcessInstanceId ), updatedVariables));
         
         // now complete user task to signal all child instances to stop
         WorkItem workItem = handler.getWorkItem();
