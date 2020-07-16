@@ -306,4 +306,13 @@ public class ProtobufProcessMarshaller
         }
     }
 
+    @Override
+    public void writeProcessTimers(MarshallerWriteContext context) throws IOException {
+        throw new UnsupportedOperationException("Removed in Kogito");
+    }
+
+    @Override
+    public void readProcessTimers(MarshallerReaderContext context) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Removed in Kogito");
+    }
 }

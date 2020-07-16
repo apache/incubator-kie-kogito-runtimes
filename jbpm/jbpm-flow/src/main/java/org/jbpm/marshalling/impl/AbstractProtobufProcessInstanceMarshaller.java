@@ -28,6 +28,7 @@ import java.util.Map;
 
 import com.google.protobuf.ExtensionRegistry;
 import org.drools.core.common.DefaultFactHandle;
+import org.drools.core.marshalling.impl.KogitoMarshallerReaderContext;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.MarshallerWriteContext;
 import org.drools.core.marshalling.impl.PersisterHelper;
@@ -703,8 +704,8 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
     
     
     // Input methods
-    public ProcessInstance readProcessInstance(MarshallerReaderContext context) throws IOException {
-        
+    public ProcessInstance readProcessInstance(MarshallerReaderContext c) throws IOException {
+        KogitoMarshallerReaderContext context = (KogitoMarshallerReaderContext)c;
         JBPMMessages.ProcessInstance _instance = (org.jbpm.marshalling.impl.JBPMMessages.ProcessInstance) context.parameterObject;
         if( _instance == null ) {
             // try to parse from the stream

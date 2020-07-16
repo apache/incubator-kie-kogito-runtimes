@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import org.drools.core.KogitoInternalAgenda;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.spi.ProcessContext;
@@ -154,7 +155,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
 
                 if (actAsWaitState()) {
                     addRuleSetListener();
-                    ((InternalAgenda) kruntime.getAgenda())
+                    ((KogitoInternalAgenda) kruntime.getAgenda())
                             .activateRuleFlowGroup(getRuleFlowGroup(), getProcessInstance().getId(), getUniqueId());
                 } else {
                     int fireLimit = DEFAULT_FIRE_RULE_LIMIT;
@@ -162,7 +163,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                     if (inputs.containsKey(FIRE_RULE_LIMIT_PARAMETER)) {
                         fireLimit = Integer.parseInt(inputs.get(FIRE_RULE_LIMIT_PARAMETER).toString());
                     }
-                    ((InternalAgenda) kruntime.getAgenda())
+                    ((KogitoInternalAgenda) kruntime.getAgenda())
                             .activateRuleFlowGroup(getRuleFlowGroup(), getProcessInstance().getId(), getUniqueId());
 
                     int fired = ((KieSession) kruntime).fireAllRules(fireLimit);

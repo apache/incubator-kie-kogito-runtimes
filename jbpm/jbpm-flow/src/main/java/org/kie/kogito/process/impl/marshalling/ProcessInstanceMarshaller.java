@@ -22,6 +22,8 @@ import java.util.Collections;
 
 import org.drools.core.impl.EnvironmentImpl;
 import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
+import org.drools.core.marshalling.impl.KogitoMarshallerReaderContext;
+import org.drools.core.marshalling.impl.KogitoProcessMarshallerWriteContext;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.PersisterHelper;
 import org.drools.core.marshalling.impl.ProcessMarshallerWriteContext;
@@ -65,12 +67,12 @@ public class ProcessInstanceMarshaller {
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 
-            ProcessMarshallerWriteContext context = new ProcessMarshallerWriteContext(baos,
-                                                                                      null,
-                                                                                      null,
-                                                                                      null,
-                                                                                      null,
-                                                                                      this.env);
+            KogitoProcessMarshallerWriteContext context = new KogitoProcessMarshallerWriteContext(baos,
+                                                                                            null,
+                                                                                            null,
+                                                                                            null,
+                                                                                            null,
+                                                                                            this.env);
             context.setProcessInstanceId(pi.getId());
             context.setState(pi.getState());
 
@@ -91,6 +93,7 @@ public class ProcessInstanceMarshaller {
             throw new RuntimeException("Error while marshalling process instance", e);
         }
     }
+<<<<<<< HEAD
 
     public WorkflowProcessInstance unmarshallWorkflowProcessInstance(byte[] data, Process<?> process) {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
@@ -101,6 +104,24 @@ public class ProcessInstanceMarshaller {
                                                                           null,
                                                                           this.env
             );
+=======
+    
+    public ProcessInstance<?> unmarshallProcessInstance(byte[] data, Process<?> process) {
+        Model m = (Model) process.createModel();
+        AbstractProcessInstance<?> processInstance = (AbstractProcessInstance<?>) process.createInstance(m);
+        return unmarshallProcessInstance(data, process, processInstance);
+    }
+    
+    public ProcessInstance<?> unmarshallProcessInstance(byte[] data, Process<?> process, AbstractProcessInstance<?> processInstance) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream( data )) {
+            MarshallerReaderContext context = new KogitoMarshallerReaderContext(bais,
+                                                                                Collections.singletonMap(process.id(), ((AbstractProcess<?>)process).process()),
+                                                                                null,
+                                                                                null,
+                                                                                null,
+                                                                                this.env
+                                                                          );
+>>>>>>> 4 errors to go
             ObjectInputStream stream = context.stream;
             String processInstanceType = stream.readUTF();
 

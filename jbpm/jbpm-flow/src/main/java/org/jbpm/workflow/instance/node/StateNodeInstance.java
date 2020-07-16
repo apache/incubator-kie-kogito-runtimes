@@ -16,6 +16,7 @@
 
 package org.jbpm.workflow.instance.node;
 
+import org.drools.core.KogitoInternalAgenda;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.spi.Activation;
 import org.jbpm.workflow.core.Constraint;
@@ -54,7 +55,7 @@ public class StateNodeInstance extends CompositeContextNodeInstance implements E
 	            	getStateNode().getUniqueId() + "-" + 
 	            	connection.getTo().getId() + "-" + 
 	            	connection.getToType();
-		        boolean isActive = ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda())
+		        boolean isActive = ((KogitoInternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda())
 		            .isRuleActiveInRuleFlowGroup("DROOLS_SYSTEM", rule, getProcessInstance().getId());
 		        if (isActive) {
 		            selected = connection;
