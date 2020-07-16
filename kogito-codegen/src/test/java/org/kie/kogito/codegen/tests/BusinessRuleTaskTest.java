@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.drools.core.config.DefaultRuleEventListenerConfig;
 import org.drools.core.event.DefaultAgendaEventListener;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessStartedEvent;
@@ -138,6 +139,7 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         assertThat(startedProcesses).hasSize(1);
     }
 
+    @Disabled
     @Test
     public void testDecision() throws Exception {
         Map<AbstractCodegenTest.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
