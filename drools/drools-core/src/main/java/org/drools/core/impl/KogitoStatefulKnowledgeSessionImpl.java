@@ -18,9 +18,28 @@ package org.drools.core.impl;
 
 import java.util.Map;
 
+import org.drools.core.SessionConfiguration;
+import org.drools.core.common.InternalAgenda;
+import org.drools.core.spi.FactHandleFactory;
+import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.process.ProcessInstance;
 
 public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSessionImpl {
+
+    public KogitoStatefulKnowledgeSessionImpl() {
+    }
+
+    public KogitoStatefulKnowledgeSessionImpl(long id, InternalKnowledgeBase kBase) {
+        super(id, kBase);
+    }
+
+    public KogitoStatefulKnowledgeSessionImpl(long id, InternalKnowledgeBase kBase, boolean initInitFactHandle, SessionConfiguration config, Environment environment) {
+        super(id, kBase, initInitFactHandle, config, environment);
+    }
+
+    public KogitoStatefulKnowledgeSessionImpl(long id, InternalKnowledgeBase kBase, FactHandleFactory handleFactory, long propagationContext, SessionConfiguration config, InternalAgenda agenda, Environment environment) {
+        super(id, kBase, handleFactory, propagationContext, config, agenda, environment);
+    }
 
     public ProcessInstance startProcessInstance(String processInstanceId) {
         return getProcessRuntime().startProcessInstance( processInstanceId );
