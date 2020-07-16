@@ -20,6 +20,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
+import org.drools.core.util.KogitoStringUtils;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -60,7 +61,7 @@ public class ProcessToExecModelGenerator {
             throw new NoSuchElementException("Cannot find class declaration in the template");
         }
         ClassOrInterfaceDeclaration processClazz = processClazzOptional.get();
-        processClazz.setName(StringUtils.capitalize(extractedProcessId + PROCESS_CLASS_SUFFIX));
+        processClazz.setName(KogitoStringUtils.capitalize(extractedProcessId + PROCESS_CLASS_SUFFIX));
         String packageName = parsedClazzFile.getPackageDeclaration().map(NodeWithName::getNameAsString).orElse(null);
         ProcessMetaData metadata = new ProcessMetaData(process.getId(),
                 extractedProcessId,
@@ -126,7 +127,7 @@ public class ProcessToExecModelGenerator {
     }
 
     public static String extractModelClassName(String processId) {
-        return StringUtils.capitalize(extractProcessId(processId) + MODEL_CLASS_SUFFIX);
+        return KogitoStringUtils.capitalize(extractProcessId(processId) + MODEL_CLASS_SUFFIX);
     }
 
     public List<UserTaskModelMetaData> generateUserTaskModel(WorkflowProcess process) {

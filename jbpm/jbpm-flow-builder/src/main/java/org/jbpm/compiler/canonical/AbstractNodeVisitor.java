@@ -37,6 +37,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
+import org.drools.core.util.KogitoStringUtils;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.process.core.context.variable.Variable;
@@ -135,7 +136,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
                         type,
                         new MethodCallExpr(
                                 new NameExpr("model"),
-                                "get" + StringUtils.capitalize(name))),
+                                "get" + KogitoStringUtils.capitalize(name))),
                 AssignExpr.Operator.ASSIGN);
 
         return new ExpressionStmt(assignExpr);

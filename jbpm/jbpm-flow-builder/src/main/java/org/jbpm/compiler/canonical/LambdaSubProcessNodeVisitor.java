@@ -27,6 +27,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.drools.core.util.KogitoStringUtils;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -201,12 +202,12 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         for (int i = 1; i < elements.length - 1; i++) {
             scope = new MethodCallExpr()
                     .setScope(scope)
-                    .setName("get" + StringUtils.capitalize(elements[i]));
+                    .setName("get" + KogitoStringUtils.capitalize(elements[i]));
         }
 
         return new MethodCallExpr()
                 .setScope(scope)
-                .setName("set" + StringUtils.capitalize(elements[elements.length - 1]))
+                .setName("set" + KogitoStringUtils.capitalize(elements[elements.length - 1]))
                 .addArgument(value);
     }
 
@@ -221,7 +222,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         for (int i = 1; i < elements.length; i++) {
             scope = new MethodCallExpr()
                     .setScope(scope)
-                    .setName("get" + StringUtils.capitalize(elements[i]));
+                    .setName("get" + KogitoStringUtils.capitalize(elements[i]));
         }
 
         return scope;

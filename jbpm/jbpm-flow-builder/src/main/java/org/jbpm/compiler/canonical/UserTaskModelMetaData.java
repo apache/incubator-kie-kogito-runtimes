@@ -43,6 +43,7 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.drools.core.util.KogitoStringUtils;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -88,10 +89,10 @@ public class UserTaskModelMetaData {
         this.humanTaskNode = humanTaskNode;
         this.processId = processId;
 
-        this.inputModelClassSimpleName = StringUtils.capitalize(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_INTPUT_CLASS_SUFFIX);
+        this.inputModelClassSimpleName = KogitoStringUtils.capitalize(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_INTPUT_CLASS_SUFFIX);
         this.inputModelClassName = packageName + '.' + inputModelClassSimpleName;
 
-        this.outputModelClassSimpleName = StringUtils.capitalize(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_OUTTPUT_CLASS_SUFFIX);
+        this.outputModelClassSimpleName = KogitoStringUtils.capitalize(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_OUTTPUT_CLASS_SUFFIX);
         this.outputModelClassName = packageName + '.' + outputModelClassSimpleName;
 
     }
