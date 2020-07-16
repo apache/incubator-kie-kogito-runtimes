@@ -46,6 +46,7 @@ import org.kie.dmn.typesafe.DMNAllTypesIndex;
 import org.kie.dmn.typesafe.DMNTypeSafePackageName;
 import org.kie.dmn.typesafe.DMNTypeSafeTypeGenerator;
 import org.kie.kogito.codegen.AbstractGenerator;
+import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
@@ -134,7 +135,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
     private final List<DMNResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
-    private boolean useMonitoring = false;
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public DecisionCodegen(List<DMNResource> resources) {
         this.resources = resources;
@@ -180,13 +181,13 @@ public class DecisionCodegen extends AbstractGenerator {
             }
             DMNRestResourceGenerator resourceGenerator = new DMNRestResourceGenerator(model, applicationCanonicalName)
                     .withDependencyInjection(annotator)
-                    .withMonitoring(useMonitoring)
+                    .withAddons(addonsConfig)
                     .withStronglyTyped(stronglyTypedEnabled);
             rgs.add(resourceGenerator);
         }
 
         for (DMNRestResourceGenerator resourceGenerator : rgs) {
-            if (useMonitoring) {
+            if (addonsConfig.useMonitoring()) {
                 generateAndStoreGrafanaDashboards(resourceGenerator);
             }
 
@@ -220,8 +221,8 @@ public class DecisionCodegen extends AbstractGenerator {
         Definitions definitions = resourceGenerator.getDmnModel().getDefinitions();
         List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect( toList());
 
-        String operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, resourceGenerator.getNameURL());
-        String domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(domainDashboardDmnTemplate, resourceGenerator.getNameURL(), decisions);
+        String operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, resourceGenerator.getNameURL(), addonsConfig.useTracing());
+        String domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(domainDashboardDmnTemplate, resourceGenerator.getNameURL(), decisions, addonsConfig.useTracing());
 
         generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.RESOURCE,
                                                                     "dashboards/operational-dashboard-" + resourceGenerator.getNameURL() + ".json",
@@ -234,7 +235,7 @@ public class DecisionCodegen extends AbstractGenerator {
     @Override
     public void updateConfig(ConfigGenerator cfg) {
         if (!resources.isEmpty()) {
-            cfg.withDecisionConfig(new DecisionConfigGenerator());
+            cfg.withDecisionConfig(new DecisionConfigGenerator(packageName));
         }
     }
 
@@ -251,13 +252,9 @@ public class DecisionCodegen extends AbstractGenerator {
         return moduleGenerator;
     }
 
-    public DecisionCodegen withMonitoring(boolean useMonitoring) {
-        this.useMonitoring = useMonitoring;
-        return this;
-    }
-
-    public DecisionCodegen withTracing(boolean useTracing) {
-        this.moduleGenerator.withTracing(useTracing);
+    public DecisionCodegen withAddons(AddonsConfig addonsConfig) {
+        this.moduleGenerator.withAddons(addonsConfig);
+        this.addonsConfig = addonsConfig;
         return this;
     }
 }

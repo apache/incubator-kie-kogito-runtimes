@@ -15,6 +15,7 @@
 
 package org.kie.kogito.codegen.decision;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.grafana.JGrafana;
@@ -89,22 +91,31 @@ public class DecisionCodegenTest {
     }
 
     @Test
-    public void GivenADMNModel_WhenMonitoringIsActive_ThenGrafanaDashboardsAreGenerated() throws Exception {
-        DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath()).withMonitoring(true);
-
-        List<GeneratedFile> generatedFiles = codeGenerator.generate();
-
-        List<GeneratedFile> dashboards = generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.RESOURCE).collect(Collectors.toList());
-
-        assertEquals(2, dashboards.size());
+    public void givenADMNModelWhenMonitoringIsActiveThenGrafanaDashboardsAreGenerated() throws Exception {
+        List<GeneratedFile> dashboards = generateTestDashboards(new AddonsConfig().withMonitoring(true));
 
         JGrafana vacationOperationalDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("operational-dashboard-Vacations.json")).findFirst().get().contents()));
 
         assertEquals(6, vacationOperationalDashboard.getDashboard().panels.size());
+        assertEquals(0, vacationOperationalDashboard.getDashboard().links.size());
 
         JGrafana vacationDomainDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("domain-dashboard-Vacations.json")).findFirst().get().contents()));
 
         assertEquals(1, vacationDomainDashboard.getDashboard().panels.size());
+        assertEquals(0, vacationDomainDashboard.getDashboard().links.size());
+    }
+
+    @Test
+    public void givenADMNModelWhenMonitoringAndTracingAreActiveThenTheGrafanaDashboardsContainsTheAuditUILink() throws Exception {
+        List<GeneratedFile> dashboards = generateTestDashboards(new AddonsConfig().withMonitoring(true).withTracing(true));
+
+        JGrafana vacationOperationalDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("operational-dashboard-Vacations.json")).findFirst().get().contents()));
+
+        assertEquals(1, vacationOperationalDashboard.getDashboard().links.size());
+
+        JGrafana vacationDomainDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("domain-dashboard-Vacations.json")).findFirst().get().contents()));
+
+        assertEquals(1, vacationDomainDashboard.getDashboard().links.size());
     }
 
     @Test
@@ -125,5 +136,18 @@ public class DecisionCodegenTest {
             codeGenerator.generate();
         });
         assertEquals("Model name should not be empty", re.getMessage());
+    }
+
+    private List<GeneratedFile> generateTestDashboards(AddonsConfig addonsConfig) throws IOException {
+        DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath())
+                .withAddons(addonsConfig);
+
+        List<GeneratedFile> generatedFiles = codeGenerator.generate();
+
+        List<GeneratedFile> dashboards = generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.RESOURCE).collect(Collectors.toList());
+
+        assertEquals(2, dashboards.size());
+
+        return dashboards;
     }
 }

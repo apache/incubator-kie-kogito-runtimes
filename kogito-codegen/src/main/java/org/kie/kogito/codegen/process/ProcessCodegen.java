@@ -58,6 +58,7 @@ import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.AbstractGenerator;
+import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
@@ -103,6 +104,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private ClassLoader contextClassLoader;
     private ResourceGeneratorFactory resourceGeneratorFactory;
+    private String packageName;
 
     public static ProcessCodegen ofJar(Path... jarPaths) {
         List<Process> processes = new ArrayList<>();
@@ -204,7 +206,7 @@ public class ProcessCodegen extends AbstractGenerator {
     private final Map<String, WorkflowProcess> processes;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
 
-    private boolean persistence;
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public ProcessCodegen(Collection<? extends Process> processes) {
         this.processes = new HashMap<>();
@@ -232,6 +234,7 @@ public class ProcessCodegen extends AbstractGenerator {
     public void setPackageName(String packageName) {
         this.moduleGenerator = new ProcessesContainerGenerator(packageName);
         this.applicationCanonicalName = packageName + ".Application";
+        this.packageName = packageName;
     }
 
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
@@ -243,8 +246,8 @@ public class ProcessCodegen extends AbstractGenerator {
         return moduleGenerator;
     }
 
-    public ProcessCodegen withPersistence(boolean persistence) {
-        this.persistence = persistence;
+    public ProcessCodegen withAddons(AddonsConfig addonsConfig) {
+        this.addonsConfig = addonsConfig;
         return this;
     }
 
@@ -335,7 +338,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     applicationCanonicalName
             )
                     .withDependencyInjection(annotator)
-                    .withPersistence(persistence);
+                    .withAddons(addonsConfig);
 
             ProcessInstanceGenerator pi = new ProcessInstanceGenerator(
                     workFlowProcess.getPackageName(),
@@ -477,7 +480,7 @@ public class ProcessCodegen extends AbstractGenerator {
     public void updateConfig(ConfigGenerator cfg) {
         if (!processes.isEmpty()) {
             cfg.withProcessConfig(
-                    new ProcessConfigGenerator());
+                    new ProcessConfigGenerator(packageName));
         }
     }
 

@@ -66,7 +66,6 @@ public class AbstractCodegenTest {
         JAVA,
         PREDICTION
     }
-
     private TestClassLoader classloader;
 
     private static final JavaCompiler JAVA_COMPILER = JavaCompilerFactory.INSTANCE.loadCompiler(JavaDialectConfiguration.CompilerType.NATIVE, "11");
