@@ -28,7 +28,6 @@ import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.event.ProcessEventSupport;
 import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.kogito.jobs.InMemoryJobService;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.MarshallerWriteContext;
 import org.drools.core.marshalling.impl.ProtobufMessages.ActionQueue.Action;
@@ -75,6 +74,7 @@ import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
+import org.kie.services.jobs.impl.InMemoryJobService;
 
 public class ProcessRuntimeImpl implements InternalProcessRuntime {
 
