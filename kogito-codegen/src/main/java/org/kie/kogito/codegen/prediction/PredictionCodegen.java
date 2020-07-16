@@ -47,12 +47,14 @@ import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.kogito.codegen.AbstractGenerator;
+import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.decision.DMNRestResourceGenerator;
+import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.rules.RuleCodegenError;
@@ -82,6 +84,7 @@ public class PredictionCodegen extends AbstractGenerator {
     private DependencyInjectionAnnotator annotator;
     private PredictionContainerGenerator moduleGenerator;
     private boolean useMonitoring = false;
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public PredictionCodegen(List<PMMLResource> resources) {
         this.resources = resources;
@@ -156,7 +159,7 @@ public class PredictionCodegen extends AbstractGenerator {
     @Override
     public void updateConfig(ConfigGenerator cfg) {
         if (!resources.isEmpty()) {
-            cfg.withPredictionConfig(new PredictionConfigGenerator());
+            cfg.withPredictionConfig(new PredictionConfigGenerator(packageName));
         }
     }
 
@@ -169,13 +172,9 @@ public class PredictionCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    public PredictionCodegen withMonitoring(boolean useMonitoring) {
-        this.useMonitoring = useMonitoring;
-        return this;
-    }
-
-    public PredictionCodegen withTracing(boolean useTracing) {
-        this.moduleGenerator.withTracing(useTracing);
+    public PredictionCodegen withAddons(AddonsConfig addonsConfig) {
+        this.moduleGenerator.withAddons(addonsConfig);
+        this.addonsConfig = addonsConfig;
         return this;
     }
 

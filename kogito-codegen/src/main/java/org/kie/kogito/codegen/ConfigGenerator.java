@@ -130,6 +130,7 @@ public class ConfigGenerator {
         generateProcessConfigDescriptor().ifPresent(generatedFiles::add);
         generateRuleConfigDescriptor().ifPresent(generatedFiles::add);
         generateDecisionConfigDescriptor().ifPresent(generatedFiles::add);
+        generatePredictionConfigDescriptor().ifPresent(generatedFiles::add);
 
         return generatedFiles;
     }
@@ -161,6 +162,16 @@ public class ConfigGenerator {
         Optional<CompilationUnit> compilationUnit = decisionConfig.compilationUnit();
         return compilationUnit.map(c -> new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
                                                           decisionConfig.generatedFilePath(),
+                                                          log(c.toString()).getBytes(StandardCharsets.UTF_8)));
+    }
+
+    private Optional<GeneratedFile> generatePredictionConfigDescriptor() {
+        if (predictionConfig == null) {
+            return Optional.empty();
+        }
+        Optional<CompilationUnit> compilationUnit = predictionConfig.compilationUnit();
+        return compilationUnit.map(c -> new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
+                                                          predictionConfig.generatedFilePath(),
                                                           log(c.toString()).getBytes(StandardCharsets.UTF_8)));
     }
 

@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import org.drools.core.config.StaticRuleConfig;
 import org.kie.kogito.decision.DecisionConfig;
+import org.kie.kogito.pmml.config.StaticPredictionConfig;
 import org.kie.kogito.prediction.PredictionConfig;
 import org.kie.kogito.dmn.config.StaticDecisionConfig;
 import org.kie.kogito.process.ProcessConfig;
@@ -18,7 +19,7 @@ public class ApplicationConfig implements org.kie.kogito.Config {
     private ProcessConfig processConfig = new StaticProcessConfig();
     private RuleConfig ruleConfig = new StaticRuleConfig();
     private DecisionConfig decisionConfig = new StaticDecisionConfig();
-    protected PredictionConfig predictionConfig;
+    private PredictionConfig predictionConfig = new StaticPredictionConfig();
 
     @Override
     public ProcessConfig process() {

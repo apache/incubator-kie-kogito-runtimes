@@ -20,15 +20,25 @@ import java.util.List;
 
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import org.kie.kogito.codegen.AbstractConfigGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.pmml.config.StaticPredictionConfig;
 
-public class PredictionConfigGenerator {
+public class PredictionConfigGenerator extends AbstractConfigGenerator  {
 
 
     private DependencyInjectionAnnotator annotator;
-
     private List<BodyDeclaration<?>> members = new ArrayList<>();
+
+    private static final String RESOURCE_CDI = "/class-templates/config/CdiPredictionConfigTemplate.java";
+    private static final String RESOURCE_SPRING = "/class-templates/config/SpringPredictionConfigTemplate.java";
+
+    public PredictionConfigGenerator(String packageName) {
+        super(packageName,
+              "PredictionConfig",
+              RESOURCE_CDI,
+              RESOURCE_SPRING);
+    }
 
     public ObjectCreationExpr newInstance() {
         return new ObjectCreationExpr().setType(StaticPredictionConfig.class.getCanonicalName());
@@ -38,11 +48,5 @@ public class PredictionConfigGenerator {
 
         return members;
     }
-
-    public PredictionConfigGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        return this;
-    }
-
 
 }

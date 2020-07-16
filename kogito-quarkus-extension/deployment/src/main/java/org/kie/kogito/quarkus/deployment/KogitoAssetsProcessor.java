@@ -75,9 +75,12 @@ import org.slf4j.LoggerFactory;
 
 public class KogitoAssetsProcessor {
 
-    private static final String generatedResourcesDir = System.getProperty("kogito.codegen.resources.directory", "target/generated-resources/kogito/");
+    private static final String generatedResourcesDir = System.getProperty("kogito.codegen.resources.directory",
+                                                                           "target/generated-resources/kogito/");
     private static final String generatedSourcesDir = "target/generated-sources/kogito/";
-    private static final String generatedCustomizableSourcesDir = System.getProperty("kogito.codegen.sources.directory", "target/generated-sources/kogito/");
+    private static final String generatedCustomizableSourcesDir = System.getProperty("kogito.codegen.sources" +
+                                                                                             ".directory", "target" +
+            "/generated-sources/kogito/");
     private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
     private final transient String generatedClassesDir = System.getProperty("quarkus.debug.generated-classes-dir");
     private final transient String appPackageName = "org.kie.kogito.app";
@@ -100,7 +103,8 @@ public class KogitoAssetsProcessor {
                                          IndexView index,
                                          LaunchModeBuildItem launchMode,
                                          BuildProducer<NativeImageResourceBuildItem> resource,
-                                         CurateOutcomeBuildItem curateOutcomeBuildItem) throws IOException, BootstrapDependencyProcessingException {
+                                         CurateOutcomeBuildItem curateOutcomeBuildItem) throws IOException,
+            BootstrapDependencyProcessingException {
 
         ClassInfo persistenceClass = index
                 .getClassByName(createDotName(persistenceFactoryClass));
@@ -115,11 +119,13 @@ public class KogitoAssetsProcessor {
             }
         }
 
-        Collection<GeneratedFile> generatedFiles = getGeneratedPersistenceFiles( appPaths, index, usePersistence, parameters );
+        Collection<GeneratedFile> generatedFiles = getGeneratedPersistenceFiles(appPaths, index, usePersistence,
+                                                                                parameters);
 
         if (!generatedFiles.isEmpty()) {
             MemoryFileSystem trgMfs = new MemoryFileSystem();
-            CompilationResult result = compile(appPaths, trgMfs, curateOutcomeBuildItem.getEffectiveModel(), generatedFiles, launchMode.getLaunchMode());
+            CompilationResult result = compile(appPaths, trgMfs, curateOutcomeBuildItem.getEffectiveModel(),
+                                               generatedFiles, launchMode.getLaunchMode());
             register(appPaths, trgMfs, generatedBeans, GeneratedBeanBuildItem::new, launchMode.getLaunchMode(), result);
         }
 
@@ -128,40 +134,41 @@ public class KogitoAssetsProcessor {
         }
     }
 
-    private Collection<GeneratedFile> getGeneratedPersistenceFiles( AppPaths appPaths, IndexView index, boolean usePersistence, List<String> parameters ) {
+    private Collection<GeneratedFile> getGeneratedPersistenceFiles(AppPaths appPaths, IndexView index,
+                                                                   boolean usePersistence, List<String> parameters) {
         GeneratorContext context = buildContext(appPaths, index);
 
         Collection<ClassInfo> modelClasses = index
-                .getAllKnownImplementors(createDotName( Model.class.getCanonicalName()));
+                .getAllKnownImplementors(createDotName(Model.class.getCanonicalName()));
 
         Collection<GeneratedFile> generatedFiles = new ArrayList<>();
 
         for (Path projectPath : appPaths.projectPaths) {
-            PersistenceGenerator persistenceGenerator = new PersistenceGenerator( new File( projectPath.toFile(), "target" ),
-                    modelClasses, usePersistence,
-                    new JandexProtoGenerator( index, createDotName( Generated.class.getCanonicalName() ),
-                            createDotName( VariableInfo.class.getCanonicalName() ) ),
-                    parameters );
-            persistenceGenerator.setDependencyInjection( new CDIDependencyInjectionAnnotator() );
-            persistenceGenerator.setPackageName( appPackageName );
-            persistenceGenerator.setContext( context );
+            PersistenceGenerator persistenceGenerator = new PersistenceGenerator(new File(projectPath.toFile(),
+                                                                                          "target"),
+                                                                                 modelClasses, usePersistence,
+                                                                                 new JandexProtoGenerator(index,
+                                                                                                          createDotName(Generated.class.getCanonicalName()),
+                                                                                                          createDotName(VariableInfo.class.getCanonicalName())),
+                                                                                 parameters);
+            persistenceGenerator.setDependencyInjection(new CDIDependencyInjectionAnnotator());
+            persistenceGenerator.setPackageName(appPackageName);
+            persistenceGenerator.setContext(context);
 
-            generatedFiles.addAll( persistenceGenerator.generate() );
+            generatedFiles.addAll(persistenceGenerator.generate());
         }
         return generatedFiles;
     }
 
-
     private Collection<GeneratedFile> getJsonSchemaFiles(Index index, MemoryFileSystem trgMfs) throws IOException {
         MemoryClassLoader cl = new MemoryClassLoader(trgMfs, Thread.currentThread().getContextClassLoader());
         return new JsonSchemaGenerator.Builder(index.getAnnotations(createDotName(UserTask.class.getCanonicalName())).stream().map(instance -> {
-                try {
-                    return cl.loadClass(instance.target().toString());
-                } catch (ClassNotFoundException e) {
-                    throw new IllegalStateException(e);
-                }
+            try {
+                return cl.loadClass(instance.target().toString());
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException(e);
+            }
         })).withGenSchemaPredicate(x -> true).withSchemaVersion(System.getProperty("kogito.jsonSchema.version")).build().generate();
-
     }
 
     @BuildStep
@@ -169,14 +176,17 @@ public class KogitoAssetsProcessor {
         List<ReflectiveHierarchyIgnoreWarningBuildItem> result = new ArrayList<>();
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.api.builder.Message$Level")));
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNContext")));
-        result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNDecisionResult")));
+        result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core" +
+                                                                                       ".DMNDecisionResult")));
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(
                 createDotName("org.kie.dmn.api.core.DMNDecisionResult$DecisionEvaluationStatus")));
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNMessage")));
-        result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNMessage$Severity")));
+        result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core" +
+                                                                                       ".DMNMessage$Severity")));
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNMessageType")));
         result.add(
-                new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.feel.runtime.events.FEELEvent")));
+                new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.feel.runtime.events" +
+                                                                                    ".FEELEvent")));
         return result;
     }
 
@@ -193,18 +203,20 @@ public class KogitoAssetsProcessor {
                               LiveReloadBuildItem liveReload,
                               BuildProducer<NativeImageResourceBuildItem> resource,
                               BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-                              CurateOutcomeBuildItem curateOutcomeBuildItem) throws IOException, BootstrapDependencyProcessingException {
+                              CurateOutcomeBuildItem curateOutcomeBuildItem) throws IOException,
+            BootstrapDependencyProcessingException {
 
         if (liveReload.isLiveReload()) {
             return;
         }
 
-        AppPaths appPaths = new AppPaths( root.getPaths() );
+        AppPaths appPaths = new AppPaths(root.getPaths());
 
         ApplicationGenerator appGen = createApplicationGenerator(appPaths, combinedIndexBuildItem);
         Collection<GeneratedFile> generatedFiles = appGen.generate();
 
-        Collection<GeneratedFile> javaFiles = generatedFiles.stream().filter( f -> f.relativePath().endsWith( ".java" ) ).collect( Collectors.toCollection( ArrayList::new ));
+        Collection<GeneratedFile> javaFiles =
+                generatedFiles.stream().filter(f -> f.relativePath().endsWith(".java")).collect(Collectors.toCollection(ArrayList::new));
         writeGeneratedFiles(appPaths, generatedFiles);
 
         if (!javaFiles.isEmpty()) {
@@ -213,17 +225,18 @@ public class KogitoAssetsProcessor {
             Set<DotName> kogitoIndex = new HashSet<>();
 
             MemoryFileSystem trgMfs = new MemoryFileSystem();
-            CompilationResult result = compile( appPaths, trgMfs, curateOutcomeBuildItem.getEffectiveModel(), javaFiles, launchMode.getLaunchMode() );
+            CompilationResult result = compile(appPaths, trgMfs, curateOutcomeBuildItem.getEffectiveModel(),
+                                               javaFiles, launchMode.getLaunchMode());
             register(appPaths, trgMfs, generatedBeans,
-                    (className, data) -> generateBeanBuildItem( combinedIndexBuildItem, kogitoIndexer, kogitoIndex, className, data ),
-                    launchMode.getLaunchMode(), result);
-
+                     (className, data) -> generateBeanBuildItem(combinedIndexBuildItem, kogitoIndexer, kogitoIndex,
+                                                                className, data),
+                     launchMode.getLaunchMode(), result);
 
             Index index = kogitoIndexer.complete();
 
-            generatePersistenceInfo(appPaths, generatedBeans, CompositeIndex.create(combinedIndexBuildItem.getIndex(), index),
-                    launchMode, resource, curateOutcomeBuildItem);
-
+            generatePersistenceInfo(appPaths, generatedBeans, CompositeIndex.create(combinedIndexBuildItem.getIndex()
+                    , index),
+                                    launchMode, resource, curateOutcomeBuildItem);
 
             reflectiveClass.produce(
                     new ReflectiveClassBuildItem(true, true, "org.kie.kogito.event.AbstractDataEvent"));
@@ -232,19 +245,26 @@ public class KogitoAssetsProcessor {
             reflectiveClass.produce(
                     new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.ProcessInstanceDataEvent"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.VariableInstanceDataEvent"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event" +
+                            ".VariableInstanceDataEvent"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.ProcessInstanceEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
+                            ".ProcessInstanceEventBody"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.NodeInstanceEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
+                            ".NodeInstanceEventBody"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.ProcessErrorEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
+                            ".ProcessErrorEventBody"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.VariableInstanceEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
+                            ".VariableInstanceEventBody"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.UserTaskInstanceDataEvent"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event" +
+                            ".UserTaskInstanceDataEvent"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskInstanceEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
+                            ".UserTaskInstanceEventBody"));
 
             Collection<ClassInfo> dataEvents = index
                     .getAllKnownSubclasses(createDotName("org.kie.kogito.event.AbstractDataEvent"));
@@ -254,11 +274,12 @@ public class KogitoAssetsProcessor {
 
             Collection<GeneratedFile> jsonFiles = getJsonSchemaFiles(index, trgMfs);
             Path relativePath = JsonSchemaUtil.getJsonDir();
-            Path jsonSchemaPath = appPaths.getFirstProjectPath().resolve("target").resolve("classes").resolve(relativePath);
+            Path jsonSchemaPath =
+                    appPaths.getFirstProjectPath().resolve("target").resolve("classes").resolve(relativePath);
             Files.createDirectories(jsonSchemaPath);
-            
+
             for (GeneratedFile jsonFile : jsonFiles) {
-                Files.write(jsonSchemaPath.resolve(jsonFile.relativePath()),jsonFile.contents());
+                Files.write(jsonSchemaPath.resolve(jsonFile.relativePath()), jsonFile.contents());
                 resource.produce(new NativeImageResourceBuildItem(relativePath.resolve(jsonFile.relativePath()).toString()));
             }
         }
@@ -266,29 +287,31 @@ public class KogitoAssetsProcessor {
 
     private void writeGeneratedFiles(AppPaths appPaths, Collection<GeneratedFile> resourceFiles) {
         for (Path projectPath : appPaths.projectPaths) {
-            String restResourcePath = projectPath.resolve( generatedCustomizableSourcesDir ).toString();
-            String resourcePath = projectPath.resolve( generatedResourcesDir ).toString();
-            String sourcePath = projectPath.resolve( generatedSourcesDir ).toString();
+            String restResourcePath = projectPath.resolve(generatedCustomizableSourcesDir).toString();
+            String resourcePath = projectPath.resolve(generatedResourcesDir).toString();
+            String sourcePath = projectPath.resolve(generatedSourcesDir).toString();
 
             for (GeneratedFile f : resourceFiles) {
                 try {
-                    if ( f.getType() == GeneratedFile.Type.RESOURCE ) {
-                        writeGeneratedFile( f, resourcePath );
+                    if (f.getType() == GeneratedFile.Type.RESOURCE) {
+                        writeGeneratedFile(f, resourcePath);
                     } else if (f.getType().isCustomizable()) {
-                        writeGeneratedFile( f, restResourcePath );
+                        writeGeneratedFile(f, restResourcePath);
                     } else {
-                        writeGeneratedFile( f, sourcePath );
+                        writeGeneratedFile(f, sourcePath);
                     }
                 } catch (IOException e) {
-                    logger.warn( String.format( "Could not write file '%s'", f.toString() ), e );
+                    logger.warn(String.format("Could not write file '%s'", f.toString()), e);
                 }
             }
         }
     }
 
-    private GeneratedBeanBuildItem generateBeanBuildItem( CombinedIndexBuildItem combinedIndexBuildItem, Indexer kogitoIndexer, Set<DotName> kogitoIndex, String className, byte[] data ) {
+    private GeneratedBeanBuildItem generateBeanBuildItem(CombinedIndexBuildItem combinedIndexBuildItem,
+                                                         Indexer kogitoIndexer, Set<DotName> kogitoIndex,
+                                                         String className, byte[] data) {
         IndexingUtil.indexClass(className, kogitoIndexer, combinedIndexBuildItem.getIndex(), kogitoIndex,
-                Thread.currentThread().getContextClassLoader(), data);
+                                Thread.currentThread().getContextClassLoader(), data);
         return new GeneratedBeanBuildItem(className, data);
     }
 
@@ -301,11 +324,11 @@ public class KogitoAssetsProcessor {
         JavaCompilerSettings compilerSettings = javaCompiler.createDefaultSettings();
         compilerSettings.addOption("-proc:none"); // force disable annotation processing
         for (Path classPath : appPaths.classesPaths) {
-            compilerSettings.addClasspath( classPath.toString() );
+            compilerSettings.addClasspath(classPath.toString());
         }
         if (appModel != null) {
             for (AppDependency i : appModel.getUserDependencies()) {
-                compilerSettings.addClasspath( i.getArtifact().getPaths().getSinglePath().toAbsolutePath().toString() );
+                compilerSettings.addClasspath(i.getArtifact().getPaths().getSinglePath().toAbsolutePath().toString());
             }
         }
 
@@ -329,7 +352,7 @@ public class KogitoAssetsProcessor {
         }
 
         return javaCompiler.compile(sources, srcMfs, trgMfs,
-                Thread.currentThread().getContextClassLoader(), compilerSettings);
+                                    Thread.currentThread().getContextClassLoader(), compilerSettings);
     }
 
     private void register(AppPaths appPaths, MemoryFileSystem trgMfs,
@@ -354,13 +377,13 @@ public class KogitoAssetsProcessor {
             generatedBeans.produce(bif.apply(className, data));
 
             if (launchMode == LaunchMode.DEVELOPMENT) {
-                Path path = writeFile( Paths.get( appPaths.getFirstClassesPath().toString(), fileName ).toString(), data );
+                Path path = writeFile(Paths.get(appPaths.getFirstClassesPath().toString(), fileName).toString(), data);
 
-                String sourceFile = path.toString().replaceFirst( "\\.class", ".java" );
-                if ( sourceFile.contains( "$" ) ) {
-                    sourceFile = sourceFile.substring( 0, sourceFile.indexOf( "$" ) ) + ".java";
+                String sourceFile = path.toString().replaceFirst("\\.class", ".java");
+                if (sourceFile.contains("$")) {
+                    sourceFile = sourceFile.substring(0, sourceFile.indexOf("$")) + ".java";
                 }
-                KogitoCompilationProvider.classToSource.put( path, Paths.get( sourceFile ) );
+                KogitoCompilationProvider.classToSource.put(path, Paths.get(sourceFile));
             }
         }
     }
@@ -375,7 +398,8 @@ public class KogitoAssetsProcessor {
         return path;
     }
 
-    private ApplicationGenerator createApplicationGenerator(AppPaths appPaths, CombinedIndexBuildItem combinedIndexBuildItem) throws IOException {
+    private ApplicationGenerator createApplicationGenerator(AppPaths appPaths,
+                                                            CombinedIndexBuildItem combinedIndexBuildItem) throws IOException {
 
         boolean usePersistence = combinedIndexBuildItem.getIndex()
                 .getClassByName(createDotName(persistenceFactoryClass)) != null;
@@ -391,55 +415,58 @@ public class KogitoAssetsProcessor {
 
         GeneratorContext context = buildContext(appPaths, combinedIndexBuildItem.getIndex());
 
-        ApplicationGenerator appGen = new ApplicationGenerator(appPackageName, new File(appPaths.getFirstProjectPath().toFile(), "target"))
+        ApplicationGenerator appGen = new ApplicationGenerator(appPackageName,
+                                                               new File(appPaths.getFirstProjectPath().toFile(),
+                                                                        "target"))
                 .withDependencyInjection(new CDIDependencyInjectionAnnotator())
                 .withAddons(addonsConfig)
                 .withGeneratorContext(context);
 
         addProcessGenerator(appPaths, addonsConfig, appGen);
         addRuleGenerator(appPaths, appGen, addonsConfig);
-        addPredictionGenerator(appPaths, appGen, useMonitoring, useTracing);
+        addPredictionGenerator(appPaths, appGen, addonsConfig);
         addDecisionGenerator(appPaths, appGen, addonsConfig);
 
         return appGen;
     }
 
-    private void addRuleGenerator( AppPaths appPaths, ApplicationGenerator appGen, AddonsConfig addonsConfig ) throws IOException {
+    private void addRuleGenerator(AppPaths appPaths, ApplicationGenerator appGen, AddonsConfig addonsConfig) throws IOException {
         IncrementalRuleCodegen generator = appPaths.isJar ?
                 IncrementalRuleCodegen.ofJar(appPaths.getJarPath()) :
                 IncrementalRuleCodegen.ofPath(appPaths.getSourcePaths());
 
         appGen.withGenerator(generator)
-                .withKModule( findKieModuleModel( appPaths ) )
+                .withKModule(findKieModuleModel(appPaths))
                 .withAddons(addonsConfig)
                 .withClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
-    private KieModuleModel findKieModuleModel( AppPaths appPaths ) throws IOException {
-        for ( Path resourcePath : appPaths.getResourcePaths() ) {
-            Path moduleXmlPath = resourcePath.resolve( KieModuleModelImpl.KMODULE_JAR_PATH );
-            if ( Files.exists( moduleXmlPath ) ) {
+    private KieModuleModel findKieModuleModel(AppPaths appPaths) throws IOException {
+        for (Path resourcePath : appPaths.getResourcePaths()) {
+            Path moduleXmlPath = resourcePath.resolve(KieModuleModelImpl.KMODULE_JAR_PATH);
+            if (Files.exists(moduleXmlPath)) {
                 return KieModuleModelImpl.fromXML(
                         new ByteArrayInputStream(
-                                Files.readAllBytes( moduleXmlPath ) ) );
+                                Files.readAllBytes(moduleXmlPath)));
             }
         }
 
         return KieModuleModelImpl.fromXML(
-                "<kmodule xmlns=\"http://www.drools.org/xsd/kmodule\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>");
+                "<kmodule xmlns=\"http://www.drools.org/xsd/kmodule\" xmlns:xsi=\"http://www.w3" +
+                        ".org/2001/XMLSchema-instance\"/>");
     }
 
-    private void addProcessGenerator( AppPaths appPaths, AddonsConfig addonsConfig, ApplicationGenerator appGen ) throws IOException {
+    private void addProcessGenerator(AppPaths appPaths, AddonsConfig addonsConfig, ApplicationGenerator appGen) throws IOException {
         ProcessCodegen generator = appPaths.isJar ?
                 ProcessCodegen.ofJar(appPaths.getJarPath()) :
                 ProcessCodegen.ofPath(appPaths.getProjectPaths());
 
-        appGen.withGenerator( generator )
+        appGen.withGenerator(generator)
                 .withAddons(addonsConfig)
                 .withClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
-    private void addPredictionGenerator( AppPaths appPaths, ApplicationGenerator appGen, AddonsConfig addonsConfig ) throws IOException {
+    private void addPredictionGenerator(AppPaths appPaths, ApplicationGenerator appGen, AddonsConfig addonsConfig) throws IOException {
         PredictionCodegen generator = appPaths.isJar ?
                 PredictionCodegen.ofJar(appPaths.getJarPath()) :
                 PredictionCodegen.ofPath(appPaths.getResourcePaths());
@@ -447,7 +474,7 @@ public class KogitoAssetsProcessor {
         appGen.withGenerator(generator.withAddons(addonsConfig));
     }
 
-    private void addDecisionGenerator( AppPaths appPaths, ApplicationGenerator appGen, AddonsConfig addonsConfig ) throws IOException {
+    private void addDecisionGenerator(AppPaths appPaths, ApplicationGenerator appGen, AddonsConfig addonsConfig) throws IOException {
         DecisionCodegen generator = appPaths.isJar ?
                 DecisionCodegen.ofJar(appPaths.getJarPath()) :
                 DecisionCodegen.ofPath(appPaths.getResourcePaths());
@@ -525,7 +552,6 @@ public class KogitoAssetsProcessor {
         context.withBuildContext(new QuarkusKogitoBuildContext(className -> {
             DotName classDotName = createDotName(className);
             return !index.getAnnotations(classDotName).isEmpty() || index.getClassByName(classDotName) != null;
-
         }));
 
         return context;
@@ -538,28 +564,28 @@ public class KogitoAssetsProcessor {
 
         private boolean isJar = false;
 
-        private AppPaths( PathsCollection paths ) {
+        private AppPaths(PathsCollection paths) {
             for (Path path : paths) {
-                PathType pathType = getPathType( path );
+                PathType pathType = getPathType(path);
                 switch (pathType) {
                     case CLASSES: {
-                        classesPaths.add( path );
-                        projectPaths.add( path.getParent().getParent() );
+                        classesPaths.add(path);
+                        projectPaths.add(path.getParent().getParent());
                         break;
                     }
                     case TEST_CLASSES: {
-                        projectPaths.add( path.getParent().getParent() );
+                        projectPaths.add(path.getParent().getParent());
                         break;
                     }
                     case JAR: {
                         isJar = true;
-                        classesPaths.add( path );
-                        projectPaths.add( path.getParent().getParent() );
+                        classesPaths.add(path);
+                        projectPaths.add(path.getParent().getParent());
                         break;
                     }
                     case UNKNOWN: {
-                        classesPaths.add( path );
-                        projectPaths.add( path );
+                        classesPaths.add(path);
+                        projectPaths.add(path);
                         break;
                     }
                 }
@@ -571,34 +597,34 @@ public class KogitoAssetsProcessor {
         }
 
         public Path getFirstClassesPath() {
-            return classesPaths.get( 0 );
+            return classesPaths.get(0);
         }
 
         public Path[] getJarPath() {
             if (!isJar) {
                 throw new IllegalStateException("Not a jar");
             }
-            return classesPaths.toArray( new Path[classesPaths.size()] );
+            return classesPaths.toArray(new Path[classesPaths.size()]);
         }
 
         public File[] getResourceFiles() {
-            return projectPaths.stream().map( p -> p.resolve("src/main/resources").toFile() ).toArray( File[]::new );
+            return projectPaths.stream().map(p -> p.resolve("src/main/resources").toFile()).toArray(File[]::new);
         }
 
         public Path[] getResourcePaths() {
-            return transformPaths( projectPaths, p -> p.resolve("src/main/resources") );
+            return transformPaths(projectPaths, p -> p.resolve("src/main/resources"));
         }
 
         public Path[] getSourcePaths() {
-            return transformPaths( projectPaths, p -> p.resolve("src") );
+            return transformPaths(projectPaths, p -> p.resolve("src"));
         }
 
         public Path[] getProjectPaths() {
-            return transformPaths( projectPaths, Function.identity() );
+            return transformPaths(projectPaths, Function.identity());
         }
 
-        private Path[] transformPaths( Collection<Path> paths, Function<Path, Path> f ) {
-            return paths.stream().map( f ).toArray( Path[]::new );
+        private Path[] transformPaths(Collection<Path> paths, Function<Path, Path> f) {
+            return paths.stream().map(f).toArray(Path[]::new);
         }
 
         private PathType getPathType(Path archiveLocation) {
@@ -616,7 +642,10 @@ public class KogitoAssetsProcessor {
         }
 
         private enum PathType {
-            CLASSES, TEST_CLASSES, JAR, UNKNOWN
+            CLASSES,
+            TEST_CLASSES,
+            JAR,
+            UNKNOWN
         }
     }
 }

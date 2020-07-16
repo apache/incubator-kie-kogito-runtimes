@@ -37,6 +37,7 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import org.kie.kogito.codegen.AbstractApplicationSection;
+import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.dmn.DmnExecutionIdSupplier;
 import org.kie.kogito.prediction.PredictionModels;
 
@@ -51,6 +52,7 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
     private String applicationCanonicalName;
     private final List<PMMLResource> resources;
     private boolean useTracing = false;
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public PredictionContainerGenerator(String applicationCanonicalName, List<PMMLResource> resources) {
         super("PredictionModels", "predictionModels", PredictionModels.class);
@@ -58,8 +60,8 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
         this.resources = resources;
     }
 
-    public PredictionContainerGenerator withTracing(boolean useTracing) {
-        this.useTracing = useTracing;
+    public PredictionContainerGenerator withAddons(AddonsConfig addonsConfig) {
+        this.addonsConfig = addonsConfig;
         return this;
     }
 

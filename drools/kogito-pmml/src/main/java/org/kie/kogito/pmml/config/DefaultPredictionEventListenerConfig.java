@@ -15,23 +15,12 @@
 
 package org.kie.kogito.pmml.config;
 
-import org.kie.kogito.prediction.PredictionConfig;
 import org.kie.kogito.prediction.PredictionEventListenerConfig;
 
-public class StaticPredictionConfig implements PredictionConfig {
+public class DefaultPredictionEventListenerConfig implements PredictionEventListenerConfig {
 
-    private final PredictionEventListenerConfig predictionEventListeners;
-
-    public StaticPredictionConfig(PredictionEventListenerConfig predictionEventListeners) {
-        this.predictionEventListeners = predictionEventListeners;
+    public DefaultPredictionEventListenerConfig() {
     }
 
-    public StaticPredictionConfig() {
-        this(new DefaultPredictionEventListenerConfig());
-    }
 
-    @Override
-    public PredictionEventListenerConfig predictionEventListeners() {
-        return predictionEventListeners;
-    }
 }
