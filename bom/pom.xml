@@ -645,6 +645,12 @@
       <!-- PMML -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-pmml-dependencies</artifactId>
+        <type>pom</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-pmml</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -726,26 +732,6 @@
         <artifactId>jbpm-serverless-workflow</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
-      </dependency>
-
-      <!-- PMML -->
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-pmml</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-pmml</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-pmml</artifactId>
-        <version>${project.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
       </dependency>
 
       <!-- spring boot starter -->

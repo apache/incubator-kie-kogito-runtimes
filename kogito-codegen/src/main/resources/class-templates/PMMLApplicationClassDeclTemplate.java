@@ -18,6 +18,7 @@ public class PredictionModels implements org.kie.kogito.prediction.PredictionMod
     }
 
     private org.kie.pmml.evaluator.api.executor.PMMLRuntime getPMMLRuntime(java.lang.String modelName) {
+        String sanitizedModelName = org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedPackageName(modelName);
         return pmmlRuntimes.values().stream()
                 .filter(pmmlRuntime ->  pmmlRuntime.getModels().stream().anyMatch(kiePMMLModel -> {
                     String originalSanitizedModelName = org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedPackageName(kiePMMLModel.getName());
