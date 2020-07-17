@@ -42,8 +42,24 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
         super(id, kBase, handleFactory, propagationContext, config, agenda, environment);
     }
 
+    @Override
+    public ProcessInstance getProcessInstance(String processInstanceId) {
+        return getProcessRuntime().getProcessInstance( processInstanceId );
+    }
+
+    @Override
     public ProcessInstance startProcessInstance(String processInstanceId) {
         return getProcessRuntime().startProcessInstance( processInstanceId );
+    }
+
+    @Override
+    public void abortProcessInstance(String processInstanceId) {
+        getProcessRuntime().abortProcessInstance( processInstanceId );
+    }
+
+    @Override
+    public void signalEvent(String type, Object event, String processInstanceId) {
+        getProcessRuntime().signalEvent( type, event, processInstanceId );
     }
 
     public Application getApplication() {

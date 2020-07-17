@@ -27,9 +27,9 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
-import org.drools.core.KogitoInternalAgenda;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.core.common.KogitoInternalAgenda;
 import org.drools.core.spi.ProcessContext;
 import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.Context;

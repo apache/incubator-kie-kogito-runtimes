@@ -21,4 +21,14 @@ public interface KogitoInternalAgenda
     InternalAgenda {
 
     boolean isRuleActiveInRuleFlowGroup(String ruleflowGroupName, String ruleName, String processInstanceId);
+
+    /**
+     * Activates the <code>RuleFlowGroup</code> with the given name.
+     * All activations in the given <code>RuleFlowGroup</code> are added to the agenda.
+     * As long as the <code>RuleFlowGroup</code> remains active,
+     * its activations are automatically added to the agenda.
+     * The given processInstanceId and nodeInstanceId define the process context
+     * in which this <code>RuleFlowGroup</code> is used.
+     */
+    void activateRuleFlowGroup(String name, String processInstanceId, String nodeInstanceId);
 }
