@@ -17,8 +17,10 @@
 package org.drools.core.impl;
 
 import org.drools.core.SessionConfiguration;
+import org.drools.core.base.DefaultKnowledgeHelper;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.spi.FactHandleFactory;
+import org.drools.core.spi.KnowledgeHelper;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.Application;
@@ -62,11 +64,31 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
         getProcessRuntime().signalEvent( type, event, processInstanceId );
     }
 
+    @Override
+    public KnowledgeHelper createKnowledgeHelper() {
+        return new RuleUnitKnowledgeHelper( this );
+    }
+
     public Application getApplication() {
         return application;
     }
 
     public void setApplication( Application application ) {
         this.application = application;
+    }
+
+    public static class RuleUnitKnowledgeHelper extends DefaultKnowledgeHelper {
+
+        private final KogitoStatefulKnowledgeSessionImpl kogitoSession;
+
+        public RuleUnitKnowledgeHelper( KogitoStatefulKnowledgeSessionImpl workingMemory ) {
+            super(workingMemory);
+            this.kogitoSession = workingMemory;
+        }
+
+        @Override
+        public void run(String ruleUnitName) {
+            kogitoSession.getApplication().ruleUnits().getRegisteredInstance( ruleUnitName ).fire();
+        }
     }
 }
