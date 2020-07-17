@@ -19,10 +19,16 @@ package org.drools.core.impl;
 import org.drools.core.SessionConfiguration;
 import org.drools.core.base.DefaultKnowledgeHelper;
 import org.drools.core.common.InternalAgenda;
+import org.drools.core.common.InternalFactHandle;
+import org.drools.core.common.InternalWorkingMemoryEntryPoint;
+import org.drools.core.factmodel.traits.Thing;
+import org.drools.core.kogito.factory.KogitoDefaultFactHandle;
 import org.drools.core.spi.FactHandleFactory;
 import org.drools.core.spi.KnowledgeHelper;
+import org.drools.core.util.bitmask.BitMask;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.Application;
 
 public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSessionImpl {
@@ -90,5 +96,54 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
         public void run(String ruleUnitName) {
             kogitoSession.getApplication().ruleUnits().getRegisteredInstance( ruleUnitName ).fire();
         }
+
+        @Override
+        public void update( final FactHandle handle, BitMask mask, Class modifiedClass ) {
+            InternalFactHandle h = (InternalFactHandle) handle;
+
+            if (h instanceof KogitoDefaultFactHandle && (( KogitoDefaultFactHandle ) h).getDataStore() != null) {
+                // This handle has been insert from a datasource, so update it
+                (( KogitoDefaultFactHandle ) h).getDataStore().update( h,
+                        h.getObject(),
+                        mask,
+                        modifiedClass,
+                        this.activation );
+                return;
+            }
+
+            (( InternalWorkingMemoryEntryPoint ) h.getEntryPoint(kogitoSession)).update( h,
+                    ((InternalFactHandle)handle).getObject(),
+                    mask,
+                    modifiedClass,
+                    this.activation );
+            if ( h.isTraitOrTraitable() ) {
+                workingMemory.updateTraits( h, mask, modifiedClass, this.activation );
+            }
+        }
+
+        @Override
+        public void delete(FactHandle handle, FactHandle.State fhState ) {
+            InternalFactHandle h = (InternalFactHandle) handle;
+
+            if (h instanceof KogitoDefaultFactHandle && (( KogitoDefaultFactHandle ) h).getDataStore() != null) {
+                // This handle has been insert from a datasource, so remove from it
+                (( KogitoDefaultFactHandle ) h).getDataStore().delete(h,
+                        this.activation.getRule(),
+                        this.activation.getTuple().getTupleSink(),
+                        fhState);
+                return;
+            }
+
+            if ( h.isTraiting() ) {
+                delete( (( Thing ) h.getObject()).getCore() );
+                return;
+            }
+
+            h.getEntryPoint(kogitoSession).delete(handle,
+                    this.activation.getRule(),
+                    this.activation.getTuple().getTupleSink(),
+                    fhState);
+        }
     }
+
 }
