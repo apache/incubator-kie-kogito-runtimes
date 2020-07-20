@@ -16,16 +16,12 @@
 
 package org.drools.core.kogito.factory;
 
-import org.drools.core.SessionConfiguration;
-import org.drools.core.common.InternalAgenda;
-import org.drools.core.common.InternalWorkingMemory;
+import org.drools.core.common.AgendaFactory;
+import org.drools.core.common.KogitoDefaultAgendaFactory;
 import org.drools.core.common.KogitoPhreakWorkingMemoryFactory;
-import org.drools.core.common.PhreakWorkingMemoryFactory;
 import org.drools.core.common.WorkingMemoryFactory;
-import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.reteoo.KieComponentFactory;
 import org.drools.core.spi.FactHandleFactory;
-import org.kie.api.runtime.Environment;
 
 public class KogitoKieComponentFactory extends KieComponentFactory {
 
@@ -40,4 +36,12 @@ public class KogitoKieComponentFactory extends KieComponentFactory {
     public WorkingMemoryFactory getWorkingMemoryFactory() {
         return wmFactory;
     }
+
+    private AgendaFactory agendaFactory = KogitoDefaultAgendaFactory.getInstance();
+
+    @Override
+    public AgendaFactory getAgendaFactory() {
+        return agendaFactory;
+    }
+
 }

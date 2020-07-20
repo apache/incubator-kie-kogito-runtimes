@@ -31,4 +31,12 @@ public interface KogitoInternalAgenda
      * in which this <code>RuleFlowGroup</code> is used.
      */
     void activateRuleFlowGroup(String name, String processInstanceId, String nodeInstanceId);
+
+    /**
+     * Returns true if there is at least one activation of the given rule name
+     * in the given ruleflow group name
+     */
+    boolean isRuleInstanceAgendaItem(String ruleflowGroupName,
+                                     String ruleName,
+                                     String processInstanceId);
 }
