@@ -1,24 +1,37 @@
+import java.util.Map;
+import java.util.function.Function;
+
+import org.kie.api.KieBase;
+import org.kie.api.runtime.KieRuntimeFactory;
+import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
+
 public class PredictionModels implements org.kie.kogito.prediction.PredictionModels {
 
-    public static java.util.Map<java.lang.String, org.kie.pmml.evaluator.api.executor.PMMLRuntime>  pmmlRuntimes = org.kie.kogito.pmml.PMMLKogito.createPMMLRuntimes();
-    private final static org.kie.kogito.ExecutionIdSupplier execIdSupplier = null;
+    public final static java.util.function.Function<String, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactoryFunction;
+
+    static {
+        final java.util.Map<org.kie.api.KieBase, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactories = org.kie.kogito.pmml.PMMLKogito.createKieRuntimeFactories();
+        kieRuntimeFactoryFunction = new java.util.function.Function<java.lang.String, org.kie.api.runtime.KieRuntimeFactory>() {
+            @Override
+            public org.kie.api.runtime.KieRuntimeFactory apply(java.lang.String s) {
+                return kieRuntimeFactories.keySet().stream()
+                        .filter(kieBase -> org.kie.pmml.evaluator.core.utils.KnowledgeBaseUtils.getModel(kieBase, s).isPresent())
+                        .map(kieBase ->  kieRuntimeFactories.get(kieBase))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Failed to fine KieRuntimeFactory for model " +s));
+            }
+        };
+    }
 
     public void init(org.kie.kogito.Application app) {
     }
 
     public org.kie.kogito.prediction.PredictionModel getPredictionModel(java.lang.String modelName) {
-        return new org.kie.kogito.pmml.PmmlPredictionModel(getPMMLRuntime(modelName), modelName, execIdSupplier);
+        return new org.kie.kogito.pmml.PmmlPredictionModel(getPMMLRuntime(modelName), modelName);
     }
 
     private org.kie.pmml.evaluator.api.executor.PMMLRuntime getPMMLRuntime(java.lang.String modelName) {
-        String sanitizedModelName = org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedPackageName(modelName);
-        return pmmlRuntimes.values().stream()
-                .filter(pmmlRuntime ->  pmmlRuntime.getModels().stream().anyMatch(kiePMMLModel -> {
-                    String originalSanitizedModelName = org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedPackageName(kiePMMLModel.getName());
-                    return java.util.Objects.equals(sanitizedModelName, originalSanitizedModelName);
-                }))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException(String.format("Failed to find a PMMLRuntime for %s", sanitizedModelName)));
+        return kieRuntimeFactoryFunction.apply(modelName).get(org.kie.pmml.evaluator.api.executor.PMMLRuntime.class);
     }
 }
 

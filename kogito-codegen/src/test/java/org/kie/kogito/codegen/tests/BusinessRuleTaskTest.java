@@ -139,7 +139,6 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         assertThat(startedProcesses).hasSize(1);
     }
 
-    @Disabled
     @Test
     public void testDecision() throws Exception {
         Map<AbstractCodegenTest.TYPE, List<String>> resourcesTypeMap = new HashMap<>();

@@ -27,15 +27,15 @@ import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.model.Model;
 import org.drools.modelcompiler.builder.KieBaseBuilder;
+import org.kie.api.KieBase;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.kogito.prediction.PredictionRuleMapper;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.container.PMMLPackage;
-import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
 import org.kie.pmml.evaluator.assembler.container.PMMLPackageImpl;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
-import org.kie.pmml.evaluator.core.service.PMMLRuntimeImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +45,13 @@ import static org.kie.pmml.evaluator.assembler.service.PMMLLoaderService.getKieP
 /**
  * Utility class to replace the <b>Assembler</b> mechanism where this is not available
  */
-public class PMMLRuntimeBuilder {
+public class KieRuntimeFactoryBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(PMMLRuntimeBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(KieRuntimeFactoryBuilder.class);
 
-    public static Map<String, PMMLRuntime> fromResources(final List<Resource> resources,
-                                                         final PMMLModelEvaluatorFinderImpl pmmlModelExecutorFinder) {
-        Map<String, PMMLRuntime> toReturn = new HashMap<>();
+    public static Map<KieBase, KieRuntimeFactory> fromResources(final List<Resource> resources,
+                                                                final PMMLModelEvaluatorFinderImpl pmmlModelExecutorFinder) {
+        final Map<KieBase, KieRuntimeFactory> toReturn = new HashMap<>();
         resources.forEach(resource -> {
             final String[] factoryClassNamePackageName = getFactoryClassNamePackageName(resource);
             final KnowledgeBuilderImpl kbuilderImpl = createKnowledgeBuilderImpl(resource);
@@ -72,8 +72,8 @@ public class PMMLRuntimeBuilder {
                                                                                            rtp -> new PMMLPackageImpl());
                 pmmlPkg.addAll(Collections.singletonList(kiePMMLModel));
             }
-            toReturn.put(resource.getSourcePath(), new PMMLRuntimeImpl(kbuilderImpl.getKnowledgeBase(),
-                                                                       pmmlModelExecutorFinder));
+            KieBase kieBase = kbuilderImpl.getKnowledgeBase();
+            toReturn.put(kieBase, KieRuntimeFactory.of(kieBase));
         });
         return toReturn;
     }

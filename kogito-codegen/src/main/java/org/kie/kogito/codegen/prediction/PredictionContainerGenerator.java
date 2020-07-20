@@ -1,5 +1,5 @@
 /*
-  * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,35 @@ package org.kie.kogito.codegen.prediction;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.expr.BinaryExpr;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.dmn.DmnExecutionIdSupplier;
 import org.kie.kogito.prediction.PredictionModels;
-
-import static org.kie.kogito.codegen.CodegenUtils.newObject;
 
 public class PredictionContainerGenerator extends AbstractApplicationSection {
 
     private static final String TEMPLATE_JAVA = "/class-templates/PMMLApplicationClassDeclTemplate.java";
 
-    private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION = new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
-
-    private String applicationCanonicalName;
+    private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION =
+            new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
     private final List<PMMLResource> resources;
+    private String applicationCanonicalName;
     private boolean useTracing = false;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
@@ -69,22 +64,35 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
     public ClassOrInterfaceDeclaration classDeclaration() {
         CompilationUnit clazz = StaticJavaParser.parse(this.getClass().getResourceAsStream(TEMPLATE_JAVA));
         ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
-        for (PMMLResource resource : resources) {
-            StringLiteralExpr getResAsStream = getReadResourceMethod(resource );
-            Optional<FieldDeclaration> pmmlRuntimeField = typeDeclaration.getFieldByName("pmmlRuntimes");
-            Expression initializer = pmmlRuntimeField.flatMap(x -> x.getVariable(0).getInitializer()).orElseThrow(() -> MODIFIED_TEMPLATE_EXCEPTION);
-            initializer.asMethodCallExpr().addArgument(getResAsStream);
-        }
-        if (useTracing) {
-            VariableDeclarator execIdSupplierVariable = typeDeclaration.getFieldByName("execIdSupplier")
-                    .map(x -> x.getVariable(0))
-                    .orElseThrow(() -> new RuntimeException("Can't find \"execIdSupplier\" field in " + TEMPLATE_JAVA));
-            execIdSupplierVariable.setInitializer(newObject(DmnExecutionIdSupplier.class));
-        }
+        populateStaticKieRuntimeFactoryFunctionInit(typeDeclaration);
         return typeDeclaration;
     }
 
-    private StringLiteralExpr getReadResourceMethod(PMMLResource resource ) {
+    private void populateStaticKieRuntimeFactoryFunctionInit(ClassOrInterfaceDeclaration typeDeclaration) {
+        final InitializerDeclaration staticDeclaration = typeDeclaration.getMembers()
+                .stream()
+                .filter(member -> member instanceof InitializerDeclaration)
+                .findFirst()
+                .map(member -> (InitializerDeclaration) member)
+                .orElseThrow(() -> MODIFIED_TEMPLATE_EXCEPTION);
+        final NodeList<Statement> statements = staticDeclaration.getBody().getStatements();
+        final VariableDeclarationExpr variableDeclarationExpr = statements.stream()
+                .filter(statement -> statement instanceof ExpressionStmt && ((ExpressionStmt) statement).getExpression() instanceof VariableDeclarationExpr)
+                .map(statement -> (VariableDeclarationExpr) ((ExpressionStmt) statement).getExpression())
+                .filter(expression -> expression.getVariable(0).getName().asString().equals("kieRuntimeFactories"))
+                .findFirst()
+                .orElseThrow(() -> MODIFIED_TEMPLATE_EXCEPTION);
+        final MethodCallExpr methodCallExpr = variableDeclarationExpr.getVariable(0)
+                .getInitializer()
+                .map(expression -> (MethodCallExpr) expression)
+                .orElseThrow(() -> MODIFIED_TEMPLATE_EXCEPTION);
+        for (PMMLResource resource : resources) {
+            StringLiteralExpr getResAsStream = getReadResourceMethod(resource);
+            methodCallExpr.addArgument(getResAsStream);
+        }
+    }
+
+    private StringLiteralExpr getReadResourceMethod(PMMLResource resource) {
         String source = resource.getModelPath();
         return new StringLiteralExpr(source);
     }
@@ -110,5 +118,4 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
                 )
         );
     }
-
 }

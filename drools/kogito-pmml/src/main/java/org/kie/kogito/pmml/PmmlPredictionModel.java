@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.kie.api.pmml.PMML4Result;
 import org.kie.api.pmml.PMMLRequestData;
-import org.kie.kogito.ExecutionIdSupplier;
 import org.kie.kogito.prediction.PredictionModel;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.executor.PMMLContext;
@@ -15,16 +14,10 @@ import org.kie.pmml.evaluator.core.utils.PMMLRequestDataBuilder;
 public class PmmlPredictionModel implements PredictionModel {
 
     private final PMMLRuntime pmmlRuntime;
-    private final ExecutionIdSupplier execIdSupplier;
     private final KiePMMLModel pmmlModel;
 
     public PmmlPredictionModel(PMMLRuntime pmmlRuntime, String modelName) {
-        this(pmmlRuntime, modelName, null);
-    }
-
-    public PmmlPredictionModel(PMMLRuntime pmmlRuntime, String modelName, ExecutionIdSupplier execIdSupplier) {
         this.pmmlRuntime = pmmlRuntime;
-        this.execIdSupplier = execIdSupplier;
         this.pmmlModel = pmmlRuntime.getModel(modelName).orElseThrow(() -> new IllegalStateException("PMML model '" + modelName + "' not found in the inherent PMMLRuntime."));
     }
 

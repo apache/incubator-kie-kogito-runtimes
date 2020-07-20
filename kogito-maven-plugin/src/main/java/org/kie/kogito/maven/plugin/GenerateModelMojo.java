@@ -46,6 +46,7 @@ import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
+import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
@@ -90,13 +91,16 @@ public class GenerateModelMojo extends AbstractKieMojo {
     // codegen backend only if at least one file of the given type exist
 
     @Parameter(property = "kogito.codegen.rules", defaultValue = "")
-    private String generateRules; // defaults to true iff there exist DRL files
+    private String generateRules; // defaults to true if there exist DRL files
 
     @Parameter(property = "kogito.codegen.processes", defaultValue = "")
-    private String generateProcesses; // defaults to true iff there exist BPMN files
+    private String generateProcesses; // defaults to true if there exist BPMN files
 
     @Parameter(property = "kogito.codegen.decisions", defaultValue = "")
-    private String generateDecisions; // defaults to true iff there exist DMN files
+    private String generateDecisions; // defaults to true if there exist DMN files
+
+    @Parameter(property = "kogito.codegen.predictions", defaultValue = "")
+    private String generatePredictions; // defaults to true if there exist PMML files
 
     /**
      * Partial generation can be used when reprocessing a pre-compiled project
@@ -172,6 +176,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
         return generateDecisions == null ? decisionsExist() : Boolean.parseBoolean(generateDecisions);
     }
 
+    private boolean generatePredictions() throws IOException {
+        return generatePredictions == null ? predictionsExist() : Boolean.parseBoolean(generatePredictions);
+    }
+
+
     private boolean generateRules() throws IOException {
         return generateRules == null ? rulesExist() : Boolean.parseBoolean(generateRules);
     }
@@ -183,6 +192,12 @@ public class GenerateModelMojo extends AbstractKieMojo {
     private boolean decisionsExist() throws IOException {
         try (final Stream<Path> paths = Files.walk(projectDir.toPath())) {
             return paths.map(p -> p.toString().toLowerCase()).anyMatch(p -> p.endsWith(".dmn"));
+        }
+    }
+
+    private boolean predictionsExist() throws IOException {
+        try (final Stream<Path> paths = Files.walk(projectDir.toPath())) {
+            return paths.map(p -> p.toString().toLowerCase()).anyMatch(p -> p.endsWith(".pmml"));
         }
     }
 
@@ -256,6 +271,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
         if (generateDecisions()) {
             appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()))
+                    .withAddons(addonsConfig);
+        }
+
+        if (generatePredictions()) {
+            appGen.withGenerator(PredictionCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withAddons(addonsConfig);
         }
 
