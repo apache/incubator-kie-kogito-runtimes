@@ -17,7 +17,9 @@
 package org.drools.core.impl;
 
 import org.drools.core.SessionConfiguration;
+import org.drools.core.WorkingMemory;
 import org.drools.core.base.DefaultKnowledgeHelper;
+import org.drools.core.base.WrappedStatefulKnowledgeSessionForRHS;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.InternalWorkingMemoryEntryPoint;
@@ -161,6 +163,23 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
         @Override
         protected AbstractProcessContext createProcessContext() {
             return new KogitoProcessContext(workingMemory.getKnowledgeRuntime());
+        }
+
+        @Override
+        protected WrappedStatefulKnowledgeSessionForRHS createWrappedSession( WorkingMemory workingMemory ) {
+            return new KogitoWrappedStatefulKnowledgeSessionForRHS( (KogitoStatefulKnowledgeSessionImpl) workingMemory );
+        }
+    }
+
+    public static class KogitoWrappedStatefulKnowledgeSessionForRHS extends WrappedStatefulKnowledgeSessionForRHS {
+
+        public KogitoWrappedStatefulKnowledgeSessionForRHS( KogitoStatefulKnowledgeSessionImpl delegate ) {
+            super(delegate);
+        }
+
+        @Override
+        public ProcessInstance getProcessInstance(String id) {
+            return ((KogitoStatefulKnowledgeSessionImpl)delegate).getProcessInstance(id);
         }
     }
 }

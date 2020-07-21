@@ -24,9 +24,9 @@ import org.drools.core.impl.EnvironmentImpl;
 import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
 import org.drools.core.marshalling.impl.KogitoMarshallerReaderContext;
 import org.drools.core.marshalling.impl.KogitoProcessMarshallerWriteContext;
+import org.drools.core.marshalling.impl.KogitoSerializablePlaceholderResolverStrategy;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.PersisterHelper;
-import org.drools.core.marshalling.impl.ProcessMarshallerWriteContext;
 import org.drools.core.marshalling.impl.SerializablePlaceholderResolverStrategy;
 import org.jbpm.marshalling.impl.JBPMMessages;
 import org.jbpm.marshalling.impl.ProcessMarshallerRegistry;
@@ -55,7 +55,11 @@ public class ProcessInstanceMarshaller {
                 strats[i] = strategy;
                 i++;
             }
+<<<<<<< HEAD
             strats[i] = new SerializablePlaceholderResolverStrategy(ClassObjectMarshallingStrategyAcceptor.DEFAULT);
+=======
+            strats[i] = new KogitoSerializablePlaceholderResolverStrategy( ClassObjectMarshallingStrategyAcceptor.DEFAULT  );
+>>>>>>> wip
         }
 
         env.set(EnvironmentName.OBJECT_MARSHALLING_STRATEGIES, strats);

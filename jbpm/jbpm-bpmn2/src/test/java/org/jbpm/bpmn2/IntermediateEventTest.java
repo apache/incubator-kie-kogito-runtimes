@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.drools.core.command.runtime.process.SetProcessInstanceVariablesCommand;
+import org.drools.core.command.runtime.process.KogitoSetProcessInstanceVariablesCommand;
 import org.drools.core.process.instance.WorkItemHandler;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
@@ -2718,7 +2718,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         String changeProcessInstanceId = instances.remove(0);
         Map<String, Object> updatedVariables = new HashMap<>();
         updatedVariables.put("fatherId", "999");
-        ksession.execute(new SetProcessInstanceVariablesCommand(Long.parseLong( changeProcessInstanceId ), updatedVariables));
+        ksession.execute(new KogitoSetProcessInstanceVariablesCommand(changeProcessInstanceId, updatedVariables));
         
         // now complete user task to signal all child instances to stop
         WorkItem workItem = handler.getWorkItem();
@@ -2776,7 +2776,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         String changeProcessInstanceId = instances.remove(0);
         Map<String, Object> updatedVariables = new HashMap<>();
         updatedVariables.put("fatherId", "999");
-        ksession.execute(new SetProcessInstanceVariablesCommand(Long.parseLong( changeProcessInstanceId ), updatedVariables));
+        ksession.execute(new KogitoSetProcessInstanceVariablesCommand(changeProcessInstanceId, updatedVariables));
         
         // now complete user task to signal all child instances to stop
         WorkItem workItem = handler.getWorkItem();
