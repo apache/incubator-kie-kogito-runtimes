@@ -34,6 +34,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.drools.compiler.kie.builder.impl.ZipKieModule;
+import org.drools.compiler.kogito.KogitoKieModuleModelImpl;
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.kie.api.builder.ReleaseId;
@@ -90,9 +91,9 @@ public final class MojoUtil {
 
     private static KieModuleModel getDependencyKieModel(final File jar) throws IOException {
         try (final ZipFile zipFile = new ZipFile(jar)) {
-            final ZipEntry zipEntry = zipFile.getEntry(KieModuleModelImpl.KMODULE_JAR_PATH);
+            final ZipEntry zipEntry = zipFile.getEntry(KogitoKieModuleModelImpl.KMODULE_JAR_PATH);
             if (zipEntry != null) {
-                final KieModuleModel kieModuleModel = KieModuleModelImpl.fromXML(zipFile.getInputStream(zipEntry));
+                final KieModuleModel kieModuleModel = KogitoKieModuleModelImpl.fromXML(zipFile.getInputStream(zipEntry));
                 setDefaultsforEmptyKieModule(kieModuleModel);
                 return kieModuleModel;
             }
