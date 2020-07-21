@@ -129,8 +129,8 @@ public class ConfigGenerator {
 
         generateProcessConfigDescriptor().ifPresent(generatedFiles::add);
         generateRuleConfigDescriptor().ifPresent(generatedFiles::add);
-        generateDecisionConfigDescriptor().ifPresent(generatedFiles::add);
         generatePredictionConfigDescriptor().ifPresent(generatedFiles::add);
+        generateDecisionConfigDescriptor().ifPresent(generatedFiles::add);
 
         return generatedFiles;
     }

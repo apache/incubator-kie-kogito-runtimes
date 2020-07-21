@@ -78,9 +78,7 @@ public class KogitoAssetsProcessor {
     private static final String generatedResourcesDir = System.getProperty("kogito.codegen.resources.directory",
                                                                            "target/generated-resources/kogito/");
     private static final String generatedSourcesDir = "target/generated-sources/kogito/";
-    private static final String generatedCustomizableSourcesDir = System.getProperty("kogito.codegen.sources" +
-                                                                                             ".directory", "target" +
-            "/generated-sources/kogito/");
+    private static final String generatedCustomizableSourcesDir = System.getProperty("kogito.codegen.sources.directory", "target/generated-sources/kogito/");
     private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
     private final transient String generatedClassesDir = System.getProperty("quarkus.debug.generated-classes-dir");
     private final transient String appPackageName = "org.kie.kogito.app";
@@ -176,17 +174,14 @@ public class KogitoAssetsProcessor {
         List<ReflectiveHierarchyIgnoreWarningBuildItem> result = new ArrayList<>();
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.api.builder.Message$Level")));
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNContext")));
-        result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core" +
-                                                                                       ".DMNDecisionResult")));
+        result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNDecisionResult")));
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(
                 createDotName("org.kie.dmn.api.core.DMNDecisionResult$DecisionEvaluationStatus")));
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNMessage")));
-        result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core" +
-                                                                                       ".DMNMessage$Severity")));
+        result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNMessage$Severity")));
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.core.DMNMessageType")));
         result.add(
-                new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.feel.runtime.events" +
-                                                                                    ".FEELEvent")));
+                new ReflectiveHierarchyIgnoreWarningBuildItem(createDotName("org.kie.dmn.api.feel.runtime.events.FEELEvent")));
         return result;
     }
 
@@ -245,26 +240,19 @@ public class KogitoAssetsProcessor {
             reflectiveClass.produce(
                     new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.ProcessInstanceDataEvent"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event" +
-                            ".VariableInstanceDataEvent"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.VariableInstanceDataEvent"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
-                            ".ProcessInstanceEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.ProcessInstanceEventBody"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
-                            ".NodeInstanceEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.NodeInstanceEventBody"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
-                            ".ProcessErrorEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.ProcessErrorEventBody"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
-                            ".VariableInstanceEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.VariableInstanceEventBody"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event" +
-                            ".UserTaskInstanceDataEvent"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.UserTaskInstanceDataEvent"));
             reflectiveClass.produce(
-                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl" +
-                            ".UserTaskInstanceEventBody"));
+                    new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskInstanceEventBody"));
 
             Collection<ClassInfo> dataEvents = index
                     .getAllKnownSubclasses(createDotName("org.kie.kogito.event.AbstractDataEvent"));
@@ -452,8 +440,7 @@ public class KogitoAssetsProcessor {
         }
 
         return KieModuleModelImpl.fromXML(
-                "<kmodule xmlns=\"http://www.drools.org/xsd/kmodule\" xmlns:xsi=\"http://www.w3" +
-                        ".org/2001/XMLSchema-instance\"/>");
+                "<kmodule xmlns=\"http://www.drools.org/xsd/kmodule\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>");
     }
 
     private void addProcessGenerator(AppPaths appPaths, AddonsConfig addonsConfig, ApplicationGenerator appGen) throws IOException {

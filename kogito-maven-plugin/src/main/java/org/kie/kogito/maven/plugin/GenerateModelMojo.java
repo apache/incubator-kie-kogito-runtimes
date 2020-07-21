@@ -181,7 +181,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
         return generatePredictions == null ? predictionsExist() : Boolean.parseBoolean(generatePredictions);
     }
 
-
     private boolean generateRules() throws IOException {
         return generateRules == null ? rulesExist() : Boolean.parseBoolean(generateRules);
     }
@@ -270,13 +269,13 @@ public class GenerateModelMojo extends AbstractKieMojo {
                     .withRestServices(useRestServices);
         }
 
-        if (generateDecisions()) {
-            appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()))
+        if (generatePredictions()) {
+            appGen.withGenerator(PredictionCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withAddons(addonsConfig);
         }
 
-        if (generatePredictions()) {
-            appGen.withGenerator(PredictionCodegen.ofPath(kieSourcesDirectory.toPath()))
+        if (generateDecisions()) {
+            appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withAddons(addonsConfig);
         }
 

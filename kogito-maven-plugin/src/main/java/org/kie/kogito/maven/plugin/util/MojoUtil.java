@@ -43,10 +43,6 @@ import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsfor
 
 public final class MojoUtil {
 
-    private MojoUtil() {
-        // Creating instances of util classes is forbidden.
-    }
-
     public static Set<URL> getProjectFiles(final MavenProject mavenProject,
                                            final List<InternalKieModule> kmoduleDeps)
             throws DependencyResolutionRequiredException, IOException {
@@ -102,5 +98,9 @@ public final class MojoUtil {
             }
         }
         return null;
+    }
+
+    private MojoUtil() {
+        // Creating instances of util classes is forbidden.
     }
 }
