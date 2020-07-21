@@ -5,6 +5,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.enterprise.inject.Instance;
+
 import org.kie.kogito.pmml.config.AbstractPredictionConfig;
 import org.kie.kogito.prediction.PredictionEventListenerConfig;
 

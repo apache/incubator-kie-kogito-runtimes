@@ -12,16 +12,36 @@
   <artifactId>kogito-pmml-dependencies</artifactId>
   <packaging>pom</packaging>
 
-  <name>KOGITO :: PMML :: Dependencies</name>
+  <name>Kogito :: Drools :: Kogito Predictive Model Markup Language :: Dependencies</name>
   <description>
     Declare this artifact as "pom" dependency to import all default kie-pmml-trusty modules with exclusions needed for Kogito environment.
   </description>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-pmml-dependencies</artifactId>
+        <type>pom</type>
+        <scope>import</scope>
+        <version>${version.org.kie7}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <!-- PMML -->
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-pmml-evaluator-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-pmml-evaluator-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-pmml-evaluator-assembler</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>

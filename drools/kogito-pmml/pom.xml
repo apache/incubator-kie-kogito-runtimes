@@ -15,18 +15,20 @@
   <name>Kogito :: Drools :: Kogito Predictive Model Markup Language</name>
   <description>Kogito wrapper for Kie Drools PMML open source engine</description>
 
-  <dependencies>
-    <!-- PMML -->
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-pmml-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
+  <dependencyManagement>
+   <dependencies>
+     <!-- PMML -->
+     <dependency>
+       <groupId>org.kie.kogito</groupId>
+       <artifactId>kogito-pmml-dependencies</artifactId>
+       <type>pom</type>
+       <scope>import</scope>
+       <version>${project.version}</version>
+     </dependency>
+   </dependencies>
+  </dependencyManagement>
 
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-api</artifactId>
-    </dependency>
+  <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-internal</artifactId>
@@ -34,6 +36,13 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-drools</artifactId>
+    </dependency>
+
+    <!-- PMML -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-pmml-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
 
     <!-- test -->
