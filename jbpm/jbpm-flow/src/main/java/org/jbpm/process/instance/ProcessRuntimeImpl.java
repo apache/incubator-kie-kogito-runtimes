@@ -26,6 +26,7 @@ import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.definitions.rule.impl.RuleImpl;
+import org.drools.core.event.KogitoProcessEventSupport;
 import org.drools.core.event.ProcessEventSupport;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
@@ -97,7 +98,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         initSignalManager();
         unitOfWorkManager = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
         jobService = new InMemoryJobService(this, unitOfWorkManager);
-        processEventSupport = new ProcessEventSupport(unitOfWorkManager);
+        processEventSupport = new KogitoProcessEventSupport(unitOfWorkManager);
         if (isActive()) {
             initProcessEventListeners();
             initStartTimers();
@@ -116,7 +117,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         initSignalManager();
         unitOfWorkManager = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
         jobService = new InMemoryJobService(this, unitOfWorkManager);
-        processEventSupport = new ProcessEventSupport(unitOfWorkManager);
+        processEventSupport = new KogitoProcessEventSupport(unitOfWorkManager);
         if (isActive()) {
             initProcessEventListeners();
             initStartTimers();

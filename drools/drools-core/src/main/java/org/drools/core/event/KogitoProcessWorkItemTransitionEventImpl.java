@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2005 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.kogito.process.workitem.Transition;
 
-public class ProcessWorkItemTransitionEventImpl extends ProcessEvent implements ProcessWorkItemTransitionEvent {
+public class KogitoProcessWorkItemTransitionEventImpl extends ProcessEvent implements ProcessWorkItemTransitionEvent {
 
     private static final long serialVersionUID = 510l;
 
@@ -31,7 +31,7 @@ public class ProcessWorkItemTransitionEventImpl extends ProcessEvent implements 
 
     private boolean transitioned;
 
-    public ProcessWorkItemTransitionEventImpl(final ProcessInstance instance, WorkItem workItem, Transition<?> transition, KieRuntime kruntime, boolean transitioned) {
+    public KogitoProcessWorkItemTransitionEventImpl( final ProcessInstance instance, WorkItem workItem, Transition<?> transition, KieRuntime kruntime, boolean transitioned) {
         super( instance, kruntime );
         this.workItem = workItem;
         this.transition = transition;

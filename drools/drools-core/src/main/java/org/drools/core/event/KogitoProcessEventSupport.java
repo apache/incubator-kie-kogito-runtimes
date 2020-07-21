@@ -35,18 +35,18 @@ import org.kie.kogito.process.workitem.Transition;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.uow.WorkUnit;
 
-public class ProcessEventSupport extends AbstractEventSupport<ProcessEventListener> {
+public class KogitoProcessEventSupport extends ProcessEventSupport {
 
     private UnitOfWorkManager unitOfWorkManager;
 
-    public ProcessEventSupport(UnitOfWorkManager unitOfWorkManager) {
+    public KogitoProcessEventSupport(UnitOfWorkManager unitOfWorkManager) {
         this.unitOfWorkManager = unitOfWorkManager;
     }
 
     /**
      * Do not use this constructor. It should be used just by deserialization.
      */
-    public ProcessEventSupport() {
+    public KogitoProcessEventSupport() {
     }
 
     public void fireBeforeProcessStarted(final ProcessInstance instance, KieRuntime kruntime ) {
@@ -105,7 +105,7 @@ public class ProcessEventSupport extends AbstractEventSupport<ProcessEventListen
     public void fireBeforeNodeTriggered(final NodeInstance nodeInstance, KieRuntime kruntime) {
         final Iterator<ProcessEventListener> iter = getEventListenersIterator();
 
-        final ProcessNodeTriggeredEvent event = new ProcessNodeTriggeredEventImpl(nodeInstance, kruntime);
+        final ProcessNodeTriggeredEvent event = new KogitoProcessNodeTriggeredEventImpl(nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
             if (iter.hasNext()) {
 
@@ -119,7 +119,7 @@ public class ProcessEventSupport extends AbstractEventSupport<ProcessEventListen
     public void fireAfterNodeTriggered(final NodeInstance nodeInstance, KieRuntime kruntime) {
         final Iterator<ProcessEventListener> iter = getEventListenersIterator();
 
-        final ProcessNodeTriggeredEvent event = new ProcessNodeTriggeredEventImpl(nodeInstance, kruntime);
+        final ProcessNodeTriggeredEvent event = new KogitoProcessNodeTriggeredEventImpl(nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
             if (iter.hasNext()) {
 
@@ -133,7 +133,7 @@ public class ProcessEventSupport extends AbstractEventSupport<ProcessEventListen
     public void fireBeforeNodeLeft(final NodeInstance nodeInstance, KieRuntime kruntime) {
         final Iterator<ProcessEventListener> iter = getEventListenersIterator();
 
-        final ProcessNodeLeftEvent event = new ProcessNodeLeftEventImpl(nodeInstance, kruntime);
+        final ProcessNodeLeftEvent event = new KogitoProcessNodeLeftEventImpl(nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
             if (iter.hasNext()) {
 
@@ -147,7 +147,7 @@ public class ProcessEventSupport extends AbstractEventSupport<ProcessEventListen
     public void fireAfterNodeLeft(final NodeInstance nodeInstance, KieRuntime kruntime) {
         final Iterator<ProcessEventListener> iter = getEventListenersIterator();
 
-        final ProcessNodeLeftEvent event = new ProcessNodeLeftEventImpl(nodeInstance, kruntime);
+        final ProcessNodeLeftEvent event = new KogitoProcessNodeLeftEventImpl(nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
             if (iter.hasNext()) {
 
@@ -164,7 +164,7 @@ public class ProcessEventSupport extends AbstractEventSupport<ProcessEventListen
                                           final ProcessInstance processInstance, NodeInstance nodeInstance, KieRuntime kruntime) {
         final Iterator<ProcessEventListener> iter = getEventListenersIterator();
 
-        final ProcessVariableChangedEvent event = new ProcessVariableChangedEventImpl(
+        final ProcessVariableChangedEvent event = new KogitoProcessVariableChangedEventImpl(
                 id, instanceId, oldValue, newValue, tags, processInstance, nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
             if (iter.hasNext()) {
@@ -181,7 +181,7 @@ public class ProcessEventSupport extends AbstractEventSupport<ProcessEventListen
                                          final List<String> tags,
                                          final ProcessInstance processInstance, NodeInstance nodeInstance, KieRuntime kruntime) {
         final Iterator<ProcessEventListener> iter = getEventListenersIterator();
-        final ProcessVariableChangedEvent event = new ProcessVariableChangedEventImpl(
+        final ProcessVariableChangedEvent event = new KogitoProcessVariableChangedEventImpl(
                 name, id, oldValue, newValue, tags, processInstance, nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
             if (iter.hasNext()) {
@@ -250,7 +250,7 @@ public class ProcessEventSupport extends AbstractEventSupport<ProcessEventListen
     public void fireBeforeWorkItemTransition(final ProcessInstance instance, WorkItem workitem, Transition<?> transition, KieRuntime kruntime ) {
         final Iterator<ProcessEventListener> iter = getEventListenersIterator();
 
-        final ProcessWorkItemTransitionEvent event = new ProcessWorkItemTransitionEventImpl(instance, workitem, transition, kruntime, false);
+        final ProcessWorkItemTransitionEvent event = new KogitoProcessWorkItemTransitionEventImpl(instance, workitem, transition, kruntime, false);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, (e) -> {
             if (iter.hasNext()) {
                 do{
@@ -263,7 +263,7 @@ public class ProcessEventSupport extends AbstractEventSupport<ProcessEventListen
     public void fireAfterWorkItemTransition(final ProcessInstance instance, WorkItem workitem, Transition<?> transition, KieRuntime kruntime) {
         final Iterator<ProcessEventListener> iter = getEventListenersIterator();
 
-        final ProcessWorkItemTransitionEvent event = new ProcessWorkItemTransitionEventImpl(instance, workitem, transition, kruntime, true);
+        final ProcessWorkItemTransitionEvent event = new KogitoProcessWorkItemTransitionEventImpl(instance, workitem, transition, kruntime, true);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, (e) -> {
             if (iter.hasNext()) {
                 do {

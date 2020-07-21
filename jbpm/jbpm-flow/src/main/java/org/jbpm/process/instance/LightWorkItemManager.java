@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.drools.core.WorkItemHandlerNotFoundException;
+import org.drools.core.event.KogitoProcessEventSupport;
 import org.drools.core.event.ProcessEventSupport;
 import org.drools.core.process.instance.WorkItem;
 import org.drools.core.process.instance.WorkItemManager;
@@ -55,7 +56,7 @@ public class LightWorkItemManager implements WorkItemManager {
 
     private final ProcessInstanceManager processInstanceManager;
     private final SignalManager signalManager;
-    private final ProcessEventSupport eventSupport;
+    private final KogitoProcessEventSupport eventSupport;
     
     private Complete completePhase = new Complete();
     private Abort abortPhase = new Abort();
@@ -63,7 +64,7 @@ public class LightWorkItemManager implements WorkItemManager {
     public LightWorkItemManager(ProcessInstanceManager processInstanceManager, SignalManager signalManager, ProcessEventSupport eventSupport) {
         this.processInstanceManager = processInstanceManager;
         this.signalManager = signalManager;
-        this.eventSupport = eventSupport;
+        this.eventSupport = (KogitoProcessEventSupport) eventSupport;
     }
 
     public void internalExecuteWorkItem(WorkItem workItem) {
@@ -76,7 +77,7 @@ public class LightWorkItemManager implements WorkItemManager {
             eventSupport.fireBeforeWorkItemTransition(processInstance, workItem, transition, null);
             
             handler.executeWorkItem(workItem, this);
-            
+
             eventSupport.fireAfterWorkItemTransition(processInstance, workItem, transition, null);
         } else throw new WorkItemHandlerNotFoundException(workItem.getName() );
     }    
@@ -179,7 +180,7 @@ public class LightWorkItemManager implements WorkItemManager {
                     completePhase.apply(workItem, transition);
                     internalCompleteWorkItem(workItem);                                        
                 }
-                
+
                 eventSupport.fireAfterWorkItemTransition(processInstance, workItem, transition, null);
             } else {
                 throw new WorkItemHandlerNotFoundException(workItem.getName() );

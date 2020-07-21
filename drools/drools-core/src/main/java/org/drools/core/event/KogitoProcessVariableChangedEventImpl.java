@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2005 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 
-public class ProcessVariableChangedEventImpl extends ProcessEvent implements ProcessVariableChangedEvent {
+public class KogitoProcessVariableChangedEventImpl  extends ProcessEvent implements ProcessVariableChangedEvent {
 
     private static final long serialVersionUID = 510l;
 
@@ -36,9 +36,9 @@ public class ProcessVariableChangedEventImpl extends ProcessEvent implements Pro
 
     private NodeInstance nodeInstance;
 
-    public ProcessVariableChangedEventImpl(final String id, final String instanceId,
-                                           final Object oldValue, final Object newValue, List<String> tags,
-                                           final ProcessInstance processInstance, NodeInstance nodeInstance, KieRuntime kruntime ) {
+    public KogitoProcessVariableChangedEventImpl( final String id, final String instanceId,
+                                                  final Object oldValue, final Object newValue, List<String> tags,
+                                                  final ProcessInstance processInstance, NodeInstance nodeInstance, KieRuntime kruntime ) {
         super( processInstance, kruntime );
         this.nodeInstance = nodeInstance;
         this.id = id;
@@ -64,8 +64,8 @@ public class ProcessVariableChangedEventImpl extends ProcessEvent implements Pro
         return newValue;
     }
 
-    public boolean hasTag(String tag) {
-        return tags.contains(tag);
+    public boolean hasTag( String tag ) {
+        return tags.contains( tag );
     }
 
     public List<String> getTags() {
@@ -82,4 +82,3 @@ public class ProcessVariableChangedEventImpl extends ProcessEvent implements Pro
                 + "; processName=" + getProcessInstance().getProcessName() + "; processId=" + getProcessInstance().getProcessId() + ")]";
     }
 }
-
