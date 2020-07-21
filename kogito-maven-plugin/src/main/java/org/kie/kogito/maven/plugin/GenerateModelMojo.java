@@ -39,7 +39,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.drools.compiler.kogito.KogitoKieModuleModelImpl;
+import org.drools.compiler.builder.impl.KogitoKieModuleModelImpl;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.kie.api.builder.model.KieModuleModel;
 import org.kie.kogito.codegen.AddonsConfig;

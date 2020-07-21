@@ -38,11 +38,11 @@ import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildI
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.runtime.LaunchMode;
+import org.drools.compiler.builder.impl.KogitoKieModuleModelImpl;
 import org.drools.compiler.commons.jci.compilers.CompilationResult;
 import org.drools.compiler.commons.jci.compilers.JavaCompiler;
 import org.drools.compiler.commons.jci.compilers.JavaCompilerSettings;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
-import org.drools.compiler.kogito.KogitoKieModuleModelImpl;
 import org.drools.core.base.ClassFieldAccessorFactory;
 import org.drools.modelcompiler.builder.JavaParserCompiler;
 import org.jboss.jandex.ClassInfo;

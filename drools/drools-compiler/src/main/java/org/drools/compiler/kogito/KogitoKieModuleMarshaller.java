@@ -14,34 +14,50 @@
  * limitations under the License.
  */
 
-package org.drools.compiler.kogito;
+package org.drools.compiler.builder.impl;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.converters.basic.*;
+import com.thoughtworks.xstream.converters.basic.BooleanConverter;
+import com.thoughtworks.xstream.converters.basic.ByteConverter;
+import com.thoughtworks.xstream.converters.basic.DoubleConverter;
+import com.thoughtworks.xstream.converters.basic.FloatConverter;
+import com.thoughtworks.xstream.converters.basic.IntConverter;
+import com.thoughtworks.xstream.converters.basic.LongConverter;
+import com.thoughtworks.xstream.converters.basic.NullConverter;
+import com.thoughtworks.xstream.converters.basic.ShortConverter;
+import com.thoughtworks.xstream.converters.basic.StringConverter;
 import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.security.AnyTypePermission;
-import org.drools.compiler.kproject.models.*;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import org.drools.compiler.kproject.models.ChannelModelImpl;
+import org.drools.compiler.kproject.models.FileLoggerModelImpl;
+import org.drools.compiler.kproject.models.KieBaseModelImpl;
+import org.drools.compiler.kproject.models.KieModuleModelImpl;
+import org.drools.compiler.kproject.models.KieSessionModelImpl;
+import org.drools.compiler.kproject.models.ListenerModelImpl;
+import org.drools.compiler.kproject.models.QualifierModelImpl;
+import org.drools.compiler.kproject.models.RuleTemplateModelImpl;
+import org.drools.compiler.kproject.models.WorkItemHandlerModelImpl;
 import org.drools.core.util.AbstractXStreamConverter;
 import org.drools.core.util.IoUtils;
 import org.kie.api.builder.model.KieBaseModel;
 import org.kie.api.builder.model.KieModuleModel;
 import org.xml.sax.SAXException;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 
