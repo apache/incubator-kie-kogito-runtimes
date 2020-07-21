@@ -51,8 +51,8 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance {
     }
 
     private boolean isCompleted() {
-        KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime())
-                .setNodeInstance(this);
+        KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
+        context.setNodeInstance(this);
         return getMilestoneNode().canComplete(context);
     }
 

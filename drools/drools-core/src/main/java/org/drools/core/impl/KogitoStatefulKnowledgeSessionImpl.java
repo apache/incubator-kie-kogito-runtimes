@@ -23,10 +23,13 @@ import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.InternalWorkingMemoryEntryPoint;
 import org.drools.core.factmodel.traits.Thing;
 import org.drools.core.kogito.factory.KogitoDefaultFactHandle;
+import org.drools.core.spi.AbstractProcessContext;
 import org.drools.core.spi.FactHandleFactory;
 import org.drools.core.spi.KnowledgeHelper;
+import org.drools.core.spi.KogitoProcessContext;
 import org.drools.core.util.bitmask.BitMask;
 import org.kie.api.runtime.Environment;
+import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.Application;
@@ -149,6 +152,15 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
                     this.activation.getTuple().getTupleSink(),
                     fhState);
         }
-    }
 
+        @Override
+        protected boolean sameNodeInstance( NodeInstance subNodeInstance, String nodeInstanceId ) {
+            return subNodeInstance.getId().equals( nodeInstanceId );
+        }
+
+        @Override
+        protected AbstractProcessContext createProcessContext() {
+            return new KogitoProcessContext(workingMemory.getKnowledgeRuntime());
+        }
+    }
 }

@@ -75,14 +75,14 @@ public class DynamicNodeInstance extends CompositeContextNodeInstance {
     }
 
     private boolean canActivate() {
-        KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime())
-                .setNodeInstance(this);
+        KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
+        context.setNodeInstance(this);
         return getDynamicNode().canActivate(context);
     }
 
     private boolean canComplete() {
-        KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime())
-                .setNodeInstance(this);
+        KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
+        context.setNodeInstance(this);
         return getNodeInstances(false).isEmpty() && getDynamicNode().canComplete(context);
     }
 
