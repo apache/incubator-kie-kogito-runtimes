@@ -18,66 +18,17 @@ package org.drools.core.marshalling.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectStreamClass;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.drools.core.common.BaseNode;
-import org.drools.core.common.InternalFactHandle;
-import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.marshalling.impl.ProtobufInputMarshaller.PBActivationsFilter;
-import org.drools.core.marshalling.impl.ProtobufInputMarshaller.TupleKey;
-import org.drools.core.phreak.PhreakTimerNode.Scheduler;
-import org.drools.core.reteoo.LeftTuple;
-import org.drools.core.reteoo.RightTuple;
-import org.drools.core.rule.EntryPointId;
-import org.drools.core.spi.PropagationContext;
 import org.kie.api.definition.process.Process;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.marshalling.ObjectMarshallingStrategyStore;
 import org.kie.api.runtime.Environment;
-import org.kie.api.runtime.EnvironmentName;
-import org.kie.api.runtime.KieRuntime;
 
 public class KogitoMarshallerReaderContext extends MarshallerReaderContext  {
-    public final MarshallerReaderContext stream;
-    public final InternalKnowledgeBase kBase;
-    public InternalWorkingMemory wm;
-    public KieRuntime kruntime;
-    public final Map<Integer, BaseNode>                                            sinks;
-
-    public Map<Long, InternalFactHandle>                                           handles;
-
-    public final Map<RightTupleKey, RightTuple>                                    rightTuples;
-    public final Map<Integer, LeftTuple>                                           terminalTupleMap;
-    public final PBActivationsFilter filter;
-
-    public final ObjectMarshallingStrategyStore resolverStrategyFactory;
-    public final Map<Integer, ObjectMarshallingStrategy>                           usedStrategies;
-    public final Map<ObjectMarshallingStrategy, ObjectMarshallingStrategy.Context> strategyContexts;
-
-    public final Map<String, EntryPointId>                                           entryPoints;
-
-    public final Map<Integer, TimersInputMarshaller>                               readersByInt;
-
-    public final Map<Long, PropagationContext>                                     propagationContexts;
-
-    public final boolean                                                           marshalProcessInstances;
-    public final boolean                                                           marshalWorkItems;
-    public final Environment env;
-
-    // this is a map to store node memory data indexed by node ID
-    private final Map<Integer, Object>                                              nodeMemories;
-
-    public Map<Integer, Object> getNodeMemories() {
-        return nodeMemories;
-    }
-
-    public Object                                                                  parameterObject;
-    public ClassLoader                                                             classLoader;
-    public Map<Integer, Map<TupleKey, Scheduler>>                                  timerNodeSchedulers;
 
     public Map<String, Process> processes = new HashMap<>();
 
@@ -122,80 +73,16 @@ public class KogitoMarshallerReaderContext extends MarshallerReaderContext  {
                                          boolean marshalProcessInstances,
                                          boolean marshalWorkItems,
                                          Environment env) throws IOException {
-        super(stream, kBase, sinks, resolverStrategyFactory, timerReaders, env);
-        this.stream = this;
-        this.kBase = kBase;
-        this.sinks = sinks;
+        super(stream, kBase, sinks, resolverStrategyFactory, timerReaders,
+                marshalProcessInstances, marshalWorkItems, env);
 
-        this.readersByInt = timerReaders;
-
-        this.handles = new HashMap<>();
-        this.rightTuples = new HashMap<>();
-        this.terminalTupleMap = new HashMap<>();
-        this.filter = new PBActivationsFilter();
-        this.entryPoints = new HashMap<>();
-        this.propagationContexts = new HashMap<>();
-        if ( resolverStrategyFactory == null ) {
-            ObjectMarshallingStrategy[] strats = (ObjectMarshallingStrategy[]) env.get(EnvironmentName.OBJECT_MARSHALLING_STRATEGIES );
-            if ( strats == null ) {
-                strats = new ObjectMarshallingStrategy[]{new SerializablePlaceholderResolverStrategy(ClassObjectMarshallingStrategyAcceptor.DEFAULT  )};
-            }
-            this.resolverStrategyFactory = new ObjectMarshallingStrategyStoreImpl(strats );
-        }
-        else {
-            this.resolverStrategyFactory = resolverStrategyFactory;
-        }
-        this.usedStrategies = new HashMap<>();
-        this.strategyContexts = new HashMap<>();
-
-        this.marshalProcessInstances = marshalProcessInstances;
-        this.marshalWorkItems = marshalWorkItems;
-        this.env = env;
-
-        this.nodeMemories = new HashMap<>();
-        this.timerNodeSchedulers = new HashMap<>();
-
-        this.parameterObject = null;
         if (this.kBase != null) {
-            
             this.kBase.getProcesses().forEach( p -> this.processes.put(p.getId(), p));
         }
     }
 
     @Override
-    protected Class< ? > resolveClass(ObjectStreamClass desc) throws IOException,
-                                                             ClassNotFoundException {
-        String name = desc.getName();
-        try {
-            if ( this.classLoader == null ) {
-                if ( this.kBase != null ) {
-                    this.classLoader = this.kBase.getRootClassLoader();
-                }
-            }
-            return Class.forName( name, false, this.classLoader );
-        } catch ( ClassNotFoundException ex ) {
-            return super.resolveClass( desc );
-        }
-    }
-    
-    public void addTimerNodeScheduler(int nodeId, TupleKey key, Scheduler scheduler ) {
-        Map<TupleKey, Scheduler> timers = timerNodeSchedulers.get(nodeId );
-        if( timers == null ) {
-            timers = new HashMap<>();
-            timerNodeSchedulers.put( nodeId, timers );
-        }
-        timers.put( key, scheduler );
-    }
-    
-    public Scheduler removeTimerNodeScheduler(int nodeId, TupleKey key ) {
-        Map<TupleKey, Scheduler> timers = timerNodeSchedulers.get(nodeId );
-        if( timers != null ) {
-            Scheduler scheduler = timers.remove(key );
-            if( timers.isEmpty() ) {
-                timerNodeSchedulers.remove( nodeId );
-            }
-            return scheduler;
-        } 
-        return null;
+    protected ObjectMarshallingStrategy[] getMarshallingStrategy() {
+        return new ObjectMarshallingStrategy[]{new KogitoSerializablePlaceholderResolverStrategy( ClassObjectMarshallingStrategyAcceptor.DEFAULT  )};
     }
 }

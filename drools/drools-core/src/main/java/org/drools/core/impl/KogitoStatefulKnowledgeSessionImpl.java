@@ -51,6 +51,11 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
     }
 
     @Override
+    public ProcessInstance getProcessInstance(Object processInstanceId) {
+        return getProcessInstance( (String) processInstanceId );
+    }
+
+    @Override
     public ProcessInstance getProcessInstance(String processInstanceId) {
         return getProcessRuntime().getProcessInstance( processInstanceId );
     }

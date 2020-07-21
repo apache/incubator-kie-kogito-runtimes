@@ -19,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.drools.core.marshalling.impl.KogitoProtobufMarshaller;
+import org.drools.core.marshalling.impl.MarshallingConfigurationImpl;
 import org.drools.core.marshalling.impl.ProtobufMarshaller;
 import org.drools.core.marshalling.impl.ReadSessionResult;
 import org.drools.core.util.DroolsStreamUtils;
@@ -26,7 +28,6 @@ import org.kie.api.KieBase;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.EnvironmentName;
 import org.kie.api.runtime.KieSession;
-import org.kie.internal.marshalling.MarshallerFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 /**
@@ -68,8 +69,8 @@ public class SerializationHelper {
     public static ReadSessionResult getSerialisedStatefulKnowledgeSessionWithMessage( final KieSession ksession,
                                                                                       final KieBase kbase,
                                                                                       final boolean dispose) throws Exception {
-        final ProtobufMarshaller marshaller = ( ProtobufMarshaller ) MarshallerFactory.newMarshaller(kbase,
-                                                                                                   ( ObjectMarshallingStrategy[]) ksession.getEnvironment().get( EnvironmentName.OBJECT_MARSHALLING_STRATEGIES));
+        ObjectMarshallingStrategy[] strategies = ( ObjectMarshallingStrategy[]) ksession.getEnvironment().get( EnvironmentName.OBJECT_MARSHALLING_STRATEGIES);
+        final ProtobufMarshaller marshaller = new KogitoProtobufMarshaller(kbase, new MarshallingConfigurationImpl( strategies, true, true ));
         final long time = ksession.getSessionClock().getCurrentTime();
         // make sure globas are in the environment of the session
         ksession.getEnvironment().set( EnvironmentName.GLOBALS, ksession.getGlobals());
