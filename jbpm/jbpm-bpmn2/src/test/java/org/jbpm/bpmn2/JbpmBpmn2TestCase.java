@@ -36,9 +36,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.drools.core.SessionConfiguration;
 import org.drools.core.audit.WorkingMemoryInMemoryLogger;
+import org.drools.core.audit.event.KogitoRuleFlowNodeLogEvent;
 import org.drools.core.audit.event.LogEvent;
-import org.drools.core.audit.event.RuleFlowLogEvent;
-import org.drools.core.audit.event.RuleFlowNodeLogEvent;
+import org.drools.core.audit.event.KogitoRuleFlowLogEvent;
 import org.drools.core.impl.EnvironmentFactory;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.util.DroolsStreamUtils;
@@ -344,8 +344,8 @@ public abstract class JbpmBpmn2TestCase {
         int counter = 0;
         
         for (LogEvent event : workingMemoryLogger.getLogEvents()) {
-            if (event instanceof RuleFlowNodeLogEvent) {
-                String nodeName = ((RuleFlowNodeLogEvent) event).getNodeName();
+            if (event instanceof KogitoRuleFlowNodeLogEvent ) {
+                String nodeName = (( KogitoRuleFlowNodeLogEvent ) event).getNodeName();
                 if (node.equals(nodeName)) {
                     counter++;
                 }
@@ -360,7 +360,7 @@ public abstract class JbpmBpmn2TestCase {
         LogEvent [] events = workingMemoryLogger.getLogEvents().toArray(new LogEvent[0]);
         for (LogEvent event : events ) { 
             if (event.getType() == LogEvent.BEFORE_RULEFLOW_CREATED) {
-                if(((RuleFlowLogEvent) event).getProcessId().equals(processId)) {
+                if((( KogitoRuleFlowLogEvent ) event).getProcessId().equals(processId)) {
                     counter++;                    
                 }
             }
@@ -382,8 +382,8 @@ public abstract class JbpmBpmn2TestCase {
         }
         
         for (LogEvent event : workingMemoryLogger.getLogEvents()) {
-            if (event instanceof RuleFlowNodeLogEvent) {
-                String nodeName = ((RuleFlowNodeLogEvent) event)
+            if (event instanceof KogitoRuleFlowNodeLogEvent ) {
+                String nodeName = (( KogitoRuleFlowNodeLogEvent ) event)
                         .getNodeName();
                 if (names.contains(nodeName)) {
                     names.remove(nodeName);
@@ -398,9 +398,9 @@ public abstract class JbpmBpmn2TestCase {
         List<String> names = new ArrayList<String>();
         
         for (LogEvent event : workingMemoryLogger.getLogEvents()) {
-            if (event instanceof RuleFlowNodeLogEvent) {
+            if (event instanceof KogitoRuleFlowNodeLogEvent ) {
                 if( event.getType() == 27 ) { 
-                    names.add(((RuleFlowNodeLogEvent) event).getNodeId());
+                    names.add((( KogitoRuleFlowNodeLogEvent ) event).getNodeId());
                 }
             }
         }
