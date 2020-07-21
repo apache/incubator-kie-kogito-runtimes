@@ -29,6 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.drools.core.WorkItemHandlerNotFoundException;
 import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.core.process.instance.KogitoWorkItem;
+import org.drools.core.process.instance.KogitoWorkItemManager;
 import org.drools.core.process.instance.WorkItem;
 import org.drools.core.process.instance.WorkItemManager;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -39,27 +41,27 @@ import org.kie.kogito.process.workitem.Policy;
 import static org.kie.api.runtime.process.WorkItem.ABORTED;
 import static org.kie.api.runtime.process.WorkItem.COMPLETED;
 
-public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
+public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Externalizable {
 
     private static final long serialVersionUID = 510l;
 
-    private Map<String, WorkItem> workItems = new ConcurrentHashMap<>();
+    private Map<String, KogitoWorkItem> workItems = new ConcurrentHashMap<>();
     private InternalKnowledgeRuntime kruntime;
     private Map<String, WorkItemHandler> workItemHandlers = new HashMap<>();
 
-    public DefaultWorkItemManager(InternalKnowledgeRuntime kruntime) {
+    public KogitoDefaultWorkItemManager( InternalKnowledgeRuntime kruntime) {
         this.kruntime = kruntime;
     }
 
     /**
      * Do not use this constructor. It should be used just by deserialization.
      */
-    public DefaultWorkItemManager() {
+    public KogitoDefaultWorkItemManager() {
     }
 
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {        
-        workItems = (Map<String, WorkItem>) in.readObject();
+        workItems = (Map<String, KogitoWorkItem>) in.readObject();
         kruntime = (InternalKnowledgeRuntime) in.readObject();
         workItemHandlers = (Map<String, WorkItemHandler>) in.readObject();
     }
@@ -70,8 +72,8 @@ public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
         out.writeObject(workItemHandlers);
     }
 
-    public void internalExecuteWorkItem(WorkItem workItem) {
-        ((WorkItemImpl) workItem).setId(UUID.randomUUID().toString());
+    public void internalExecuteWorkItem( KogitoWorkItem workItem) {
+        (( KogitoWorkItemImpl ) workItem).setId(UUID.randomUUID().toString());
         internalAddWorkItem(workItem);
         WorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
         if (handler != null) {
@@ -79,12 +81,12 @@ public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
         } else throw new WorkItemHandlerNotFoundException(workItem.getName() );
     }
 
-    public void internalAddWorkItem(WorkItem workItem) {
+    public void internalAddWorkItem( KogitoWorkItem workItem) {
         workItems.put(workItem.getId(), workItem);
     }
 
     public void internalAbortWorkItem(String id) {
-        WorkItemImpl workItem = (WorkItemImpl) workItems.get(id);
+        KogitoWorkItemImpl workItem = ( KogitoWorkItemImpl ) workItems.get(id);
         // work item may have been aborted
         if (workItem != null) {
             WorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
@@ -99,12 +101,12 @@ public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
     }
 
     public void retryWorkItem(String workItemId) {
-    	WorkItem workItem = workItems.get(workItemId);
+    	KogitoWorkItem workItem = workItems.get(workItemId);
     	retryWorkItem(workItem);
     }
 
     public void retryWorkItemWithParams(String workItemId,Map<String,Object> map) {
-        WorkItem workItem = workItems.get(workItemId);
+        KogitoWorkItem workItem = workItems.get(workItemId);
         
         if ( workItem != null ) {
             workItem.setParameters( map );
@@ -113,7 +115,7 @@ public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
         }
     }
     
-    private void retryWorkItem(WorkItem workItem) {
+    private void retryWorkItem( KogitoWorkItem workItem) {
         if (workItem != null) {
             WorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
             if (handler != null) {
@@ -122,16 +124,12 @@ public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
         }
     }
     
-    public Set<WorkItem> getWorkItems() {
-        return new HashSet<>(workItems.values());
-    }
-
-    public WorkItem getWorkItem(String id) {
+    public KogitoWorkItem getWorkItem( String id) {
         return workItems.get(id);
     }
 
     public void completeWorkItem(String id, Map<String, Object> results, Policy<?>... policies) {
-        WorkItem workItem = workItems.get(id);
+        KogitoWorkItem workItem = workItems.get(id);
         // work item may have been aborted
         if (workItem != null) {
             (workItem).setResults(results);
@@ -146,7 +144,7 @@ public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
     }
 
     public void abortWorkItem(String id, Policy<?>... policies) {
-        WorkItemImpl workItem = (WorkItemImpl) workItems.get(id);
+        KogitoWorkItemImpl workItem = ( KogitoWorkItemImpl ) workItems.get(id);
         // work item may have been aborted
         if (workItem != null) {
             ProcessInstance processInstance = kruntime.getProcessInstance(workItem.getProcessInstanceId());
@@ -163,15 +161,26 @@ public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
         this.workItemHandlers.put(workItemName, handler);
     }
 
+    @Override
+    public Set<WorkItem> getWorkItems() {
+        return new HashSet<>(workItems.values());
+    }
+
+    @Override
+    public WorkItem getWorkItem( long id ) {
+        throw new UnsupportedOperationException( "org.drools.core.process.instance.impl.KogitoDefaultWorkItemManager.getWorkItem -> TODO" );
+
+    }
+
     public void clear() {
         this.workItems.clear();
     }
     
     public void signalEvent(String type, Object event) { 
         this.kruntime.signalEvent(type, event);
-    } 
-    
-    public void signalEvent(String type, Object event, String processInstanceId) { 
+    }
+
+    public void signalEvent(String type, Object event, String processInstanceId) {
         this.kruntime.signalEvent(type, event, processInstanceId);
     }
 
@@ -185,7 +194,13 @@ public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
             }
         }
     }
-    
+
+    @Override
+    public void retryWorkItem( Long workItemID, Map<String, Object> params ) {
+        throw new UnsupportedOperationException( "org.drools.core.process.instance.impl.KogitoDefaultWorkItemManager.retryWorkItem -> TODO" );
+
+    }
+
     @Override
     public void retryWorkItem( String workItemID, Map<String, Object> params ) {
        if(params==null || params.isEmpty()){
@@ -197,7 +212,31 @@ public class DefaultWorkItemManager implements WorkItemManager, Externalizable {
     }
 
     @Override
-    public void internalCompleteWorkItem(WorkItem workItem) {
+    public void internalCompleteWorkItem( KogitoWorkItem workItem) {
         
+    }
+
+    public WorkItemManager createWorkItemManager( InternalKnowledgeRuntime kruntime ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void internalExecuteWorkItem( WorkItem workItem ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void internalAddWorkItem( WorkItem workItem ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void internalAbortWorkItem( long id ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void signalEvent( String type, Object event, long processInstanceId ) {
+        throw new UnsupportedOperationException();
     }
 }

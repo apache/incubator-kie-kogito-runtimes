@@ -17,37 +17,18 @@
 package org.drools.core.process.instance;
 
 import java.util.Date;
-import java.util.Map;
 
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 
-public interface WorkItem extends org.kie.api.runtime.process.WorkItem {
-
-    void setName(String name);
-
-    void setParameter(String name, Object value);
-
-    void setParameters(Map<String, Object> parameters);
-
-    void setResults(Map<String, Object> results);
-
-    void setState(int state);
+public interface KogitoWorkItem extends WorkItem {
 
     void setProcessInstanceId(String processInstanceId);
 
-    void setDeploymentId(String deploymentId);
-
     void setNodeInstanceId(String deploymentId);
 
-    void setNodeId(long deploymentId);
+    String getNodeInstanceStringId();
 
-    String getDeploymentId();
-
-    String getNodeInstanceId();
-
-    long getNodeId();
-    
     void setPhaseId(String phaseId);
     
     void setPhaseStatus(String phaseStatus);

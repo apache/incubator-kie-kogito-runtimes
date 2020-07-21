@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.drools.core.command.runtime.process.KogitoSetProcessInstanceVariablesCommand;
+import org.drools.core.process.instance.KogitoWorkItem;
 import org.drools.core.process.instance.WorkItemHandler;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
@@ -1073,10 +1074,10 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         WorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        assertThat(workItem instanceof org.drools.core.process.instance.WorkItem).isTrue();
+        assertThat(workItem instanceof KogitoWorkItem ).isTrue();
 
-        String nodeInstanceId = ((org.drools.core.process.instance.WorkItem) workItem).getNodeInstanceId();
-        long nodeId = ((org.drools.core.process.instance.WorkItem) workItem).getNodeId();
+        String nodeInstanceId = (( KogitoWorkItem ) workItem).getNodeInstanceStringId();
+        long nodeId = (( KogitoWorkItem ) workItem).getNodeId();
 
         assertThat(nodeId).isNotNull();
         assertThat(nodeId > 0).isTrue();
@@ -1096,11 +1097,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         WorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        assertThat(workItem instanceof org.drools.core.process.instance.WorkItem).isTrue();
+        assertThat(workItem instanceof KogitoWorkItem ).isTrue();
 
-        String nodeInstanceId = ((org.drools.core.process.instance.WorkItem) workItem).getNodeInstanceId();
-        long nodeId = ((org.drools.core.process.instance.WorkItem) workItem).getNodeId();
-        String deploymentId = ((org.drools.core.process.instance.WorkItem) workItem).getDeploymentId();
+        String nodeInstanceId = (( KogitoWorkItem ) workItem).getNodeInstanceStringId();
+        long nodeId = (( KogitoWorkItem ) workItem).getNodeId();
+        String deploymentId = (( KogitoWorkItem ) workItem).getDeploymentId();
 
         assertThat(nodeId).isNotNull();
         assertThat(nodeId > 0).isTrue();

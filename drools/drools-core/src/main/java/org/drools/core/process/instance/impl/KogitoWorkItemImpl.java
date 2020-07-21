@@ -22,11 +22,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.drools.core.process.instance.WorkItem;
+import org.drools.core.process.instance.KogitoWorkItem;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 
-public class WorkItemImpl implements WorkItem, Serializable {
+public class KogitoWorkItemImpl implements KogitoWorkItem, Serializable {
 
     private static final long serialVersionUID = 510l;
 
@@ -67,6 +67,11 @@ public class WorkItemImpl implements WorkItem, Serializable {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    @Override
+    public void setProcessInstanceId( long processInstanceId ) {
+        throw new UnsupportedOperationException();
     }
 
     public int getState() {
@@ -123,7 +128,16 @@ public class WorkItemImpl implements WorkItem, Serializable {
         this.deploymentId = deploymentId;
     }
 
-    public String getNodeInstanceId() {
+    @Override
+    public void setNodeInstanceId( long deploymentId ) {
+        throw new UnsupportedOperationException();
+    }
+
+    public long getNodeInstanceId() {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getNodeInstanceStringId() {
         return nodeInstanceId;
     }
 

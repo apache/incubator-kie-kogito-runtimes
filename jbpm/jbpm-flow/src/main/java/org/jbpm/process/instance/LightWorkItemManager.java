@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,9 +28,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.drools.core.WorkItemHandlerNotFoundException;
 import org.drools.core.event.KogitoProcessEventSupport;
 import org.drools.core.event.ProcessEventSupport;
+import org.drools.core.process.instance.KogitoWorkItem;
+import org.drools.core.process.instance.KogitoWorkItemManager;
 import org.drools.core.process.instance.WorkItem;
-import org.drools.core.process.instance.WorkItemManager;
-import org.drools.core.process.instance.impl.WorkItemImpl;
+import org.drools.core.process.instance.impl.KogitoWorkItemImpl;
 import org.jbpm.process.instance.impl.workitem.Abort;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
@@ -49,9 +49,9 @@ import static org.jbpm.process.instance.impl.workitem.Abort.STATUS;
 import static org.kie.api.runtime.process.WorkItem.ABORTED;
 import static org.kie.api.runtime.process.WorkItem.COMPLETED;
 
-public class LightWorkItemManager implements WorkItemManager {
+public class LightWorkItemManager implements KogitoWorkItemManager {
  
-    private Map<String, WorkItem> workItems = new ConcurrentHashMap<>();
+    private Map<String, KogitoWorkItem> workItems = new ConcurrentHashMap<>();
     private Map<String, WorkItemHandler> workItemHandlers = new HashMap<>();
 
     private final ProcessInstanceManager processInstanceManager;
@@ -67,8 +67,8 @@ public class LightWorkItemManager implements WorkItemManager {
         this.eventSupport = (KogitoProcessEventSupport) eventSupport;
     }
 
-    public void internalExecuteWorkItem(WorkItem workItem) {
-        ((WorkItemImpl) workItem).setId(UUID.randomUUID().toString());
+    public void internalExecuteWorkItem( KogitoWorkItem workItem) {
+        (( KogitoWorkItemImpl ) workItem).setId(UUID.randomUUID().toString());
         internalAddWorkItem(workItem);
         WorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
         if (handler != null) {
@@ -82,12 +82,12 @@ public class LightWorkItemManager implements WorkItemManager {
         } else throw new WorkItemHandlerNotFoundException(workItem.getName() );
     }    
 
-    public void internalAddWorkItem(WorkItem workItem) {
+    public void internalAddWorkItem( KogitoWorkItem workItem) {
         workItems.put(workItem.getId(), workItem);  
     }
 
     public void internalAbortWorkItem(String id) {
-        WorkItemImpl workItem = (WorkItemImpl) workItems.get(id);
+        KogitoWorkItemImpl workItem = ( KogitoWorkItemImpl ) workItems.get(id);
         // work item may have been aborted
         if (workItem != null) {
             workItem.setCompleteDate(new Date());
@@ -111,12 +111,12 @@ public class LightWorkItemManager implements WorkItemManager {
     }
 
     public void retryWorkItem(String workItemId) {
-    	WorkItem workItem = workItems.get(workItemId);
+    	KogitoWorkItem workItem = workItems.get(workItemId);
     	retryWorkItem(workItem);
     }
 
     public void retryWorkItemWithParams(String workItemId,Map<String,Object> map) {
-        WorkItem workItem = workItems.get(workItemId);
+        KogitoWorkItem workItem = workItems.get(workItemId);
         
         if ( workItem != null ) {
             workItem.setParameters( map );
@@ -125,7 +125,7 @@ public class LightWorkItemManager implements WorkItemManager {
         }
     }
     
-    private void retryWorkItem(WorkItem workItem) {
+    private void retryWorkItem( KogitoWorkItem workItem) {
         if (workItem != null) {
             WorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
             if (handler != null) {
@@ -134,11 +134,7 @@ public class LightWorkItemManager implements WorkItemManager {
         }
     }
     
-    public Set<WorkItem> getWorkItems() {
-        return new HashSet<>(workItems.values());
-    }
-
-    public WorkItem getWorkItem(String id) {
+    public KogitoWorkItem getWorkItem( String id) {
         return workItems.get(id);
     }
 
@@ -146,7 +142,7 @@ public class LightWorkItemManager implements WorkItemManager {
         transitionWorkItem(id, new TransitionToComplete(results, Arrays.asList(policies)));
     }
     
-    public void internalCompleteWorkItem(WorkItem workItem) {
+    public void internalCompleteWorkItem( KogitoWorkItem workItem) {
         ProcessInstance processInstance = processInstanceManager.getProcessInstance(workItem.getProcessInstanceId());                    
         workItem.setState(COMPLETED);
         workItem.setCompleteDate(new Date());
@@ -162,7 +158,7 @@ public class LightWorkItemManager implements WorkItemManager {
     @SuppressWarnings("unchecked")
     @Override
     public void transitionWorkItem(String id, Transition<?> transition) {
-        WorkItem workItem = workItems.get(id);
+        KogitoWorkItem workItem = workItems.get(id);
         // work item may have been aborted
         if (workItem != null) {
                         
@@ -192,7 +188,7 @@ public class LightWorkItemManager implements WorkItemManager {
     }
 
     public void abortWorkItem(String id, Policy<?>... policies) {
-        WorkItemImpl workItem = (WorkItemImpl) workItems.get(id);
+        KogitoWorkItemImpl workItem = ( KogitoWorkItemImpl ) workItems.get(id);
         // work item may have been aborted
         if (workItem != null) {
             if (!workItem.enforce(policies)) {
@@ -219,14 +215,50 @@ public class LightWorkItemManager implements WorkItemManager {
         this.workItemHandlers.put(workItemName, handler);
     }
 
+    @Override
+    public void internalExecuteWorkItem( WorkItem workItem ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.internalExecuteWorkItem -> TODO" );
+
+    }
+
+    @Override
+    public void internalAddWorkItem( WorkItem workItem ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.internalAddWorkItem -> TODO" );
+
+    }
+
+    @Override
+    public void internalAbortWorkItem( long id ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.internalAbortWorkItem -> TODO" );
+
+    }
+
+    @Override
+    public Set<WorkItem> getWorkItems() {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.getWorkItems -> TODO" );
+
+    }
+
+    @Override
+    public WorkItem getWorkItem( long id ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.getWorkItem -> TODO" );
+
+    }
+
     public void clear() {
         this.workItems.clear();
     }
     
     public void signalEvent(String type, Object event) { 
         this.signalManager.signalEvent(type, event);
-    } 
-    
+    }
+
+    @Override
+    public void signalEvent( String type, Object event, long processInstanceId ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.signalEvent -> TODO" );
+
+    }
+
     public void signalEvent(String type, Object event, String processInstanceId) { 
         this.signalManager.signalEvent(processInstanceId, type, event);
     }
@@ -241,7 +273,13 @@ public class LightWorkItemManager implements WorkItemManager {
             }
         }
     }
-    
+
+    @Override
+    public void retryWorkItem( Long workItemID, Map<String, Object> params ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.retryWorkItem -> TODO" );
+
+    }
+
     @Override
     public void retryWorkItem( String workItemID, Map<String, Object> params ) {
        if(params==null || params.isEmpty()){

@@ -16,10 +16,22 @@
 
 package org.drools.core.process.instance;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
+import java.util.Map;
 
-public interface WorkItemManagerFactory {
+public interface KogitoWorkItemManager extends WorkItemManager {
 
-    WorkItemManager createWorkItemManager(InternalKnowledgeRuntime kruntime);
+    void internalExecuteWorkItem( KogitoWorkItem workItem);
+
+    void internalAddWorkItem( KogitoWorkItem workItem);
+
+    void internalAbortWorkItem(String id);
+    
+    void internalCompleteWorkItem( KogitoWorkItem workItem);
+    
+    KogitoWorkItem getWorkItem( String id);
+
+    public void signalEvent(String type, Object event, String processInstanceId);
+
+    void retryWorkItem( String workItemID, Map<String, Object> params ) ;
 
 }

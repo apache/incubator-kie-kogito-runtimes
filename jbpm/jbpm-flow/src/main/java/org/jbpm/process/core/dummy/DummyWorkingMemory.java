@@ -28,7 +28,7 @@ import org.drools.core.event.RuleRuntimeEventSupport;
 import org.drools.core.impl.EnvironmentImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.phreak.PropagationEntry;
-import org.drools.core.process.instance.impl.DefaultWorkItemManager;
+import org.drools.core.process.instance.impl.KogitoDefaultWorkItemManager;
 import org.drools.core.reteoo.EntryPointNode;
 import org.drools.core.reteoo.TerminalNode;
 import org.drools.core.rule.EntryPointId;
@@ -79,7 +79,7 @@ public class DummyWorkingMemory implements InternalWorkingMemory,
         this.kieBase = kieBase;
         environment = new EnvironmentImpl();
         timerService = new JDKTimerService();
-        this.workItemManager = new DefaultWorkItemManager(this);
+        this.workItemManager = new KogitoDefaultWorkItemManager(this);
     }
 
     public void setProcessRuntime(InternalProcessRuntime processRuntime) {
