@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.KogitoInternalAgenda;
-import org.drools.core.spi.ProcessContext;
+import org.drools.core.spi.KogitoProcessContext;
 import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
@@ -178,7 +178,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 }
             } else if (ruleType.isRuleUnit()) {
                 RuleUnitFactory<RuleUnitData> factory = ruleSetNode.getRuleUnitFactory();
-                ProcessContext context = new ProcessContext(getProcessInstance().getKnowledgeRuntime());
+                KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
                 context.setNodeInstance(this);
                 RuleUnitData model = factory.bind(context);
                 RuleUnitInstance<RuleUnitData> instance = factory.unit().createInstance(model);

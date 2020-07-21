@@ -32,7 +32,7 @@ import org.drools.core.WorkItemHandlerNotFoundException;
 import org.drools.core.process.instance.WorkItem;
 import org.drools.core.process.instance.WorkItemManager;
 import org.drools.core.process.instance.impl.WorkItemImpl;
-import org.drools.core.spi.ProcessContext;
+import org.drools.core.spi.KogitoProcessContext;
 import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
@@ -281,7 +281,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     private void handleAssignment(Assignment assignment) {
         AssignmentAction action = (AssignmentAction) assignment.getMetaData("Action");
         try {
-            ProcessContext context = new ProcessContext(getProcessInstance().getKnowledgeRuntime());
+            KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
             context.setNodeInstance(this);
             action.execute(getWorkItem(), context);
         } catch (Exception e) {
