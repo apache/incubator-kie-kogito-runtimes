@@ -55,11 +55,7 @@ public class ProcessInstanceMarshaller {
                 strats[i] = strategy;
                 i++;
             }
-<<<<<<< HEAD
-            strats[i] = new SerializablePlaceholderResolverStrategy(ClassObjectMarshallingStrategyAcceptor.DEFAULT);
-=======
             strats[i] = new KogitoSerializablePlaceholderResolverStrategy( ClassObjectMarshallingStrategyAcceptor.DEFAULT  );
->>>>>>> wip
         }
 
         env.set(EnvironmentName.OBJECT_MARSHALLING_STRATEGIES, strats);
@@ -97,35 +93,12 @@ public class ProcessInstanceMarshaller {
             throw new RuntimeException("Error while marshalling process instance", e);
         }
     }
-<<<<<<< HEAD
 
     public WorkflowProcessInstance unmarshallWorkflowProcessInstance(byte[] data, Process<?> process) {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
-            MarshallerReaderContext context = new MarshallerReaderContext(bais,
-                                                                          Collections.singletonMap(process.id(), ((AbstractProcess<?>) process).process()),
-                                                                          null,
-                                                                          null,
-                                                                          null,
-                                                                          this.env
-            );
-=======
-    
-    public ProcessInstance<?> unmarshallProcessInstance(byte[] data, Process<?> process) {
-        Model m = (Model) process.createModel();
-        AbstractProcessInstance<?> processInstance = (AbstractProcessInstance<?>) process.createInstance(m);
-        return unmarshallProcessInstance(data, process, processInstance);
-    }
-    
-    public ProcessInstance<?> unmarshallProcessInstance(byte[] data, Process<?> process, AbstractProcessInstance<?> processInstance) {
-        try (ByteArrayInputStream bais = new ByteArrayInputStream( data )) {
             MarshallerReaderContext context = new KogitoMarshallerReaderContext(bais,
-                                                                                Collections.singletonMap(process.id(), ((AbstractProcess<?>)process).process()),
-                                                                                null,
-                                                                                null,
-                                                                                null,
-                                                                                this.env
-                                                                          );
->>>>>>> 4 errors to go
+                                                                                Collections.singletonMap(process.id(), ((AbstractProcess<?>) process).process()),
+                                                                                null, null, null, this.env );
             ObjectInputStream stream = context.stream;
             String processInstanceType = stream.readUTF();
 
