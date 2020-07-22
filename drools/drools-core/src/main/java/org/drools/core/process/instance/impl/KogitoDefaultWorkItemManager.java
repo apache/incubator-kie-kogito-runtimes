@@ -32,7 +32,6 @@ import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.process.instance.KogitoWorkItem;
 import org.drools.core.process.instance.KogitoWorkItemManager;
 import org.drools.core.process.instance.WorkItem;
-import org.drools.core.process.instance.WorkItemManager;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.internal.runtime.Closeable;
@@ -42,8 +41,6 @@ import static org.kie.api.runtime.process.WorkItem.ABORTED;
 import static org.kie.api.runtime.process.WorkItem.COMPLETED;
 
 public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Externalizable {
-
-    private static final long serialVersionUID = 510l;
 
     private Map<String, KogitoWorkItem> workItems = new ConcurrentHashMap<>();
     private InternalKnowledgeRuntime kruntime;
@@ -203,21 +200,16 @@ public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Exte
 
     @Override
     public void retryWorkItem( String workItemID, Map<String, Object> params ) {
-       if(params==null || params.isEmpty()){
+       if (params==null || params.isEmpty()) {
            retryWorkItem(workItemID);
-       }else{
+       } else {
            this.retryWorkItemWithParams( workItemID, params );
        }
-        
     }
 
     @Override
     public void internalCompleteWorkItem( KogitoWorkItem workItem) {
         
-    }
-
-    public WorkItemManager createWorkItemManager( InternalKnowledgeRuntime kruntime ) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

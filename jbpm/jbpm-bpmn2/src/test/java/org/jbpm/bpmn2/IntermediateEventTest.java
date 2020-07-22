@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.drools.core.command.runtime.process.KogitoSetProcessInstanceVariablesCommand;
 import org.drools.core.process.instance.KogitoWorkItem;
-import org.drools.core.process.instance.WorkItemHandler;
+import org.kie.api.runtime.process.WorkItemHandler;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.objects.Person;
