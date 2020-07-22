@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -189,53 +189,10 @@
       </exclusions>
     </dependency>
     <!-- PMML -->
-    <!-- PMML -->
     <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-pmml-evaluator-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-pmml-dependencies</artifactId>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-pmml-dependencies</artifactId>
       <type>pom</type>
-      <exclusions>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-internal</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.drools</groupId>
-          <artifactId>drools-mvel-parser</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.drools</groupId>
-          <artifactId>drools-model-compiler</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.drools</groupId>
-          <artifactId>drools-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.drools</groupId>
-          <artifactId>drools-compiler</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.drools</groupId>
-          <artifactId>drools-canonical-model</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.drools</groupId>
-          <artifactId>drools-core-reflective</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.drools</groupId>
-          <artifactId>drools-ruleunit</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -261,7 +218,7 @@
       <groupId>com.github.javaparser</groupId>
       <artifactId>javaparser-core</artifactId>
     </dependency>
-    
+
     <!-- classpath scanning -->
     <dependency>
       <groupId>org.reflections</groupId>

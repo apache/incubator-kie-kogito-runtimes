@@ -52,10 +52,10 @@ import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
 
 @Mojo(name = "generateModel",
-      requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-      requiresProject = true,
-      defaultPhase = LifecyclePhase.COMPILE,
-      threadSafe = true)
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
+        requiresProject = true,
+        defaultPhase = LifecyclePhase.COMPILE,
+        threadSafe = true)
 public class GenerateModelMojo extends AbstractKieMojo {
 
     public static final List<String> DROOLS_EXTENSIONS = Arrays.asList(".drl", ".xls", ".xlsx", ".csv");
@@ -80,7 +80,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
     private File outputDirectory;
 
-    @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build.directory}/generated-sources/kogito")
+    @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build" +
+            ".directory}/generated-sources/kogito")
     private File customizableSources;
 
     @Parameter(readonly = true, defaultValue = "${project.build.directory}/generated-sources/kogito")
@@ -227,7 +228,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
             appPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
         }
 
-        boolean usePersistence = persistence || hasClassOnClasspath(project, "org.kie.kogito.persistence.KogitoProcessInstancesFactory");
+        boolean usePersistence = persistence || hasClassOnClasspath(project, "org.kie.kogito.persistence" +
+                ".KogitoProcessInstancesFactory");
         boolean useMonitoring = hasClassOnClasspath(project, "org.kie.kogito.monitoring.rest.MetricsResource");
         boolean useTracing = hasClassOnClasspath(project, "org.kie.kogito.tracing.decision.DecisionTracingListener");
 
@@ -269,10 +271,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
                     .withRestServices(useRestServices);
         }
 
-        if (generatePredictions()) {
-            appGen.withGenerator(PredictionCodegen.ofPath(kieSourcesDirectory.toPath()))
-                    .withAddons(addonsConfig);
-        }
+        appGen.withGenerator(PredictionCodegen.ofPath(kieSourcesDirectory.toPath()))
+                .withAddons(addonsConfig);
 
         if (generateDecisions()) {
             appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()))
@@ -284,7 +284,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     private KieModuleModel getKModuleModel() throws IOException {
         if (!project.getResources().isEmpty()) {
-            Path moduleXmlPath = Paths.get(project.getResources().get(0).getDirectory()).resolve(KieModuleModelImpl.KMODULE_JAR_PATH);
+            Path moduleXmlPath =
+                    Paths.get(project.getResources().get(0).getDirectory()).resolve(KieModuleModelImpl.KMODULE_JAR_PATH);
             try {
                 return KieModuleModelImpl.fromXML(
                         new ByteArrayInputStream(
@@ -309,7 +310,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
         if (f.getType().isCustomizable()) {
             sourceFolder = getCustomizableSources();
             path = Paths.get(sourceFolder.getPath(), f.relativePath());
-            getLog().info("Generating: "+ path);
+            getLog().info("Generating: " + path);
         } else {
             sourceFolder = generatedSources;
             path = Paths.get(sourceFolder.getPath(), f.relativePath());
@@ -321,7 +322,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     private void deleteDrlFiles() throws MojoExecutionException {
         // Remove drl files
-        try (final Stream<Path> drlFiles = Files.find(outputDirectory.toPath(), Integer.MAX_VALUE, (p, f) -> drlFileMatcher.matches(p))) {
+        try (final Stream<Path> drlFiles = Files.find(outputDirectory.toPath(), Integer.MAX_VALUE,
+                                                      (p, f) -> drlFileMatcher.matches(p))) {
             drlFiles.forEach(p -> {
                 try {
                     Files.delete(p);

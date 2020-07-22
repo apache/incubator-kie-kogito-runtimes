@@ -61,7 +61,6 @@ public class DMNKogito {
     public static DMNRuntime createGenericDMNRuntime(Function<String, KieRuntimeFactory> kiePMMLRuntimeFactoryFunction, Reader... readers) {
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
-                .setRootClassLoader(null)
                 .setKieRuntimeFactoryFunction(kiePMMLRuntimeFactoryFunction)
                 .buildConfiguration()
                 .fromResources(resources)

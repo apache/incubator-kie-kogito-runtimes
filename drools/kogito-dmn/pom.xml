@@ -119,8 +119,15 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-pmml-evaluator-api</artifactId>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-pmml-api-dependencies</artifactId>
+      <type>pom</type>
+      <exclusions>
+        <exclusion>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-pmml-commons</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- test -->

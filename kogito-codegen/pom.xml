@@ -104,11 +104,6 @@
     <!-- PMML -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-pmml-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-pmml</artifactId>
     </dependency>
 

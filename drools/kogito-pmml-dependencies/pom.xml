@@ -33,18 +33,6 @@
     <!-- PMML -->
     <dependency>
       <groupId>org.kie</groupId>
-      <artifactId>kie-pmml-evaluator-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-pmml-evaluator-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-pmml-evaluator-assembler</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
       <artifactId>kie-pmml-dependencies</artifactId>
       <type>pom</type>
       <exclusions>
@@ -83,6 +71,16 @@
         <exclusion>
           <groupId>org.drools</groupId>
           <artifactId>drools-ruleunit</artifactId>
+        </exclusion>
+        <!-- NEEDED FOR PMML+SPRINGBOOT -->
+        <!--   DO NOT EXCLUDE!!!! -->
+<!--        <exclusion>-->
+<!--          <groupId>org.glassfish.jaxb</groupId>-->
+<!--          <artifactId>jaxb-runtime</artifactId>-->
+<!--        </exclusion>-->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
