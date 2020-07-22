@@ -341,7 +341,12 @@ public abstract class ProjectClassLoader extends ClassLoader implements KieTypeR
     }
 
     private static boolean isOsgiClassLoader(ClassLoader cl) {
-        return Stream.of( cl.getClass().getInterfaces() ).map( Class::getSimpleName ).anyMatch( name -> name.equals( "BundleReference" ) );
+        for (Class<?> clc = cl.getClass(); clc != null && !clc.equals(ClassLoader.class); clc = clc.getSuperclass()) {
+            if (Stream.of(clc.getInterfaces()).map(Class::getSimpleName).anyMatch(name -> name.equals("BundleReference"))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // WARNING: This is and should be used just for testing purposes.
