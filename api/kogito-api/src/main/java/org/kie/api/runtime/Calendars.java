@@ -16,7 +16,7 @@
 
 package org.kie.api.runtime;
 
-import org.kie.kogito.timer.Calendar;
+import org.kie.api.time.Calendar;
 
 public interface Calendars {
 
