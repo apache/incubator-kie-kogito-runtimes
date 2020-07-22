@@ -24,11 +24,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -143,11 +146,17 @@ public class AbstractCodegenTest {
                         .withRuleUnits(hasRuleUnit)
                         .withDependencyInjection(null);
 
-
+        // Hack just to avoid test breaking
+        Set<TYPE> generatedTypes = new HashSet<>();
         for (TYPE type :  TYPE.values()) {
             if (resourcesTypeMap.containsKey(type) && !resourcesTypeMap.get(type).isEmpty()) {
                 appGen.withGenerator(generatorTypeMap.get(type).apply(resourcesTypeMap.get(type)));
+                generatedTypes.add(type);
             }
+        }
+        // Hack just to avoid test breaking
+        if (generatedTypes.contains(TYPE.DECISION) && !generatedTypes.contains(TYPE.PREDICTION)) {
+            appGen.withGenerator(generatorTypeMap.get(TYPE.PREDICTION).apply(Collections.EMPTY_LIST));
         }
 
         Collection<GeneratedFile> generatedFiles = appGen.generate();

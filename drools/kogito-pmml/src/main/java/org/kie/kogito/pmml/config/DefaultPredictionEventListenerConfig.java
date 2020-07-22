@@ -21,6 +21,4 @@ public class DefaultPredictionEventListenerConfig implements PredictionEventList
 
     public DefaultPredictionEventListenerConfig() {
     }
-
-
 }

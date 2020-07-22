@@ -283,6 +283,4 @@ public class PredictionCodegen extends AbstractGenerator {
     private void storeFile(GeneratedFile.Type type, String path, String source) {
         generatedFiles.add(new GeneratedFile(type, path, log(source).getBytes(StandardCharsets.UTF_8)));
     }
-
-
 }

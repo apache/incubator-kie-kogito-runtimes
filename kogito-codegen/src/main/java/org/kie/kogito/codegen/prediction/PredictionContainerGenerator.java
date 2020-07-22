@@ -46,7 +46,6 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
             new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
     private final List<PMMLResource> resources;
     private String applicationCanonicalName;
-    private boolean useTracing = false;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public PredictionContainerGenerator(String applicationCanonicalName, List<PMMLResource> resources) {

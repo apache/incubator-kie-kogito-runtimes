@@ -28,7 +28,7 @@ public class StaticConfig implements Config {
     private final PredictionConfig predictionConfig;
     private final DecisionConfig decisionConfig;
 
-    public StaticConfig(Addons addons, ProcessConfig processConfig, RuleConfig ruleConfig,  DecisionConfig decisionConfig, PredictionConfig predictionConfig) {
+    public StaticConfig(Addons addons, ProcessConfig processConfig, RuleConfig ruleConfig, DecisionConfig decisionConfig, PredictionConfig predictionConfig) {
         this.addons = addons;
         this.processConfig = processConfig;
         this.ruleConfig = ruleConfig;
