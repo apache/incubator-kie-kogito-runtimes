@@ -599,7 +599,8 @@ public class KogitoAssetsProcessor {
             if (path.endsWith("target" + File.separator + "test-classes")) {
                 return PathType.TEST_CLASSES;
             }
-            if (path.endsWith(".jar")) {
+            // Quarkus generates a file with extension .jar.original when doing a native compilation of a uberjar
+            if (path.endsWith(".jar") || path.endsWith(".jar.original")) {
                 return PathType.JAR;
             }
             return PathType.UNKNOWN;
