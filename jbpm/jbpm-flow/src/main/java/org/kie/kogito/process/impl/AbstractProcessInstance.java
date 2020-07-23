@@ -101,10 +101,12 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.rt = rt;
         this.variables = variables;
         syncProcessInstance((WorkflowProcessInstance) wpi);
-        reconnect();
     }
 
     protected void reconnect() {
+        if (processInstance == null) {
+            return;
+        }
         if (processInstance.getKnowledgeRuntime() == null) {
             processInstance.setKnowledgeRuntime(((InternalProcessRuntime) rt).getInternalKieRuntime());
         }
@@ -210,20 +212,24 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     public void abort() {
-        String pid = processInstance().getId();
-        unbind(variables, processInstance().getVariables());
-        this.rt.abortProcessInstance(pid);
-        this.status = processInstance.getState();
-        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));
+        executeInContext(() -> {
+            String pid = processInstance().getId();
+            unbind(variables, processInstance().getVariables());
+            this.rt.abortProcessInstance(pid);
+            this.status = processInstance.getState();
+            addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));
+        });
     }
 
     @Override
     public <S> void send(Signal<S> signal) {
-        if (signal.referenceId() != null) {
-            processInstance().setReferenceId(signal.referenceId());
-        }
-        processInstance().signalEvent(signal.channel(), signal.payload());
-        removeOnFinish();
+        executeInContext(() -> {
+            if (signal.referenceId() != null) {
+                processInstance().setReferenceId(signal.referenceId());
+            }
+            processInstance().signalEvent(signal.channel(), signal.payload());
+            removeOnFinish();
+        });
     }
 
     @Override
@@ -305,44 +311,48 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void triggerNode(String nodeId) {
-        WorkflowProcessInstance wfpi = processInstance();
-        RuleFlowProcess rfp = ((RuleFlowProcess) wfpi.getProcess());
+        executeInContext(() -> {
+            WorkflowProcessInstance wfpi = processInstance();
+            RuleFlowProcess rfp = ((RuleFlowProcess) wfpi.getProcess());
 
-        Node node = rfp.getNodesRecursively()
-                .stream()
-                .filter(ni -> nodeId.equals(ni.getMetaData().get("UniqueId"))).findFirst().orElseThrow(() -> new NodeNotFoundException(this.id, nodeId));
+            Node node = rfp.getNodesRecursively()
+                    .stream()
+                    .filter(ni -> nodeId.equals(ni.getMetaData().get("UniqueId"))).findFirst().orElseThrow(() -> new NodeNotFoundException(this.id, nodeId));
 
-        Node parentNode = rfp.getParentNode(node.getId());
+            Node parentNode = rfp.getParentNode(node.getId());
 
-        NodeInstanceContainer nodeInstanceContainerNode = parentNode == null ? wfpi : ((NodeInstanceContainer) wfpi.getNodeInstance(parentNode));
+            NodeInstanceContainer nodeInstanceContainerNode = parentNode == null ? wfpi : ((NodeInstanceContainer) wfpi.getNodeInstance(parentNode));
 
-        nodeInstanceContainerNode.getNodeInstance(node).trigger(null, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+            nodeInstanceContainerNode.getNodeInstance(node).trigger(null, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+        });
     }
 
     @Override
     public void cancelNodeInstance(String nodeInstanceId) {
-        NodeInstance nodeInstance = processInstance()
-                .getNodeInstances(true)
-                .stream()
-                .filter(ni -> ni.getId().equals(nodeInstanceId))
-                .findFirst()
-                .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
-
-        nodeInstance.cancel();
-        removeOnFinish();
+        executeInContext(() -> {
+            NodeInstance nodeInstance = ((WorkflowProcessInstanceImpl) processInstance())
+                    .getNodeInstances(true)
+                    .stream()
+                    .filter(ni -> ni.getId().equals(nodeInstanceId))
+                    .findFirst()
+                    .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
+            nodeInstance.cancel();
+            removeOnFinish();
+        });
     }
 
     @Override
     public void retriggerNodeInstance(String nodeInstanceId) {
-        NodeInstance nodeInstance = processInstance()
-                .getNodeInstances(true)
-                .stream()
-                .filter(ni -> ni.getId().equals(nodeInstanceId))
-                .findFirst()
-                .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
-
-        ((NodeInstanceImpl) nodeInstance).retrigger(true);
-        removeOnFinish();
+        executeInContext(() -> {
+            NodeInstance nodeInstance = processInstance()
+                    .getNodeInstances(true)
+                    .stream()
+                    .filter(ni -> ni.getId().equals(nodeInstanceId))
+                    .findFirst()
+                    .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
+            ((NodeInstanceImpl) nodeInstance).retrigger(true);
+            removeOnFinish();
+        });
     }
 
     protected WorkflowProcessInstance processInstance() {
@@ -393,20 +403,26 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void completeWorkItem(String id, Map<String, Object> variables, Policy<?>... policies) {
-        this.rt.getWorkItemManager().completeWorkItem(id, variables, policies);
-        removeOnFinish();
+        executeInContext(() -> {
+            this.rt.getWorkItemManager().completeWorkItem(id, variables, policies);
+            removeOnFinish();
+        });
     }
 
     @Override
     public void abortWorkItem(String id, Policy<?>... policies) {
-        this.rt.getWorkItemManager().abortWorkItem(id, policies);
-        removeOnFinish();
+        executeInContext(() -> {
+            this.rt.getWorkItemManager().abortWorkItem(id, policies);
+            removeOnFinish();
+        });
     }
 
     @Override
     public void transitionWorkItem(String id, Transition<?> transition) {
-        this.rt.getWorkItemManager().transitionWorkItem(id, transition);
-        removeOnFinish();
+        executeInContext(() -> {
+            this.rt.getWorkItemManager().transitionWorkItem(id, transition);
+            removeOnFinish();
+        });
     }
 
     @Override
@@ -422,12 +438,12 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Collection<Milestone> milestones() {
-        return ((WorkflowProcessInstance) processInstance).milestones();
+        return processInstance().milestones();
     }
 
     @Override
     public Collection<AdHocFragment> adHocFragments() {
-        return ((WorkflowProcessInstance) processInstance).adHocFragments();
+        return processInstance().adHocFragments();
     }
 
     protected void removeOnFinish() {
@@ -524,28 +540,45 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
             @Override
             public void retrigger() {
-                WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
-                NodeInstance ni = pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
-                pInstance.setState(STATE_ACTIVE);
-                pInstance.internalSetErrorNodeId(null);
-                pInstance.internalSetErrorMessage(null);
-                ni.trigger(null, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
-                removeOnFinish();
+                executeInContext(() -> {
+                    WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
+                    NodeInstance ni = pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
+                    pInstance.setState(STATE_ACTIVE);
+                    pInstance.internalSetErrorNodeId(null);
+                    pInstance.internalSetErrorMessage(null);
+                    ni.trigger(null, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                    removeOnFinish();
+                });
             }
 
             @Override
             public void skip() {
-                WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
-                NodeInstance ni = pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
-                pInstance.setState(STATE_ACTIVE);
-                pInstance.internalSetErrorNodeId(null);
-                pInstance.internalSetErrorMessage(null);
-                ((NodeInstanceImpl) ni).triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, true);
-                removeOnFinish();
+                executeInContext(() -> {
+                    WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
+                    NodeInstance ni = pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
+                    pInstance.setState(STATE_ACTIVE);
+                    pInstance.internalSetErrorNodeId(null);
+                    pInstance.internalSetErrorMessage(null);
+                    ((NodeInstanceImpl) ni).triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, true);
+                    removeOnFinish();
+                });
             }
         };
     }
 
+    private void executeInContext(Command command) {
+        try {
+            reconnect();
+            command.execute();
+        } finally {
+            disconnect();
+        }
+    }
+
+    private interface Command {
+
+        void execute();
+    }
 
     private class CompletionEventListener implements EventListener {
 
