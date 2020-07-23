@@ -29,6 +29,8 @@ import org.drools.core.spi.AbstractProcessContext;
 import org.drools.core.spi.FactHandleFactory;
 import org.drools.core.spi.KnowledgeHelper;
 import org.drools.core.spi.KogitoProcessContext;
+import org.drools.core.time.KogitoTimerServiceFactory;
+import org.drools.core.time.TimerService;
 import org.drools.core.util.bitmask.BitMask;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.process.NodeInstance;
@@ -53,6 +55,11 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
 
     public KogitoStatefulKnowledgeSessionImpl(long id, InternalKnowledgeBase kBase, FactHandleFactory handleFactory, long propagationContext, SessionConfiguration config, InternalAgenda agenda, Environment environment) {
         super(id, kBase, handleFactory, propagationContext, config, agenda, environment);
+    }
+
+    @Override
+    protected TimerService createTimerService() {
+        return KogitoTimerServiceFactory.getTimerService( this.config );
     }
 
     @Override
