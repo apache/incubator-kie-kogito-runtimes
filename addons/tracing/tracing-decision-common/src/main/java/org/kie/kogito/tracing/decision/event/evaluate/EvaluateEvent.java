@@ -219,7 +219,7 @@ public class EvaluateEvent {
         return new EvaluateEvent(EvaluateEventType.AFTER_INVOKE_BKM, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getBusinessKnowledgeModel());
     }
 
-    private static Map<String, Object> extractContext(DMNContext context) {
+    public static Map<String, Object> extractContext(DMNContext context) {
         return context.getAll().entrySet().stream()
                 .filter(e -> !(e.getValue() instanceof FEELFunction))
                 // This collect method avoids this bug (https://bugs.openjdk.java.net/browse/JDK-8148463) on variables with null value

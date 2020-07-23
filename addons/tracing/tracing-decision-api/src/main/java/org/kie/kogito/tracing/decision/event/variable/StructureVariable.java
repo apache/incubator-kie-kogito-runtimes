@@ -14,9 +14,27 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.event.common;
+package org.kie.kogito.tracing.decision.event.variable;
 
-public enum MessageCategory {
-    DMN,
-    INTERNAL
+import java.util.Map;
+
+public class StructureVariable extends TypedVariable {
+
+    private Map<String, TypedVariable> value;
+
+    private StructureVariable() {
+    }
+
+    public StructureVariable(String type) {
+        super(Kind.STRUCTURE, type);
+    }
+
+    public StructureVariable(String type, Map<String, TypedVariable> value) {
+        super(Kind.STRUCTURE, type);
+        this.value = value;
+    }
+
+    public Map<String, TypedVariable> getValue() {
+        return value;
+    }
 }

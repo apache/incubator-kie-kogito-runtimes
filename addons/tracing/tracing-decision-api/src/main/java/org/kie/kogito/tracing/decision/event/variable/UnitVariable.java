@@ -14,37 +14,42 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.event.common;
+package org.kie.kogito.tracing.decision.event.variable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
-public class MessageExceptionField {
+public class UnitVariable extends TypedVariable {
 
-    private String className;
-    private String message;
     @JsonInclude(NON_NULL)
-    private MessageExceptionField cause;
+    private String baseType;
 
-    private MessageExceptionField() {
+    private JsonNode value;
+
+    private UnitVariable() {
     }
 
-    public MessageExceptionField(String className, String message, MessageExceptionField cause) {
-        this.className = className;
-        this.message = message;
-        this.cause = cause;
+    public UnitVariable(String type) {
+        this(type, null, null);
     }
 
-    public String getClassName() {
-        return className;
+    public UnitVariable(String type, JsonNode value) {
+        this(type, null, value);
     }
 
-    public String getMessage() {
-        return message;
+    public UnitVariable(String type, String baseType, JsonNode value) {
+        super(Kind.UNIT, type);
+        this.baseType = baseType;
+        this.value = value;
     }
 
-    public MessageExceptionField getCause() {
-        return cause;
+    public String getBaseType() {
+        return baseType;
+    }
+
+    public JsonNode getValue() {
+        return value;
     }
 }

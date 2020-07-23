@@ -25,10 +25,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.kogito.tracing.decision.DecisionTestUtils;
-import org.kie.kogito.tracing.decision.event.common.InternalMessageType;
-import org.kie.kogito.tracing.decision.event.common.MessageCategory;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType;
+import org.kie.kogito.tracing.decision.event.message.InternalMessageType;
+import org.kie.kogito.tracing.decision.event.message.MessageCategory;
 import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
 import org.kie.kogito.tracing.decision.event.trace.TraceEventType;
 

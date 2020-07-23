@@ -14,10 +14,9 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.event.common;
+package org.kie.kogito.tracing.decision.event.message;
 
-public enum MessageLevel {
-    ERROR,
-    WARNING,
-    INFO;
+public enum MessageCategory {
+    DMN,
+    INTERNAL
 }
