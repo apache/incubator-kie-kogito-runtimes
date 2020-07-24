@@ -17,6 +17,7 @@
 package org.kie.kogito.tracing.decision.event.trace;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -43,7 +44,7 @@ public class TraceOutputValue {
 
     @JsonProperty("inputs")
     @JsonInclude(NON_EMPTY)
-    private List<TypedVariable> inputs;
+    private Map<String, TypedVariable> inputs;
 
     @JsonProperty("messages")
     @JsonInclude(NON_EMPTY)
@@ -52,7 +53,7 @@ public class TraceOutputValue {
     private TraceOutputValue() {
     }
 
-    public TraceOutputValue(String id, String name, String status, TypedVariable value, List<TypedVariable> inputs, List<Message> messages) {
+    public TraceOutputValue(String id, String name, String status, TypedVariable value, Map<String, TypedVariable> inputs, List<Message> messages) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -77,7 +78,7 @@ public class TraceOutputValue {
         return value;
     }
 
-    public List<TypedVariable> getInputs() {
+    public Map<String, TypedVariable> getInputs() {
         return inputs;
     }
 

@@ -144,12 +144,16 @@ public class DefaultAggregator implements Aggregator {
         Map<String, InputDataNode> inputNodesMap = inputDataNodesFromFirstEvent(model, firstEvent).stream()
                 .collect(Collectors.toMap(DMNNode::getName, Function.identity()));
 
-        return firstEvent.getContext().entrySet().stream()
-                .map(entry -> inputNodesMap.containsKey(entry.getKey())
-                        ? traceInputFrom(inputNodesMap.get(entry.getKey()), entry.getValue())
-                        : traceInputFrom(entry.getKey(), entry.getValue())
-                )
-                .collect(Collectors.toList());
+        return Stream.concat(
+                firstEvent.getContext().entrySet().stream()
+                        .map(entry -> inputNodesMap.containsKey(entry.getKey())
+                                ? traceInputFrom(inputNodesMap.get(entry.getKey()), entry.getValue())
+                                : traceInputFrom(entry.getKey(), entry.getValue())
+                        ),
+                inputNodesMap.entrySet().stream()
+                        .filter(entry -> !firstEvent.getContext().containsKey(entry.getKey()))
+                        .map(entry -> traceInputFrom(entry.getValue(), null))
+        ).collect(Collectors.toList());
     }
 
     private static Collection<InputDataNode> inputDataNodesFromFirstEvent(DMNModel model, EvaluateEvent firstEvent) {
@@ -356,9 +360,8 @@ public class DefaultAggregator implements Aggregator {
                 )
                 .orElseGet(HashMap::new);
 
-        List<TypedVariable> decisionInputs = decisionInputTypes.entrySet().stream()
-                .map(e -> EventUtils.typedVariableFrom(e.getValue(), context.get(e.getKey())))
-                .collect(Collectors.toList());
+        Map<String, TypedVariable> decisionInputs = decisionInputTypes.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> EventUtils.typedVariableFrom(e.getValue(), context.get(e.getKey()))));
 
         return new TraceOutputValue(
                 decisionResult.getDecisionId(),
