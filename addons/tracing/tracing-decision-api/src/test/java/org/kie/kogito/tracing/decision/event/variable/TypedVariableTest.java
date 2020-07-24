@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TypedVariableTest {
+class TypedVariableTest {
 
     @Test
     void test() throws JsonProcessingException {

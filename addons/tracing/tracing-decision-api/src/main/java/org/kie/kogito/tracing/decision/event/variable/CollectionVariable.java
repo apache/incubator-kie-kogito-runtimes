@@ -31,6 +31,7 @@ public class CollectionVariable extends TypedVariable {
 
     public CollectionVariable(String type, Collection<TypedVariable> value) {
         super(Kind.COLLECTION, type);
+        this.value = value;
     }
 
     public Collection<TypedVariable> getValue() {
