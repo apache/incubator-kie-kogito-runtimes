@@ -145,14 +145,8 @@ public class DefaultAggregator implements Aggregator {
                 .collect(Collectors.toMap(DMNNode::getName, Function.identity()));
 
         return Stream.concat(
-                firstEvent.getContext().entrySet().stream()
-                        .map(entry -> inputNodesMap.containsKey(entry.getKey())
-                                ? traceInputFrom(inputNodesMap.get(entry.getKey()), entry.getValue())
-                                : traceInputFrom(entry.getKey(), entry.getValue())
-                        ),
-                inputNodesMap.entrySet().stream()
-                        .filter(entry -> !firstEvent.getContext().containsKey(entry.getKey()))
-                        .map(entry -> traceInputFrom(entry.getValue(), null))
+                streamInputsFromInitialContext(firstEvent, inputNodesMap),
+                streamKnownInputsNotInInitialContext(firstEvent, inputNodesMap)
         ).collect(Collectors.toList());
     }
 
@@ -176,6 +170,23 @@ public class DefaultAggregator implements Aggregator {
             }
         }
         return model.getInputs();
+    }
+
+    private static Stream<TraceInputValue> streamInputsFromInitialContext(EvaluateEvent firstEvent, Map<String, InputDataNode> inputNodesMap) {
+        return firstEvent.getContext().entrySet().stream()
+                .map(entry -> buildTraceInputValue(entry.getKey(), entry.getValue(), inputNodesMap));
+    }
+
+    private static TraceInputValue buildTraceInputValue(String name, Object value, Map<String, InputDataNode> inputNodesMap) {
+        return inputNodesMap.containsKey(name)
+                ? traceInputFrom(inputNodesMap.get(name), value)
+                : traceInputFrom(name, value);
+    }
+
+    private static Stream<TraceInputValue> streamKnownInputsNotInInitialContext(EvaluateEvent firstEvent, Map<String, InputDataNode> inputNodesMap) {
+        return inputNodesMap.entrySet().stream()
+                .filter(entry -> !firstEvent.getContext().containsKey(entry.getKey()))
+                .map(entry -> traceInputFrom(entry.getValue(), null));
     }
 
     private static List<TraceOutputValue> buildTraceOutputValues(DMNModel model, EvaluateEvent lastEvent) {
