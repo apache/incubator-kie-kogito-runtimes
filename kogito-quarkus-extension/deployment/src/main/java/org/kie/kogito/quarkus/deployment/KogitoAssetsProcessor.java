@@ -600,6 +600,7 @@ public class KogitoAssetsProcessor {
                 return PathType.TEST_CLASSES;
             }
             // Quarkus generates a file with extension .jar.original when doing a native compilation of a uberjar
+            // TODO replace ".jar.original" with constant JarResultBuildStep.RENAMED_JAR_EXTENSION when it will be avialable in Quakrus 1.7
             if (path.endsWith(".jar") || path.endsWith(".jar.original")) {
                 return PathType.JAR;
             }
