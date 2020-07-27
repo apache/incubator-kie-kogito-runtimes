@@ -70,9 +70,6 @@ import static org.kie.pmml.evaluator.assembler.service.PMMLCompilerService.getKi
 
 public class PredictionCodegen extends AbstractGenerator {
 
-    private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard" +
-            "-template.json";
-    private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
     private final List<PMMLResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
     private String packageName;
