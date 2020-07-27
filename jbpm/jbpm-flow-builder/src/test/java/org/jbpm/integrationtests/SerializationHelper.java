@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.drools.compiler.integrationtests;
+package org.jbpm.integrationtests;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
