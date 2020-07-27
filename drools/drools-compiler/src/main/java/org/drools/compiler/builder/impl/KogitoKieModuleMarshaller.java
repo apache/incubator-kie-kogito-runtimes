@@ -1,9 +1,8 @@
 /*
- * Copyright 2005 JBoss Inc
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -143,7 +142,7 @@ public class KogitoKieModuleMarshaller {
         }
 
         public void marshal( Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
-            KogitoKieModuleModelImpl kModule = (KogitoKieModuleModelImpl) value;
+            org.drools.compiler.builder.impl.KogitoKieModuleModelImpl kModule = ( org.drools.compiler.builder.impl.KogitoKieModuleModelImpl ) value;
             writePropertyMap(writer, context, "configuration", kModule.getConfProps());
             for ( KieBaseModel kBaseModule : kModule.getKieBaseModels().values() ) {
                 writeObject( writer, context, "kbase", kBaseModule);
@@ -151,7 +150,7 @@ public class KogitoKieModuleMarshaller {
         }
 
         public Object unmarshal( HierarchicalStreamReader reader, final UnmarshallingContext context) {
-            final KogitoKieModuleModelImpl kModule = new KogitoKieModuleModelImpl();
+            final org.drools.compiler.builder.impl.KogitoKieModuleModelImpl kModule = new org.drools.compiler.builder.impl.KogitoKieModuleModelImpl();
 
             readNodes(reader, new NodeReader() {
                 public void onNode(HierarchicalStreamReader reader, String name, String value) {
