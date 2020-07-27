@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.pmml;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.kogito.prediction.PredictionRuleMapper;
+import org.kie.pmml.commons.exceptions.KiePMMLException;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.container.PMMLPackage;
 import org.kie.pmml.evaluator.assembler.container.PMMLPackageImpl;
@@ -49,6 +51,10 @@ public class KieRuntimeFactoryBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(KieRuntimeFactoryBuilder.class);
 
+    private KieRuntimeFactoryBuilder() {
+        // Avoid instantiation
+    }
+
     public static Map<KieBase, KieRuntimeFactory> fromResources(final Stream<Resource> resources) {
         final Map<KieBase, KieRuntimeFactory> toReturn = new HashMap<>();
         resources.forEach(resource -> {
@@ -56,7 +62,7 @@ public class KieRuntimeFactoryBuilder {
             final KnowledgeBuilderImpl kbuilderImpl = createKnowledgeBuilderImpl(resource);
             List<KiePMMLModel> toAdd = getKiePMMLModelsLoadedFromResource(kbuilderImpl, resource);
             if (toAdd.isEmpty()) {
-                throw new RuntimeException("Failed to retrieve compiled models");
+                throw new KiePMMLException("Failed to retrieve compiled models");
             }
             for (KiePMMLModel kiePMMLModel : toAdd) {
                 InternalKnowledgePackage internalKnowledgePackage =
@@ -95,8 +101,8 @@ public class KieRuntimeFactoryBuilder {
         String packageName = classNamePackageName[1];
         String fullPMMLRuleMapperClassName = packageName + ".PredictionRuleMapperImpl";
         try {
-            return (PredictionRuleMapper) classLoader.loadClass(fullPMMLRuleMapperClassName).newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | ClassCastException e) {
+            return (PredictionRuleMapper) classLoader.loadClass(fullPMMLRuleMapperClassName).getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | ClassCastException | NoSuchMethodException | InvocationTargetException e) {
             logger.info(String.format("%s class not found in rootClassLoader", fullPMMLRuleMapperClassName));
             return null;
         }
@@ -104,10 +110,10 @@ public class KieRuntimeFactoryBuilder {
 
     private static Model loadModel(final ClassLoader classLoader, final String ruleName) {
         try {
-            return (Model) classLoader.loadClass(ruleName).newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | ClassCastException e) {
+            return (Model) classLoader.loadClass(ruleName).getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | ClassCastException | NoSuchMethodException | InvocationTargetException e) {
             logger.info(String.format("%s class not found in rootClassLoader", ruleName));
-            throw new RuntimeException(String.format("Failed to load or instantiate %s ", ruleName));
+            throw new KiePMMLException(String.format("Failed to load or instantiate %s ", ruleName));
         }
     }
 }

@@ -199,7 +199,7 @@ public class PredictionCodegen extends AbstractGenerator {
                     throw new RuntimeException(errorMessage);
                 }
                 if (!(model instanceof HasSourcesMap)) {
-                    String errorMessage = String.format("\"Expecting HasSourcesMap instance, retrieved %s inside %s",
+                    String errorMessage = String.format("Expecting HasSourcesMap instance, retrieved %s inside %s",
                                                         model.getClass().getName(),
                                                         resource.getModelPath());
                     throw new RuntimeException(errorMessage);

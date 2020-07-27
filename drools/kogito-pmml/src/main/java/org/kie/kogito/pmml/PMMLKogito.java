@@ -28,11 +28,10 @@ import org.kie.api.pmml.PMML4Result;
 import org.kie.api.pmml.PMMLRequestData;
 import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.kogito.Application;
+import org.kie.pmml.commons.exceptions.KiePMMLException;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
 import org.kie.pmml.evaluator.core.PMMLContextImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
 
@@ -42,8 +41,6 @@ import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
  * predictions.
  */
 public class PMMLKogito {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PMMLKogito.class);
 
     private PMMLKogito() {
         // intentionally private.
@@ -69,7 +66,7 @@ public class PMMLKogito {
                     String.format ("Wrong number of model(s) with name '%s': %s",
                                    modelName,
                                    modelsWithName.size());
-            throw new RuntimeException(errorMessage);
+            throw new KiePMMLException(errorMessage);
         }
     }
 

@@ -18,8 +18,6 @@ package org.kie.kogito.prediction;
 import java.util.Map;
 
 import org.kie.api.pmml.PMML4Result;
-import org.kie.dmn.api.core.DMNContext;
-import org.kie.dmn.api.core.DMNResult;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.executor.PMMLContext;
 

@@ -85,7 +85,7 @@ public class StaticServiceRegistry implements ServiceRegistry {
             KieRuntimeService kieRuntimeService = (KieRuntimeService)SimpleInstanceCreator.instance(kieRuntimeServiceImplementation);
             ((KieRuntimes) serviceMap.get(KieRuntimes.class)).getRuntimes().put(runtimeName, kieRuntimeService);
         } catch (Exception e) {
-            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
