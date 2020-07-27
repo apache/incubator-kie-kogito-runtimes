@@ -68,11 +68,11 @@ public class EntryPointDataProcessor implements DataProcessor {
     }
 
     public void delete(DataHandle dh, RuleImpl rule, TerminalNode terminalNode, FactHandle.State fhState) {
-        delete( handles.get(dh), rule, terminalNode, fhState );
+        delete( (KogitoInternalFactHandle) handles.get(dh), rule, terminalNode, fhState );
     }
 
-    public void delete(InternalFactHandle fh, RuleImpl rule, TerminalNode terminalNode, FactHandle.State fhState) {
+    public void delete(KogitoInternalFactHandle fh, RuleImpl rule, TerminalNode terminalNode, FactHandle.State fhState) {
         (( WorkingMemoryEntryPoint ) entryPoint).delete( fh, rule, terminalNode, fhState );
-        handles.remove( (( KogitoInternalFactHandle ) fh).getDataHandle() );
+        handles.remove( fh.getDataHandle() );
     }
 }

@@ -119,7 +119,7 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
 
             if (h instanceof KogitoDefaultFactHandle && (( KogitoDefaultFactHandle ) h).getDataStore() != null) {
                 // This handle has been insert from a datasource, so update it
-                (( KogitoDefaultFactHandle ) h).getDataStore().update( h,
+                (( KogitoDefaultFactHandle ) h).getDataStore().update( (KogitoDefaultFactHandle) h,
                         h.getObject(),
                         mask,
                         modifiedClass,
@@ -143,7 +143,7 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
 
             if (h instanceof KogitoDefaultFactHandle && (( KogitoDefaultFactHandle ) h).getDataStore() != null) {
                 // This handle has been insert from a datasource, so remove from it
-                (( KogitoDefaultFactHandle ) h).getDataStore().delete(h,
+                (( KogitoDefaultFactHandle ) h).getDataStore().delete( (KogitoDefaultFactHandle) h,
                         this.activation.getRule(),
                         this.activation.getTuple().getTupleSink(),
                         fhState);

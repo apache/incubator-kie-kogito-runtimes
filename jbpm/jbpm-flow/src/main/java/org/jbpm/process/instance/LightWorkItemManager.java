@@ -217,32 +217,28 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
 
     @Override
     public void internalExecuteWorkItem( WorkItem workItem ) {
-        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.internalExecuteWorkItem -> TODO" );
+        throw new UnsupportedOperationException();
 
     }
 
     @Override
     public void internalAddWorkItem( WorkItem workItem ) {
-        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.internalAddWorkItem -> TODO" );
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void internalAbortWorkItem( long id ) {
-        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.internalAbortWorkItem -> TODO" );
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Set<WorkItem> getWorkItems() {
-        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.getWorkItems -> TODO" );
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public WorkItem getWorkItem( long id ) {
-        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightWorkItemManager.getWorkItem -> TODO" );
-
+        throw new UnsupportedOperationException();
     }
 
     public void clear() {
