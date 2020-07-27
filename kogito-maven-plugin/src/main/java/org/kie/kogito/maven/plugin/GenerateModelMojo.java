@@ -80,8 +80,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
     private File outputDirectory;
 
-    @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build" +
-            ".directory}/generated-sources/kogito")
+    @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build.directory}/generated-sources/kogito")
     private File customizableSources;
 
     @Parameter(readonly = true, defaultValue = "${project.build.directory}/generated-sources/kogito")
@@ -93,16 +92,16 @@ public class GenerateModelMojo extends AbstractKieMojo {
     // codegen backend only if at least one file of the given type exist
 
     @Parameter(property = "kogito.codegen.rules", defaultValue = "")
-    private String generateRules; // defaults to true if there exist DRL files
+    private String generateRules; // defaults to true iff there exist DRL files
 
     @Parameter(property = "kogito.codegen.processes", defaultValue = "")
-    private String generateProcesses; // defaults to true if there exist BPMN files
+    private String generateProcesses; // defaults to true iff there exist BPMN files
 
     @Parameter(property = "kogito.codegen.decisions", defaultValue = "")
-    private String generateDecisions; // defaults to true if there exist DMN files
+    private String generateDecisions; // defaults to true iff there exist DMN files
 
     @Parameter(property = "kogito.codegen.predictions", defaultValue = "")
-    private String generatePredictions; // defaults to true if there exist PMML files
+    private String generatePredictions; // defaults to true iff there exist PMML files
 
     /**
      * Partial generation can be used when reprocessing a pre-compiled project
@@ -228,8 +227,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
             appPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
         }
 
-        boolean usePersistence = persistence || hasClassOnClasspath(project, "org.kie.kogito.persistence" +
-                ".KogitoProcessInstancesFactory");
+        boolean usePersistence = persistence || hasClassOnClasspath(project, "org.kie.kogito.persistence.KogitoProcessInstancesFactory");
         boolean useMonitoring = hasClassOnClasspath(project, "org.kie.kogito.monitoring.rest.MetricsResource");
         boolean useTracing = hasClassOnClasspath(project, "org.kie.kogito.tracing.decision.DecisionTracingListener");
 
@@ -284,8 +282,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     private KieModuleModel getKModuleModel() throws IOException {
         if (!project.getResources().isEmpty()) {
-            Path moduleXmlPath =
-                    Paths.get(project.getResources().get(0).getDirectory()).resolve(KieModuleModelImpl.KMODULE_JAR_PATH);
+            Path moduleXmlPath = Paths.get(project.getResources().get(0).getDirectory()).resolve(KieModuleModelImpl.KMODULE_JAR_PATH);
             try {
                 return KieModuleModelImpl.fromXML(
                         new ByteArrayInputStream(

@@ -64,16 +64,16 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
     // codegen backend only if at least one file of the given type exist
 
     @Parameter(property = "kogito.codegen.rules", defaultValue = "")
-    private String generateRules; // defaults to true if there exist DRL files
+    private String generateRules; // defaults to true iff there exist DRL files
 
     @Parameter(property = "kogito.codegen.processes", defaultValue = "")
-    private String generateProcesses; // defaults to true if there exist BPMN files
+    private String generateProcesses; // defaults to true iff there exist BPMN files
 
     @Parameter(property = "kogito.codegen.decisions", defaultValue = "")
-    private String generateDecisions; // defaults to true if there exist DMN files
+    private String generateDecisions; // defaults to true iff there exist DMN files
 
     @Parameter(property = "kogito.codegen.predictions", defaultValue = "")
-    private String generatePredictions; // defaults to true if there exist PMML files
+    private String generatePredictions; // defaults to true iff there exist PMML files
 
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
