@@ -36,7 +36,7 @@ public class PredictionCodegenTest extends AbstractCodegenTest {
     @Test
     public void generateAllFiles() throws Exception {
 
-        GeneratorContext context = stronglyTypedContext();
+        GeneratorContext context = GeneratorContext.ofProperties(new Properties());
 
         PredictionCodegen codeGenerator = PredictionCodegen.ofPath(Paths.get(FULL_SOURCE).toAbsolutePath());
         codeGenerator.setContext(context);
@@ -47,13 +47,5 @@ public class PredictionCodegenTest extends AbstractCodegenTest {
         ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
         assertNotNull(classDeclaration);
     }
-
-    private GeneratorContext stronglyTypedContext() {
-        Properties properties = new Properties();
-        properties.put(PredictionCodegen.STRONGLY_TYPED_CONFIGURATION_KEY, Boolean.TRUE.toString());
-        return GeneratorContext.ofProperties(properties);
-    }
-
-
 
 }

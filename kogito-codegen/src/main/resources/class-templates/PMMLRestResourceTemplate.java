@@ -21,9 +21,6 @@ public class PMMLRestResourceTemplate {
 
     private static final String KOGITO_DECISION_INFOWARN_HEADER = "X-Kogito-decision-messages";
 
-    @javax.ws.rs.core.Context
-    private org.jboss.resteasy.spi.HttpResponse httpResponse;
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -40,10 +37,7 @@ public class PMMLRestResourceTemplate {
         }
     }
 
-    private static final com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper()
-            .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
-            .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
+    private static final com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
 
 }

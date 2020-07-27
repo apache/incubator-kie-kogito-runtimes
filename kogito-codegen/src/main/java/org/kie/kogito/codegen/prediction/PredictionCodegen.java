@@ -53,12 +53,9 @@ import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.KogitoPackageSources;
-import org.kie.kogito.codegen.decision.DMNRestResourceGenerator;
-import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.rules.RuleCodegenError;
-import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.pmml.commons.model.HasSourcesMap;
 import org.kie.pmml.commons.model.KiePMMLFactoryModel;
 import org.kie.pmml.commons.model.KiePMMLModel;
@@ -76,14 +73,12 @@ public class PredictionCodegen extends AbstractGenerator {
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard" +
             "-template.json";
     private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
-    public static String STRONGLY_TYPED_CONFIGURATION_KEY = "kogito.predictions.stronglytyped";
     private final List<PMMLResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
     private String packageName;
     private String applicationCanonicalName;
     private DependencyInjectionAnnotator annotator;
     private PredictionContainerGenerator moduleGenerator;
-    private boolean useMonitoring = false;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public PredictionCodegen(List<PMMLResource> resources) {
@@ -203,10 +198,14 @@ public class PredictionCodegen extends AbstractGenerator {
             List<KiePMMLModel> kiepmmlModels = resource.getKiePmmlModels();
             for (KiePMMLModel model : kiepmmlModels) {
                 if (model.getName() == null || model.getName().isEmpty()) {
-                    throw new RuntimeException("Model name should not be empty");
+                    String errorMessage = String.format("Model name should not be empty inside %s", resource.getModelPath());
+                    throw new RuntimeException(errorMessage);
                 }
                 if (!(model instanceof HasSourcesMap)) {
-                    throw new RuntimeException("Expecting HasSourcesMap instance, retrieved " + model.getClass().getName());
+                    String errorMessage = String.format("\"Expecting HasSourcesMap instance, retrieved %s inside %s",
+                                                        model.getClass().getName(),
+                                                        resource.getModelPath());
+                    throw new RuntimeException(errorMessage);
                 }
                 Map<String, String> sourceMap = ((HasSourcesMap) model).getSourcesMap();
                 for (Map.Entry<String, String> sourceMapEntry : sourceMap.entrySet()) {
@@ -219,8 +218,7 @@ public class PredictionCodegen extends AbstractGenerator {
                 }
                 if (!(model instanceof KiePMMLFactoryModel)) {
                     PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(model, applicationCanonicalName)
-                            .withDependencyInjection(annotator)
-                            .withMonitoring(useMonitoring);
+                            .withDependencyInjection(annotator);
                     storeFile(GeneratedFile.Type.PMML, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
                 }
             }

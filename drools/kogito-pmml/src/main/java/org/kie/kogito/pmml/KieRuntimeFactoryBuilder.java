@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.compiler.compiler.PackageRegistry;
@@ -35,7 +36,6 @@ import org.kie.kogito.prediction.PredictionRuleMapper;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.container.PMMLPackage;
 import org.kie.pmml.evaluator.assembler.container.PMMLPackageImpl;
-import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +49,7 @@ public class KieRuntimeFactoryBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(KieRuntimeFactoryBuilder.class);
 
-    public static Map<KieBase, KieRuntimeFactory> fromResources(final List<Resource> resources,
-                                                                final PMMLModelEvaluatorFinderImpl pmmlModelExecutorFinder) {
+    public static Map<KieBase, KieRuntimeFactory> fromResources(final Stream<Resource> resources) {
         final Map<KieBase, KieRuntimeFactory> toReturn = new HashMap<>();
         resources.forEach(resource -> {
             final String[] factoryClassNamePackageName = getFactoryClassNamePackageName(resource);

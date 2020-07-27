@@ -31,10 +31,10 @@ import org.kie.kogito.Application;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
 import org.kie.pmml.evaluator.core.PMMLContextImpl;
-import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
-import org.kie.pmml.evaluator.core.utils.PMMLRequestDataBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
 
 /**
  * Internal Utility class.<br/>
@@ -55,8 +55,8 @@ public class PMMLKogito {
      * PMML decisions.
      */
     public static Map<KieBase, KieRuntimeFactory> createKieRuntimeFactories(String... pmmlPaths) {
-        List<Resource> resources = Stream.of(pmmlPaths).map(FileSystemResource::new).collect(Collectors.toList());
-        return KieRuntimeFactoryBuilder.fromResources(resources, new PMMLModelEvaluatorFinderImpl());
+        Stream<Resource> resources = Stream.of(pmmlPaths).map(FileSystemResource::new);
+        return KieRuntimeFactoryBuilder.fromResources(resources);
     }
 
     public static KiePMMLModel modelByName(PMMLRuntime pmmlRuntime, String modelName) {
@@ -65,7 +65,11 @@ public class PMMLKogito {
         if (modelsWithName.size() == 1) {
             return modelsWithName.get(0);
         } else {
-            throw new RuntimeException("Multiple model with the same name: " + modelName);
+            String errorMessage =
+                    String.format ("Wrong number of model(s) with name '%s': %s",
+                                   modelName,
+                                   modelsWithName.size());
+            throw new RuntimeException(errorMessage);
         }
     }
 
@@ -74,14 +78,4 @@ public class PMMLKogito {
         return pmmlRuntime.evaluate(modelName, new PMMLContextImpl(pmmlRequestData));
     }
 
-    private static PMMLRequestData getPMMLRequestData(String modelName, Map<String, Object> parameters) {
-        String correlationId = "CORRELATION_ID";
-        PMMLRequestDataBuilder pmmlRequestDataBuilder = new PMMLRequestDataBuilder(correlationId, modelName);
-        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-            Object pValue = entry.getValue();
-            Class class1 = pValue.getClass();
-            pmmlRequestDataBuilder.addParameter(entry.getKey(), pValue, class1);
-        }
-        return pmmlRequestDataBuilder.build();
-    }
 }

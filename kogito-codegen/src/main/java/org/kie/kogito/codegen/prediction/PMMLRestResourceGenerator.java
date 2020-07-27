@@ -21,7 +21,6 @@ import java.util.NoSuchElementException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
@@ -45,8 +44,6 @@ public class PMMLRestResourceGenerator {
     private final String resourceClazzName;
     private final String appCanonicalName;
     private DependencyInjectionAnnotator annotator;
-    private boolean useMonitoring;
-    private boolean isStronglyTyped = false;
 
     public PMMLRestResourceGenerator(KiePMMLModel model, String appCanonicalName) {
         this.kiePMMLModel = model;
@@ -86,7 +83,7 @@ public class PMMLRestResourceGenerator {
     }
 
     private void interpolateInputType(ClassOrInterfaceDeclaration template) {
-        String inputType = isStronglyTyped ? "InputSet" : "java.util.Map<String, Object>";
+        String inputType = "java.util.Map<String, Object>";
         template.findAll(ClassOrInterfaceType.class, t -> t.asString().equals("$inputType$"))
                 .forEach(type -> type.setName(inputType));
     }
@@ -101,11 +98,6 @@ public class PMMLRestResourceGenerator {
 
     public PMMLRestResourceGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
-        return this;
-    }
-
-    public PMMLRestResourceGenerator withMonitoring(boolean useMonitoring) {
-        this.useMonitoring = useMonitoring;
         return this;
     }
 

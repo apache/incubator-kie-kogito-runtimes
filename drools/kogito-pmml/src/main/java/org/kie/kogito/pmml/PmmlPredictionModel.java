@@ -9,7 +9,8 @@ import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.executor.PMMLContext;
 import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
 import org.kie.pmml.evaluator.core.PMMLContextImpl;
-import org.kie.pmml.evaluator.core.utils.PMMLRequestDataBuilder;
+
+import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
 
 public class PmmlPredictionModel implements PredictionModel {
 
@@ -36,17 +37,6 @@ public class PmmlPredictionModel implements PredictionModel {
     @Override
     public KiePMMLModel getKiePMMLModel() {
         return pmmlModel;
-    }
-
-    private static PMMLRequestData getPMMLRequestData(String modelName, Map<String, Object> parameters) {
-        String correlationId = "CORRELATION_ID";
-        PMMLRequestDataBuilder pmmlRequestDataBuilder = new PMMLRequestDataBuilder(correlationId, modelName);
-        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-            Object pValue = entry.getValue();
-            Class class1 = pValue.getClass();
-            pmmlRequestDataBuilder.addParameter(entry.getKey(), pValue, class1);
-        }
-        return pmmlRequestDataBuilder.build();
     }
 
 }
