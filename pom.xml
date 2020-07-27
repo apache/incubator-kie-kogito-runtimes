@@ -156,7 +156,7 @@
     <container.image.keycloak.version>8.0.1</container.image.keycloak.version>
     <container.image.keycloak>quay.io/keycloak/keycloak:${container.image.keycloak.version}</container.image.keycloak>
   </properties>
-  SerializationHelper
+  
   <!-- distributionManagement section -->
   <distributionManagement>
     <repository>
