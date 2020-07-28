@@ -27,7 +27,6 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -44,13 +43,9 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.util.IoUtils;
-import org.kie.api.management.GAV;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.decision.DecisionModelType;
 import org.kie.kogito.decision.DecisionModels;
-import org.kie.kogito.dmn.DecisionModelJarResource;
-import org.kie.kogito.dmn.DecisionModelRelativeResource;
 import org.kie.kogito.dmn.DmnExecutionIdSupplier;
 
 import static org.kie.kogito.codegen.CodegenUtils.newObject;
@@ -93,61 +88,9 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         }
 
         if (addonsConfig.useTracing()) {
-            setupResourcesVariable(typeDeclaration);
             setupExecIdSupplierVariable(typeDeclaration);
         }
         return typeDeclaration;
-    }
-
-    private void setupResourcesVariable(ClassOrInterfaceDeclaration typeDeclaration) {
-        List<MethodDeclaration> getResourcesMethods = typeDeclaration.getMethodsBySignature("getResources");
-        if (getResourcesMethods.size() != 1) {
-            throw (new RuntimeException("A \"getResourcePaths()\" method was not found in " + TEMPLATE_JAVA));
-        }
-        MethodDeclaration getResourcesMethod = getResourcesMethods.get(0);
-        getResourcesMethod.getBody().ifPresent(body -> {
-            VariableDeclarator variable = getResourcesMethod.findFirst(VariableDeclarator.class)
-                    .orElseThrow(() -> new RuntimeException("Can't find a variable declaration in the \"getResourcePaths()\" method."));
-            for (DMNResource resource : resources) {
-                MethodCallExpr add = new MethodCallExpr(variable.getNameAsExpression(), "add");
-                if (resource.getPath().toString().endsWith(".jar")) {
-                    add.addArgument(newObject(DecisionModelJarResource.class,
-                                              mockGAV(),
-                                              new StringLiteralExpr(getDecisionModelJarResourcePath(resource)),
-                                              new StringLiteralExpr(resource.getDmnModel().getNamespace()),
-                                              new StringLiteralExpr(resource.getDmnModel().getName()),
-                                              makeDMNIdentifier(resource),
-                                              makeDMNType()));
-                } else {
-                    ClassOrInterfaceType applicationClass = StaticJavaParser.parseClassOrInterfaceType(applicationCanonicalName);
-                    add.addArgument(newObject(DecisionModelRelativeResource.class,
-                                              mockGAV(),
-                                              new StringLiteralExpr(getDecisionModelRelativeResourcePath(resource)),
-                                              new StringLiteralExpr(resource.getDmnModel().getNamespace()),
-                                              new StringLiteralExpr(resource.getDmnModel().getName()),
-                                              makeDMNIdentifier(resource),
-                                              makeDMNType(),
-                                              new FieldAccessExpr(applicationClass.getNameAsExpression(), "class")));
-                }
-                body.addStatement(body.getStatements().size() - 1, add);
-            }
-        });
-    }
-
-    private ObjectCreationExpr mockGAV() {
-        return newObject(GAV.class,
-                         new StringLiteralExpr("dummy"),
-                         new StringLiteralExpr("dummy"),
-                         new StringLiteralExpr("0.0"));
-    }
-
-    private StringLiteralExpr makeDMNIdentifier(DMNResource resource) {
-        return new StringLiteralExpr(resource.getDmnModel().getNamespace() + ":" + resource.getDmnModel().getName());
-    }
-
-    private FieldAccessExpr makeDMNType() {
-        NameExpr clazz = new NameExpr(DecisionModelType.class.getName());
-        return new FieldAccessExpr(clazz, "DMN");
     }
 
     private String getDecisionModelJarResourcePath(DMNResource resource) {

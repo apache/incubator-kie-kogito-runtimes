@@ -24,10 +24,9 @@ import io.cloudevents.v1.CloudEventImpl;
 import io.reactivex.subscribers.TestSubscriber;
 import org.junit.jupiter.api.Test;
 import org.kie.api.management.GAV;
-import org.kie.kogito.Application;
+import org.kie.internal.decision.DecisionModelResource;
+import org.kie.internal.decision.DecisionModelResourcesProvider;
 import org.kie.kogito.decision.DecisionModelType;
-import org.kie.kogito.decision.DecisionModels;
-import org.kie.kogito.decision.DecisionModels.DecisionModelResource;
 import org.kie.kogito.tracing.decision.event.CloudEventUtils;
 import org.kie.kogito.tracing.decision.event.model.ModelEvent;
 
@@ -43,13 +42,10 @@ public class QuarkusModelEventEmitterTest {
     @Test
     public void testEmitEvent() {
         final TestSubscriber<String> subscriber = new TestSubscriber<>();
-        final DecisionModels mockedDecisionModels = mock(DecisionModels.class);
-        final Application mockedApplication = mock(Application.class);
         final List<DecisionModelResource> models = Arrays.asList(makeModel(), makeModel());
-        when(mockedApplication.decisionModels()).thenReturn(mockedDecisionModels);
-        when(mockedDecisionModels.resources()).thenReturn(models);
+        final DecisionModelResourcesProvider mockedDecisionModelResourcesProvider = () -> models;
 
-        final QuarkusModelEventEmitter eventEmitter = new QuarkusModelEventEmitter(mockedApplication);
+        final QuarkusModelEventEmitter eventEmitter = new QuarkusModelEventEmitter(mockedDecisionModelResourcesProvider);
         eventEmitter.getEventPublisher().subscribe(subscriber);
         eventEmitter.publishDecisionModels();
 

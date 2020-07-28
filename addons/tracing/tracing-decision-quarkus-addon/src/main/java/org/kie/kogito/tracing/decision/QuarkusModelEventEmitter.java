@@ -16,10 +16,6 @@
 
 package org.kie.kogito.tracing.decision;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -28,38 +24,24 @@ import io.quarkus.runtime.Startup;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.subjects.PublishSubject;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
-import org.kie.kogito.Application;
-import org.kie.kogito.tracing.decision.event.CloudEventUtils;
-import org.kie.kogito.tracing.decision.event.model.ModelEvent;
+import org.kie.internal.decision.DecisionModelResourcesProvider;
 import org.reactivestreams.Publisher;
 
 @Startup
 @Singleton
-public class QuarkusModelEventEmitter implements EventEmitter {
+public class QuarkusModelEventEmitter extends BaseModelEventEmitter {
 
-    private final Application application;
     private final PublishSubject<String> eventSubject;
 
     @Inject
-    public QuarkusModelEventEmitter(final Application application) {
-        this.application = application;
+    public QuarkusModelEventEmitter(final DecisionModelResourcesProvider decisionModelResourcesProvider) {
+        super(decisionModelResourcesProvider);
         this.eventSubject = PublishSubject.create();
     }
 
     @PostConstruct
     public void publishDecisionModels() {
-        application.decisionModels().resources().forEach(resource -> {
-            //Fire a new ModelEvent containing the model, name and namespace
-            emit(CloudEventUtils.encode(CloudEventUtils.build("id",
-                                                              URI.create(URLEncoder.encode(ModelEvent.class.getName(), StandardCharsets.UTF_8)),
-                                                              new ModelEvent(ModelEvent.GAV.from(resource.getGav()),
-                                                                             resource.getModelName(),
-                                                                             resource.getNamespace(),
-                                                                             resource.getIdentifier(),
-                                                                             resource.getModelType(),
-                                                                             resource.get()),
-                                                              ModelEvent.class)));
-        });
+        super.publishDecisionModels();
     }
 
     @Outgoing("kogito-tracing-model")

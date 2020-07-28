@@ -23,11 +23,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
@@ -38,7 +33,6 @@ import org.kie.kogito.grafana.JGrafana;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DecisionCodegenTest {
 
@@ -51,14 +45,15 @@ public class DecisionCodegenTest {
         codeGenerator.setContext(context);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(5, generatedFiles.size());
+        assertEquals(6, generatedFiles.size());
 
         assertIterableEquals(Arrays.asList(
                 "decision/InputSet.java",
                 "decision/TEmployee.java",
                 "decision/TAddress.java",
                 "decision/TPayroll.java",
-                "decision/VacationsResource.java"
+                "decision/VacationsResource.java",
+                "org/kie/kogito/app/DecisionModelResourcesProvider.java"
                              ),
                              fileNames(generatedFiles)
         );
@@ -85,10 +80,11 @@ public class DecisionCodegenTest {
         codeGenerator.setContext(context);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(2, generatedFiles.size());
+        assertEquals(3, generatedFiles.size());
 
         assertIterableEquals(Arrays.asList("http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/InputSet.java",
-                                           "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java"),
+                                           "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java",
+                                           "org/kie/kogito/app/DecisionModelResourcesProvider.java"),
                              fileNames(generatedFiles)
         );
 
@@ -129,7 +125,7 @@ public class DecisionCodegenTest {
         DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision-test20200507").toAbsolutePath());
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(2, generatedFiles.size());
+        assertEquals(3, generatedFiles.size());
 
         ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
         assertNotNull(classDeclaration);
@@ -155,36 +151,5 @@ public class DecisionCodegenTest {
         assertEquals(2, dashboards.size());
 
         return dashboards;
-    }
-
-    @Test
-    public void generateResources() throws Exception {
-
-        GeneratorContext context = stronglyTypedContext();
-
-        DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath()).withAddons(new AddonsConfig().withTracing(true));
-        codeGenerator.setContext(context);
-
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
-        assertNotNull(classDeclaration);
-
-        MethodDeclaration methodDeclaration = classDeclaration.findAll(MethodDeclaration.class, d -> d.getName().getIdentifier().equals("getResources")).get(0);
-        assertNotNull(methodDeclaration);
-        assertTrue(methodDeclaration.getBody().isPresent());
-
-        BlockStmt body = methodDeclaration.getBody().get();
-        assertTrue(body.getStatements().size() > 2);
-        assertTrue(body.getStatements().get(1).isExpressionStmt());
-
-        ExpressionStmt expression = (ExpressionStmt) body.getStatements().get(1);
-        assertTrue(expression.getExpression() instanceof MethodCallExpr);
-
-        MethodCallExpr call = (MethodCallExpr) expression.getExpression();
-        assertEquals(call.getName().getIdentifier(), "add");
-        assertTrue(call.getScope().isPresent());
-        assertTrue(call.getScope().get().isNameExpr());
-
-        NameExpr nameExpr = call.getScope().get().asNameExpr();
-        assertEquals(nameExpr.getName().getIdentifier(), "resourcePaths");
     }
 }

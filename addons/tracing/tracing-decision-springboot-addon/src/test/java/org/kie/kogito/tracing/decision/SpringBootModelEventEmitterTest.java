@@ -23,10 +23,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.cloudevents.v1.CloudEventImpl;
 import org.junit.jupiter.api.Test;
 import org.kie.api.management.GAV;
-import org.kie.kogito.Application;
+import org.kie.internal.decision.DecisionModelResource;
+import org.kie.internal.decision.DecisionModelResourcesProvider;
 import org.kie.kogito.decision.DecisionModelType;
-import org.kie.kogito.decision.DecisionModels;
-import org.kie.kogito.decision.DecisionModels.DecisionModelResource;
 import org.kie.kogito.tracing.decision.event.CloudEventUtils;
 import org.kie.kogito.tracing.decision.event.model.ModelEvent;
 import org.mockito.ArgumentCaptor;
@@ -47,16 +46,12 @@ public class SpringBootModelEventEmitterTest {
 
     @Test
     public void testEmitEvent() {
-        final DecisionModels mockedDecisionModels = mock(DecisionModels.class);
-        final Application mockedApplication = mock(Application.class);
-
         @SuppressWarnings("unchecked")
         final KafkaTemplate<String, String> mockedKarkaTemplate = mock(KafkaTemplate.class);
         final List<DecisionModelResource> models = Arrays.asList(makeModel(), makeModel());
-        when(mockedApplication.decisionModels()).thenReturn(mockedDecisionModels);
-        when(mockedDecisionModels.resources()).thenReturn(models);
+        final DecisionModelResourcesProvider mockedDecisionModelResourcesProvider = () -> models;
 
-        final SpringBootModelEventEmitter eventEmitter = new SpringBootModelEventEmitter(mockedApplication, mockedKarkaTemplate, TEST_TOPIC);
+        final SpringBootModelEventEmitter eventEmitter = new SpringBootModelEventEmitter(mockedDecisionModelResourcesProvider, mockedKarkaTemplate, TEST_TOPIC);
         eventEmitter.publishDecisionModels();
 
         final ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);

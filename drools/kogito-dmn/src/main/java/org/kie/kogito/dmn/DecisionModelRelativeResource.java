@@ -18,9 +18,8 @@ import java.io.InputStream;
 
 import org.kie.api.management.GAV;
 import org.kie.kogito.decision.DecisionModelType;
-import org.kie.kogito.decision.DecisionModels;
 
-public class DecisionModelRelativeResource extends DecisionModels.BaseDecisionModelResource {
+public class DecisionModelRelativeResource extends BaseDecisionModelResource {
 
     private final Class application;
 

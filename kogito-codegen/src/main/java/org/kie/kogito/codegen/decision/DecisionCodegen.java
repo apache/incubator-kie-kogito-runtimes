@@ -131,7 +131,7 @@ public class DecisionCodegen extends AbstractGenerator {
     private String applicationCanonicalName;
     private DependencyInjectionAnnotator annotator;
 
-    private DecisionContainerGenerator moduleGenerator;
+    private DecisionContainerGenerator decisionContainerGenerator;
 
     private final List<DMNResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
@@ -142,23 +142,32 @@ public class DecisionCodegen extends AbstractGenerator {
 
         // set default package name
         setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
-        this.moduleGenerator = new DecisionContainerGenerator(applicationCanonicalName, resources);
+        this.decisionContainerGenerator = new DecisionContainerGenerator(applicationCanonicalName, resources);
     }
 
+    @Override
     public void setPackageName(String packageName) {
         this.packageName = packageName;
         this.applicationCanonicalName = packageName + ".Application";
     }
 
+    @Override
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
     }
 
+    @Override
     public List<GeneratedFile> generate() {
         if (resources.isEmpty()) {
             return Collections.emptyList();
         }
+        generateAndStoreRestResources();
+        generateAndStoreDecisionModelResourcesProvider();
 
+        return generatedFiles;
+    }
+
+    private void generateAndStoreRestResources() {
         List<DecisionRestResourceGenerator> rgs = new ArrayList<>(); // REST resources
 
         for (DMNResource resource : resources) {
@@ -189,8 +198,13 @@ public class DecisionCodegen extends AbstractGenerator {
 
             storeFile(GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
         }
+    }
 
-        return generatedFiles;
+    private void generateAndStoreDecisionModelResourcesProvider() {
+        final DecisionModelResourcesProviderGenerator generator = new DecisionModelResourcesProviderGenerator(packageName, applicationCanonicalName, resources)
+                .withDependencyInjection(annotator)
+                .withAddons(addonsConfig);
+        storeFile(GeneratedFile.Type.CLASS, generator.generatedFilePath(), generator.generate());
     }
 
     private void generateStronglyTypedInput(DMNModel model) {
@@ -244,11 +258,11 @@ public class DecisionCodegen extends AbstractGenerator {
 
     @Override
     public ApplicationSection section() {
-        return moduleGenerator;
+        return decisionContainerGenerator;
     }
 
     public DecisionCodegen withAddons(AddonsConfig addonsConfig) {
-        this.moduleGenerator.withAddons(addonsConfig);
+        this.decisionContainerGenerator.withAddons(addonsConfig);
         this.addonsConfig = addonsConfig;
         return this;
     }

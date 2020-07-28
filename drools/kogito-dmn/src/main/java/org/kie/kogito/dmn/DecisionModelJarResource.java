@@ -19,9 +19,8 @@ import java.io.InputStream;
 import org.drools.core.util.IoUtils;
 import org.kie.api.management.GAV;
 import org.kie.kogito.decision.DecisionModelType;
-import org.kie.kogito.decision.DecisionModels;
 
-public class DecisionModelJarResource extends DecisionModels.BaseDecisionModelResource {
+public class DecisionModelJarResource extends BaseDecisionModelResource {
 
     public DecisionModelJarResource(GAV gav,
                                     String path,

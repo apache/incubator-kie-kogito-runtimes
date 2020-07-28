@@ -16,52 +16,32 @@
 
 package org.kie.kogito.tracing.decision;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import javax.annotation.PostConstruct;
 
-import org.kie.kogito.Application;
-import org.kie.kogito.tracing.decision.event.CloudEventUtils;
-import org.kie.kogito.tracing.decision.event.model.ModelEvent;
+import org.kie.internal.decision.DecisionModelResourcesProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SpringBootModelEventEmitter implements EventEmitter {
+public class SpringBootModelEventEmitter extends BaseModelEventEmitter {
 
-    private final Application application;
     private final KafkaTemplate<String, String> template;
     private final String kafkaTopicName;
 
     @Autowired
-    public SpringBootModelEventEmitter(final Application application,
+    public SpringBootModelEventEmitter(final DecisionModelResourcesProvider decisionModelResourcesProvider,
                                        final KafkaTemplate<String, String> template,
                                        final @Value(value = "${kogito.addon.tracing.decision.kafka.topic.name:kogito-tracing-model}") String kafkaTopicName) {
-        this.application = application;
+        super(decisionModelResourcesProvider);
         this.template = template;
         this.kafkaTopicName = kafkaTopicName;
     }
 
-    @Async
     @PostConstruct
     public void publishDecisionModels() {
-        application.decisionModels().resources().forEach(resource -> {
-            //Fire a new ModelEvent containing the model, name and namespace
-            emit(CloudEventUtils.encode(CloudEventUtils.build("id",
-                                                              URI.create(URLEncoder.encode(ModelEvent.class.getName(), StandardCharsets.UTF_8)),
-                                                              new ModelEvent(ModelEvent.GAV.from(resource.getGav()),
-                                                                             resource.getModelName(),
-                                                                             resource.getNamespace(),
-                                                                             resource.getIdentifier(),
-                                                                             resource.getModelType(),
-                                                                             resource.get()),
-                                                              ModelEvent.class)));
-        });
+        super.publishDecisionModels();
     }
 
     @Override
