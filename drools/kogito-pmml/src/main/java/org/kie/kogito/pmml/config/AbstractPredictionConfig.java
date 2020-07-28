@@ -15,7 +15,6 @@ public abstract class AbstractPredictionConfig implements org.kie.kogito.predict
         }
     }
 
-    @Override
     public PredictionEventListenerConfig predictionEventListeners() {
         return predictionEventListener;
     }

@@ -30,7 +30,6 @@ public class StaticPredictionConfig implements PredictionConfig {
         this(new DefaultPredictionEventListenerConfig());
     }
 
-    @Override
     public PredictionEventListenerConfig predictionEventListeners() {
         return predictionEventListeners;
     }

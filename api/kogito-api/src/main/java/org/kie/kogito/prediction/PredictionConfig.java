@@ -17,6 +17,4 @@ package org.kie.kogito.prediction;
 
 public interface PredictionConfig {
 
-    PredictionEventListenerConfig predictionEventListeners();
-
 }

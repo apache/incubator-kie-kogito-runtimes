@@ -22,8 +22,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.util.StringUtils;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
@@ -37,6 +37,8 @@ public class PMMLRestResourceGenerator {
 
     private static final String TEMPLATE_JAVA = "/class-templates/PMMLRestResourceTemplate.java";
 
+    private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION =
+            new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
     private final KiePMMLModel kiePMMLModel;
     private final String nameURL;
     private final String packageName;
@@ -47,7 +49,8 @@ public class PMMLRestResourceGenerator {
 
     public PMMLRestResourceGenerator(KiePMMLModel model, String appCanonicalName) {
         this.kiePMMLModel = model;
-        this.packageName = "org.kie.kogito." + CodegenStringUtil.escapeIdentifier(model.getClass().getPackage().getName());
+        this.packageName =
+                "org.kie.kogito." + CodegenStringUtil.escapeIdentifier(model.getClass().getPackage().getName());
         this.nameURL = URLEncoder.encode(model.getName()).replaceAll("\\+", "%20");
         this.appCanonicalName = appCanonicalName;
         String classPrefix = StringUtils.capitalize(model.getName());
@@ -66,9 +69,19 @@ public class PMMLRestResourceGenerator {
 
         template.setName(resourceClazzName);
 
-        template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
-
-        interpolateInputType(template);
+        try {
+            template.findFirst(SingleMemberAnnotationExpr.class).orElseThrow(() -> new RuntimeException("")).setMemberValue(new StringLiteralExpr(nameURL));
+            template.getMethodsByName("pmml").get(0)
+                    .getBody().orElseThrow(() -> new RuntimeException(""))
+                    .getStatement(0).asExpressionStmt().getExpression()
+                    .asVariableDeclarationExpr()
+                    .getVariable(0)
+                    .getInitializer().orElseThrow(() -> new RuntimeException(""))
+                    .asMethodCallExpr()
+                    .getArgument(0).asStringLiteralExpr().setString(kiePMMLModel.getName());
+        } catch (Exception e) {
+            throw MODIFIED_TEMPLATE_EXCEPTION;
+        }
 
         if (useInjection()) {
             template.findAll(FieldDeclaration.class,
@@ -80,12 +93,6 @@ public class PMMLRestResourceGenerator {
 
         template.getMembers().sort(new BodyDeclarationComparator());
         return clazz.toString();
-    }
-
-    private void interpolateInputType(ClassOrInterfaceDeclaration template) {
-        String inputType = "java.util.Map<String, Object>";
-        template.findAll(ClassOrInterfaceType.class, t -> t.asString().equals("$inputType$"))
-                .forEach(type -> type.setName(inputType));
     }
 
     public String getNameURL() {
@@ -107,14 +114,6 @@ public class PMMLRestResourceGenerator {
 
     private void initializeApplicationField(FieldDeclaration fd) {
         fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(appCanonicalName));
-    }
-
-    private void interpolateStrings(StringLiteralExpr vv) {
-        String s = vv.getValue();
-        String documentation = "";
-        String interpolated = s.replace("$nameURL$", nameURL)
-                .replace("$modelName$", kiePMMLModel.getName());
-        vv.setString(interpolated);
     }
 
     public String generatedFilePath() {
