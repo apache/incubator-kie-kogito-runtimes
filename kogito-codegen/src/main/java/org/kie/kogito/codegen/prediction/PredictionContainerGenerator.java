@@ -44,9 +44,9 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
 
     private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION =
             new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
-    private final List<PMMLResource> resources;
-    private String applicationCanonicalName;
-    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
+    final List<PMMLResource> resources;
+    final String applicationCanonicalName;
+    AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public PredictionContainerGenerator(String applicationCanonicalName, List<PMMLResource> resources) {
         super("PredictionModels", "predictionModels", PredictionModels.class);
@@ -65,6 +65,28 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
         ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
         populateStaticKieRuntimeFactoryFunctionInit(typeDeclaration);
         return typeDeclaration;
+    }
+
+    @Override
+    public List<Statement> setupStatements() {
+        return Collections.singletonList(
+                new IfStmt(
+                        new BinaryExpr(
+                                new MethodCallExpr(new MethodCallExpr(null, "config"), "prediction"),
+                                new NullLiteralExpr(),
+                                BinaryExpr.Operator.NOT_EQUALS
+                        ),
+                        new BlockStmt().addStatement(new ExpressionStmt(new MethodCallExpr(
+                                new NameExpr("predictionModels"), "init", NodeList.nodeList(new ThisExpr())
+                        ))),
+                        null
+                )
+        );
+    }
+
+    @Override
+    protected boolean useApplication() {
+        return false;
     }
 
     private void populateStaticKieRuntimeFactoryFunctionInit(ClassOrInterfaceDeclaration typeDeclaration) {
@@ -94,27 +116,5 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
     private StringLiteralExpr getReadResourceMethod(PMMLResource resource) {
         String source = resource.getModelPath();
         return new StringLiteralExpr(source);
-    }
-
-    @Override
-    protected boolean useApplication() {
-        return false;
-    }
-
-    @Override
-    public List<Statement> setupStatements() {
-        return Collections.singletonList(
-                new IfStmt(
-                        new BinaryExpr(
-                                new MethodCallExpr(new MethodCallExpr(null, "config"), "prediction"),
-                                new NullLiteralExpr(),
-                                BinaryExpr.Operator.NOT_EQUALS
-                        ),
-                        new BlockStmt().addStatement(new ExpressionStmt(new MethodCallExpr(
-                                new NameExpr("predictionModels"), "init", NodeList.nodeList(new ThisExpr())
-                        ))),
-                        null
-                )
-        );
     }
 }

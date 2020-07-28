@@ -35,22 +35,21 @@ import static com.github.javaparser.StaticJavaParser.parse;
 
 public class PMMLRestResourceGenerator {
 
-    private static final String TEMPLATE_JAVA = "/class-templates/PMMLRestResourceTemplate.java";
+    static final String TEMPLATE_JAVA = "/class-templates/PMMLRestResourceTemplate.java";
 
     private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION =
             new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
-    private final KiePMMLModel kiePMMLModel;
     private final String nameURL;
-    private final String packageName;
-    private final String relativePath;
+    final String packageName;
+    final String appCanonicalName;
+    DependencyInjectionAnnotator annotator;
     private final String resourceClazzName;
-    private final String appCanonicalName;
-    private DependencyInjectionAnnotator annotator;
+    private final String relativePath;
+    private final KiePMMLModel kiePMMLModel;
 
     public PMMLRestResourceGenerator(KiePMMLModel model, String appCanonicalName) {
         this.kiePMMLModel = model;
-        this.packageName =
-                "org.kie.kogito." + CodegenStringUtil.escapeIdentifier(model.getClass().getPackage().getName());
+        this.packageName = "org.kie.kogito." + CodegenStringUtil.escapeIdentifier(model.getClass().getPackage().getName());
         this.nameURL = URLEncoder.encode(model.getName()).replaceAll("\\+", "%20");
         this.appCanonicalName = appCanonicalName;
         String classPrefix = StringUtils.capitalize(model.getName());
@@ -70,15 +69,8 @@ public class PMMLRestResourceGenerator {
         template.setName(resourceClazzName);
 
         try {
-            template.findFirst(SingleMemberAnnotationExpr.class).orElseThrow(() -> new RuntimeException("")).setMemberValue(new StringLiteralExpr(nameURL));
-            template.getMethodsByName("pmml").get(0)
-                    .getBody().orElseThrow(() -> new RuntimeException(""))
-                    .getStatement(0).asExpressionStmt().getExpression()
-                    .asVariableDeclarationExpr()
-                    .getVariable(0)
-                    .getInitializer().orElseThrow(() -> new RuntimeException(""))
-                    .asMethodCallExpr()
-                    .getArgument(0).asStringLiteralExpr().setString(kiePMMLModel.getName());
+            setPathValue(template);
+            setPredictionModelName(template);
         } catch (Exception e) {
             throw MODIFIED_TEMPLATE_EXCEPTION;
         }
@@ -112,15 +104,30 @@ public class PMMLRestResourceGenerator {
         return resourceClazzName;
     }
 
-    private void initializeApplicationField(FieldDeclaration fd) {
-        fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(appCanonicalName));
-    }
-
     public String generatedFilePath() {
         return relativePath;
     }
 
     protected boolean useInjection() {
         return this.annotator != null;
+    }
+
+    void setPathValue(ClassOrInterfaceDeclaration template) {
+        template.findFirst(SingleMemberAnnotationExpr.class).orElseThrow(() -> new RuntimeException("")).setMemberValue(new StringLiteralExpr(nameURL));
+    }
+
+    void setPredictionModelName(ClassOrInterfaceDeclaration template) {
+        template.getMethodsByName("pmml").get(0)
+                .getBody().orElseThrow(() -> new RuntimeException(""))
+                .getStatement(0).asExpressionStmt().getExpression()
+                .asVariableDeclarationExpr()
+                .getVariable(0)
+                .getInitializer().orElseThrow(() -> new RuntimeException(""))
+                .asMethodCallExpr()
+                .getArgument(0).asStringLiteralExpr().setString(kiePMMLModel.getName());
+    }
+
+    private void initializeApplicationField(FieldDeclaration fd) {
+        fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(appCanonicalName));
     }
 }
