@@ -39,6 +39,7 @@ public class QuarkusModelEventEmitter extends BaseModelEventEmitter {
         this.eventSubject = PublishSubject.create();
     }
 
+    @Override
     @PostConstruct
     public void publishDecisionModels() {
         super.publishDecisionModels();

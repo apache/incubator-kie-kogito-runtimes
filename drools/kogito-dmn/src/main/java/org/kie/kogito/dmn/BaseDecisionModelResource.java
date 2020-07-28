@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class BaseDecisionModelResource implements DecisionModelResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DecisionModelResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseDecisionModelResource.class);
 
     protected final GAV gav;
     protected final String path;

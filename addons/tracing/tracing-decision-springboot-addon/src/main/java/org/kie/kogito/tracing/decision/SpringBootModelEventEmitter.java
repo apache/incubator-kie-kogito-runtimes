@@ -39,6 +39,7 @@ public class SpringBootModelEventEmitter extends BaseModelEventEmitter {
         this.kafkaTopicName = kafkaTopicName;
     }
 
+    @Override
     @PostConstruct
     public void publishDecisionModels() {
         super.publishDecisionModels();
