@@ -87,8 +87,8 @@ public abstract class BaseDecisionModelResource implements DecisionModelResource
             return load(is);
         } catch (IOException ioe) {
             LOG.error(ioe.getMessage());
+            throw new RuntimeException(ioe);
         }
-        throw new RuntimeException("Failed to get model");
     }
 
     private String load(InputStream is) {
@@ -100,6 +100,7 @@ public abstract class BaseDecisionModelResource implements DecisionModelResource
             }
         } catch (IOException ioe) {
             LOG.error(ioe.getMessage());
+            throw new RuntimeException(ioe);
         }
         return sb.toString();
     }

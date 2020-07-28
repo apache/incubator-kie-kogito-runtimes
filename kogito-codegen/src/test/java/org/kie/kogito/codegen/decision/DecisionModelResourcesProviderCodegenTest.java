@@ -44,7 +44,9 @@ public class DecisionModelResourcesProviderCodegenTest {
 
         final GeneratorContext context = GeneratorContext.ofProperties(new Properties());
 
-        final DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath()).withAddons(new AddonsConfig().withTracing(true));
+        final DecisionCodegen codeGenerator = DecisionCodegen
+                .ofPath(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath())
+                .withAddons(new AddonsConfig().withTracing(true));
         codeGenerator.setContext(context);
 
         final List<GeneratedFile> generatedFiles = codeGenerator.generate();
@@ -65,7 +67,10 @@ public class DecisionModelResourcesProviderCodegenTest {
 
         assertNotNull(classDeclaration);
 
-        final MethodDeclaration methodDeclaration = classDeclaration.findAll(MethodDeclaration.class, d -> d.getName().getIdentifier().equals("getResources")).get(0);
+        final MethodDeclaration methodDeclaration = classDeclaration
+                .findFirst(MethodDeclaration.class,
+                           d -> d.getName().getIdentifier().equals("getResources"))
+                .orElseThrow(() -> new NoSuchElementException("Class declaration doesn't contain a method named \"getResources\"!"));
         assertNotNull(methodDeclaration);
         assertTrue(methodDeclaration.getBody().isPresent());
 
