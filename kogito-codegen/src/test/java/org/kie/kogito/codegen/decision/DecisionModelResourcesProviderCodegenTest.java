@@ -33,6 +33,7 @@ import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 
 import static com.github.javaparser.StaticJavaParser.parse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,7 +51,7 @@ public class DecisionModelResourcesProviderCodegenTest {
         codeGenerator.setContext(context);
 
         final List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(2, generatedFiles.size());
+        assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(2); // the two resources below, see https://github.com/kiegroup/kogito-runtimes/commit/18ec525f530b1ff1bddcf18c0083f14f86aff171#diff-edd3a09d62dc627ee10fe37925944217R53
 
         //A Rest endpoint is always generated per model.
         assertEquals(GeneratedFile.Type.REST, generatedFiles.get(0).getType());
