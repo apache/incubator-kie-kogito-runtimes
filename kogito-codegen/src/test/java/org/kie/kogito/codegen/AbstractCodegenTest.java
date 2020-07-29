@@ -195,7 +195,6 @@ public class AbstractCodegenTest {
         Class<Application> app = (Class<Application>) Class.forName(this.getClass().getPackage().getName() + ".Application", true, classloader);
 
         Application application = app.getDeclaredConstructor().newInstance();
-//        app.getMethod("setup").invoke(application);
         return application;
     }
     
