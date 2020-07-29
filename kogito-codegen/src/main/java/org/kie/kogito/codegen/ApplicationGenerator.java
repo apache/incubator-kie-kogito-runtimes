@@ -134,19 +134,15 @@ public class ApplicationGenerator {
     }
 
     private void initializeSectionsExplicitly(ClassOrInterfaceDeclaration cls) {
-        // initialize sections explicitly only in the "no-annotator" case.
-        // Otherwise templates use CDI
-        if (annotator == null) {
-            for (Generator generator : generators) {
-                ApplicationSection section = generator.section();
-                if (section != null) {
-                    initializeSection(cls, section);
-                }
+        for (Generator generator : generators) {
+            ApplicationSection section = generator.section();
+            if (section != null) {
+                replaceSectionPlaceHolder(cls, section);
             }
         }
     }
 
-    private void initializeSection(ClassOrInterfaceDeclaration cls, ApplicationSection section) {
+    private void replaceSectionPlaceHolder(ClassOrInterfaceDeclaration cls, ApplicationSection section) {
         // look for an expression of the form: foo = ... /* $SectionName$ */ ;
         //      e.g.: this.processes = null /* $Processes$ */;
         // and replaces the entire expression with an initializer; e.g.:

@@ -17,12 +17,12 @@ public class ApplicationConfig extends org.kie.kogito.StaticConfig {
 
     @javax.inject.Inject
     public ApplicationConfig(
-            $Addons$,
             Instance<org.kie.kogito.process.ProcessConfig> processConfig,
             Instance<org.kie.kogito.rules.RuleConfig> ruleConfig,
             Instance<org.kie.kogito.decision.DecisionConfig> decisionConfig,
             Instance<org.kie.kogito.prediction.PredictionConfig> predictionConfig) {
-        super(orDefault(processConfig, StaticProcessConfig::new),
+        super($Addons$,
+              orDefault(processConfig, StaticProcessConfig::new),
               orDefault(ruleConfig, StaticRuleConfig::new),
               orDefault(decisionConfig, StaticDecisionConfig::new),
               orDefault(predictionConfig, StaticPredictionConfig::new));
@@ -35,5 +35,4 @@ public class ApplicationConfig extends org.kie.kogito.StaticConfig {
             return instance.get();
         }
     }
-
 }

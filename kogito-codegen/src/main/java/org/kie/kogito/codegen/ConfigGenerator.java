@@ -64,6 +64,7 @@ public class ConfigGenerator {
     private final String sourceFilePath;
     private final String targetTypeName;
     private final String targetCanonicalName;
+    private final TemplatedGenerator templatedGenerator;
 
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -72,6 +73,11 @@ public class ConfigGenerator {
         this.targetTypeName = "ApplicationConfig";
         this.targetCanonicalName = this.packageName + "." + targetTypeName;
         this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
+        this.templatedGenerator = new TemplatedGenerator(packageName,
+                                                         targetTypeName,
+                                                         RESOURCE_CDI,
+                                                         RESOURCE_SPRING,
+                                                         RESOURCE_DEFAULT);
     }
 
     public ConfigGenerator withProcessConfig(ProcessConfigGenerator cfg) {
@@ -108,6 +114,7 @@ public class ConfigGenerator {
 
     public ConfigGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
+        this.templatedGenerator.withDependencyInjection(annotator);
         return this;
     }
 
@@ -183,22 +190,8 @@ public class ConfigGenerator {
     }
 
     public CompilationUnit compilationUnit() {
-
-        String resource;
-
-        if (annotator == null) {
-            resource = RESOURCE_DEFAULT;
-        } else if (annotator instanceof CDIDependencyInjectionAnnotator) {
-            resource = RESOURCE_CDI;
-        } else if (annotator instanceof SpringDependencyInjectionAnnotator) {
-            resource = RESOURCE_SPRING;
-        } else {
-            throw new IllegalArgumentException("Unknown annotator " + annotator);
-        }
-
-        CompilationUnit compilationUnit =
-                parse(this.getClass().getResourceAsStream(resource))
-                        .setPackageDeclaration(packageName);
+        CompilationUnit compilationUnit = templatedGenerator.compilationUnit()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Template: No CompilationUnit"));
 
         ClassOrInterfaceDeclaration cls = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new RuntimeException("ApplicationConfig template class not found"));

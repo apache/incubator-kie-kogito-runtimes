@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import javax.lang.model.SourceVersion;
 
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
@@ -37,6 +38,7 @@ public class TemplatedGenerator {
     private final String resourceDefault;
 
     private DependencyInjectionAnnotator annotator;
+    private String targetTypeName;
 
     public TemplatedGenerator(
             String packageName,
@@ -54,7 +56,8 @@ public class TemplatedGenerator {
         }
 
         this.packageName = packageName;
-        String targetCanonicalName = this.packageName + "." + targetTypeName;
+        this.targetTypeName = targetTypeName;
+        String targetCanonicalName = this.packageName + "." + this.targetTypeName;
         this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
         this.resourceCdi = resourceCdi;
         this.resourceSpring = resourceSpring;
@@ -102,10 +105,14 @@ public class TemplatedGenerator {
             throw new IllegalArgumentException("Unknown annotator " + annotator);
         }
 
-        CompilationUnit compilationUnit =
-                parse(this.getClass().getResourceAsStream(resource))
-                        .setPackageDeclaration(packageName);
+        try {
+            CompilationUnit compilationUnit =
+                    parse(this.getClass().getResourceAsStream(resource))
+                            .setPackageDeclaration(packageName);
 
-        return Optional.of(compilationUnit);
+            return Optional.of(compilationUnit);
+        } catch (ParseProblemException ex) {
+            throw new TemplateInstantiationException(targetTypeName, resource, ex);
+        }
     }
 }
