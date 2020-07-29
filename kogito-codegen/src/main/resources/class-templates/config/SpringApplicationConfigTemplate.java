@@ -15,6 +15,7 @@ public class ApplicationConfig extends org.kie.kogito.StaticConfig {
 
     @org.springframework.beans.factory.annotation.Autowired
     public ApplicationConfig(
+            $Addons$,
             List<org.kie.kogito.process.ProcessConfig> processConfig,
             List<org.kie.kogito.rules.RuleConfig> ruleConfig,
             List<org.kie.kogito.decision.DecisionConfig> decisionConfig,

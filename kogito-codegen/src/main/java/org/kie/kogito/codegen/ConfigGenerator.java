@@ -207,14 +207,30 @@ public class ConfigGenerator {
         ClassOrInterfaceDeclaration cls = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new RuntimeException("ApplicationConfig template class not found"));
 
-        // add found addons
-        cls.addMember(generateAddonsMethod());
+        initializeAddons(cls);
 
-        cls.getMembers().sort(new BodyDeclarationComparator());
         return compilationUnit;
     }
 
+    private void initializeAddons(ClassOrInterfaceDeclaration cls) {
+        // get the place holder and replace it with a list of the addons that have been found
+        NameExpr addonsPlaceHolder =
+                cls.findFirst(NameExpr.class, e -> e.getNameAsString().equals("$Addons$")).
+                orElseThrow(() -> new IllegalArgumentException("Invalid Template: Missing $Addons$ placeholder"));
+
+        addonsPlaceHolder.getParentNode().get()
+                .replace(addonsPlaceHolder, generateAddonsList());
+    }
+
     private MethodDeclaration generateAddonsMethod() {
+        BlockStmt body = new BlockStmt().addStatement(new ReturnStmt(
+                newObject(Addons.class, generateAddonsList())
+        ));
+
+        return method(Keyword.PUBLIC, Addons.class, "addons", body);
+    }
+
+    private ObjectCreationExpr generateAddonsList() {
         MethodCallExpr asListOfAddons = new MethodCallExpr(new NameExpr("java.util.Arrays"), "asList");
         try {
             Enumeration<URL> urls = classLoader.getResources("META-INF/kogito.addon");
@@ -226,12 +242,7 @@ public class ConfigGenerator {
         } catch (IOException e) {
             LOGGER.warn("Unexpected exception during loading of kogito.addon files", e);
         }
-
-        BlockStmt body = new BlockStmt().addStatement(new ReturnStmt(
-                newObject(Addons.class, asListOfAddons)
-        ));
-
-        return method(Keyword.PUBLIC, Addons.class, "addons", body);
+        return newObject(Addons.class, asListOfAddons);
     }
 
     public String generatedFilePath() {

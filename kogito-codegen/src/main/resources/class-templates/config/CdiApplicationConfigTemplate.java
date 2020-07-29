@@ -17,6 +17,7 @@ public class ApplicationConfig extends org.kie.kogito.StaticConfig {
 
     @javax.inject.Inject
     public ApplicationConfig(
+            $Addons$,
             Instance<org.kie.kogito.process.ProcessConfig> processConfig,
             Instance<org.kie.kogito.rules.RuleConfig> ruleConfig,
             Instance<org.kie.kogito.decision.DecisionConfig> decisionConfig,

@@ -45,9 +45,9 @@ public abstract class AbstractApplication implements Application {
         this.decisionModels = decisionModels;
         this.predictionModels = predictionModels;
 
-        if (config().process() != null) {
-            unitOfWorkManager().eventManager().setAddons(config().addons());
-        }
+//        if (config().process() != null) {
+//            unitOfWorkManager().eventManager().setAddons(config().addons());
+//        }
     }
 
     public Config config() {
