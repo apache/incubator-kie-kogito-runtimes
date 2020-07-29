@@ -1,9 +1,8 @@
 package $Package$;
 
-import org.kie.kogito.Config;
-import org.kie.kogito.uow.UnitOfWorkManager;
+import org.kie.kogito.StaticApplication;
 
-public class Application extends org.kie.kogito.AbstractApplication {
+public class Application extends StaticApplication {
 
     public Application() {
         this.config = new ApplicationConfig();
