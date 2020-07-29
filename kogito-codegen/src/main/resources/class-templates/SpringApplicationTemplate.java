@@ -14,11 +14,14 @@ public class Application extends org.kie.kogito.AbstractApplication {
             Config config,
             java.util.Collection<Processes> processes/*,
             java.util.Collection<RuleUnits> ruleUnits,
-            java.util.Collection<DecisionModels> decisionModels*/) {
+            java.util.Collection<DecisionModels> decisionModels,
+            java.util.Collection<PredictionModels> predictionModels,
+            */) {
         this.config = config;
         this.processes = orNull(processes);
         this.ruleUnits = null /* $RuleUnits$ */;
         this.decisionModels = null /* $DecisionModels$ */;
+        this.predictionModels = null /* $PredictionModels$ */;
 
         if (config().process() != null) {
             unitOfWorkManager().eventManager().setAddons(config().addons());

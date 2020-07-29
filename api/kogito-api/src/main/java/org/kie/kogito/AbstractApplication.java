@@ -16,6 +16,7 @@
 package org.kie.kogito;
 
 import org.kie.kogito.decision.DecisionModels;
+import org.kie.kogito.prediction.PredictionModels;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.RuleUnits;
 import org.kie.kogito.uow.UnitOfWorkManager;
@@ -26,16 +27,23 @@ public abstract class AbstractApplication implements Application {
     protected Processes processes;
     protected RuleUnits ruleUnits;
     protected DecisionModels decisionModels;
+    protected PredictionModels predictionModels;
 
     public AbstractApplication() {
 
     }
 
-    public AbstractApplication(Config config, Processes processes, RuleUnits ruleUnits, DecisionModels decisionModels) {
+    public AbstractApplication(
+            Config config,
+            Processes processes,
+            RuleUnits ruleUnits,
+            DecisionModels decisionModels,
+            PredictionModels predictionModels) {
         this.config = config;
         this.processes = processes;
         this.ruleUnits = ruleUnits;
         this.decisionModels = decisionModels;
+        this.predictionModels = predictionModels;
 
         if (config().process() != null) {
             unitOfWorkManager().eventManager().setAddons(config().addons());
@@ -59,6 +67,11 @@ public abstract class AbstractApplication implements Application {
     @Override
     public DecisionModels decisionModels() {
         return decisionModels;
+    }
+
+    @Override
+    public PredictionModels predictionModels() {
+        return predictionModels;
     }
 
     public UnitOfWorkManager unitOfWorkManager() {

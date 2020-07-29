@@ -10,6 +10,7 @@ public class Application extends org.kie.kogito.AbstractApplication {
         this.processes = null /* $Processes$ */;
         this.ruleUnits = null /* $RuleUnits$ */;
         this.decisionModels = null /* $DecisionModels$ */;
+        this.predictionModels = null /* $PredictionModels$ */;
 
         if (config().process() != null) {
             unitOfWorkManager().eventManager().setAddons(config().addons());

@@ -68,23 +68,6 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
     }
 
     @Override
-    public List<Statement> setupStatements() {
-        return Collections.singletonList(
-                new IfStmt(
-                        new BinaryExpr(
-                                new MethodCallExpr(new MethodCallExpr(null, "config"), "prediction"),
-                                new NullLiteralExpr(),
-                                BinaryExpr.Operator.NOT_EQUALS
-                        ),
-                        new BlockStmt().addStatement(new ExpressionStmt(new MethodCallExpr(
-                                new NameExpr("predictionModels"), "init", NodeList.nodeList(new ThisExpr())
-                        ))),
-                        null
-                )
-        );
-    }
-
-    @Override
     protected boolean useApplication() {
         return false;
     }
