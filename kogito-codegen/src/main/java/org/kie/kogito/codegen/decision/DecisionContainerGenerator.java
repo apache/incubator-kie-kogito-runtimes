@@ -120,9 +120,4 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         return new MethodCallExpr(new FieldAccessExpr(applicationClass.getNameAsExpression(), "class"), "getResourceAsStream")
                 .addArgument(new StringLiteralExpr(getDecisionModelRelativeResourcePath(resource)));
     }
-
-    @Override
-    protected boolean useApplication() {
-        return true;
-    }
 }

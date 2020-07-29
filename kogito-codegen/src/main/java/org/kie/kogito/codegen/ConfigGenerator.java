@@ -25,15 +25,11 @@ import java.util.Enumeration;
 import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.drools.core.util.StringUtils;
 import org.kie.kogito.Addons;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
@@ -207,42 +203,46 @@ public class ConfigGenerator {
         ClassOrInterfaceDeclaration cls = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new RuntimeException("ApplicationConfig template class not found"));
 
-        initializeAddons(cls);
+        replaceAddonPlaceHolder(cls);
 
         return compilationUnit;
     }
 
-    private void initializeAddons(ClassOrInterfaceDeclaration cls) {
+    private void replaceAddonPlaceHolder(ClassOrInterfaceDeclaration cls) {
         // get the place holder and replace it with a list of the addons that have been found
         NameExpr addonsPlaceHolder =
                 cls.findFirst(NameExpr.class, e -> e.getNameAsString().equals("$Addons$")).
-                orElseThrow(() -> new IllegalArgumentException("Invalid Template: Missing $Addons$ placeholder"));
+                        orElseThrow(() -> new IllegalArgumentException("Invalid Template: Missing $Addons$ placeholder"));
 
+        ObjectCreationExpr addonsList = generateAddonsList();
         addonsPlaceHolder.getParentNode().get()
-                .replace(addonsPlaceHolder, generateAddonsList());
-    }
-
-    private MethodDeclaration generateAddonsMethod() {
-        BlockStmt body = new BlockStmt().addStatement(new ReturnStmt(
-                newObject(Addons.class, generateAddonsList())
-        ));
-
-        return method(Keyword.PUBLIC, Addons.class, "addons", body);
+                .replace(addonsPlaceHolder, addonsList);
     }
 
     private ObjectCreationExpr generateAddonsList() {
+        Collection<String> addons = loadAddonList();
+
         MethodCallExpr asListOfAddons = new MethodCallExpr(new NameExpr("java.util.Arrays"), "asList");
+        for (String addon : addons) {
+            asListOfAddons.addArgument(new StringLiteralExpr(addon));
+        }
+
+        return newObject(Addons.class, asListOfAddons);
+    }
+
+    private Collection<String> loadAddonList() {
+        ArrayList<String> addons = new ArrayList<>();
         try {
             Enumeration<URL> urls = classLoader.getResources("META-INF/kogito.addon");
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 String addon = StringUtils.readFileAsString(new InputStreamReader(url.openStream()));
-                asListOfAddons.addArgument(new StringLiteralExpr(addon));
+                addons.add(addon);
             }
         } catch (IOException e) {
             LOGGER.warn("Unexpected exception during loading of kogito.addon files", e);
         }
-        return newObject(Addons.class, asListOfAddons);
+        return addons;
     }
 
     public String generatedFilePath() {

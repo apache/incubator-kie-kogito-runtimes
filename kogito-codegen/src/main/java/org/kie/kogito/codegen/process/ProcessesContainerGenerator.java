@@ -64,7 +64,6 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
 
     private DependencyInjectionAnnotator annotator;
 
-    private NodeList<BodyDeclaration<?>> applicationDeclarations;
     private BlockStmt byProcessIdBody = new BlockStmt();
     private BlockStmt processesBody = new BlockStmt();
     private final TemplatedGenerator templatedGenerator;
@@ -74,7 +73,6 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
         this.packageName = packageName;
         this.processes = new ArrayList<>();
         this.factoryMethods = new ArrayList<>();
-        this.applicationDeclarations = new NodeList<>();
 
         this.templatedGenerator = new TemplatedGenerator(
                 packageName,
@@ -118,53 +116,31 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
         CompilationUnit compilationUnit = templatedGenerator.compilationUnit()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Template: No CompilationUnit"));
 
-        if (annotator == null) {
-            byProcessIdBody
-                    .addStatement(new ReturnStmt(new NullLiteralExpr()));
-
-            NodeList<Expression> processIds = NodeList.nodeList(processes.stream().map(p -> new StringLiteralExpr(p.processId())).collect(Collectors.toList()));
-            processesBody
-                    .addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));
-
-            FieldDeclaration applicationFieldDeclaration = new FieldDeclaration();
-            applicationFieldDeclaration
-                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, "Application"), "application"))
-                    .setModifiers(Modifier.Keyword.PRIVATE, Modifier.Keyword.FINAL);
-            applicationDeclarations.add(applicationFieldDeclaration);
-
-            ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration("Processes")
-                    .addModifier(Modifier.Keyword.PUBLIC)
-                    .addParameter("Application", "application")
-                    .setBody(new BlockStmt().addStatement("this.application = application;"));
-            applicationDeclarations.add(constructorDeclaration);
-
-            compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processIds")).get()
-                    .setBody(this.processesBody);
-
-            compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processById")).get()
-                    .setBody(this.byProcessIdBody);
-
-            ClassOrInterfaceDeclaration cls = super.classDeclaration().setMembers(applicationDeclarations);
-            cls.getMembers().sort(new BodyDeclarationComparator());
-        }
+        registerProcessesExplicitly(compilationUnit);
         return compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get();
     }
 
-//    @Override
-//    public CompilationUnit injectableClass() {
-//        CompilationUnit compilationUnit = parse(this.getClass().getResourceAsStream(RESOURCE)).setPackageDeclaration(packageName);
-//        ClassOrInterfaceDeclaration cls = compilationUnit
-//                .findFirst(ClassOrInterfaceDeclaration.class)
-//                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
-//
-//        cls.findAll(FieldDeclaration.class, fd -> fd.getVariable(0).getNameAsString().equals("processes")).forEach(fd -> {
-//            annotator.withInjection(fd);
-//            fd.getVariable(0).setType(new ClassOrInterfaceType(null, new SimpleName(annotator.multiInstanceInjectionType()),
-//                                                               NodeList.nodeList(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new WildcardType(new ClassOrInterfaceType(null, Model.class.getCanonicalName())))))));
-//        });
-//
-//        annotator.withApplicationComponent(cls);
-//
-//        return compilationUnit;
-//    }
+    private void registerProcessesExplicitly(CompilationUnit compilationUnit) {
+        // only for non-DI cases
+        if (annotator == null) {
+            setupProcessById(compilationUnit);
+            setupProcessIds(compilationUnit);
+        }
+    }
+
+    private void setupProcessIds(CompilationUnit compilationUnit) {
+        NodeList<Expression> processIds = NodeList.nodeList(processes.stream().map(p -> new StringLiteralExpr(p.processId())).collect(Collectors.toList()));
+        processesBody
+                .addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));
+
+        compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processIds")).get()
+                .setBody(this.processesBody);
+    }
+
+    private void setupProcessById(CompilationUnit compilationUnit) {
+        byProcessIdBody
+                .addStatement(new ReturnStmt(new NullLiteralExpr()));
+        compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processById")).get()
+                .setBody(this.byProcessIdBody);
+    }
 }

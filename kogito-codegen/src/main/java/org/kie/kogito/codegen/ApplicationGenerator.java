@@ -21,7 +21,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -35,27 +34,18 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
-import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
-import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.Labeler;
 import org.kie.kogito.codegen.metadata.MetaDataWriter;
 import org.kie.kogito.codegen.metadata.PrometheusLabeler;
-import org.kie.kogito.codegen.process.ProcessCodegen;
-import org.kie.kogito.codegen.process.ProcessGenerator;
-import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.github.javaparser.StaticJavaParser.parse;
 
 public class ApplicationGenerator {
 
@@ -137,31 +127,37 @@ public class ApplicationGenerator {
 
         factoryMethods.forEach(cls::addMember);
 
-        if (annotator == null) {
-            for (Generator generator : generators) {
-                ApplicationSection section = generator.section();
-                initializeSectionExplicitly(cls, section);
-            }
-        }
+        initializeSectionsExplicitly(cls);
 
         cls.getMembers().sort(new BodyDeclarationComparator());
         return compilationUnit;
     }
 
-    private void initializeSectionExplicitly(ClassOrInterfaceDeclaration cls, ApplicationSection section) {
-        if (section == null) {
-            return; // skip
+    private void initializeSectionsExplicitly(ClassOrInterfaceDeclaration cls) {
+        // initialize sections explicitly only in the "no-annotator" case.
+        // Otherwise templates use CDI
+        if (annotator == null) {
+            for (Generator generator : generators) {
+                ApplicationSection section = generator.section();
+                if (section != null) {
+                    initializeSection(cls, section);
+                }
+            }
         }
+    }
 
+    private void initializeSection(ClassOrInterfaceDeclaration cls, ApplicationSection section) {
         // look for an expression of the form: foo = ... /* $SectionName$ */ ;
         //      e.g.: this.processes = null /* $Processes$ */;
         // and replaces the entire expression with an initializer; e.g.:
         //      e.g.: this.processes = new Processes(this);
 
-        Optional<AssignExpr> fae = cls.findFirst(BlockComment.class, c -> c.getContent().trim().equals('$' + section.sectionClassName() + '$'))
+        Optional<AssignExpr> fae = cls.findFirst(
+                BlockComment.class, c -> c.getContent().trim().equals('$' + section.sectionClassName() + '$'))
                 .flatMap(Node::getParentNode)
                 .map(ExpressionStmt.class::cast)
                 .map(e -> e.getExpression().asAssignExpr());
+
         if (fae.isPresent()) {
             Expression initializer =
                     section.fieldDeclaration().getVariable(0).getInitializer().get().asObjectCreationExpr().setArguments(new NodeList<>(new ThisExpr()));
