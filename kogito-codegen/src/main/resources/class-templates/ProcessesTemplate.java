@@ -1,32 +1,20 @@
 package $Package$;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+public class Processes implements org.kie.kogito.process.Processes {
 
-import org.kie.kogito.Model;
-import org.kie.kogito.process.Process;
-import org.kie.kogito.process.Processes;
+    private final Application application;
 
-public class ApplicationProcesses implements Processes {
-
-    Object processes;
-        
-    private Map<String, Process<? extends Model>> mappedProcesses = new HashMap<>();
-
-    @javax.annotation.PostConstruct
-    public void setup() {
-        
-        for (Process<? extends Model> process : processes) {
-            mappedProcesses.put(process.id(), process);
-        }
+    public Processes(Application application) {
+        this.application = application;
     }
-    
-    public Process<? extends Model> processById(String processId) {
-        return mappedProcesses.get(processId);
+
+    public org.kie.kogito.process.Process<? extends org.kie.kogito.Model> processById(String processId) {
+        if ("$ProcessId".equals(processId))
+            return new $ProcessClassName$(application).configure();
+        return null;
     }
-    
-    public Collection<String> processIds() {
-        return mappedProcesses.keySet();
+
+    public java.util.Collection<String> processIds() {
+        return java.util.Arrays.asList("$ProcessId$");
     }
 }

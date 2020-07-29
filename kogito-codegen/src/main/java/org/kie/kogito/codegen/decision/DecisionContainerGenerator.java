@@ -123,23 +123,6 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
 
     @Override
     protected boolean useApplication() {
-        return false;
-    }
-
-    @Override
-    public List<Statement> setupStatements() {
-        return Collections.singletonList(
-                new IfStmt(
-                        new BinaryExpr(
-                                new MethodCallExpr(new MethodCallExpr(null, "config"), "decision"),
-                                new NullLiteralExpr(),
-                                BinaryExpr.Operator.NOT_EQUALS
-                        ),
-                        new BlockStmt().addStatement(new ExpressionStmt(new MethodCallExpr(
-                                new NameExpr("decisionModels"), "init", NodeList.nodeList(new ThisExpr())
-                        ))),
-                        null
-                )
-        );
+        return true;
     }
 }

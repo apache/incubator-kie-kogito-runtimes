@@ -131,6 +131,7 @@ public class ConfigGenerator {
         generateRuleConfigDescriptor().ifPresent(generatedFiles::add);
         generatePredictionConfigDescriptor().ifPresent(generatedFiles::add);
         generateDecisionConfigDescriptor().ifPresent(generatedFiles::add);
+        generateBeanConfig().ifPresent(generatedFiles::add);
 
         return generatedFiles;
     }
@@ -172,6 +173,16 @@ public class ConfigGenerator {
         Optional<CompilationUnit> compilationUnit = predictionConfig.compilationUnit();
         return compilationUnit.map(c -> new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
                                                           predictionConfig.generatedFilePath(),
+                                                          log(c.toString()).getBytes(StandardCharsets.UTF_8)));
+    }
+
+    private Optional<GeneratedFile> generateBeanConfig() {
+        ConfigBeanGenerator configBeanGenerator = new ConfigBeanGenerator(packageName);
+        configBeanGenerator.withDependencyInjection(annotator);
+
+        Optional<CompilationUnit> compilationUnit = configBeanGenerator.compilationUnit();
+        return compilationUnit.map(c -> new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
+                                                          configBeanGenerator.generatedFilePath(),
                                                           log(c.toString()).getBytes(StandardCharsets.UTF_8)));
     }
 

@@ -15,7 +15,10 @@
 
 package org.kie.kogito.codegen;
 
+import java.text.MessageFormat;
 import java.util.Optional;
+
+import javax.lang.model.SourceVersion;
 
 import com.github.javaparser.ast.CompilationUnit;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
@@ -24,40 +27,74 @@ import org.kie.kogito.codegen.di.SpringDependencyInjectionAnnotator;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 
-public abstract class AbstractConfigGenerator {
+public class TemplatedGenerator {
 
     private final String packageName;
     private final String sourceFilePath;
 
     private final String resourceCdi;
     private final String resourceSpring;
+    private final String resourceDefault;
 
     private DependencyInjectionAnnotator annotator;
 
-    public AbstractConfigGenerator(String packageName, String targetTypeName, String resourceCdi, String resourceSpring) {
+    public TemplatedGenerator(
+            String packageName,
+            String targetTypeName,
+            String resourceCdi,
+            String resourceSpring,
+            String resourceDefault) {
+        if (packageName == null) {
+            throw new IllegalArgumentException("Package name cannot be undefined (null), please specify a package name!");
+        }
+        if (!SourceVersion.isName(packageName)) {
+            throw new IllegalArgumentException(
+                    MessageFormat.format(
+                            "Package name \"{0}\" is not valid. It should be a valid Java package name.", packageName));
+        }
+
         this.packageName = packageName;
         String targetCanonicalName = this.packageName + "." + targetTypeName;
         this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
         this.resourceCdi = resourceCdi;
         this.resourceSpring = resourceSpring;
+        this.resourceDefault = resourceDefault;
+    }
+
+    public TemplatedGenerator(
+            String packageName,
+            String targetTypeName,
+            String resourceCdi,
+            String resourceSpring) {
+        this(packageName,
+             targetTypeName,
+             resourceCdi,
+             resourceSpring,
+             null);
     }
 
     public String generatedFilePath() {
         return sourceFilePath;
     }
 
-    public final AbstractConfigGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
+    protected String packageName() {
+        return this.packageName;
+    }
+
+    public TemplatedGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
         return this;
     }
 
     public Optional<CompilationUnit> compilationUnit() {
-        if (annotator == null) {
-            return Optional.empty();
-        }
-
         String resource;
-        if (annotator instanceof CDIDependencyInjectionAnnotator) {
+        if (annotator == null) {
+            if (resourceDefault == null) {
+                return Optional.empty();
+            } else {
+                resource = resourceDefault;
+            }
+        } else if (annotator instanceof CDIDependencyInjectionAnnotator) {
             resource = resourceCdi;
         } else if (annotator instanceof SpringDependencyInjectionAnnotator) {
             resource = resourceSpring;

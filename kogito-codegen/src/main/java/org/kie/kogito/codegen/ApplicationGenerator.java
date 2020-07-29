@@ -21,6 +21,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -30,24 +31,27 @@ import java.util.stream.Collectors;
 import javax.lang.model.SourceVersion;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.kie.kogito.Config;
+import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.Labeler;
 import org.kie.kogito.codegen.metadata.MetaDataWriter;
 import org.kie.kogito.codegen.metadata.PrometheusLabeler;
-import org.kie.kogito.event.EventPublisher;
+import org.kie.kogito.codegen.process.ProcessCodegen;
+import org.kie.kogito.codegen.process.ProcessGenerator;
+import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +61,9 @@ public class ApplicationGenerator {
 
     public static final Logger logger = LoggerFactory.getLogger(ApplicationGenerator.class);
 
-    private static final String RESOURCE = "/class-templates/ApplicationTemplate.java";
+    private static final String RESOURCE_CDI = "/class-templates/CdiApplicationTemplate.java";
+    private static final String RESOURCE_SPRING = "/class-templates/SpringApplicationTemplate.java";
+    private static final String RESOURCE_DEFAULT = "/class-templates/ApplicationTemplate.java";
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
     public static final String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
@@ -75,6 +81,7 @@ public class ApplicationGenerator {
     private Map<Class, Labeler> labelers = new HashMap<>();
 
     private GeneratorContext context;
+    private final TemplatedGenerator templatedGenerator;
 
     public ApplicationGenerator(String packageName, File targetDirectory) {
         if (packageName == null) {
@@ -89,6 +96,13 @@ public class ApplicationGenerator {
         this.targetDirectory = targetDirectory;
         this.factoryMethods = new ArrayList<>();
         this.configGenerator = new ConfigGenerator(packageName);
+
+        this.templatedGenerator = new TemplatedGenerator(
+                packageName,
+                APPLICATION_CLASS_NAME,
+                RESOURCE_CDI,
+                RESOURCE_SPRING,
+                RESOURCE_DEFAULT);
     }
 
     public String targetCanonicalName() {
@@ -103,84 +117,64 @@ public class ApplicationGenerator {
         return (this.packageName + "." + className).replace('.', '/') + ".java";
     }
 
+    /**
+     *
+     * @deprecated used only in tests?
+     */
+    @Deprecated
     public void addFactoryMethods(Collection<MethodDeclaration> decls) {
         factoryMethods.addAll(decls);
     }
 
     CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit =
-                parse(this.getClass().getResourceAsStream(RESOURCE))
-                        .setPackageDeclaration(packageName);
+                templatedGenerator.compilationUnit()
+                        .orElseThrow(() -> new IllegalArgumentException("Cannot find template for " + APPLICATION_CLASS_NAME));
 
         ClassOrInterfaceDeclaration cls = compilationUnit
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
-        VariableDeclarator eventPublishersDeclarator;
-        FieldDeclaration eventPublishersFieldDeclaration = new FieldDeclaration();
-
-        FieldDeclaration kogitoServiceField = new FieldDeclaration().addVariable(new VariableDeclarator()
-                                                                                .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getCanonicalName()))))
-                                                                                .setName("kogitoService"));
-
-        cls.addMember(eventPublishersFieldDeclaration);
-        cls.addMember(kogitoServiceField);
-        if (useInjection()) {
-            annotator.withSingletonComponent(cls);
-
-            cls.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("setup")).
-            orElseThrow(() -> new RuntimeException("setup method template not found"))
-            .addAnnotation("javax.annotation.PostConstruct");
-
-            annotator.withOptionalInjection(eventPublishersFieldDeclaration);
-            eventPublishersDeclarator = new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(annotator.multiInstanceInjectionType()), NodeList.nodeList(new ClassOrInterfaceType(null, EventPublisher.class.getCanonicalName()))), "eventPublishers");
-
-            annotator.withConfigInjection(kogitoServiceField, "kogito.service.url");
-        } else {
-            eventPublishersDeclarator = new VariableDeclarator(new ClassOrInterfaceType(null, new SimpleName(List.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, EventPublisher.class.getCanonicalName()))), "eventPublishers");
-            kogitoServiceField.getVariable(0).setInitializer(new MethodCallExpr(new NameExpr(Optional.class.getCanonicalName()), "empty"));
-        }
-
-        eventPublishersFieldDeclaration.addVariable(eventPublishersDeclarator);
-
-        FieldDeclaration configField = null;
-        if (useInjection()) {
-            configField = new FieldDeclaration()
-                    .addVariable(new VariableDeclarator()
-                                         .setType(Config.class.getCanonicalName())
-                                         .setName("config"));
-            annotator.withInjection(configField);
-        } else {
-            configField = new FieldDeclaration()
-                    .addModifier(Modifier.Keyword.PROTECTED)
-                    .addVariable(new VariableDeclarator()
-                            .setType(Config.class.getCanonicalName())
-                            .setName("config")
-                            .setInitializer(configGenerator.newInstance()));
-        }
-        cls.addMember(configField);
-
         factoryMethods.forEach(cls::addMember);
 
-        Optional<BlockStmt> optSetupBody = cls
-                .findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("setup"))
-                .flatMap(MethodDeclaration::getBody);
-        for (Generator generator : generators) {
-            ApplicationSection section = generator.section();
-            if (section == null) {
-                continue;
+        if (annotator == null) {
+            for (Generator generator : generators) {
+                ApplicationSection section = generator.section();
+                initializeSectionExplicitly(cls, section);
             }
-            cls.addMember(section.fieldDeclaration());
-            cls.addMember(section.factoryMethod());
-            optSetupBody.ifPresent(b -> section.setupStatements().forEach(b::addStatement));
         }
+
         cls.getMembers().sort(new BodyDeclarationComparator());
         return compilationUnit;
+    }
+
+    private void initializeSectionExplicitly(ClassOrInterfaceDeclaration cls, ApplicationSection section) {
+        if (section == null) {
+            return; // skip
+        }
+
+        // look for an expression of the form: foo = ... /* $SectionName$ */ ;
+        //      e.g.: this.processes = null /* $Processes$ */;
+        // and replaces the entire expression with an initializer; e.g.:
+        //      e.g.: this.processes = new Processes(this);
+
+        Optional<AssignExpr> fae = cls.findFirst(BlockComment.class, c -> c.getContent().trim().equals('$' + section.sectionClassName() + '$'))
+                .flatMap(Node::getParentNode)
+                .map(ExpressionStmt.class::cast)
+                .map(e -> e.getExpression().asAssignExpr());
+        if (fae.isPresent()) {
+            Expression initializer =
+                    section.fieldDeclaration().getVariable(0).getInitializer().get().asObjectCreationExpr().setArguments(new NodeList<>(new ThisExpr()));
+            fae.get().setValue(initializer);
+        }
+        // else ignore: there is no such templated argument
+
     }
 
     public ApplicationGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
         configGenerator.withDependencyInjection(annotator);
+        templatedGenerator.withDependencyInjection(annotator);
         return this;
     }
 

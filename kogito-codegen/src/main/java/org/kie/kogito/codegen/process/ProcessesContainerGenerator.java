@@ -46,6 +46,7 @@ import com.github.javaparser.ast.type.WildcardType;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
+import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.process.Processes;
 
@@ -54,15 +55,19 @@ import static com.github.javaparser.StaticJavaParser.parse;
 public class ProcessesContainerGenerator extends AbstractApplicationSection {
 
     private static final String RESOURCE = "/class-templates/ProcessesTemplate.java";
+    private static final String RESOURCE_CDI = "/class-templates/CdiProcessesTemplate.java";
+    private static final String RESOURCE_SPRING = "/class-templates/SpringProcessesTemplate.java";
+
     private final String packageName;
     private final List<ProcessGenerator> processes;
     private final List<BodyDeclaration<?>> factoryMethods;
 
     private DependencyInjectionAnnotator annotator;
-    
+
     private NodeList<BodyDeclaration<?>> applicationDeclarations;
-    private MethodDeclaration byProcessIdMethodDeclaration;
-    private MethodDeclaration processesMethodDeclaration;
+    private BlockStmt byProcessIdBody = new BlockStmt();
+    private BlockStmt processesBody = new BlockStmt();
+    private final TemplatedGenerator templatedGenerator;
 
     public ProcessesContainerGenerator(String packageName) {
         super("Processes", "processes", Processes.class);
@@ -71,23 +76,12 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
         this.factoryMethods = new ArrayList<>();
         this.applicationDeclarations = new NodeList<>();
 
-        byProcessIdMethodDeclaration = new MethodDeclaration()
-                .addModifier(Modifier.Keyword.PUBLIC)
-                .setName("processById")
-                .setType(new ClassOrInterfaceType(null, org.kie.kogito.process.Process.class.getCanonicalName())
-                                 .setTypeArguments(new WildcardType(new ClassOrInterfaceType(null, Model.class.getCanonicalName()))))
-                .setBody(new BlockStmt())
-                .addParameter("String", "processId");
-
-        processesMethodDeclaration = new MethodDeclaration()
-                .addModifier(Modifier.Keyword.PUBLIC)
-                .setName("processIds")
-                .setType(new ClassOrInterfaceType(null, Collection.class.getCanonicalName())
-                                 .setTypeArguments(new ClassOrInterfaceType(null, "String")))
-                .setBody(new BlockStmt());
-
-        applicationDeclarations.add(byProcessIdMethodDeclaration);
-        applicationDeclarations.add(processesMethodDeclaration);
+        this.templatedGenerator = new TemplatedGenerator(
+                packageName,
+                "Processes",
+                RESOURCE_CDI,
+                RESOURCE_SPRING,
+                RESOURCE);
     }
 
     public List<BodyDeclaration<?>> factoryMethods() {
@@ -109,63 +103,68 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
                                                 "configure")),
                                         null);
 
-        byProcessIdMethodDeclaration
-                .getBody()
-                .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
+        byProcessIdBody
                 .addStatement(byProcessId);
     }
 
     public ProcessesContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
+        this.templatedGenerator.withDependencyInjection(annotator);
         return this;
     }
 
     @Override
     public ClassOrInterfaceDeclaration classDeclaration() {
-        byProcessIdMethodDeclaration
-                .getBody()
-                .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .addStatement(new ReturnStmt(new NullLiteralExpr()));
+        CompilationUnit compilationUnit = templatedGenerator.compilationUnit()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Template: No CompilationUnit"));
 
-        NodeList<Expression> processIds = NodeList.nodeList(processes.stream().map(p -> new StringLiteralExpr(p.processId())).collect(Collectors.toList()));
-        processesMethodDeclaration
-                .getBody()
-                .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
-                .addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));
+        if (annotator == null) {
+            byProcessIdBody
+                    .addStatement(new ReturnStmt(new NullLiteralExpr()));
 
-        FieldDeclaration applicationFieldDeclaration = new FieldDeclaration();
-        applicationFieldDeclaration
-                .addVariable( new VariableDeclarator( new ClassOrInterfaceType(null, "Application"), "application") )
-                .setModifiers( Modifier.Keyword.PRIVATE, Modifier.Keyword.FINAL );
-        applicationDeclarations.add( applicationFieldDeclaration );
+            NodeList<Expression> processIds = NodeList.nodeList(processes.stream().map(p -> new StringLiteralExpr(p.processId())).collect(Collectors.toList()));
+            processesBody
+                    .addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));
 
-        ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration("Processes")
-                .addModifier(Modifier.Keyword.PUBLIC)
-                .addParameter( "Application", "application" )
-                .setBody( new BlockStmt().addStatement( "this.application = application;" ) );
-        applicationDeclarations.add( constructorDeclaration );
+            FieldDeclaration applicationFieldDeclaration = new FieldDeclaration();
+            applicationFieldDeclaration
+                    .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, "Application"), "application"))
+                    .setModifiers(Modifier.Keyword.PRIVATE, Modifier.Keyword.FINAL);
+            applicationDeclarations.add(applicationFieldDeclaration);
 
-        ClassOrInterfaceDeclaration cls = super.classDeclaration().setMembers(applicationDeclarations);
-        cls.getMembers().sort(new BodyDeclarationComparator());
-        
-        return cls;
+            ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration("Processes")
+                    .addModifier(Modifier.Keyword.PUBLIC)
+                    .addParameter("Application", "application")
+                    .setBody(new BlockStmt().addStatement("this.application = application;"));
+            applicationDeclarations.add(constructorDeclaration);
+
+            compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processIds")).get()
+                    .setBody(this.processesBody);
+
+            compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processById")).get()
+                    .setBody(this.byProcessIdBody);
+
+            ClassOrInterfaceDeclaration cls = super.classDeclaration().setMembers(applicationDeclarations);
+            cls.getMembers().sort(new BodyDeclarationComparator());
+        }
+        return compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get();
     }
 
-    @Override
-    public CompilationUnit injectableClass() {
-        CompilationUnit compilationUnit = parse(this.getClass().getResourceAsStream(RESOURCE)).setPackageDeclaration(packageName);                        
-        ClassOrInterfaceDeclaration cls = compilationUnit
-                .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
-        
-        cls.findAll(FieldDeclaration.class, fd -> fd.getVariable(0).getNameAsString().equals("processes")).forEach(fd -> {
-            annotator.withInjection(fd);
-            fd.getVariable(0).setType(new ClassOrInterfaceType(null, new SimpleName(annotator.multiInstanceInjectionType()), 
-                                                               NodeList.nodeList(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new WildcardType(new ClassOrInterfaceType(null, Model.class.getCanonicalName())))))));
-        });
-        
-        annotator.withApplicationComponent(cls);
-        
-        return compilationUnit;
-    }
+//    @Override
+//    public CompilationUnit injectableClass() {
+//        CompilationUnit compilationUnit = parse(this.getClass().getResourceAsStream(RESOURCE)).setPackageDeclaration(packageName);
+//        ClassOrInterfaceDeclaration cls = compilationUnit
+//                .findFirst(ClassOrInterfaceDeclaration.class)
+//                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+//
+//        cls.findAll(FieldDeclaration.class, fd -> fd.getVariable(0).getNameAsString().equals("processes")).forEach(fd -> {
+//            annotator.withInjection(fd);
+//            fd.getVariable(0).setType(new ClassOrInterfaceType(null, new SimpleName(annotator.multiInstanceInjectionType()),
+//                                                               NodeList.nodeList(new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()), NodeList.nodeList(new WildcardType(new ClassOrInterfaceType(null, Model.class.getCanonicalName())))))));
+//        });
+//
+//        annotator.withApplicationComponent(cls);
+//
+//        return compilationUnit;
+//    }
 }

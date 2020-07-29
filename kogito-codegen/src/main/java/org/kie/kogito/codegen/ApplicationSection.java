@@ -49,8 +49,4 @@ public interface ApplicationSection {
         return null;
     }
 
-    default List<Statement> setupStatements() {
-        return Collections.emptyList();
-    }
-
 }
