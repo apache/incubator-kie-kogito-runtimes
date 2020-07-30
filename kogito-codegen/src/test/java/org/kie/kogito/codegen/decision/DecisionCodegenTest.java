@@ -30,8 +30,8 @@ import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.grafana.JGrafana;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DecisionCodegenTest {
@@ -45,19 +45,15 @@ public class DecisionCodegenTest {
         codeGenerator.setContext(context);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(5, generatedFiles.size());
+        assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(6);
+        assertThat(fileNames(generatedFiles)).containsAll(Arrays.asList("decision/InputSet.java",
+                                                                        "decision/TEmployee.java",
+                                                                        "decision/TAddress.java",
+                                                                        "decision/TPayroll.java",
+                                                                        "decision/VacationsResource.java",
+                                                                        "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        assertIterableEquals(Arrays.asList(
-                "decision/InputSet.java",
-                "decision/TEmployee.java",
-                "decision/TAddress.java",
-                "decision/TPayroll.java",
-                "decision/VacationsResource.java"
-                             ),
-                             fileNames(generatedFiles)
-        );
-
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
+        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
         assertNotNull(classDeclaration);
     }
 
@@ -79,14 +75,12 @@ public class DecisionCodegenTest {
         codeGenerator.setContext(context);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(2, generatedFiles.size());
+        assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(3);
+        assertThat(fileNames(generatedFiles)).containsAll(Arrays.asList("http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/InputSet.java",
+                                                                        "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java",
+                                                                        "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        assertIterableEquals(Arrays.asList("http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/InputSet.java",
-                                           "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java"),
-                             fileNames(generatedFiles)
-        );
-
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
+        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
         assertNotNull(classDeclaration);
     }
 
@@ -123,9 +117,9 @@ public class DecisionCodegenTest {
         DecisionCodegen codeGenerator = DecisionCodegen.ofPath(Paths.get("src/test/resources/decision-test20200507").toAbsolutePath());
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(2, generatedFiles.size());
+        assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(3);
 
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
+        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
         assertNotNull(classDeclaration);
     }
 

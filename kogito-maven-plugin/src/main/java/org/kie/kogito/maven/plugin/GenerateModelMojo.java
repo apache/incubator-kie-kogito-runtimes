@@ -44,17 +44,19 @@ import org.kie.api.builder.model.KieModuleModel;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
+import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
 
 @Mojo(name = "generateModel",
-      requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-      requiresProject = true,
-      defaultPhase = LifecyclePhase.COMPILE,
-      threadSafe = true)
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
+        requiresProject = true,
+        defaultPhase = LifecyclePhase.COMPILE,
+        threadSafe = true)
 public class GenerateModelMojo extends AbstractKieMojo {
 
     public static final List<String> DROOLS_EXTENSIONS = Arrays.asList(".drl", ".xls", ".xlsx", ".csv");
@@ -98,6 +100,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     @Parameter(property = "kogito.codegen.decisions", defaultValue = "")
     private String generateDecisions; // defaults to true iff there exist DMN files
+
+    @Parameter(property = "kogito.codegen.predictions", defaultValue = "")
+    private String generatePredictions; // defaults to true iff there exist PMML files
 
     /**
      * Partial generation can be used when reprocessing a pre-compiled project
@@ -173,6 +178,10 @@ public class GenerateModelMojo extends AbstractKieMojo {
         return generateDecisions == null ? decisionsExist() : Boolean.parseBoolean(generateDecisions);
     }
 
+    private boolean generatePredictions() throws IOException {
+        return generatePredictions == null ? predictionsExist() : Boolean.parseBoolean(generatePredictions);
+    }
+
     private boolean generateRules() throws IOException {
         return generateRules == null ? rulesExist() : Boolean.parseBoolean(generateRules);
     }
@@ -184,6 +193,12 @@ public class GenerateModelMojo extends AbstractKieMojo {
     private boolean decisionsExist() throws IOException {
         try (final Stream<Path> paths = Files.walk(projectDir.toPath())) {
             return paths.map(p -> p.toString().toLowerCase()).anyMatch(p -> p.endsWith(".dmn"));
+        }
+    }
+
+    private boolean predictionsExist() throws IOException {
+        try (final Stream<Path> paths = Files.walk(projectDir.toPath())) {
+            return paths.map(p -> p.toString().toLowerCase()).anyMatch(p -> p.endsWith(".pmml"));
         }
     }
 
@@ -255,6 +270,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
                     .withRestServices(useRestServices);
         }
 
+        appGen.withGenerator(PredictionCodegen.ofPath(kieSourcesDirectory.toPath()))
+                .withAddons(addonsConfig);
+
         if (generateDecisions()) {
             appGen.withGenerator(DecisionCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withAddons(addonsConfig);
@@ -287,10 +305,14 @@ public class GenerateModelMojo extends AbstractKieMojo {
     private Path pathOf(GeneratedFile f) {
         File sourceFolder;
         Path path;
-        if (f.getType().isCustomizable()) {
+        if (f.getType() == Type.GENERATED_CP_RESOURCE) { // since kogito-maven-plugin is after maven-resource-plugin, need to manually place in the correct (CP) location
+            sourceFolder = outputDirectory;
+            path = Paths.get(sourceFolder.getPath(), f.relativePath());
+            getLog().info("Generating: " + path);
+        } else if (f.getType().isCustomizable()) {
             sourceFolder = getCustomizableSources();
             path = Paths.get(sourceFolder.getPath(), f.relativePath());
-            getLog().info("Generating: "+ path);
+            getLog().info("Generating: " + path);
         } else {
             sourceFolder = generatedSources;
             path = Paths.get(sourceFolder.getPath(), f.relativePath());
@@ -302,7 +324,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     private void deleteDrlFiles() throws MojoExecutionException {
         // Remove drl files
-        try (final Stream<Path> drlFiles = Files.find(outputDirectory.toPath(), Integer.MAX_VALUE, (p, f) -> drlFileMatcher.matches(p))) {
+        try (final Stream<Path> drlFiles = Files.find(outputDirectory.toPath(), Integer.MAX_VALUE,
+                                                      (p, f) -> drlFileMatcher.matches(p))) {
             drlFiles.forEach(p -> {
                 try {
                     Files.delete(p);

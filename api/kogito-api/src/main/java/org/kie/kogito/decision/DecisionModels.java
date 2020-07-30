@@ -18,5 +18,4 @@ package org.kie.kogito.decision;
 public interface DecisionModels {
 
     DecisionModel getDecisionModel(String namespace, String name);
-
 }
