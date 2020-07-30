@@ -16,8 +16,7 @@
 package org.kie.kogito.codegen;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 
 /**
  * A descriptor for a "section" of the root Application class.
@@ -34,9 +33,7 @@ public interface ApplicationSection {
 
     String sectionClassName();
 
-    FieldDeclaration fieldDeclaration();
-
-    MethodDeclaration factoryMethod();
+    ObjectCreationExpr newInstance();
 
     ClassOrInterfaceDeclaration classDeclaration();
 

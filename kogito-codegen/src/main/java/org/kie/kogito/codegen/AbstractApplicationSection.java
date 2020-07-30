@@ -22,6 +22,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 
@@ -65,28 +66,10 @@ public class AbstractApplicationSection implements ApplicationSection {
     }
 
     @Override
-    public FieldDeclaration fieldDeclaration() {
-        ObjectCreationExpr objectCreationExpr = new ObjectCreationExpr().setType( sectionClassName );
-        if (useApplication()) {
-            objectCreationExpr.addArgument( "this" );
-        }
-        return new FieldDeclaration()
-                .addVariable(
-                        new VariableDeclarator()
-                                .setType( sectionClassName )
-                                .setName(methodName)
-                                .setInitializer(objectCreationExpr) );
+    public ObjectCreationExpr newInstance() {
+        return new ObjectCreationExpr()
+                .setType(sectionClassName)
+                .addArgument(new ThisExpr());
     }
 
-    protected boolean useApplication() {
-        return true;
-    }
-
-    public MethodDeclaration factoryMethod() {
-        return new MethodDeclaration()
-                .setModifiers(Modifier.Keyword.PUBLIC)
-                .setType( sectionClassName )
-                .setName(methodName)
-                .setBody(new BlockStmt().addStatement(new ReturnStmt(new NameExpr(methodName))));
-    }
 }

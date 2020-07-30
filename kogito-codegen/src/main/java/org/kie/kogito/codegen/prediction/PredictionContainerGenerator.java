@@ -60,11 +60,6 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
         return typeDeclaration;
     }
 
-    @Override
-    protected boolean useApplication() {
-        return false;
-    }
-
     private void populateStaticKieRuntimeFactoryFunctionInit(ClassOrInterfaceDeclaration typeDeclaration) {
         final InitializerDeclaration staticDeclaration = typeDeclaration.getMembers()
                 .stream()

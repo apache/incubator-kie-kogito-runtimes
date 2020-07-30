@@ -71,11 +71,6 @@ class PredictionContainerGeneratorTest {
 
     }
 
-    @Test
-    void useApplication() {
-        assertFalse(predictionContainerGenerator.useApplication());
-    }
-
     private static List<PMMLResource> getPMMLResources() {
         return IntStream.range(0, 3)
                 .mapToObj(i -> getPMMLResource("Resource-" + i)).collect(Collectors.toList());

@@ -108,14 +108,6 @@ public class ApplicationGenerator {
         return (this.packageName + "." + className).replace('.', '/') + ".java";
     }
 
-    /**
-     * @deprecated used only in tests?
-     */
-    @Deprecated
-    public void addFactoryMethods(Collection<MethodDeclaration> decls) {
-        factoryMethods.addAll(decls);
-    }
-
     CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit =
                 templatedGenerator.compilationUnit()
@@ -154,18 +146,8 @@ public class ApplicationGenerator {
                 .map(ExpressionStmt.class::cast)
                 .map(e -> e.getExpression().asAssignExpr());
 
-        if (fae.isPresent()) {
-            VariableDeclarator v = section.fieldDeclaration().getVariable(0);
-            ObjectCreationExpr initializer =
-                    v.getInitializer()
-                            .orElseThrow(() -> new InvalidTemplateException(
-                                    APPLICATION_CLASS_NAME,
-                                    templatedGenerator.templatePath(),
-                                    "cannot find initializer expression in variable declaration " + v))
-                            .asObjectCreationExpr()
-                            .setArguments(new NodeList<>(new ThisExpr()));
-            fae.get().setValue(initializer);
-        }
+        fae.ifPresent(
+                assignExpr -> assignExpr.setValue(section.newInstance()));
         // else ignore: there is no such templated argument
 
     }
