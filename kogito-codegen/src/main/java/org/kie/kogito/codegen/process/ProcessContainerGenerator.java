@@ -40,11 +40,11 @@ import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.process.Processes;
 
-public class ProcessesContainerGenerator extends AbstractApplicationSection {
+public class ProcessContainerGenerator extends AbstractApplicationSection {
 
-    private static final String RESOURCE = "/class-templates/ProcessesTemplate.java";
-    private static final String RESOURCE_CDI = "/class-templates/CdiProcessesTemplate.java";
-    private static final String RESOURCE_SPRING = "/class-templates/SpringProcessesTemplate.java";
+    private static final String RESOURCE = "/class-templates/ProcessContainerTemplate.java";
+    private static final String RESOURCE_CDI = "/class-templates/CdiProcessContainerTemplate.java";
+    private static final String RESOURCE_SPRING = "/class-templates/SpringProcessContainerTemplate.java";
     public static final String SECTION_CLASS_NAME = "Processes";
 
     private final String packageName;
@@ -57,7 +57,7 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
     private BlockStmt processesBody = new BlockStmt();
     private final TemplatedGenerator templatedGenerator;
 
-    public ProcessesContainerGenerator(String packageName) {
+    public ProcessContainerGenerator(String packageName) {
         super(SECTION_CLASS_NAME, "processes", Processes.class);
         this.packageName = packageName;
         this.processes = new ArrayList<>();
@@ -90,7 +90,7 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
                 .addStatement(byProcessId);
     }
 
-    public ProcessesContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
+    public ProcessContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
         this.templatedGenerator.withDependencyInjection(annotator);
         return this;
