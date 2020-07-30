@@ -15,14 +15,9 @@
 
 package org.kie.kogito.codegen;
 
-import java.util.Collections;
-import java.util.List;
-
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.stmt.Statement;
 
 /**
  * A descriptor for a "section" of the root Application class.
@@ -44,9 +39,5 @@ public interface ApplicationSection {
     MethodDeclaration factoryMethod();
 
     ClassOrInterfaceDeclaration classDeclaration();
-
-    default CompilationUnit injectableClass() {
-        return null;
-    }
 
 }

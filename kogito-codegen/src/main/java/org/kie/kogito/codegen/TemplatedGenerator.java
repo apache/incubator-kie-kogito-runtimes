@@ -39,6 +39,7 @@ public class TemplatedGenerator {
 
     private DependencyInjectionAnnotator annotator;
     private String targetTypeName;
+    private String selectedResource;
 
     public TemplatedGenerator(
             String packageName,
@@ -80,6 +81,10 @@ public class TemplatedGenerator {
         return sourceFilePath;
     }
 
+    public String templatePath() {
+        return selectedResource;
+    }
+
     protected String packageName() {
         return this.packageName;
     }
@@ -90,29 +95,35 @@ public class TemplatedGenerator {
     }
 
     public Optional<CompilationUnit> compilationUnit() {
-        String resource;
-        if (annotator == null) {
-            if (resourceDefault == null) {
-                return Optional.empty();
-            } else {
-                resource = resourceDefault;
-            }
-        } else if (annotator instanceof CDIDependencyInjectionAnnotator) {
-            resource = resourceCdi;
-        } else if (annotator instanceof SpringDependencyInjectionAnnotator) {
-            resource = resourceSpring;
-        } else {
-            throw new IllegalArgumentException("Unknown annotator " + annotator);
+        selectResource();
+        if (selectedResource == null) {
+            return Optional.empty();
         }
 
         try {
             CompilationUnit compilationUnit =
-                    parse(this.getClass().getResourceAsStream(resource))
+                    parse(this.getClass().getResourceAsStream(selectedResource))
                             .setPackageDeclaration(packageName);
 
             return Optional.of(compilationUnit);
         } catch (ParseProblemException ex) {
-            throw new TemplateInstantiationException(targetTypeName, resource, ex);
+            throw new TemplateInstantiationException(targetTypeName, selectedResource, ex);
+        }
+    }
+
+    private void selectResource() {
+        if (annotator == null) {
+            if (resourceDefault == null) {
+                return;
+            } else {
+                selectedResource = resourceDefault;
+            }
+        } else if (annotator instanceof CDIDependencyInjectionAnnotator) {
+            selectedResource = resourceCdi;
+        } else if (annotator instanceof SpringDependencyInjectionAnnotator) {
+            selectedResource = resourceSpring;
+        } else {
+            throw new IllegalArgumentException("Unknown annotator " + annotator);
         }
     }
 }

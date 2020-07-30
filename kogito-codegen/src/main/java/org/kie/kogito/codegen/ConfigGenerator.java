@@ -33,18 +33,14 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import org.drools.core.util.StringUtils;
 import org.kie.kogito.Addons;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
-import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.codegen.di.SpringDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.github.javaparser.StaticJavaParser.parse;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
-import static org.kie.kogito.codegen.CodegenUtils.method;
 import static org.kie.kogito.codegen.CodegenUtils.newObject;
 
 public class ConfigGenerator {
@@ -205,10 +201,17 @@ public class ConfigGenerator {
         // get the place holder and replace it with a list of the addons that have been found
         NameExpr addonsPlaceHolder =
                 cls.findFirst(NameExpr.class, e -> e.getNameAsString().equals("$Addons$")).
-                        orElseThrow(() -> new IllegalArgumentException("Invalid Template: Missing $Addons$ placeholder"));
+                        orElseThrow(() -> new InvalidTemplateException(
+                                targetTypeName,
+                                templatedGenerator.templatePath(),
+                                "Missing $Addons$ placeholder"));
 
         ObjectCreationExpr addonsList = generateAddonsList();
-        addonsPlaceHolder.getParentNode().get()
+        addonsPlaceHolder.getParentNode()
+                .orElseThrow(() -> new InvalidTemplateException(
+                        targetTypeName,
+                        templatedGenerator.templatePath(),
+                        "Cannot replace $Addons$ placeholder"))
                 .replace(addonsPlaceHolder, addonsList);
     }
 

@@ -35,9 +35,10 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
@@ -108,7 +109,6 @@ public class ApplicationGenerator {
     }
 
     /**
-     *
      * @deprecated used only in tests?
      */
     @Deprecated
@@ -155,8 +155,15 @@ public class ApplicationGenerator {
                 .map(e -> e.getExpression().asAssignExpr());
 
         if (fae.isPresent()) {
-            Expression initializer =
-                    section.fieldDeclaration().getVariable(0).getInitializer().get().asObjectCreationExpr().setArguments(new NodeList<>(new ThisExpr()));
+            VariableDeclarator v = section.fieldDeclaration().getVariable(0);
+            ObjectCreationExpr initializer =
+                    v.getInitializer()
+                            .orElseThrow(() -> new InvalidTemplateException(
+                                    APPLICATION_CLASS_NAME,
+                                    templatedGenerator.templatePath(),
+                                    "cannot find initializer expression in variable declaration " + v))
+                            .asObjectCreationExpr()
+                            .setArguments(new NodeList<>(new ThisExpr()));
             fae.get().setValue(initializer);
         }
         // else ignore: there is no such templated argument
@@ -175,7 +182,7 @@ public class ApplicationGenerator {
         return this;
     }
 
-   public ApplicationGenerator withRuleUnits(boolean hasRuleUnits) {
+    public ApplicationGenerator withRuleUnits(boolean hasRuleUnits) {
         this.hasRuleUnits = hasRuleUnits;
         return this;
     }
@@ -191,17 +198,13 @@ public class ApplicationGenerator {
         List<GeneratedFile> generatedFiles = generateComponents();
         generators.forEach(gen -> gen.updateConfig(configGenerator));
         if (targetDirectory.isDirectory()) {
-            generators.forEach( gen -> MetaDataWriter.writeLabelsImageMetadata( targetDirectory, gen.getLabels() ) );
+            generators.forEach(gen -> MetaDataWriter.writeLabelsImageMetadata(targetDirectory, gen.getLabels()));
         }
         generatedFiles.add(generateApplicationDescriptor());
         generatedFiles.addAll(generateApplicationSections());
 
         generatedFiles.addAll(configGenerator.generate());
 
-        if (useInjection()) {
-            generators.stream().filter(gen -> gen.section() != null)
-                    .forEach(gen -> generateSectionClass(gen.section(), generatedFiles));
-        }
         this.labelers.values().forEach(l -> MetaDataWriter.writeLabelsImageMetadata(targetDirectory, l.generateLabels()));
         return generatedFiles;
     }
@@ -215,7 +218,7 @@ public class ApplicationGenerator {
     public GeneratedFile generateApplicationDescriptor() {
         return new GeneratedFile(GeneratedFile.Type.APPLICATION,
                                  generatedFilePath(),
-                                 log( compilationUnit().toString() ).getBytes(StandardCharsets.UTF_8));
+                                 log(compilationUnit().toString()).getBytes(StandardCharsets.UTF_8));
     }
 
     private List<GeneratedFile> generateApplicationSections() {
@@ -227,29 +230,14 @@ public class ApplicationGenerator {
                 continue;
             }
             CompilationUnit sectionUnit = new CompilationUnit();
-            sectionUnit.setPackageDeclaration( this.packageName );
-            sectionUnit.addType( section.classDeclaration() );
+            sectionUnit.setPackageDeclaration(this.packageName);
+            sectionUnit.addType(section.classDeclaration());
             generatedFiles.add(
                     new GeneratedFile(GeneratedFile.Type.APPLICATION_SECTION,
                                       getFilePath(section.sectionClassName()),
                                       sectionUnit.toString()));
         }
         return generatedFiles;
-    }
-
-    public void generateSectionClass(ApplicationSection section, List<GeneratedFile> generatedFiles) {
-        CompilationUnit cp = section.injectableClass();
-
-        if (cp != null) {
-            String packageName = cp.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
-            String clazzName = packageName + "." + cp
-                    .findFirst(ClassOrInterfaceDeclaration.class)
-                    .map(c -> c.getName().toString())
-                    .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
-            generatedFiles.add(new GeneratedFile(GeneratedFile.Type.CLASS,
-                                                 clazzName.replace('.', '/') + ".java",
-                                 log( cp.toString() ).getBytes(StandardCharsets.UTF_8)));
-        }
     }
 
     public <G extends Generator> G withGenerator(G generator) {
@@ -262,24 +250,20 @@ public class ApplicationGenerator {
     }
 
     public static String log(String source) {
-        if ( logger.isDebugEnabled() ) {
-            logger.debug( "=====" );
-            logger.debug( source );
-            logger.debug( "=====" );
+        if (logger.isDebugEnabled()) {
+            logger.debug("=====");
+            logger.debug(source);
+            logger.debug("=====");
         }
         return source;
     }
 
     public static void log(byte[] source) {
-        if ( logger.isDebugEnabled() ) {
-            logger.debug( "=====" );
-            logger.debug( new String(source) );
-            logger.debug( "=====" );
+        if (logger.isDebugEnabled()) {
+            logger.debug("=====");
+            logger.debug(new String(source));
+            logger.debug("=====");
         }
-    }
-
-    protected boolean useInjection() {
-        return this.annotator != null;
     }
 
     public ApplicationGenerator withClassLoader(ClassLoader projectClassLoader) {

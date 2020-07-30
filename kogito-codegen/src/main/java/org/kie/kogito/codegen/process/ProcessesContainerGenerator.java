@@ -17,46 +17,35 @@ package org.kie.kogito.codegen.process;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.WildcardType;
-import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractApplicationSection;
-import org.kie.kogito.codegen.BodyDeclarationComparator;
+import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.process.Processes;
-
-import static com.github.javaparser.StaticJavaParser.parse;
 
 public class ProcessesContainerGenerator extends AbstractApplicationSection {
 
     private static final String RESOURCE = "/class-templates/ProcessesTemplate.java";
     private static final String RESOURCE_CDI = "/class-templates/CdiProcessesTemplate.java";
     private static final String RESOURCE_SPRING = "/class-templates/SpringProcessesTemplate.java";
+    public static final String SECTION_CLASS_NAME = "Processes";
 
     private final String packageName;
     private final List<ProcessGenerator> processes;
@@ -69,21 +58,17 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
     private final TemplatedGenerator templatedGenerator;
 
     public ProcessesContainerGenerator(String packageName) {
-        super("Processes", "processes", Processes.class);
+        super(SECTION_CLASS_NAME, "processes", Processes.class);
         this.packageName = packageName;
         this.processes = new ArrayList<>();
         this.factoryMethods = new ArrayList<>();
 
         this.templatedGenerator = new TemplatedGenerator(
                 packageName,
-                "Processes",
+                SECTION_CLASS_NAME,
                 RESOURCE_CDI,
                 RESOURCE_SPRING,
                 RESOURCE);
-    }
-
-    public List<BodyDeclaration<?>> factoryMethods() {
-        return factoryMethods;
     }
 
     public void addProcess(ProcessGenerator p) {
@@ -117,7 +102,11 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Template: No CompilationUnit"));
 
         registerProcessesExplicitly(compilationUnit);
-        return compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get();
+        return compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new InvalidTemplateException(
+                        SECTION_CLASS_NAME,
+                        templatedGenerator.templatePath(),
+                        "Cannot find class definition"));
     }
 
     private void registerProcessesExplicitly(CompilationUnit compilationUnit) {
@@ -133,14 +122,22 @@ public class ProcessesContainerGenerator extends AbstractApplicationSection {
         processesBody
                 .addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(Arrays.class.getCanonicalName()), "asList", processIds)));
 
-        compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processIds")).get()
+        compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processIds"))
+                .orElseThrow(() -> new InvalidTemplateException(
+                        SECTION_CLASS_NAME,
+                        templatedGenerator.templatePath(),
+                        "Cannot find 'processIds' method body"))
                 .setBody(this.processesBody);
     }
 
     private void setupProcessById(CompilationUnit compilationUnit) {
         byProcessIdBody
                 .addStatement(new ReturnStmt(new NullLiteralExpr()));
-        compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processById")).get()
+        compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("processById"))
+                .orElseThrow(() -> new InvalidTemplateException(
+                        SECTION_CLASS_NAME,
+                        templatedGenerator.templatePath(),
+                        "Cannot find 'processById' method body"))
                 .setBody(this.byProcessIdBody);
     }
 }
