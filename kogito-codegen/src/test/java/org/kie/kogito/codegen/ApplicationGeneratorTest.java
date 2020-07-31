@@ -17,12 +17,10 @@ package org.kie.kogito.codegen;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,26 +30,15 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.Config;
-import org.kie.kogito.StaticApplication;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.MetaDataWriter;
 import org.kie.kogito.codegen.metadata.PrometheusLabeler;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@Disabled("Review these tests as some are outdated")
 public class ApplicationGeneratorTest {
 
     private static final String PACKAGE_NAME = "org.drools.test";
@@ -79,31 +66,24 @@ public class ApplicationGeneratorTest {
     @Test
     public void generatedFilePath() {
         final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, new File(""));
-        assertThat(appGenerator.generatedFilePath()).isNotNull();
-        assertThat(appGenerator.generatedFilePath()).isEqualTo(EXPECTED_APPLICATION_NAME.replace(".", "/") + ".java");
+        String path = appGenerator.generateApplicationDescriptor().relativePath();
+        assertThat(path).isNotNull();
+        assertThat(path).isEqualTo(EXPECTED_APPLICATION_NAME.replace(".", "/") + ".java");
     }
 
     @Test
     public void compilationUnit() {
-        final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, new File("target"));
-        assertCompilationUnit(appGenerator.compilationUnit(), false);
+        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(PACKAGE_NAME);
+        assertCompilationUnit(appGenerator.getCompilationUnitOrThrow(), false);
     }
 
     @Test
     public void compilationUnitWithCDI() {
-        final ApplicationGenerator initialAppGenerator = new ApplicationGenerator(PACKAGE_NAME, new File("target"));
-        final ApplicationGenerator appGenerator = initialAppGenerator.withDependencyInjection(new CDIDependencyInjectionAnnotator());
-        assertThat(appGenerator).isSameAs(initialAppGenerator);
-        assertCompilationUnit(appGenerator.compilationUnit(), true);
+        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(PACKAGE_NAME);
+        appGenerator.withDependencyInjection(new CDIDependencyInjectionAnnotator());
+        assertCompilationUnit(appGenerator.getCompilationUnitOrThrow(), true);
     }
 
-    @Test
-    public void generate() {
-        final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, new File("target"));
-        final Collection<GeneratedFile> generatedFiles = appGenerator.generate();
-        assertGeneratedFiles(generatedFiles, appGenerator.compilationUnit().toString().getBytes(StandardCharsets.UTF_8), 2);
-    }
-    
     @Test
     public void generateWithMonitoring() throws IOException {
         final Path targetDirectory = Paths.get("target");
@@ -135,7 +115,8 @@ public class ApplicationGeneratorTest {
 
             ObjectMapper mapper = new ObjectMapper();
             final Map<String, List> elementsFromFile = mapper.readValue(generatedFile.get().toFile(),
-                                                                        new TypeReference<Map<String, List>>(){});
+                                                                        new TypeReference<Map<String, List>>() {
+                                                                        });
             assertThat(elementsFromFile).hasSize(1);
             final List<Map<String, String>> listWithLabelsMap = elementsFromFile.entrySet().iterator().next().getValue();
             assertThat(listWithLabelsMap).isNotNull();
@@ -165,7 +146,6 @@ public class ApplicationGeneratorTest {
         }
 
         assertThat(mainAppClass.getMembers()).isNotNull();
-
     }
 
     private void assertGeneratedFiles(final Collection<GeneratedFile> generatedFiles,
@@ -179,7 +159,7 @@ public class ApplicationGeneratorTest {
             assertThat(generatedFile.getType()).isIn(GeneratedFile.Type.APPLICATION, GeneratedFile.Type.APPLICATION_CONFIG, GeneratedFile.Type.APPLICATION_SECTION, GeneratedFile.Type.RULE, GeneratedFile.Type.CLASS);
             if (generatedFile.getType() == GeneratedFile.Type.APPLICATION) {
                 if (generatedFile.relativePath() == EXPECTED_APPLICATION_NAME.replace(".", "/") + ".java") {
-                    assertThat( generatedFile.contents() ).isEqualTo( expectedApplicationContent );
+                    assertThat(generatedFile.contents()).isEqualTo(expectedApplicationContent);
                 }
             }
         }

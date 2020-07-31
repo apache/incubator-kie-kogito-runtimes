@@ -38,7 +38,7 @@ public class TemplatedGenerator {
     private final String resourceDefault;
 
     private DependencyInjectionAnnotator annotator;
-    private String targetTypeName;
+    private final String targetTypeName;
     private String selectedResource;
 
     public TemplatedGenerator(
@@ -82,7 +82,12 @@ public class TemplatedGenerator {
     }
 
     public String templatePath() {
+        selectResource();
         return selectedResource;
+    }
+
+    public String typeName() {
+        return targetTypeName;
     }
 
     protected String packageName() {

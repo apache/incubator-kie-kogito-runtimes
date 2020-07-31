@@ -15,23 +15,13 @@
 
 package org.kie.kogito.codegen;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import org.drools.core.util.StringUtils;
-import org.kie.kogito.Addons;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
@@ -41,14 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
-import static org.kie.kogito.codegen.CodegenUtils.newObject;
 
 public class ConfigGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigGenerator.class);
-    private static final String RESOURCE_DEFAULT = "/class-templates/config/ApplicationConfigTemplate.java";
-    private static final String RESOURCE_CDI = "/class-templates/config/CdiApplicationConfigTemplate.java";
-    private static final String RESOURCE_SPRING = "/class-templates/config/SpringApplicationConfigTemplate.java";
+    private final ApplicationConfigGenerator applicationConfigGenerator;
 
     private DependencyInjectionAnnotator annotator;
     private ProcessConfigGenerator processConfig;
@@ -60,20 +47,14 @@ public class ConfigGenerator {
     private final String sourceFilePath;
     private final String targetTypeName;
     private final String targetCanonicalName;
-    private final TemplatedGenerator templatedGenerator;
-
-    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    private Collection<String> addons;
 
     public ConfigGenerator(String packageName) {
         this.packageName = packageName;
         this.targetTypeName = "ApplicationConfig";
         this.targetCanonicalName = this.packageName + "." + targetTypeName;
         this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
-        this.templatedGenerator = new TemplatedGenerator(packageName,
-                                                         targetTypeName,
-                                                         RESOURCE_CDI,
-                                                         RESOURCE_SPRING,
-                                                         RESOURCE_DEFAULT);
+        this.applicationConfigGenerator = new ApplicationConfigGenerator(packageName);
     }
 
     public ConfigGenerator withProcessConfig(ProcessConfigGenerator cfg) {
@@ -110,7 +91,7 @@ public class ConfigGenerator {
 
     public ConfigGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
-        this.templatedGenerator.withDependencyInjection(annotator);
+        this.applicationConfigGenerator.withDependencyInjection(annotator);
         return this;
     }
 
@@ -121,10 +102,7 @@ public class ConfigGenerator {
 
     public Collection<GeneratedFile> generate() {
         ArrayList<GeneratedFile> generatedFiles = new ArrayList<>();
-        generatedFiles.add(
-                new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
-                                  generatedFilePath(),
-                                  log(compilationUnit().toString()).getBytes(StandardCharsets.UTF_8)));
+        generatedFiles.add(generateApplicationConfigDescriptor());
 
         generateProcessConfigDescriptor().ifPresent(generatedFiles::add);
         generateRuleConfigDescriptor().ifPresent(generatedFiles::add);
@@ -133,6 +111,17 @@ public class ConfigGenerator {
         generateBeanConfig().ifPresent(generatedFiles::add);
 
         return generatedFiles;
+    }
+
+    private GeneratedFile generateApplicationConfigDescriptor() {
+        CompilationUnit compilationUnit = applicationConfigGenerator.compilationUnit()
+                .orElseThrow(() -> new InvalidTemplateException(
+                        applicationConfigGenerator.typeName(),
+                        applicationConfigGenerator.templatePath(),
+                        "Missing template"));
+        return new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
+                                 applicationConfigGenerator.generatedFilePath(),
+                                 log(compilationUnit.toString()).getBytes(StandardCharsets.UTF_8));
     }
 
     private Optional<GeneratedFile> generateProcessConfigDescriptor() {
@@ -185,67 +174,7 @@ public class ConfigGenerator {
                                                           log(c.toString()).getBytes(StandardCharsets.UTF_8)));
     }
 
-    public CompilationUnit compilationUnit() {
-        CompilationUnit compilationUnit = templatedGenerator.compilationUnit()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Template: No CompilationUnit"));
-
-        ClassOrInterfaceDeclaration cls = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new RuntimeException("ApplicationConfig template class not found"));
-
-        replaceAddonPlaceHolder(cls);
-
-        return compilationUnit;
-    }
-
-    private void replaceAddonPlaceHolder(ClassOrInterfaceDeclaration cls) {
-        // get the place holder and replace it with a list of the addons that have been found
-        NameExpr addonsPlaceHolder =
-                cls.findFirst(NameExpr.class, e -> e.getNameAsString().equals("$Addons$")).
-                        orElseThrow(() -> new InvalidTemplateException(
-                                targetTypeName,
-                                templatedGenerator.templatePath(),
-                                "Missing $Addons$ placeholder"));
-
-        ObjectCreationExpr addonsList = generateAddonsList();
-        addonsPlaceHolder.getParentNode()
-                .orElseThrow(() -> new InvalidTemplateException(
-                        targetTypeName,
-                        templatedGenerator.templatePath(),
-                        "Cannot replace $Addons$ placeholder"))
-                .replace(addonsPlaceHolder, addonsList);
-    }
-
-    private ObjectCreationExpr generateAddonsList() {
-        Collection<String> addons = loadAddonList();
-
-        MethodCallExpr asListOfAddons = new MethodCallExpr(new NameExpr("java.util.Arrays"), "asList");
-        for (String addon : addons) {
-            asListOfAddons.addArgument(new StringLiteralExpr(addon));
-        }
-
-        return newObject(Addons.class, asListOfAddons);
-    }
-
-    private Collection<String> loadAddonList() {
-        ArrayList<String> addons = new ArrayList<>();
-        try {
-            Enumeration<URL> urls = classLoader.getResources("META-INF/kogito.addon");
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                String addon = StringUtils.readFileAsString(new InputStreamReader(url.openStream()));
-                addons.add(addon);
-            }
-        } catch (IOException e) {
-            LOGGER.warn("Unexpected exception during loading of kogito.addon files", e);
-        }
-        return addons;
-    }
-
-    public String generatedFilePath() {
-        return sourceFilePath;
-    }
-
-    public void withClassLoader(ClassLoader projectClassLoader) {
-        this.classLoader = projectClassLoader;
+    public void withAddons(Collection<String> addons) {
+        this.applicationConfigGenerator.withAddons(addons);
     }
 }

@@ -16,31 +16,21 @@
 package org.kie.kogito.codegen;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.lang.model.SourceVersion;
-
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.comments.BlockComment;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.ThisExpr;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
+import org.drools.core.util.StringUtils;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.Labeler;
 import org.kie.kogito.codegen.metadata.MetaDataWriter;
@@ -52,10 +42,6 @@ public class ApplicationGenerator {
 
     public static final Logger logger = LoggerFactory.getLogger(ApplicationGenerator.class);
 
-    private static final String RESOURCE_CDI = "/class-templates/CdiApplicationTemplate.java";
-    private static final String RESOURCE_SPRING = "/class-templates/SpringApplicationTemplate.java";
-    private static final String RESOURCE_DEFAULT = "/class-templates/ApplicationTemplate.java";
-
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
     public static final String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
     public static final String APPLICATION_CLASS_NAME = "Application";
@@ -66,96 +52,37 @@ public class ApplicationGenerator {
     private DependencyInjectionAnnotator annotator;
 
     private boolean hasRuleUnits;
-    private final List<BodyDeclaration<?>> factoryMethods;
+    private final ApplicationContainerGenerator applicationMainGenerator;
     private ConfigGenerator configGenerator;
     private List<Generator> generators = new ArrayList<>();
     private Map<Class, Labeler> labelers = new HashMap<>();
 
     private GeneratorContext context;
-    private final TemplatedGenerator templatedGenerator;
+    private ClassLoader classLoader;
 
     public ApplicationGenerator(String packageName, File targetDirectory) {
-        if (packageName == null) {
-            throw new IllegalArgumentException("Package name cannot be undefined (null), please specify a package name!");
-        }
-        if (!SourceVersion.isName(packageName)) {
-            throw new IllegalArgumentException(
-                    MessageFormat.format(
-                            "Package name \"{0}\" is not valid. It should be a valid Java package name.", packageName));
-        }
+
         this.packageName = packageName;
         this.targetDirectory = targetDirectory;
-        this.factoryMethods = new ArrayList<>();
-        this.configGenerator = new ConfigGenerator(packageName);
+        this.classLoader = Thread.currentThread().getContextClassLoader();
+        this.applicationMainGenerator = new ApplicationContainerGenerator(packageName);
 
-        this.templatedGenerator = new TemplatedGenerator(
-                packageName,
-                APPLICATION_CLASS_NAME,
-                RESOURCE_CDI,
-                RESOURCE_SPRING,
-                RESOURCE_DEFAULT);
+        this.configGenerator = new ConfigGenerator(packageName);
+        this.configGenerator.withAddons(loadAddonList());
     }
 
     public String targetCanonicalName() {
         return this.packageName + "." + APPLICATION_CLASS_NAME;
     }
 
-    public String generatedFilePath() {
-        return getFilePath(APPLICATION_CLASS_NAME);
-    }
-
     private String getFilePath(String className) {
         return (this.packageName + "." + className).replace('.', '/') + ".java";
     }
 
-    CompilationUnit compilationUnit() {
-        CompilationUnit compilationUnit =
-                templatedGenerator.compilationUnit()
-                        .orElseThrow(() -> new IllegalArgumentException("Cannot find template for " + APPLICATION_CLASS_NAME));
-
-        ClassOrInterfaceDeclaration cls = compilationUnit
-                .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
-
-        factoryMethods.forEach(cls::addMember);
-
-        initializeSectionsExplicitly(cls);
-
-        cls.getMembers().sort(new BodyDeclarationComparator());
-        return compilationUnit;
-    }
-
-    private void initializeSectionsExplicitly(ClassOrInterfaceDeclaration cls) {
-        for (Generator generator : generators) {
-            ApplicationSection section = generator.section();
-            if (section != null) {
-                replaceSectionPlaceHolder(cls, section);
-            }
-        }
-    }
-
-    private void replaceSectionPlaceHolder(ClassOrInterfaceDeclaration cls, ApplicationSection section) {
-        // look for an expression of the form: foo = ... /* $SectionName$ */ ;
-        //      e.g.: this.processes = null /* $Processes$ */;
-        // and replaces the entire expression with an initializer; e.g.:
-        //      e.g.: this.processes = new Processes(this);
-
-        Optional<AssignExpr> fae = cls.findFirst(
-                BlockComment.class, c -> c.getContent().trim().equals('$' + section.sectionClassName() + '$'))
-                .flatMap(Node::getParentNode)
-                .map(ExpressionStmt.class::cast)
-                .map(e -> e.getExpression().asAssignExpr());
-
-        fae.ifPresent(
-                assignExpr -> assignExpr.setValue(section.newInstance()));
-        // else ignore: there is no such templated argument
-
-    }
-
     public ApplicationGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
-        configGenerator.withDependencyInjection(annotator);
-        templatedGenerator.withDependencyInjection(annotator);
+        this.applicationMainGenerator.withDependencyInjection(annotator);
+        this.configGenerator.withDependencyInjection(annotator);
         return this;
     }
 
@@ -198,9 +125,17 @@ public class ApplicationGenerator {
     }
 
     public GeneratedFile generateApplicationDescriptor() {
+        List<String> sections = generators.stream()
+                .map(Generator::section)
+                .filter(Objects::nonNull)
+                .map(ApplicationSection::sectionClassName)
+                .collect(Collectors.toList());
+
+        applicationMainGenerator.withSections(sections);
+        CompilationUnit compilationUnit = applicationMainGenerator.getCompilationUnitOrThrow();
         return new GeneratedFile(GeneratedFile.Type.APPLICATION,
-                                 generatedFilePath(),
-                                 log(compilationUnit().toString()).getBytes(StandardCharsets.UTF_8));
+                                 applicationMainGenerator.generatedFilePath(),
+                                 log(compilationUnit.toString()).getBytes(StandardCharsets.UTF_8));
     }
 
     private List<GeneratedFile> generateApplicationSections() {
@@ -248,8 +183,23 @@ public class ApplicationGenerator {
         }
     }
 
-    public ApplicationGenerator withClassLoader(ClassLoader projectClassLoader) {
-        this.configGenerator.withClassLoader(projectClassLoader);
+    public ApplicationGenerator withClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
         return this;
+    }
+
+    private Collection<String> loadAddonList() {
+        ArrayList<String> addons = new ArrayList<>();
+        try {
+            Enumeration<URL> urls = classLoader.getResources("META-INF/kogito.addon");
+            while (urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                String addon = StringUtils.readFileAsString(new InputStreamReader(url.openStream()));
+                addons.add(addon);
+            }
+        } catch (IOException e) {
+            logger.warn("Unexpected exception during loading of kogito.addon files", e);
+        }
+        return addons;
     }
 }

@@ -31,8 +31,10 @@ public class Application extends StaticApplication {
         if (collection.isEmpty()) {
             return null;
         } else {
+            if (collection.size() > 1) {
+                throw new IllegalArgumentException("Found too many injection candidates " + collection);
+            }
             return collection.iterator().next();
         }
     }
-
 }
