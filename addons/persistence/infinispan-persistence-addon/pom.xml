@@ -89,6 +89,16 @@
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-query</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.infinispan</groupId>
+          <artifactId>infinispan-directory-provider</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.infinispan</groupId>
+          <artifactId>infinispan-lucene-directory</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
