@@ -10,14 +10,14 @@ public class Application extends StaticApplication {
     @javax.inject.Inject
     public Application(
             Config config,
-            javax.enterprise.inject.Instance<Processes> processes/*,
-            javax.enterprise.inject.Instance<RuleUnits> ruleUnits,
+            javax.enterprise.inject.Instance<Processes> processes,
+            javax.enterprise.inject.Instance<RuleUnits> ruleUnits/*,
             javax.enterprise.inject.Instance<DecisionModels> decisionModels,
             java.util.Collection<PredictionModels> predictionModels
             */) {
         this.config = config;
         this.processes = orNull(processes);
-        this.ruleUnits = null /* $RuleUnits$ */;
+        this.ruleUnits = orNull(ruleUnits);
         this.decisionModels = null /* $DecisionModels$ */;
         this.predictionModels = null /* $PredictionModels$ */;
 
