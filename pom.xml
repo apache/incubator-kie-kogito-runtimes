@@ -693,7 +693,12 @@
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-remote-query-client</artifactId>
         <version>${version.org.infinispan}</version>
-      </dependency>      
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-query-dsl</artifactId>
+        <version>${version.org.infinispan}</version>
+      </dependency> 
       <dependency>
         <groupId>org.infinispan.protostream</groupId>
         <artifactId>protostream</artifactId>
