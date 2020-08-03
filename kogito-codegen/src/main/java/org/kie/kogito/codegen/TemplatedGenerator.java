@@ -39,7 +39,6 @@ public class TemplatedGenerator {
 
     private DependencyInjectionAnnotator annotator;
     private final String targetTypeName;
-    private String selectedResource;
 
     public TemplatedGenerator(
             String packageName,
@@ -82,8 +81,7 @@ public class TemplatedGenerator {
     }
 
     public String templatePath() {
-        selectResource();
-        return selectedResource;
+        return selectResource();
     }
 
     public String typeName() {
@@ -100,7 +98,7 @@ public class TemplatedGenerator {
     }
 
     public Optional<CompilationUnit> compilationUnit() {
-        selectResource();
+        String selectedResource = selectResource();
         if (selectedResource == null) {
             return Optional.empty();
         }
@@ -116,17 +114,17 @@ public class TemplatedGenerator {
         }
     }
 
-    private void selectResource() {
+    private String selectResource() {
         if (annotator == null) {
             if (resourceDefault == null) {
-                return;
+                return null;
             } else {
-                selectedResource = resourceDefault;
+                return resourceDefault;
             }
         } else if (annotator instanceof CDIDependencyInjectionAnnotator) {
-            selectedResource = resourceCdi;
+            return resourceCdi;
         } else if (annotator instanceof SpringDependencyInjectionAnnotator) {
-            selectedResource = resourceSpring;
+            return resourceSpring;
         } else {
             throw new IllegalArgumentException("Unknown annotator " + annotator);
         }
