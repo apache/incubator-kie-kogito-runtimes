@@ -593,6 +593,19 @@
         <classifier>javadoc</classifier>
       </dependency>
 
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>messaging-commons</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>messaging-commons</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+
+
       <!-- Management Console -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
