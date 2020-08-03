@@ -29,14 +29,30 @@ import java.util.UUID;
  */
 public abstract class AbstractDataEvent<T> implements DataEvent<T> {
 
-    private static final String SPEC_VERSION = "0.3";
-
+    /**
+     * String prefix for Kogito CloudEvents type fields.
+     * Since this is a required field, the constructor will fill them with this default value.
+     * Ideally, callers would use #TYPE_FORMAT to fill this field using the process name and the signal node name, e.g: process.travelagency.visaapproved
+     */
+    public static final String TYPE_PREFIX = "process";
+    public static final String TYPE_FORMAT = TYPE_PREFIX + ".%s.%s";
+    /**
+     * String format for Kogito CloudEvents source fields.
+     * Since this is a required field, the constructor will fill them with default value, e.g.: /process/travelAgency/0982-1223-3121-1212
+     */
+    public static final String SOURCE_FORMAT = "/process/%s/%s";
+    private static final String SPEC_VERSION = "1.0";
     private String specversion;
     private String id;
     private String source;
     private String type;
     private String time;
+    private String subject;
+    private String datacontenttype;
+    private String dataschema;
+
     private T data;
+
     private String kogitoProcessinstanceId;
     private String kogitoRootProcessinstanceId;
     private String kogitoProcessId;
@@ -63,6 +79,34 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         this.kogitoProcessId = kogitoProcessId;
         this.kogitoRootProcessId = kogitoRootProcessId;
         this.kogitoAddons = kogitoAddons;
+
+        this.ensureRequiredFields();
+    }
+
+    public AbstractDataEvent(String type,
+                             String source,
+                             T body,
+                             String kogitoProcessinstanceId,
+                             String kogitoRootProcessinstanceId,
+                             String kogitoProcessId,
+                             String kogitoRootProcessId,
+                             String kogitoAddons,
+                             String subject,
+                             String datacontenttype,
+                             String dataschema) {
+        this(type, source, body, kogitoProcessinstanceId, kogitoRootProcessinstanceId, kogitoProcessId, kogitoRootProcessId, kogitoAddons);
+        this.subject = subject;
+        this.datacontenttype = datacontenttype;
+        this.dataschema = dataschema;
+    }
+
+    protected void ensureRequiredFields() {
+        if (this.type == null || this.type.isEmpty()) {
+            this.type = TYPE_PREFIX;
+        }
+        if (this.source == null || this.source.isEmpty()) {
+            this.source = String.format(SOURCE_FORMAT, kogitoProcessId, kogitoProcessinstanceId);
+        }
     }
 
     @Override
@@ -93,6 +137,21 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     @Override
     public T getData() {
         return data;
+    }
+
+    @Override
+    public String getDatacontenttype() {
+        return datacontenttype;
+    }
+
+    @Override
+    public String getDataschema() {
+        return dataschema;
+    }
+
+    @Override
+    public String getSubject() {
+        return subject;
     }
 
     public String getKogitoProcessinstanceId() {
