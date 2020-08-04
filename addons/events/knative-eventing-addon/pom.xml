@@ -15,12 +15,7 @@
     <properties>
         <!-- aligned with smallrye -->
         <!-- TODO: send a PR to SmallRye Reactive Messaging to upgrade to SDK 2.x -->
-        <!-- Fixme: we do have this already set in the Kogito Runtimes BOM, but using 1.3.0 version -->
         <version.cloudevents>2.0.0-milestone1</version.cloudevents>
-        <version.smallrye>2.1.1</version.smallrye>
-        <!-- aligned with quarkus -->
-        <!-- Fixme: we do depend on resteasy in test context but we could also leverage from the same dependency here on `provided` scope -->
-        <version.resteasy>4.5.5.Final</version.resteasy>
     </properties>
 
     <dependencyManagement>
@@ -34,6 +29,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-services</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.cloudevents</groupId>
             <artifactId>cloudevents-api</artifactId>
@@ -52,13 +52,11 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core-spi</artifactId>
-            <version>${version.resteasy}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>smallrye-reactive-messaging-http</artifactId>
-            <version>${version.smallrye}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -67,15 +65,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-services</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
-            <version>${version.resteasy}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

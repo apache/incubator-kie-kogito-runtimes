@@ -1,7 +1,18 @@
+/*
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.kie.kogito.events.knative.ce.extensions;
-
-import io.cloudevents.CloudEventExtensions;
-import io.cloudevents.Extension;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,6 +21,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import io.cloudevents.CloudEventExtensions;
+import io.cloudevents.Extension;
+import org.kie.kogito.services.event.impl.ProcessInstanceEventBody;
+
 // The size of this extension could be reevaluated since we could make use of `type`, `source` and `subject` for processId, referenceId and instanceState
 
 /**
@@ -17,15 +32,25 @@ import java.util.Set;
  */
 public class KogitoProcessExtension implements Extension {
 
-    public static final String PROCESS_INSTANCE_ID = "kogitoprocessinstanceid";
-    public static final String ROOT_PROCESS_INSTANCE_ID = "kogitorootprocessinstanceid";
+    // these keys don't have the period cause CloudEvents serialized on JSON won't have them
+
+    public static final String PROCESS_INSTANCE_ID = ProcessInstanceEventBody.PROCESS_ID_META_DATA.replace(".", "");
+    public static final String ROOT_PROCESS_INSTANCE_ID = ProcessInstanceEventBody.ROOT_PROCESS_ID_META_DATA.replace(".", "");
+    public static final String ROOT_PROCESS_ID = ProcessInstanceEventBody.ROOT_PROCESS_ID_META_DATA.replace(".", "");
+    public static final String PROCESS_INSTANCE_STATE = ProcessInstanceEventBody.STATE_META_DATA.replace(".", "");
     public static final String PROCESS_ID = "kogitoprocessid";
-    public static final String ROOT_PROCESS_ID = "kogitorootprocessid";
     public static final String ADDONS = "kogitoaddons";
     public static final String PARENT_PROCESS_INSTANCE_ID = "kogitoparentprocessinstanceid";
-    public static final String PROCESS_INSTANCE_STATE = "kogitoprocessinstancestate";
     public static final String REF_ID = "kogitoreferenceid";
-    static final Set<String> ALL_KEYS = new HashSet<>(Arrays.asList(PROCESS_INSTANCE_ID, ROOT_PROCESS_INSTANCE_ID, PROCESS_ID, ROOT_PROCESS_ID, ADDONS, PARENT_PROCESS_INSTANCE_ID, PROCESS_INSTANCE_STATE, REF_ID));
+    static final Set<String> ALL_KEYS = new HashSet<>(
+            Arrays.asList(
+                    PROCESS_INSTANCE_ID,
+                    ROOT_PROCESS_INSTANCE_ID,
+                    PROCESS_ID,
+                    ROOT_PROCESS_ID,
+                    ADDONS,
+                    PARENT_PROCESS_INSTANCE_ID,
+                    PROCESS_INSTANCE_STATE, REF_ID));
 
     private final Map<String, Object> innerValues;
     private String kogitoProcessinstanceId;
@@ -144,8 +169,12 @@ public class KogitoProcessExtension implements Extension {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         KogitoProcessExtension that = (KogitoProcessExtension) o;
         return Objects.equals(kogitoProcessinstanceId, that.kogitoProcessinstanceId) &&
                 Objects.equals(kogitoRootProcessinstanceId, that.kogitoRootProcessinstanceId) &&
@@ -170,5 +199,4 @@ public class KogitoProcessExtension implements Extension {
                 ", kogitoReferenceId='" + kogitoReferenceId + '\'' +
                 '}';
     }
-
 }

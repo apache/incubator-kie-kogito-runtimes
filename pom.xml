@@ -693,6 +693,11 @@
         <version>${version.io.smallrye.reactive}</version>
       </dependency>
       <dependency>
+        <groupId>io.smallrye.reactive</groupId>
+        <artifactId>smallrye-reactive-messaging-http</artifactId>
+        <version>${version.io.smallrye.reactive}</version>
+      </dependency>
+      <dependency>
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>${version.javax.inject}</version>

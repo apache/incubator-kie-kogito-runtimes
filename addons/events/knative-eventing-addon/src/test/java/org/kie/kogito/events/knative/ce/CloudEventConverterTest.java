@@ -13,6 +13,8 @@ import java.net.URI;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.*;
+
 class CloudEventConverterTest {
 
     @Test
@@ -33,7 +35,7 @@ class CloudEventConverterTest {
                         .build();
 
         final String ceJson = CloudEventConverter.toJson(cloudEvent);
-        Assertions.assertThat(ceJson).isNotEmpty().contains("Oi Mundo!");
+        assertThat(ceJson).isNotEmpty().contains("Oi Mundo!");
     }
 
     @Test
@@ -55,17 +57,17 @@ class CloudEventConverterTest {
                 "\t}\n" +
                 "}";
         final PersonDataEvent dataEventJson = json.readValue(messageJson, PersonDataEvent.class);
-        Assertions.assertThat(dataEventJson.getData().getEmail()).isEqualTo("jan.kowalski@example.com");
-        Assertions.assertThat(dataEventJson).isNotNull();
+        assertThat(dataEventJson.getData().getEmail()).isEqualTo("jan.kowalski@example.com");
+        assertThat(dataEventJson).isNotNull();
 
         final CloudEvent event = CloudEventConverter.toCloudEvent(messageJson.getBytes());
-        Assertions.assertThat(event).isNotNull();
+        assertThat(event).isNotNull();
         final Person person = json.readValue(event.getData(), Person.class);
-        Assertions.assertThat(person).isNotNull();
-        Assertions.assertThat(person.getEmail()).isEqualTo("jan.kowalski@example.com");
+        assertThat(person).isNotNull();
+        assertThat(person.getEmail()).isEqualTo("jan.kowalski@example.com");
 
         final String convertedEvent = CloudEventConverter.toJson(event);
-        Assertions.assertThat(convertedEvent).contains("jan.kowalski@example.com");
+        assertThat(convertedEvent).contains("jan.kowalski@example.com");
     }
 
     @Test
@@ -87,11 +89,11 @@ class CloudEventConverterTest {
                 "}";
 
         final CloudEvent event = CloudEventConverter.toCloudEvent(messageJson.getBytes());
-        Assertions.assertThat(event).isNotNull();
-        Assertions.assertThat(event.getExtensionNames()).isNotEmpty();
+        assertThat(event).isNotNull();
+        assertThat(event.getExtensionNames()).isNotEmpty();
 
         final String convertedEvent = CloudEventConverter.toJson(event);
-        Assertions.assertThat(convertedEvent)
+        assertThat(convertedEvent)
                 .contains("jan.kowalski@example.com")
                 .contains("kogitoReferenceId")
                 .contains("12345");

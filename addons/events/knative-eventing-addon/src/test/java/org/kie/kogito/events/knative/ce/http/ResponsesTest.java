@@ -5,21 +5,23 @@ import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Response;
 
+import static org.assertj.core.api.Assertions.*;
+
 class ResponsesTest {
 
     @Test
     void errorProcessingCloudEvent() {
         final Response response = Responses.errorProcessingCloudEvent(new IllegalArgumentException("Fail!"));
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
-        Assertions.assertThat(response.getEntity()).isInstanceOf(ResponseError.class);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+        assertThat(response.getEntity()).isInstanceOf(ResponseError.class);
     }
 
     @Test
     void channelNotBound() {
         final Response response = Responses.channelNotBound("MyChannel", null);
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getStatus()).isEqualTo(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        Assertions.assertThat(response.getEntity()).isInstanceOf(ResponseError.class);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        assertThat(response.getEntity()).isInstanceOf(ResponseError.class);
     }
 }

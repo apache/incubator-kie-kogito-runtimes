@@ -5,13 +5,15 @@ import org.assertj.core.api.Assertions;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.*;
+
 class CloudEventHttpOutgoingDecoratorTest {
 
     @Test
     void verifyDecorateAndSend() {
         final String payload = "any message";
         final Message<String> message = new CloudEventHttpOutgoingDecorator().decorate(payload);
-        Assertions.assertThat(message).isNotNull();
-        Assertions.assertThat(message.getMetadata(HttpResponseMetadata.class)).isPresent();
+        assertThat(message).isNotNull();
+        assertThat(message.getMetadata(HttpResponseMetadata.class)).isPresent();
     }
 }
