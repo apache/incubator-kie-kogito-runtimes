@@ -13,8 +13,6 @@
     <description>Kogito Events handling for Knative Eventing AddOn</description>
 
     <properties>
-        <!-- aligned with smallrye -->
-        <!-- TODO: send a PR to SmallRye Reactive Messaging to upgrade to SDK 2.x -->
         <version.cloudevents>2.0.0-milestone1</version.cloudevents>
     </properties>
 
