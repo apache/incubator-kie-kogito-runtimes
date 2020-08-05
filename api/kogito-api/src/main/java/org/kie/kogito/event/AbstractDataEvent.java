@@ -20,6 +20,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * This is an abstract implementation of the {@link DataEvent} that contains basic common attributes referring to
  * kogito processes metadata. This class can be extended mainly by Services that need to publish events to be
@@ -27,6 +30,7 @@ import java.util.UUID;
  *
  * @param <T> the payload
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractDataEvent<T> implements DataEvent<T> {
 
     /**
@@ -42,14 +46,17 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
      */
     public static final String SOURCE_FORMAT = "/process/%s/%s";
     private static final String SPEC_VERSION = "1.0";
-    private String specversion;
+    @JsonProperty("specversion")
+    private String specVersion;
     private String id;
     private String source;
     private String type;
     private String time;
     private String subject;
-    private String datacontenttype;
-    private String dataschema;
+    @JsonProperty("datacontenttype")
+    private String dataContentType;
+    @JsonProperty("dataschema")
+    private String dataSchema;
 
     private T data;
 
@@ -67,7 +74,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
                              String kogitoProcessId,
                              String kogitoRootProcessId,
                              String kogitoAddons) {
-        this.specversion = SPEC_VERSION;
+        this.specVersion = SPEC_VERSION;
         this.id = UUID.randomUUID().toString();
         this.source = source;
         this.type = type;
@@ -92,12 +99,12 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
                              String kogitoRootProcessId,
                              String kogitoAddons,
                              String subject,
-                             String datacontenttype,
-                             String dataschema) {
+                             String dataContentType,
+                             String dataSchema) {
         this(type, source, body, kogitoProcessinstanceId, kogitoRootProcessinstanceId, kogitoProcessId, kogitoRootProcessId, kogitoAddons);
         this.subject = subject;
-        this.datacontenttype = datacontenttype;
-        this.dataschema = dataschema;
+        this.dataContentType = dataContentType;
+        this.dataSchema = dataSchema;
     }
 
     protected void ensureRequiredFields() {
@@ -115,8 +122,8 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     }
 
     @Override
-    public String getSpecversion() {
-        return specversion;
+    public String getSpecVersion() {
+        return specVersion;
     }
 
     @Override
@@ -140,13 +147,13 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     }
 
     @Override
-    public String getDatacontenttype() {
-        return datacontenttype;
+    public String getDataContentType() {
+        return dataContentType;
     }
 
     @Override
-    public String getDataschema() {
-        return dataschema;
+    public String getDataSchema() {
+        return dataSchema;
     }
 
     @Override

@@ -37,7 +37,7 @@ public interface DataEvent<T> {
      *
      * @return specification version
      */
-    String getSpecversion();
+    String getSpecVersion();
 
     /**
      * Returns unique id of the event
@@ -72,14 +72,14 @@ public interface DataEvent<T> {
      *
      * @return Content type of data value
      */
-    String getDatacontenttype();
+    String getDataContentType();
 
     /**
      * Identifies the schema that data adheres to
      *
      * @return the schema that data adheres to
      */
-    String getDataschema();
+    String getDataSchema();
 
     /**
      * The subject of the event in the context of the event producer (identified by source)
