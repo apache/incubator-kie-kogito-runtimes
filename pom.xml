@@ -120,7 +120,6 @@
     <version.io.quarkus>1.6.0.Final</version.io.quarkus>
     <version.io.restassured>4.3.0</version.io.restassured>
     <version.io.restassured.springboot>3.3.0</version.io.restassured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
-    <version.io.smallrye.reactive>2.1.1</version.io.smallrye.reactive>
 
     <version.org.antlr>3.5.2</version.org.antlr>
     <version.org.antlr4>4.8</version.org.antlr4>
@@ -687,11 +686,6 @@
         <version>${version.org.graalvm.nativeimage}</version>
       </dependency>
 
-      <dependency>
-        <groupId>io.smallrye.reactive</groupId>
-        <artifactId>smallrye-reactive-messaging-provider</artifactId>
-        <version>${version.io.smallrye.reactive}</version>
-      </dependency>
       <dependency>
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
