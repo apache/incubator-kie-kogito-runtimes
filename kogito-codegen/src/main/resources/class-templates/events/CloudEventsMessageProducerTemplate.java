@@ -4,8 +4,8 @@ package com.myspace.demo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.events.knative.ce.decorators.Decorator;
-import org.kie.kogito.events.knative.ce.decorators.DecoratorFactory;
+import org.kie.kogito.events.knative.ce.decorators.MessageDecorator;
+import org.kie.kogito.events.knative.ce.decorators.MessageDecoratorFactory;
 import org.kie.kogito.services.event.DataEventAttrBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class MessageProducer {
 
     Optional<Boolean> useCloudEvents = Optional.of(true);
 
-    Optional<Decorator> decorator = DecoratorFactory.newInstance();
+    Optional<MessageDecorator> decorator = MessageDecoratorFactory.newInstance();
 
     private static final Logger LOGGER = LoggerFactory.getLogger("MessageProducer");
 

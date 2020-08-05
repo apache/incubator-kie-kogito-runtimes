@@ -391,6 +391,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
                         // this is not cool, we should have a way to process addons
                         // generators without adding conditions to the main generators
+                        // see: https://issues.redhat.com/browse/KOGITO-1767
                         if (addonsConfig.useKnativeEventing()) {
                             mpgs.add(new CloudEventsMessageProducerGenerator(
                                     workFlowProcess,

@@ -12,20 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.events.knative.ce.http;
+package org.kie.kogito.events.knative.ce.decorators;
 
-import javax.ws.rs.core.MediaType;
+import java.util.Optional;
 
-/**
- * Extends {@link MediaType} to CloudEvents support
- */
-// this shouldn't be provided by the CE SDK? Send a PR.
-public final class ExtMediaType {
+import org.junit.jupiter.api.Test;
 
-    public static final String CLOUDEVENTS_JSON = "application/cloudevents+json";
-    public static final MediaType CLOUDEVENTS_JSON_TYPE = new MediaType("application", "cloudevents+json");
+import static org.assertj.core.api.Assertions.assertThat;
 
-    private ExtMediaType() {
+class MessageMessageDecoratorFactoryTest {
 
+    @Test
+    void verifyCloudEventHttpIsOnClasspath() {
+        final Optional<MessageDecorator> decorator = MessageDecoratorFactory.newInstance();
+        assertThat(decorator).isPresent();
+        assertThat(decorator.get()).isInstanceOf(CloudEventHttpOutgoingDecorator.class);
     }
 }
