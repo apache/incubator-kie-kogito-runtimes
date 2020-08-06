@@ -74,7 +74,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -104,6 +103,25 @@
   </build>
 
   <profiles>
+    <profile>
+      <id>persistence</id>
+      <activation>
+        <property>
+          <name>persistence</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-infinispan-client</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>infinispan-persistence-addon</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+
     <profile>
       <id>native-image</id>
       <activation>

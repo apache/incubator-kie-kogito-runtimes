@@ -15,17 +15,17 @@
 
 package org.kie.kogito.codegen.process.persistence.proto;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ProtoMessage {
+public class ProtoEnum {
 
     private String name;
     private String javaPackageOption;
-    private List<ProtoField> fields = new ArrayList<ProtoField>();
+    private Map<String, Integer> fields = new HashMap<>();
     private String comment;
 
-    public ProtoMessage(String name, String javaPackageOption) {
+    public ProtoEnum(String name, String javaPackageOption) {
         super();
         this.name = name;
         this.javaPackageOption = javaPackageOption;
@@ -39,11 +39,11 @@ public class ProtoMessage {
         this.name = name;
     }
 
-    public List<ProtoField> getFields() {
+    public Map<String, Integer> getFields() {
         return fields;
     }
 
-    public void setFields(List<ProtoField> fields) {
+    public void setFields(Map<String, Integer> fields) {
         this.fields = fields;
     }
 
@@ -63,14 +63,8 @@ public class ProtoMessage {
         this.comment = comment;
     }
 
-    public ProtoField addField(String applicability, String type, String name) {
-
-        int index = fields.size() + 1;
-        ProtoField field = new ProtoField(applicability, type, name, index);
-        if (!fields.contains(field)) {
-            fields.add(field);
-        }
-        
+    public String addField(String field, Integer ordinal) {
+        fields.put(field, ordinal);
         return field;
     }
 
@@ -80,13 +74,17 @@ public class ProtoMessage {
         if (comment != null) {
             tostring.append("/* " + comment + " */ \n");
         }
-        tostring.append("message " + name + " { \n");
+        tostring.append("enum " + name + " { \n");
         if (javaPackageOption != null) {
             tostring.append("\toption java_package = \"" + javaPackageOption + "\";\n");
         }
-        fields.forEach(f -> tostring.append(f.toString()));
+        fields.forEach((value, ordinal) -> tostring
+                .append("\t")
+                .append(value)
+                .append(" = ")
+                .append(ordinal)
+                .append(";\n"));
         tostring.append("}\n");
-
         return tostring.toString();
     }
 
@@ -106,12 +104,11 @@ public class ProtoMessage {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ProtoMessage other = (ProtoMessage) obj;
+        ProtoEnum other = (ProtoEnum) obj;
         if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        return true;
+            return other.name == null;
+        } else {
+            return name.equals(other.name);
+        }
     }
 }

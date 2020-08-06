@@ -28,7 +28,6 @@ import org.kie.kogito.codegen.data.PersonWithList;
 
 public class ReflectionProtoGeneratorTest {
 
-    
     private ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator();
     
     @Test
