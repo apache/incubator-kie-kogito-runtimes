@@ -80,7 +80,7 @@ public class KogitoAssetsProcessor {
     private static final String generatedSourcesDir = "target/generated-sources/kogito/";
     private static final String generatedCustomizableSourcesDir = System.getProperty("kogito.codegen.sources.directory", "target/generated-sources/kogito/");
     private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
-    private final transient String generatedClassesDir = System.getProperty("quarkus.debug.generated-classes-dir");
+//    private final transient String generatedClassesDir = System.getProperty("quarkus.debug.generated-classes-dir");
     private final transient String appPackageName = "org.kie.kogito.app";
     private final transient String persistenceFactoryClass = "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
     private final transient String metricsClass = "org.kie.kogito.monitoring.rest.MetricsResource";
@@ -330,6 +330,7 @@ public class KogitoAssetsProcessor {
 
         String[] sources = new String[generatedFiles.size()];
         int index = 0;
+        String location = appPaths.getFirstProjectPath().resolve("target").resolve("classes").toString();
         for (GeneratedFile entry : generatedFiles) {
             String generatedClassFile = entry.relativePath().replace("src/main/java/", "");
             String fileName = toRuntimeSource(toClassName(generatedClassFile));
@@ -337,10 +338,6 @@ public class KogitoAssetsProcessor {
 
             srcMfs.write(fileName, entry.contents());
 
-            String location = generatedClassesDir;
-            if (launchMode == LaunchMode.DEVELOPMENT) {
-                location = Paths.get(appPaths.getFirstClassesPath().toString()).toString();
-            }
 
             writeGeneratedFile(entry, location);
         }
@@ -365,20 +362,19 @@ public class KogitoAssetsProcessor {
             throw new IllegalStateException(errorInfo.toString());
         }
 
+        Path location = appPaths.getFirstProjectPath().resolve("target").resolve("classes");
         for (String fileName : trgMfs.getFileNames()) {
             byte[] data = trgMfs.getBytes(fileName);
             String className = toClassName(fileName);
             generatedBeans.produce(bif.apply(className, data));
 
-            if (launchMode == LaunchMode.DEVELOPMENT) {
-                Path path = writeFile(Paths.get(appPaths.getFirstClassesPath().toString(), fileName).toString(), data);
+            Path path = writeFile(Paths.get(appPaths.getFirstClassesPath().toString(), fileName).toString(), data);
 
-                String sourceFile = path.toString().replaceFirst("\\.class", ".java");
-                if (sourceFile.contains("$")) {
-                    sourceFile = sourceFile.substring(0, sourceFile.indexOf("$")) + ".java";
-                }
-                KogitoCompilationProvider.classToSource.put(path, Paths.get(sourceFile));
+            String sourceFile = path.toString().replaceFirst("\\.class", ".java");
+            if (sourceFile.contains("$")) {
+                sourceFile = sourceFile.substring(0, sourceFile.indexOf("$")) + ".java";
             }
+            KogitoCompilationProvider.classToSource.put(path, Paths.get(sourceFile));
         }
     }
 
