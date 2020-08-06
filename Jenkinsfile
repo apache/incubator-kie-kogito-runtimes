@@ -34,30 +34,44 @@ pipeline {
                 }
             }
         }
-        stage('Build kogito-runtimes') {
+        stage('Prepare for testing') {
             steps {
-                mavenCleanInstall("kogito-runtimes", false, ["run-code-coverage"])
-                runMaven("validate", "kogito-runtimes", false, ["sonarcloud-analysis"], "-e -nsu")
+                mavenCleanInstall("kogito-runtimes", true)
+                // Remove kogito-apps once working on https://issues.redhat.com/browse/KOGITO-2720
+                // as useless if examples do not depend on them
+                mavenCleanInstall("kogito-apps", true)
+                // No need to install examples for testing
+                // mavenCleanInstall("kogito-examples", true)
             }
         }
-        stage('Build kogito-apps') {
-            steps {
-                mavenCleanInstall("kogito-apps")
-            }
-        }
-        stage('Build kogito-examples') {
-            steps {
-                mavenCleanInstall("kogito-examples")
-            }
-        }
-        stage('Build kogito-examples with persistence') {
-            steps {
-                mavenCleanInstall("kogito-examples-persistence", false, ["persistence"])
-            }
-        }
-        stage('Build kogito-examples with events') {
-            steps {
-                mavenCleanInstall("kogito-examples-events", false, ["events"])
+        stage("Tests") {
+            parallel {
+                stage('Test Runtimes') {
+                    steps {
+                        mavenVerify("kogito-runtimes", ["run-code-coverage"])
+                        runMaven("validate", "kogito-runtimes", false, ["sonarcloud-analysis"], "-e -nsu")
+                    }
+                }
+                stage('Test Apps') {
+                    steps {
+                        mavenVerify("kogito-apps")
+                    }
+                }
+                stage('Test Examples') {
+                    steps {
+                        mavenVerify("kogito-examples")
+                    }
+                }
+                stage('Test Examples with persistence') {
+                    steps {
+                        mavenVerify("kogito-examples-persistence", ["persistence"])
+                    }
+                }
+                stage('Test Examples with events') {
+                    steps {
+                        mavenVerify("kogito-examples-events", ["events"])
+                    }
+                }
             }
         }
     }
@@ -93,6 +107,10 @@ void checkoutRepo(String repo, String dirName=repo) {
 
 void mavenCleanInstall(String directory, boolean skipTests = false, List profiles = [], String extraArgs = "") {
     runMaven("clean install", directory, skipTests, profiles, extraArgs)
+}
+
+void mavenVerify(String directory, List profiles = [], String extraArgs = "") {
+    runMaven("verify", directory, false, profiles, extraArgs)
 }
 
 void runMaven(String command, String directory, boolean skipTests = false, List profiles = [], String extraArgs = "") {
