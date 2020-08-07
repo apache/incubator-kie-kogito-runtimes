@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -41,8 +42,12 @@ import org.kie.kogito.UserTask;
 import org.kie.kogito.UserTaskParam;
 import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.json.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JsonSchemaGenerator {
+
+    public static final Logger logger = LoggerFactory.getLogger(JsonSchemaGenerator.class);
 
     private Stream<Class<?>> stream;
     private Function<? super Class<?>, String> getSchemaName;
@@ -96,7 +101,10 @@ public class JsonSchemaGenerator {
         builder.forFields().withIgnoreCheck(JsonSchemaGenerator::isNotUserTaskParam).withCustomDefinitionProvider(this::getInputOutput);
         SchemaGenerator generator = new SchemaGenerator(builder.build());
         ObjectWriter writer = new ObjectMapper().writer();
-        Map<String, List<Class<?>>> map = stream.filter(shouldGenSchema).collect(Collectors.groupingBy(getSchemaName));
+        Map<String, List<Class<?>>> map = stream
+                .filter(shouldGenSchema)
+                .filter(this::ensureNotNull)
+                .collect(Collectors.groupingBy(getSchemaName));
         Collection<GeneratedFile> files = new ArrayList<>();
         for (Map.Entry<String, List<Class<?>>> entry : map.entrySet()) {
             ObjectNode merged = null;
@@ -114,6 +122,16 @@ public class JsonSchemaGenerator {
             }
         }
         return files;
+    }
+
+    private boolean ensureNotNull(Class<?> c) {
+        UserTask userTask = c.getAnnotation(UserTask.class);
+        boolean isNull = userTask == null;
+        if (isNull) {
+            logger.warn("Could not retrieve UserTask annotation from class {} but was expected. " +
+                                "This may be a class loader bug. If JsonSchemas have been generated you may ignore this message.", c);
+        }
+        return !isNull;
     }
 
     private CustomPropertyDefinition getInputOutput(FieldScope f, SchemaGenerationContext context) {
