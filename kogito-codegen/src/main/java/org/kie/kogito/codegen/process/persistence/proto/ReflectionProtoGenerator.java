@@ -60,7 +60,11 @@ public class ReflectionProtoGenerator implements ProtoGenerator<Class<?>> {
     public Proto generate(String messageComment, String fieldComment, String packageName, Class<?> dataModel, String... headers) {
         try {
             Proto proto = new Proto(packageName, headers);
-            messageFromClass(proto, dataModel, packageName, messageComment, fieldComment);        
+            if(dataModel.isEnum()) {
+                enumFromClass(proto, dataModel, null);
+            } else {
+                messageFromClass(proto, dataModel, packageName, messageComment, fieldComment);
+            }
             return proto;
         } catch (Exception e) {
             throw new RuntimeException("Error while generating proto for model class " + dataModel, e);

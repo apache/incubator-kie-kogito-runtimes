@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.integrationtests.quarkus;
+package org.acme.examples.model;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.NativeImageTest;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
-
-@NativeImageTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class NativeJavaFNctxIT extends JavaFNctxTest {
-
-    // Execute the same tests but in native mode.
+public enum MovieGenre {
+    COMEDY,
+    FANTASY,
+    HORROR,
+    SCI_FI,
+    WESTERN
 }

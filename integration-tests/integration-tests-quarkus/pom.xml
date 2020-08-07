@@ -73,6 +73,11 @@
       <artifactId>json-schema-validator</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-test-utils</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>
@@ -99,6 +104,15 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -120,6 +134,24 @@
           <artifactId>infinispan-persistence-addon</artifactId>
         </dependency>
       </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <enable.resource.infinispan>true</enable.resource.infinispan>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+        <testResources>
+          <testResource>
+            <directory>src/test/extra-resources/persistence</directory>
+          </testResource>
+        </testResources>
+      </build>
     </profile>
 
     <profile>

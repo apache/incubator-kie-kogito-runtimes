@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.integrationtests.quarkus;
+package org.kie.kogito.integrationtests.springboot;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.acme.examples.model.Movie;
 import org.acme.examples.model.MovieGenre;
 import org.acme.examples.model.Rating;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.kie.kogito.testcontainers.springboot.InfinispanSpringBootTestResource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.ContextConfiguration;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -35,25 +38,30 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
+@ContextConfiguration(initializers = InfinispanSpringBootTestResource.Conditional.class)
 class EnumsTest {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
+    @LocalServerPort
+    int randomServerPort;
+
     @Test
     @SuppressWarnings("unchecked")
     void testSubmitMovie() {
+        RestAssured.port = randomServerPort;
         Map<String, Object> params = new HashMap<>();
         Movie movie = new Movie().setGenre(MovieGenre.COMEDY).setName("The Holy Grail").setReleaseYear(1975).setRating(Rating.UR);
         params.put("movie", movie);
 
         String pid = given()
                 .contentType(ContentType.JSON)
-            .when()
                 .body(params)
+            .when()
                 .post("/cinema")
             .then()
                 .statusCode(200)

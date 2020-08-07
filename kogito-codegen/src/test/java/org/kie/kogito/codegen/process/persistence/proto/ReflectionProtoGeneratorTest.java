@@ -18,13 +18,18 @@ package org.kie.kogito.codegen.process.persistence.proto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.data.Answer;
+import org.kie.kogito.codegen.data.AnswerWitAnnotations;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.data.PersonVarInfo;
 import org.kie.kogito.codegen.data.PersonWithAddress;
 import org.kie.kogito.codegen.data.PersonWithAddresses;
 import org.kie.kogito.codegen.data.PersonWithList;
+import org.kie.kogito.codegen.data.Question;
+import org.kie.kogito.codegen.data.QuestionWithAnnotatedEnum;
 
 public class ReflectionProtoGeneratorTest {
 
@@ -343,4 +348,133 @@ public class ReflectionProtoGeneratorTest {
         assertThat(field.getApplicability()).isEqualTo("optional");
         assertThat(field.getComment()).isEqualTo("@Field(store = Store.YES)\n @VariableInfo(tags=\"test\")");
     }
+
+    @Test
+    public void testAnswerProtoFile() {
+
+        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(Answer.class));
+        assertThat(proto).isNotNull();
+
+        assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");
+        assertThat(proto.getSyntax()).isEqualTo("proto2");
+        assertThat(proto.getEnums()).hasSize(1);
+
+        ProtoEnum answer = proto.getEnums().get(0);
+        assertThat(answer).isNotNull();
+        assertThat(answer.getName()).isEqualTo("Answer");
+        assertThat(answer.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
+        assertThat(answer.getFields()).hasSize(3);
+
+        Map<String, Integer> fields = answer.getFields();
+        assertThat(fields).isNotNull();
+        assertThat(fields.get("YES")).isEqualTo(0);
+        assertThat(fields.get("MAYBE")).isEqualTo(1);
+        assertThat(fields.get("NO")).isEqualTo(2);
+    }
+
+    @Test
+    public void testAnswerWithAnnotationsProtoFile() {
+
+        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(AnswerWitAnnotations.class));
+        assertThat(proto).isNotNull();
+
+        assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");
+        assertThat(proto.getSyntax()).isEqualTo("proto2");
+        assertThat(proto.getEnums()).hasSize(1);
+
+        ProtoEnum answer = proto.getEnums().get(0);
+        assertThat(answer).isNotNull();
+        assertThat(answer.getName()).isEqualTo("AnswerWitAnnotations");
+        assertThat(answer.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
+        assertThat(answer.getFields()).hasSize(3);
+
+        Map<String, Integer> fields = answer.getFields();
+        assertThat(fields).isNotNull();
+        assertThat(fields.get("YES")).isEqualTo(1);
+        assertThat(fields.get("MAYBE")).isEqualTo(2);
+        assertThat(fields.get("NO")).isEqualTo(3);
+    }
+
+    @Test
+    public void testAnswerWithVariableInfoProtoFile() {
+
+        Proto proto = generator.generate("@Indexed", "@Field(store = Store.YES)", "org.kie.kogito.test.persons", Answer.class);
+        assertThat(proto).isNotNull();
+
+        assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");
+        assertThat(proto.getSyntax()).isEqualTo("proto2");
+        assertThat(proto.getEnums()).hasSize(1);
+
+        ProtoEnum answer = proto.getEnums().get(0);
+        assertThat(answer).isNotNull();
+        assertThat(answer.getName()).isEqualTo("Answer");
+        assertThat(answer.getComment()).isBlank();
+        assertThat(answer.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
+        assertThat(answer.getFields()).hasSize(3);
+
+        Map<String, Integer> fields = answer.getFields();
+        assertThat(fields).isNotNull();
+        assertThat(fields.get("YES")).isEqualTo(0);
+        assertThat(fields.get("MAYBE")).isEqualTo(1);
+        assertThat(fields.get("NO")).isEqualTo(2);
+    }
+
+    @Test
+    public void testQuestionWithEnumProtoFile() {
+
+        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(Question.class));
+        assertThat(proto).isNotNull();
+
+        assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");
+        assertThat(proto.getSyntax()).isEqualTo("proto2");
+        assertThat(proto.getMessages()).hasSize(1);
+
+        ProtoMessage question = proto.getMessages().get(0);
+        assertThat(question).isNotNull();
+        assertThat(question.getName()).isEqualTo("Question");
+        assertThat(question.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
+        assertThat(question.getFields()).hasSize(2);
+
+        ProtoField field = question.getFields().get(0);
+        assertThat(field).isNotNull();
+        assertThat(field.getName()).isEqualTo("answer");
+        assertThat(field.getType()).isEqualTo("Answer");
+        assertThat(field.getApplicability()).isEqualTo("optional");
+
+        field = question.getFields().get(1);
+        assertThat(field).isNotNull();
+        assertThat(field.getName()).isEqualTo("question");
+        assertThat(field.getType()).isEqualTo("string");
+        assertThat(field.getApplicability()).isEqualTo("optional");
+    }
+
+    @Test
+    public void testQuestionWithAnnotatedEnumProtoFile() {
+
+        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(QuestionWithAnnotatedEnum.class));
+        assertThat(proto).isNotNull();
+
+        assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");
+        assertThat(proto.getSyntax()).isEqualTo("proto2");
+        assertThat(proto.getMessages()).hasSize(1);
+
+        ProtoMessage question = proto.getMessages().get(0);
+        assertThat(question).isNotNull();
+        assertThat(question.getName()).isEqualTo("QuestionWithAnnotatedEnum");
+        assertThat(question.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
+        assertThat(question.getFields()).hasSize(2);
+
+        ProtoField field = question.getFields().get(0);
+        assertThat(field).isNotNull();
+        assertThat(field.getName()).isEqualTo("answer");
+        assertThat(field.getType()).isEqualTo("AnswerWitAnnotations");
+        assertThat(field.getApplicability()).isEqualTo("optional");
+
+        field = question.getFields().get(1);
+        assertThat(field).isNotNull();
+        assertThat(field.getName()).isEqualTo("question");
+        assertThat(field.getType()).isEqualTo("string");
+        assertThat(field.getApplicability()).isEqualTo("optional");
+    }
+
 }

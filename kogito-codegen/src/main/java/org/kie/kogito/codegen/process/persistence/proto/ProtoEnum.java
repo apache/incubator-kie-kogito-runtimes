@@ -26,7 +26,6 @@ public class ProtoEnum {
     private String comment;
 
     public ProtoEnum(String name, String javaPackageOption) {
-        super();
         this.name = name;
         this.javaPackageOption = javaPackageOption;
     }

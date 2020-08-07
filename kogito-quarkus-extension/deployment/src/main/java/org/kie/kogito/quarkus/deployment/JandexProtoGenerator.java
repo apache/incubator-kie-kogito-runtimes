@@ -60,8 +60,11 @@ public class JandexProtoGenerator implements ProtoGenerator<ClassInfo> {
             String... headers) {
         try {
             Proto proto = new Proto(packageName, headers);
-
-            messageFromClass(proto, dataModel, index, packageName, messageComment, fieldComment);
+            if (dataModel.superName() != null && Enum.class.getName().equals(dataModel.superName().toString())) {
+                enumFromClass(proto, dataModel, null);
+            } else {
+                messageFromClass(proto, dataModel, index, packageName, messageComment, fieldComment);
+            }
             return proto;
         } catch (Exception e) {
             throw new RuntimeException("Error while generating proto for data model", e);
