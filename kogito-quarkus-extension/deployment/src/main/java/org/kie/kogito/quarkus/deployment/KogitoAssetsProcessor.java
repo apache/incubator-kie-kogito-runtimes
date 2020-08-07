@@ -28,6 +28,8 @@ import org.drools.compiler.commons.jci.compilers.JavaCompilerSettings;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.core.base.ClassFieldAccessorFactory;
 import org.drools.modelcompiler.builder.JavaParserCompiler;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.CompositeIndex;
 import org.jboss.jandex.DotName;
@@ -152,17 +154,22 @@ public class KogitoAssetsProcessor {
         return generatedFiles;
     }
 
-
     private Collection<GeneratedFile> getJsonSchemaFiles(Index index, MemoryFileSystem trgMfs) throws IOException {
         MemoryClassLoader cl = new MemoryClassLoader(trgMfs, Thread.currentThread().getContextClassLoader());
-        return new JsonSchemaGenerator.Builder(index.getAnnotations(createDotName(UserTask.class.getCanonicalName())).stream().map(instance -> {
-            try {
-                return cl.loadClass(instance.target().toString());
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException(e);
-            }
-        })).withGenSchemaPredicate(x -> true).withSchemaVersion(System.getProperty("kogito.jsonSchema.version")).build().generate();
+        List<AnnotationInstance> annotations =
+                index.getAnnotations(createDotName(UserTask.class.getCanonicalName()));
 
+        JsonSchemaGenerator.SimpleBuilder simpleBuilder =
+                new JsonSchemaGenerator.SimpleBuilder(cl)
+                        .withSchemaVersion(System.getProperty("kogito.jsonSchema.version"));
+
+        for (AnnotationInstance ann : annotations) {
+            String processName = ann.value("processName").asString();
+            String taskName = ann.value("taskName").asString();
+            simpleBuilder.addSchemaName(ann.target().asClass().name().toString(), processName, taskName);
+        }
+
+        return simpleBuilder.build().generate();
     }
 
     @BuildStep
@@ -278,7 +285,7 @@ public class KogitoAssetsProcessor {
         for (Path projectPath : appPaths.projectPaths) {
             String restResourcePath = projectPath.resolve( generatedCustomizableSourcesDir ).toString();
             String resourcePath = projectPath.resolve( generatedResourcesDir ).toString();
-            String sourcePath = projectPath.resolve( generatedSourcesDir ).toString(); 
+            String sourcePath = projectPath.resolve( generatedSourcesDir ).toString();
 
             for (GeneratedFile f : resourceFiles) {
                 try {

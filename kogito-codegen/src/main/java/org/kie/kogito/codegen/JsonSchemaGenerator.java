@@ -18,9 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -48,51 +48,100 @@ import org.slf4j.LoggerFactory;
 public class JsonSchemaGenerator {
 
     public static final Logger logger = LoggerFactory.getLogger(JsonSchemaGenerator.class);
+    public static final SchemaVersion DEFAULT_SCHEMA_VERSION = SchemaVersion.DRAFT_7;
 
-    private Stream<Class<?>> stream;
-    private Function<? super Class<?>, String> getSchemaName;
-    private Predicate<? super Class<?>> shouldGenSchema;
-    private SchemaVersion schemaVersion = SchemaVersion.DRAFT_7;
+    private final Map<String, List<Class<?>>> map;
+    private final SchemaVersion schemaVersion;
 
-    public static class Builder {
+    public static class SimpleBuilder {
 
-        private Stream<Class<?>> stream;
-        private Function<? super Class<?>, String> getSchemaName;
-        private Predicate<? super Class<?>> shouldGenSchema;
-        private String schemaVersion;
+        private final Map<String, List<Class<?>>> taskClassesById = new HashMap<>();
+        private ClassLoader loader ;
+        private SchemaVersion schemaVersion = SchemaVersion.DRAFT_7;
 
-        public Builder(Stream<Class<?>> stream) {
-            this.stream = stream;
+        public SimpleBuilder(ClassLoader cl) {
+            this.loader = cl;
         }
 
-        public Builder withSchemaNameFunction(Function<? super Class<?>, String> getSchemaName) {
-            this.getSchemaName = getSchemaName;
+        public SimpleBuilder() {
+            this(Thread.currentThread().getContextClassLoader());
+        }
+
+        public SimpleBuilder withSchemaVersion(String schemaVersion) {
+            this.schemaVersion = schemaVersion == null?
+                    DEFAULT_SCHEMA_VERSION :
+                    SchemaVersion.valueOf(schemaVersion.trim().toUpperCase());
             return this;
         }
 
-        public Builder withGenSchemaPredicate(Predicate<? super Class<?>> shouldGenSchema) {
-            this.shouldGenSchema = shouldGenSchema;
-            return this;
-        }
-
-        public Builder withSchemaVersion(String schemaVersion) {
-            this.schemaVersion = schemaVersion;
+        public SimpleBuilder addSchemaName(String taskClass, String processId, String userTask) {
+            String jsonSchemaName = JsonSchemaUtil.getJsonSchemaName(processId, userTask);
+            try {
+                Class<?> cls = loader.loadClass(taskClass);
+                taskClassesById.computeIfAbsent(
+                        jsonSchemaName, e -> new ArrayList<>()).add(cls);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException(e);
+            }
             return this;
         }
 
         public JsonSchemaGenerator build() {
-            JsonSchemaGenerator instance = new JsonSchemaGenerator(stream);
-            instance.getSchemaName = getSchemaName != null ? getSchemaName : JsonSchemaGenerator::getKey;
-            instance.shouldGenSchema = shouldGenSchema != null ? shouldGenSchema : JsonSchemaGenerator::isUserTaskClass;
-            if (schemaVersion != null) {
-                instance.schemaVersion = SchemaVersion.valueOf(schemaVersion.trim().toUpperCase());
-            }
-            return instance;
+            return new JsonSchemaGenerator(taskClassesById, schemaVersion);
         }
     }
 
-    private JsonSchemaGenerator(Stream<Class<?>> stream) {
-        this.stream = stream;
+    public static class ClassBuilder {
+
+        private Stream<Class<?>> stream;
+        private Function<? super Class<?>, String> getSchemaName = JsonSchemaGenerator::getKey;
+        private Predicate<? super Class<?>> shouldGenSchema = JsonSchemaGenerator::isUserTaskClass;
+        private SchemaVersion schemaVersion = DEFAULT_SCHEMA_VERSION;
+
+        public ClassBuilder(Stream<Class<?>> stream) {
+            this.stream = stream;
+        }
+
+        public ClassBuilder withSchemaNameFunction(Function<? super Class<?>, String> getSchemaName) {
+            this.getSchemaName = getSchemaName;
+            return this;
+        }
+
+        public ClassBuilder withGenSchemaPredicate(Predicate<? super Class<?>> shouldGenSchema) {
+            this.shouldGenSchema = shouldGenSchema;
+            return this;
+        }
+
+        public ClassBuilder withSchemaVersion(String schemaVersion) {
+            this.schemaVersion = schemaVersion == null?
+                    DEFAULT_SCHEMA_VERSION :
+                    SchemaVersion.valueOf(schemaVersion.trim().toUpperCase());
+            return this;
+        }
+
+        public JsonSchemaGenerator build() {
+            Map<String, List<Class<?>>> map = stream
+                    .filter(shouldGenSchema)
+                    .filter(this::ensureNotNull)
+                    .collect(Collectors.groupingBy(getSchemaName));
+
+            return new JsonSchemaGenerator(map, schemaVersion);
+        }
+
+        private boolean ensureNotNull(Class<?> c) {
+            UserTask userTask = c.getAnnotation(UserTask.class);
+            boolean isNull = userTask == null;
+            if (isNull) {
+                logger.warn("Could not retrieve UserTask annotation from class {} but was expected. " +
+                                    "This may be a class loader bug. If JsonSchemas have been generated you may ignore this message.", c);
+            }
+            return !isNull;
+        }
+    }
+
+    private JsonSchemaGenerator(Map<String, List<Class<?>>> map, SchemaVersion schemaVersion) {
+        this.map = map;
+        this.schemaVersion = schemaVersion;
     }
 
     public Collection<GeneratedFile> generate() throws IOException {
@@ -101,10 +150,7 @@ public class JsonSchemaGenerator {
         builder.forFields().withIgnoreCheck(JsonSchemaGenerator::isNotUserTaskParam).withCustomDefinitionProvider(this::getInputOutput);
         SchemaGenerator generator = new SchemaGenerator(builder.build());
         ObjectWriter writer = new ObjectMapper().writer();
-        Map<String, List<Class<?>>> map = stream
-                .filter(shouldGenSchema)
-                .filter(this::ensureNotNull)
-                .collect(Collectors.groupingBy(getSchemaName));
+
         Collection<GeneratedFile> files = new ArrayList<>();
         for (Map.Entry<String, List<Class<?>>> entry : map.entrySet()) {
             ObjectNode merged = null;
@@ -122,16 +168,6 @@ public class JsonSchemaGenerator {
             }
         }
         return files;
-    }
-
-    private boolean ensureNotNull(Class<?> c) {
-        UserTask userTask = c.getAnnotation(UserTask.class);
-        boolean isNull = userTask == null;
-        if (isNull) {
-            logger.warn("Could not retrieve UserTask annotation from class {} but was expected. " +
-                                "This may be a class loader bug. If JsonSchemas have been generated you may ignore this message.", c);
-        }
-        return !isNull;
     }
 
     private CustomPropertyDefinition getInputOutput(FieldScope f, SchemaGenerationContext context) {
