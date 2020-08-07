@@ -368,7 +368,6 @@ public class KogitoAssetsProcessor {
             throw new IllegalStateException(errorInfo.toString());
         }
 
-        Path location = appPaths.getFirstProjectPath().resolve("target").resolve("classes");
         for (String fileName : trgMfs.getFileNames()) {
             byte[] data = trgMfs.getBytes(fileName);
             String className = toClassName(fileName);
