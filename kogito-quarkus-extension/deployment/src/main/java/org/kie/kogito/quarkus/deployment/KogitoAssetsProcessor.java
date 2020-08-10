@@ -372,7 +372,13 @@ public class KogitoAssetsProcessor {
             byte[] data = trgMfs.getBytes(fileName);
             String className = toClassName(fileName);
             generatedBeans.produce(bif.apply(className, data));
+        }
 
+        if (appPaths.isJar) {
+            return;
+        }
+        for (String fileName : trgMfs.getFileNames()) {
+            byte[] data = trgMfs.getBytes(fileName);
             Path path = writeFile(Paths.get(appPaths.getFirstClassesPath().toString(), fileName).toString(), data);
 
             String sourceFile = path.toString().replaceFirst("\\.class", ".java");
