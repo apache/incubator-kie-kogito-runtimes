@@ -689,7 +689,7 @@
 
       <dependency>
         <groupId>io.smallrye.reactive</groupId>
-        <artifactId>smallrye-reactive-messaging-provider</artifactId>
+        <artifactId>smallrye-reactive-messaging-http</artifactId>
         <version>${version.io.smallrye.reactive}</version>
       </dependency>
       <dependency>
