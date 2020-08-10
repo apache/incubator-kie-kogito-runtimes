@@ -27,7 +27,7 @@ import org.kie.kogito.quarkus.deployment.JandexProtoGenerator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JandexProtoGeneratorTest {
+class JandexProtoGeneratorTest {
 
     @Test
     void testGenerate() {

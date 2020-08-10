@@ -140,8 +140,25 @@
                 </property>
             </activation>
             <properties>
-                <version.infinispan.starter>2.2.3.Final</version.infinispan.starter>
+                <version.infinispan.starter>@version.org.infinispan.starter@</version.infinispan.starter>
+                <version.infinispan>@version.org.infinispan@</version.infinispan>
             </properties>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.infinispan</groupId>
+                        <artifactId>infinispan-bom</artifactId>
+                        <version>${version.infinispan}</version>
+                        <type>pom</type>
+                        <scope>import</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.infinispan</groupId>
+                        <artifactId>infinispan-spring-boot-starter</artifactId>
+                        <version>${version.infinispan.starter}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
             <dependencies>
                 <dependency>
                     <groupId>org.infinispan</groupId>

@@ -31,12 +31,12 @@ import org.kie.kogito.codegen.data.PersonWithList;
 import org.kie.kogito.codegen.data.Question;
 import org.kie.kogito.codegen.data.QuestionWithAnnotatedEnum;
 
-public class ReflectionProtoGeneratorTest {
+class ReflectionProtoGeneratorTest {
 
     private ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator();
     
     @Test
-    public void testPersonProtoFile() {
+    void testPersonProtoFile() {
         
         Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(Person.class));
         assertThat(proto).isNotNull();
@@ -71,7 +71,7 @@ public class ReflectionProtoGeneratorTest {
     }
     
     @Test
-    public void testPersonWithAddressProtoFile() {
+    void testPersonWithAddressProtoFile() {
         
         Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(PersonWithAddress.class));
         assertThat(proto).isNotNull();
@@ -142,7 +142,7 @@ public class ReflectionProtoGeneratorTest {
     }
 
     @Test
-    public void testPersonWithListProtoFile() {
+    void testPersonWithListProtoFile() {
 
         Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(PersonWithList.class));
         assertThat(proto).isNotNull();
@@ -201,7 +201,7 @@ public class ReflectionProtoGeneratorTest {
     }
     
     @Test
-    public void testPersonWithAddressesProtoFile() {
+    void testPersonWithAddressesProtoFile() {
         
         Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(PersonWithAddresses.class));
         assertThat(proto).isNotNull();
@@ -272,7 +272,7 @@ public class ReflectionProtoGeneratorTest {
     }
     
     @Test
-    public void testPersonAsModelProtoFile() {
+    void testPersonAsModelProtoFile() {
         
         Proto proto = generator.generate("@Indexed", "@Field(store = Store.YES)", "org.kie.kogito.test.persons", Person.class);
         assertThat(proto).isNotNull();
@@ -311,7 +311,7 @@ public class ReflectionProtoGeneratorTest {
     }
     
     @Test
-    public void testPersonWithVariableInfoAsModelProtoFile() {
+    void testPersonWithVariableInfoAsModelProtoFile() {
         
         Proto proto = generator.generate("@Indexed", "@Field(store = Store.YES)", "org.kie.kogito.test.persons", PersonVarInfo.class);
         assertThat(proto).isNotNull();
@@ -350,7 +350,7 @@ public class ReflectionProtoGeneratorTest {
     }
 
     @Test
-    public void testAnswerProtoFile() {
+    void testAnswerProtoFile() {
 
         Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(Answer.class));
         assertThat(proto).isNotNull();
@@ -366,14 +366,14 @@ public class ReflectionProtoGeneratorTest {
         assertThat(answer.getFields()).hasSize(3);
 
         Map<String, Integer> fields = answer.getFields();
-        assertThat(fields).isNotNull();
-        assertThat(fields.get("YES")).isEqualTo(0);
-        assertThat(fields.get("MAYBE")).isEqualTo(1);
-        assertThat(fields.get("NO")).isEqualTo(2);
+        assertThat(fields).isNotNull()
+                .containsEntry("YES", 0)
+                .containsEntry("MAYBE", 1)
+                .containsEntry("NO", 2);
     }
 
     @Test
-    public void testAnswerWithAnnotationsProtoFile() {
+    void testAnswerWithAnnotationsProtoFile() {
 
         Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(AnswerWitAnnotations.class));
         assertThat(proto).isNotNull();
@@ -389,14 +389,14 @@ public class ReflectionProtoGeneratorTest {
         assertThat(answer.getFields()).hasSize(3);
 
         Map<String, Integer> fields = answer.getFields();
-        assertThat(fields).isNotNull();
-        assertThat(fields.get("YES")).isEqualTo(1);
-        assertThat(fields.get("MAYBE")).isEqualTo(2);
-        assertThat(fields.get("NO")).isEqualTo(3);
+        assertThat(fields).isNotNull()
+                .containsEntry("YES", 1)
+                .containsEntry("MAYBE", 2)
+                .containsEntry("NO", 3);
     }
 
     @Test
-    public void testAnswerWithVariableInfoProtoFile() {
+    void testAnswerWithVariableInfoProtoFile() {
 
         Proto proto = generator.generate("@Indexed", "@Field(store = Store.YES)", "org.kie.kogito.test.persons", Answer.class);
         assertThat(proto).isNotNull();
@@ -413,14 +413,14 @@ public class ReflectionProtoGeneratorTest {
         assertThat(answer.getFields()).hasSize(3);
 
         Map<String, Integer> fields = answer.getFields();
-        assertThat(fields).isNotNull();
-        assertThat(fields.get("YES")).isEqualTo(0);
-        assertThat(fields.get("MAYBE")).isEqualTo(1);
-        assertThat(fields.get("NO")).isEqualTo(2);
+        assertThat(fields).isNotNull()
+                .containsEntry("YES", 0)
+                .containsEntry("MAYBE", 1)
+                .containsEntry("NO", 2);
     }
 
     @Test
-    public void testQuestionWithEnumProtoFile() {
+    void testQuestionWithEnumProtoFile() {
 
         Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(Question.class));
         assertThat(proto).isNotNull();
@@ -449,7 +449,7 @@ public class ReflectionProtoGeneratorTest {
     }
 
     @Test
-    public void testQuestionWithAnnotatedEnumProtoFile() {
+    void testQuestionWithAnnotatedEnumProtoFile() {
 
         Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(QuestionWithAnnotatedEnum.class));
         assertThat(proto).isNotNull();
