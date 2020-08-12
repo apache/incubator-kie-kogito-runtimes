@@ -122,9 +122,9 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <systemProperties>
+                            <systemPropertyVariables>
                                 <container.image.infinispan>@container.image.infinispan@</container.image.infinispan>
-                            </systemProperties>
+                            </systemPropertyVariables>
                         </configuration>
                     </execution>
                 </executions>
@@ -178,9 +178,9 @@
                         <executions>
                             <execution>
                                 <configuration>
-                                    <systemProperties>
+                                    <systemPropertyVariables>
                                         <enable.resource.infinispan>true</enable.resource.infinispan>
-                                    </systemProperties>
+                                    </systemPropertyVariables>
                                 </configuration>
                             </execution>
                         </executions>

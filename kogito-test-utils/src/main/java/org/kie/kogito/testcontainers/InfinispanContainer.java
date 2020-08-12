@@ -33,6 +33,7 @@ public class InfinispanContainer extends GenericContainer<InfinispanContainer> i
     public static final String INFINISPAN_PROPERTY = "container.image." + NAME;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InfinispanContainer.class);
+    private static final String DEFAULT_IMAGE = "quay.io/infinispan/server:11.0.1.Final";
 
     public InfinispanContainer() {
         addExposedPort(PORT);
@@ -40,7 +41,7 @@ public class InfinispanContainer extends GenericContainer<InfinispanContainer> i
         withEnv("PASS", "admin");
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         waitingFor(Wait.forLogMessage(".*ISPN080001.*", 1));
-        setDockerImageName(System.getProperty(INFINISPAN_PROPERTY));
+        setDockerImageName(System.getProperty(INFINISPAN_PROPERTY, DEFAULT_IMAGE));
     }
 
     @Override

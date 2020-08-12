@@ -37,6 +37,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> imple
 
     private static final String REALM_FILE = "/tmp/realm.json";
     private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakContainer.class);
+    private static final String DEFAULT_IMAGE = "quay.io/keycloak/keycloak:11.0.0";
 
     public KeycloakContainer() {
         addExposedPort(PORT);
@@ -46,7 +47,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> imple
         withClasspathResourceMapping("testcontainers/keycloak/kogito-realm.json", REALM_FILE, BindMode.READ_ONLY);
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         waitingFor(Wait.forHttp("/auth").withStartupTimeout(Duration.ofMinutes(5)));
-        setDockerImageName(System.getProperty(KEYCLOAK_PROPERTY));
+        setDockerImageName(System.getProperty(KEYCLOAK_PROPERTY, DEFAULT_IMAGE));
     }
 
     @Override
