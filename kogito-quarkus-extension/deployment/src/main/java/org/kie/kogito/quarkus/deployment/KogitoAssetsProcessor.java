@@ -81,6 +81,9 @@ import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Main class of the Kogito extension
+ */
 public class KogitoAssetsProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
@@ -128,6 +131,9 @@ public class KogitoAssetsProcessor {
         return new FeatureBuildItem("kogito");
     }
 
+    /**
+     * Main entry point of the Quarkus extension
+     */
     @BuildStep
     public void generateModel() throws IOException {
 
@@ -135,8 +141,11 @@ public class KogitoAssetsProcessor {
             return;
         }
 
+
+        // scan and parse paths
         AppPaths appPaths = new AppPaths(root.getPaths());
 
+        // enable addons looking at available classes
         boolean usePersistence = combinedIndexBuildItem.getIndex()
                 .getClassByName(persistenceFactoryClass) != null;
         boolean useMonitoring = combinedIndexBuildItem.getIndex()
@@ -144,12 +153,13 @@ public class KogitoAssetsProcessor {
         boolean useTracing = !combinedIndexBuildItem.getIndex()
                 .getAllKnownSubclasses(tracingClass).isEmpty();
 
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        GeneratorContext context = buildContext(appPaths, combinedIndexBuildItem.getIndex());
         AddonsConfig addonsConfig = new AddonsConfig()
                 .withPersistence(usePersistence)
                 .withMonitoring(useMonitoring)
                 .withTracing(useTracing);
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        GeneratorContext context = buildContext(appPaths, combinedIndexBuildItem.getIndex());
 
         Path[] paths = appPaths.getPath();
 
@@ -162,6 +172,8 @@ public class KogitoAssetsProcessor {
                         .withDependencyInjection(new CDIDependencyInjectionAnnotator())
                         .withAddons(addonsConfig)
                         .withGeneratorContext(context);
+
+        // configure each individual generator. Ordering is relevant.
 
         appGen.withGenerator(ProcessCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
                 .withAddons(addonsConfig)
@@ -178,25 +190,30 @@ public class KogitoAssetsProcessor {
         appGen.withGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
                 .withAddons(addonsConfig);
 
-        // invoke the generation procedure
+        // real work occurs here: invoke the code-generation procedure
         Collection<GeneratedFile> generatedFiles = appGen.generate();
 
+        // dump files to disk
         for (Path projectPath : appPaths.projectPaths) {
             generatedFileWriterBuilder
                     .build(projectPath)
                     .writeAll(generatedFiles);
         }
 
+        // register resources to the Quarkus environment
         registerResources(generatedFiles);
 
+        // build Java source code and register the generated beans
         Index index = processGeneratedJavaSourceCode(
                 appPaths,
                 generatedFiles);
 
+        // no java source code has been generated. Stop.
         if (index == null) {
             return;
         }
 
+        // further processing
         generatePersistenceInfo(appPaths, index);
 
         registerDataEventsForReflection(index);
@@ -479,17 +496,6 @@ public class KogitoAssetsProcessor {
             sourceName = sourceName.substring(0, sourceName.length() - 6);
         }
         return sourceName.replace('/', '.');
-    }
-
-    private void writeGeneratedFile(GeneratedFile f, String location) throws IOException {
-        if (location == null) {
-            return;
-        }
-
-        String generatedClassFile = f.relativePath().replace("src/main/java", "");
-        Files.write(
-                pathOf(location, generatedClassFile),
-                f.contents());
     }
 
     private Path pathOf(String location, String end) {

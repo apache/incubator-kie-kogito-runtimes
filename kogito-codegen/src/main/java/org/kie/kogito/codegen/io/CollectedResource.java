@@ -35,8 +35,15 @@ import org.kie.api.io.ResourceType;
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
 
+/**
+ * A (Path basePath, Resource resource) pair
+ */
 public class CollectedResource {
 
+    /**
+     * Returns a collection of CollectedResource from the given paths.
+     * If a path is a jar, then walks inside the jar.
+     */
     public static Collection<CollectedResource> fromPaths(Path... paths) {
         Collection<CollectedResource> resources = new ArrayList<>();
 
@@ -55,6 +62,9 @@ public class CollectedResource {
         return resources;
     }
 
+    /**
+     * Returns a collection of CollectedResource from the given jar file.
+     */
     public static Collection<CollectedResource> fromJarFile(Path jarPath) {
         Collection<CollectedResource> resources = new ArrayList<>();
         try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
@@ -76,6 +86,9 @@ public class CollectedResource {
         }
     }
 
+    /**
+     * Returns a collection of CollectedResource from the given directory.
+     */
     public static Collection<CollectedResource> fromDirectory(Path path) {
         Collection<CollectedResource> resources = new ArrayList<>();
         try {

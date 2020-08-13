@@ -32,6 +32,10 @@ import org.kie.kogito.codegen.GeneratedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A instance of a Java compiler with a given classpath,
+ * default flags, and its target directories.
+ */
 public class InMemoryCompiler {
 
     private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
@@ -55,12 +59,17 @@ public class InMemoryCompiler {
         }
     }
 
+    /**
+     * Compiles the given {@link GeneratedFile}s and returns the compilation results.
+     * It throws an {@link IllegalStateException} if there are errors.
+     */
     CompilationResult compile(Collection<GeneratedFile> generatedFiles) {
         MemoryFileSystem srcMfs = new MemoryFileSystem();
 
         String[] sources = new String[generatedFiles.size()];
         int index = 0;
         for (GeneratedFile entry : generatedFiles) {
+            // verify if this is still needed https://issues.redhat.com/browse/KOGITO-3085
             String generatedClassFile = entry.relativePath().replace("src/main/java/", "");
             String fileName = toRuntimeSource(toClassName(generatedClassFile));
             sources[index++] = fileName;
@@ -89,6 +98,9 @@ public class InMemoryCompiler {
         return result;
     }
 
+    /**
+     * @return the MemoryFileSystem where class files have been generated
+     */
     public MemoryFileSystem getTargetFileSystem() {
         return trgMfs;
     }
@@ -106,6 +118,7 @@ public class InMemoryCompiler {
     }
 
     private String toRuntimeSource(String className) {
+        // verify if this is still needed https://issues.redhat.com/browse/KOGITO-3085
         return "src/main/java/" + className.replace('.', '/') + ".java";
     }
 }

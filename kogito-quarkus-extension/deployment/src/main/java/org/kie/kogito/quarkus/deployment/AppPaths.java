@@ -45,7 +45,6 @@ class AppPaths {
 
     final Set<Path> projectPaths = new LinkedHashSet<>();
     final List<Path> classesPaths = new ArrayList<>();
-    Path[] decompressedPaths;
 
     boolean isJar = false;
 
@@ -76,21 +75,6 @@ class AppPaths {
             }
         }
 
-        if (isJar) {
-            logger.warn("Got JAR: decompressing to a temporary directory for codegen");
-            Path[] jarPaths = getJarPath();
-            this.decompressedPaths = new Path[jarPaths.length];
-            try {
-                for (int i = 0, jarPathsLength = jarPaths.length; i < jarPathsLength; i++) {
-                    Path jarPath = jarPaths[i];
-                    Path tmp = Files.createTempDirectory(jarPath.getFileName().toString());
-                    unzipJar(jarPath, tmp);
-                    decompressedPaths[i] = tmp;
-                }
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }
     }
 
     public Path[] getPath() {
@@ -98,33 +82,6 @@ class AppPaths {
             return getJarPath();
         } else {
             return getResourcePaths();
-        }
-    }
-
-    public static void unzipJar(Path jarPath, Path destinationDir) throws IOException {
-        File file = jarPath.toFile();
-        JarFile jar = new JarFile(file);
-        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements(); ) {
-            JarEntry entry = enums.nextElement();
-            String fileName = destinationDir + File.separator + entry.getName();
-            File f = new File(fileName);
-            if (fileName.endsWith("/")) {
-                f.mkdirs();
-            }
-        }
-        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements(); ) {
-            JarEntry entry = enums.nextElement();
-            String fileName = destinationDir + File.separator + entry.getName();
-            File f = new File(fileName);
-            if (!fileName.endsWith("/")) {
-                InputStream is = jar.getInputStream(entry);
-                FileOutputStream fos = new FileOutputStream(f);
-                while (is.available() > 0) {
-                    fos.write(is.read());
-                }
-                fos.close();
-                is.close();
-            }
         }
     }
 

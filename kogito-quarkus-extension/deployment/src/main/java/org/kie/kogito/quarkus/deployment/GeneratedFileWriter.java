@@ -24,6 +24,10 @@ import java.util.Collection;
 
 import org.kie.kogito.codegen.GeneratedFile;
 
+/**
+ * Writes {@link GeneratedFile} to the right directory, depending on its
+ * {@link GeneratedFile.Type}
+ */
 public class GeneratedFileWriter {
 
     public static class Builder {
@@ -33,6 +37,13 @@ public class GeneratedFileWriter {
         private final String resourcePath;
         private final String scaffoldedSourcesDir;
 
+        /**
+         *
+         * @param classesDir usually target/classes/
+         * @param sourcesDir usually target/generated-sources/kogito/
+         * @param resourcesDir usually target/generated-resources/kogito/
+         * @param scaffoldedSourcesDir usually src/main/java/
+         */
         public Builder(String classesDir, String sourcesDir, String resourcesDir, String scaffoldedSourcesDir) {
             this.classesDir = classesDir;
             this.sourcesDir = sourcesDir;
@@ -40,6 +51,11 @@ public class GeneratedFileWriter {
             this.scaffoldedSourcesDir = scaffoldedSourcesDir;
         }
 
+        /**
+         * @param basePath the path to which the given subdirectories will be written
+         *                 e.g. ${basePath}/${classesDir}/myfile.ext
+         *
+         */
         public GeneratedFileWriter build(Path basePath) {
             return new GeneratedFileWriter(
                     basePath.resolve(classesDir),
@@ -54,6 +70,13 @@ public class GeneratedFileWriter {
     private final Path resourcePath;
     private final Path scaffoldedSourcesDir;
 
+    /**
+     *
+     * @param classesDir usually target/classes/
+     * @param sourcesDir usually target/generated-sources/kogito/
+     * @param resourcePath usually target/generated-resources/kogito/
+     * @param scaffoldedSourcesDir usually src/main/java/
+     */
     public GeneratedFileWriter(Path classesDir, Path sourcesDir, Path resourcePath, Path scaffoldedSourcesDir) {
         this.classesDir = classesDir;
         this.sourcesDir = sourcesDir;
@@ -91,6 +114,7 @@ public class GeneratedFileWriter {
         if (location == null) {
             return;
         }
+        // verify if this is still needed https://issues.redhat.com/browse/KOGITO-3085
         String generatedClassFile = f.relativePath().replace("src/main/java", "");
         Files.write(
                 pathOf(location, generatedClassFile),
