@@ -1,0 +1,172 @@
+package org.kie.kogito.quarkus.deployment;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+import io.quarkus.bootstrap.model.PathsCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+class AppPaths {
+
+    private static final Logger logger = LoggerFactory.getLogger(AppPaths.class);
+
+    final Set<Path> projectPaths = new LinkedHashSet<>();
+    final List<Path> classesPaths = new ArrayList<>();
+    Path[] decompressedPaths;
+
+    boolean isJar = false;
+
+    AppPaths(PathsCollection paths) {
+        for (Path path : paths) {
+            PathType pathType = getPathType(path);
+            switch (pathType) {
+                case CLASSES: {
+                    classesPaths.add(path);
+                    projectPaths.add(path.getParent().getParent());
+                    break;
+                }
+                case TEST_CLASSES: {
+                    projectPaths.add(path.getParent().getParent());
+                    break;
+                }
+                case JAR: {
+                    isJar = true;
+                    classesPaths.add(path);
+                    projectPaths.add(path.getParent().getParent());
+                    break;
+                }
+                case UNKNOWN: {
+                    classesPaths.add(path);
+                    projectPaths.add(path);
+                    break;
+                }
+            }
+        }
+
+        if (isJar) {
+            logger.warn("Got JAR: decompressing to a temporary directory for codegen");
+            Path[] jarPaths = getJarPath();
+            this.decompressedPaths = new Path[jarPaths.length];
+            try {
+                for (int i = 0, jarPathsLength = jarPaths.length; i < jarPathsLength; i++) {
+                    Path jarPath = jarPaths[i];
+                    Path tmp = Files.createTempDirectory(jarPath.getFileName().toString());
+                    unzipJar(jarPath, tmp);
+                    decompressedPaths[i] = tmp;
+                }
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+    }
+
+    public Path[] getPath() {
+        if (isJar) {
+            return getJarPath();
+        } else {
+            return getResourcePaths();
+        }
+    }
+
+    public static void unzipJar(Path jarPath, Path destinationDir) throws IOException {
+        File file = jarPath.toFile();
+        JarFile jar = new JarFile(file);
+        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements(); ) {
+            JarEntry entry = enums.nextElement();
+            String fileName = destinationDir + File.separator + entry.getName();
+            File f = new File(fileName);
+            if (fileName.endsWith("/")) {
+                f.mkdirs();
+            }
+        }
+        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements(); ) {
+            JarEntry entry = enums.nextElement();
+            String fileName = destinationDir + File.separator + entry.getName();
+            File f = new File(fileName);
+            if (!fileName.endsWith("/")) {
+                InputStream is = jar.getInputStream(entry);
+                FileOutputStream fos = new FileOutputStream(f);
+                while (is.available() > 0) {
+                    fos.write(is.read());
+                }
+                fos.close();
+                is.close();
+            }
+        }
+    }
+
+    public Path getFirstProjectPath() {
+        return projectPaths.iterator().next();
+    }
+
+    public Path getFirstClassesPath() {
+        return classesPaths.get(0);
+    }
+
+    public Path[] getJarPath() {
+        if (!isJar) {
+            throw new IllegalStateException("Not a jar");
+        }
+        return classesPaths.toArray(new Path[classesPaths.size()]);
+    }
+
+    public File[] getResourceFiles() {
+        return projectPaths.stream().map(p -> p.resolve("src/main/resources").toFile()).toArray(File[]::new);
+    }
+
+    public Path[] getResourcePaths() {
+        return transformPaths(projectPaths, p -> p.resolve("src/main/resources"));
+    }
+
+    public Path[] getSourcePaths() {
+        return transformPaths(projectPaths, p -> p.resolve("src"));
+    }
+
+    public Path[] getProjectPaths() {
+        return transformPaths(projectPaths, Function.identity());
+    }
+
+    private Path[] transformPaths(Collection<Path> paths, Function<Path, Path> f) {
+        return paths.stream().map(f).toArray(Path[]::new);
+    }
+
+    private PathType getPathType(Path archiveLocation) {
+        String path = archiveLocation.toString();
+        if (path.endsWith("target" + File.separator + "classes")) {
+            return PathType.CLASSES;
+        }
+        if (path.endsWith("target" + File.separator + "test-classes")) {
+            return PathType.TEST_CLASSES;
+        }
+        // Quarkus generates a file with extension .jar.original when doing a native compilation of a uberjar
+        // TODO replace ".jar.original" with constant JarResultBuildStep.RENAMED_JAR_EXTENSION when it will be avialable in Quakrus 1.7
+        if (path.endsWith(".jar") || path.endsWith(".jar.original")) {
+            return PathType.JAR;
+        }
+        return PathType.UNKNOWN;
+    }
+
+    private enum PathType {
+        CLASSES,
+        TEST_CLASSES,
+        JAR,
+        UNKNOWN
+    }
+}
