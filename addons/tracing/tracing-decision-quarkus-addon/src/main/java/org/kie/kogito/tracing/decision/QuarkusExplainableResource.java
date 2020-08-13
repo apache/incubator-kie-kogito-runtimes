@@ -27,9 +27,12 @@ import javax.ws.rs.core.Response;
 import org.kie.kogito.Application;
 import org.kie.kogito.tracing.decision.event.explainability.PredictInput;
 import org.kie.kogito.tracing.decision.explainability.ExplainabilityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/predict")
 public class QuarkusExplainableResource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(QuarkusExplainableResource.class);
 
     private final Application application;
     private final ExplainabilityService explainabilityService = ExplainabilityService.INSTANCE;
@@ -46,6 +49,7 @@ public class QuarkusExplainableResource {
         try {
             return Response.ok(explainabilityService.processRequest(application, input)).build();
         } catch (Exception e) {
+            LOGGER.info("An Exception occurred processing the predict request", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
