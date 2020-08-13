@@ -1,0 +1,19 @@
+name: Build Chain
+
+on: [pull_request]
+
+jobs:
+  build-chain-openjdk11:
+    runs-on: ubuntu-latest
+    name: Pull Request openjdk11
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build Chain
+      id: build-chain
+      uses: kiegroup/github-action-build-chain@openjdk11
+      with:
+        child-dependencies: 'kogito-apps'
+        build-command: 'mvn clean install -Prun-code-coverage | mvn validate -Psonarcloud-analysis -e -nsu | mvn clean install -Ppersistence'
+        workflow-file-name: "pull_request.yml"
+      env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
