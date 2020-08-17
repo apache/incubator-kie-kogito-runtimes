@@ -16,16 +16,21 @@
 
 package org.kie.kogito.tracing.decision.event.variable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UnitVariable extends TypedVariable {
 
+    @JsonProperty("baseType")
     @JsonInclude(NON_NULL)
     private String baseType;
 
+    @JsonProperty("value")
     private JsonNode value;
 
     private UnitVariable() {

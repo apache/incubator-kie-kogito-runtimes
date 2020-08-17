@@ -18,8 +18,13 @@ package org.kie.kogito.tracing.decision.event.variable;
 
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CollectionVariable extends TypedVariable {
 
+    @JsonProperty("value")
     private Collection<TypedVariable> value;
 
     private CollectionVariable() {

@@ -18,8 +18,13 @@ package org.kie.kogito.tracing.decision.event.variable;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class StructureVariable extends TypedVariable {
 
+    @JsonProperty("value")
     private Map<String, TypedVariable> value;
 
     private StructureVariable() {
