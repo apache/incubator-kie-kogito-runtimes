@@ -25,12 +25,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/predict")
 public class SpringBootExplainableResource {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpringBootExplainableResource.class);
 
     private final Application application;
     private final ExplainabilityService explainabilityService = ExplainabilityService.INSTANCE;
@@ -46,6 +50,7 @@ public class SpringBootExplainableResource {
         try {
             return ResponseEntity.ok(explainabilityService.processRequest(application, input));
         } catch (Exception e) {
+            LOGGER.warn("An Exception occurred processing the predict request", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
