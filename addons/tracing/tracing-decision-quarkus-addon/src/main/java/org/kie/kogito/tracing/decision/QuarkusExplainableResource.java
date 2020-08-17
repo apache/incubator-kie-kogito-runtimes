@@ -49,7 +49,7 @@ public class QuarkusExplainableResource {
         try {
             return Response.ok(explainabilityService.processRequest(application, input)).build();
         } catch (Exception e) {
-            LOGGER.info("An Exception occurred processing the predict request", e);
+            LOGGER.warn("An Exception occurred processing the predict request", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
