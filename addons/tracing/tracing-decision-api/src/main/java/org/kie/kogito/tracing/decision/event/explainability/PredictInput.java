@@ -27,14 +27,14 @@ public class PredictInput {
     @JsonProperty("modelIdentifier")
     private ModelIdentifier modelIdentifier;
 
-    @JsonProperty("perturbedRequest")
-    private Map<String, Object> perturbedRequest;
+    @JsonProperty("request")
+    private Map<String, Object> request;
 
     public PredictInput(){}
 
-    public PredictInput(ModelIdentifier modelIdentifier, Map<String, Object> perturbedRequest) {
+    public PredictInput(ModelIdentifier modelIdentifier, Map<String, Object> request) {
         this.modelIdentifier = modelIdentifier;
-        this.perturbedRequest = perturbedRequest;
+        this.request = request;
     }
 
     public ModelIdentifier getModelIdentifier() {
@@ -45,11 +45,11 @@ public class PredictInput {
         this.modelIdentifier = modelIdentifier;
     }
 
-    public Map<String, Object> getPerturbedRequest() {
-        return perturbedRequest;
+    public Map<String, Object> getRequest() {
+        return request;
     }
 
-    public void setPerturbedRequest(Map<String, Object> perturbedRequest) {
-        this.perturbedRequest = perturbedRequest;
+    public void setRequest(Map<String, Object> request) {
+        this.request = request;
     }
 }

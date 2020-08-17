@@ -27,15 +27,15 @@ public class PredictOutput {
     @JsonProperty("modelIdentifier")
     private ModelIdentifier modelIdentifier;
 
-    @JsonProperty("perturbedResult")
-    private Map<String, Object> perturbedResult;
+    @JsonProperty("result")
+    private Map<String, Object> result;
 
     public PredictOutput() {
     }
 
-    public PredictOutput(ModelIdentifier modelIdentifier, Map<String, Object> perturbedResult) {
+    public PredictOutput(ModelIdentifier modelIdentifier, Map<String, Object> result) {
         this.modelIdentifier = modelIdentifier;
-        this.perturbedResult = perturbedResult;
+        this.result = result;
     }
 
     public ModelIdentifier getModelIdentifier() {
@@ -46,11 +46,11 @@ public class PredictOutput {
         this.modelIdentifier = modelIdentifier;
     }
 
-    public Map<String, Object> getPerturbedResult() {
-        return perturbedResult;
+    public Map<String, Object> getResult() {
+        return result;
     }
 
-    public void setPerturbedResult(Map<String, Object> perturbedResult) {
-        this.perturbedResult = perturbedResult;
+    public void setResult(Map<String, Object> result) {
+        this.result = result;
     }
 }

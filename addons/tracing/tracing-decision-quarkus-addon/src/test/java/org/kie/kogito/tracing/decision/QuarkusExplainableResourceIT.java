@@ -35,10 +35,10 @@ public class QuarkusExplainableResourceIT {
 
     @Test
     @SuppressWarnings("unchecked")
-    void testPerturbedRequestIsProcessedAndCorrect() throws JsonProcessingException {
+    void testRequestIsProcessedAndCorrect() throws JsonProcessingException {
         String resourceId = String.format("%s:%s", MODEL_NAMESPACE, MODEL_NAME);
         String body = String.format(
-                "{\"perturbedRequest\" : {\"Driver\": {\"Age\": 25, \"Points\": 100}, \"Violation\": {\"Type\" : \"speed\", \"Actual Speed\": 120, \"Speed Limit\": 40}}," +
+                "{\"request\" : {\"Driver\": {\"Age\": 25, \"Points\": 100}, \"Violation\": {\"Type\" : \"speed\", \"Actual Speed\": 120, \"Speed Limit\": 40}}," +
                 "\"modelIdentifier\": {\"resourceType\": \"dmn\",\"resourceId\": \"%s\"}}",
                 resourceId);
 
@@ -51,16 +51,16 @@ public class QuarkusExplainableResourceIT {
 
 
         Assertions.assertNotNull(output);
-        Assertions.assertNotNull(output.getPerturbedResult());
+        Assertions.assertNotNull(output.getResult());
         Assertions.assertNotNull(output.getModelIdentifier());
-        Map<String, Object> perturbedResult = output.getPerturbedResult();
+        Map<String, Object> result = output.getResult();
 
-        Assertions.assertTrue(perturbedResult.containsKey("Should the driver be suspended?"));
-        Assertions.assertEquals("Yes", perturbedResult.get("Should the driver be suspended?"));
-        Assertions.assertTrue(perturbedResult.containsKey("Fine"));
+        Assertions.assertTrue(result.containsKey("Should the driver be suspended?"));
+        Assertions.assertEquals("Yes", result.get("Should the driver be suspended?"));
+        Assertions.assertTrue(result.containsKey("Fine"));
         Map<String, Object> expectedFine = new HashMap<>();
         expectedFine.put("Points", 7);
         expectedFine.put("Amount", 1000);
-        Assertions.assertEquals(expectedFine, perturbedResult.get("Fine"));
+        Assertions.assertEquals(expectedFine, result.get("Fine"));
     }
 }

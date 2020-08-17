@@ -78,9 +78,9 @@ public class ExplainabilityServiceTest {
         PredictOutput predictOutput = explainabilityService.processRequest(application, predictInput);
 
         Assertions.assertNotNull(predictOutput);
-        Assertions.assertNotNull(predictOutput.getPerturbedResult());
+        Assertions.assertNotNull(predictOutput.getResult());
 
-        Map<String, Object> perturbedResult = predictOutput.getPerturbedResult();
+        Map<String, Object> perturbedResult = predictOutput.getResult();
         Assertions.assertTrue(perturbedResult.containsKey("Should the driver be suspended?"));
         Assertions.assertTrue(perturbedResult.get("Should the driver be suspended?").equals("No"));
         Assertions.assertTrue(perturbedResult.containsKey("Fine"));

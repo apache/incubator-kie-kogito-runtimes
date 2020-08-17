@@ -51,7 +51,7 @@ public class DecisionExplainabilityResourceExecutor implements ExplainabilityRes
     }
 
     public Map<String, Object> convertDMNInput(PredictInput predictInput) {
-        return predictInput.getPerturbedRequest();
+        return predictInput.getRequest();
     }
 
     public PredictOutput convertDMNOutput(DMNResult dmnResult, PredictInput predictInput) {
