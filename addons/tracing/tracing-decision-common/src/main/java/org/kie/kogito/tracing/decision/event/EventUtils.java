@@ -163,11 +163,11 @@ public class EventUtils {
         return StreamSupport.stream(iterable.spliterator(), false);
     }
 
-    public static TraceResourceId traceResourceIdFrom(DMNModel model) {
+    public static TraceResourceId traceResourceIdFrom(String serviceUrl, DMNModel model) {
         if (model == null) {
             return null;
         }
-        return new TraceResourceId(model.getNamespace(), model.getName());
+        return new TraceResourceId(serviceUrl, model.getNamespace(), model.getName());
     }
 
     public static TraceType traceTypeFrom(DMNType dmnType) {

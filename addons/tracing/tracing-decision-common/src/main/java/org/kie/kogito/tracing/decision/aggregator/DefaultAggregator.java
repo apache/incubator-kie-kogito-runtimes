@@ -42,6 +42,7 @@ import org.kie.dmn.api.core.ast.InputDataNode;
 import org.kie.dmn.core.ast.DMNBaseNode;
 import org.kie.dmn.core.ast.DecisionServiceNodeImpl;
 import org.kie.dmn.feel.util.Pair;
+import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.tracing.decision.event.CloudEventUtils;
 import org.kie.kogito.tracing.decision.event.EventUtils;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateDecisionResult;
@@ -77,20 +78,20 @@ public class DefaultAggregator implements Aggregator {
     private static final String VARIABLE_ID_KEY = "variableId";
 
     @Override
-    public CloudEventImpl<TraceEvent> aggregate(DMNModel model, String executionId, List<EvaluateEvent> events) {
+    public CloudEventImpl<TraceEvent> aggregate(DMNModel model, String executionId, List<EvaluateEvent> events, ConfigBean configBean) {
         return events == null || events.isEmpty()
-                ? buildNotEnoughDataCloudEvent(model, executionId)
-                : buildDefaultCloudEvent(model, executionId, events);
+                ? buildNotEnoughDataCloudEvent(model, executionId, configBean)
+                : buildDefaultCloudEvent(model, executionId, events, configBean);
     }
 
-    private static CloudEventImpl<TraceEvent> buildNotEnoughDataCloudEvent(DMNModel model, String executionId) {
+    private static CloudEventImpl<TraceEvent> buildNotEnoughDataCloudEvent(DMNModel model, String executionId, ConfigBean configBean) {
         TraceHeader header = new TraceHeader(
                 TraceEventType.DMN,
                 executionId,
                 null,
                 null,
                 null,
-                EventUtils.traceResourceIdFrom(model),
+                EventUtils.traceResourceIdFrom(configBean.getServiceUrl(), model),
                 Stream.of(
                         EventUtils.messageFrom(InternalMessageType.NOT_ENOUGH_DATA),
                         model == null ? EventUtils.messageFrom(InternalMessageType.DMN_MODEL_NOT_FOUND) : null
@@ -102,7 +103,7 @@ public class DefaultAggregator implements Aggregator {
         return CloudEventUtils.build(executionId, CloudEventUtils.uriFromString(UNKNOWN_SOURCE_URL), event, TraceEvent.class);
     }
 
-    private static CloudEventImpl<TraceEvent> buildDefaultCloudEvent(DMNModel model, String executionId, List<EvaluateEvent> events) {
+    private static CloudEventImpl<TraceEvent> buildDefaultCloudEvent(DMNModel model, String executionId, List<EvaluateEvent> events, ConfigBean configBean) {
         EvaluateEvent firstEvent = events.get(0);
         EvaluateEvent lastEvent = events.get(events.size() - 1);
 
@@ -118,7 +119,7 @@ public class DefaultAggregator implements Aggregator {
                 firstEvent.getTimestamp(),
                 lastEvent.getTimestamp(),
                 computeDurationMillis(firstEvent, lastEvent),
-                firstEvent.toTraceResourceId(),
+                firstEvent.toTraceResourceId(configBean.getServiceUrl()),
                 Stream.of(
                         model == null ? Stream.of(EventUtils.messageFrom(InternalMessageType.DMN_MODEL_NOT_FOUND)) : Stream.<Message>empty(),
                         executionStepsPair.getRight().stream(),

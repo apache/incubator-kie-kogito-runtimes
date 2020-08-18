@@ -157,10 +157,10 @@ public class EvaluateEvent {
         return decisionTableResult;
     }
 
-    public TraceResourceId toTraceResourceId() {
+    public TraceResourceId toTraceResourceId(String serviceUrl) {
         return getType() == BEFORE_EVALUATE_DECISION_SERVICE || getType() == AFTER_EVALUATE_DECISION_SERVICE
-               ? new TraceResourceId(getModelNamespace(), getModelName(), getNodeId(), getNodeName())
-               : new TraceResourceId(getModelNamespace(), getModelName());
+               ? new TraceResourceId(serviceUrl, getModelNamespace(), getModelName(), getNodeId(), getNodeName())
+               : new TraceResourceId(serviceUrl, getModelNamespace(), getModelName());
     }
 
     public static EvaluateEvent from(BeforeEvaluateAllEvent event) {
