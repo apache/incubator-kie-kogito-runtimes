@@ -17,10 +17,9 @@
 package org.kie.kogito.tracing.decision.aggregator;
 
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -100,7 +99,7 @@ public class DefaultAggregator implements Aggregator {
 
         TraceEvent event = new TraceEvent(header, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
-        return CloudEventUtils.build(executionId, URI.create(URLEncoder.encode(UNKNOWN_SOURCE_URL, StandardCharsets.UTF_8)), event, TraceEvent.class);
+        return CloudEventUtils.build(executionId, CloudEventUtils.uriFromString(UNKNOWN_SOURCE_URL), event, TraceEvent.class);
     }
 
     private static CloudEventImpl<TraceEvent> buildDefaultCloudEvent(DMNModel model, String executionId, List<EvaluateEvent> events) {
@@ -124,7 +123,7 @@ public class DefaultAggregator implements Aggregator {
                         model == null ? Stream.of(EventUtils.messageFrom(InternalMessageType.DMN_MODEL_NOT_FOUND)) : Stream.<Message>empty(),
                         executionStepsPair.getRight().stream(),
                         lastEvent.getResult().getMessages().stream()
-                                .filter(m -> m.getSourceId() == null || m.getSourceId().isBlank())
+                                .filter(m -> m.getSourceId() == null || m.getSourceId().isEmpty())
                 ).flatMap(Function.identity()).collect(Collectors.toList())
         );
 
@@ -136,8 +135,8 @@ public class DefaultAggregator implements Aggregator {
 
     private static URI buildSource(EvaluateEvent event) {
         return event.getType() == BEFORE_EVALUATE_DECISION_SERVICE || event.getType() == AFTER_EVALUATE_DECISION_SERVICE
-                ? URI.create(String.format("%s/%s", urlEncode(event.getModelName()), urlEncode(event.getNodeName())))
-                : URI.create(urlEncode(event.getModelName()));
+                ? URI.create(String.format("%s/%s", CloudEventUtils.urlEncode(event.getModelName()), CloudEventUtils.urlEncode(event.getNodeName())))
+                : URI.create(CloudEventUtils.urlEncode(event.getModelName()));
     }
 
     private static List<TraceInputValue> buildTraceInputValues(DMNModel model, EvaluateEvent firstEvent) {
@@ -200,7 +199,7 @@ public class DefaultAggregator implements Aggregator {
             return new Pair<>(buildTraceExecutionStepsHierarchy(model, events), Collections.emptyList());
         } catch (IllegalStateException e) {
             LOG.error(String.format("IllegalStateException during aggregation of evaluation %s", executionId), e);
-            return new Pair<>(buildTraceExecutionStepsList(model, events), List.of(EventUtils.messageFrom(InternalMessageType.NO_EXECUTION_STEP_HIERARCHY, e)));
+            return new Pair<>(buildTraceExecutionStepsList(model, events), Arrays.asList(EventUtils.messageFrom(InternalMessageType.NO_EXECUTION_STEP_HIERARCHY, e)));
         }
     }
 
@@ -290,13 +289,16 @@ public class DefaultAggregator implements Aggregator {
         Map<String, String> additionalData = new HashMap<>();
         additionalData.put(EXPRESSION_ID_KEY, afterEvent.getContextEntryResult().getExpressionId());
         additionalData.put(VARIABLE_ID_KEY, afterEvent.getContextEntryResult().getVariableId());
-        Optional.ofNullable(model)
+
+        Optional<String> optDecisionNodeId = Optional.ofNullable(model)
                 .map(m -> m.getDecisionByName(afterEvent.getNodeName()))
-                .map(DecisionNode::getId)
-                .ifPresentOrElse(
-                        id -> additionalData.put(NODE_ID_KEY, id),
-                        () -> additionalData.put(NODE_NAME_KEY, afterEvent.getNodeName())
-                );
+                .map(DecisionNode::getId);
+
+        if (optDecisionNodeId.isPresent()) {
+            additionalData.put(NODE_ID_KEY, optDecisionNodeId.get());
+        } else {
+            additionalData.put(NODE_NAME_KEY, afterEvent.getNodeName());
+        }
 
         return new TraceExecutionStep(TraceExecutionStepType.DMN_CONTEXT_ENTRY, duration, afterEvent.getContextEntryResult().getVariableName(), result, Collections.emptyList(), additionalData, children);
     }
@@ -323,13 +325,16 @@ public class DefaultAggregator implements Aggregator {
         Map<String, String> additionalData = new HashMap<>();
         additionalData.put(MATCHES_KEY, afterEvent.getDecisionTableResult().getMatches().stream().map(Object::toString).collect(Collectors.joining(",")));
         additionalData.put(SELECTED_KEY, afterEvent.getDecisionTableResult().getSelected().stream().map(Object::toString).collect(Collectors.joining(",")));
-        Optional.ofNullable(model)
+
+        Optional<String> optDecisionNodeId = Optional.ofNullable(model)
                 .map(m -> m.getDecisionByName(afterEvent.getNodeName()))
-                .map(DecisionNode::getId)
-                .ifPresentOrElse(
-                        id -> additionalData.put(NODE_ID_KEY, id),
-                        () -> additionalData.put(NODE_NAME_KEY, afterEvent.getNodeName())
-                );
+                .map(DecisionNode::getId);
+
+        if (optDecisionNodeId.isPresent()) {
+            additionalData.put(NODE_ID_KEY, optDecisionNodeId.get());
+        } else {
+            additionalData.put(NODE_NAME_KEY, afterEvent.getNodeName());
+        }
 
         return new TraceExecutionStep(TraceExecutionStepType.DMN_DECISION_TABLE, duration, afterEvent.getDecisionTableResult().getDecisionTableName(), null, Collections.emptyList(), additionalData, children);
     }
@@ -396,7 +401,4 @@ public class DefaultAggregator implements Aggregator {
         return null;
     }
 
-    private static String urlEncode(String input) {
-        return URLEncoder.encode(input, StandardCharsets.UTF_8);
-    }
 }

@@ -16,6 +16,7 @@
 
 package org.kie.kogito.tracing.decision.event.variable;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,7 +34,7 @@ class TypedVariableTest {
     void test() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
-        List<TypedVariable> variables = List.of(
+        List<TypedVariable> variables = Arrays.asList(
                 new UnitVariable("number"),
                 new CollectionVariable("list"),
                 new StructureVariable("tStruct")
@@ -41,7 +42,7 @@ class TypedVariableTest {
 
         String serializedJson = mapper.writeValueAsString(variables);
 
-        List<TypedVariable> serializedVariables = mapper.readValue(serializedJson, new TypeReference<>() {
+        List<TypedVariable> serializedVariables = mapper.readValue(serializedJson, new TypeReference<List<TypedVariable>>() {
         });
 
         assertNotNull(serializedVariables);
