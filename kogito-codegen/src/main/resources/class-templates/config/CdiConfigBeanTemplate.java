@@ -1,5 +1,5 @@
 @javax.inject.Singleton
-public class ConfigBean implements org.kie.kogito.conf.ConfigBean {
+public class ConfigBean extends org.kie.kogito.conf.StaticConfigBean {
 
     @org.eclipse.microprofile.config.inject.ConfigProperty(name = "kogito.service.url")
     java.util.Optional<java.lang.String> kogitoService;
