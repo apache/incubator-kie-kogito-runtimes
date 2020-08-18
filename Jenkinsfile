@@ -37,33 +37,43 @@ pipeline {
         }
         stage('Build kogito-runtimes') {
             steps {
-                mavenCleanInstall("kogito-runtimes", false, ["run-code-coverage"])
-                runMaven("validate", "kogito-runtimes", false, ["sonarcloud-analysis"], "-e -nsu")
+                // TODO enable tests
+                mavenCleanInstall("kogito-runtimes", true, ["run-code-coverage"])
+                runMaven("validate", "kogito-runtimes", true, ["sonarcloud-analysis"], "-e -nsu")
             }
         }
-        stage('Build integration-tests with persistence') {
-            steps {
-                mavenCleanInstall("integration-tests", false, ["persistence"])
-            }
-        }
-        stage('Build kogito-apps') {
-            steps {
-                mavenCleanInstall("kogito-apps")
-            }
-        }
-        stage('Build kogito-examples') {
-            steps {
-                mavenCleanInstall("kogito-examples")
-            }
-        }
-        stage('Build kogito-examples with persistence') {
-            steps {
-                mavenCleanInstall("kogito-examples-persistence", false, ["persistence"])
-            }
-        }
-        stage('Build kogito-examples with events') {
-            steps {
-                mavenCleanInstall("kogito-examples-events", false, ["events"])
+        stage('Build apps and examples') {
+            parallel {
+                stage('Build integration-tests with persistence') {
+                    steps {
+                        sh "mkdir -p .m2/repository && rsync -av --progress ~/.m2/repository .m2/repository"
+                        mavenCleanInstall("integration-tests", false, ["persistence"], "-Dmaven.repo.local=.m2/repository/")
+                    }
+                }
+                stage('Build kogito-apps') {
+                    steps {
+                        sh "mkdir -p .m2/repository && rsync -av --progress ~/.m2/repository .m2/repository"
+                        mavenCleanInstall("kogito-apps", false, [], "-Dmaven.repo.local=.m2/repository/")
+                    }
+                }
+                stage('Build kogito-examples') {
+                    steps {
+                        sh "mkdir -p .m2/repository && rsync -av --progress ~/.m2/repository .m2/repository"
+                        mavenCleanInstall("kogito-examples", false, [], "-Dmaven.repo.local=.m2/repository/")
+                    }
+                }
+                stage('Build kogito-examples with persistence') {
+                    steps {
+                        sh "mkdir -p .m2/repository && rsync -av --progress ~/.m2/repository .m2/repository"
+                        mavenCleanInstall("kogito-examples-persistence", false, ["persistence"], "-Dmaven.repo.local=.m2/repository/")
+                    }
+                }
+                stage('Build kogito-examples with events') {
+                    steps {
+                        sh "mkdir -p .m2/repository && rsync -av --progress ~/.m2/repository .m2/repository"
+                        mavenCleanInstall("kogito-examples-events", false, ["events"], "-Dmaven.repo.local=.m2/repository/")
+                    }
+                }
             }
         }
     }
