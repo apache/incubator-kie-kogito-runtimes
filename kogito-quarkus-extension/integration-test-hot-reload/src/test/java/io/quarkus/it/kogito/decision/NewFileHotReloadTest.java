@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package io.quarkus.it.kogito.decision;
 
 import java.io.File;
