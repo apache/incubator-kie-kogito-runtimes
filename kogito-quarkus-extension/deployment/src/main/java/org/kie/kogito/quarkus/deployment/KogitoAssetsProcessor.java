@@ -422,14 +422,16 @@ public class KogitoAssetsProcessor {
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskInstanceEventBody"));
 
         // not sure there is any generated class directly inheriting from AbstractDataEvent, keeping just in case
-        index.getAllKnownSubclasses(DotName.createSimple(org.kie.kogito.event.AbstractDataEvent.class.getCanonicalName()))
-                .forEach(c -> reflectiveClass.produce(
-                        new ReflectiveClassBuildItem(true, true, c.name().toString())));
-
-        index.getAllKnownSubclasses(DotName.createSimple(org.kie.kogito.services.event.AbstractProcessDataEvent.class.getCanonicalName()))
-                .forEach(c -> reflectiveClass.produce(
-                        new ReflectiveClassBuildItem(true, true, c.name().toString())));
-
+        addChildrenClasses(index, org.kie.kogito.event.AbstractDataEvent.class, reflectiveClass);
+        addChildrenClasses(index, org.kie.kogito.services.event.AbstractProcessDataEvent.class, reflectiveClass);
+    }
+    
+    private void addChildrenClasses(Index index,
+                                    Class<?> superClass,
+                                    BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+        index.getAllKnownSubclasses(DotName.createSimple(superClass.getCanonicalName()))
+             .forEach(c -> reflectiveClass.produce(
+                      new ReflectiveClassBuildItem(true, true, c.name().toString())));
     }
 
     private Index indexBuildItems(Collection<GeneratedBeanBuildItem> buildItems) {
