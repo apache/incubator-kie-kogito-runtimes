@@ -51,7 +51,7 @@ public class CollectedResource {
             if (path.toFile().isDirectory()) {
                 Collection<CollectedResource> res = fromDirectory(path);
                 resources.addAll(res);
-            } else if (path.getFileName().toString().endsWith(".jar")) {
+            } else if (path.getFileName().toString().endsWith(".jar") || path.getFileName().toString().endsWith(".jar.original")) {
                 Collection<CollectedResource> res = fromJarFile(path);
                 resources.addAll(res);
             } else {
