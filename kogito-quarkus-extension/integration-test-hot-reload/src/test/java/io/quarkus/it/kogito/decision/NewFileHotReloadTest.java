@@ -51,7 +51,7 @@ public class NewFileHotReloadTest {
                     .addAsResource("adult.txt", DMN_RESOURCE_FILE + ".dummy")); // add a dummy file only to enforce creation of resource folder
 
     @Test
-    public void newFileTest() throws IOException {
+    void newFileTest() throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(requireNonNull(classLoader.getResource("TrafficViolation.txt")).getFile());
         String xml = new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
