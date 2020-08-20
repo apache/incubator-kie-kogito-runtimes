@@ -16,7 +16,7 @@ jobs:
       uses: kiegroup/github-action-build-chain@master
       with:
         child-dependencies: 'kogito-apps'
-        build-command: 'mvn clean install -Prun-code-coverage | mvn validate -Psonarcloud-analysis -e -nsu | mvn clean install -Ppersistence'
+        build-command: 'mvn --version | mvn clean install -Prun-code-coverage | mvn validate -Psonarcloud-analysis -e -nsu | mvn clean install -Ppersistence'
         build-command-upstream: 'mvn clean install -DskipTests'
         workflow-file-name: "pull_request.yml"
       env:
