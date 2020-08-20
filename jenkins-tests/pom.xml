@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-runtimes</artifactId>
+        <artifactId>kogito-build-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>kogito-runtimes-jenkins-tests</artifactId>
@@ -15,7 +15,7 @@
         <repository>
             <id>jenkins-releases</id>
             <name>Jenkins Releases</name>
-            <url>http://repo.jenkins-ci.org/releases</url>
+            <url>https://repo.jenkins-ci.org/releases</url>
         </repository>
     </repositories>
 

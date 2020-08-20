@@ -16,10 +16,6 @@
 
 package org.kie.kogito.tracing.decision;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.reactivex.subscribers.TestSubscriber;
@@ -28,34 +24,43 @@ import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.Application;
+import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.conf.StaticConfigBean;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
+import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
 import org.mockito.ArgumentCaptor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.tracing.decision.Constants.MODEL_NAME;
+import static org.kie.kogito.tracing.decision.Constants.MODEL_NAMESPACE;
+import static org.kie.kogito.tracing.decision.Constants.MODEL_RESOURCE;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+
 public class QuarkusDecisionTracingTest {
 
     private static final String TEST_EXECUTION_ID = "7c50581e-6e5b-407b-91d6-2ffb1d47ebc0";
+    private final static String TEST_SERVICE_URL = "localhost:8080";
 
     @Test
     public void test_ListenerAndCollector_UseRealEvents_Working() {
-        final String modelResource = "/Traffic Violation.dmn";
-        final String modelNamespace = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
-        final String modelName = "Traffic Violation";
-
         final DMNRuntime runtime = DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
-                QuarkusDecisionTracingTest.class.getResourceAsStream(modelResource)
+                QuarkusDecisionTracingTest.class.getResourceAsStream(MODEL_RESOURCE)
         ));
 
+        ConfigBean configBean = new StaticConfigBean(TEST_SERVICE_URL);
         EventBus eventBus = mock(EventBus.class);
 
         QuarkusDecisionTracingListener listener = new QuarkusDecisionTracingListener(eventBus);
@@ -72,7 +77,7 @@ public class QuarkusDecisionTracingTest {
         contextVariables.put("Driver", driver);
         contextVariables.put("Violation", violation);
 
-        final DecisionModel model = new DmnDecisionModel(runtime, modelNamespace, modelName, () -> TEST_EXECUTION_ID);
+        final DecisionModel model = new DmnDecisionModel(runtime, MODEL_NAMESPACE, MODEL_NAME, () -> TEST_EXECUTION_ID);
         final DMNContext context = model.newContext(contextVariables);
         model.evaluateAll(context);
 
@@ -83,18 +88,20 @@ public class QuarkusDecisionTracingTest {
         TestSubscriber<String> subscriber = new TestSubscriber<>();
 
         final DecisionModels mockedDecisionModels = mock(DecisionModels.class);
-        when(mockedDecisionModels.getDecisionModel(modelNamespace, modelName)).thenReturn(model);
+        when(mockedDecisionModels.getDecisionModel(MODEL_NAMESPACE, MODEL_NAME)).thenReturn(model);
         final Application mockedApplication = mock(Application.class);
         when(mockedApplication.decisionModels()).thenReturn(mockedDecisionModels);
 
         QuarkusTraceEventEmitter eventEmitter = new QuarkusTraceEventEmitter();
-        QuarkusDecisionTracingCollector collector = new QuarkusDecisionTracingCollector(mockedApplication, eventEmitter);
+        QuarkusDecisionTracingCollector collector = new QuarkusDecisionTracingCollector(mockedApplication, eventEmitter, configBean);
         eventEmitter.getEventPublisher().subscribe(subscriber);
         eventCaptor.getAllValues().forEach(collector::onEvent);
 
         subscriber.assertValueCount(1);
 
-        CloudEventImpl<JsonNode> cloudEvent = Json.decodeValue(subscriber.values().get(0), CloudEventImpl.class, JsonNode.class);
+        CloudEventImpl<TraceEvent> cloudEvent = Json.decodeValue(subscriber.values().get(0), CloudEventImpl.class, TraceEvent.class);
         assertEquals(TEST_EXECUTION_ID, cloudEvent.getAttributes().getId());
+        assertTrue(cloudEvent.getData().isPresent());
+        assertEquals(TEST_SERVICE_URL, cloudEvent.getData().get().getHeader().getResourceId().getServiceUrl());
     }
 }

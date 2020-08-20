@@ -12,10 +12,6 @@
   <artifactId>tracing-decision-common</artifactId>
   <name>Kogito :: Add-Ons :: Tracing :: Common</name>
 
-  <properties>
-    <maven.compiler.release>11</maven.compiler.release>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -30,6 +26,11 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
