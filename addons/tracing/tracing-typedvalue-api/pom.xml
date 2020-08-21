@@ -9,27 +9,18 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>tracing-decision-api</artifactId>
-  <name>Kogito :: Add-Ons :: Tracing :: API</name>
+  <artifactId>tracing-typedvalue-api</artifactId>
+  <name>Kogito :: Add-Ons :: Tracing :: TypedValue API</name>
 
   <dependencies>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-api</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>tracing-typedvalue-api</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.cloudevents</groupId>
-      <artifactId>cloudevents-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
@@ -40,6 +31,7 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
 </project>
