@@ -14,47 +14,32 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.event.variable;
+package org.kie.kogito.tracing.typedvalue;
+
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UnitVariable extends TypedVariable {
-
-    @JsonProperty("baseType")
-    @JsonInclude(NON_NULL)
-    private String baseType;
+public class StructureValue extends TypedValue {
 
     @JsonProperty("value")
-    private JsonNode value;
+    private Map<String, TypedValue> value;
 
-    private UnitVariable() {
+    private StructureValue() {
     }
 
-    public UnitVariable(String type) {
-        this(type, null, null);
+    public StructureValue(String type) {
+        super(Kind.STRUCTURE, type);
     }
 
-    public UnitVariable(String type, JsonNode value) {
-        this(type, null, value);
-    }
-
-    public UnitVariable(String type, String baseType, JsonNode value) {
-        super(Kind.UNIT, type);
-        this.baseType = baseType;
+    public StructureValue(String type, Map<String, TypedValue> value) {
+        super(Kind.STRUCTURE, type);
         this.value = value;
     }
 
-    public String getBaseType() {
-        return baseType;
-    }
-
-    public JsonNode getValue() {
+    public Map<String, TypedValue> getValue() {
         return value;
     }
 }

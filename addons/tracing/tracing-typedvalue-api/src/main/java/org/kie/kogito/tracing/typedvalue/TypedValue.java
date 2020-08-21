@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.event.variable;
+package org.kie.kogito.tracing.typedvalue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,16 +24,16 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        defaultImpl = TypedVariable.Kind.class,
+        defaultImpl = TypedValue.Kind.class,
         property = "kind",
         visible = true
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = UnitVariable.class, name = "UNIT"),
-        @JsonSubTypes.Type(value = CollectionVariable.class, name = "COLLECTION"),
-        @JsonSubTypes.Type(value = StructureVariable.class, name = "STRUCTURE")
+        @JsonSubTypes.Type(value = UnitValue.class, name = "UNIT"),
+        @JsonSubTypes.Type(value = CollectionValue.class, name = "COLLECTION"),
+        @JsonSubTypes.Type(value = StructureValue.class, name = "STRUCTURE")
 })
-public abstract class TypedVariable {
+public abstract class TypedValue {
 
     public enum Kind {
         UNIT,
@@ -47,10 +47,10 @@ public abstract class TypedVariable {
     @JsonProperty("type")
     private String type;
 
-    protected TypedVariable() {
+    protected TypedValue() {
     }
 
-    protected TypedVariable(Kind kind, String type) {
+    protected TypedValue(Kind kind, String type) {
         this.kind = kind;
         this.type = type;
     }
@@ -68,11 +68,11 @@ public abstract class TypedVariable {
         return kind == Kind.COLLECTION;
     }
 
-    public CollectionVariable toCollection() {
+    public CollectionValue toCollection() {
         if (!isCollection()) {
             throw new IllegalStateException(String.format("Can't convert TypedVariable of kind %s to COLLECTION", kind));
         }
-        return (CollectionVariable) this;
+        return (CollectionValue) this;
     }
 
     @JsonIgnore
@@ -80,11 +80,11 @@ public abstract class TypedVariable {
         return kind == Kind.STRUCTURE;
     }
 
-    public StructureVariable toStructure() {
+    public StructureValue toStructure() {
         if (!isStructure()) {
             throw new IllegalStateException(String.format("Can't convert TypedVariable of kind %s to STRUCTURE", kind));
         }
-        return (StructureVariable) this;
+        return (StructureValue) this;
     }
 
     @JsonIgnore
@@ -92,10 +92,10 @@ public abstract class TypedVariable {
         return kind == Kind.UNIT;
     }
 
-    public UnitVariable toUnit() {
+    public UnitValue toUnit() {
         if (!isUnit()) {
             throw new IllegalStateException(String.format("Can't convert TypedVariable of kind %s to UNIT", kind));
         }
-        return (UnitVariable) this;
+        return (UnitValue) this;
     }
 }

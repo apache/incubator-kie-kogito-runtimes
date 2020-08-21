@@ -57,7 +57,7 @@ import org.kie.kogito.tracing.decision.event.trace.TraceExecutionStepType;
 import org.kie.kogito.tracing.decision.event.trace.TraceHeader;
 import org.kie.kogito.tracing.decision.event.trace.TraceInputValue;
 import org.kie.kogito.tracing.decision.event.trace.TraceOutputValue;
-import org.kie.kogito.tracing.decision.event.variable.TypedVariable;
+import org.kie.kogito.tracing.typedvalue.TypedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -387,7 +387,7 @@ public class DefaultAggregator implements Aggregator {
                 )
                 .orElseGet(HashMap::new);
 
-        Map<String, TypedVariable> decisionInputs = decisionInputTypes.entrySet().stream()
+        Map<String, TypedValue> decisionInputs = decisionInputTypes.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> EventUtils.typedVariableFrom(e.getValue(), context.get(e.getKey()))));
 
         return new TraceOutputValue(

@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.event.variable;
+package org.kie.kogito.tracing.typedvalue;
 
 import java.util.Collection;
 
@@ -22,24 +22,24 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CollectionVariable extends TypedVariable {
+public class CollectionValue extends TypedValue {
 
     @JsonProperty("value")
-    private Collection<TypedVariable> value;
+    private Collection<TypedValue> value;
 
-    private CollectionVariable() {
+    private CollectionValue() {
     }
 
-    public CollectionVariable(String type) {
+    public CollectionValue(String type) {
         super(Kind.COLLECTION, type);
     }
 
-    public CollectionVariable(String type, Collection<TypedVariable> value) {
+    public CollectionValue(String type, Collection<TypedValue> value) {
         super(Kind.COLLECTION, type);
         this.value = value;
     }
 
-    public Collection<TypedVariable> getValue() {
+    public Collection<TypedValue> getValue() {
         return value;
     }
 }

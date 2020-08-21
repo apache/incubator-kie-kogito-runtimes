@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.event.variable;
+package org.kie.kogito.tracing.typedvalue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,38 +28,38 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TypedVariableTest {
+class TypedValueTest {
 
     @Test
     void test() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
-        List<TypedVariable> variables = Arrays.asList(
-                new UnitVariable("number"),
-                new CollectionVariable("list"),
-                new StructureVariable("tStruct")
+        List<TypedValue> variables = Arrays.asList(
+                new UnitValue("number"),
+                new CollectionValue("list"),
+                new StructureValue("tStruct")
         );
 
         String serializedJson = mapper.writeValueAsString(variables);
 
-        List<TypedVariable> serializedVariables = mapper.readValue(serializedJson, new TypeReference<List<TypedVariable>>() {
+        List<TypedValue> serializedVariables = mapper.readValue(serializedJson, new TypeReference<List<TypedValue>>() {
         });
 
         assertNotNull(serializedVariables);
         assertSame(3, serializedVariables.size());
 
-        assertSame(TypedVariable.Kind.UNIT, serializedVariables.get(0).getKind());
-        assertTrue(serializedVariables.get(0) instanceof UnitVariable);
+        assertSame(TypedValue.Kind.UNIT, serializedVariables.get(0).getKind());
+        assertTrue(serializedVariables.get(0) instanceof UnitValue);
         assertTrue(serializedVariables.get(0).isUnit());
         assertNotNull(serializedVariables.get(0).toUnit());
 
-        assertSame(TypedVariable.Kind.COLLECTION, serializedVariables.get(1).getKind());
-        assertTrue(serializedVariables.get(1) instanceof CollectionVariable);
+        assertSame(TypedValue.Kind.COLLECTION, serializedVariables.get(1).getKind());
+        assertTrue(serializedVariables.get(1) instanceof CollectionValue);
         assertTrue(serializedVariables.get(1).isCollection());
         assertNotNull(serializedVariables.get(1).toCollection());
 
-        assertSame(TypedVariable.Kind.STRUCTURE, serializedVariables.get(2).getKind());
-        assertTrue(serializedVariables.get(2) instanceof StructureVariable);
+        assertSame(TypedValue.Kind.STRUCTURE, serializedVariables.get(2).getKind());
+        assertTrue(serializedVariables.get(2) instanceof StructureValue);
         assertTrue(serializedVariables.get(2).isStructure());
         assertNotNull(serializedVariables.get(2).toStructure());
     }
