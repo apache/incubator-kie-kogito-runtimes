@@ -85,7 +85,8 @@ public class KieRuntimeFactoryBuilder {
                     internalKnowledgePackage = pkgReg.getPackage();
                 }
                 PMMLPackage pmmlPkg =
-                        internalKnowledgePackage.getResourceTypePackages().computeIfAbsent(ResourceType.PMML,
+                        internalKnowledgePackage.getResourceTypePackages().computeIfAbsent(
+                                ResourceType.PMML,
                                 rtp -> new PMMLPackageImpl());
                 pmmlPkg.addAll(Collections.singletonList(kiePMMLModel));
             }
