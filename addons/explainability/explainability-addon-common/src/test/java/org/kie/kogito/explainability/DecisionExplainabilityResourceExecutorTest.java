@@ -28,12 +28,13 @@ import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.util.stream.Stream;
 
 import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DecisionExplainabilityResourceExecutorTest {
 
@@ -52,9 +53,9 @@ public class DecisionExplainabilityResourceExecutorTest {
         String namespace = args[0];
         String name = args[1];
         DecisionExplainabilityResourceExecutor executor = new DecisionExplainabilityResourceExecutor();
-        DecisionModels decisionModels = Mockito.mock(DecisionModels.class);
+        DecisionModels decisionModels = mock(DecisionModels.class);
         DecisionModel model = new DmnDecisionModel(generateDMNRuntime(namespace, name), namespace, name);
-        Mockito.when(decisionModels.getDecisionModel(ArgumentMatchers.eq(namespace), ArgumentMatchers.eq(name))).thenReturn(model);
+        when(decisionModels.getDecisionModel(eq(namespace), eq(name))).thenReturn(model);
 
         ModelIdentifier modelIdentifier = new ModelIdentifier("dmn", String.format("%s%s%s", namespace, RESOURCE_ID_SEPARATOR, name));
         DecisionModel decisionModelResponse = executor.getDecisionModel(decisionModels, modelIdentifier);
@@ -76,11 +77,11 @@ public class DecisionExplainabilityResourceExecutorTest {
     }
 
     private DMNRuntime generateDMNRuntime(String namespace, String name){
-        DMNRuntime runtime = Mockito.mock(DMNRuntime.class);
-        DMNModel dmnModel = Mockito.mock(DMNModel.class);
-        Mockito.when(dmnModel.getNamespace()).thenReturn(namespace);
-        Mockito.when(dmnModel.getName()).thenReturn(name);
-        Mockito.when(runtime.getModel(ArgumentMatchers.eq(namespace), ArgumentMatchers.eq(name))).thenReturn(dmnModel);
+        DMNRuntime runtime = mock(DMNRuntime.class);
+        DMNModel dmnModel = mock(DMNModel.class);
+        when(dmnModel.getNamespace()).thenReturn(namespace);
+        when(dmnModel.getName()).thenReturn(name);
+        when(runtime.getModel(eq(namespace), eq(name))).thenReturn(dmnModel);
         return runtime;
     }
 }

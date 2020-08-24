@@ -16,7 +16,7 @@
 
 
     <modules>
-        <module>explainability-common</module>
+        <module>explainability-addon-common</module>
         <module>explainability-springboot-addon</module>
         <module>explainability-quarkus-addon</module>
     </modules>

@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.StaticApplication;
-import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
@@ -29,7 +28,6 @@ import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
 
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,14 +50,11 @@ public class ExplainabilityServiceTest {
     @Test
     public void testPerturbedExecution() {
 
-        DecisionModels decisionModels = new DecisionModels() {
-            @Override
-            public DecisionModel getDecisionModel(String namespace, String name) {
-                if (MODEL_NAMESPACE.equals(namespace) && MODEL_NAME.equals(name)) {
-                    return decisionModel;
-                }
-                throw new RuntimeException("Model not found.");
+        DecisionModels decisionModels = (namespace, name) -> {
+            if (MODEL_NAMESPACE.equals(namespace) && MODEL_NAME.equals(name)) {
+                return decisionModel;
             }
+            throw new RuntimeException("Model not found.");
         };
 
         Map<String, Object> perturbedRequest = createRequest();

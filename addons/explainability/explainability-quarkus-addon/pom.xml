@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>explainability-common</artifactId>
+            <artifactId>explainability-addon-common</artifactId>
         </dependency>
 
         <dependency>

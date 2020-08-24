@@ -964,18 +964,18 @@
       <!-- Explainability -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>explainability-common</artifactId>
+        <artifactId>explainability-addon-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>explainability-common</artifactId>
+        <artifactId>explainability-addon-common</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>explainability-common</artifactId>
+        <artifactId>explainability-addon-common</artifactId>
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
       </dependency>

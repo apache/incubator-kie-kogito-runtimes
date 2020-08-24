@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>explainability-common</artifactId>
-    <name>Kogito :: Add-Ons :: Explainability :: Common</name>
+    <artifactId>explainability-addon-common</artifactId>
+    <name>Kogito :: Add-Ons :: Explainability :: Addon :: Common</name>
 
 
     <dependencies>
