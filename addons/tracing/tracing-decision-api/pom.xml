@@ -19,7 +19,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>tracing-typedvalue-api</artifactId>
+      <artifactId>typedvalue-api</artifactId>
     </dependency>
     <dependency>
       <groupId>io.cloudevents</groupId>

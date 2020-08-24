@@ -9,8 +9,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>tracing-typedvalue-api</artifactId>
-  <name>Kogito :: Add-Ons :: Tracing :: TypedValue API</name>
+  <artifactId>typedvalue-api</artifactId>
+  <name>Kogito :: Add-Ons :: TypedValue API</name>
 
   <dependencies>
     <dependency>
