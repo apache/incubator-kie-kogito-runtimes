@@ -16,19 +16,23 @@
 
 package org.kie.kogito.explainability;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.explainability.Constants.MODEL_NAME;
 import static org.kie.kogito.explainability.Constants.MODEL_NAMESPACE;
 
@@ -39,30 +43,62 @@ class SpringBootExplainableResourceTest {
     @Test
     @SuppressWarnings("unchecked")
     void explainServiceTest() {
-        List<PredictInput> inputs = singletonList(createInput());
+        List<PredictInput> inputs = singletonList(createInput(40));
 
         List<PredictOutput> outputs = (List<PredictOutput>) resource.predict(inputs).getBody();
 
-        Assertions.assertNotNull(outputs);
-        Assertions.assertEquals(1, outputs.size());
+        assertNotNull(outputs);
+        assertEquals(1, outputs.size());
 
         PredictOutput output = outputs.get(0);
 
-        Assertions.assertNotNull(output.getResult());
-        Assertions.assertNotNull(output.getModelIdentifier());
+        assertNotNull(output.getResult());
+        assertNotNull(output.getModelIdentifier());
         Map<String, Object> result = output.getResult();
 
-        Assertions.assertTrue(result.containsKey("Should the driver be suspended?"));
-        Assertions.assertEquals("Yes", result.get("Should the driver be suspended?"));
-        Assertions.assertTrue(result.containsKey("Fine"));
+        assertTrue(result.containsKey("Should the driver be suspended?"));
+        assertEquals("Yes", result.get("Should the driver be suspended?"));
+        assertTrue(result.containsKey("Fine"));
         Map<String, Object> expectedFine = new HashMap<>();
         expectedFine.put("Points", BigDecimal.valueOf(7));
         expectedFine.put("Amount", BigDecimal.valueOf(1000));
-        Assertions.assertEquals(expectedFine.get("Points"), ((Map<String, Object>)result.get("Fine")).get("Points"));
-        Assertions.assertEquals(expectedFine.get("Amount"), ((Map<String, Object>)result.get("Fine")).get("Amount"));
+        assertEquals(expectedFine.get("Points"), ((Map<String, Object>)result.get("Fine")).get("Points"));
+        assertEquals(expectedFine.get("Amount"), ((Map<String, Object>)result.get("Fine")).get("Amount"));
     }
 
-    private PredictInput createInput() {
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void explainServiceTestMultipleInputs() {
+        List<PredictInput> inputs = asList(createInput(40), createInput(120));
+
+        List<PredictOutput> outputs = (List<PredictOutput>) resource.predict(inputs).getBody();
+
+        assertNotNull(outputs);
+        assertEquals(2, outputs.size());
+
+        PredictOutput output = outputs.get(1);
+
+        assertNotNull(output);
+        assertNotNull(output.getResult());
+        assertNotNull(output.getModelIdentifier());
+        Map<String, Object> result = output.getResult();
+
+        assertTrue(result.containsKey("Should the driver be suspended?"));
+        assertEquals("No", result.get("Should the driver be suspended?"));
+        assertNull(result.get("Fine"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void explainServiceTestNoInputs() {
+        List<PredictOutput> outputs = (List<PredictOutput>) resource.predict(emptyList()).getBody();
+
+        assertNotNull(outputs);
+        assertEquals(0, outputs.size());
+    }
+
+    private PredictInput createInput(int speedLimit) {
         String resourceId = String.format("%s:%s", MODEL_NAMESPACE, MODEL_NAME);
 
         Map<String, Object> driver = new HashMap<>();
@@ -72,7 +108,7 @@ class SpringBootExplainableResourceTest {
         Map<String, Object> violation = new HashMap<>();
         violation.put("Type", "speed");
         violation.put("Actual Speed", 120);
-        violation.put("Speed Limit", 40);
+        violation.put("Speed Limit", speedLimit);
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("Driver", driver);

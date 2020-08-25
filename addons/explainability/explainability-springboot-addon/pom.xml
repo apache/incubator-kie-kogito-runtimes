@@ -11,8 +11,6 @@
 
     <artifactId>explainability-springboot-addon</artifactId>
     <name>Kogito :: Add-Ons :: Explainability :: SpringBoot Addon</name>
-
-
     <dependencyManagement>
         <dependencies>
             <dependency>

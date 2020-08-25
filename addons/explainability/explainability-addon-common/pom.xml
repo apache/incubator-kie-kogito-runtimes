@@ -11,8 +11,6 @@
 
     <artifactId>explainability-addon-common</artifactId>
     <name>Kogito :: Add-Ons :: Explainability :: Addon :: Common</name>
-
-
     <dependencies>
         <dependency>
             <groupId>org.kie.kogito</groupId>

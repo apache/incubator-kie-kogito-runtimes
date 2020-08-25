@@ -11,10 +11,7 @@
 
     <artifactId>explainability</artifactId>
     <name>Kogito :: Add-Ons :: Explainability</name>
-
     <packaging>pom</packaging>
-
-
     <modules>
         <module>explainability-addon-common</module>
         <module>explainability-springboot-addon</module>

@@ -16,10 +16,9 @@
 
 package org.kie.kogito.explainability;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.conf.StaticConfigBean;
@@ -31,6 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.explainability.Constants.MODEL_NAME;
 import static org.kie.kogito.explainability.Constants.MODEL_NAMESPACE;
 
@@ -43,8 +46,7 @@ public class QuarkusExplainableResourceIT {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void explainServiceTest() throws JsonProcessingException {
+    void explainServiceTest() {
         String resourceId = String.format("%s:%s", MODEL_NAMESPACE, MODEL_NAME);
         String body = String.format(
                 "[{\"request\" : {\"Driver\": {\"Age\": 25, \"Points\": 100}, \"Violation\": {\"Type\" : \"speed\", \"Actual Speed\": 120, \"Speed Limit\": 40}}," +
@@ -56,23 +58,70 @@ public class QuarkusExplainableResourceIT {
                 .when()
                 .body(body)
                 .post("/predict")
-                .as(List.class);
+                .as(new TypeRef<List<PredictOutput>>() { });
 
-        Assertions.assertEquals(1, outputs.size());
+        assertEquals(1, outputs.size());
 
         PredictOutput output = outputs.get(0);
 
-        Assertions.assertNotNull(output);
-        Assertions.assertNotNull(output.getResult());
-        Assertions.assertNotNull(output.getModelIdentifier());
+        assertNotNull(output);
+        assertNotNull(output.getResult());
+        assertNotNull(output.getModelIdentifier());
         Map<String, Object> result = output.getResult();
 
-        Assertions.assertTrue(result.containsKey("Should the driver be suspended?"));
-        Assertions.assertEquals("Yes", result.get("Should the driver be suspended?"));
-        Assertions.assertTrue(result.containsKey("Fine"));
+        assertTrue(result.containsKey("Should the driver be suspended?"));
+        assertEquals("Yes", result.get("Should the driver be suspended?"));
+        assertTrue(result.containsKey("Fine"));
         Map<String, Object> expectedFine = new HashMap<>();
         expectedFine.put("Points", 7);
         expectedFine.put("Amount", 1000);
-        Assertions.assertEquals(expectedFine, result.get("Fine"));
+        assertEquals(expectedFine, result.get("Fine"));
+    }
+
+    @Test
+    void explainServiceTestMultipleInputs() {
+        String resourceId = String.format("%s:%s", MODEL_NAMESPACE, MODEL_NAME);
+        String body = String.format(
+                "[{\"request\" : {\"Driver\": {\"Age\": 25, \"Points\": 100}, \"Violation\": {\"Type\" : \"speed\", \"Actual Speed\": 120, \"Speed Limit\": 40}}," +
+                        "\"modelIdentifier\": {\"resourceType\": \"dmn\",\"resourceId\": \"%s\"}}, " +
+                        "{\"request\" : {\"Driver\": {\"Age\": 25, \"Points\": 100}, \"Violation\": {\"Type\" : \"speed\", \"Actual Speed\": 120, \"Speed Limit\": 120}}," +
+                "\"modelIdentifier\": {\"resourceType\": \"dmn\",\"resourceId\": \"%s\"}}]",
+                resourceId, resourceId);
+
+        List<PredictOutput> outputs = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(body)
+                .post("/predict")
+                .as(new TypeRef<List<PredictOutput>>() { });
+
+
+        assertEquals(2, outputs.size());
+
+        PredictOutput output = outputs.get(1);
+
+        assertNotNull(output);
+        assertNotNull(output.getResult());
+        assertNotNull(output.getModelIdentifier());
+        Map<String, Object> result = output.getResult();
+
+        assertTrue(result.containsKey("Should the driver be suspended?"));
+        assertEquals("No", result.get("Should the driver be suspended?"));
+        assertNull(result.get("Fine"));
+    }
+
+    @Test
+    void explainServiceTestNoInputs() {
+        String body = "[]";
+
+        List<PredictOutput> outputs = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(body)
+                .post("/predict")
+                .as(new TypeRef<List<PredictOutput>>() { });
+
+
+        assertEquals(0, outputs.size());
     }
 }
