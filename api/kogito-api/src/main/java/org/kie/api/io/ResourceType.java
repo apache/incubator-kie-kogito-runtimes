@@ -83,6 +83,9 @@ public class ResourceType
 
         CACHE.put( resourceType, resource );
         resource.getAllExtensions().forEach( ext -> {
+            if (ext.contains( "." )) {
+                throw new IllegalArgumentException( "A resource extension cannot contain a dot. Found: " + ext );
+            }
             CACHE.put( "." + ext, resource );
         } );
         return resource;
@@ -261,14 +264,6 @@ public class ResourceType
                                                                      "src/main/resources",
                                                                      "feel");
 
-    /** Serverless Workflow language */
-    public static final ResourceType SW = addResourceTypeToRegistry("SW",
-                                                                      false,
-                                                                      "Serverless Workflow",
-                                                                      "src/main/resources",
-                                                                      "sw.yml", "sw.yaml", "sw.json");
-
-
     /** NO-Operation ResourceType - used for example to dynamically disable a given AssemblerService */
     public static final ResourceType NOOP = addResourceTypeToRegistry("NOOP",
                                                                       false,
@@ -286,10 +281,8 @@ public class ResourceType
     }
 
     public static ResourceType determineResourceType(final String resourceName) {
-        return CACHE.values().stream()
-                .filter(r -> r.matchesExtension(resourceName))
-                .findFirst()
-                .orElse(null);
+        int dotPos = resourceName.lastIndexOf( '.' );
+        return dotPos < 0 ? null : CACHE.get( resourceName.substring( dotPos ) );
     }
 
     public boolean matchesExtension(String resourceName) {
