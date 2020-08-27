@@ -355,14 +355,14 @@ public class DefaultAggregator implements Aggregator {
     }
 
     private static TraceInputValue traceInputFrom(String name, Object value) {
-        return new TraceInputValue(null, name, EventUtils.typedVariableFrom(value), Collections.emptyList());
+        return new TraceInputValue(null, name, EventUtils.typedValueFrom(value), Collections.emptyList());
     }
 
     private static TraceInputValue traceInputFrom(InputDataNode node, Object value) {
         return new TraceInputValue(
                 node.getId(),
                 node.getName(),
-                EventUtils.typedVariableFrom(node.getType(), value),
+                EventUtils.typedValueFrom(node.getType(), value),
                 Collections.emptyList()
         );
     }
@@ -388,13 +388,13 @@ public class DefaultAggregator implements Aggregator {
                 .orElseGet(HashMap::new);
 
         Map<String, TypedValue> decisionInputs = decisionInputTypes.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> EventUtils.typedVariableFrom(e.getValue(), context.get(e.getKey()))));
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> EventUtils.typedValueFrom(e.getValue(), context.get(e.getKey()))));
 
         return new TraceOutputValue(
                 decisionResult.getDecisionId(),
                 decisionResult.getDecisionName(),
                 decisionResult.getEvaluationStatus().name(),
-                EventUtils.typedVariableFrom(type, decisionResult.getResult()),
+                EventUtils.typedValueFrom(type, decisionResult.getResult()),
                 decisionInputs,
                 decisionResult.getMessages()
         );

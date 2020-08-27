@@ -70,7 +70,7 @@ public abstract class TypedValue {
 
     public CollectionValue toCollection() {
         if (!isCollection()) {
-            throw new IllegalStateException(String.format("Can't convert TypedVariable of kind %s to COLLECTION", kind));
+            throw new IllegalStateException(String.format("Can't convert TypedValue of kind %s to COLLECTION", kind));
         }
         return (CollectionValue) this;
     }
@@ -82,7 +82,7 @@ public abstract class TypedValue {
 
     public StructureValue toStructure() {
         if (!isStructure()) {
-            throw new IllegalStateException(String.format("Can't convert TypedVariable of kind %s to STRUCTURE", kind));
+            throw new IllegalStateException(String.format("Can't convert TypedValue of kind %s to STRUCTURE", kind));
         }
         return (StructureValue) this;
     }
@@ -94,7 +94,7 @@ public abstract class TypedValue {
 
     public UnitValue toUnit() {
         if (!isUnit()) {
-            throw new IllegalStateException(String.format("Can't convert TypedVariable of kind %s to UNIT", kind));
+            throw new IllegalStateException(String.format("Can't convert TypedValue of kind %s to UNIT", kind));
         }
         return (UnitValue) this;
     }
