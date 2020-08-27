@@ -19,12 +19,14 @@ package org.kie.kogito.explainability;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.conf.StaticConfigBean;
 import org.kie.kogito.explainability.model.PredictOutput;
 
 import javax.inject.Singleton;
+import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +123,27 @@ public class QuarkusExplainableResourceIT {
                 .post("/predict")
                 .as(new TypeRef<List<PredictOutput>>() { });
 
-
         assertEquals(0, outputs.size());
+    }
+
+    @Test
+    void explainServiceFail() {
+        String resourceId = "unknown:model";
+        String body = String.format(
+                "[{\"request\" : {\"Driver\": {\"Age\": 25, \"Points\": 100}, \"Violation\": {\"Type\" : \"speed\", \"Actual Speed\": 120, \"Speed Limit\": 40}}," +
+                        "\"modelIdentifier\": {\"resourceType\": \"dmn\",\"resourceId\": \"%s\"}}, " +
+                        "{\"request\" : {\"Driver\": {\"Age\": 25, \"Points\": 100}, \"Violation\": {\"Type\" : \"speed\", \"Actual Speed\": 120, \"Speed Limit\": 120}}," +
+                        "\"modelIdentifier\": {\"resourceType\": \"dmn\",\"resourceId\": \"%s\"}}]",
+                resourceId, resourceId);
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(body)
+                .post("/predict")
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                .body(Matchers.isA(String.class))
+                .body(Matchers.containsString("Model not found."));
     }
 }

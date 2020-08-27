@@ -16,13 +16,11 @@
 
 package org.kie.kogito.explainability;
 
-import org.kie.kogito.Application;
-import org.kie.kogito.explainability.model.PredictInput;
-import org.kie.kogito.explainability.model.PredictOutput;
+public class Constants {
 
-public interface ExplainabilityResourceExecutor {
+    private Constants() {
+        // prevent initialization
+    }
 
-    boolean acceptRequest(PredictInput predictInput);
-
-    PredictOutput processRequest(Application application, PredictInput predictInput);
+    public static final String SKIP_TRACING = "skipTracing";
 }

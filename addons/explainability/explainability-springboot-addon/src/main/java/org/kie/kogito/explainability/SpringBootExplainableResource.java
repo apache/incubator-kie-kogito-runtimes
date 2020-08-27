@@ -36,9 +36,9 @@ import java.util.List;
 public class SpringBootExplainableResource {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(SpringBootExplainableResource.class);
+    private static final ExplainabilityService explainabilityService = ExplainabilityService.INSTANCE;
 
     private final Application application;
-    private final ExplainabilityService explainabilityService = ExplainabilityService.INSTANCE;
 
     @Autowired
     public SpringBootExplainableResource(Application application) {
@@ -47,7 +47,7 @@ public class SpringBootExplainableResource {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> predict(List<PredictInput> inputs) {
+    public ResponseEntity<Object> predict(List<PredictInput> inputs) {
         try {
             return ResponseEntity.ok(explainabilityService.processRequest(application, inputs));
         } catch (Exception e) {

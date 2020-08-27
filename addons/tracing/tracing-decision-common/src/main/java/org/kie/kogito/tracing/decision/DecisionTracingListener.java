@@ -27,7 +27,7 @@ import org.kie.dmn.api.core.event.DMNEvent;
 import org.kie.dmn.api.core.event.DMNRuntimeEventListener;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 
-import static org.kie.kogito.explainability.ExplainabilityResourceExecutor.SKIP_TRACING;
+import static org.kie.kogito.explainability.Constants.SKIP_TRACING;
 
 /**
  * This class must always have exact FQCN as <code>org.kie.kogito.tracing.decision.DecisionTracingListener</code>

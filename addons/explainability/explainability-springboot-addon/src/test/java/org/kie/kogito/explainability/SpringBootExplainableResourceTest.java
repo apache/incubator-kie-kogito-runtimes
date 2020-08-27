@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -66,7 +68,6 @@ class SpringBootExplainableResourceTest {
         assertEquals(expectedFine.get("Amount"), ((Map<String, Object>)result.get("Fine")).get("Amount"));
     }
 
-
     @Test
     @SuppressWarnings("unchecked")
     void explainServiceTestMultipleInputs() {
@@ -96,6 +97,16 @@ class SpringBootExplainableResourceTest {
 
         assertNotNull(outputs);
         assertEquals(0, outputs.size());
+    }
+
+    @Test
+    void explainServiceFail() {
+        PredictInput input = createInput(10);
+        input.getModelIdentifier().setResourceId("unknown:model");
+        ResponseEntity<Object> responseEntity = resource.predict(singletonList(input));
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals("Model not found.", responseEntity.getBody());
     }
 
     private PredictInput createInput(int speedLimit) {

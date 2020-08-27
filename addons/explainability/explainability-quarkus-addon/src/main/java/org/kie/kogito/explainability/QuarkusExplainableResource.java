@@ -32,10 +32,11 @@ import java.util.List;
 
 @Path("/predict")
 public class QuarkusExplainableResource {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(QuarkusExplainableResource.class);
+    private static final ExplainabilityService explainabilityService = ExplainabilityService.INSTANCE;
 
     private final Application application;
-    private final ExplainabilityService explainabilityService = ExplainabilityService.INSTANCE;
 
     @Inject
     public QuarkusExplainableResource(Application application) {

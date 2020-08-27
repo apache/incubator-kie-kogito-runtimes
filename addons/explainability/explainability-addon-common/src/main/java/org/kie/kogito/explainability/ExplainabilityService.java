@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toList;
 
 public class ExplainabilityService {
 
-    public static ExplainabilityService INSTANCE = new ExplainabilityService(singletonList(new DecisionExplainabilityResourceExecutor()));
+    public static final ExplainabilityService INSTANCE = new ExplainabilityService(singletonList(new DecisionExplainabilityResourceExecutor()));
 
     private Collection<ExplainabilityResourceExecutor> executors;
 
