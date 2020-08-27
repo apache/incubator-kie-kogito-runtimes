@@ -34,6 +34,8 @@ import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
+import org.kie.kogito.pmml.PMMLKogito;
+import org.kie.pmml.evaluator.core.utils.KnowledgeBaseUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -95,20 +97,20 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
     private Function<String, KieRuntimeFactory> initPmmlKieRuntimeFactory() {
         try (Stream<Path> fileStream = Files.walk(Paths.get("."))) {
             Map<KieBase, KieRuntimeFactory> kieRuntimeFactories =
-                    org.kie.kogito.pmml.PMMLKogito.createKieRuntimeFactoriesWithInMemoryCompilation(
+                    PMMLKogito.createKieRuntimeFactoriesWithInMemoryCompilation(
                             fileStream
                                     .filter(path -> Files.isRegularFile(path) && path.toString().endsWith(".pmml"))
                                     .map(Path::toString)
                                     .toArray(String[]::new));
 
             return s -> kieRuntimeFactories.keySet().stream()
-                    .filter(kieBase -> org.kie.pmml.evaluator.core.utils.KnowledgeBaseUtils.getModel(kieBase, s).isPresent())
+                    .filter(kieBase -> KnowledgeBaseUtils.getModel(kieBase, s).isPresent())
                     .map(kieRuntimeFactories::get)
                     .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Failed to fine KieRuntimeFactory for model " + s));
+                    .orElseThrow(() -> new IllegalArgumentException("Failed to fine KieRuntimeFactory for model " + s));
 
         } catch (IOException e) {
-            throw new RuntimeException("Error initalizing KogitoDMNScenarioRunnerHelper", e);
+            throw new IllegalStateException("Error initializing KogitoDMNScenarioRunnerHelper", e);
         }
     }
 
@@ -117,7 +119,6 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
 
         try (Stream<Path> fileStream = Files.walk(Paths.get("."))) {
             List<Resource> resources = fileStream.filter(path -> Files.isRegularFile(path) && path.toString().endsWith(".dmn"))
-                    .peek(System.out::println)
                     .map(Path::toFile)
                     .map(FileSystemResource::new)
                     .collect(toList());
@@ -126,9 +127,9 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
                     .setKieRuntimeFactoryFunction(kieRuntimeFactoryFunction)
                     .buildConfiguration()
                     .fromResources(resources)
-                    .getOrElseThrow(e -> new RuntimeException("Error initalizing DMNRuntime", e));
+                    .getOrElseThrow(e -> new RuntimeException("Error initializing DMNRuntime", e));
         } catch (IOException e) {
-            throw new RuntimeException("Error initalizing KogitoDMNScenarioRunnerHelper", e);
+            throw new IllegalStateException("Error initializing KogitoDMNScenarioRunnerHelper", e);
         }
     }
 

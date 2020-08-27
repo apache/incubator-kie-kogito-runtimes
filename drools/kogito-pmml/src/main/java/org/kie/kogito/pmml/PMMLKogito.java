@@ -53,7 +53,7 @@ public class PMMLKogito {
      * PMML decisions.
      */
     public static Map<KieBase, KieRuntimeFactory> createKieRuntimeFactories(String... pmmlPaths) {
-        return commonCreateKieRuntimeFactorie(KieRuntimeFactoryBuilder::fromResources, pmmlPaths);
+        return commonCreateKieRuntimeFactory(KieRuntimeFactoryBuilder::fromResources, pmmlPaths);
     }
 
     /**
@@ -63,7 +63,7 @@ public class PMMLKogito {
      * @return
      */
     public static Map<KieBase, KieRuntimeFactory> createKieRuntimeFactoriesWithInMemoryCompilation(String... pmmlPaths) {
-        return commonCreateKieRuntimeFactorie(KieRuntimeFactoryBuilder::fromResourcesWithInMemoryCompilation, pmmlPaths);
+        return commonCreateKieRuntimeFactory(KieRuntimeFactoryBuilder::fromResourcesWithInMemoryCompilation, pmmlPaths);
     }
 
     public static KiePMMLModel modelByName(PMMLRuntime pmmlRuntime, String modelName) {
@@ -85,7 +85,7 @@ public class PMMLKogito {
         return pmmlRuntime.evaluate(modelName, new PMMLContextImpl(pmmlRequestData));
     }
 
-    private static Map<KieBase, KieRuntimeFactory> commonCreateKieRuntimeFactorie(
+    private static Map<KieBase, KieRuntimeFactory> commonCreateKieRuntimeFactory(
             final Function<Stream<Resource>, Map<KieBase, KieRuntimeFactory>> factory,
             final String... pmmlPaths) {
         Stream<Resource> resources = Stream.of(pmmlPaths).map(FileSystemResource::new);
