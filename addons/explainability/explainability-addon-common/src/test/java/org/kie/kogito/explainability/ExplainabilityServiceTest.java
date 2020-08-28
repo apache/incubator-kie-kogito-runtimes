@@ -54,7 +54,7 @@ public class ExplainabilityServiceTest {
             if (MODEL_NAMESPACE.equals(namespace) && MODEL_NAME.equals(name)) {
                 return decisionModel;
             }
-            throw new RuntimeException("Model not found.");
+            throw new RuntimeException("Model " + namespace + ":" + name + " not found.");
         };
 
         Map<String, Object> perturbedRequest = createRequest();

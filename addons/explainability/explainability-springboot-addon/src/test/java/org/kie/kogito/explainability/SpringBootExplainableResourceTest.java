@@ -101,12 +101,13 @@ class SpringBootExplainableResourceTest {
 
     @Test
     void explainServiceFail() {
+        String unknownwResourceId = "unknown:model";
         PredictInput input = createInput(10);
-        input.getModelIdentifier().setResourceId("unknown:model");
+        input.getModelIdentifier().setResourceId(unknownwResourceId);
         ResponseEntity<Object> responseEntity = resource.predict(singletonList(input));
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-        assertEquals("Model not found.", responseEntity.getBody());
+        assertEquals("Model " + unknownwResourceId + " not found.", responseEntity.getBody());
     }
 
     private PredictInput createInput(int speedLimit) {

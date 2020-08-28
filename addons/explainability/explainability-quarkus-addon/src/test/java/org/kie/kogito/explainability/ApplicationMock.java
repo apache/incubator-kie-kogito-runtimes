@@ -43,7 +43,7 @@ public class ApplicationMock implements Application {
             if (Constants.MODEL_NAMESPACE.equals(namespace) && Constants.MODEL_NAME.equals(name)) {
                 return decisionModel;
             }
-            throw new RuntimeException("Model not found.");
+            throw new RuntimeException("Model " + namespace + ":" + name + " not found.");
         };
     }
 

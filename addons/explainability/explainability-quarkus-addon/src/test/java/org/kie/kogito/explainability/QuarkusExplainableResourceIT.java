@@ -128,13 +128,13 @@ public class QuarkusExplainableResourceIT {
 
     @Test
     void explainServiceFail() {
-        String resourceId = "unknown:model";
+        String unknownResourceId = "unknown:model";
         String body = String.format(
                 "[{\"request\" : {\"Driver\": {\"Age\": 25, \"Points\": 100}, \"Violation\": {\"Type\" : \"speed\", \"Actual Speed\": 120, \"Speed Limit\": 40}}," +
                         "\"modelIdentifier\": {\"resourceType\": \"dmn\",\"resourceId\": \"%s\"}}, " +
                         "{\"request\" : {\"Driver\": {\"Age\": 25, \"Points\": 100}, \"Violation\": {\"Type\" : \"speed\", \"Actual Speed\": 120, \"Speed Limit\": 120}}," +
                         "\"modelIdentifier\": {\"resourceType\": \"dmn\",\"resourceId\": \"%s\"}}]",
-                resourceId, resourceId);
+                unknownResourceId, unknownResourceId);
 
         given()
                 .contentType(ContentType.JSON)
@@ -144,6 +144,6 @@ public class QuarkusExplainableResourceIT {
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .body(Matchers.isA(String.class))
-                .body(Matchers.containsString("Model not found."));
+                .body(Matchers.containsString("Model " + unknownResourceId + " not found."));
     }
 }
