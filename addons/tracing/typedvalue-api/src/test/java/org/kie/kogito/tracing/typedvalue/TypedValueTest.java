@@ -56,29 +56,31 @@ class TypedValueTest {
         assertSame(3, serializedVariables.size());
 
         // test unit
-        assertSame(TypedValue.Kind.UNIT, serializedVariables.get(0).getKind());
-        assertTrue(serializedVariables.get(0) instanceof UnitValue);
-        assertTrue(serializedVariables.get(0).isUnit());
-        assertFalse(serializedVariables.get(0).isCollection());
-        assertFalse(serializedVariables.get(0).isStructure());
-        assertThrows(IllegalStateException.class, () -> serializedVariables.get(0).toCollection());
+        TypedValue serializedVariable1 = serializedVariables.get(0);
+        assertSame(TypedValue.Kind.UNIT, serializedVariable1.getKind());
+        assertTrue(serializedVariable1 instanceof UnitValue);
+        assertTrue(serializedVariable1.isUnit());
+        assertFalse(serializedVariable1.isCollection());
+        assertFalse(serializedVariable1.isStructure());
+        assertThrows(IllegalStateException.class, serializedVariable1::toCollection);
 
-        UnitValue unitValue = serializedVariables.get(0).toUnit();
+        UnitValue unitValue = serializedVariable1.toUnit();
         assertNotNull(unitValue);
         assertEquals("baseType", unitValue.getBaseType());
         assertTrue(unitValue.getValue() instanceof DoubleNode);
-        assertEquals(1d, ((DoubleNode)unitValue.getValue()).doubleValue(), 0.1);
+        assertEquals(1d, unitValue.getValue().doubleValue(), 0.1);
 
         // test collection
-        assertSame(TypedValue.Kind.COLLECTION, serializedVariables.get(1).getKind());
-        assertTrue(serializedVariables.get(1) instanceof CollectionValue);
-        assertFalse(serializedVariables.get(1).isUnit());
-        assertTrue(serializedVariables.get(1).isCollection());
-        assertFalse(serializedVariables.get(1).isStructure());
-        assertNotNull(serializedVariables.get(1).toCollection());
-        assertThrows(IllegalStateException.class, () -> serializedVariables.get(1).toStructure());
+        TypedValue serializableVariable2 = serializedVariables.get(1);
+        assertSame(TypedValue.Kind.COLLECTION, serializableVariable2.getKind());
+        assertTrue(serializableVariable2 instanceof CollectionValue);
+        assertFalse(serializableVariable2.isUnit());
+        assertTrue(serializableVariable2.isCollection());
+        assertFalse(serializableVariable2.isStructure());
+        assertNotNull(serializableVariable2.toCollection());
+        assertThrows(IllegalStateException.class, serializableVariable2::toStructure);
 
-        CollectionValue collectionValue = serializedVariables.get(1).toCollection();
+        CollectionValue collectionValue = serializableVariable2.toCollection();
         assertNotNull(collectionValue);
         assertEquals(1, collectionValue.getValue().size());
         TypedValue value = collectionValue.getValue().iterator().next();
@@ -86,15 +88,16 @@ class TypedValueTest {
         assertEquals("string", value.toUnit().getType());
 
         // test structure
-        assertSame(TypedValue.Kind.STRUCTURE, serializedVariables.get(2).getKind());
-        assertTrue(serializedVariables.get(2) instanceof StructureValue);
-        assertFalse(serializedVariables.get(2).isUnit());
-        assertFalse(serializedVariables.get(2).isCollection());
-        assertTrue(serializedVariables.get(2).isStructure());
-        assertNotNull(serializedVariables.get(2).toStructure());
-        assertThrows(IllegalStateException.class, () -> serializedVariables.get(2).toUnit());
+        TypedValue serializableVariable3 = serializedVariables.get(2);
+        assertSame(TypedValue.Kind.STRUCTURE, serializableVariable3.getKind());
+        assertTrue(serializableVariable3 instanceof StructureValue);
+        assertFalse(serializableVariable3.isUnit());
+        assertFalse(serializableVariable3.isCollection());
+        assertTrue(serializableVariable3.isStructure());
+        assertNotNull(serializableVariable3.toStructure());
+        assertThrows(IllegalStateException.class, serializableVariable3::toUnit);
 
-        StructureValue structureValue = serializedVariables.get(2).toStructure();
+        StructureValue structureValue = serializableVariable3.toStructure();
         assertNotNull(structureValue);
         assertEquals(1, structureValue.getValue().size());
         Map<String, TypedValue> valueMap = structureValue.getValue();
