@@ -52,18 +52,22 @@ pipeline {
             }
         }
         stage('Build kogito-examples') {
-            steps {
-                mavenCleanInstall("kogito-examples")
-            }
-        }
-        stage('Build kogito-examples with persistence') {
-            steps {
-                mavenCleanInstall("kogito-examples-persistence", false, ["persistence"])
-            }
-        }
-        stage('Build kogito-examples with events') {
-            steps {
-                mavenCleanInstall("kogito-examples-events", false, ["events"])
+            parallel {
+                stage('Build kogito-examples') {
+                    steps {
+                        mavenCleanInstall("kogito-examples")
+                    }
+                }
+                stage('Build kogito-examples with persistence') {
+                    steps {
+                        mavenCleanInstall("kogito-examples-persistence", false, ["persistence"])
+                    }
+                }
+                stage('Build kogito-examples with events') {
+                    steps {
+                        mavenCleanInstall("kogito-examples-events", false, ["events"])
+                    }
+                }
             }
         }
     }
