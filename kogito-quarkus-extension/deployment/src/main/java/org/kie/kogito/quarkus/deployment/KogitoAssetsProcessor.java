@@ -185,7 +185,8 @@ public class KogitoAssetsProcessor {
                 .withAddons(addonsConfig)
                 .withClassLoader(classLoader);
 
-        appGen.withGenerator(PredictionCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
+        boolean isJPMMLAvailable = hasClassOnClasspath("org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
+        appGen.withGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromPaths(paths)))
                 .withAddons(addonsConfig);
 
         appGen.withGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
@@ -221,6 +222,15 @@ public class KogitoAssetsProcessor {
         registerDataEventsForReflection(index);
 
         writeJsonSchema(appPaths, index);
+    }
+
+    private boolean hasClassOnClasspath(final String className) {
+        try {
+            Thread.currentThread().getContextClassLoader().loadClass(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     private void registerResources(Collection<GeneratedFile> generatedFiles) {

@@ -99,7 +99,7 @@ public class AbstractCodegenTest {
                                                                                               .map(resource -> new File(TEST_JAVA, resource))
                                                                                               .collect(Collectors.toList())));
         generatorTypeMap.put(TYPE.PREDICTION,
-                             strings -> PredictionCodegen.ofFiles(Paths.get(TEST_RESOURCES).toAbsolutePath(),
+                             strings -> PredictionCodegen.ofFiles(false, Paths.get(TEST_RESOURCES).toAbsolutePath(),
                                                                   strings
                                                                           .stream()
                                                                           .map(resource -> new File(TEST_RESOURCES, resource))
