@@ -185,6 +185,7 @@ public class KogitoAssetsProcessor {
                 .withAddons(addonsConfig)
                 .withClassLoader(classLoader);
 
+        // Not using Jandex here because the container kie-dmn-jpmml has not it enabled
         boolean isJPMMLAvailable = hasClassOnClasspath("org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
         appGen.withGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromPaths(paths)))
                 .withAddons(addonsConfig);
