@@ -30,6 +30,7 @@ import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
+import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.ProcessInstanceResolverFactory;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
@@ -59,7 +60,7 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
             String paramName = matcher.group(1);
             if (replacements.get(paramName) == null) {
                 try {
-                    String value = (String) MVELSafeHelper.getEvaluator()
+                    String value = (String) MVELProcessHelper.MVEL_SUPPLIER.get()
                             .eval(paramName,new ProcessInstanceResolverFactory(((WorkflowProcessInstance) p)));
                     replacements.put(paramName, value);
                 } catch (Throwable t) {

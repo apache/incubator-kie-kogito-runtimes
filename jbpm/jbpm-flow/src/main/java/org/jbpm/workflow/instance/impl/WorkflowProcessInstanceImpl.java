@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -88,6 +89,7 @@ import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.ItemDescription;
 import org.kie.kogito.process.flexible.Milestone;
 import org.kie.kogito.timer.TimerInstance;
+import org.kie.soup.project.datamodel.commons.util.MVELEvaluator;
 import org.mvel2.integration.VariableResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -684,7 +686,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                     replacements.put(paramName, variableValue.toString());
                 } else {
                     try {
-                        variableValue = MVELSafeHelper.getEvaluator().eval(paramName, factory);
+                        MVELEvaluator mvelEvaluator = MVELProcessHelper.MVEL_SUPPLIER.get();
+                        variableValue = mvelEvaluator.eval(paramName, factory);
                         String variableValueString = variableValue == null ? "" : variableValue.toString();
                         replacements.put(paramName, variableValueString);
                     } catch (Throwable t) {

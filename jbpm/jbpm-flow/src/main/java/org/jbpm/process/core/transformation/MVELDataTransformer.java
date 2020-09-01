@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.drools.core.util.MVELSafeHelper;
+import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.kie.api.runtime.process.DataTransformer;
 import org.mvel2.MVEL;
 import org.mvel2.ParserConfiguration;
@@ -66,7 +67,7 @@ public class MVELDataTransformer implements DataTransformer {
 	@Override
 	public Object transform(Object expression, Map<String, Object> parameters) {
 		logger.debug("About to execute mvel expression {} with parameters {}", expression, parameters);
-		return MVELSafeHelper.getEvaluator().executeExpression(expression, parameters);
+		return MVELProcessHelper.MVEL_SUPPLIER.get().executeExpression(expression, parameters);
 	}
 
 }

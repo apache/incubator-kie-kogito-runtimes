@@ -23,6 +23,7 @@ import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.util.PatternConstants;
+import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.kie.api.runtime.process.NodeInstance;
 
@@ -47,7 +48,7 @@ public class VariableUtil {
                     replacements.put(paramName, variableValueString);
                 } else {
                     try {
-                        Object variableValue = MVELSafeHelper.getEvaluator().eval(paramName, new NodeInstanceResolverFactory((org.jbpm.workflow.instance.NodeInstance) nodeInstance));
+                        Object variableValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(paramName, new NodeInstanceResolverFactory((org.jbpm.workflow.instance.NodeInstance) nodeInstance));
                         String variableValueString = variableValue == null ? "" : variableValue.toString(); 
                         replacements.put(paramName, variableValueString);
                     } catch (Throwable t) {

@@ -34,6 +34,7 @@ import org.jbpm.workflow.core.node.ForEachNode.ForEachJoinNode;
 import org.jbpm.workflow.core.node.ForEachNode.ForEachSplitNode;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
+import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.kie.api.definition.process.Connection;
@@ -101,7 +102,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
             collection = variableScopeInstance.getVariable(collectionExpression);
         } else {
             try {
-                collection = MVELSafeHelper.getEvaluator().eval(collectionExpression, new NodeInstanceResolverFactory(this));
+                collection = MVELProcessHelper.MVEL_SUPPLIER.get().eval(collectionExpression, new NodeInstanceResolverFactory(this));
             } catch (Throwable t) {
                 throw new IllegalArgumentException(
                         "Could not find collection " + collectionExpression);
@@ -230,7 +231,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                 return false;
             }
             try {
-                Object result = MVELSafeHelper.getEvaluator().eval(expression, new ForEachNodeInstanceResolverFactory(this, tempVariables));
+                Object result = MVELProcessHelper.MVEL_SUPPLIER.get().eval(expression, new ForEachNodeInstanceResolverFactory(this, tempVariables));
                 if (!(result instanceof Boolean)) {
                     throw new RuntimeException("Completion condition expression must return boolean values: " + result
                                                        + " for expression " + expression);

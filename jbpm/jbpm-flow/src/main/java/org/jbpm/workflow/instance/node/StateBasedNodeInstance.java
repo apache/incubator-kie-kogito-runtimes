@@ -44,6 +44,7 @@ import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.node.StateBasedNode;
 import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
+import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.event.rule.MatchCreatedEvent;
@@ -262,7 +263,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                     replacements.put(paramName, variableValueString);
                 } else {
                     try {
-                        Object variableValue = MVELSafeHelper.getEvaluator().eval(paramName, new NodeInstanceResolverFactory(this));
+                        Object variableValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(paramName, new NodeInstanceResolverFactory(this));
                         String variableValueString = variableValue == null ? "" : variableValue.toString();
                         replacements.put(paramName, variableValueString);
                     } catch (Throwable t) {

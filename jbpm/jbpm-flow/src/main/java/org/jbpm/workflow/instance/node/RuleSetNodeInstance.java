@@ -51,6 +51,7 @@ import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.RuleUnitFactory;
 import org.jbpm.workflow.core.node.Transformation;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
+import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.KieSession;
@@ -310,7 +311,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                         Object value = objects.get(association.getSources().get(0));
                         if (value == null) {
                             try {
-                                value = MVELSafeHelper.getEvaluator().eval(association.getSources().get(0), new MapVariableResolverFactory(objects));
+                                value = MVELProcessHelper.MVEL_SUPPLIER.get().eval(association.getSources().get(0), new MapVariableResolverFactory(objects));
                             } catch (Throwable t) {
                                 // do nothing
                             }
@@ -334,7 +335,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                             NodeInstanceResolverFactory resolver = new NodeInstanceResolverFactory(this);
                             resolver.addExtraParameters(objects);
                             Serializable compiled = MVEL.compileExpression(expression);
-                            MVELSafeHelper.getEvaluator().executeExpression(compiled, resolver);
+                            MVELProcessHelper.MVEL_SUPPLIER.get().executeExpression(compiled, resolver);
                         } else { 
                             logger.warn("Could not find variable scope for variable {}", association.getTarget());
                         }
@@ -366,7 +367,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                     parameterValue = variableScopeInstance.getVariable(association.getSources().get(0));
                 } else {
                     try {
-                        parameterValue = MVELSafeHelper.getEvaluator().eval(association.getSources().get(0), new NodeInstanceResolverFactory(this));
+                        parameterValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(association.getSources().get(0), new NodeInstanceResolverFactory(this));
                     } catch (Throwable t) {
                         logger.error("Could not find variable scope for variable {}", association.getSources().get(0));
                         logger.error("when trying to execute RuleSetNode {}", ruleSetNode.getName());
@@ -408,7 +409,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                     }
                 } else {
                     try {
-                        Object variableValue = MVELSafeHelper.getEvaluator().eval(paramName, new NodeInstanceResolverFactory(this));
+                        Object variableValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(paramName, new NodeInstanceResolverFactory(this));
                         if (variableValue != null) {
                             return variableValue;
                         }
@@ -432,7 +433,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 parameterValue = variableScopeInstance.getVariable(sourceParam);
             } else {
                 try {
-                    parameterValue = MVELSafeHelper.getEvaluator().eval(sourceParam, new NodeInstanceResolverFactory(this));
+                    parameterValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(sourceParam, new NodeInstanceResolverFactory(this));
                 } catch (Throwable t) {
                     logger.warn("Could not find variable scope for variable {}", sourceParam);
                 }
