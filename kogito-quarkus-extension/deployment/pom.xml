@@ -40,6 +40,10 @@
             <artifactId>quarkus-resteasy-jackson-deployment</artifactId>
             <version>${version.io.quarkus}</version>
         </dependency>
+        <dependency>
+            <groupId>org.graalvm.nativeimage</groupId>
+            <artifactId>svm</artifactId>
+        </dependency>
 
         <!-- kogito -->
         <dependency>
