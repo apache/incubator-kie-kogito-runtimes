@@ -17,20 +17,52 @@
 
 package org.jbpm.workflow.instance.impl;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.drools.core.util.MVELSafeHelper;
 import org.kie.soup.project.datamodel.commons.util.MVELEvaluator;
+import org.mvel2.ErrorDetail;
+import org.mvel2.MVEL;
+import org.mvel2.ParserContext;
+import org.mvel2.compiler.ExpressionCompiler;
 
 public class MVELProcessHelper {
-    public static final Supplier<MVELEvaluator> MVEL_SUPPLIER =
-            System.getProperty("org.graalvm.nativeimage.imagecode") == null ?
-                    MVELSafeHelper::getEvaluator
-                    : () -> { throw new UnsupportedOperationException("MVEL evaluation is not supported in native image"); } ;
 
+    public static final boolean IS_JDK = System.getProperty("org.graalvm.nativeimage.imagecode") == null;
+    public static final Supplier<MVELEvaluator> MVEL_SUPPLIER =
+            IS_JDK ?
+                    MVELSafeHelper::getEvaluator :
+                    () -> {
+                        throw new UnsupportedOperationException("MVEL evaluation is not supported in native image");
+                    };
+
+    public static final Function<String, Serializable> MVEL_EXPR_COMPILER =
+            IS_JDK ?
+                    MVEL::compileExpression :
+                    expr -> {
+                        throw new UnsupportedOperationException("MVEL compilation is not supported in native image");
+                    };
+
+    public static final Function<String, List<ErrorDetail>> MVEL_EXPR_COMPILER_DETAILED =
+            IS_JDK ?
+                    MVELProcessHelper::expressionCompiler :
+                    expr -> {
+                        throw new UnsupportedOperationException("MVEL compilation is not supported in native image");
+                    };
 
     public MVELEvaluator get() {
         return MVEL_SUPPLIER.get();
     }
 
+    private static List<ErrorDetail> expressionCompiler(String actionString) {
+        ParserContext parserContext = new ParserContext();
+        ExpressionCompiler compiler = new ExpressionCompiler(actionString,
+                                                             parserContext);
+        compiler.setVerifying(true);
+        compiler.compile();
+        return parserContext.getErrorList();
+    }
 }

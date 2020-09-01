@@ -334,7 +334,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                             String expression = paramName + " = " + output;
                             NodeInstanceResolverFactory resolver = new NodeInstanceResolverFactory(this);
                             resolver.addExtraParameters(objects);
-                            Serializable compiled = MVEL.compileExpression(expression);
+                            Serializable compiled = MVELProcessHelper.MVEL_EXPR_COMPILER.apply(expression);
                             MVELProcessHelper.MVEL_SUPPLIER.get().executeExpression(compiled, resolver);
                         } else { 
                             logger.warn("Could not find variable scope for variable {}", association.getTarget());
