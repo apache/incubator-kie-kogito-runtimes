@@ -43,6 +43,7 @@
         <dependency>
             <groupId>org.graalvm.nativeimage</groupId>
             <artifactId>svm</artifactId>
+            <version>20.2.0</version>
         </dependency>
 
         <!-- kogito -->
