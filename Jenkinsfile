@@ -28,10 +28,6 @@ pipeline {
 
                     checkoutRepo("kogito-runtimes")
                     checkoutRepo("kogito-runtimes", "integration-tests")
-                    checkoutRepo("kogito-apps")
-                    checkoutRepo("kogito-examples")
-                    checkoutRepo("kogito-examples", "kogito-examples-persistence")
-                    checkoutRepo("kogito-examples", "kogito-examples-events")
                 }
             }
         }
@@ -46,25 +42,38 @@ pipeline {
                 mavenCleanInstall("integration-tests", false, ["persistence"])
             }
         }
-        stage('Build kogito-apps') {
+        stage('Share kogito-runtimes artifacts') {
             steps {
-                mavenCleanInstall("kogito-apps")
+                stash includes: "~/.m2/repository/", name "repository"
             }
         }
-        stage('Build kogito-examples') {
+        stage('Build kogito-apps && kogito-examples') {
             parallel {
+                stage('Build kogito-apps') {
+                    steps {
+                        unstash 'repository'
+                        checkoutRepo("kogito-apps")
+                        mavenCleanInstall("kogito-apps")
+                    }
+                }
                 stage('Build kogito-examples') {
                     steps {
+                        unstash 'repository'
+                        checkoutRepo("kogito-examples")
                         mavenCleanInstall("kogito-examples")
                     }
                 }
                 stage('Build kogito-examples with persistence') {
                     steps {
+                        unstash 'repository'
+                        checkoutRepo("kogito-examples", "kogito-examples-persistence")
                         mavenCleanInstall("kogito-examples-persistence", false, ["persistence"])
                     }
                 }
                 stage('Build kogito-examples with events') {
                     steps {
+                        unstash 'repository'
+                        checkoutRepo("kogito-examples", "kogito-examples-events")
                         mavenCleanInstall("kogito-examples-events", false, ["events"])
                     }
                 }
