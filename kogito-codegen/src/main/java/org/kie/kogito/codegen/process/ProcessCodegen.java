@@ -131,27 +131,6 @@ public class ProcessCodegen extends AbstractGenerator {
 
     /**
      *
-     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(...))
-     */
-    @Deprecated
-    public static ProcessCodegen ofPath(Path... paths) throws IOException {
-        List<Process> allProcesses = new ArrayList<>();
-        for (Path path : paths) {
-            Path srcPath = Paths.get( path.toString() );
-            try (Stream<Path> filesStream = Files.walk( srcPath )) {
-                List<File> files = filesStream
-                        .filter( p -> SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch( p.toString()::endsWith ) ||
-                                SUPPORTED_SW_EXTENSIONS.keySet().stream().anyMatch( p.toString()::endsWith ) )
-                        .map( Path::toFile )
-                        .collect( Collectors.toList() );
-                allProcesses.addAll( parseProcesses(files) );
-            }
-        }
-        return ofProcesses(allProcesses);
-    }
-
-    /**
-     *
      * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromFiles(...))
      */
     @Deprecated

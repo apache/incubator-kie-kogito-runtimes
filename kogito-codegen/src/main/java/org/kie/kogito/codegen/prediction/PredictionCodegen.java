@@ -98,24 +98,6 @@ public class PredictionCodegen extends AbstractGenerator {
 
     /**
      *
-     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(...))
-     */
-    @Deprecated    public static PredictionCodegen ofPath(Path... paths) throws IOException {
-        List<PMMLResource> resources = new ArrayList<>();
-        for (Path path : paths) {
-            Path srcPath = Paths.get(path.toString());
-            try (Stream<Path> filesStream = Files.walk(srcPath)) {
-                List<File> files = filesStream.filter(p -> p.toString().endsWith(".pmml"))
-                        .map(Path::toFile)
-                        .collect(Collectors.toList());
-                resources.addAll(parseFiles(srcPath, files));
-            }
-        }
-        return ofPredictions(resources);
-    }
-
-    /**
-     *
      * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromFiles(...))
      */
     @Deprecated
