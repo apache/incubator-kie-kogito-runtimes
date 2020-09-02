@@ -102,6 +102,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
     private void init() {
         Map<Resource, CollectedResource> r2cr = cResources.stream().collect(Collectors.toMap(CollectedResource::resource, Function.identity()));
+        DecisionValidation.dmnValidateResources(context(), r2cr.keySet());
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
                                                  .buildConfiguration()
                                                  .fromResources(r2cr.keySet())
