@@ -129,48 +129,11 @@ public class ProcessCodegen extends AbstractGenerator {
         return ofProcesses(processes);
     }
 
-    public static ProcessCodegen ofJar(Path... jarPaths) {
-        List<Process> processes = new ArrayList<>();
-
-        for (Path jarPath : jarPaths) {
-            try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
-                Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    ResourceType resourceType = determineResourceType(entry.getName());
-                    if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(entry.getName()::endsWith)) {
-                        InternalResource resource = makeResourceFromZipEntry(zipFile, entry, resourceType);
-                        processes.addAll(parseProcessFile(resource));
-                    } else {
-                        SUPPORTED_SW_EXTENSIONS.entrySet()
-                                .stream()
-                                .filter(e -> entry.getName().endsWith(e.getKey()))
-                                .forEach(e -> {
-                                    InternalResource r = makeResourceFromZipEntry(zipFile, entry, resourceType);
-                                    processes.add(parseWorkflowFile(r, e.getValue()));
-                                });
-                    }
-                }
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }
-
-        return ofProcesses(processes);
-    }
-
-    private static InternalResource makeResourceFromZipEntry(ZipFile zipFile, ZipEntry entry, ResourceType resourceType) {
-        try {
-            InternalResource resource = null;
-            resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
-            resource.setResourceType(resourceType);
-            resource.setSourcePath(entry.getName());
-            return resource;
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
+    /**
+     *
+     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(...))
+     */
+    @Deprecated
     public static ProcessCodegen ofPath(Path... paths) throws IOException {
         List<Process> allProcesses = new ArrayList<>();
         for (Path path : paths) {
@@ -187,6 +150,11 @@ public class ProcessCodegen extends AbstractGenerator {
         return ofProcesses(allProcesses);
     }
 
+    /**
+     *
+     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromFiles(...))
+     */
+    @Deprecated
     public static ProcessCodegen ofFiles(Collection<File> processFiles) {
         List<Process> allProcesses = parseProcesses(processFiles);
         return ofProcesses(allProcesses);

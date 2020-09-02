@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
+import org.kie.kogito.codegen.io.CollectedResource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,7 +39,7 @@ public class PredictionCodegenTest extends AbstractCodegenTest {
 
         GeneratorContext context = GeneratorContext.ofProperties(new Properties());
 
-        PredictionCodegen codeGenerator = PredictionCodegen.ofPath(Paths.get(FULL_SOURCE).toAbsolutePath());
+        PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get(FULL_SOURCE).toAbsolutePath()));
         codeGenerator.setContext(context);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();

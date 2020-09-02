@@ -96,30 +96,11 @@ public class PredictionCodegen extends AbstractGenerator {
         return ofPredictions(dmnResources);
     }
 
-    public static PredictionCodegen ofJar(Path... jarPaths) throws IOException {
-        List<PMMLResource> pmmlResources = new ArrayList<>();
-        for (Path jarPath : jarPaths) {
-            List<Resource> resources = new ArrayList<>();
-            try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
-                Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    ResourceType resourceType = determineResourceType(entry.getName());
-                    if (resourceType == ResourceType.PMML) {
-                        InternalResource resource =
-                                new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
-                        resource.setResourceType(resourceType);
-                        resource.setSourcePath(entry.getName());
-                        resources.add(resource);
-                    }
-                }
-            }
-            pmmlResources.addAll(parsePredictions(jarPath, resources));
-        }
-        return ofPredictions(pmmlResources);
-    }
-
-    public static PredictionCodegen ofPath(Path... paths) throws IOException {
+    /**
+     *
+     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(...))
+     */
+    @Deprecated    public static PredictionCodegen ofPath(Path... paths) throws IOException {
         List<PMMLResource> resources = new ArrayList<>();
         for (Path path : paths) {
             Path srcPath = Paths.get(path.toString());
@@ -133,6 +114,11 @@ public class PredictionCodegen extends AbstractGenerator {
         return ofPredictions(resources);
     }
 
+    /**
+     *
+     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromFiles(...))
+     */
+    @Deprecated
     public static PredictionCodegen ofFiles(Path basePath, List<File> files) {
         return ofPredictions(parseFiles(basePath, files));
     }

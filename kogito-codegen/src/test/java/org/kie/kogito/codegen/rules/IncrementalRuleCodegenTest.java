@@ -28,6 +28,7 @@ import org.kie.api.internal.utils.ServiceRegistry;
 import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.io.CollectedResource;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,9 +82,8 @@ public class IncrementalRuleCodegenTest {
     @Test
     public void generateDirectoryRecursively() {
         IncrementalRuleCodegen incrementalRuleCodegen =
-                IncrementalRuleCodegen.ofPath(
-                        Paths.get("src/test/resources/org/kie/kogito/codegen/rules"),
-                        ResourceType.DRL);
+                IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromPaths(
+                        Paths.get("src/test/resources/org/kie/kogito/codegen/rules")));
         incrementalRuleCodegen.setPackageName("com.acme");
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
@@ -106,9 +106,8 @@ public class IncrementalRuleCodegenTest {
     @Test
     public void generateSingleUnit() {
         IncrementalRuleCodegen incrementalRuleCodegen =
-                IncrementalRuleCodegen.ofPath(
-                        Paths.get("src/test/resources/org/kie/kogito/codegen/rules/myunit"),
-                        ResourceType.DRL);
+                IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromPaths(
+                        Paths.get("src/test/resources/org/kie/kogito/codegen/rules/myunit")));
         incrementalRuleCodegen.setPackageName("com.acme");
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
