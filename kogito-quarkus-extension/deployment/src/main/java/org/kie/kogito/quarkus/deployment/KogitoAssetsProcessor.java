@@ -104,6 +104,7 @@ public class KogitoAssetsProcessor {
     private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
     private static final DotName metricsClass = DotName.createSimple("org.kie.kogito.monitoring.rest.MetricsResource");
     private static final DotName tracingClass = DotName.createSimple("org.kie.kogito.tracing.decision.DecisionTracingListener");
+    private static final DotName dmnJpmmlClass = DotName.createSimple( "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
 
     @Inject
     ArchiveRootBuildItem root;
@@ -153,6 +154,8 @@ public class KogitoAssetsProcessor {
                 .getClassByName(metricsClass) != null;
         boolean useTracing = !combinedIndexBuildItem.getIndex()
                 .getAllKnownSubclasses(tracingClass).isEmpty();
+        boolean isJPMMLAvailable =combinedIndexBuildItem.getIndex()
+                .getClassByName(dmnJpmmlClass) != null;
 
         AddonsConfig addonsConfig = new AddonsConfig()
                 .withPersistence(usePersistence)
@@ -185,8 +188,6 @@ public class KogitoAssetsProcessor {
                 .withAddons(addonsConfig)
                 .withClassLoader(classLoader);
 
-        // Not using Jandex here because the container kie-dmn-jpmml has not it enabled
-        boolean isJPMMLAvailable = hasClassOnClasspath("org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
         appGen.withGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromPaths(paths)))
                 .withAddons(addonsConfig);
 
@@ -223,15 +224,6 @@ public class KogitoAssetsProcessor {
         registerDataEventsForReflection(index);
 
         writeJsonSchema(appPaths, index);
-    }
-
-    private boolean hasClassOnClasspath(final String className) {
-        try {
-            Thread.currentThread().getContextClassLoader().loadClass(className);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 
     private void registerResources(Collection<GeneratedFile> generatedFiles) {
