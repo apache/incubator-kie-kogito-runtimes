@@ -3,6 +3,7 @@ package $Package$;
 import org.kie.kogito.Config;
 import org.kie.kogito.StaticApplication;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.rules.RuleUnits;
 
 @javax.inject.Singleton
 public class Application extends StaticApplication {

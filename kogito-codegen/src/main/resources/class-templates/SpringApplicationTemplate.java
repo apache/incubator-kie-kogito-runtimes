@@ -3,6 +3,7 @@ package $Package$;
 import org.kie.kogito.Config;
 import org.kie.kogito.StaticApplication;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.rules.RuleUnits;
 
 @org.springframework.stereotype.Component
 @org.springframework.web.context.annotation.ApplicationScope
