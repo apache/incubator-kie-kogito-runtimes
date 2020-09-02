@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.ContextInstance;
@@ -102,7 +101,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
             collection = variableScopeInstance.getVariable(collectionExpression);
         } else {
             try {
-                collection = MVELProcessHelper.MVEL_SUPPLIER.get().eval(collectionExpression, new NodeInstanceResolverFactory(this));
+                collection = MVELProcessHelper.evaluator().eval(collectionExpression, new NodeInstanceResolverFactory(this));
             } catch (Throwable t) {
                 throw new IllegalArgumentException(
                         "Could not find collection " + collectionExpression);
@@ -231,7 +230,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                 return false;
             }
             try {
-                Object result = MVELProcessHelper.MVEL_SUPPLIER.get().eval(expression, new ForEachNodeInstanceResolverFactory(this, tempVariables));
+                Object result = MVELProcessHelper.evaluator().eval(expression, new ForEachNodeInstanceResolverFactory(this, tempVariables));
                 if (!(result instanceof Boolean)) {
                     throw new RuntimeException("Completion condition expression must return boolean values: " + result
                                                        + " for expression " + expression);

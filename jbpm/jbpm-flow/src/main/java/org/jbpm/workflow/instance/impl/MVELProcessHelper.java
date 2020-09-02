@@ -31,30 +31,38 @@ import org.mvel2.compiler.ExpressionCompiler;
 
 public class MVELProcessHelper {
 
-    public static final boolean IS_JDK = System.getProperty("org.graalvm.nativeimage.imagecode") == null;
-    public static final Supplier<MVELEvaluator> MVEL_SUPPLIER =
+    private static final boolean IS_JDK = System.getProperty("org.graalvm.nativeimage.imagecode") == null;
+    private static final Supplier<MVELEvaluator> EVALUATOR_SUPPLIER =
             IS_JDK ?
                     MVELSafeHelper::getEvaluator :
                     () -> {
                         throw new UnsupportedOperationException("MVEL evaluation is not supported in native image");
                     };
 
-    public static final Function<String, Serializable> MVEL_EXPR_COMPILER =
+    private static final Function<String, Serializable> EXPR_COMPILER =
             IS_JDK ?
                     MVEL::compileExpression :
                     expr -> {
                         throw new UnsupportedOperationException("MVEL compilation is not supported in native image");
                     };
 
-    public static final Function<String, List<ErrorDetail>> MVEL_EXPR_COMPILER_DETAILED =
+    private static final Function<String, List<ErrorDetail>> EXPR_COMPILER_DETAILED =
             IS_JDK ?
                     MVELProcessHelper::expressionCompiler :
                     expr -> {
                         throw new UnsupportedOperationException("MVEL compilation is not supported in native image");
                     };
 
-    public MVELEvaluator get() {
-        return MVEL_SUPPLIER.get();
+    public static MVELEvaluator evaluator() {
+        return EVALUATOR_SUPPLIER.get();
+    }
+
+    public static Serializable compileExpression(String expr) {
+        return EXPR_COMPILER.apply(expr);
+    }
+
+    public static List<ErrorDetail> validateExpression(String expression) {
+        return EXPR_COMPILER_DETAILED.apply(expression);
     }
 
     private static List<ErrorDetail> expressionCompiler(String actionString) {

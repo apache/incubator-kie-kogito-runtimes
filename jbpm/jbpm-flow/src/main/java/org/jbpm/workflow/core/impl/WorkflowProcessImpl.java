@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 
-import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.util.PatternConstants;
@@ -60,7 +59,7 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
             String paramName = matcher.group(1);
             if (replacements.get(paramName) == null) {
                 try {
-                    String value = (String) MVELProcessHelper.MVEL_SUPPLIER.get()
+                    String value = (String) MVELProcessHelper.evaluator()
                             .eval(paramName,new ProcessInstanceResolverFactory(((WorkflowProcessInstance) p)));
                     replacements.put(paramName, value);
                 } catch (Throwable t) {

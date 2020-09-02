@@ -30,13 +30,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
-import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -686,7 +684,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                     replacements.put(paramName, variableValue.toString());
                 } else {
                     try {
-                        MVELEvaluator mvelEvaluator = MVELProcessHelper.MVEL_SUPPLIER.get();
+                        MVELEvaluator mvelEvaluator = MVELProcessHelper.evaluator();
                         variableValue = mvelEvaluator.eval(paramName, factory);
                         String variableValueString = variableValue == null ? "" : variableValue.toString();
                         replacements.put(paramName, variableValueString);

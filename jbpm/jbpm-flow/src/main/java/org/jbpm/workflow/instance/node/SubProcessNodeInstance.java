@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
-import org.drools.core.util.MVELSafeHelper;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
@@ -111,7 +110,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                     parameterValue = variableScopeInstance.getVariable(mapping.getSources().get(0));
                 } else {
                     try {
-                        parameterValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(mapping.getSources().get(0), new NodeInstanceResolverFactory(this));
+                        parameterValue = MVELProcessHelper.evaluator().eval(mapping.getSources().get(0), new NodeInstanceResolverFactory(this));
                     } catch (Throwable t) {
                         parameterValue = VariableUtil.resolveVariable(mapping.getSources().get(0), this);
                         if (parameterValue != null) {
@@ -147,7 +146,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                     replacements.put(paramName, variableValueString);
                 } else {
                     try {
-                        Object variableValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(paramName, new NodeInstanceResolverFactory(this));
+                        Object variableValue = MVELProcessHelper.evaluator().eval(paramName, new NodeInstanceResolverFactory(this));
                         String variableValueString = variableValue == null ? "" : variableValue.toString();
                         replacements.put(paramName, variableValueString);
                     } catch (Throwable t) {
@@ -329,7 +328,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                         Object value = subProcessVariableScopeInstance.getVariable(mapping.getSources().get(0));
                         if (value == null) {
                             try {
-                                value = MVELProcessHelper.MVEL_SUPPLIER.get().eval(mapping.getSources().get(0), new VariableScopeResolverFactory(subProcessVariableScopeInstance));
+                                value = MVELProcessHelper.evaluator().eval(mapping.getSources().get(0), new VariableScopeResolverFactory(subProcessVariableScopeInstance));
                             } catch (Throwable t) {
                                 // do nothing
                             }
@@ -346,8 +345,8 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                             String expression = paramName + " = " + output;
                             VariableScopeResolverFactory resolver = new VariableScopeResolverFactory(subProcessVariableScopeInstance);
                             resolver.addExtraParameters(((VariableScopeInstance) getProcessInstance().getContextInstance(VariableScope.VARIABLE_SCOPE)).getVariables());
-                            Serializable compiled = MVEL.compileExpression(expression);
-                            MVELProcessHelper.MVEL_SUPPLIER.get().executeExpression(compiled, resolver);
+                            Serializable compiled = MVELProcessHelper.compileExpression(expression);
+                            MVELProcessHelper.evaluator().executeExpression(compiled, resolver);
                         } else {
                             logger.error("Could not find variable scope for variable {}", mapping.getTarget());
                             logger.error("when trying to complete SubProcess node {}", getSubProcessNode().getName());
@@ -434,7 +433,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                 parameterValue = variableScopeInstance.getVariable(sourceParam);
             } else {
                 try {
-                    parameterValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(sourceParam, new NodeInstanceResolverFactory(this));
+                    parameterValue = MVELProcessHelper.evaluator().eval(sourceParam, new NodeInstanceResolverFactory(this));
                 } catch (Throwable t) {
                     logger.warn("Could not find variable scope for variable {}", sourceParam);
                 }

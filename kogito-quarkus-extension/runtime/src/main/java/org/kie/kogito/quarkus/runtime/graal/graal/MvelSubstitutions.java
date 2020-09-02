@@ -62,29 +62,3 @@ final class MVEL_Target {
         throw new UnsupportedOperationException("Cannot run MVEL#analyze in native mode");
     }
 }
-//
-//@TargetClass(MvelUtil.class)
-//final class MvelUtil_Target {
-//
-//    @Substitute
-//    private static MVELAnalysisResult analyzeExpression(String expr,
-//                                                        ParserConfiguration conf,
-//                                                        BoundIdentifiers availableIdentifiers) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    @Substitute
-//    public static MVELObjectExpression createMvelObjectExpression(String expression, ClassLoader classLoader, Map<String, Declaration> decls) {
-//        throw new UnsupportedOperationException();
-//    }
-//}
-//
-//
-//
-//final class ASM_CL_Target {
-//
-//    private java.lang.Class loadClass(String className, byte[] b) throws Exception {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//}

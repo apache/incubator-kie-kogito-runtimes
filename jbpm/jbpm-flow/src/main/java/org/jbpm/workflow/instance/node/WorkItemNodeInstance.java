@@ -33,7 +33,6 @@ import org.drools.core.process.instance.KogitoWorkItem;
 import org.drools.core.process.instance.KogitoWorkItemManager;
 import org.drools.core.process.instance.impl.KogitoWorkItemImpl;
 import org.drools.core.spi.KogitoProcessContext;
-import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.ParameterDefinition;
@@ -227,7 +226,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                     parameterValue = variableScopeInstance.getVariable(association.getSources().get(0));
                 } else {
                     try {
-                        parameterValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(association.getSources().get(0), new NodeInstanceResolverFactory(this));
+                        parameterValue = MVELProcessHelper.evaluator().eval(association.getSources().get(0), new NodeInstanceResolverFactory(this));
                     } catch (Throwable t) {
                         logger.error("Could not find variable scope for variable {}", association.getSources().get(0));
                         logger.error("when trying to execute Work Item {}", work.getName());
@@ -257,7 +256,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                             replacements.put(paramName, variableValueString);
                         } else {
                             try {
-                                Object variableValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(paramName, new NodeInstanceResolverFactory(this));
+                                Object variableValue = MVELProcessHelper.evaluator().eval(paramName, new NodeInstanceResolverFactory(this));
                                 String variableValueString = variableValue == null ? "" : variableValue.toString();
                                 replacements.put(paramName, variableValueString);
                             } catch (Throwable t) {
@@ -324,7 +323,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                         Object value = workItem.getResult(association.getSources().get(0));
                         if (value == null) {
                             try {
-                                value = MVELProcessHelper.MVEL_SUPPLIER.get().eval(association.getSources().get(0), new WorkItemResolverFactory(workItem));
+                                value = MVELProcessHelper.evaluator().eval(association.getSources().get(0), new WorkItemResolverFactory(workItem));
                             } catch (Throwable t) {
                                 // do nothing
                             }
@@ -350,8 +349,8 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                             String expression = paramName + " = " + output;
                             NodeInstanceResolverFactory resolver = new NodeInstanceResolverFactory(this);
                             resolver.addExtraParameters(workItem.getResults());
-                            Serializable compiled = MVEL.compileExpression(expression);
-                            MVELProcessHelper.MVEL_SUPPLIER.get().executeExpression(compiled, resolver);
+                            Serializable compiled = MVELProcessHelper.compileExpression(expression);
+                            MVELProcessHelper.evaluator().executeExpression(compiled, resolver);
                         } else {                        
                             logger.warn("Could not find variable scope for variable {}", association.getTarget());
                             logger.warn("when trying to complete Work Item {}", workItem.getName());
@@ -534,7 +533,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 parameterValue = variableScopeInstance.getVariable(sourceParam);
             } else {
                 try {
-                    parameterValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(sourceParam, new NodeInstanceResolverFactory(this));
+                    parameterValue = MVELProcessHelper.evaluator().eval(sourceParam, new NodeInstanceResolverFactory(this));
                 } catch (Throwable t) {
                     logger.warn("Could not find variable scope for variable {}", sourceParam);
                 }

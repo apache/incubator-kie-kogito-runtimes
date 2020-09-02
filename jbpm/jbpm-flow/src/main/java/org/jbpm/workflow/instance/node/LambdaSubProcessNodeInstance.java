@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.spi.KogitoProcessContext;
-import org.drools.core.util.MVELSafeHelper;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
@@ -275,7 +274,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
 	            parameterValue = variableScopeInstance.getVariable(sourceParam);
 	        } else {
 	            try {
-	                parameterValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(sourceParam, new NodeInstanceResolverFactory(this));
+	                parameterValue = MVELProcessHelper.evaluator().eval(sourceParam, new NodeInstanceResolverFactory(this));
 	            } catch (Throwable t) {
 	                logger.warn("Could not find variable scope for variable {}", sourceParam);
 	            }

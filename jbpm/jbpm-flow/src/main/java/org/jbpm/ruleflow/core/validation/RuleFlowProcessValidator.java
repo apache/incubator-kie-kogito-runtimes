@@ -393,7 +393,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                                         "Action has empty action.");
                     } else if ("mvel".equals(droolsAction.getDialect())) {
                         try {
-                            List<ErrorDetail> mvelErrors = MVELProcessHelper.MVEL_EXPR_COMPILER_DETAILED.apply(actionString);
+                            List<ErrorDetail> mvelErrors = MVELProcessHelper.validateExpression(actionString);
                             if (mvelErrors != null) {
                                 for (Iterator<ErrorDetail> iterator = mvelErrors.iterator(); iterator.hasNext(); ) {
                                     ErrorDetail error = iterator.next();

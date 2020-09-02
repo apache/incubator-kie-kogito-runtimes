@@ -31,7 +31,6 @@ import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.KogitoInternalAgenda;
 import org.drools.core.spi.KogitoProcessContext;
-import org.drools.core.util.MVELSafeHelper;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.exception.ExceptionScope;
@@ -68,7 +67,6 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
-import org.mvel2.MVEL;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -311,7 +309,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                         Object value = objects.get(association.getSources().get(0));
                         if (value == null) {
                             try {
-                                value = MVELProcessHelper.MVEL_SUPPLIER.get().eval(association.getSources().get(0), new MapVariableResolverFactory(objects));
+                                value = MVELProcessHelper.evaluator().eval(association.getSources().get(0), new MapVariableResolverFactory(objects));
                             } catch (Throwable t) {
                                 // do nothing
                             }
@@ -334,8 +332,8 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                             String expression = paramName + " = " + output;
                             NodeInstanceResolverFactory resolver = new NodeInstanceResolverFactory(this);
                             resolver.addExtraParameters(objects);
-                            Serializable compiled = MVELProcessHelper.MVEL_EXPR_COMPILER.apply(expression);
-                            MVELProcessHelper.MVEL_SUPPLIER.get().executeExpression(compiled, resolver);
+                            Serializable compiled = MVELProcessHelper.compileExpression(expression);
+                            MVELProcessHelper.evaluator().executeExpression(compiled, resolver);
                         } else { 
                             logger.warn("Could not find variable scope for variable {}", association.getTarget());
                         }
@@ -367,7 +365,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                     parameterValue = variableScopeInstance.getVariable(association.getSources().get(0));
                 } else {
                     try {
-                        parameterValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(association.getSources().get(0), new NodeInstanceResolverFactory(this));
+                        parameterValue = MVELProcessHelper.evaluator().eval(association.getSources().get(0), new NodeInstanceResolverFactory(this));
                     } catch (Throwable t) {
                         logger.error("Could not find variable scope for variable {}", association.getSources().get(0));
                         logger.error("when trying to execute RuleSetNode {}", ruleSetNode.getName());
@@ -409,7 +407,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                     }
                 } else {
                     try {
-                        Object variableValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(paramName, new NodeInstanceResolverFactory(this));
+                        Object variableValue = MVELProcessHelper.evaluator().eval(paramName, new NodeInstanceResolverFactory(this));
                         if (variableValue != null) {
                             return variableValue;
                         }
@@ -433,7 +431,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 parameterValue = variableScopeInstance.getVariable(sourceParam);
             } else {
                 try {
-                    parameterValue = MVELProcessHelper.MVEL_SUPPLIER.get().eval(sourceParam, new NodeInstanceResolverFactory(this));
+                    parameterValue = MVELProcessHelper.evaluator().eval(sourceParam, new NodeInstanceResolverFactory(this));
                 } catch (Throwable t) {
                     logger.warn("Could not find variable scope for variable {}", sourceParam);
                 }
