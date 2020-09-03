@@ -129,16 +129,6 @@ public class ProcessCodegen extends AbstractGenerator {
         return ofProcesses(processes);
     }
 
-    /**
-     *
-     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromFiles(...))
-     */
-    @Deprecated
-    public static ProcessCodegen ofFiles(Collection<File> processFiles) {
-        List<Process> allProcesses = parseProcesses(processFiles);
-        return ofProcesses(allProcesses);
-    }
-
     private static ProcessCodegen ofProcesses(List<Process> processes) {
         return new ProcessCodegen(processes);
     }

@@ -96,21 +96,8 @@ public class PredictionCodegen extends AbstractGenerator {
         return ofPredictions(dmnResources);
     }
 
-    /**
-     *
-     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromFiles(...))
-     */
-    @Deprecated
-    public static PredictionCodegen ofFiles(Path basePath, List<File> files) {
-        return ofPredictions(parseFiles(basePath, files));
-    }
-
     private static PredictionCodegen ofPredictions(List<PMMLResource> resources) {
         return new PredictionCodegen(resources);
-    }
-
-    private static List<PMMLResource> parseFiles(Path path, List<File> files) {
-        return parsePredictions(path, files.stream().map(FileSystemResource::new).collect(toList()));
     }
 
     private static List<PMMLResource> parsePredictions(Path path, List<Resource> resources) {

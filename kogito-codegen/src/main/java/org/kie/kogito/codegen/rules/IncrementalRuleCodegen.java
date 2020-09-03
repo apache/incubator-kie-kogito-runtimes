@@ -98,54 +98,13 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return ofResources(dmnResources);
     }
 
-    /**
-     *
-     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(...))
-     */
-    @Deprecated
-    public static IncrementalRuleCodegen ofPath(Path... paths) {
-        Set<Resource> resources = new HashSet<>();
-        for (Path path : paths) {
-            try (Stream<File> files = Files.walk( path ).map( Path::toFile )) {
-                resources.addAll( toResources( files ) );
-            } catch (IOException e) {
-                throw new UncheckedIOException( e );
-            }
-        }
-        return new IncrementalRuleCodegen(resources);
-    }
-
-    /**
-     *
-     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(...))
-     */
-    @Deprecated
-    public static IncrementalRuleCodegen ofPath(Path basePath, ResourceType resourceType) {
-        try (Stream<File> files = Files.walk(basePath).map(Path::toFile)) {
-            Set<Resource> resources = toResources(files, resourceType);
-            return new IncrementalRuleCodegen(resources);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    /**
-     *
-     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromFiles(...))
-     */
-    @Deprecated
-    public static IncrementalRuleCodegen ofFiles(Collection<File> files, ResourceType resourceType) {
-        return new IncrementalRuleCodegen(toResources(files.stream(), resourceType));
-    }
-
-    /**
-     *
-     * @deprecated no alternative
-     */
-    @Deprecated
-    public static IncrementalRuleCodegen ofJavaFiles(Collection<File> files) {
+    public static IncrementalRuleCodegen ofJavaResources(Collection<CollectedResource> resources) {
         List<Resource> generatedRules =
-                AnnotatedClassPostProcessor.scan(files.stream().map(File::toPath)).generate();
+                AnnotatedClassPostProcessor.scan(
+                        resources.stream()
+                                .filter(r -> r.resource().getResourceType() == ResourceType.JAVA)
+                                .map(r -> new File(r.resource().getSourcePath()))
+                                .map(File::toPath)).generate();
         return ofResources(generatedRules);
     }
 
@@ -158,11 +117,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return new IncrementalRuleCodegen(toResources(files.stream()));
     }
 
-    /**
-     *
-     * @deprecated use DecisionCodegen.ofCollectedResources()
-     */
-    @Deprecated public static IncrementalRuleCodegen ofResources(Collection<Resource> resources) {
+    public static IncrementalRuleCodegen ofResources(Collection<Resource> resources) {
         return new IncrementalRuleCodegen(resources);
     }
 
