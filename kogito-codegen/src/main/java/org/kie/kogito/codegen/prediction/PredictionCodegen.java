@@ -93,6 +93,7 @@ public class PredictionCodegen extends AbstractGenerator {
     public static PredictionCodegen ofCollectedResources(boolean isJPMMLAvailable,
                                                          Collection<CollectedResource> resources) {
         if (isJPMMLAvailable) {
+            logger.info("jpmml libraries available on classpath, skipping kie-pmml parsing and compilation");
             return ofPredictions(Collections.emptyList());
         }
         List<PMMLResource> dmnResources = resources.stream()
@@ -105,6 +106,7 @@ public class PredictionCodegen extends AbstractGenerator {
 
     public static PredictionCodegen ofJar(boolean isJPMMLAvailable, Path... jarPaths) throws IOException {
         if (isJPMMLAvailable) {
+            logger.info("jpmml libraries available on classpath, skipping kie-pmml parsing and compilation");
             return ofPredictions(Collections.emptyList());
         }
         List<PMMLResource> pmmlResources = new ArrayList<>();
@@ -131,6 +133,7 @@ public class PredictionCodegen extends AbstractGenerator {
 
     public static PredictionCodegen ofPath(boolean isJPMMLAvailable, Path... paths) throws IOException {
         if (isJPMMLAvailable) {
+            logger.info("jpmml libraries available on classpath, skipping kie-pmml parsing and compilation");
             return ofPredictions(Collections.emptyList());
         }
         List<PMMLResource> resources = new ArrayList<>();
@@ -148,6 +151,7 @@ public class PredictionCodegen extends AbstractGenerator {
 
     public static PredictionCodegen ofFiles(boolean isJPMMLAvailable, Path basePath, List<File> files) {
         if (isJPMMLAvailable) {
+            logger.info("jpmml libraries available on classpath, skipping kie-pmml parsing and compilation");
             return ofPredictions(Collections.emptyList());
         }
         return ofPredictions(parseFiles(basePath, files));
