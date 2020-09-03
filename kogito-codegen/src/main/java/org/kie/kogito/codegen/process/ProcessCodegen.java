@@ -162,6 +162,8 @@ public class ProcessCodegen extends AbstractGenerator {
             return workflowParser.parseWorkFlow(r.getReader());
         } catch (IOException e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
+        } catch (RuntimeException e) {
+            throw new ProcessCodegenException(r.getSourcePath(), e);
         }
     }
 
@@ -173,6 +175,8 @@ public class ProcessCodegen extends AbstractGenerator {
             return xmlReader.read(r.getReader());
         } catch (SAXException | IOException e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
+        } catch (RuntimeException e) {
+            throw new ProcessCodegenException(r.getSourcePath(), e);
         }
     }
 
