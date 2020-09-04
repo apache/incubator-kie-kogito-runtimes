@@ -91,7 +91,8 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
 
     private String getDecisionModelRelativeResourcePath(CollectedResource resource) {
         String source = getDecisionModelJarResourcePath(resource);
-        Path relativizedPath = resource.basePath().relativize(Paths.get(source));
+        Path sourcePath = Paths.get(source).toAbsolutePath();
+        Path relativizedPath = resource.basePath().toAbsolutePath().relativize(sourcePath);
         return "/" + relativizedPath.toString().replace(File.separatorChar, '/');
     }
 
