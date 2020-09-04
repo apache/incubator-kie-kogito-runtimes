@@ -17,30 +17,19 @@ package org.kie.kogito.codegen.process;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
-import org.drools.core.io.internal.InternalResource;
 import org.drools.core.util.StringUtils;
 import org.drools.core.xml.SemanticModules;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
@@ -56,7 +45,6 @@ import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
-import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
@@ -71,15 +59,12 @@ import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsMessageProducerGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator;
-import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.kie.kogito.rules.units.UndefinedGeneratedRuleUnitVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import static java.util.stream.Collectors.toList;
-import static org.drools.core.util.IoUtils.readBytesFromInputStream;
-import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 /**

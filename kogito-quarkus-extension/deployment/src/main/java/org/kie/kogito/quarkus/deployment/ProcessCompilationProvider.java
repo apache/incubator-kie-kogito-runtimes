@@ -18,7 +18,6 @@ package org.kie.kogito.quarkus.deployment;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 

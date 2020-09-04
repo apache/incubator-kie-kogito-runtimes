@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.Generator;
 import org.kie.kogito.codegen.io.CollectedResource;

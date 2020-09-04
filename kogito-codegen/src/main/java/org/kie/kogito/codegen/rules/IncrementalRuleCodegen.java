@@ -16,17 +16,12 @@
 package org.kie.kogito.codegen.rules;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,8 +29,6 @@ import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -47,9 +40,7 @@ import org.drools.compiler.compiler.DecisionTableFactory;
 import org.drools.compiler.compiler.DroolsError;
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
-import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
-import org.drools.core.io.internal.InternalResource;
 import org.drools.modelcompiler.builder.GeneratedFile;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.kie.api.builder.model.KieBaseModel;
@@ -79,12 +70,9 @@ import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.units.AssignableChecker;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 
-import static java.util.stream.Collectors.toList;
-
 import static com.github.javaparser.StaticJavaParser.parse;
+import static java.util.stream.Collectors.toList;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
-import static org.drools.core.util.IoUtils.readBytesFromInputStream;
-import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 import static org.kie.kogito.codegen.ApplicationGenerator.logger;
 
@@ -106,15 +94,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                                 .map(r -> new File(r.resource().getSourcePath()))
                                 .map(File::toPath)).generate();
         return ofResources(generatedRules);
-    }
-
-    /**
-     *
-     * @deprecated use DecisionCodegen.ofCollectedResources(CollectedResource.fromFiles(...))
-     */
-    @Deprecated
-    public static IncrementalRuleCodegen ofFiles(Collection<File> files) {
-        return new IncrementalRuleCodegen(toResources(files.stream()));
     }
 
     public static IncrementalRuleCodegen ofResources(Collection<Resource> resources) {
