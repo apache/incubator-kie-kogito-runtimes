@@ -128,7 +128,10 @@ public class CollectedResource {
     private final Resource resource;
 
     public CollectedResource(Path basePath, Resource resource) {
-        if (! Paths.get(resource.getSourcePath()).toAbsolutePath().startsWith(basePath.toAbsolutePath())) {
+        // basePath must be a prefix of sourcePath
+        // unless sourcePath is a jar file, then the check is ignored
+        if (! resource.getSourcePath().endsWith(".jar") &&
+                ! Paths.get(resource.getSourcePath()).toAbsolutePath().startsWith(basePath.toAbsolutePath())) {
             throw new IllegalArgumentException(
                     String.format("basePath %s is not a prefix to the resource sourcePath %s",
                                   basePath, resource.getSourcePath()));
