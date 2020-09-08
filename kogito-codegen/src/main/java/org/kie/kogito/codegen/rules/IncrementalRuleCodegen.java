@@ -81,7 +81,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     public static IncrementalRuleCodegen ofCollectedResources(Collection<CollectedResource> resources) {
         List<Resource> dmnResources = resources.stream()
                 .map(CollectedResource::resource)
-                .filter(IncrementalRuleCodegen::isSupportedResourceType)
+                .filter(r -> r.getResourceType() == ResourceType.DRL || r.getResourceType() == ResourceType.DTABLE)
                 .collect(toList());
         return ofResources(dmnResources);
     }
@@ -100,37 +100,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return new IncrementalRuleCodegen(resources);
     }
 
-    private static Set<Resource> toResources(Stream<File> files, ResourceType resourceType) {
-        return files.filter(f -> resourceType.matchesExtension(f.getName())).map(FileSystemResource::new).peek(r -> r.setResourceType(resourceType)).collect(Collectors.toSet());
-    }
-
-    private static Set<Resource> toResources(Stream<File> files) {
-        return files.map(FileSystemResource::new).peek(r -> r.setResourceType(typeOf(r))).filter(r -> r.getResourceType() != null).collect(Collectors.toSet());
-    }
-
-    private static boolean isSupportedResourceType(Resource r) {
-        for (ResourceType rt : resourceTypes) {
-            if (r.getResourceType() == rt) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static ResourceType typeOf(FileSystemResource r) {
-        for (ResourceType rt : resourceTypes) {
-            if (rt.matchesExtension(r.getFile().getName())) {
-                return rt;
-            }
-        }
-        return null;
-    }
-
-
-    private static final ResourceType[] resourceTypes = {
-            ResourceType.DRL,
-            ResourceType.DTABLE
-    };
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private final Collection<Resource> resources;
     private RuleUnitContainerGenerator moduleGenerator;
@@ -149,11 +118,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private final boolean decisionTableSupported;
     private final Map<String, RuleUnitConfig> configs;
 
-
-    @Deprecated
-    public IncrementalRuleCodegen(Path basePath, Collection<File> files, ResourceType resourceType) {
-        this(toResources(files.stream(), resourceType));
-    }
 
     private IncrementalRuleCodegen(Collection<Resource> resources) {
         this.resources = resources;
