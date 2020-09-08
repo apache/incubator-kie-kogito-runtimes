@@ -10,7 +10,8 @@ public class PredictionModels implements org.kie.kogito.prediction.PredictionMod
     public final static java.util.function.Function<String, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactoryFunction;
 
     static {
-        final java.util.Map<org.kie.api.KieBase, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactories = org.kie.kogito.pmml.PMMLKogito.createKieRuntimeFactories();
+        final java.util.List<org.kie.kogito.prediction.PredictionRuleMappers> predictionRuleMappers = null;
+        final java.util.Map<org.kie.api.KieBase, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactories = org.kie.kogito.pmml.PMMLKogito.createKieRuntimeFactories(predictionRuleMappers);
         kieRuntimeFactoryFunction = new java.util.function.Function<java.lang.String, org.kie.api.runtime.KieRuntimeFactory>() {
             @Override
             public org.kie.api.runtime.KieRuntimeFactory apply(java.lang.String s) {

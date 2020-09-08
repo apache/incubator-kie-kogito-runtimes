@@ -15,10 +15,10 @@
  */
 package org.kie.kogito.prediction;
 
-import org.drools.model.Model;
+import java.util.List;
 
-public interface PredictionRuleMapper {
+public interface PredictionRuleMappers {
 
-    Model getModel();
+    List<PredictionRuleMapper> getPredictionRuleMappers();
 
 }

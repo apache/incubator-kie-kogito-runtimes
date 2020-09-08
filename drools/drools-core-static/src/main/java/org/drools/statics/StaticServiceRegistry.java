@@ -27,6 +27,7 @@ import org.kie.api.internal.assembler.KieAssemblers;
 import org.kie.api.internal.runtime.KieRuntimeService;
 import org.kie.api.internal.runtime.KieRuntimes;
 import org.kie.api.internal.utils.ServiceRegistry;
+import org.kie.api.internal.weaver.KieWeaverService;
 import org.kie.api.internal.weaver.KieWeavers;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceConfiguration;
@@ -71,7 +72,10 @@ public class StaticServiceRegistry implements ServiceRegistry {
 
         constructorMap.put("TimerService", SimpleInstanceCreator.constructor("org.drools.core.time.impl.JDKTimerService"));
 
-        registerKieRuntimeService("org.kie.pmml.evaluator.api.executor.PMMLRuntime", "org.kie.pmml.evaluator.core.service.PMMLRuntimeService");
+        registerKieRuntimeService("org.kie.pmml.evaluator.api.executor.PMMLRuntime", "org.kie.pmml.evaluator.core.service.PMMLRuntimeService", false);
+        registerKieWeaverService("org.kie.pmml.evaluator.assembler.PMMLWeaverService", false);
+        registerService("org.drools.core.runtime.process.ProcessRuntimeFactoryService", "org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl", false);
+
     }
 
     private void registerService(String service, String implementation, boolean mandatory) {
@@ -86,14 +90,33 @@ public class StaticServiceRegistry implements ServiceRegistry {
         }
     }
 
-    private void registerKieRuntimeService(String runtimeName, String kieRuntimeServiceImplementation) {
+    private void registerKieRuntimeService(String runtimeName, String kieRuntimeServiceImplementation, boolean mandatory) {
         try {
             KieRuntimeService kieRuntimeService = (KieRuntimeService)SimpleInstanceCreator.instance(kieRuntimeServiceImplementation);
             ((KieRuntimes) serviceMap.get(KieRuntimes.class)).getRuntimes().put(runtimeName, kieRuntimeService);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            if (mandatory) {
+                throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+            } else {
+                log.debug("Ignored non-mandatory KieRuntimes service load error", e);
+            }
         }
     }
+
+    private void registerKieWeaverService(String kieWeaverServiceImplementation, boolean mandatory) {
+        try {
+            final KieWeaversImpl kieWeavers = (KieWeaversImpl) serviceMap.get(KieWeavers.class);
+            KieWeaverService kieWeaverService = (KieWeaverService)SimpleInstanceCreator.instance(kieWeaverServiceImplementation);
+            kieWeavers.accept(kieWeaverService);
+        } catch (Exception e) {
+            if (mandatory) {
+                throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+            } else {
+                log.debug("Ignored non-mandatory KieWeaverService service load error", e);
+            }
+        }
+    }
+
 
     @Override
     public <T> T get(Class<T> cls) {

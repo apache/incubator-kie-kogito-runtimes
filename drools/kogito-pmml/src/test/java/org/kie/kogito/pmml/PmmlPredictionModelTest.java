@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.kie.api.KieBase;
 import org.kie.api.pmml.PMML4Result;
 import org.kie.api.pmml.PMMLRequestData;
 import org.kie.api.pmml.ParameterInfo;
@@ -92,6 +93,11 @@ class PmmlPredictionModelTest {
             @Override
             public PMML4Result evaluate(String s, PMMLContext pmmlContext) {
                 return PMML_4_RESULT;
+            }
+
+            @Override
+            public KieBase getKnowledgeBase() {
+                return null;
             }
         };
     }
