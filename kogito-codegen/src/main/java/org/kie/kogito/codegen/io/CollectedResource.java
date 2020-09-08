@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -127,6 +128,11 @@ public class CollectedResource {
     private final Resource resource;
 
     public CollectedResource(Path basePath, Resource resource) {
+        if (! Paths.get(resource.getSourcePath()).toAbsolutePath().startsWith(basePath.toAbsolutePath())) {
+            throw new IllegalArgumentException(
+                    String.format("basePath %s is not a prefix to the resource sourcePath %s",
+                                  basePath, resource.getSourcePath()));
+        }
         this.basePath = basePath;
         this.resource = resource;
     }
