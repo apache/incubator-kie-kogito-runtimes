@@ -17,7 +17,6 @@ package org.kie.kogito.codegen.rules;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -40,7 +37,6 @@ import org.drools.compiler.compiler.DecisionTableFactory;
 import org.drools.compiler.compiler.DroolsError;
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
-import org.drools.core.io.impl.FileSystemResource;
 import org.drools.modelcompiler.builder.GeneratedFile;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.kie.api.builder.model.KieBaseModel;
