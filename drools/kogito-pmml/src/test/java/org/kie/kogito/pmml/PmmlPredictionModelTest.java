@@ -95,10 +95,6 @@ class PmmlPredictionModelTest {
                 return PMML_4_RESULT;
             }
 
-            @Override
-            public KieBase getKnowledgeBase() {
-                return null;
-            }
         };
     }
 
