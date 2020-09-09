@@ -16,21 +16,13 @@
 package org.kie.kogito.codegen.prediction;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
@@ -39,10 +31,7 @@ import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.compiler.lang.descr.PackageDescr;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseImpl;
-import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.DescrResource;
-import org.drools.core.io.impl.FileSystemResource;
-import org.drools.core.io.internal.InternalResource;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
@@ -63,16 +52,16 @@ import org.kie.pmml.commons.model.HasSourcesMap;
 import org.kie.pmml.commons.model.KiePMMLFactoryModel;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.models.drools.commons.model.KiePMMLDroolsModelWithSources;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
-import static org.drools.core.util.IoUtils.readBytesFromInputStream;
-import static org.kie.api.io.ResourceType.determineResourceType;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
-import static org.kie.kogito.codegen.ApplicationGenerator.logger;
 import static org.kie.pmml.evaluator.assembler.service.PMMLCompilerService.getKiePMMLModelsFromResourceFromPlugin;
 
 public class PredictionCodegen extends AbstractGenerator {
 
+    private static final Logger logger = LoggerFactory.getLogger(PredictionCodegen.class);
     private final List<PMMLResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
     private String packageName;
@@ -89,7 +78,12 @@ public class PredictionCodegen extends AbstractGenerator {
         this.moduleGenerator = new PredictionContainerGenerator(applicationCanonicalName, resources);
     }
 
-    public static PredictionCodegen ofCollectedResources(Collection<CollectedResource> resources) {
+    public static PredictionCodegen ofCollectedResources(boolean isJPMMLAvailable,
+                                                         Collection<CollectedResource> resources) {
+        if (isJPMMLAvailable) {
+            logger.info("jpmml libraries available on classpath, skipping kie-pmml parsing and compilation");
+            return ofPredictions(Collections.emptyList());
+        }
         List<PMMLResource> pmmlResources = resources.stream()
                 .filter(r -> r.resource().getResourceType() == ResourceType.PMML)
                 .flatMap(r -> parsePredictions(r.basePath(), Collections.singletonList(r.resource())).stream())
@@ -97,53 +91,8 @@ public class PredictionCodegen extends AbstractGenerator {
         return ofPredictions(pmmlResources);
     }
 
-    public static PredictionCodegen ofJar(Path... jarPaths) throws IOException {
-        List<PMMLResource> pmmlResources = new ArrayList<>();
-        for (Path jarPath : jarPaths) {
-            List<Resource> resources = new ArrayList<>();
-            try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
-                Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    ResourceType resourceType = determineResourceType(entry.getName());
-                    if (resourceType == ResourceType.PMML) {
-                        InternalResource resource =
-                                new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
-                        resource.setResourceType(resourceType);
-                        resource.setSourcePath(entry.getName());
-                        resources.add(resource);
-                    }
-                }
-            }
-            pmmlResources.addAll(parsePredictions(jarPath, resources));
-        }
-        return ofPredictions(pmmlResources);
-    }
-
-    public static PredictionCodegen ofPath(Path... paths) throws IOException {
-        List<PMMLResource> resources = new ArrayList<>();
-        for (Path path : paths) {
-            Path srcPath = Paths.get(path.toString());
-            try (Stream<Path> filesStream = Files.walk(srcPath)) {
-                List<File> files = filesStream.filter(p -> p.toString().endsWith(".pmml"))
-                        .map(Path::toFile)
-                        .collect(Collectors.toList());
-                resources.addAll(parseFiles(srcPath, files));
-            }
-        }
-        return ofPredictions(resources);
-    }
-
-    public static PredictionCodegen ofFiles(Path basePath, List<File> files) {
-        return ofPredictions(parseFiles(basePath, files));
-    }
-
     private static PredictionCodegen ofPredictions(List<PMMLResource> resources) {
         return new PredictionCodegen(resources);
-    }
-
-    private static List<PMMLResource> parseFiles(Path path, List<File> files) {
-        return parsePredictions(path, files.stream().map(FileSystemResource::new).collect(toList()));
     }
 
     private static List<PMMLResource> parsePredictions(Path path, List<Resource> resources) {
@@ -216,30 +165,29 @@ public class PredictionCodegen extends AbstractGenerator {
                            final CompositeKnowledgeBuilder batch) {
         for (KiePMMLModel model : kiepmmlModels) {
             if (model.getName() == null || model.getName().isEmpty()) {
-                String errorMessage = String.format("Model name should not be empty inside %s",
-                                                    resource.getModelPath());
-                throw new RuntimeException(errorMessage);
-            }
-            if (!(model instanceof HasSourcesMap)) {
-                String errorMessage = String.format("Expecting HasSourcesMap instance, retrieved %s inside %s",
-                                                    model.getClass().getName(),
-                                                    resource.getModelPath());
-                throw new RuntimeException(errorMessage);
-            }
-            Map<String, String> sourceMap = ((HasSourcesMap) model).getSourcesMap();
-            for (Map.Entry<String, String> sourceMapEntry : sourceMap.entrySet()) {
-                String path = sourceMapEntry.getKey().replace('.', File.separatorChar) + ".java";
-                storeFile(GeneratedFile.Type.PMML, path, sourceMapEntry.getValue());
-            }
-            if (model instanceof KiePMMLDroolsModelWithSources) {
-                PackageDescr packageDescr = ((KiePMMLDroolsModelWithSources) model).getPackageDescr();
-                batch.add(new DescrResource(packageDescr), ResourceType.DESCR);
-            }
-            if (!(model instanceof KiePMMLFactoryModel)) {
+                    String errorMessage = String.format("Model name should not be empty inside %s", resource.getModelPath());
+                    throw new RuntimeException(errorMessage);
+                }
+                if (!(model instanceof HasSourcesMap)) {
+                    String errorMessage = String.format("Expecting HasSourcesMap instance, retrieved %s inside %s",
+                                                        model.getClass().getName(),
+                                                        resource.getModelPath());
+                    throw new RuntimeException(errorMessage);
+                }
+                Map<String, String> sourceMap = ((HasSourcesMap) model).getSourcesMap();
+                for (Map.Entry<String, String> sourceMapEntry : sourceMap.entrySet()) {
+                    String path = sourceMapEntry.getKey().replace('.', File.separatorChar) + ".java";
+                    storeFile(GeneratedFile.Type.PMML, path, sourceMapEntry.getValue());
+                }
+                if (model instanceof KiePMMLDroolsModelWithSources) {
+                    PackageDescr packageDescr = ((KiePMMLDroolsModelWithSources)model).getPackageDescr();
+                    batch.add( new DescrResource( packageDescr ), ResourceType.DESCR );
+                }
+                if (!(model instanceof KiePMMLFactoryModel)) {
                 PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(model,
                                                                                             applicationCanonicalName)
                         .withDependencyInjection(annotator);
-                storeFile(GeneratedFile.Type.PMML, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
+                    storeFile(GeneratedFile.Type.PMML, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
             }
             if (model instanceof HasNestedModels) {
                 addModels(((HasNestedModels) model).getNestedModels(), resource, batch);

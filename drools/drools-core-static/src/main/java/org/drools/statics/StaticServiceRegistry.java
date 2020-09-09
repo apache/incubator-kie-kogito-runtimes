@@ -74,7 +74,6 @@ public class StaticServiceRegistry implements ServiceRegistry {
 
         registerKieRuntimeService("org.kie.pmml.evaluator.api.executor.PMMLRuntime", "org.kie.pmml.evaluator.core.service.PMMLRuntimeService", false);
         registerKieWeaverService("org.kie.pmml.evaluator.assembler.PMMLWeaverService", false);
-        registerService("org.drools.core.runtime.process.ProcessRuntimeFactoryService", "org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl", false);
 
     }
 
@@ -115,8 +114,6 @@ public class StaticServiceRegistry implements ServiceRegistry {
                 log.debug("Ignored non-mandatory KieWeaverService service load error", e);
             }
         }
-    }
-
 
     @Override
     public <T> T get(Class<T> cls) {
