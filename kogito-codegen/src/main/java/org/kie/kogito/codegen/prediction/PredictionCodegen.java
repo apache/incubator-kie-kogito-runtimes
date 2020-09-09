@@ -150,7 +150,8 @@ public class PredictionCodegen extends AbstractGenerator {
         for (PMMLResource resource : resources) {
             ModelBuilderImpl<KogitoPackageSources> modelBuilder =
                     new ModelBuilderImpl<>(KogitoPackageSources::dumpSources,
-                                                                                         new KnowledgeBuilderConfigurationImpl(getClass().getClassLoader()), new ReleaseIdImpl("dummy:dummy:0.0.0"), true, false);
+                                           new KnowledgeBuilderConfigurationImpl(getClass().getClassLoader()),
+                                           new ReleaseIdImpl("dummy:dummy:0.0.0"), true, false);
             CompositeKnowledgeBuilder batch = modelBuilder.batch();
             List<KiePMMLModel> kiepmmlModels = resource.getKiePmmlModels();
             addModels(kiepmmlModels, resource, batch);
