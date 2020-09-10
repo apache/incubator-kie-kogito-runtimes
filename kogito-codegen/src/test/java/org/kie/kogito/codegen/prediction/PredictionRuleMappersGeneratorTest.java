@@ -25,6 +25,5 @@ class PredictionRuleMappersGeneratorTest {
         List<String> mod = generatedRuleMappers.stream().map(gen -> "new " + gen + "()").collect(Collectors.toList());
         expected = "Arrays.asList(" + String.join(", ", mod) + ");";
         assertTrue(retrieved.contains(expected));
-        System.out.println(retrieved);
     }
 }
