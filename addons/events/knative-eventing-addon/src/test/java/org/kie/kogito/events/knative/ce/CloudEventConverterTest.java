@@ -16,19 +16,20 @@ package org.kie.kogito.events.knative.ce;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
+import io.cloudevents.jackson.JsonFormat;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CloudEventConverterTest {
+
+    static final ObjectMapper objectMapper = new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
 
     @Test
     void verifyBasicCloudEventConversion() {
@@ -47,14 +48,12 @@ class CloudEventConverterTest {
                         .withData(payload.getBytes())
                         .build();
 
-        final String ceJson = CloudEventConverter.toJson(cloudEvent);
-        assertThat(ceJson).isNotEmpty().contains("Oi Mundo!");
+        final String ceJson = new String(cloudEvent.getData());
+        assertThat(ceJson).isNotEmpty().isEqualTo("Oi Mundo!");
     }
 
     @Test
     void verifyDataEventCloudEventConversion() throws IOException {
-        final ObjectMapper json = new ObjectMapper();
-        json.setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
         // this is a typical HTTP post message
         final String messageJson = "{\n" +
                 "  \"specversion\": \"0.3\",\n" +
@@ -69,22 +68,22 @@ class CloudEventConverterTest {
                 "\t\"nationality\" : \"Polish\"\n" +
                 "\t}\n" +
                 "}";
-        final PersonDataEvent dataEventJson = json.readValue(messageJson, PersonDataEvent.class);
+        final PersonDataEvent dataEventJson = objectMapper.readValue(messageJson, PersonDataEvent.class);
         assertThat(dataEventJson.getData().getEmail()).isEqualTo("jan.kowalski@example.com");
         assertThat(dataEventJson).isNotNull();
 
-        final CloudEvent event = CloudEventConverter.toCloudEvent(messageJson.getBytes());
+        final CloudEvent event = objectMapper.readValue(messageJson, CloudEvent.class);
         assertThat(event).isNotNull();
-        final Person person = json.readValue(event.getData(), Person.class);
+        final Person person = objectMapper.readValue(event.getData(), Person.class);
         assertThat(person).isNotNull();
         assertThat(person.getEmail()).isEqualTo("jan.kowalski@example.com");
 
-        final String convertedEvent = CloudEventConverter.toJson(event);
+        final String convertedEvent = objectMapper.writeValueAsString(event);
         assertThat(convertedEvent).contains("jan.kowalski@example.com");
     }
 
     @Test
-    void verifyDataEventWithProcessDataCloudEventConversion() {
+    void verifyDataEventWithProcessDataCloudEventConversion() throws IOException {
         // this is a typical HTTP post message
         final String messageJson = "{\n" +
                 "  \"kogitoReferenceId\": \"12345\",\n" +
@@ -101,11 +100,11 @@ class CloudEventConverterTest {
                 "\t}\n" +
                 "}";
 
-        final CloudEvent event = CloudEventConverter.toCloudEvent(messageJson.getBytes());
+        final CloudEvent event = objectMapper.readValue(messageJson.getBytes(), CloudEvent.class);
         assertThat(event).isNotNull();
         assertThat(event.getExtensionNames()).isNotEmpty();
 
-        final String convertedEvent = CloudEventConverter.toJson(event);
+        final String convertedEvent = new String(objectMapper.writeValueAsBytes(event));
         assertThat(convertedEvent)
                 .contains("jan.kowalski@example.com")
                 .contains("kogitoReferenceId")

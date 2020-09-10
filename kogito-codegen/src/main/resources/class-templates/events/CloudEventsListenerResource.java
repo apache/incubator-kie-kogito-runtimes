@@ -1,13 +1,12 @@
 package org.kie.kogito.app;
 
 import io.cloudevents.CloudEvent;
+import io.cloudevents.jackson.JsonFormat;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.kie.kogito.events.knative.ce.CloudEventConverter;
 import org.kie.kogito.events.knative.ce.Printer;
-import org.kie.kogito.events.knative.ce.http.ExtMediaType;
 import org.kie.kogito.events.knative.ce.http.Responses;
-import org.kie.kogito.events.knative.ce.http.RestEasyHttpRequestConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,11 +37,10 @@ public class CloudEventListenerResource {
     }
 
     @POST()
-    @Consumes({MediaType.APPLICATION_JSON, ExtMediaType.CLOUDEVENTS_JSON, MediaType.TEXT_PLAIN})
+    @Consumes({MediaType.APPLICATION_JSON, JsonFormat.CONTENT_TYPE, MediaType.TEXT_PLAIN})
     @Produces(MediaType.APPLICATION_JSON)
-    public javax.ws.rs.core.Response cloudEventListener(@Context HttpRequest request) {
+    public javax.ws.rs.core.Response cloudEventListener(CloudEvent event) {
         try {
-            final CloudEvent cloudEvent = httpRequestConverter.from(request);
             LOGGER.debug("CloudEvent received: {}", Printer.beautify(cloudEvent));
             if (emitters.get(cloudEvent.getType()) != null) {
                 // convert CloudEvent to JSON and send to internal channels
