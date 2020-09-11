@@ -44,7 +44,17 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = KogitoSpringbootApplication.class)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
+        classes = KogitoSpringbootApplication.class,
+        properties = {
+            "spring.kafka.consumer.group-id=kogito-group",
+            "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
+            "spring.kafka.consumer.value-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
+            "spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer",
+            "spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.StringSerializer"
+        }
+)
 @ContextConfiguration(initializers = KafkaSpringBootTestResource.class)
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PingPongMessageTest {
