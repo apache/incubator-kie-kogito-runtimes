@@ -51,7 +51,6 @@ public class SimpleModifyHotReloadTest {
                     JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
                             .addAsResource("application.properties.stronglytyped", "/application.properties")
                             .addAsResource("TrafficViolation.txt", DMN_RESOURCE_FILE);
-                    System.out.println(ja.getContent());
                     return ja;
                 }
             });
