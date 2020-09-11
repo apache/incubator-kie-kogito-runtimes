@@ -56,14 +56,10 @@ public abstract class ConditionalSpringBootTestResource implements ApplicationCo
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
-        System.out.println("----------------INITIALIZE: "+condition.isEnabled());
-
         if (condition.isEnabled()) {
             testResource.start();
             updateBeanFactory(applicationContext.getBeanFactory());
-            System.out.println("----------------update spring context start");
             updateContextProperty(applicationContext, getKogitoProperty(), getKogitoPropertyValue());
-            System.out.println("----------------update spring context end");
         }
     }
 

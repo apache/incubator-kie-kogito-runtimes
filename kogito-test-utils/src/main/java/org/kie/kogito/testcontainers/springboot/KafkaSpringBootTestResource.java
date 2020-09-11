@@ -19,7 +19,6 @@ import org.kie.kogito.kafka.KafkaClient;
 import org.kie.kogito.resources.ConditionalSpringBootTestResource;
 import org.kie.kogito.testcontainers.KogitoKafkaContainer;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Kafka spring boot resource that works within the test lifecycle.
@@ -44,22 +43,6 @@ public class KafkaSpringBootTestResource extends ConditionalSpringBootTestResour
 
         beanFactory.registerSingleton(KafkaClient.class.getName(), new KafkaClient("localhost:" + getTestResource().getMappedPort()));
     }
-//
-//    @Override
-//    public void initialize(ConfigurableApplicationContext applicationContext) {
-//
-//        if (condition().isEnabled()) {
-//            updateContextProperty(applicationContext, "spring.kafka.consumer.group-id", "kogito-group");
-//            updateContextProperty(applicationContext, "spring.kafka.consumer.key-deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-//            updateContextProperty(applicationContext, "spring.kafka.consumer.value-deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-//            updateContextProperty(applicationContext, "spring.kafka.producer.key-serializer", "org.apache.kafka.common.serialization.StringSerializer");
-//            updateContextProperty(applicationContext, "spring.kafka.producer.value-serializer", "org.apache.kafka.common.serialization.StringSerializer");
-//        }
-//
-//        super.initialize(applicationContext);
-//
-//    }
-
 
     public static class Conditional extends KafkaSpringBootTestResource {
 

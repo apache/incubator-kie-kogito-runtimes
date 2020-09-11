@@ -46,57 +46,13 @@ import static org.hamcrest.CoreMatchers.equalTo;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-        classes = KogitoSpringbootApplication.class,
-        properties = {
-            "spring.kafka.consumer.group-id=kogito-group",
-            "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
-            "spring.kafka.consumer.value-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
-            "spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer",
-            "spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.StringSerializer"
-        }
+        classes = KogitoSpringbootApplication.class
 )
 @ContextConfiguration(initializers = KafkaSpringBootTestResource.class)
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PingPongMessageTest {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
-    
-//    @Value("${spring.kafka.bootstrap-servers}")
-//    String kafkaServer;
-
-    @Autowired
-    private KafkaAdmin admin;
-
-//    @Bean
-//    NewTopic topic1(){
-//        return new NewTopic("pong_start", -1, (short) -1);
-//    }
-//
-//    @Bean
-//    NewTopic topic2(){
-//        return new NewTopic("pong_end", -1, (short) -1);
-//    }
-
-    @BeforeEach
-    void init(){
-        try {
-//            System.out.println("admin = " + admin);
-//        System.out.println("kafkaServer = " + kafkaServer);
-//        KafkaAdmin admin = new KafkaAdmin(Collections.singletonMap(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer));
-//            AdminClient client = AdminClient.create(admin.getConfigurationProperties());
-//            System.out.println("-- creating --");
-//            client.createTopics(Arrays.asList(
-//                    new NewTopic("pong_start", 1, (short) 1),
-//                    new NewTopic("pong_end", 1, (short) 1)
-//            ));
-//            System.out.println("-- listing --");
-//            client.listTopics().names().get().forEach(System.out::println);
-//            client.close();
-        } catch (Exception ex){
-            ex.printStackTrace();
-        }
     }
 
     @Test
