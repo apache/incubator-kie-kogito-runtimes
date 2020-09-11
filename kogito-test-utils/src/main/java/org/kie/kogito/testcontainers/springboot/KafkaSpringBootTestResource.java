@@ -42,7 +42,7 @@ public class KafkaSpringBootTestResource extends ConditionalSpringBootTestResour
         super.updateBeanFactory(beanFactory);
 
 //        beanFactory.destroyBean(KafkaClient.class.getName());
-        beanFactory.registerSingleton(KafkaClient.class.getName(), new KafkaClient("localhost:" + getTestResource().getMappedPort()));
+//        beanFactory.registerSingleton(KafkaClient.class.getName(), new KafkaClient("localhost:" + getTestResource().getMappedPort()));
     }
 
     public static class Conditional extends KafkaSpringBootTestResource {
