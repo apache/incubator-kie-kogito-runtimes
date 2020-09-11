@@ -44,8 +44,8 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
-@ContextConfiguration(initializers = KafkaSpringBootTestResource.Conditional.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = KogitoSpringbootApplication.class)
+@ContextConfiguration(initializers = KafkaSpringBootTestResource.class)
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PingPongMessageTest {
 
@@ -53,8 +53,8 @@ public class PingPongMessageTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
     
-    @Value("${spring.kafka.bootstrap-servers}")
-    String kafkaServer;
+//    @Value("${spring.kafka.bootstrap-servers}")
+//    String kafkaServer;
 
     @Autowired
     private KafkaAdmin admin;
@@ -73,7 +73,7 @@ public class PingPongMessageTest {
     void init(){
         try {
 //            System.out.println("admin = " + admin);
-        System.out.println("kafkaServer = " + kafkaServer);
+//        System.out.println("kafkaServer = " + kafkaServer);
 //        KafkaAdmin admin = new KafkaAdmin(Collections.singletonMap(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer));
 //            AdminClient client = AdminClient.create(admin.getConfigurationProperties());
 //            System.out.println("-- creating --");
