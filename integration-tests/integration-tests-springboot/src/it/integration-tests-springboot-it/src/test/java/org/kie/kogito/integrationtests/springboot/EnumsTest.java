@@ -53,36 +53,36 @@ class EnumsTest extends BaseRestTest {
 
         String pid = given()
                 .contentType(ContentType.JSON)
-                .when()
+            .when()
                 .body(params)
                 .post("/cinema")
-                .then()
+            .then()
                 .statusCode(201)
                 .body("id", not(emptyOrNullString()))
                 .body("movie.name", equalTo(movie.getName()))
                 .body("movie.genre", equalTo(movie.getGenre().name()))
                 .body("movie.rating", equalTo(movie.getRating().name()))
                 .body("movie.releaseYear", equalTo(movie.getReleaseYear()))
-                .extract()
+            .extract()
                 .path("id");
 
         WorkItem task = given()
-                .when()
+            .when()
                 .get("/cinema/{pid}/tasks", pid)
-                .then()
+            .then()
                 .statusCode(200)
                 .body("$.size", is(1))
-                .extract()
+            .extract()
                 .as(TestWorkItem[].class)[0];
 
         assertEquals("ReviewRatingTask", task.getName());
 
         given()
                 .contentType(ContentType.JSON)
-                .when()
+            .when()
                 .body(Collections.singletonMap("reviewedRating", Rating.PG_13))
                 .post("/cinema/{pid}/ReviewRatingTask/{taskId}", pid, task.getId())
-                .then()
+            .then()
                 .statusCode(200)
                 .body("movie.rating", equalTo(Rating.PG_13.name()));
     }

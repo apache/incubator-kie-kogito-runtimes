@@ -127,7 +127,6 @@ public class MessageConsumerGenerator {
                              fd -> isApplicationField(fd)).forEach(fd -> initializeApplicationField(fd, template));
         }
         template.getMembers().sort(new BodyDeclarationComparator());
-        System.out.println("consumer clazz = \n\n" + clazz);
         return clazz.toString();
     }
     

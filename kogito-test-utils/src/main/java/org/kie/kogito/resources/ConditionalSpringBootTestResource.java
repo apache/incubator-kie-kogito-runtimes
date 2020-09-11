@@ -50,10 +50,6 @@ public abstract class ConditionalSpringBootTestResource implements ApplicationCo
         return conditionalEnabled;
     }
 
-    protected ConditionHolder condition() {
-        return condition;
-    }
-
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
         if (condition.isEnabled()) {

@@ -17,43 +17,25 @@
 package org.kie.kogito.integrationtests.springboot;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.Arrays;
 
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.junit.jupiter.api.extension.ExtendWith;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.testcontainers.springboot.KafkaSpringBootTestResource;
+import org.kie.kogito.testcontainers.springboot.InfinispanSpringBootTestResource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.context.annotation.Bean;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.kafka.core.KafkaAdmin;
 
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-        classes = KogitoSpringbootApplication.class
-)
-@ContextConfiguration(initializers = KafkaSpringBootTestResource.class)
-public class PingPongMessageTest {
-
-    static {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
+@ContextConfiguration(initializers =  { KafkaSpringBootTestResource.class, InfinispanSpringBootTestResource.Conditional.class })
+public class PingPongMessageTest extends BaseRestTest {
 
     @Test
     void testPingPongBetweenProcessInstances() {
@@ -64,8 +46,6 @@ public class PingPongMessageTest {
                 .then()
                 .statusCode(201)
                 .extract().body().path("id");
-
-        System.out.println("pId = " + pId);
 
         await().atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> given()

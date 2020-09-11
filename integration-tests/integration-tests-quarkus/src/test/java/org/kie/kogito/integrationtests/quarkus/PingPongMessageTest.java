@@ -47,8 +47,6 @@ public class PingPongMessageTest {
                 .statusCode(201)
                 .extract().body().path("id");
 
-        System.out.println("pId = " + pId);
-
         await().atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> given()
                         .contentType(ContentType.JSON)
