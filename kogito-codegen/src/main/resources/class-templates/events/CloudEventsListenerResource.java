@@ -37,7 +37,7 @@ public class CloudEventListenerResource {
     }
 
     @POST()
-    @Consumes({MediaType.APPLICATION_JSON, JsonFormat.CONTENT_TYPE, MediaType.TEXT_PLAIN})
+    @Consumes({MediaType.APPLICATION_JSON, JsonFormat.CONTENT_TYPE})
     @Produces(MediaType.APPLICATION_JSON)
     public javax.ws.rs.core.Response cloudEventListener(CloudEvent event) {
         try {

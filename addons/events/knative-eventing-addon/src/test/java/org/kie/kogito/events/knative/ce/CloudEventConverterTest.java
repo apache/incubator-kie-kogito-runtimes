@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.jackson.JsonFormat;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
 
@@ -37,7 +40,7 @@ class CloudEventConverterTest {
         final String eventId = UUID.randomUUID().toString();
         final URI src = URI.create("/trigger");
         final String eventType = "My.Cloud.Event.Type";
-        final String payload = "Oi Mundo!";
+        final String payload = "{\"message\": \"Oi Mundo!\"}";
 
         // passing in the given attributes
         final CloudEvent cloudEvent =
@@ -48,8 +51,8 @@ class CloudEventConverterTest {
                         .withData(payload.getBytes())
                         .build();
 
-        final String ceJson = new String(cloudEvent.getData());
-        assertThat(ceJson).isNotEmpty().isEqualTo("Oi Mundo!");
+        final JsonObject ceJson = new JsonObject(Buffer.buffer(cloudEvent.getData()));
+        assertThat(ceJson.getString("message")).isNotEmpty().isEqualTo("Oi Mundo!");
     }
 
     @Test

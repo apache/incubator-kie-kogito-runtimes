@@ -42,39 +42,17 @@ class CloudEventListenerResourceTest {
     }
 
     @Test
-    void verifyHttpRequestIsNotACloudEvent() {
-        final ResponseError error =
-                given().when()
-                        .header("ce-type", "myevent")
-                        .header("ce-source", "/from/unit/test")
-                        .header("ce-specversion", "1.0")
-                        .header("ce-id", UUID.randomUUID().toString())
-                        .header("ce-kogitoReferenceId", "12345")
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
-                        .post("/")
-                        .then()
-                        .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-                        .extract().response().as(ResponseError.class);
-        assertThat(error.getMessage()).contains("Failed to process HttpRequest into a CloudEvent format");
-    }
-
-    @Test
-    void verifyHttpRequestWithTextPayloadExpectsString() {
-        final String source = "/from/unit/test";
+    void verifyHttpRequestUnsupportedMediaType() {
         given().when()
-                .body("Ciao!")
                 .header("ce-type", "myevent")
-                .header("ce-source", source)
+                .header("ce-source", "/from/unit/test")
                 .header("ce-specversion", "1.0")
                 .header("ce-id", UUID.randomUUID().toString())
                 .header("ce-kogitoReferenceId", "12345")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
                 .post("/")
                 .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body(Matchers.equalTo("Ciao!"))
-                .header("ce-kogitoreferenceid", "12345")
-                .contentType(Matchers.equalTo(MediaType.TEXT_PLAIN_TYPE.withCharset(StandardCharsets.ISO_8859_1.name()).toString()));
+                .statusCode(Response.Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode());
     }
 
     @Test
