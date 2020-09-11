@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -116,21 +117,25 @@ public class KieRuntimeFactoryBuilder {
 
     private static List<PredictionRuleMapper> loadPMMLRuleMappers(final ClassLoader classLoader,
                                                                   final Resource resource) {
-        PredictionRuleMappers predictionRuleMappers = loadPMMLRuleMappersClass(classLoader, resource);
-        return predictionRuleMappers.getPredictionRuleMappers();
+        Optional<PredictionRuleMappers> predictionRuleMappers = loadPMMLRuleMappersClass(classLoader, resource);
+        return predictionRuleMappers.map(PredictionRuleMappers::getPredictionRuleMappers).orElse(Collections.emptyList());
     }
 
-    private static PredictionRuleMappers loadPMMLRuleMappersClass(final ClassLoader classLoader,
-                                                                  final Resource resource) {
+    private static Optional<PredictionRuleMappers> loadPMMLRuleMappersClass(final ClassLoader classLoader,
+                                                                            final Resource resource) {
         String[] classNamePackageName = getFactoryClassNamePackageName(resource);
         String packageName = classNamePackageName[1];
         String fullPMMLRuleMappersClassName = packageName + ".PredictionRuleMappersImpl";
         try {
-            return (PredictionRuleMappers) classLoader.loadClass(fullPMMLRuleMappersClassName).getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException| ClassCastException e) {
-            throw new RuntimeException(String.format("%s class not found in rootClassLoader",
+            PredictionRuleMappers predictionRuleMappers =
+                    (PredictionRuleMappers) classLoader.loadClass(fullPMMLRuleMappersClassName).getDeclaredConstructor().newInstance();
+            return Optional.of(predictionRuleMappers);
+        } catch (ClassNotFoundException e) {
+            logger.debug("{} class not found in rootClassLoader", fullPMMLRuleMappersClassName);
+            return Optional.empty();
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("%s class not instantiable",
                                                      fullPMMLRuleMappersClassName), e);
         }
     }
-
 }
