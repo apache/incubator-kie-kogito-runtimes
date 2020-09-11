@@ -24,7 +24,7 @@ class CloudEventsResourceGeneratorTest {
         assertNotNull(clazz);
         Assertions.assertThat(clazz.getChildNodes()).isNotEmpty();
         Assertions.assertThat(clazz.getImports()).contains(
-                new ImportDeclaration("org.kie.kogito.events.knative.ce.http.RestEasyHttpRequestConverter", false, false));
+                new ImportDeclaration("org.kie.kogito.events.knative.ce.CloudEventConverter", false, false));
     }
 
     @Test

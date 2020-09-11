@@ -33,7 +33,7 @@ public class CloudEventListenerResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudEventListenerResource.class);
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON, JsonFormat.CONTENT_TYPE, MediaType.TEXT_PLAIN})
+    @Consumes({MediaType.APPLICATION_JSON, JsonFormat.CONTENT_TYPE})
     @Produces(MediaType.APPLICATION_JSON)
     public Response cloudEventListener(CloudEvent event) {
         try {
