@@ -55,7 +55,9 @@ public abstract class ConditionalSpringBootTestResource implements ApplicationCo
         if (condition.isEnabled()) {
             testResource.start();
             updateBeanFactory(applicationContext.getBeanFactory());
+            System.out.println("----------------update spring context start");
             updateContextProperty(applicationContext, getKogitoProperty(), getKogitoPropertyValue());
+            System.out.println("----------------update spring context end");
         }
     }
 

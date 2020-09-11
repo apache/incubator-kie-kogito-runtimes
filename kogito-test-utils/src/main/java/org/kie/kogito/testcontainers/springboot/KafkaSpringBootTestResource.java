@@ -41,6 +41,7 @@ public class KafkaSpringBootTestResource extends ConditionalSpringBootTestResour
     protected void updateBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         super.updateBeanFactory(beanFactory);
 
+//        beanFactory.destroyBean(KafkaClient.class.getName());
         beanFactory.registerSingleton(KafkaClient.class.getName(), new KafkaClient("localhost:" + getTestResource().getMappedPort()));
     }
 

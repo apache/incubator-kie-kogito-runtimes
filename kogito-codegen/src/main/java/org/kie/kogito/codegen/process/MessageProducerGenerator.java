@@ -134,6 +134,7 @@ public class MessageProducerGenerator {
         }
 
         template.getMembers().sort(new BodyDeclarationComparator());
+        System.out.println("producer clazz = \n\n" + clazz);
         return clazz.toString();
     }
 

@@ -14,6 +14,7 @@
  */
 package org.kie.kogito.event.impl;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,29 +45,37 @@ public class CloudEventConsumer<D, M extends Model, T extends AbstractProcessDat
     @Override
     public void consume(Application application, Process<M> process, String payload, String trigger) {
         try {
+            System.out.println("--------------------------");
+            System.out.println("process = " + process.id());
+            System.out.println("trigger = " + trigger);
             T cloudEvent = EventUtils.readEvent(payload, cloudEventClass);
+            System.out.println("cloudEvent = " + cloudEvent);
             M model = function.apply(cloudEvent.getData());
+            System.out.println("model = " + model);
+            System.out.println("cloudEvent.getKogitoReferenceId() = " + cloudEvent.getKogitoReferenceId());
+            System.out.println("cloudEvent.getKogitoProcessinstanceId() = " + cloudEvent.getKogitoProcessinstanceId());
             UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+                System.out.println("current instances size: " +  process.instances().size());
+                process.instances().values().forEach(p -> System.out.println("p.id() = " + p.id()));
                 if (cloudEvent.getKogitoReferenceId() != null) {
-                    logger.debug(
-                        "Received message with reference id '{}' going to use it to send signal '{}'",
-                        cloudEvent.getKogitoReferenceId(),
-                        trigger);
-                    process
-                        .instances()
-                        .findById(cloudEvent.getKogitoReferenceId())
-                        .ifPresent(
-                            pi -> pi
-                                .send(
-                                    Sig
-                                        .of(
-                                            "Message-" + trigger,
-                                            cloudEvent.getData(),
-                                            cloudEvent.getKogitoProcessinstanceId())));
+                    logger.debug("Received message with reference id '{}' going to use it to send signal '{}'",
+                                 cloudEvent.getKogitoReferenceId(),
+                                 trigger);
+                    Optional<ProcessInstance<M>> instance = process.instances().findById(cloudEvent.getKogitoReferenceId());
+                    if(instance.isPresent()){
+                        System.out.println("sto pi = " + cloudEvent.getKogitoProcessinstanceId());
+                        instance.get().send(Sig.of("Message-" + trigger,
+                                                   cloudEvent.getData(),
+                                                   cloudEvent.getKogitoProcessinstanceId()));
+                    } else {
+                        System.out.println("error process not found! " + cloudEvent.getKogitoReferenceId());
+                        logger.warn("Process instance with id '{}' not found for triggering signal '{}'",
+                                    cloudEvent.getKogitoReferenceId(),
+                                    trigger);
+                    }
                 } else {
-                    logger.debug(
-                        "Received message without reference id, staring new process instance with trigger '{}'",
-                        trigger);
+                    logger.debug("Received message without reference id, staring new process instance with trigger '{}'",
+                                 trigger);
                     ProcessInstance<M> pi = process.createInstance(model);
                     if (cloudEvent.getKogitoStartFromNode() != null) {
                         pi.startFrom(cloudEvent.getKogitoStartFromNode(), cloudEvent.getKogitoProcessinstanceId());
