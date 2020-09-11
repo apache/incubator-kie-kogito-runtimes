@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,13 @@ package org.kie.kogito.codegen.prediction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
@@ -78,31 +74,13 @@ public class PredictionContainerGenerator extends AbstractApplicationSection {
                 .map(member -> (InitializerDeclaration) member)
                 .orElseThrow(() -> MODIFIED_TEMPLATE_EXCEPTION);
         final NodeList<Statement> statements = staticDeclaration.getBody().getStatements();
-        final VariableDeclarationExpr predictionRuleMappers = statements.stream()
-                .filter(statement -> statement instanceof ExpressionStmt && ((ExpressionStmt) statement).getExpression() instanceof VariableDeclarationExpr)
-                .map(statement -> (VariableDeclarationExpr) ((ExpressionStmt) statement).getExpression())
-                .filter(expression -> expression.getVariable(0).getName().asString().equals("predictionRuleMappers"))
-                .findFirst()
-                .orElseThrow(() -> MODIFIED_TEMPLATE_EXCEPTION);
-        final List<Expression> nodeList = predictionRulesMapperClasses.stream()
-                .map(predictionRulesMapperClass -> {
-                    ObjectCreationExpr objectCreationExpr = new ObjectCreationExpr();
-                    objectCreationExpr.setType(predictionRulesMapperClass);
-                    return objectCreationExpr;
-                })
-                .collect(Collectors.toList());
-        NodeList<Expression> expressions = NodeList.nodeList(nodeList);
-        MethodCallExpr methodCallExpr = new MethodCallExpr(new NameExpr("java.util.Arrays"), "asList", expressions);
-        predictionRuleMappers.getVariables().get(0).setInitializer(methodCallExpr);
-
-
         final VariableDeclarationExpr kieRuntimeFactories = statements.stream()
                 .filter(statement -> statement instanceof ExpressionStmt && ((ExpressionStmt) statement).getExpression() instanceof VariableDeclarationExpr)
                 .map(statement -> (VariableDeclarationExpr) ((ExpressionStmt) statement).getExpression())
                 .filter(expression -> expression.getVariable(0).getName().asString().equals("kieRuntimeFactories"))
                 .findFirst()
                 .orElseThrow(() -> MODIFIED_TEMPLATE_EXCEPTION);
-        methodCallExpr = kieRuntimeFactories.getVariable(0)
+        MethodCallExpr methodCallExpr = kieRuntimeFactories.getVariable(0)
                 .getInitializer()
                 .map(expression -> (MethodCallExpr) expression)
                 .orElseThrow(() -> MODIFIED_TEMPLATE_EXCEPTION);

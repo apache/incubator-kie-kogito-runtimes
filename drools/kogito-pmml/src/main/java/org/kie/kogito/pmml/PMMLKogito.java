@@ -29,7 +29,6 @@ import org.kie.api.pmml.PMML4Result;
 import org.kie.api.pmml.PMMLRequestData;
 import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.kogito.Application;
-import org.kie.kogito.prediction.PredictionRuleMappers;
 import org.kie.pmml.commons.exceptions.KiePMMLException;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.evaluator.api.executor.PMMLRuntime;
@@ -52,8 +51,11 @@ public class PMMLKogito {
      * Internal Utility class.<br/>
      * Use {@link Application#predictionModels()} of Kogito API to programmatically access PMML assets and evaluate
      * PMML decisions.
+     *
+     * @param pmmlPaths
+     * @return
      */
-    public static Map<KieBase, KieRuntimeFactory> createKieRuntimeFactories(List<PredictionRuleMappers> predictionRuleMappers, String... pmmlPaths) {
+    public static Map<KieBase, KieRuntimeFactory> createKieRuntimeFactories(String... pmmlPaths) {
         return commonCreateKieRuntimeFactory(KieRuntimeFactoryBuilder::fromResources, pmmlPaths);
     }
 

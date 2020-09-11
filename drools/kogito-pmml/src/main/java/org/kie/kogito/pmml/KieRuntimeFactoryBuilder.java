@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.pmml;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -128,9 +127,9 @@ public class KieRuntimeFactoryBuilder {
         String fullPMMLRuleMappersClassName = packageName + ".PredictionRuleMappersImpl";
         try {
             return (PredictionRuleMappers) classLoader.loadClass(fullPMMLRuleMappersClassName).getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | ClassCastException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (ReflectiveOperationException| ClassCastException e) {
             throw new RuntimeException(String.format("%s class not found in rootClassLoader",
-                                                     fullPMMLRuleMappersClassName));
+                                                     fullPMMLRuleMappersClassName), e);
         }
     }
 

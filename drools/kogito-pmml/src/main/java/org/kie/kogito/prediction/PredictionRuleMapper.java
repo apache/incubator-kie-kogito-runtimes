@@ -17,6 +17,10 @@ package org.kie.kogito.prediction;
 
 import org.drools.model.Model;
 
+/**
+ * <p>Class used to retrieve the <code>org.drools.model.Model</code> associated to each <code>KiePMMLDroolsModel</code>.</p>
+ * This is needed during <code>KieBase</code> initialization to instantiate the <b>drools</b> network
+ */
 public interface PredictionRuleMapper {
 
     Model getModel();

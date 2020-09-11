@@ -81,11 +81,7 @@ public class StaticServiceRegistry implements ServiceRegistry {
         try {
             serviceMap.put(Class.forName(service), SimpleInstanceCreator.instance(implementation));
         } catch (Exception e) {
-            if (mandatory) {
-                throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
-            } else {
-                log.debug("Ignored non-mandatory service load error", e);
-            }
+            commonManageException(service, e, mandatory);
         }
     }
 
@@ -94,26 +90,27 @@ public class StaticServiceRegistry implements ServiceRegistry {
             KieRuntimeService kieRuntimeService = (KieRuntimeService)SimpleInstanceCreator.instance(kieRuntimeServiceImplementation);
             ((KieRuntimes) serviceMap.get(KieRuntimes.class)).getRuntimes().put(runtimeName, kieRuntimeService);
         } catch (Exception e) {
-            if (mandatory) {
-                throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
-            } else {
-                log.debug("Ignored non-mandatory KieRuntimes service load error", e);
-            }
+            commonManageException("KieRuntimes", e, mandatory);
         }
     }
 
     private void registerKieWeaverService(String kieWeaverServiceImplementation, boolean mandatory) {
         try {
             final KieWeaversImpl kieWeavers = (KieWeaversImpl) serviceMap.get(KieWeavers.class);
-            KieWeaverService kieWeaverService = (KieWeaverService)SimpleInstanceCreator.instance(kieWeaverServiceImplementation);
+            KieWeaverService kieWeaverService = (KieWeaverService) SimpleInstanceCreator.instance(kieWeaverServiceImplementation);
             kieWeavers.accept(kieWeaverService);
         } catch (Exception e) {
-            if (mandatory) {
-                throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
-            } else {
-                log.debug("Ignored non-mandatory KieWeaverService service load error", e);
-            }
+            commonManageException("KieWeaverService", e, mandatory);
         }
+    }
+
+    private void commonManageException(String ignoredServiceType, Exception e, boolean mandatory ) {
+        if (mandatory) {
+            throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+        } else {
+            log.debug("Ignored non-mandatory {} service load error", ignoredServiceType, e);
+        }
+    }
 
     @Override
     public <T> T get(Class<T> cls) {
@@ -148,7 +145,7 @@ public class StaticServiceRegistry implements ServiceRegistry {
                                       type,
                                       configuration);
             } else {
-                log.debug("KieAssemblers: ignored " + type);
+                log.debug("KieAssemblers: ignored {}", type);
             }
         }
 
@@ -158,7 +155,7 @@ public class StaticServiceRegistry implements ServiceRegistry {
             if (assembler != null) {
                 assembler.addResources(knowledgeBuilder, resources, type);
             } else {
-                log.debug("KieAssemblers: ignored " + type);
+                log.debug("KieAssemblers: ignored {}", type);
             }
         }
     }

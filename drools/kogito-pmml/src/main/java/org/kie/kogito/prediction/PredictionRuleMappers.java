@@ -17,6 +17,13 @@ package org.kie.kogito.prediction;
 
 import java.util.List;
 
+/**
+ * Class used to retrieve <b>all</b> the <code>org.drools.model.Model</code>s associated to a <code>KiePMMLModel</code>.
+ *
+ * <p>For <code>KiePMMLDroolsModel</code>, there is a 1:1 relationship.</p>
+ * <p>For <code>KiePMMLModelModel</code>, there is a 1:n relationship, where <i>n</i> represent the nested <code>KiePMMLDroolsModel</code>s.</p>
+ * <p>For all other <code>KiePMMLModel</code>s, this is unused.</p>
+ */
 public interface PredictionRuleMappers {
 
     List<PredictionRuleMapper> getPredictionRuleMappers();
