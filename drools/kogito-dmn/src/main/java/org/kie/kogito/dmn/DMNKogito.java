@@ -61,7 +61,7 @@ public class DMNKogito {
 
     public static DMNRuntime createGenericDMNRuntime(Function<String, KieRuntimeFactory> kiePMMLRuntimeFactoryFunction, Reader... readers) {
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
-        EvalHelper.clearGenericAccessorCache();
+        EvalHelper.clearGenericAccessorCache(); // KOGITO-3325 DMN hot reload manage accessor cache when stronglytyped
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
                 .setKieRuntimeFactoryFunction(kiePMMLRuntimeFactoryFunction)
                 .buildConfiguration()
