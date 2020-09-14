@@ -27,7 +27,6 @@ import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -64,7 +63,6 @@ class EvaluateEventJsonGeneratorTest {
 
     static final ObjectMapper MAPPER = new ObjectMapper()
             .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, false)
-            .registerModule(new Jdk8Module())
             .registerModule(new JavaTimeModule())
             .setDefaultPrettyPrinter(new TestPrettyPrinter());
 
