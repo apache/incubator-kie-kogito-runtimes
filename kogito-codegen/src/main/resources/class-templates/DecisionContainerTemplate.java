@@ -1,6 +1,6 @@
 public class DecisionModels implements org.kie.kogito.decision.DecisionModels {
 
-    private final static boolean IS_JDK = System.getProperty("org.graalvm.nativeimage.imagecode") == null;
+    private final static boolean IS_JDK = System.getProperty("org.graalvm.nativeimage.imagecode") != null;
 
     private final static java.util.function.Function<java.lang.String, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactoryFunction = PredictionModels.kieRuntimeFactoryFunction;
     private final static org.kie.dmn.api.core.DMNRuntime dmnRuntime = org.kie.kogito.dmn.DMNKogito.createGenericDMNRuntime(kieRuntimeFactoryFunction);
@@ -15,7 +15,7 @@ public class DecisionModels implements org.kie.kogito.decision.DecisionModels {
     }
 
     private static java.io.InputStreamReader readResource(java.io.InputStream stream) {
-        if (IS_JDK) {
+        if (!IS_NATIVE_IMAGE) {
             return new java.io.InputStreamReader(stream);
         }
 
