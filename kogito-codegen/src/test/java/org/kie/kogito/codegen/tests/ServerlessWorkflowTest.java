@@ -382,19 +382,28 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
+
+
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
 
         List<WorkItem> workItems = processInstance.workItems(securityPolicy);
         assertEquals(1, workItems.size());
         assertEquals("approval", workItems.get(0).getName());
 
-        String decisionParamStr = "{\"result\": \"approved\"}";
+        //String decisionParamStr = "{\"result\": \"approved\"}";
+        String decisionParamStr = "{\n" +
+                "  \"decisions\" : [ {\n" +
+                "    \"result\" : \"approved\"\n" +
+                "  } ]\n" +
+                "}\n";
+
         JsonNode decisionParamObj = mapper.readTree(decisionParamStr);
 
         Map<String, Object> completionMap = new HashMap<>();
         completionMap.put("decision", decisionParamObj);
 
         processInstance.completeWorkItem(workItems.get(0).getId(), completionMap, securityPolicy);
+
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
         assertThat(workItemTransitionEvents).hasSize(4);
@@ -409,7 +418,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         JsonNode approvalDecisionOut = (JsonNode) result.toMap().get("approvaldecision");
 
         assertThat(workflowdataOut.get("decision").textValue()).isEqualTo("Approved");
-        assertThat(approvalDecisionOut.get("result").textValue()).isEqualTo("approved");
     }
 
     @ParameterizedTest

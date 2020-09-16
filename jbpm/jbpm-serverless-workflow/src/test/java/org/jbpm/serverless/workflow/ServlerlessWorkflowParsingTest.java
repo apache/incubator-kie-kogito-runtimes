@@ -16,6 +16,8 @@
 package org.jbpm.serverless.workflow;
 
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.serverless.workflow.api.Workflow;
+import org.jbpm.serverless.workflow.utils.WorkflowTestUtils;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.node.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -598,20 +600,32 @@ public class ServlerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/specexamples/helloworld.sw.json", "/specexamples/helloworld.sw.yml",
-            "/specexamples/greeting.sw.json", "/specexamples/greeting.sw.yml",
-            "/specexamples/eventbasedgreeting.sw.json", "/specexamples/eventbasedgreeting.sw.yml",
-            "/specexamples/solvemathproblems.sw.json", "/specexamples/solvemathproblems.sw.yml",
-            "/specexamples/parallel.sw.json", "/specexamples/parallel.sw.yml",
-            "/specexamples/jobmonitoring.sw.json", "/specexamples/jobmonitoring.sw.yml",
-            "/specexamples/sendcloudevent.sw.json", "/specexamples/sendcloudevent.sw.yml",
-            "/specexamples/monitorpatient.sw.json", "/specexamples/monitorpatient.sw.yml",
-            "/specexamples/finalizecollegeapplication.sw.json", "/specexamples/finalizecollegeapplication.sw.yml",
-            "/specexamples/creditcheck.sw.json", "/specexamples/creditcheck.sw.yml"
+    @ValueSource(strings = {"/examples/applicantrequest.sw.json", "/examples/applicantrequest.sw.yml",
+            "/examples/carauctionbids.sw.json", "/examples/carauctionbids.sw.yml",
+            "/examples/creditcheck.sw.json", "/examples/creditcheck.sw.yml",
+            "/examples/eventbasedgreeting.sw.json", "/examples/eventbasedgreeting.sw.yml",
+            "/examples/finalizecollegeapplication.sw.json", "/examples/finalizecollegeapplication.sw.yml",
+            "/examples/greeting.sw.json", "/examples/greeting.sw.yml",
+            "/examples/helloworld.sw.json", "/examples/helloworld.sw.yml",
+            "/examples/jobmonitoring.sw.json", "/examples/jobmonitoring.sw.yml",
+            "/examples/monitorpatient.sw.json", "/examples/monitorpatient.sw.yml",
+            "/examples/parallel.sw.json", "/examples/parallel.sw.yml",
+            "/examples/provisionorder.sw.json", "/examples/provisionorder.sw.yml",
+            "/examples/sendcloudevent.sw.json", "/examples/sendcloudevent.sw.yml",
+            "/examples/solvemathproblems.sw.json", "/examples/solvemathproblems.sw.yml",
+            "/examples/foreachstatewithactions.sw.json", "/examples/foreachstatewithactions.sw.yml",
+            "/examples/periodicinboxcheck.sw.json", "/examples/periodicinboxcheck.sw.yml",
+            "/examples/vetappointmentservice.sw.json", "/examples/vetappointmentservice.sw.yml",
+            "/examples/eventbasedtransition.sw.json", "/examples/eventbasedtransition.sw.yml"
     })
     public void testSpecExamplesParsing(String workflowLocation) throws Exception {
-        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
-        assertNotNull(process);
+        Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
+
+        assertNotNull(workflow);
+        assertNotNull(workflow.getId());
+        assertNotNull(workflow.getName());
+        assertNotNull(workflow.getStates());
+        assertTrue(workflow.getStates().size() > 0);
     }
 
 }

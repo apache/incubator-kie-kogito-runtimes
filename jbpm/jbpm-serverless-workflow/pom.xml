@@ -75,6 +75,16 @@
       <artifactId>validation-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.github.everit-org.json-schema</groupId>
+      <artifactId>org.everit.json.schema</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
+
     <!-- test -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -155,4 +165,12 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- needed for everit json schema -->
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
 </project>
