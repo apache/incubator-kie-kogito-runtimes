@@ -112,15 +112,20 @@ public class ServerlessWorkflowParser {
         List<State> workflowStates = workflow.getStates();
         List<FunctionDefinition> workflowFunctions = workflow.getFunctions();
 
-        StartNode workflowStartNode;
+        StartNode workflowStartNode = null;
         Map<String, EndNode> workflowEndNodes = new HashMap<>();
 
         State workflowStartState = ServerlessWorkflowUtils.getWorkflowStartState(workflow);
 
-        if (workflowStartState.getType().equals(Type.EVENT)) {
-            EventState startEventState = (EventState) workflowStartState;
-            workflowStartNode = factory.messageStartNode(idCounter.getAndIncrement(), ServerlessWorkflowUtils.getWorkflowEventFor(workflow, startEventState.getOnEvents().get(0).getEventRefs().get(0)), process);
-        } else {
+//        if (workflowStartState.getType().equals(Type.EVENT)) {
+//            EventState startEventState = (EventState) workflowStartState;
+//            workflowStartNode = factory.messageStartNode(idCounter.getAndIncrement(), ServerlessWorkflowUtils.getWorkflowEventFor(workflow, startEventState.getOnEvents().get(0).getEventRefs().get(0)), process);
+//        } else {
+//            workflowStartNode = factory.startNode(idCounter.getAndIncrement(), NODE_START_NAME, process);
+//        }
+
+        // starting event states can have multiple starts. this is handled below
+        if (!workflowStartState.getType().equals(Type.EVENT)) {
             workflowStartNode = factory.startNode(idCounter.getAndIncrement(), NODE_START_NAME, process);
         }
 
@@ -144,7 +149,19 @@ public class ServerlessWorkflowParser {
                 CompositeContextNode embeddedSubProcess = factory.subProcessNode(idCounter.getAndIncrement(), state.getName(), process);
                 handleActions(workflowFunctions, eventState.getOnEvents().get(0).getActions(), process, embeddedSubProcess);
 
-                factory.connect(workflowStartNode.getId(), embeddedSubProcess.getId(), workflowStartNode.getId() + "_" + embeddedSubProcess.getId(), process);
+                List<String> onEventRefs = eventState.getOnEvents().get(0).getEventRefs();
+                if(onEventRefs.size() == 1) {
+                    StartNode singleMessageStartNode = factory.messageStartNode(idCounter.getAndIncrement(), ServerlessWorkflowUtils.getWorkflowEventFor(workflow, eventState.getOnEvents().get(0).getEventRefs().get(0)), process);
+                    factory.connect(singleMessageStartNode.getId(), embeddedSubProcess.getId(), singleMessageStartNode.getId() + "_" + embeddedSubProcess.getId(), process);
+                } else {
+                    Join messageStartJoin = factory.joinNode(idCounter.getAndIncrement(), eventState.getName() + "Split", Join.TYPE_XOR, process);
+
+                    for(String onEventRef : onEventRefs) {
+                        StartNode messageStartNode = factory.messageStartNode(idCounter.getAndIncrement(), ServerlessWorkflowUtils.getWorkflowEventFor(workflow, onEventRef), process);
+                        factory.connect(messageStartNode.getId(), messageStartJoin.getId(), messageStartNode.getId() + "_" + messageStartJoin.getId(), process);
+                    }
+                    factory.connect(messageStartJoin.getId(), embeddedSubProcess.getId(), messageStartJoin.getId() + "_" + embeddedSubProcess.getId(), process);
+                }
 
                 if (state.getEnd() != null) {
                     factory.connect(embeddedSubProcess.getId(), workflowEndNodes.get(state.getName()).getId(), embeddedSubProcess.getId() + "_" + workflowEndNodes.get(state.getName()).getId(), process);

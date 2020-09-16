@@ -174,14 +174,51 @@ public class ServlerlessWorkflowParsingTest extends BaseServerlessTest {
         assertEquals(3, process.getNodes().length);
 
         Node node = process.getNodes()[2];
-        assertTrue(node instanceof CompositeContextNode);
-        node = process.getNodes()[0];
         assertTrue(node instanceof StartNode);
-        node = process.getNodes()[1];
+        node = process.getNodes()[0];
         assertTrue(node instanceof EndNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof CompositeContextNode);
 
         // now check the composite one to see what nodes it has
-        CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
+        CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[1];
+
+        assertEquals(3, compositeNode.getNodes().length);
+
+        node = compositeNode.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = compositeNode.getNodes()[1];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof EndNode);
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/exec/single-eventstate-multi-eventrefs.sw.json", "/exec/single-eventstate-multi-eventrefs.sw.yml"})
+    public void testSingleEventStateMultiEventRefsWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("function", process.getId());
+        assertEquals("test-wf", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(5, process.getNodes().length);
+
+        Node node = process.getNodes()[0];
+        assertTrue(node instanceof EndNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof CompositeContextNode);
+        node = process.getNodes()[2];
+        assertTrue(node instanceof Join);
+        node = process.getNodes()[3];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[4];
+        assertTrue(node instanceof StartNode);
+
+        // now check the composite one to see what nodes it has
+        CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[1];
 
         assertEquals(3, compositeNode.getNodes().length);
 
