@@ -142,7 +142,6 @@
     <version.xmlunit>2.2.1</version.xmlunit>
     <version.jsonschema2pojo-maven-plugin>1.0.1</version.jsonschema2pojo-maven-plugin>
     <version.com.github.java-json-tools>2.2.10</version.com.github.java-json-tools>
-    <json.schema.validation.version>1.12.1</json.schema.validation.version>
     <version.json>20200518</version.json>
     <version.org.mongo>4.0.3</version.org.mongo>
 
@@ -732,11 +731,6 @@
       </dependency>
 
       <!-- Workflow related -->
-      <dependency>
-        <groupId>com.github.everit-org.json-schema</groupId>
-        <artifactId>org.everit.json.schema</artifactId>
-        <version>${json.schema.validation.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
