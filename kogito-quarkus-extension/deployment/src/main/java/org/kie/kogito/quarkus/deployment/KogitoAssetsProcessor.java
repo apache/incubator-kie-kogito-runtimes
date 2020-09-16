@@ -423,7 +423,6 @@ public class KogitoAssetsProcessor {
                 forEach(pmmlModelEvaluator -> toReturn.add(new ReflectiveClassBuildItem(true, true, pmmlModelEvaluator.getClass())));
         logger.debug("toReturn {}", toReturn.size());
         return toReturn;
-
     }
 
     @BuildStep
