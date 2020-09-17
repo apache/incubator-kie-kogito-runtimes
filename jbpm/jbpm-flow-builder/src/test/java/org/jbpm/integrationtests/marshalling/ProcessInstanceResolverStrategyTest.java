@@ -124,6 +124,7 @@ public class ProcessInstanceResolverStrategyTest extends AbstractBaseTest {
         assertNotNull(pim);
         assertNotNull(ProcessInstanceResolverStrategy.retrieveKnowledgeRuntime(writerContext));
         assertTrue(processInstance.equals(pim.getProcessInstance(serializedProcessInstanceId)));
+        bais.close();
         
         // Test strategy.read
         bais = new ByteArrayInputStream(bytes);
@@ -135,6 +136,7 @@ public class ProcessInstanceResolverStrategyTest extends AbstractBaseTest {
                                                                             marshallingConfig.isMarshallProcessInstances(),
                                                                             marshallingConfig.isMarshallWorkItems() ,
                                                                             EnvironmentFactory.newEnvironment());
+        bais.close();
         readerContext.wm = ((StatefulKnowledgeSessionImpl) ksession).getInternalWorkingMemory();
         Object procInstObject = strategy.read(readerContext); 
         assertTrue(procInstObject != null && procInstObject instanceof ProcessInstance );
@@ -142,12 +144,13 @@ public class ProcessInstanceResolverStrategyTest extends AbstractBaseTest {
     }
 
     private int calculateNumBytesForLong(String longVal) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeUTF(longVal);
-        baos.close();
-        oos.close();
-        return baos.toByteArray().length;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+            oos.writeUTF(longVal);
+            baos.close();
+            oos.close();
+            return baos.toByteArray().length;
+        }
     }
 
 }

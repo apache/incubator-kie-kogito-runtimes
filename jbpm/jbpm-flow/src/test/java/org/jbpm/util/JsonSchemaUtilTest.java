@@ -73,41 +73,43 @@ public class JsonSchemaUtilTest {
             "            \"output\": true\n" + 
             "        }\n" + 
             "    }}";
-    
+
     @Test
     void testJsonSchema() throws IOException {
-        InputStream in = new ByteArrayInputStream(example.getBytes());
-        Map<String,Object> schemaMap = JsonSchemaUtil.load(in);
-        assertEquals ("object", schemaMap.get("type"));
-        Map<String,Object> properties = (Map<String,Object>)schemaMap.get("properties");
-        assertEquals(2,properties.size());
-        assertTrue((Boolean)((Map)properties.get("approved")).get("output"));
-        assertTrue((Boolean)((Map)properties.get("traveller")).get("input"));
+        try (InputStream in = new ByteArrayInputStream(example.getBytes())) {
+            Map<String, Object> schemaMap = JsonSchemaUtil.load(in);
+            assertEquals("object", schemaMap.get("type"));
+            Map<String, Object> properties = (Map<String, Object>) schemaMap.get("properties");
+            assertEquals(2, properties.size());
+            assertTrue((Boolean) ((Map) properties.get("approved")).get("output"));
+            assertTrue((Boolean) ((Map) properties.get("traveller")).get("input"));
+        }
     }
 
     @Test
     <T> void testJsonSchemaPhases() throws IOException {
-        InputStream in = new ByteArrayInputStream(example.getBytes());
-        Policy<T>[] policies = new Policy[0];
-        Map<String, Object> schemaMap = JsonSchemaUtil.load(in);
-        Process<T> process = mock(Process.class);
-        ProcessInstances<T> processInstances = mock(ProcessInstances.class);
-        when(process.instances()).thenReturn(processInstances);
-        ProcessInstance<T> processInstance = mock(ProcessInstance.class);
-        when(processInstances.findById("pepe", ProcessInstanceReadMode.READ_ONLY)).thenReturn((Optional) Optional.of(processInstance));
-        WorkItem task = mock(WorkItem.class);
-        when(processInstance.workItem("task", policies)).thenReturn(task);
-        when(task.getPhase()).thenReturn("active");
-        Application application = mock(Application.class);
-        Config config = mock(Config.class);
-        ProcessConfig processConfig = mock(ProcessConfig.class);
-        when(application.config()).thenReturn(config);
-        when(config.process()).thenReturn(processConfig);
-        WorkItemHandlerConfig workItemHandlerConfig = mock(WorkItemHandlerConfig.class);
-        when(processConfig.workItemHandlers()).thenReturn(workItemHandlerConfig);
-        WorkItemHandler workItemHandler = new HumanTaskWorkItemHandler();
-        when(workItemHandlerConfig.forName("Human Task")).thenReturn(workItemHandler);
-        schemaMap = JsonSchemaUtil.addPhases(process, application, "pepe", "task", policies, schemaMap);
-        assertFalse(((Collection) schemaMap.get("phases")).isEmpty());
+        try (InputStream in = new ByteArrayInputStream(example.getBytes())) {
+            Policy<T>[] policies = new Policy[0];
+            Map<String, Object> schemaMap = JsonSchemaUtil.load(in);
+            Process<T> process = mock(Process.class);
+            ProcessInstances<T> processInstances = mock(ProcessInstances.class);
+            when(process.instances()).thenReturn(processInstances);
+            ProcessInstance<T> processInstance = mock(ProcessInstance.class);
+            when(processInstances.findById("pepe", ProcessInstanceReadMode.READ_ONLY)).thenReturn((Optional) Optional.of(processInstance));
+            WorkItem task = mock(WorkItem.class);
+            when(processInstance.workItem("task", policies)).thenReturn(task);
+            when(task.getPhase()).thenReturn("active");
+            Application application = mock(Application.class);
+            Config config = mock(Config.class);
+            ProcessConfig processConfig = mock(ProcessConfig.class);
+            when(application.config()).thenReturn(config);
+            when(config.process()).thenReturn(processConfig);
+            WorkItemHandlerConfig workItemHandlerConfig = mock(WorkItemHandlerConfig.class);
+            when(processConfig.workItemHandlers()).thenReturn(workItemHandlerConfig);
+            WorkItemHandler workItemHandler = new HumanTaskWorkItemHandler();
+            when(workItemHandlerConfig.forName("Human Task")).thenReturn(workItemHandler);
+            schemaMap = JsonSchemaUtil.addPhases(process, application, "pepe", "task", policies, schemaMap);
+            assertFalse(((Collection) schemaMap.get("phases")).isEmpty());
+        }
     }
 }
