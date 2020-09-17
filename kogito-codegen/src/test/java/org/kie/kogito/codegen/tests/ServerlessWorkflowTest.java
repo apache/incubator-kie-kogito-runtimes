@@ -266,6 +266,33 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         assertThat(dataOut.get("decision").textValue()).isEqualTo("Denied");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"serverless/switch-state-end-condition.sw.json", "serverless/switch-state-end-condition.sw.yml"})
+    public void testSwitchStateWithEndConditionWorkflow(String processLocation) throws Exception {
+
+        Application app = generateCodeProcessesOnly(processLocation);
+        assertThat(app).isNotNull();
+
+        Process<? extends Model> p = app.processes().processById("switchworkflow");
+
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+
+        String jsonParamStr = "{}";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
+
+
+        parameters.put("workflowdata", jsonParamObj);
+        m.fromMap(parameters);
+
+        ProcessInstance<?> processInstance = p.createInstance(m);
+        processInstance.start();
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+    }
+
     @Test
     public void testSubFlowWorkflow() throws Exception {
 
