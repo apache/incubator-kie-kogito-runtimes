@@ -16,24 +16,27 @@
 
 package org.kie.kogito.integrationtests.quarkus;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
+import io.quarkus.test.QuarkusUnitTest;
 import io.restassured.http.ContentType;
+import org.acme.travels.Address;
+import org.acme.travels.Traveller;
+import org.acme.travels.TravellerValidationService;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
-@QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class JsonSchemaTest {
+public class JsonSchemaTest {
 
-    static {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
-
+    @RegisterExtension
+    static final QuarkusUnitTest config = new QuarkusUnitTest()
+            .setArchiveProducer(() -> ShrinkWrap.create( JavaArchive.class)
+                    .addAsResource("approval.bpmn.test", "src/main/resources/approval.bpmn")
+                    .addAsResource("approvals_firstLineApproval.json.test", "META-INF/jsonSchema/approvals_firstLineApproval.json")
+                    .addClasses( Address.class, Traveller.class, TravellerValidationService.class ));
     @Test
     void testJsonSchema() {
         given().contentType(ContentType.JSON).when().get("/approvals/firstLineApproval/schema").then().statusCode(200).body(matchesJsonSchemaInClasspath("META-INF/jsonSchema/approvals_firstLineApproval.json"));

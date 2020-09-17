@@ -20,10 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
+import io.quarkus.test.QuarkusUnitTest;
 import io.restassured.http.ContentType;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.kie.kogito.integrationtests.HelloService;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -32,12 +35,13 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-@QuarkusTest
-class BasicRestTest {
+public class BasicRestTest {
 
-    static {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
+    @RegisterExtension
+    static final QuarkusUnitTest config = new QuarkusUnitTest()
+            .setArchiveProducer(() -> ShrinkWrap.create( JavaArchive.class)
+                    .addAsResource("AdHocFragments.bpmn.test", "src/main/resources/AdHocFragments.bpmn")
+                    .addClasses( HelloService.class ));
 
     @Test
     void testGeneratedId() {

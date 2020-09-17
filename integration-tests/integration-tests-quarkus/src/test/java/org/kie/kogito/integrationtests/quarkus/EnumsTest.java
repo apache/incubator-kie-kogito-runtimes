@@ -19,15 +19,15 @@ package org.kie.kogito.integrationtests.quarkus;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
+import io.quarkus.test.QuarkusUnitTest;
 import io.restassured.http.ContentType;
 import org.acme.examples.model.Movie;
 import org.acme.examples.model.MovieGenre;
 import org.acme.examples.model.Rating;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -35,14 +35,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 
-@QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class EnumsTest {
+public class EnumsTest {
 
-    static {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
-
+    @RegisterExtension
+    static final QuarkusUnitTest config = new QuarkusUnitTest()
+            .setArchiveProducer(() -> ShrinkWrap.create( JavaArchive.class)
+                    .addAsResource("cinema.bpmn.test", "src/main/resources/cinema.bpmn")
+                    .addClasses( Movie.class, MovieGenre.class, Rating.class ));
     @Test
     @SuppressWarnings("unchecked")
     void testSubmitMovie() {

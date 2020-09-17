@@ -17,26 +17,29 @@ package org.kie.kogito.integrationtests.quarkus;
 
 import java.math.BigDecimal;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.QuarkusUnitTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.config.JsonPathConfig;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.kie.kogito.integrationtests.MyMathUtils;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.config.JsonConfig.jsonConfig;
 import static org.hamcrest.Matchers.closeTo;
 
-@QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class JavaFNctxTest {
+public class JavaFNctxTest {
 
-    static {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
-
+    @RegisterExtension
+    static final QuarkusUnitTest config = new QuarkusUnitTest()
+            .setArchiveProducer(() -> ShrinkWrap.create( JavaArchive.class)
+                    .addAsResource("java_function_context.dmn.test", "src/main/resources/java_function_context.dmn")
+                    .addAsResource("java_function_context.dmn.test", "java_function_context.dmn")
+                    .addClasses( MyMathUtils.class )
+            );
     @Test
     void testJavaFNctx() {
         given().config(RestAssured.config().jsonConfig(jsonConfig().numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL)))

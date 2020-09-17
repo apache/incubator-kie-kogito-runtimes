@@ -19,26 +19,26 @@ package org.kie.kogito.integrationtests.quarkus;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
+import io.quarkus.test.QuarkusUnitTest;
 import io.restassured.http.ContentType;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.kie.kogito.integrationtests.HelloService;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 
-@QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class FlexibleProcessTest {
+public class FlexibleProcessTest {
 
-    static {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
-
+    @RegisterExtension
+    static final QuarkusUnitTest config = new QuarkusUnitTest()
+            .setArchiveProducer(() -> ShrinkWrap.create( JavaArchive.class)
+                    .addAsResource("AdHocProcess.bpmn.test", "src/main/resources/AdHocProcess.bpmn")
+                    .addClasses( HelloService.class ));
     @Test
     void testInstantiateProcess() {
         Map<String, String> params = new HashMap<>();
