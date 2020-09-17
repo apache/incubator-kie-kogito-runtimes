@@ -206,7 +206,7 @@ public class DecisionRestResourceGenerator {
     }
 
     private void interpolateInputData(ClassOrInterfaceDeclaration template) {
-        String inputData = isStronglyTyped ? "outputSet" : "variables";
+        String inputData = "variables"; // use "outputSet" if stronglyTyped when drools 7.44 is available
         template.findAll(NameExpr.class, expr -> expr.getNameAsString().equals("$inputData$"))
                 .forEach(expr -> expr.setName(inputData));
     }
