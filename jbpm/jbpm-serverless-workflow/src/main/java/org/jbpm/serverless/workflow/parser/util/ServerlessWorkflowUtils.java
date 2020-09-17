@@ -115,14 +115,11 @@ public class ServerlessWorkflowUtils {
     }
 
     public static boolean supportedParallelState(ParallelState parallelState) {
-        // currently branches must exist and can include only actions
-        // this will be improved in future
+        // currently support for only workflowId inside branches
         if (parallelState.getBranches() != null && parallelState.getBranches().size() > 0) {
             for (Branch branch : parallelState.getBranches()) {
-                if ((branch.getActions() == null || branch.getActions().size() < 1) || branch.getWorkflowId() == null) {
-                    if (branch.getWorkflowId() == null) {
-                        return false;
-                    }
+                if(branch.getWorkflowId() == null || branch.getWorkflowId().length() < 1) {
+                    return false;
                 }
             }
             return true;

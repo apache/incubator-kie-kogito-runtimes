@@ -24,14 +24,14 @@ import java.util.ServiceLoader;
 public class WorkflowPropertySourceProvider {
     private WorkflowPropertySource workflowPropertySource;
 
-    private static Logger logger = LoggerFactory.getLogger(WorkflowValidatorProvider.class);
+    private static Logger logger = LoggerFactory.getLogger(WorkflowPropertySourceProvider.class);
 
     public WorkflowPropertySourceProvider() {
         ServiceLoader<WorkflowPropertySource> foundPropertyContext = ServiceLoader.load(WorkflowPropertySource.class);
         Iterator<WorkflowPropertySource> it = foundPropertyContext.iterator();
         if (it.hasNext()) {
             workflowPropertySource = it.next();
-            logger.info("Found property source: " + workflowPropertySource.toString());
+            logger.info("Found property source: {}", workflowPropertySource.toString());
         }
     }
 

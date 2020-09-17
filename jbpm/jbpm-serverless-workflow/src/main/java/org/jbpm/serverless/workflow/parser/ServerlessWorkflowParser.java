@@ -77,6 +77,7 @@ public class ServerlessWorkflowParser {
     private static final String NODE_END_NAME = "End";
     private static final String NODETOID_START = "start";
     private static final String NODETOID_END = "end";
+    private static final String XORSPLITDEFAULT = "Default";
 
     private AtomicLong idCounter = new AtomicLong(1);
     private ServerlessWorkflowFactory factory;
@@ -117,13 +118,6 @@ public class ServerlessWorkflowParser {
 
         State workflowStartState = ServerlessWorkflowUtils.getWorkflowStartState(workflow);
 
-//        if (workflowStartState.getType().equals(Type.EVENT)) {
-//            EventState startEventState = (EventState) workflowStartState;
-//            workflowStartNode = factory.messageStartNode(idCounter.getAndIncrement(), ServerlessWorkflowUtils.getWorkflowEventFor(workflow, startEventState.getOnEvents().get(0).getEventRefs().get(0)), process);
-//        } else {
-//            workflowStartNode = factory.startNode(idCounter.getAndIncrement(), NODE_START_NAME, process);
-//        }
-
         // starting event states can have multiple starts. this is handled below
         if (!workflowStartState.getType().equals(Type.EVENT)) {
             workflowStartNode = factory.startNode(idCounter.getAndIncrement(), NODE_START_NAME, process);
@@ -150,13 +144,13 @@ public class ServerlessWorkflowParser {
                 handleActions(workflowFunctions, eventState.getOnEvents().get(0).getActions(), process, embeddedSubProcess);
 
                 List<String> onEventRefs = eventState.getOnEvents().get(0).getEventRefs();
-                if(onEventRefs.size() == 1) {
+                if (onEventRefs.size() == 1) {
                     StartNode singleMessageStartNode = factory.messageStartNode(idCounter.getAndIncrement(), ServerlessWorkflowUtils.getWorkflowEventFor(workflow, eventState.getOnEvents().get(0).getEventRefs().get(0)), process);
                     factory.connect(singleMessageStartNode.getId(), embeddedSubProcess.getId(), singleMessageStartNode.getId() + "_" + embeddedSubProcess.getId(), process);
                 } else {
                     Join messageStartJoin = factory.joinNode(idCounter.getAndIncrement(), eventState.getName() + "Split", Join.TYPE_XOR, process);
 
-                    for(String onEventRef : onEventRefs) {
+                    for (String onEventRef : onEventRefs) {
                         StartNode messageStartNode = factory.messageStartNode(idCounter.getAndIncrement(), ServerlessWorkflowUtils.getWorkflowEventFor(workflow, onEventRef), process);
                         factory.connect(messageStartNode.getId(), messageStartJoin.getId(), messageStartNode.getId() + "_" + messageStartJoin.getId(), process);
                     }
@@ -330,7 +324,7 @@ public class ServerlessWorkflowParser {
                 Long sourceId = nameToNodeId.get(state.getName()).get(NODETOID_END);
                 Long targetId = nameToNodeId.get(state.getTransition().getNextState()).get(NODETOID_START);
 
-                if (transition.getProduceEvents().size() > 0 && transition.getProduceEvents().get(0) != null && transition.getProduceEvents().get(0).getEventRef() != null) {
+                if (!transition.getProduceEvents().isEmpty() && transition.getProduceEvents().get(0).getEventRef() != null) {
                     ActionNode sendEventNode = factory.sendEventNode(idCounter.getAndIncrement(),
                             ServerlessWorkflowUtils.getWorkflowEventFor(workflow, transition.getProduceEvents().get(0).getEventRef()), process);
                     factory.connect(sourceId, sendEventNode.getId(), sourceId + "_" + sendEventNode.getId(), process);
@@ -396,18 +390,18 @@ public class ServerlessWorkflowParser {
             // 1. if its a transition
             if (switchState.getDefault() != null && switchState.getDefault().getTransition() != null && switchState.getDefault().getTransition().getNextState() != null) {
                 long targetId = nameToNodeId.get(switchState.getDefault().getTransition().getNextState()).get(NODETOID_START);
-                xorSplit.getMetaData().put("Default", xorSplit.getId() + "_" + targetId);
+                xorSplit.getMetaData().put(XORSPLITDEFAULT, xorSplit.getId() + "_" + targetId);
             }
             // 2. if its an end
             if (switchState.getDefault() != null && switchState.getDefault().getEnd() != null) {
                 if (switchState.getDefault().getEnd().getKind() == End.Kind.EVENT) {
                     EndNode defaultEndNode = factory.messageEndNode(idCounter.getAndIncrement(), NODE_END_NAME, workflow, switchState.getDefault().getEnd(), process);
                     factory.connect(xorSplit.getId(), defaultEndNode.getId(), xorSplit.getId() + "_" + defaultEndNode.getId(), process);
-                    xorSplit.getMetaData().put("Default", xorSplit.getId() + "_" + defaultEndNode.getId());
+                    xorSplit.getMetaData().put(XORSPLITDEFAULT, xorSplit.getId() + "_" + defaultEndNode.getId());
                 } else {
                     EndNode defaultEndNode = factory.endNode(idCounter.getAndIncrement(), NODE_END_NAME, true, process);
                     factory.connect(xorSplit.getId(), defaultEndNode.getId(), xorSplit.getId() + "_" + defaultEndNode.getId(), process);
-                    xorSplit.getMetaData().put("Default", xorSplit.getId() + "_" + defaultEndNode.getId());
+                    xorSplit.getMetaData().put(XORSPLITDEFAULT, xorSplit.getId() + "_" + defaultEndNode.getId());
                 }
             }
 
@@ -435,10 +429,9 @@ public class ServerlessWorkflowParser {
                     // set constraint
                     boolean isDefaultConstraint = false;
 
-                    if (switchState.getDefault().getTransition() != null && condition.getTransition() != null) {
-                        if (condition.getTransition().getNextState().equals(switchState.getDefault().getTransition().getNextState())) {
-                            isDefaultConstraint = true;
-                        }
+                    if (switchState.getDefault().getTransition() != null && condition.getTransition() != null &&
+                            condition.getTransition().getNextState().equals(switchState.getDefault().getTransition().getNextState())) {
+                        isDefaultConstraint = true;
                     }
 
                     if (switchState.getDefault().getEnd() != null && condition.getEnd() != null) {

@@ -182,17 +182,24 @@ public class ServerlessWorkflowFactory {
         endNode.setId(id);
         endNode.setName(name);
 
-        EventDefinition eventDef = ServerlessWorkflowUtils.getWorkflowEventFor(workflow, stateEnd.getProduceEvents().get(0).getEventRef());
+        //currently support a single produce event
+        if (stateEnd.getProduceEvents() != null && stateEnd.getProduceEvents().size() > 0) {
 
-        endNode.setMetaData(Metadata.TRIGGER_REF, eventDef.getSource());
-        endNode.setMetaData(Metadata.TRIGGER_TYPE, "ProduceMessage");
-        endNode.setMetaData(Metadata.MESSAGE_TYPE, JSON_NODE);
-        endNode.setMetaData(Metadata.MAPPING_VARIABLE, DEFAULT_WORKFLOW_VAR);
-        addMessageEndNodeAction(endNode, DEFAULT_WORKFLOW_VAR, JSON_NODE);
+            EventDefinition eventDef = ServerlessWorkflowUtils.getWorkflowEventFor(workflow, stateEnd.getProduceEvents().get(0).getEventRef());
 
-        nodeContainer.addNode(endNode);
+            endNode.setMetaData(Metadata.TRIGGER_REF, eventDef.getSource());
+            endNode.setMetaData(Metadata.TRIGGER_TYPE, "ProduceMessage");
+            endNode.setMetaData(Metadata.MESSAGE_TYPE, JSON_NODE);
+            endNode.setMetaData(Metadata.MAPPING_VARIABLE, DEFAULT_WORKFLOW_VAR);
+            addMessageEndNodeAction(endNode, DEFAULT_WORKFLOW_VAR, JSON_NODE);
 
-        return endNode;
+            nodeContainer.addNode(endNode);
+
+            return endNode;
+        } else {
+            LOGGER.error("Unable to find produce event definition for state end.");
+            return null;
+        }
     }
 
     public TimerNode timerNode(long id, String name, String delay, NodeContainer nodeContainer) {
