@@ -50,8 +50,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- license plugin -->
-    <version.license.plugin>4.0.rc1</version.license.plugin>
-    <skipLicensesCheck>false</skipLicensesCheck>
+    <version.kogito.license.plugin>4.0.rc1</version.kogito.license.plugin>
+    <skipLicensesCheck>true</skipLicensesCheck>
   </properties>
 
   <!-- distributionManagement section -->
@@ -88,45 +88,24 @@
   </repositories>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>com.mycila</groupId>
-          <artifactId>license-maven-plugin</artifactId>
-          <version>${version.license.plugin}</version>
-          <configuration>
-            <header>file:///${maven.multiModuleProjectDirectory}/licensesheader.txt</header>
-            <includes>
-              <include>**/*.java</include>
-            </includes>
-            <excludes>
-              <exclude>.mvn/**</exclude>
-              <exclude>**/kogito-apps/**</exclude>
-              <!--            <exclude>**/kogito-runtimes/**</exclude>-->
-            </excludes>
-          </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>com.mycila</groupId>
-              <artifactId>license-maven-plugin-git</artifactId>
-              <version>${version.license.plugin}</version>
-            </dependency>
-          </dependencies>
-          <executions>
-            <execution>
-              <configuration>
-                <skip>${skipLicensesCheck}</skip>
-              </configuration>
-              <goals>
-                <goal>check</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <header>${project.root.dir}/licensesheader.txt</header>
+          <includes>
+            <include>**/*.java</include>
+          </includes>
+          <excludes>
+            <exclude>.mvn/**</exclude>
+            <exclude>**/kogito-apps/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
-  
+
   <pluginRepositories>
     <pluginRepository>
       <!-- Duplicating the Maven Central repository here (as it is already coming from Super POM) makes the build much faster,
