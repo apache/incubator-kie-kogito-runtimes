@@ -20,13 +20,25 @@ import org.jbpm.serverless.workflow.api.Workflow;
 import org.jbpm.serverless.workflow.utils.WorkflowTestUtils;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.node.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ServlerlessWorkflowParsingTest extends BaseServerlessTest {
+public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
+
+    @BeforeAll
+    public static void init() {
+        System.setProperty("jbpm.enable.multi.con", "true");
+    }
+
+    @AfterAll
+    public static void cleanup() {
+        System.clearProperty("jbpm.enable.multi.con");
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"/exec/single-operation.sw.json", "/exec/single-operation.sw.yml"})
@@ -672,6 +684,48 @@ public class ServlerlessWorkflowParsingTest extends BaseServerlessTest {
         assertEquals("org.apache.camel.ProducerTemplate", workItemNode.getWork().getParameter("interfaceImplementationRef"));
         assertEquals("Java", workItemNode.getWork().getParameter("implementation"));
 
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/exec/prchecker.sw.json", "/exec/prchecker.sw.yml"})
+    public void testPrCheckerWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("prchecker", process.getId());
+        assertEquals("Github PR Checker Workflow", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(9, process.getNodes().length);
+
+        Node node = process.getNodes()[0];
+        assertTrue(node instanceof CompositeContextNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof Join);
+        node = process.getNodes()[2];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[3];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[4];
+        assertTrue(node instanceof Split);
+        node = process.getNodes()[5];
+        assertTrue(node instanceof Split);
+        node = process.getNodes()[6];
+        assertTrue(node instanceof ActionNode);
+        node = process.getNodes()[7];
+        assertTrue(node instanceof EndNode);
+        node = process.getNodes()[8];
+        assertTrue(node instanceof EndNode);
+
+        Split split = (Split) process.getNodes()[4];
+        assertEquals("CheckBackend", split.getName());
+        assertEquals(2, split.getType());
+        assertEquals(2, split.getConstraints().size());
+
+        Split split2 = (Split) process.getNodes()[5];
+        assertEquals("CheckFrontend", split2.getName());
+        assertEquals(2, split2.getType());
+        assertEquals(2, split2.getConstraints().size());
     }
 
     @ParameterizedTest

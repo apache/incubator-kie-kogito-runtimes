@@ -566,4 +566,34 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         assertThat(workflowdataOut.get("person").get("adult").textValue()).isEqualTo("true");
 
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"serverless/prchecker.sw.json", "serverless/prchecker.sw.yml"})
+    public void testPrCheckerWorkflow(String processLocation) throws Exception {
+        System.setProperty("jbpm.enable.multi.con", "true");
+
+        Application app = generateCodeProcessesOnly(processLocation);
+        assertThat(app).isNotNull();
+
+        Process<? extends Model> p = app.processes().processById("prchecker");
+
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+
+        String jsonParamStr = "{}";
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
+
+
+        parameters.put("workflowdata", jsonParamObj);
+        m.fromMap(parameters);
+
+        ProcessInstance<?> processInstance = p.createInstance(m);
+        processInstance.start();
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
+        System.clearProperty("jbpm.enable.multi.con");
+    }
 }
