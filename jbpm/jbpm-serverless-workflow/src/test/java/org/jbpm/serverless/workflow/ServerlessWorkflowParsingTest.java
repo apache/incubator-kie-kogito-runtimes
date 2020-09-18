@@ -729,6 +729,73 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"/exec/transition-produce-multi-events.sw.json", "/exec/transition-produce-multi-events.sw.yml"})
+    public void testProduceMultiEventsOnTransition(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("produceeventontransition", process.getId());
+        assertEquals("Produce Event On Transition", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(8, process.getNodes().length);
+        Node node = process.getNodes()[0];
+        assertTrue(node instanceof StartNode);
+        node = process.getNodes()[1];
+        assertTrue(node instanceof EndNode);
+        node = process.getNodes()[2];
+        assertTrue(node instanceof CompositeContextNode);
+        node = process.getNodes()[3];
+        assertTrue(node instanceof CompositeContextNode);
+        node = process.getNodes()[4];
+        assertTrue(node instanceof ActionNode);
+        node = process.getNodes()[5];
+        assertTrue(node instanceof ActionNode);
+        node = process.getNodes()[6];
+        assertTrue(node instanceof ActionNode);
+        node = process.getNodes()[7];
+        assertTrue(node instanceof ActionNode);
+
+        ActionNode actionNode = (ActionNode) process.getNodes()[4];
+        assertEquals("TestKafkaEvent", actionNode.getName());
+
+        ActionNode actionNode2 = (ActionNode) process.getNodes()[5];
+        assertEquals("TestKafkaEvent2", actionNode2.getName());
+
+        ActionNode actionNode3 = (ActionNode) process.getNodes()[6];
+        assertEquals("TestKafkaEvent3", actionNode3.getName());
+
+        ActionNode actionNode4 = (ActionNode) process.getNodes()[7];
+        assertEquals("TestKafkaEvent4", actionNode4.getName());
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/exec/switch-state-produce-events.sw.json", "/exec/switch-state-produce-events.sw.yml"})
+    public void testSwitchProduceEventsOnTransitionWorkflow(String workflowLocation) throws Exception {
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertEquals("switchworkflow", process.getId());
+        assertEquals("switch-wf", process.getName());
+        assertEquals("1.0", process.getVersion());
+        assertEquals("org.kie.kogito.serverless", process.getPackageName());
+        assertEquals(RuleFlowProcess.PUBLIC_VISIBILITY, process.getVisibility());
+
+        assertEquals(15, process.getNodes().length);
+
+        Split split = (Split) process.getNodes()[4];
+        assertEquals("ChooseOnAge", split.getName());
+        assertEquals(2, split.getType());
+        assertEquals(2, split.getConstraints().size());
+
+        boolean haveDefaultConstraint = false;
+        for (Constraint constraint : split.getConstraints().values()) {
+            haveDefaultConstraint = haveDefaultConstraint || constraint.isDefault();
+        }
+
+        assertTrue(haveDefaultConstraint);
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"/examples/applicantrequest.sw.json", "/examples/applicantrequest.sw.yml",
             "/examples/carauctionbids.sw.json", "/examples/carauctionbids.sw.yml",
             "/examples/creditcheck.sw.json", "/examples/creditcheck.sw.yml",
