@@ -183,7 +183,7 @@ public class ServerlessWorkflowFactory {
         endNode.setName(name);
 
         //currently support a single produce event
-        if (stateEnd.getProduceEvents() != null && stateEnd.getProduceEvents().size() > 0) {
+        if (!stateEnd.getProduceEvents().isEmpty()) {
 
             EventDefinition eventDef = ServerlessWorkflowUtils.getWorkflowEventFor(workflow, stateEnd.getProduceEvents().get(0).getEventRef());
 

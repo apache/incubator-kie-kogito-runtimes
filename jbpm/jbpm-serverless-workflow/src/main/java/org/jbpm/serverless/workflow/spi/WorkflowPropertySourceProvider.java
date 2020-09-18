@@ -31,7 +31,7 @@ public class WorkflowPropertySourceProvider {
         Iterator<WorkflowPropertySource> it = foundPropertyContext.iterator();
         if (it.hasNext()) {
             workflowPropertySource = it.next();
-            logger.info("Found property source: {}", workflowPropertySource.toString());
+            logger.info("Found property source: {}", workflowPropertySource);
         }
     }
 

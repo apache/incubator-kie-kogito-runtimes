@@ -54,7 +54,7 @@ public class BaseWorkflow {
         try {
             return jsonObjectMapper.writeValueAsString(workflow);
         } catch (JsonProcessingException e) {
-            logger.error("Error mapping to json: " + e.getMessage());
+            logger.error("Error mapping to json: {}", e.getMessage());
             return null;
         }
     }
@@ -68,7 +68,7 @@ public class BaseWorkflow {
                     .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER);
             return new YAMLMapper(yamlFactory).writeValueAsString(jsonNode);
         } catch (Exception e) {
-            logger.error("Error mapping to yaml: " + e.getMessage());
+            logger.error("Error mapping to yaml: {}", e.getMessage());
             return null;
         }
     }
