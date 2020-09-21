@@ -103,10 +103,6 @@ public abstract class AbstractProcessDataEvent<T> extends AbstractDataEvent<T> {
         return kogitoProcessinstanceState;
     }
 
-    public void setKogitoReferenceId(String kogitoReferenceId) {
-        this.kogitoReferenceId = kogitoReferenceId;
-    }
-
     public String getKogitoReferenceId() {
         return this.kogitoReferenceId;
     }

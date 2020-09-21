@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,22 +35,22 @@ public class CloudEventUtils {
     private static final Logger LOG = LoggerFactory.getLogger(CloudEventUtils.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
 
-    public static <E> CloudEvent build(String id,
-                                       URI source,
-                                       E data,
-                                       Class<E> dataType) {
-        byte[] bytes = null;
+    public static <E> Optional<CloudEvent> build(String id,
+                                                 URI source,
+                                                 E data,
+                                                 Class<E> dataType) {
         try {
-            bytes = OBJECT_MAPPER.writeValueAsBytes(data);
+            byte[] bytes = OBJECT_MAPPER.writeValueAsBytes(data);
+            return Optional.of(CloudEventBuilder.v1()
+                    .withType(dataType.getName())
+                    .withId(id)
+                    .withSource(source)
+                    .withData(bytes)
+                    .build());
         } catch (JsonProcessingException e) {
             LOG.error("Unable to serialize CloudEvent data", e);
+            return Optional.empty();
         }
-        return CloudEventBuilder.v1()
-                .withType(dataType.getName())
-                .withId(id)
-                .withSource(source)
-                .withData(bytes)
-                .build();
     }
 
     public static String encode(CloudEvent event) {

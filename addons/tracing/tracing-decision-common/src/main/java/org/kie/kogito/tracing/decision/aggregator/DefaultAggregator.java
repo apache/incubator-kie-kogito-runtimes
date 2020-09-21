@@ -98,7 +98,9 @@ public class DefaultAggregator implements Aggregator {
         );
 
         TraceEvent event = new TraceEvent(header, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        return CloudEventUtils.build(executionId, buildSource(configBean.getServiceUrl(), null), event, TraceEvent.class);
+        return CloudEventUtils
+                .build(executionId, buildSource(configBean.getServiceUrl(), null), event, TraceEvent.class)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid TraceEvent created. Unable to encode"));
     }
 
     private static CloudEvent buildDefaultCloudEvent(DMNModel model, String executionId, List<EvaluateEvent> events, ConfigBean configBean) {
@@ -128,7 +130,9 @@ public class DefaultAggregator implements Aggregator {
 
         // complete event
         TraceEvent event = new TraceEvent(header, inputs, outputs, executionStepsPair.getLeft());
-        return CloudEventUtils.build(executionId, buildSource(configBean.getServiceUrl(), firstEvent), event, TraceEvent.class);
+        return CloudEventUtils
+                .build(executionId, buildSource(configBean.getServiceUrl(), firstEvent), event, TraceEvent.class)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid TraceEvent created. Unable to encode"));
     }
 
     private static URI buildSource(String serviceUrl, EvaluateEvent event) {

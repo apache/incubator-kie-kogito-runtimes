@@ -1,10 +1,10 @@
 package org.kie.kogito.app;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.jackson.JsonFormat;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.kie.kogito.events.knative.ce.CloudEventConverter;
 import org.kie.kogito.events.knative.ce.Printer;
 import org.kie.kogito.events.knative.ce.http.Responses;
 import org.slf4j.Logger;
@@ -23,12 +23,15 @@ import java.util.Map;
 public class CloudEventListenerResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("CloudEventListenerResource");
-    private RestEasyHttpRequestConverter httpRequestConverter = new RestEasyHttpRequestConverter();
     private Map<String, Emitter<String>> emitters;
+
+    @javax.inject.Inject
+    ObjectMapper objectMapper;
 
     @javax.annotation.PostConstruct
     public void setup() {
         emitters = new HashMap<>();
+        objectMapper.registerModule(JsonFormat.getCloudEventJacksonModule());
         /*
          * $repeat$
          * emitters.put("$channel$", $emitter$);
@@ -41,13 +44,13 @@ public class CloudEventListenerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public javax.ws.rs.core.Response cloudEventListener(CloudEvent event) {
         try {
-            LOGGER.debug("CloudEvent received: {}", Printer.beautify(cloudEvent));
-            if (emitters.get(cloudEvent.getType()) != null) {
+            LOGGER.debug("CloudEvent received: {}", Printer.beautify(event));
+            if (emitters.get(event.getType()) != null) {
                 // convert CloudEvent to JSON and send to internal channels
-                emitters.get(cloudEvent.getType()).send(CloudEventConverter.toJson(cloudEvent));
+                emitters.get(event.getType()).send(objectMapper.writeValueAsString(event));
                 return javax.ws.rs.core.Response.ok().build();
             } else {
-                return Responses.channelNotBound(cloudEvent.getType(), cloudEvent);
+                return Responses.channelNotBound(event.getType(), event);
             }
         } catch (Exception ex) {
             return Responses.errorProcessingCloudEvent(ex);
