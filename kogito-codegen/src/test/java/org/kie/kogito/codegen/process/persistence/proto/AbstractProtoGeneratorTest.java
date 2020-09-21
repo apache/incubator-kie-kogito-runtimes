@@ -19,24 +19,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class AbstractProtoGeneratorTest {
 
     @Test
     void checkGeneratedProtoBufAndListing(@TempDir Path tmpTargetDir) throws IOException {
         final ReflectionProtoGenerator generator = new ReflectionProtoGenerator();
-        for (int i = 0; i < 5; i++){
+        for (int i = 0; i < 5; i++) {
             final Proto proto = new Proto("org.acme.test");
             generator.writeFilesToFS("protofile." + i, tmpTargetDir.toString(), proto);
         }
@@ -45,8 +41,9 @@ class AbstractProtoGeneratorTest {
         final ObjectMapper mapper = new ObjectMapper();
         List<String> files = mapper.readValue(list, List.class);
         assertThat(files).isNotEmpty();
-        assertThat(files).hasAtLeastOneElementOfType(String.class);
-        assertThat(files).contains("protofile.0.proto");
-        assertThat(files).hasSize(5);
+        assertThat(files)
+                .hasAtLeastOneElementOfType(String.class)
+                .contains("protofile.0.proto")
+                .hasSize(5);
     }
 }
