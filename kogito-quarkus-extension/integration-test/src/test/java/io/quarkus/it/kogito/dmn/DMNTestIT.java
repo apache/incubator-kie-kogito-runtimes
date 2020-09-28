@@ -3,6 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -12,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.events.knative.ce.http;
 
-import io.cloudevents.CloudEvent;
+package io.quarkus.it.kogito.dmn;
 
-/**
- * Public common interface for HttpRequest converters.
- *
- * @param <H> HttpRequest reference from the target runtime
- */
-public interface HttpRequestConverter<H> {
+import io.quarkus.test.junit.NativeImageTest;
 
-    CloudEvent from(H request);
-
+@NativeImageTest
+public class DMNTestIT extends DMNTest {
 }

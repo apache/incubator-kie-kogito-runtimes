@@ -12,20 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.events.knative.ce.http;
+package org.kogito.workitem.rest;
 
-import javax.ws.rs.core.MediaType;
+import java.util.function.UnaryOperator;
 
-/**
- * Extends {@link MediaType} to CloudEvents support
- */
-// this shouldn't be provided by the CE SDK? Send a PR.
-public final class ExtMediaType {
-
-    public static final String CLOUDEVENTS_JSON = "application/cloudevents+json";
-    public static final MediaType CLOUDEVENTS_JSON_TYPE = new MediaType("application", "cloudevents+json");
-
-    private ExtMediaType() {
-
-    }
+/* Added to make it easier to search for ParamResolver function implementations, 
+ * see https://github.com/kiegroup/kogito-runtimes/pull/778#pullrequestreview-493382982 */ 
+public interface RestWorkItemHandlerParamResolver extends UnaryOperator<Object> {
 }
