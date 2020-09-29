@@ -94,14 +94,11 @@ void saveReports(boolean allowEmpty=false){
 
 void checkoutRepo(String repo, String dirName=repo) {
     dir(dirName) {
-        githubscm.checkoutIfExists(repo, changeAuthor, changeBranch, 'kiegroup', changeTarget, true)
+        checkout(githubscm.resolveRepository(repoName, "kiegroup", params.BRANCH_NAME, false))
     }
 }
 
-void mavenCleanInstallNative(String repoName, String dirName = "") {
-    if(dirName == ""){
-        dirName = repoName
-    }
+void mavenCleanInstallNative(String repoName, String dirName = repoName) {
     dir(dirName){
         mavenCleanInstall("-Pnative -Dquarkus.native.container-build=true -Dquarkus.native.container-runtime=podman")
     }
