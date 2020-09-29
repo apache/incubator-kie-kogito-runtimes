@@ -92,6 +92,12 @@ void saveReports(boolean allowEmpty=false){
     junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: allowEmpty
 }
 
+void checkoutRepo(String repo, String dirName=repo) {
+    dir(dirName) {
+        githubscm.checkoutIfExists(repo, changeAuthor, changeBranch, 'kiegroup', changeTarget, true)
+    }
+}
+
 void mavenCleanInstallNative(String repoName, String dirName = "") {
     if(dirName == ""){
         dirName = repoName
