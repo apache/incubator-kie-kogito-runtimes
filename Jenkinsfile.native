@@ -21,10 +21,6 @@ pipeline {
     environment {
         KOGITO_CI_EMAIL_TO = credentials('KOGITO_CI_EMAIL_TO')
         MAVEN_OPTS = '-Xms1024m -Xmx4g'
-
-        // Set into 'Initialize' stage
-        // DROOLS_VERSION
-        // MAVEN_EXTRA_ARGS
     }
     stages {
         stage('Initialize') {
