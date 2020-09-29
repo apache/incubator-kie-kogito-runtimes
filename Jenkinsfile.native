@@ -1,0 +1,110 @@
+@Library('jenkins-pipeline-shared-libraries')_
+
+pipeline {
+    agent {
+        label 'kie-rhel7 && kie-mem16g'
+    }
+    tools {
+        maven 'kie-maven-3.6.2'
+        jdk 'kie-jdk11'
+    }
+    triggers {
+        cron ('H 10 * * *')
+    }
+    options {
+        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')
+        timeout(time: 360, unit: 'MINUTES')
+    }
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: "master", description: 'Set the branch to build&test')
+    }
+    environment {
+        KOGITO_CI_EMAIL_TO = credentials('KOGITO_CI_EMAIL_TO')
+        MAVEN_OPTS = '-Xms1024m -Xmx4g'
+
+        // Set into 'Initialize' stage
+        // DROOLS_VERSION
+        // MAVEN_EXTRA_ARGS
+    }
+    stages {
+        stage('Initialize') {
+            steps {
+                script {
+                    mailer.buildLogScriptPR()
+
+                    checkoutRepo("kogito-runtimes")
+                    checkoutRepo("kogito-apps")
+                    checkoutRepo("kogito-examples")
+                }
+            }
+        }
+        stage('Build kogito-runtimes (-Pnative)') {
+            steps {
+                script {
+                    mavenCleanInstallNative("kogito-runtimes")
+                }
+            }
+            post {
+                always {
+                    saveReports()
+                }
+            }
+        }
+        stage('Build kogito-apps (-Pnative)') {
+            steps {
+                script {
+                    mavenCleanInstallNative("kogito-apps")
+                }
+            }
+            post {
+                always {
+                    saveReports()
+                }
+            }
+        }
+        stage('Build kogito-examples (-Pnative)') {
+            steps {
+                script {
+                    mavenCleanInstallNative("kogito-examples")
+                }
+            }
+            post {
+                always {
+                    saveReports()
+                }
+            }
+        }
+    }
+    post {
+        unsuccessful {
+            sendNotification()
+        }
+        always {
+            junit '**/target/surefire-reports/**/*.xml'
+            cleanWs()
+        }
+    }
+}
+
+void sendNotification(){
+    emailext body: "Kogito daily native #${BUILD_NUMBER} was: ${currentBuild.currentResult}\nPlease look here: ${BUILD_URL}",
+             subject: "[${params.BRANCH_NAME}][d] Runtimes native",
+             to: env.KOGITO_CI_EMAIL_TO
+}
+
+void saveReports(boolean allowEmpty=false){
+    junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: allowEmpty
+}
+
+void mavenCleanInstallNative(String repoName, String dirName = "") {
+    if(dirName == ""){
+        dirName = repoName
+    }
+    dir(dirName){
+        mavenCleanInstall("-Pnative -Dquarkus.native.container-build=true -Dquarkus.native.container-runtime=podman")
+    }
+}
+
+void mavenCleanInstall(String extraArgs){
+    maven.runMavenWithSubmarineSettings("clean install ${env.MAVEN_EXTRA_ARGS} ${extraArgs}", false)
+}
