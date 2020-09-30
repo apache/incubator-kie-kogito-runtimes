@@ -30,7 +30,7 @@ pipeline {
                 }
             }
         }
-        stage('Build kogito-runtimes (-Pnative)') {
+        stage('Build kogito-runtimes') {
             steps {
                 script {
                     mavenCleanInstallNative("kogito-runtimes")
@@ -42,7 +42,7 @@ pipeline {
                 }
             }
         }
-        stage('Build kogito-apps (-Pnative)') {
+        stage('Build kogito-apps') {
             steps {
                 script {
                     mavenCleanInstallNative("kogito-apps")
@@ -54,7 +54,7 @@ pipeline {
                 }
             }
         }
-        stage('Build kogito-examples (-Pnative)') {
+        stage('Build kogito-examples') {
             steps {
                 script {
                     mavenCleanInstallNative("kogito-examples")
