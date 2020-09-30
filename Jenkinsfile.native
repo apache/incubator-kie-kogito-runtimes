@@ -102,5 +102,5 @@ void mavenCleanInstallNative(String repoName, String dirName = repoName) {
 }
 
 void mavenCleanInstall(String extraArgs){
-    maven.runMavenWithSubmarineSettings("clean install ${env.MAVEN_EXTRA_ARGS} ${extraArgs}", false)
+    maven.runMavenWithSubmarineSettings("clean install ${env.MAVEN_OPTS} ${extraArgs}", false)
 }
