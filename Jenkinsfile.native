@@ -89,7 +89,7 @@ void saveReports(boolean allowEmpty=false){
     junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: allowEmpty
 }
 
-void checkoutRepo(String repo, String dirName=repo) {
+void checkoutRepo(String repoName, String dirName=repoName) {
     dir(dirName) {
         checkout(githubscm.resolveRepository(repoName, "kiegroup", env.BRANCH_NAME, false))
     }
