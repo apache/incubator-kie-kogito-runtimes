@@ -17,7 +17,6 @@ pipeline {
     }
     environment {
         KOGITO_CI_EMAIL_TO = credentials('KOGITO_CI_EMAIL_TO')
-        MAVEN_OPTS = '-Xms1024m -Xmx4g'
     }
     stages {
         stage('Initialize') {
@@ -102,5 +101,5 @@ void mavenCleanInstallNative(String repoName, String dirName = repoName) {
 }
 
 void mavenCleanInstall(String extraArgs){
-    maven.runMavenWithSubmarineSettings("clean install ${env.MAVEN_OPTS} ${extraArgs}", false)
+    maven.runMavenWithSubmarineSettings("clean install ${extraArgs}", false)
 }
