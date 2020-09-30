@@ -2,7 +2,7 @@
 
 pipeline {
     agent {
-        label 'kie-rhel7 && kie-mem16g'
+        label 'kogito-cloud'
     }
     tools {
         maven 'kie-maven-3.6.2'
@@ -14,9 +14,6 @@ pipeline {
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')
         timeout(time: 360, unit: 'MINUTES')
-    }
-    parameters {
-        string(name: 'BRANCH_NAME', defaultValue: "master", description: 'Set the branch to build&test')
     }
     environment {
         KOGITO_CI_EMAIL_TO = credentials('KOGITO_CI_EMAIL_TO')
@@ -84,7 +81,7 @@ pipeline {
 
 void sendNotification(){
     emailext body: "Kogito daily native #${BUILD_NUMBER} was: ${currentBuild.currentResult}\nPlease look here: ${BUILD_URL}",
-             subject: "[${params.BRANCH_NAME}][d] Runtimes native",
+             subject: "[${env.BRANCH_NAME}][d] Runtimes native",
              to: env.KOGITO_CI_EMAIL_TO
 }
 
@@ -94,7 +91,7 @@ void saveReports(boolean allowEmpty=false){
 
 void checkoutRepo(String repo, String dirName=repo) {
     dir(dirName) {
-        checkout(githubscm.resolveRepository(repoName, "kiegroup", params.BRANCH_NAME, false))
+        checkout(githubscm.resolveRepository(repoName, "kiegroup", env.BRANCH_NAME, false))
     }
 }
 
