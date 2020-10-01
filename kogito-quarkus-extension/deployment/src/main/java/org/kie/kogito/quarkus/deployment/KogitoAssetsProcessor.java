@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -72,6 +73,7 @@ import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.JsonSchemaGenerator;
+import org.kie.kogito.codegen.MonitoringUtils;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
@@ -205,6 +207,9 @@ public class KogitoAssetsProcessor {
 
         // real work occurs here: invoke the code-generation procedure
         Collection<GeneratedFile> generatedFiles = appGen.generate();
+
+        Optional<GeneratedFile> dashboardsListFile = MonitoringUtils.generateDashboardsList(generatedFiles);
+        dashboardsListFile.ifPresent(generatedFiles::add);
 
         // dump files to disk
         for (Path projectPath : appPaths.projectPaths) {
