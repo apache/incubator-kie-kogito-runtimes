@@ -45,7 +45,7 @@ pipeline {
         stage('Build kogito-apps') {
             steps {
                 script {
-                    mavenCleanInstallNative("kogito-apps")
+                    mavenCleanInstall("kogito-apps")
                 }
             }
             post {
@@ -94,12 +94,12 @@ void checkoutRepo(String repoName, String dirName=repoName) {
     }
 }
 
-void mavenCleanInstallNative(String repoName, String dirName = repoName) {
-    dir(dirName){
-        mavenCleanInstall("-Pnative -Dquarkus.native.container-build=true -Dquarkus.native.container-runtime=podman")
-    }
+void mavenCleanInstallNative(String dirName) {
+    mavenCleanInstall(dirName, "-Pnative -Dquarkus.native.container-build=true -Dquarkus.native.container-runtime=podman")
 }
 
-void mavenCleanInstall(String extraArgs){
-    maven.runMavenWithSubmarineSettings("clean install ${extraArgs}", false)
+void mavenCleanInstall(String dirName, String extraArgs = ""){
+    dir(dirName){
+        maven.runMavenWithSubmarineSettings("clean install ${extraArgs}", false)
+    }
 }
