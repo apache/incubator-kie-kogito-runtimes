@@ -105,7 +105,7 @@
 
     <version.net.java.dev.glazedlists>1.8.0</version.net.java.dev.glazedlists>
 
-    <version.io.cloudevents>2.0.0-milestone2</version.io.cloudevents>
+    <version.io.cloudevents>2.0.0-milestone3</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>4.8.0</version.io.fabric8.kubernetes-client>
     <version.io.prometheus>0.5.0</version.io.prometheus>
     <version.io.restassured>4.3.0</version.io.restassured>
@@ -139,6 +139,7 @@
     <version.spring.framework>5.2.7.RELEASE</version.spring.framework>
     <version.xmlunit>2.2.1</version.xmlunit>
     <version.jsonschema2pojo-maven-plugin>1.0.1</version.jsonschema2pojo-maven-plugin>
+    <version.com.github.java-json-tools>2.2.10</version.com.github.java-json-tools>
     <version.org.mongo>4.0.3</version.org.mongo>
 
     <!-- container images for testing -->
@@ -711,6 +712,12 @@
         <groupId>io.rest-assured</groupId>
         <artifactId>json-schema-validator</artifactId>
         <version>${version.io.restassured}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.java-json-tools</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>${version.com.github.java-json-tools}</version>
+        <scope>test</scope>
       </dependency>
       
       <!-- mongoDB related -->
