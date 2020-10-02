@@ -69,24 +69,6 @@ pipeline {
                 }
             }
         }
-        stage('Is staging repository promoted?') {
-            when {
-                expression { return isRelease() && getStagingRepoUrl() != '' }
-            }
-            steps {
-                script {
-                    def pipelineName = 'Kogito Runtimes promote pipeline'
-                    withCredentials([string(credentialsId: 'KOGITO_CI_EMAIL_TO', variable: 'ZULIP_EMAIL')]) {
-                        emailext body: "${getProjectVersion()} artifacts are ready for promotion.\n" +
-                                 "The staging repository can be found at: ${getStagingRepoUrl()}\n" +
-                                 "Please promote the repository and then confirm the promotion here: ${env.BUILD_URL}input",
-                                 subject: "[${getBuildBranch()}] Release Pipeline",
-                                 to: ZULIP_EMAIL
-                    }
-                    input message: 'Has the staging repository been promoted?', ok: 'Yes'
-                }
-            }
-        }
         stage('Merge runtimes deploy PR and tag') {
             when {
                 expression { return isRelease() }
@@ -111,25 +93,6 @@ pipeline {
                         checkoutRepo('kogito-apps')
                         mergeAndPush('kogito-apps', getDeployPrLink('kogito-apps'))
                         tagLatest()
-                    }
-                }
-            }
-        }
-        stage('Merge examples deploy PR and tag') {
-            when {
-                expression { return isRelease() }
-            }
-            steps{
-                script {
-                    dir('kogito-examples') {
-                        checkoutRepo('kogito-examples')
-                        mergeAndPush('kogito-examples', getDeployPrLink('kogito-examples'))
-                        tagLatest()
-
-                        if(params.UPDATE_STABLE_BRANCH) {
-                            githubscm.createBranch('stable')
-                            forcePushProtectedBranch('kogito-examples', 'stable', 'master')
-                        }
                     }
                 }
             }
@@ -172,24 +135,6 @@ pipeline {
                     dir('kogito-apps') {
                         sh "git checkout ${getBuildBranch()}"
                         mergeAndPush('kogito-apps', getPipelinePrLink('kogito-apps'))
-                    }
-                }
-            }
-        }
-        stage('Set examples next snapshot version'){
-            when {
-                expression { return isRelease() }
-            }
-            steps {
-                script {
-                    dir('kogito-examples-bot') {
-                        prepareForPR('kogito-examples')
-                        maven.mvnVersionsSet(getSnapshotVersion(), true)
-                        commitAndCreatePR('kogito-examples')
-                    }
-                    dir('kogito-examples') {
-                        sh "git checkout ${getBuildBranch()}"
-                        mergeAndPush('kogito-examples', getPipelinePrLink('kogito-examples'))
                     }
                 }
             }
