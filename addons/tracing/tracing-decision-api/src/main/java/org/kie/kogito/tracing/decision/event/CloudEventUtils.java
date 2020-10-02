@@ -53,21 +53,21 @@ public class CloudEventUtils {
         }
     }
 
-    public static String encode(CloudEvent event) {
+    public static Optional<String> encode(CloudEvent event) {
         try {
-            return OBJECT_MAPPER.writeValueAsString(event);
+            return Optional.of(OBJECT_MAPPER.writeValueAsString(event));
         } catch (JsonProcessingException e) {
             LOG.error("Unable to encode CloudEvent", e);
-            return null;
+            return Optional.empty();
         }
     }
 
-    public static CloudEvent decode(String json) {
+    public static Optional<CloudEvent> decode(String json) {
         try {
-            return OBJECT_MAPPER.readValue(json, CloudEvent.class);
+            return Optional.of(OBJECT_MAPPER.readValue(json, CloudEvent.class));
         } catch (JsonProcessingException e) {
             LOG.error("Unable to decode CloudEvent", e);
-            return null;
+            return Optional.empty();
         }
     }
 

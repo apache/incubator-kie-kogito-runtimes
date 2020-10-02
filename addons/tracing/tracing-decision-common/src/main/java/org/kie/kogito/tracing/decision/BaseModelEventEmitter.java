@@ -39,7 +39,8 @@ public abstract class BaseModelEventEmitter implements EventEmitter {
                                     resource.getModelType(),
                                     resource.get()),
                             ModelEvent.class)
-                    .ifPresent(e -> emit(CloudEventUtils.encode(e)));
+                    .flatMap(CloudEventUtils::encode)
+                    .ifPresent(this::emit);
         });
     }
 }
