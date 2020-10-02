@@ -23,15 +23,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.explainability.model.PredictInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Path("/predict")
 public class SpringBootExplainableResource {
@@ -49,12 +47,12 @@ public class SpringBootExplainableResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Object predict(@RequestBody List<PredictInput> inputs) {
+    public Response predict(List<PredictInput> inputs) {
         try {
-            return explainabilityService.processRequest(application, inputs);
+            return Response.ok(explainabilityService.processRequest(application, inputs)).build();
         } catch (Exception e) {
             LOGGER.warn("An Exception occurred processing the predict request", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 }
