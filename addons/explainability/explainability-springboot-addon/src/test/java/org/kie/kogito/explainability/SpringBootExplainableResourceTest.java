@@ -47,7 +47,7 @@ class SpringBootExplainableResourceTest {
     void explainServiceTest() {
         List<PredictInput> inputs = singletonList(createInput(40));
 
-        List<PredictOutput> outputs = (List<PredictOutput>) resource.predict(inputs).getBody();
+        List<PredictOutput> outputs = (List<PredictOutput>) resource.predict(inputs);
 
         assertNotNull(outputs);
         assertEquals(1, outputs.size());
@@ -73,7 +73,7 @@ class SpringBootExplainableResourceTest {
     void explainServiceTestMultipleInputs() {
         List<PredictInput> inputs = asList(createInput(40), createInput(120));
 
-        List<PredictOutput> outputs = (List<PredictOutput>) resource.predict(inputs).getBody();
+        List<PredictOutput> outputs = (List<PredictOutput>) resource.predict(inputs);
 
         assertNotNull(outputs);
         assertEquals(2, outputs.size());
@@ -93,18 +93,19 @@ class SpringBootExplainableResourceTest {
     @Test
     @SuppressWarnings("unchecked")
     void explainServiceTestNoInputs() {
-        List<PredictOutput> outputs = (List<PredictOutput>) resource.predict(emptyList()).getBody();
+        List<PredictOutput> outputs = (List<PredictOutput>) resource.predict(emptyList());//.getBody();
 
         assertNotNull(outputs);
         assertEquals(0, outputs.size());
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void explainServiceFail() {
         String unknownwResourceId = "unknown:model";
         PredictInput input = createInput(10);
         input.getModelIdentifier().setResourceId(unknownwResourceId);
-        ResponseEntity<Object> responseEntity = resource.predict(singletonList(input));
+        ResponseEntity<Object> responseEntity = (ResponseEntity<Object>) resource.predict(singletonList(input));
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         assertEquals("Model " + unknownwResourceId + " not found.", responseEntity.getBody());

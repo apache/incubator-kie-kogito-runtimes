@@ -49,9 +49,9 @@ public class SpringBootExplainableResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity<Object> predict(@RequestBody List<PredictInput> inputs) {
+    public Object predict(@RequestBody List<PredictInput> inputs) {
         try {
-            return ResponseEntity.ok(explainabilityService.processRequest(application, inputs));
+            return explainabilityService.processRequest(application, inputs);
         } catch (Exception e) {
             LOGGER.warn("An Exception occurred processing the predict request", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
