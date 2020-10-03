@@ -83,20 +83,7 @@ public class DecisionValidation {
                                                                                            .collect(Collectors.toList())
                                                                                            .toArray(new Reader[]{}));
         logValidationMessages(schemaModelValidations, DecisionValidation::validateMsgPrefixer, DMNMessage::getText);
-        List<DMNMessage> errors = schemaModelValidations.stream().filter(m -> m.getLevel() == Level.ERROR).collect(Collectors.toList());
-        if (!errors.isEmpty()) {
-            if (validateOption != ValidationOption.IGNORE) {
-                StringBuilder sb = new StringBuilder("DMN Validation schema and model validation contained errors").append("\n");
-                sb.append("You may configure ").append(DecisionCodegen.VALIDATION_CONFIGURATION_KEY).append("=IGNORE to ignore validation errors").append("\n");
-                sb.append("DMN Validation errors:").append("\n");
-                sb.append(errors.stream().map(DMNMessage::getMessage).collect(Collectors.joining(",\n")));
-                LOG.error(sb.toString());
-                throw new RuntimeException(sb.toString());
-            } else {
-                LOG.warn("DMN Validation encountered errors but validation configuration was set to IGNORE, continuing with no blocking error.");
-                return;
-            }
-        }
+        processMessagesHandleErrors(validateOption, schemaModelValidations);
     }
 
     private static String validateMsgPrefixer(DMNMessage msg) {
@@ -186,12 +173,41 @@ public class DecisionValidation {
                     LOG.info(" analysis for decision table '" + nameOrIDOfTable(r) + "':");
                     List<DMNMessage> messages = r.asDMNMessages();
                     logValidationMessages(messages, (u) -> "  ", DMNMessage::getMessage);
-                    if (messages.stream().anyMatch(m -> m.getLevel() == Level.ERROR)) {
-                        throw new RuntimeException("There are DMN Validation Error(s).");
-                    }
+                    processMessagesHandleErrors(validateOption, messages);
                 }
             }
         }
+    }
+
+    private static void processMessagesHandleErrors(ValidationOption validateOption, Collection<DMNMessage> messages) {
+        List<DMNMessage> errors = messages.stream().filter(m -> m.getLevel() == Level.ERROR).collect(Collectors.toList());
+        if (!errors.isEmpty()) {
+            if (validateOption != ValidationOption.IGNORE) {
+                StringBuilder sb = new StringBuilder("DMN Validation schema and model validation contained errors").append("\n");
+                sb.append("You may configure ").append(DecisionCodegen.VALIDATION_CONFIGURATION_KEY).append("=IGNORE to ignore validation errors").append("\n");
+                sb.append("DMN Validation errors:").append("\n");
+                sb.append(errors.stream().map(m -> modelName(m) + ": " + m.getMessage()).collect(Collectors.joining(",\n")));
+                LOG.error(sb.toString());
+                throw new RuntimeException(sb.toString());
+            } else {
+                LOG.warn("DMN Validation encountered errors but validation configuration was set to IGNORE, continuing with no blocking error.");
+                return;
+            }
+        }
+    }
+
+    private static String modelName(DMNMessage m) {
+        Object sr = m.getSourceReference();
+        if (sr instanceof DMNModelInstrumentedBase) {
+            DMNModelInstrumentedBase dmnIB = (DMNModelInstrumentedBase) sr;
+            while (dmnIB != null && !(dmnIB instanceof Definitions)) {
+                dmnIB = dmnIB.getParent();
+            }
+            if (dmnIB instanceof Definitions) {
+                return ((Definitions) dmnIB).getName();
+            }
+        }
+        return "";
     }
 
     private static String nameOrIDOfTable(DTAnalysis r) { // TODO pending DROOLS-5072 refactoring
