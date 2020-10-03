@@ -164,15 +164,15 @@ public class DecisionValidation {
         DMNDTAnalyser dmndtAnalyser = new DMNDTAnalyser(Arrays.asList(new ExtendedDMNProfile())); // TODO pending DROOLS-5072 refactoring
         LOG.info("DMN DT Validator initialized.");
         for (DMNModel model : dmnModels) {
-            LOG.info("Analysing decision tables in DMN Model '" + model.getName() + "' ...");
+            LOG.info("Analysing decision tables in DMN Model '{}' ...", model.getName());
             List<DTAnalysis> results = dmndtAnalyser.analyse(model, new HashSet<>(Arrays.asList(DMNValidator.Validation.ANALYZE_DECISION_TABLE)));
             if (results.isEmpty()) {
                 LOG.info(" no decision tables found.");
             } else {
                 for (DTAnalysis r : results) {
-                    LOG.info(" analysis for decision table '" + nameOrIDOfTable(r) + "':");
+                    LOG.info(" analysis for decision table '{}':", nameOrIDOfTable(r));
                     List<DMNMessage> messages = r.asDMNMessages();
-                    logValidationMessages(messages, (u) -> "  ", DMNMessage::getMessage);
+                    logValidationMessages(messages, p -> "  ", DMNMessage::getMessage);
                     processMessagesHandleErrors(validateOption, messages);
                 }
             }
