@@ -19,19 +19,27 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.kie.api.builder.Message.Level;
 import org.kie.api.io.Resource;
 import org.kie.dmn.api.core.DMNMessage;
+import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.core.compiler.profiles.ExtendedDMNProfile;
 import org.kie.dmn.model.api.DMNModelInstrumentedBase;
+import org.kie.dmn.model.api.DecisionTable;
 import org.kie.dmn.model.api.Definitions;
+import org.kie.dmn.model.api.FunctionDefinition;
+import org.kie.dmn.model.api.NamedElement;
 import org.kie.dmn.validation.DMNValidator;
 import org.kie.dmn.validation.DMNValidatorFactory;
+import org.kie.dmn.validation.dtanalysis.DMNDTAnalyser;
+import org.kie.dmn.validation.dtanalysis.model.DTAnalysis;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,10 +66,13 @@ public class DecisionValidation {
         IGNORE;
     }
 
+    /**
+     * Performs VALIDATE_SCHEMA, VALIDATE_MODEL for XSD schema validation and Semantic validation with DRL rules as exec model
+     */
     static void dmnValidateResources(GeneratorContext context, Collection<Resource> resources) {
         ValidationOption validateOption = fromContext(context);
         if (validateOption == ValidationOption.DISABLED) {
-            LOG.info("DMN Validation was set to DISABLED, skipping.");
+            LOG.info("DMN Validation was set to DISABLED, skipping VALIDATE_SCHEMA, VALIDATE_MODEL.");
             return;
         }
         List<DMNMessage> schemaModelValidations = DMNValidatorFactory.newValidator(Arrays.asList(new ExtendedDMNProfile()))
@@ -71,7 +82,7 @@ public class DecisionValidation {
                                                                                            .map(DecisionValidation::resourceToReader)
                                                                                            .collect(Collectors.toList())
                                                                                            .toArray(new Reader[]{}));
-        logValidationMessages(schemaModelValidations);
+        logValidationMessages(schemaModelValidations, DecisionValidation::validateMsgPrefixer, DMNMessage::getText);
         List<DMNMessage> errors = schemaModelValidations.stream().filter(m -> m.getLevel() == Level.ERROR).collect(Collectors.toList());
         if (!errors.isEmpty()) {
             if (validateOption != ValidationOption.IGNORE) {
@@ -86,6 +97,19 @@ public class DecisionValidation {
                 return;
             }
         }
+    }
+
+    private static String validateMsgPrefixer(DMNMessage msg) {
+        if (msg.getSourceReference() instanceof DMNModelInstrumentedBase) {
+            DMNModelInstrumentedBase ib = (DMNModelInstrumentedBase) msg.getSourceReference();
+            while (ib.getParent() != null) {
+                ib = ib.getParent();
+            }
+            if (ib instanceof Definitions) {
+                return (((Definitions) ib).getName() + ": ");
+            }
+        }
+        return "";
     }
 
     private static ValidationOption fromContext(GeneratorContext context) {
@@ -115,7 +139,9 @@ public class DecisionValidation {
         }
     }
 
-    private static void logValidationMessages(List<DMNMessage> validation) {
+    private static void logValidationMessages(List<DMNMessage> validation,
+                                              Function<DMNMessage, String> prefixer,
+                                              Function<DMNMessage, String> computeMessage) {
         for (DMNMessage msg : validation) {
             Consumer<String> logFn = null;
             switch (msg.getLevel()) {
@@ -130,18 +156,55 @@ public class DecisionValidation {
                     logFn = LOG::info;
                     break;
             }
-            StringBuilder sb = new StringBuilder("DMN Model name: ");
-            if (msg.getSourceReference() instanceof DMNModelInstrumentedBase) {
-                DMNModelInstrumentedBase ib = (DMNModelInstrumentedBase) msg.getSourceReference();
-                while (ib.getParent() != null) {
-                    ib = ib.getParent();
-                }
-                if (ib instanceof Definitions) {
-                    sb.append(((Definitions) ib).getName() + ", ");
-                }
-            }
-            sb.append(msg.getText());
+            StringBuilder sb = new StringBuilder();
+            sb.append(prefixer.apply(msg));
+            sb.append(computeMessage.apply(msg));
             logFn.accept(sb.toString());
         }
     }
+
+    /**
+     * Performs ANALYZE_DECISION_TABLE for DMN Decision Table (static) analysis
+     */
+    static void dmnValidateDecisionTablesInModels(GeneratorContext context, Collection<DMNModel> dmnModels) {
+        ValidationOption validateOption = fromContext(context);
+        if (validateOption == ValidationOption.DISABLED) {
+            LOG.info("DMN Validation was set to DISABLED, skipping Decision Table (static) analysis.");
+            return;
+        }
+
+        LOG.info("Initializing DMN DT Validator...");
+        DMNDTAnalyser dmndtAnalyser = new DMNDTAnalyser(Arrays.asList(new ExtendedDMNProfile())); // TODO pending DROOLS-5072 refactoring
+        LOG.info("DMN DT Validator initialized.");
+        for (DMNModel model : dmnModels) {
+            LOG.info("Analysing decision tables in DMN Model '" + model.getName() + "' ...");
+            List<DTAnalysis> results = dmndtAnalyser.analyse(model, new HashSet<>(Arrays.asList(DMNValidator.Validation.ANALYZE_DECISION_TABLE)));
+            if (results.isEmpty()) {
+                LOG.info(" no decision tables found.");
+            } else {
+                for (DTAnalysis r : results) {
+                    LOG.info(" analysis for decision table '" + nameOrIDOfTable(r) + "':");
+                    List<DMNMessage> messages = r.asDMNMessages();
+                    logValidationMessages(messages, (u) -> "  ", DMNMessage::getMessage);
+                    if (messages.stream().anyMatch(m -> m.getLevel() == Level.ERROR)) {
+                        throw new RuntimeException("There are DMN Validation Error(s).");
+                    }
+                }
+            }
+        }
+    }
+
+    private static String nameOrIDOfTable(DTAnalysis r) { // TODO pending DROOLS-5072 refactoring
+        DecisionTable sourceDT = r.getSource();
+        if (sourceDT.getOutputLabel() != null && !sourceDT.getOutputLabel().isEmpty()) {
+            return sourceDT.getOutputLabel();
+        } else if (sourceDT.getParent() instanceof NamedElement) {
+            return ((NamedElement) sourceDT.getParent()).getName();
+        } else if (sourceDT.getParent() instanceof FunctionDefinition && sourceDT.getParent().getParent() instanceof NamedElement) {
+            return ((NamedElement) sourceDT.getParent().getParent()).getName();
+        } else {
+            return new StringBuilder("[ID: ").append(sourceDT.getId()).append("]").toString();
+        }
+    }
 }
+
