@@ -49,10 +49,6 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
         String protoFileName = processId + ".proto";
         List<GeneratedFile> protoFiles = new ArrayList<>();
 
-//        protoFiles.add(new GeneratedFile(GeneratedFile.Type.GENERATED_CP_RESOURCE,
-//                                         Paths.get(targetDirectory, GENERATED_PROTO_PERSISTENCE_PATH + protoFileName).toString(),
-//                                         modelProto.toString().getBytes(StandardCharsets.UTF_8))
-//        );
         protoFiles.add(new GeneratedFile(GeneratedFile.Type.GENERATED_CP_RESOURCE,
                                          GENERATED_PROTO_RES_PATH + protoFileName,
                                          modelProto.toString().getBytes(StandardCharsets.UTF_8))
