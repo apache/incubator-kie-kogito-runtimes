@@ -47,6 +47,11 @@
       <artifactId>arc-processor</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-undertow</artifactId>
+    </dependency>
+
     <!-- kogito -->
     <dependency>
       <groupId>org.kie.kogito</groupId>

@@ -40,6 +40,10 @@
             <artifactId>quarkus-resteasy-jackson-deployment</artifactId>
             <version>${version.io.quarkus}</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-undertow-deployment</artifactId>
+        </dependency>
 
         <!-- kogito -->
         <dependency>
