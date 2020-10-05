@@ -77,7 +77,7 @@ public class ProcessClassesMojo extends AbstractKieMojo {
     private String schemaVersion;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {        
+    public void execute() throws MojoExecutionException {
         try {
             JavaCompilerSettings settings = new JavaCompilerSettings();
             List<URL> pathUrls = new ArrayList<>();
@@ -113,18 +113,16 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                         parameters.add(t.getTypeName());
                     }
                 }
-                
+
                 GeneratorContext context = GeneratorContext.ofResourcePath(kieSourcesDirectory);
                 context.withBuildContext(discoverKogitoRuntimeContext(project));
-                
+
                 String persistenceType = context.getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
                 PersistenceGenerator persistenceGenerator = new PersistenceGenerator(new File(project.getBuild().getDirectory()), modelClasses, !classes.isEmpty(), new ReflectionProtoGenerator(), cl, parameters, persistenceType);
                 persistenceGenerator.setPackageName(appPackageName);
                 persistenceGenerator.setDependencyInjection(discoverDependencyInjectionAnnotator(project));
                 persistenceGenerator.setContext(context);
                 Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
-
-
 
                 MemoryFileSystem srcMfs = new MemoryFileSystem();
                 MemoryFileSystem trgMfs = new MemoryFileSystem();

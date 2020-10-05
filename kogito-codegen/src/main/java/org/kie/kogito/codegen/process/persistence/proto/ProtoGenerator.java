@@ -18,15 +18,17 @@ package org.kie.kogito.codegen.process.persistence.proto;
 import java.util.Collection;
 import java.util.Date;
 
+import org.kie.kogito.codegen.GeneratedFile;
+
 public interface ProtoGenerator<T> {
-    
-    String INDEX_COMMENT = "@Field(store = Store.YES)"; 
+
+    String INDEX_COMMENT = "@Field(store = Store.YES)";
 
     Proto generate(String packageName, Collection<T> dataModel, String... headers);
-    
+
     Proto generate(String messageComment, String fieldComment, String packageName, T dataModel, String... headers);
-    
-    Collection<T> extractDataClasses(Collection<T> input, String targetDirectory);
+
+    Collection<T> extractDataClasses(Collection<T> input, String targetDirectory, Collection<GeneratedFile> generatedFiles);
 
     default String applicabilityByType(String type) {
         if (type.equals("Collection")) {
@@ -56,5 +58,4 @@ public interface ProtoGenerator<T> {
 
         return null;
     }
-
 }

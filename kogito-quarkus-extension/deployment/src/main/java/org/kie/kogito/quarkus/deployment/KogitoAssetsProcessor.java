@@ -206,16 +206,6 @@ public class KogitoAssetsProcessor {
         // real work occurs here: invoke the code-generation procedure
         Collection<GeneratedFile> generatedFiles = appGen.generate();
 
-        // dump files to disk
-        for (Path projectPath : appPaths.projectPaths) {
-            generatedFileWriterBuilder
-                    .build(projectPath)
-                    .writeAll(generatedFiles);
-        }
-
-        // register resources to the Quarkus environment
-        registerResources(generatedFiles);
-
         // build Java source code and register the generated beans
         Index index = processGeneratedJavaSourceCode(
                 appPaths,
@@ -227,11 +217,26 @@ public class KogitoAssetsProcessor {
         }
 
         // further processing
-        generatePersistenceInfo(appPaths, index);
+        Collection<GeneratedFile> persistenceGeneratedFiles = generatePersistenceInfo(appPaths, index);
+        generatedFiles.addAll(persistenceGeneratedFiles);
+
+        // Write files to disk
+        dumpFilesToDisk(appPaths, generatedFiles);
+
+        // register resources to the Quarkus environment
+        registerResources(generatedFiles);
 
         registerDataEventsForReflection(index);
 
         writeJsonSchema(appPaths, index);
+    }
+
+    private void dumpFilesToDisk(AppPaths appPaths, Collection<GeneratedFile> generatedFiles){
+        for (Path projectPath : appPaths.projectPaths) {
+            generatedFileWriterBuilder
+                    .build(projectPath)
+                    .writeAll(generatedFiles);
+        }
     }
 
     private void registerResources(Collection<GeneratedFile> generatedFiles) {
@@ -269,7 +274,7 @@ public class KogitoAssetsProcessor {
         return indexBuildItems(generatedBeanBuildItems);
     }
 
-    private void generatePersistenceInfo(AppPaths appPaths, IndexView inputIndex) throws IOException {
+    private Collection<GeneratedFile> generatePersistenceInfo(AppPaths appPaths, IndexView inputIndex) throws IOException {
 
         CompositeIndex index = CompositeIndex.create(combinedIndexBuildItem.getIndex(), inputIndex);
 
@@ -288,12 +293,14 @@ public class KogitoAssetsProcessor {
         }
         GeneratorContext context = buildContext(appPaths, index);
         String persistenceType = context.getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
-        Collection<GeneratedFile> generatedFiles = getGeneratedPersistenceFiles(appPaths, index, usePersistence, parameters, context, persistenceType);
+        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(appPaths, index, usePersistence, parameters, context, persistenceType);
+        Collection<GeneratedFile> persistenceClasses = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.CLASS)).collect(Collectors.toList());
+        Collection<GeneratedFile> persistenceProtoFiles = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.GENERATED_CP_RESOURCE)).collect(Collectors.toList());
 
-        if (!generatedFiles.isEmpty()) {
+        if (!persistenceClasses.isEmpty()) {
             InMemoryCompiler inMemoryCompiler = new InMemoryCompiler(appPaths.classesPaths,
                                                                      curateOutcomeBuildItem.getEffectiveModel().getUserDependencies());
-            inMemoryCompiler.compile(generatedFiles);
+            inMemoryCompiler.compile(persistenceClasses);
             Collection<GeneratedBeanBuildItem> generatedBeanBuildItems = makeBuildItems(appPaths, inMemoryCompiler.getTargetFileSystem());
             generatedBeanBuildItems.forEach(generatedBeans::produce);
         }
@@ -306,6 +313,8 @@ public class KogitoAssetsProcessor {
             addInnerClasses(org.jbpm.marshalling.impl.JBPMMessages.class, reflectiveClass);
             reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "java.lang.String"));
         }
+
+        return persistenceProtoFiles;
     }
     
     private void addInnerClasses(Class<?> superClass, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
