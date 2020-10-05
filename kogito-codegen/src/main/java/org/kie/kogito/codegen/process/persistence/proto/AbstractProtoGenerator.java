@@ -54,12 +54,9 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
                                          modelProto.toString().getBytes(StandardCharsets.UTF_8))
         );
 
-        List<Path> protoFilePaths = new ArrayList<>();
-        protoFilePaths.add(Paths.get(targetDirectory, GENERATED_PROTO_PERSISTENCE_PATH + protoFileName));
-        for (Path protoFilePath : protoFilePaths) {
-            Files.createDirectories(protoFilePath.getParent());
-            Files.write(protoFilePath, modelProto.toString().getBytes(StandardCharsets.UTF_8));
-        }
+        Path protoFilePath = Paths.get(targetDirectory, GENERATED_PROTO_PERSISTENCE_PATH + protoFileName);
+        Files.createDirectories(protoFilePath.getParent());
+        Files.write(protoFilePath, modelProto.toString().getBytes(StandardCharsets.UTF_8));
 
         return protoFiles;
     }
