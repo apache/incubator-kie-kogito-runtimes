@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,15 +30,12 @@ import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-
-public class CloudEventsResourceGenerator {
+public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator {
 
     static final String EMITTER_PREFIX = "emitter_";
     static final String EMITTER_TYPE = "Emitter<String>";
@@ -49,7 +45,6 @@ public class CloudEventsResourceGenerator {
     // even if we only support Quarkus for now, this will come in handy when we add SpringBoot support.
     private final DependencyInjectionAnnotator annotator;
     private final List<TriggerMetaData> triggers;
-    private final Random random = new Random();
 
     public CloudEventsResourceGenerator(final List<ProcessExecutableModelGenerator> generators, final DependencyInjectionAnnotator annotator) {
         this.triggers = this.filterTriggers(generators);
@@ -66,6 +61,10 @@ public class CloudEventsResourceGenerator {
         return RESOURCE_TEMPLATE;
     }
 
+    protected String getClassName() {
+        return CLASS_NAME;
+    }
+
     /**
      * Triggers used to generate the channels
      *
@@ -73,15 +72,6 @@ public class CloudEventsResourceGenerator {
      */
     List<TriggerMetaData> getTriggers() {
         return triggers;
-    }
-
-    /**
-     * Gets the full class name in path format like <code>org/my/ns/Class.java</code>
-     *
-     * @return
-     */
-    public String generatedFilePath() {
-        return String.format("%s/%s.java", ApplicationGenerator.DEFAULT_PACKAGE_NAME.replace(".", "/"), CLASS_NAME);
     }
 
     /**
@@ -120,10 +110,6 @@ public class CloudEventsResourceGenerator {
             return filteredTriggers;
         }
         return Collections.emptyList();
-    }
-
-    private CompilationUnit parseTemplate() {
-        return parse(this.getClass().getResourceAsStream(getResourceTemplate())).setPackageDeclaration(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
     }
 
     private void addChannels(final ClassOrInterfaceDeclaration template) {
