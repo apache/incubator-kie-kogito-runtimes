@@ -28,16 +28,15 @@ import org.kie.kogito.codegen.GeneratedFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AbstractProtoGeneratorTest {
-    private static final String TARGET_DIR = "target/";
     @Test
     void checkGeneratedProtoBufAndListing(@TempDir Path tmpTargetDir) throws IOException {
         final ReflectionProtoGenerator generator = new ReflectionProtoGenerator();
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             final Proto proto = new Proto("org.acme.test");
-            generatedFiles.addAll(generator.generateProtoFiles(TARGET_DIR, "protofile." + i, proto));
+            generatedFiles.addAll(generator.generateProtoFiles("protofile." + i, tmpTargetDir.toString(), proto));
         }
-        generator.generateProtoListingFile(generatedFiles, TARGET_DIR).ifPresent(generatedFiles::add);
+        generator.generateProtoListingFile(generatedFiles, tmpTargetDir.toString()).ifPresent(generatedFiles::add);
 
         GeneratedFile listFile = generatedFiles.stream().filter(x -> x.relativePath().endsWith("list.json")).findFirst().get();
         byte[] list = listFile.contents();
