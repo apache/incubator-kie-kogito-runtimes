@@ -100,7 +100,7 @@ public class DecisionCodegen extends AbstractGenerator {
         this.decisionContainerGenerator = new DecisionContainerGenerator(applicationCanonicalName, this.cResources);
     }
 
-    private void init() {
+    private void loadModelsAndValidate() {
         Map<Resource, CollectedResource> r2cr = cResources.stream().collect(Collectors.toMap(CollectedResource::resource, Function.identity()));
         // First, we perform static validation on directly the XML
         DecisionValidation.dmnValidateResources(context(), r2cr.keySet());
@@ -131,7 +131,7 @@ public class DecisionCodegen extends AbstractGenerator {
         if (cResources.isEmpty()) {
             return Collections.emptyList();
         }
-        init();
+        loadModelsAndValidate();
         generateAndStoreRestResources();
         generateAndStoreDecisionModelResourcesProvider();
 

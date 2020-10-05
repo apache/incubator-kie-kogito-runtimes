@@ -82,11 +82,11 @@ public class DecisionValidation {
                                                                                            .map(DecisionValidation::resourceToReader)
                                                                                            .collect(Collectors.toList())
                                                                                            .toArray(new Reader[]{}));
-        logValidationMessages(schemaModelValidations, DecisionValidation::validateMsgPrefixer, DMNMessage::getText);
+        logValidationMessages(schemaModelValidations, DecisionValidation::extractMsgPrefix, DMNMessage::getText);
         processMessagesHandleErrors(validateOption, schemaModelValidations);
     }
 
-    private static String validateMsgPrefixer(DMNMessage msg) {
+    private static String extractMsgPrefix(DMNMessage msg) {
         if (msg.getSourceReference() instanceof DMNModelInstrumentedBase) {
             DMNModelInstrumentedBase ib = (DMNModelInstrumentedBase) msg.getSourceReference();
             while (ib.getParent() != null) {
