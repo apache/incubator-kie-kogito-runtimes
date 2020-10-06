@@ -18,10 +18,10 @@ package org.kie.kogito.quarkus.deployment;
 
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.infinispan.protostream.annotations.ProtoEnumValue;
@@ -207,7 +207,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                     dataModelClasses.add(index.getClassByName(pd.type().name()));
                 }
 
-                generatedFiles.addAll(generateModelClassProto(modelClazz, targetDirectory));
+                generateModelClassProto(modelClazz, targetDirectory).ifPresent(generatedFiles::add);
             }
 
             this.generateProtoListingFile(generatedFiles, targetDirectory).ifPresent(generatedFiles::add);
@@ -218,7 +218,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         return dataModelClasses;
     }
 
-    protected List<GeneratedFile> generateModelClassProto(ClassInfo modelClazz, String targetDirectory) throws Exception {
+    protected Optional<GeneratedFile> generateModelClassProto(ClassInfo modelClazz, String targetDirectory) throws Exception {
 
         String processId = getReferenceOfModel(modelClazz, "reference");
         String name = getReferenceOfModel(modelClazz, "name");
@@ -235,7 +235,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
             if (modelProto.getMessages().isEmpty()) {
                 // no messages, nothing to do
-                return Collections.EMPTY_LIST;
+                return Optional.empty();
             }
 
             ProtoMessage modelMessage = modelProto.getMessages().stream().filter(msg -> msg.getName().equals(name)).findFirst()
@@ -243,10 +243,10 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
             modelMessage.addField("optional", "org.kie.kogito.index.model.KogitoMetadata", "metadata")
                     .setComment(INDEX_COMMENT);
 
-            return this.generateProtoFiles(processId, targetDirectory, modelProto);
+            return Optional.of(generateProtoFiles(processId, targetDirectory, modelProto));
         }
 
-        return Collections.EMPTY_LIST;
+        return Optional.empty();
     }
 
     protected String getReferenceOfModel(ClassInfo modelClazz, String name) {

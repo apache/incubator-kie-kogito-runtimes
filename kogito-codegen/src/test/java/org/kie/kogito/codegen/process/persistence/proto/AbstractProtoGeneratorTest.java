@@ -34,7 +34,7 @@ class AbstractProtoGeneratorTest {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             final Proto proto = new Proto("org.acme.test");
-            generatedFiles.addAll(generator.generateProtoFiles("protofile." + i, tmpTargetDir.toString(), proto));
+            generatedFiles.add(generator.generateProtoFiles("protofile." + i, tmpTargetDir.toString(), proto));
         }
         generator.generateProtoListingFile(generatedFiles, tmpTargetDir.toString()).ifPresent(generatedFiles::add);
 

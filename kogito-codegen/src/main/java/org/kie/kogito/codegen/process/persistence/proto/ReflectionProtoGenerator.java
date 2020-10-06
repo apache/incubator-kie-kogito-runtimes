@@ -24,10 +24,9 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -86,7 +85,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
                     dataModelClasses.add(propertyType);
                 }
 
-                generatedFiles.addAll(generateModelClassProto(modelClazz, targetDirectory));
+                generateModelClassProto(modelClazz, targetDirectory).ifPresent(generatedFiles::add);
             }
             this.generateProtoListingFile(generatedFiles, targetDirectory).ifPresent(generatedFiles::add);
         } catch (Exception e) {
@@ -198,7 +197,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
         pEnum.addField(field.getName(), ordinal);
     }
 
-    protected List<GeneratedFile> generateModelClassProto(Class<?> modelClazz, String targetDirectory) throws Exception {
+    protected Optional<GeneratedFile> generateModelClassProto(Class<?> modelClazz, String targetDirectory) throws Exception {
 
         Generated generatedData = modelClazz.getAnnotation(Generated.class);
         if (generatedData != null) {
@@ -212,13 +211,13 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
                                         "option kogito_id = \"" + processId + "\";");
             if (modelProto.getMessages().isEmpty()) {
                 // no messages, nothing to do
-                return Collections.EMPTY_LIST;
+                return Optional.empty();
             }
             ProtoMessage modelMessage = modelProto.getMessages().stream().filter(msg -> msg.getName().equals(generatedData.name())).findFirst().orElseThrow(() -> new IllegalStateException("Unable to find model message"));
             modelMessage.addField("optional", "org.kie.kogito.index.model.KogitoMetadata", "metadata").setComment(INDEX_COMMENT);
 
-            return this.generateProtoFiles(processId, targetDirectory, modelProto);
+            return Optional.of(generateProtoFiles(processId, targetDirectory, modelProto));
         }
-        return Collections.EMPTY_LIST;
+        return Optional.empty();
     }
 }

@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -45,20 +44,17 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
     /**
      * Generates the proto files from the given model.
      */
-    public final List<GeneratedFile> generateProtoFiles(final String processId, final String targetDirectory, final Proto modelProto) throws IOException {
+    public final GeneratedFile generateProtoFiles(final String processId, final String targetDirectory, final Proto modelProto) throws IOException {
         String protoFileName = processId + ".proto";
-        List<GeneratedFile> protoFiles = new ArrayList<>();
-
-        protoFiles.add(new GeneratedFile(GeneratedFile.Type.GENERATED_CP_RESOURCE,
+        GeneratedFile protoFile = new GeneratedFile(GeneratedFile.Type.GENERATED_CP_RESOURCE,
                                          GENERATED_PROTO_RES_PATH + protoFileName,
-                                         modelProto.toString().getBytes(StandardCharsets.UTF_8))
-        );
+                                         modelProto.toString().getBytes(StandardCharsets.UTF_8));
 
         Path protoFilePath = Paths.get(targetDirectory, GENERATED_PROTO_PERSISTENCE_PATH + protoFileName);
         Files.createDirectories(protoFilePath.getParent());
         Files.write(protoFilePath, modelProto.toString().getBytes(StandardCharsets.UTF_8));
 
-        return protoFiles;
+        return protoFile;
     }
 
     /**
