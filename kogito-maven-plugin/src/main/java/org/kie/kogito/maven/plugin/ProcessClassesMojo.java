@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -123,6 +124,7 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 persistenceGenerator.setDependencyInjection(discoverDependencyInjectionAnnotator(project));
                 persistenceGenerator.setContext(context);
                 Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
+                generatedFiles = generatedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.CLASS)).collect(Collectors.toList());
 
                 MemoryFileSystem srcMfs = new MemoryFileSystem();
                 MemoryFileSystem trgMfs = new MemoryFileSystem();
