@@ -19,36 +19,76 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.process.ProcessGenerationUtils;
+import org.kie.kogito.event.TopicType;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
-// TODO: add more tests
 
 class TopicsInformationResourceGeneratorTest {
 
     @Test
     void verifyProcessWithMessageEvent() {
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateCatchEventMessage.bpmn2", 1);
+
+        assertThat(clazz).isNotNull();
+        assertThat(clazz.getDefaultConstructor()).isPresent();
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(2);
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString()).contains("customer");
+    }
+
+    @Test
+    void verifyProcessWithStartAndEndMessageEvent() {
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messagestartevent/MessageStartAndEndEvent.bpmn2", 2);
+
+        assertThat(clazz).isNotNull();
+        assertThat(clazz.getDefaultConstructor()).isPresent();
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(3);
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString())
+                .contains("customers").contains(TopicType.CONSUMED.name());
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(2).toExpressionStmt().get().getExpression().toString())
+                .contains("processedcustomers").contains(TopicType.PRODUCED.name());
+    }
+
+    @Test
+    void verifyProcessWithIntermediateThrowEventMessageEvent() {
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateThrowEventMessage.bpmn2", 1);
+
+        assertThat(clazz).isNotNull();
+        assertThat(clazz.getDefaultConstructor()).isPresent();
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(2);
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString())
+                .contains("customers").contains(TopicType.PRODUCED.name());
+    }
+
+    @Test
+    void verifyProcessWithBoundaryEventMessageEvent() {
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/BoundaryMessageEventOnTask.bpmn2", 1);
+
+        assertThat(clazz).isNotNull();
+        assertThat(clazz.getDefaultConstructor()).isPresent();
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(2);
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString())
+                .contains("customers").contains(TopicType.CONSUMED.name());
+    }
+
+    @Test
+    void verifyProcessWithoutMessageEvent() {
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/usertask/approval.bpmn2", 0);
+
+        assertThat(clazz).isNotNull();
+        assertThat(clazz.getDefaultConstructor()).isPresent();
+        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(1);
+    }
+
+    private ClassOrInterfaceDeclaration generateAndParseClass(String bpmnFile, int expectedTriggers) {
         final TopicsInformationResourceGenerator generator =
-                new TopicsInformationResourceGenerator(ProcessGenerationUtils.execModelFromProcessFile("/messageevent/IntermediateCatchEventMessage.bpmn2"));
+                new TopicsInformationResourceGenerator(ProcessGenerationUtils.execModelFromProcessFile(bpmnFile));
+        assertThat(generator.getTriggers()).hasSize(expectedTriggers);
         final String source = generator.generate();
         assertThat(source).isNotNull();
-        assertThat(generator.getTriggers()).hasSize(1);
-
         final ClassOrInterfaceDeclaration clazz = StaticJavaParser
                 .parse(source)
                 .getClassByName(generator.getClassName())
                 .orElseThrow(() -> new IllegalArgumentException("Class does not exists"));
-
-        assertThat(clazz).isNotNull();
-        /*
-        assertThat(clazz.getFields().stream()
-                           .filter(f -> f.get .getAnnotationByName("Channel").isPresent())
-                           .count()).isEqualTo(1L);
-        assertThat(clazz.getFields().stream()
-                           .filter(f -> f.getAnnotationByName("Inject").isPresent())
-                           .count()).isEqualTo(2L);
-         */
+        return clazz;
     }
-
 }

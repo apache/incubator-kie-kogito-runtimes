@@ -20,11 +20,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
@@ -70,23 +68,13 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
 
     private void addTopics(final ClassOrInterfaceDeclaration template) {
         final BlockStmt constructorBlock = template.getDefaultConstructor().orElseThrow(() -> new IllegalArgumentException("No body found in setup method!")).getBody();
-        // first we take the comment block and then filter the content to use only the lines we are interested
-        final List<String> linesSetup = Stream.of(constructorBlock.getAllContainedComments().stream()
-                                                          .filter(c -> c.isBlockComment() && c.getContent().contains("$repeat$"))
-                                                          .findFirst().orElseThrow(() -> new IllegalArgumentException("Topics constructor repeat block not found!"))
-                                                          .getContent().split("\n"))
-                .filter(l -> !l.trim().isEmpty() && !l.contains("repeat"))
-                .map(l -> l.replace("*", ""))
-                .collect(Collectors.toList());
-        // clean up the comments
-        constructorBlock.getAllContainedComments().forEach(Comment::remove);
-
+        final List<String> repeatLines = extractRepeatLinesFromMethod(constructorBlock);
         this.triggers.forEach(t -> {
-            String topicType = TopicType.consumed.getDeclaringClass().getName();
+            String topicType = TopicType.class.getName() + "." + TopicType.CONSUMED.name();
             if (TriggerMetaData.TriggerType.ProduceMessage.equals(t.getType())) {
-                topicType = TopicType.produced.getDeclaringClass().getName();
+                topicType = TopicType.class.getName() + "." + TopicType.PRODUCED.name();
             }
-            for (String l : linesSetup) {
+            for (String l : repeatLines) {
                 constructorBlock.addStatement(l.replace("$name$", t.getName()).replace("$type$", topicType));
             }
         });

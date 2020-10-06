@@ -16,6 +16,6 @@
 package org.kie.kogito.event;
 
 public enum TopicType {
-    produced,
-    consumed;
+    PRODUCED,
+    CONSUMED;
 }

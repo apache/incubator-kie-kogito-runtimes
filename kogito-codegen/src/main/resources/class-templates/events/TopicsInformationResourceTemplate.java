@@ -1,14 +1,14 @@
 package org.kie.kogito.app;
 
-import org.kie.kogito.event.Topic;
-import org.kie.kogito.event.TopicType;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.kie.kogito.event.Topic;
 
 @Path("/messaging/topics")
 public class TopicsInformationResource {
@@ -29,5 +29,4 @@ public class TopicsInformationResource {
     public javax.ws.rs.core.Response getTopics() {
         return javax.ws.rs.core.Response.ok(topics).build();
     }
-
 }

@@ -20,13 +20,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
@@ -117,23 +115,14 @@ public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator
         final MethodDeclaration setup = template.findFirst(MethodDeclaration.class, m -> m.getAnnotationByName("PostConstruct").isPresent())
                 .orElseThrow(() -> new IllegalArgumentException("No setup method found!"));
         final BlockStmt setupBody = setup.getBody().orElseThrow(() -> new IllegalArgumentException("No body found in setup method!"));
-        // first we take the comment block and then filter the content to use only the lines we are interested
-        final List<String> linesSetup = Stream.of(setup.getAllContainedComments().stream()
-                                                          .filter(c -> c.isBlockComment() && c.getContent().contains("$repeat$"))
-                                                          .findFirst().orElseThrow(() -> new IllegalArgumentException("Emitters setup repeat block not found!"))
-                                                          .getContent().split("\n"))
-                .filter(l -> !l.trim().isEmpty() && !l.contains("repeat"))
-                .map(l -> l.replace("*", ""))
-                .collect(Collectors.toList());
-        // clean up the comments
-        setup.getAllContainedComments().forEach(Comment::remove);
+        final List<String> lines = this.extractRepeatLinesFromMethod(setupBody);
         // declaring Emitters
         this.triggers.forEach(t -> {
             final String emitterField = this.sanitizeEmitterName(t.getName());
             // fields to be injected
             annotator.withOutgoingMessage(template.addField(EMITTER_TYPE, new StringLiteralExpr(emitterField).asString()), t.getName());
             // hashmap setup
-            linesSetup.forEach(l -> setupBody.addStatement(l.replace("$channel$", t.getName()).replace("$emitter$", emitterField)));
+            lines.forEach(l -> setupBody.addStatement(l.replace("$channel$", t.getName()).replace("$emitter$", emitterField)));
         });
     }
 

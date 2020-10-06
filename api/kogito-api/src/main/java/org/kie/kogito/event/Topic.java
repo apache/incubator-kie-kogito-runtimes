@@ -19,12 +19,15 @@ import java.util.Objects;
 
 /**
  * Responsible to hold information about a topic being consumed or produced by a Kogito service
- *
  */
 public class Topic {
 
     private String name;
     private TopicType type;
+
+    public Topic() {
+
+    }
 
     public Topic(final String name, final TopicType type) {
         this.name = name;
