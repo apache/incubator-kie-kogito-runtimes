@@ -33,7 +33,6 @@ pipeline {
         string(name: 'PROJECT_VERSION', defaultValue: '', description: 'Override `deployment.properties`. Optional if not RELEASE. If RELEASE, cannot be empty.')
         string(name: 'STAGING_REPO_URL', defaultValue: '', description: 'Override `deployment.properties`.')
         string(name: 'GIT_TAG', defaultValue: '', description: 'Git tag to set, if different from PROJECT_VERSION')
-        booleanParam(name: 'UPDATE_STABLE_BRANCH', defaultValue: false, description: 'Set to true if you want to update the `stable` branch to new created Git tag.')
 
         // Bot author information. Set as params for easy testing.
         string(name: 'BOT_CREDENTIALS_ID', defaultValue: 'bsig-gh-bot', description: 'Credentials for PR creation')
