@@ -134,7 +134,7 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
     }
 
     private boolean filterResource(Path path, String extension) {
-        return Files.isRegularFile(path) && path.toString().endsWith(extension) && !path.toString().contains("/target/");
+        return path.toString().endsWith(extension) && !path.toString().contains("/target/") && Files.isRegularFile(path);
     }
 
 }
