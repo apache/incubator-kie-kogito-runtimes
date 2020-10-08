@@ -79,12 +79,6 @@ public class StaticServiceRegistry implements ServiceRegistry {
         // marshalling
         registerService(org.kie.api.marshalling.KieMarshallers.class.getCanonicalName(), "org.drools.serialization.protobuf.MarshallerProviderImpl", false);
         registerService("org.drools.compiler.kie.builder.impl.CompilationCacheProvider", "org.drools.serialization.protobuf.CompilationCacheProviderImpl", false);
-
-        // mvel
-        registerService("org.drools.compiler.rule.builder.ConstraintBuilder", "org.drools.mvel.MVELConstraintBuilder", false);
-        registerService("org.drools.core.base.CoreComponentsBuilder", "org.drools.mvel.MVELCoreComponentsBuilder", false);
-        registerService("org.drools.core.base.FieldAccessorFactory", "org.drools.mvel.asm.ClassFieldAccessorFactory", false);
-        registerService("org.drools.core.factmodel.ClassBuilderFactory", "org.drools.mvel.asm.DefaultClassBuilderFactory", false);
     }
 
     private void registerService(String service, String implementation, boolean mandatory) {
