@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MonitoringUtils {
+public class DashboardGeneratedFileUtils {
     private static final String STATIC_RESOURCE_PATH = "META-INF/resources/monitoring/dashboards/";
     private static final String DASHBOARDS_PATH = "dashboards/";
     private static final String OPERATIONAL_DASHBOARD_PREFIX = "operational-dashboard-";
@@ -33,7 +33,7 @@ public class MonitoringUtils {
     private static final String LIST_FILENAME = "list.json";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static List<GeneratedFile> generateOperationalDashboards(String operationalDashboard, String name){
+    public static List<GeneratedFile> operational(String operationalDashboard, String name){
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(GeneratedFile.Type.GENERATED_CP_RESOURCE,
                                                                     STATIC_RESOURCE_PATH + OPERATIONAL_DASHBOARD_PREFIX + name,
@@ -44,7 +44,7 @@ public class MonitoringUtils {
         return generatedFiles;
     }
 
-    public static List<GeneratedFile> generateDomainDashboards(String domainDashboard, String name){
+    public static List<GeneratedFile> domain(String domainDashboard, String name){
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(GeneratedFile.Type.GENERATED_CP_RESOURCE,
                                                                     STATIC_RESOURCE_PATH + DOMAIN_DASHBOARD_PREFIX + name,
@@ -55,7 +55,7 @@ public class MonitoringUtils {
         return generatedFiles;
     }
 
-    public static Optional<GeneratedFile> generateDashboardsList(Collection<GeneratedFile> generatedFiles){
+    public static Optional<GeneratedFile> list(Collection<GeneratedFile> generatedFiles){
         List<String> fileNames = generatedFiles.stream()
                 .filter(x -> x.relativePath().startsWith(STATIC_RESOURCE_PATH))
                 .map(x -> x.relativePath().substring(x.relativePath().lastIndexOf("/") + 1))

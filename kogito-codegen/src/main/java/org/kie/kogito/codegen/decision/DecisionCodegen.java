@@ -47,8 +47,8 @@ import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
+import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.MonitoringUtils;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
@@ -238,8 +238,8 @@ public class DecisionCodegen extends AbstractGenerator {
 
         String operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, resourceGenerator.getNameURL(), addonsConfig.useTracing());
         String domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(domainDashboardDmnTemplate, resourceGenerator.getNameURL(), decisions, addonsConfig.useTracing());
-        generatedFiles.addAll(MonitoringUtils.generateOperationalDashboards(operationalDashboard, resourceGenerator.getNameURL() + ".json"));
-        generatedFiles.addAll(MonitoringUtils.generateDomainDashboards(domainDashboard, resourceGenerator.getNameURL() + ".json"));
+        generatedFiles.addAll(DashboardGeneratedFileUtils.operational(operationalDashboard, resourceGenerator.getNameURL() + ".json"));
+        generatedFiles.addAll(DashboardGeneratedFileUtils.domain(domainDashboard, resourceGenerator.getNameURL() + ".json"));
     }
 
     @Override
