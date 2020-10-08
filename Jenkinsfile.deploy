@@ -348,6 +348,13 @@ void runMaven(String command, String directory, boolean skipTests = false, List 
         mvnCmd += " ${extraArgs}"
     }
     dir(directory) {
-        maven.runMavenWithSubmarineSettings(mvnCmd, skipTests)
+        if(isRelease()){
+            // In case of release, we already have the settings.xml
+            Properties props = new Properties()
+            props.setProperty('skipTests', skipTests)
+            maven.runMaven(mvnCmd, [], props)
+        } else {
+            maven.runMavenWithSubmarineSettings(mvnCmd, skipTests)   
+        }
     }
 }
