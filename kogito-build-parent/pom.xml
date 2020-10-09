@@ -168,6 +168,11 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
+        <artifactId>kie-dmn-openapi</artifactId>
+        <version>${version.org.kie7}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
         <artifactId>kie-dmn-jpmml</artifactId>
         <version>${version.org.kie7}</version>
       </dependency>
