@@ -36,7 +36,7 @@ class AbstractProtoGeneratorTest {
             final Proto proto = new Proto("org.acme.test");
             generatedFiles.add(generator.generateProtoFiles("protofile." + i, tmpTargetDir.toString(), proto));
         }
-        generator.generateProtoListingFile(generatedFiles, tmpTargetDir.toString()).ifPresent(generatedFiles::add);
+        generator.generateProtoListingFile(generatedFiles).ifPresent(generatedFiles::add);
 
         GeneratedFile listFile = generatedFiles.stream().filter(x -> x.relativePath().endsWith("list.json")).findFirst().get();
         byte[] list = listFile.contents();

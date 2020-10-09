@@ -23,9 +23,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -68,9 +70,9 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
         }
     }
 
-    public Collection<Class<?>> extractDataClasses(Collection<Class<?>> input, String targetDirectory, Collection<GeneratedFile> generatedFiles) {
-
+    public ProtoDataClassesResult<Class<?>> extractDataClasses(Collection<Class<?>> input, String targetDirectory) {
         Set<Class<?>> dataModelClasses = new HashSet<>();
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
         try {
             for (Class<?> modelClazz : input) {
 
@@ -87,12 +89,12 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
                 generateModelClassProto(modelClazz, targetDirectory).ifPresent(generatedFiles::add);
             }
-            this.generateProtoListingFile(generatedFiles, targetDirectory).ifPresent(generatedFiles::add);
+            this.generateProtoListingFile(generatedFiles).ifPresent(generatedFiles::add);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        return dataModelClasses;
+        return new ProtoDataClassesResult<>(dataModelClasses, generatedFiles);
     }
 
     protected ProtoMessage messageFromClass(Proto proto, Class<?> clazz, String packageName, String messageComment, String fieldComment) throws Exception {

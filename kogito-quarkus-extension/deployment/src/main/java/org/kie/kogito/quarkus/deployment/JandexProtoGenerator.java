@@ -17,6 +17,7 @@
 package org.kie.kogito.quarkus.deployment;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import org.jboss.jandex.Type.Kind;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.process.persistence.proto.AbstractProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
+import org.kie.kogito.codegen.process.persistence.proto.ProtoDataClassesResult;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoEnum;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoMessage;
 
@@ -192,7 +194,8 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     }
 
     @Override
-    public Collection<ClassInfo> extractDataClasses(Collection<ClassInfo> input, String targetDirectory, Collection<GeneratedFile> generatedFiles) {
+    public ProtoDataClassesResult<ClassInfo> extractDataClasses(Collection<ClassInfo> input, String targetDirectory) {
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
         Set<ClassInfo> dataModelClasses = new HashSet<>();
         try {
             for (ClassInfo modelClazz : input) {
@@ -210,12 +213,12 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                 generateModelClassProto(modelClazz, targetDirectory).ifPresent(generatedFiles::add);
             }
 
-            this.generateProtoListingFile(generatedFiles, targetDirectory).ifPresent(generatedFiles::add);
+            this.generateProtoListingFile(generatedFiles).ifPresent(generatedFiles::add);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        return dataModelClasses;
+        return new ProtoDataClassesResult<>(dataModelClasses, generatedFiles);
     }
 
     protected Optional<GeneratedFile> generateModelClassProto(ClassInfo modelClazz, String targetDirectory) throws Exception {
