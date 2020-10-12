@@ -1,6 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie.kogito</groupId>
@@ -9,7 +9,7 @@
   </parent>
   <artifactId>integration-tests-quarkus-processes</artifactId>
   <name>Kogito :: Integration Tests :: Quarkus :: Processes</name>
-  
+
   <dependencyManagement>
     <dependencies>
       <dependency> <!-- MUST keep these two together IN THIS FILE until Quarkus BOM defines Kogito dependencies -->
@@ -28,7 +28,7 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
+
 
   <dependencies>
     <dependency>
@@ -50,34 +50,28 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.smallrye.reactive</groupId>
-      <artifactId>smallrye-reactive-messaging-http</artifactId>
-    </dependency>
+    
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-arc-deployment</artifactId>
+      <artifactId>quarkus-infinispan-client</artifactId>
+      <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5-internal</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.java-json-tools</groupId>
+      <artifactId>json-schema-validator</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -130,6 +124,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <includes>
+            <include>org/kie/kogito/integrationtests/quarkus/*</include>
+          </includes>
           <systemPropertyVariables>
             <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
           </systemPropertyVariables>
@@ -162,6 +159,10 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
+              <includes>
+                <include>org/kie/kogito/integrationtests/quarkus/*</include>
+                <include>org/kie/kogito/integrationtests/quarkus/infinispan/*</include>
+              </includes>
               <systemPropertyVariables>
                 <enable.resource.infinispan>true</enable.resource.infinispan>
               </systemPropertyVariables>

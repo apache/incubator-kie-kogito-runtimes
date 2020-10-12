@@ -100,13 +100,17 @@ public class DecisionCodegen extends AbstractGenerator {
         this.decisionContainerGenerator = new DecisionContainerGenerator(applicationCanonicalName, this.cResources);
     }
 
-    private void init() {
+    private void loadModelsAndValidate() {
         Map<Resource, CollectedResource> r2cr = cResources.stream().collect(Collectors.toMap(CollectedResource::resource, Function.identity()));
+        // First, we perform static validation on directly the XML
         DecisionValidation.dmnValidateResources(context(), r2cr.keySet());
+        // DMN model processing; any semantic error during compilation will also be thrown accordingly
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
                                                  .buildConfiguration()
                                                  .fromResources(r2cr.keySet())
                                                  .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
+        // Any post-compilation of the DMN model validations: DT (static) analysis
+        DecisionValidation.dmnValidateDecisionTablesInModels(context(), dmnRuntime.getModels());
         List<DMNResource> dmnResources = dmnRuntime.getModels().stream().map(model -> new DMNResource(model, r2cr.get(model.getResource()))).collect(toList());
         resources.addAll(dmnResources);
     }
@@ -127,7 +131,7 @@ public class DecisionCodegen extends AbstractGenerator {
         if (cResources.isEmpty()) {
             return Collections.emptyList();
         }
-        init();
+        loadModelsAndValidate();
         generateAndStoreRestResources();
         generateAndStoreDecisionModelResourcesProvider();
 
@@ -185,9 +189,11 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private void generateAndStoreDecisionModelResourcesProvider() {
-        final DecisionModelResourcesProviderGenerator generator = new DecisionModelResourcesProviderGenerator(packageName, applicationCanonicalName, resources)
-                                                                                                                                                               .withDependencyInjection(annotator)
-                                                                                                                                                               .withAddons(addonsConfig);
+        final DecisionModelResourcesProviderGenerator generator = new DecisionModelResourcesProviderGenerator(packageName,
+                                                                                                              applicationCanonicalName,
+                                                                                                              resources)
+                .withDependencyInjection(annotator)
+                .withAddons(addonsConfig);
         storeFile(GeneratedFile.Type.CLASS, generator.generatedFilePath(), generator.generate());
     }
 
@@ -197,22 +203,19 @@ public class DecisionCodegen extends AbstractGenerator {
             DMNAllTypesIndex index = new DMNAllTypesIndex(factory, model);
 
             DMNTypeSafeTypeGenerator generator = new DMNTypeSafeTypeGenerator(model, index, factory).withJacksonAnnotation();
-            boolean useMPAnnotations = false;
-            if (projectClassLoader != null) {
-                try {
-                    Class<?> loadedOpenAPI = projectClassLoader.loadClass("org.eclipse.microprofile.openapi.models.OpenAPI");
-                    if (loadedOpenAPI != null) {
-                        useMPAnnotations = true;
-                    }
-                } catch (Exception e) {
-                    // do nothing.
-                }
-            }
+            boolean useMPAnnotations = trueIFFClassIsPresent("org.eclipse.microprofile.openapi.models.OpenAPI");
             if (useMPAnnotations) {
                 logger.debug("useMPAnnotations");
                 generator.withMPAnnotation();
             } else {
                 logger.debug("NO useMPAnnotations");
+            }
+            boolean useIOSwaggerOASv3Annotations = trueIFFClassIsPresent("io.swagger.v3.oas.annotations.media.Schema");
+            if (useIOSwaggerOASv3Annotations) {
+                logger.debug("useIOSwaggerOASv3Annotations");
+                generator.withIOSwaggerOASv3();
+            } else {
+                logger.debug("NO useIOSwaggerOASv3Annotations");
             }
             Map<String, String> allTypesSourceCode = generator
                     .processTypes()
@@ -223,6 +226,20 @@ public class DecisionCodegen extends AbstractGenerator {
             logger.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
             throw e;
         }
+    }
+
+    private boolean trueIFFClassIsPresent(String fqn) {
+        if (projectClassLoader != null) {
+            try {
+                Class<?> c = projectClassLoader.loadClass(fqn);
+                if (c != null) {
+                    return true;
+                }
+            } catch (Exception e) {
+                // do nothing.
+            }
+        }
+        return false;
     }
 
     private void generateAndStoreGrafanaDashboards(DecisionRestResourceGenerator resourceGenerator) {

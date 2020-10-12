@@ -561,6 +561,19 @@
         <classifier>javadoc</classifier>
       </dependency>
 
+      <!-- Security -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>security-commons</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>security-commons</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <!-- Explainability Services -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -907,6 +920,17 @@
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>jbpm-bpmn2</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+       <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-rest-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-rest-workitem</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>

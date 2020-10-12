@@ -30,6 +30,9 @@
 
     <properties>
         <java.version>@maven.compiler.release@</java.version>
+        <version.infinispan.starter>@version.org.infinispan.starter@</version.infinispan.starter>
+        <infinispan.version>@version.org.infinispan@</infinispan.version>
+        <rest-assured.version>@version.io.restassured@</rest-assured.version>
     </properties>
     
     <dependencyManagement>
@@ -130,20 +133,8 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <systemProperties>
-                                <container.image.infinispan>@container.image.infinispan@</container.image.infinispan>
-                            </systemProperties>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>@version.surefire.plugin@</version>
             </plugin>
         </plugins>
     </build>
@@ -155,16 +146,12 @@
                     <name>persistence</name>
                 </property>
             </activation>
-            <properties>
-                <version.infinispan.starter>@version.org.infinispan.starter@</version.infinispan.starter>
-                <version.infinispan>@version.org.infinispan@</version.infinispan>
-            </properties>
             <dependencyManagement>
                 <dependencies>
                     <dependency>
                         <groupId>org.infinispan</groupId>
                         <artifactId>infinispan-bom</artifactId>
-                        <version>${version.infinispan}</version>
+                        <version>${infinispan.version}</version>
                         <type>pom</type>
                         <scope>import</scope>
                     </dependency>
@@ -190,16 +177,13 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <configuration>
-                                    <systemProperties>
-                                        <enable.resource.infinispan>true</enable.resource.infinispan>
-                                    </systemProperties>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>@version.surefire.plugin@</version>
+                        <configuration>
+                            <systemProperties>
+                                <enable.resource.infinispan>true</enable.resource.infinispan>
+                            </systemProperties>
+                        </configuration>
                     </plugin>
                 </plugins>
                 <testResources>
