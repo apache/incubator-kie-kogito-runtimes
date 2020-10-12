@@ -202,6 +202,16 @@
         <artifactId>drools-model-compiler</artifactId>
         <version>${version.org.kie7}</version>
       </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-mvel</artifactId>
+        <version>${version.org.kie7}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-serialization-protobuf</artifactId>
+        <version>${version.org.kie7}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.drools</groupId>
