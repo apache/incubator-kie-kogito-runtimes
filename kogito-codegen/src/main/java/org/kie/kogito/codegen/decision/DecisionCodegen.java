@@ -28,6 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.microprofile.openapi.spi.OASFactoryResolver;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.dmn.api.core.DMNModel;
@@ -70,6 +71,7 @@ public class DecisionCodegen extends AbstractGenerator {
     public static String VALIDATION_CONFIGURATION_KEY = "kogito.decisions.validation";
 
     public static DecisionCodegen ofCollectedResources(Collection<CollectedResource> resources) {
+        OASFactoryResolver.instance(); // manually invoke SPI, o/w Kogito CodeGen Kogito Quarkus extension failure at NewFileHotReloadTest due to java.util.ServiceConfigurationError: org.eclipse.microprofile.openapi.spi.OASFactoryResolver: io.smallrye.openapi.spi.OASFactoryResolverImpl not a subtype
         List<CollectedResource> dmnResources = resources.stream()
                 .filter(r -> r.resource().getResourceType() == ResourceType.DMN)
                 .collect(toList());
@@ -149,7 +151,7 @@ public class DecisionCodegen extends AbstractGenerator {
         try {
             List<DMNModel> models = resources.stream().map(DMNResource::getDmnModel).collect(Collectors.toList());
             oasResult = DMNOASGeneratorFactory.generator(models).build();
-            String jsonContent = new ObjectMapper().writeValueAsString(oasResult.jsonSchemaNode);
+            String jsonContent = new ObjectMapper().writeValueAsString(oasResult.getJsonSchemaNode());
             storeFile(GeneratedFile.Type.GENERATED_CP_RESOURCE, "META-INF/resources/dmnDefinitions.json", jsonContent);
         } catch (Exception e) {
             LOG.error("Error while trying to generate OpenAPI specification for the DMN models", e);

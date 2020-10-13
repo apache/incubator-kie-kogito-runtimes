@@ -165,8 +165,8 @@ public class DecisionRestResourceGenerator {
         String inputRef = null;
         String outputRef = null;
         if (withOASResult!= null) {
-            inputRef = withOASResult.namingPolicy.getRef(withOASResult.lookupIOSetsByModel(dmnModel).getInputSet());
-            outputRef = withOASResult.namingPolicy.getRef(withOASResult.lookupIOSetsByModel(dmnModel).getOutputSet());
+            inputRef = withOASResult.getNamingPolicy().getRef(withOASResult.lookupIOSetsByModel(dmnModel).getInputSet());
+            outputRef = withOASResult.getNamingPolicy().getRef(withOASResult.lookupIOSetsByModel(dmnModel).getOutputSet());
         }
         // MP / Quarkus
         processAnnForRef(dmnMethod,
