@@ -126,8 +126,8 @@ public class ProcessSVGService {
         JsonArray pInstancesArray = resp.bodyAsJsonObject().getJsonObject("data")
                 .getJsonArray("ProcessInstances");
         if (pInstancesArray != null && !pInstancesArray.isEmpty()) {
-            List<String> completedNodes = new ArrayList<String>();
-            List<String> activeNodes = new ArrayList<String>();
+            List<String> completedNodes = new ArrayList<>();
+            List<String> activeNodes = new ArrayList<>();
             JsonArray nodesArray = pInstancesArray.getJsonObject(0).getJsonArray("nodes");
             nodesArray.stream()
                     .forEach(node -> {
@@ -146,7 +146,7 @@ public class ProcessSVGService {
     LOGGER.error("Unable to execute query \n {} \nat data index service({})", query, dataIndexHttpURL);
     return "Unable to execute query \n '" + query + "' \nat data index service " + dataIndexHttpURL + "";
 }
-    private WebClientOptions getDataIndexWebClientOptions(String dataIndexHttpURL) {
+    protected WebClientOptions getDataIndexWebClientOptions(String dataIndexHttpURL) {
         try {
             URL dataIndexURL = new URL(dataIndexHttpURL);
             return new WebClientOptions()
