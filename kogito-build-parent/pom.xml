@@ -78,7 +78,7 @@
     <version.vertx.web.client>3.9.2</version.vertx.web.client>
 
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>1.8.0.Final</version.io.quarkus>
+    <version.io.quarkus>1.9.0.CR1</version.io.quarkus>
 
     <!-- dependencies versions -->
     <version.ch.obermuhlner>2.0.1</version.ch.obermuhlner>
