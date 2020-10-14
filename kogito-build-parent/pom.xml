@@ -1230,6 +1230,7 @@
                     <echo message="Generating JaCoCo Reports"/>
                     <taskdef name="report" classname="org.jacoco.ant.ReportTask"/>
                     <mkdir dir="${project.reporting.outputDirectory}/jacoco"/>
+                    <mkdir dir="${project.root.dir}/target"/>
                     <report>
                       <executiondata>
                         <fileset dir="${project.root.dir}/target">
