@@ -364,7 +364,7 @@
         <artifactId>json-path-assert</artifactId>
         <version>${version.jayway.jsonpath}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-web-client</artifactId>
@@ -731,7 +731,7 @@
         <version>${version.com.github.java-json-tools}</version>
         <scope>test</scope>
       </dependency>
-      
+
       <!-- mongoDB related -->
       <dependency>
         <groupId>org.mongodb</groupId>
