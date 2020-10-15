@@ -67,7 +67,8 @@ import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.B
 public class DefaultAggregator implements Aggregator {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAggregator.class);
-    private static final String UNKNOWN_SOURCE_URL = "__UNKNOWN_SOURCE__";
+    private static final String UNKNOWN_SOURCE_URI_STRING = CloudEventUtils.urlEncodedStringFrom("__UNKNOWN_SOURCE__")
+            .orElseThrow(IllegalStateException::new);
 
     private static final String EXPRESSION_ID_KEY = "expressionId";
     private static final String MATCHES_KEY = "matches";
@@ -134,18 +135,24 @@ public class DefaultAggregator implements Aggregator {
     }
 
     private static URI buildSource(String serviceUrl, EvaluateEvent event) {
-        String modelChunk = event != null
-                ? CloudEventUtils.urlEncode(event.getModelName())
-                : null;
-        String decisionChunk = event != null && (event.getType() == BEFORE_EVALUATE_DECISION_SERVICE || event.getType() == AFTER_EVALUATE_DECISION_SERVICE)
-                ? CloudEventUtils.urlEncode(event.getNodeName())
-                : null;
+        String modelChunk = Optional.ofNullable(event)
+                .map(EvaluateEvent::getModelName)
+                .flatMap(CloudEventUtils::urlEncodedStringFrom)
+                .orElse(null);
+
+        String decisionChunk = Optional.ofNullable(event)
+                .filter(e -> e.getType() == BEFORE_EVALUATE_DECISION_SERVICE || e.getType() == AFTER_EVALUATE_DECISION_SERVICE)
+                .map(EvaluateEvent::getNodeName)
+                .flatMap(CloudEventUtils::urlEncodedStringFrom)
+                .orElse(null);
+
         String fullUrl = Stream.of(serviceUrl, modelChunk, decisionChunk)
                 .filter(s -> s != null && !s.isEmpty())
                 .collect(Collectors.joining("/"));
+
         return URI.create(Optional.of(fullUrl)
                 .filter(s -> !s.isEmpty())
-                .orElseGet(() -> CloudEventUtils.urlEncode(UNKNOWN_SOURCE_URL))
+                .orElse(UNKNOWN_SOURCE_URI_STRING)
         );
     }
 
