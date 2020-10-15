@@ -33,7 +33,7 @@ public class AddonsConfigTest {
     public void addonsAreProperlyActivated() {
         AddonsConfig addonsConfig = new AddonsConfig();
 
-        assertThat(addonsConfig.useMonitoring()).isFalse();
+        assertThat(addonsConfig.useMonitoring()).isTrue();
         assertThat(addonsConfig.withMonitoring(true).useMonitoring()).isTrue();
 
         assertThat(addonsConfig.useTracing()).isFalse();
