@@ -73,18 +73,18 @@
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-shared-events-quarkus</artifactId>
+        <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-shared-events-quarkus</artifactId>
+        <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-shared-events-quarkus</artifactId>
+        <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
       </dependency>
@@ -92,18 +92,18 @@
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-shared-events-spring</artifactId>
+        <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-shared-events-spring</artifactId>
+        <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-shared-events-spring</artifactId>
+        <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
       </dependency>

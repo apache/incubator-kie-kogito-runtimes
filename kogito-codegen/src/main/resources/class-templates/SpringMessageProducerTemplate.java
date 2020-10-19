@@ -13,12 +13,12 @@ import java.util.Optional;
 public class MessageProducer extends AbstractMessageProducer<$DataType$, $DataEventType$> {
 
     // this field will go away when we transition Spring to generic CE handling
-    org.kie.kogito.shared.events.spring.SpringKafkaCloudEventEmitter em;
+    org.kie.kogito.addon.cloudevents.spring.SpringKafkaCloudEventEmitter em;
 
     @org.springframework.beans.factory.annotation.Autowired()
     MessageProducer(
             // we will use the interface when we transition Spring to generic CE handling
-            org.kie.kogito.shared.events.spring.SpringKafkaCloudEventEmitter emitter,
+            org.kie.kogito.addon.cloudevents.spring.SpringKafkaCloudEventEmitter emitter,
             ConfigBean configBean) {
         super(emitter,
               new DefaultEventMarshaller(),

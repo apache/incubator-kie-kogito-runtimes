@@ -15,29 +15,30 @@
  *
  */
 
-package org.kie.kogito.shared.events.quarkus;
+package org.kie.kogito.addon.cloudevents.spring;
 
 import java.util.concurrent.CompletionStage;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.kie.kogito.services.event.CloudEventEmitter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
- * the quarkus implementation just delegates to a real emitter,
- * since smallrye reactive messaging handles different transports
- *
+ * Spring implementation delegating to kafka template
+ * TODO proper error handling https://issues.redhat.com/browse/KOGITO-3408
  */
-@ApplicationScoped
-public class QuarkusCloudEventEmitter implements CloudEventEmitter {
-    @Inject
-    @Channel("kogito_outgoing_stream")
-    Emitter<String> emitter;
+@Component
+public class SpringKafkaCloudEventEmitter implements CloudEventEmitter {
+    @Autowired
+    org.springframework.kafka.core.KafkaTemplate<String, String> emitter;
 
     public CompletionStage<Void> emit(String e) {
-        return emitter.send(e);
+        return emitter.send("kogito_outgoing_stream", e)
+                .completable()
+                .thenRun(() -> {}); // discard return to comply with the signature
+    }
+
+    public void emit(String topic, String message) {
+        emitter.send(topic, message);
     }
 }

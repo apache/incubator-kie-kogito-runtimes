@@ -67,7 +67,7 @@
 
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-shared-events-spring</artifactId>
+            <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
         </dependency>
 
         <dependency>

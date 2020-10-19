@@ -21,11 +21,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie.kogito</groupId>
-    <artifactId>kogito-shared</artifactId>
+    <artifactId>cloudevents</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>kogito-shared-events-spring</artifactId>
-  <name>Kogito :: Shared :: Events :: SpringBoot</name>
+  <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
+  <name>Kogito :: Add-Ons :: CloudEvents :: Spring Boot</name>
+  <description>Kogito Events handling for CloudEvents AddOn (Spring Boot)</description>
 
   <dependencies>
     <dependency>

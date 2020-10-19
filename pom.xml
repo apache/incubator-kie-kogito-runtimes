@@ -119,7 +119,6 @@
     <module>api</module>
     <module>drools</module>
     <module>jbpm</module>
-    <module>kogito-shared</module>
     <module>kogito-cloud-services</module>
     <module>kogito-codegen</module>
     <module>kogito-springboot</module>

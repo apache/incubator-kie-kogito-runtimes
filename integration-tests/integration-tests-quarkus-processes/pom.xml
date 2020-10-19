@@ -34,7 +34,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-shared-events-quarkus</artifactId>
+      <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
     </dependency>
 
     <dependency>

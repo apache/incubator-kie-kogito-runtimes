@@ -15,29 +15,29 @@
  *
  */
 
-package org.kie.kogito.shared.events.quarkus;
+package org.kie.kogito.addon.cloudevents.quarkus;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import java.util.concurrent.CompletionStage;
 
-import io.quarkus.runtime.Startup;
-import io.smallrye.mutiny.Multi;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.reactivestreams.Publisher;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.kie.kogito.services.event.CloudEventEmitter;
 
 /**
- * Takes a @Channel event stream and re-exposes it as a Multi
- * (a subclass of {@link Publisher})
+ * the quarkus implementation just delegates to a real emitter,
+ * since smallrye reactive messaging handles different transports
+ *
  */
-@Startup
-public class QuarkusCloudEventPublisher {
-    @Channel("kogito_incoming_stream")
-    Multi<String> events;
+@ApplicationScoped
+public class QuarkusCloudEventEmitter implements CloudEventEmitter {
+    @Inject
+    @Channel("kogito_outgoing_stream")
+    Emitter<String> emitter;
 
-    @Produces
-    @Named("kogito_event_publisher")
-    public Multi<String> makeMulti() {
-        return events;
+    public CompletionStage<Void> emit(String e) {
+        return emitter.send(e);
     }
-
 }
