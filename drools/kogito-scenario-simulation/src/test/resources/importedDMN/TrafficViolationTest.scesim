@@ -42,7 +42,7 @@
             </ExpressionElement>
           </expressionElements>
           <expressionIdentifier>
-            <name>1|5</name>
+            <name>1|4</name>
             <type>GIVEN</type>
           </expressionIdentifier>
           <factIdentifier>
@@ -59,23 +59,71 @@
         <FactMapping>
           <expressionElements>
             <ExpressionElement>
-              <step>Violation</step>
+              <step>Driver</step>
             </ExpressionElement>
             <ExpressionElement>
-              <step>Type</step>
+              <step>State</step>
             </ExpressionElement>
           </expressionElements>
           <expressionIdentifier>
-            <name>1|8</name>
+            <name>1|5</name>
+            <type>GIVEN</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Driver</name>
+            <className>Driver</className>
+          </factIdentifier>
+          <className>string</className>
+          <factAlias>Driver</factAlias>
+          <expressionAlias>State</expressionAlias>
+          <genericTypes/>
+          <columnWidth>114</columnWidth>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements>
+            <ExpressionElement>
+              <step>Risk</step>
+            </ExpressionElement>
+            <ExpressionElement>
+              <step>Level</step>
+            </ExpressionElement>
+          </expressionElements>
+          <expressionIdentifier>
+            <name>1|6</name>
+            <type>GIVEN</type>
+          </expressionIdentifier>
+          <factIdentifier>
+            <name>Risk</name>
+            <className>Risk</className>
+          </factIdentifier>
+          <className>number</className>
+          <factAlias>Risk</factAlias>
+          <expressionAlias>Level</expressionAlias>
+          <genericTypes/>
+          <columnWidth>114</columnWidth>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
+        </FactMapping>
+        <FactMapping>
+          <expressionElements>
+            <ExpressionElement>
+              <step>Violation</step>
+            </ExpressionElement>
+            <ExpressionElement>
+              <step>Actual Speed</step>
+            </ExpressionElement>
+          </expressionElements>
+          <expressionIdentifier>
+            <name>1|7</name>
             <type>GIVEN</type>
           </expressionIdentifier>
           <factIdentifier>
             <name>Violation</name>
             <className>Violation</className>
           </factIdentifier>
-          <className>Type</className>
+          <className>number</className>
           <factAlias>Violation</factAlias>
-          <expressionAlias>Type</expressionAlias>
+          <expressionAlias>Actual Speed</expressionAlias>
           <genericTypes/>
           <columnWidth>114</columnWidth>
           <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
@@ -90,7 +138,7 @@
             </ExpressionElement>
           </expressionElements>
           <expressionIdentifier>
-            <name>1|9</name>
+            <name>1|10</name>
             <type>GIVEN</type>
           </expressionIdentifier>
           <factIdentifier>
@@ -110,20 +158,20 @@
               <step>Violation</step>
             </ExpressionElement>
             <ExpressionElement>
-              <step>Actual Speed</step>
+              <step>Type</step>
             </ExpressionElement>
           </expressionElements>
           <expressionIdentifier>
-            <name>1|10</name>
+            <name>1|11</name>
             <type>GIVEN</type>
           </expressionIdentifier>
           <factIdentifier>
             <name>Violation</name>
             <className>Violation</className>
           </factIdentifier>
-          <className>number</className>
+          <className>Type</className>
           <factAlias>Violation</factAlias>
-          <expressionAlias>Actual Speed</expressionAlias>
+          <expressionAlias>Type</expressionAlias>
           <genericTypes/>
           <columnWidth>114</columnWidth>
           <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
@@ -138,7 +186,7 @@
             </ExpressionElement>
           </expressionElements>
           <expressionIdentifier>
-            <name>1|11</name>
+            <name>1|12</name>
             <type>EXPECT</type>
           </expressionIdentifier>
           <factIdentifier>
@@ -162,7 +210,7 @@
             </ExpressionElement>
           </expressionElements>
           <expressionIdentifier>
-            <name>1|12</name>
+            <name>1|13</name>
             <type>EXPECT</type>
           </expressionIdentifier>
           <factIdentifier>
@@ -183,7 +231,7 @@
             </ExpressionElement>
           </expressionElements>
           <expressionIdentifier>
-            <name>1|13</name>
+            <name>1|14</name>
             <type>EXPECT</type>
           </expressionIdentifier>
           <factIdentifier>
@@ -211,7 +259,18 @@
               <name>Description</name>
               <type>OTHER</type>
             </expressionIdentifier>
-            <rawValue class="string">Above speed limit: 10km/h and 30 km/h</rawValue>
+            <rawValue class="string">Imported DMN Model Test</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">20</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -222,7 +281,18 @@
               <name>1|5</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">10</rawValue>
+            <rawValue class="string">"Brazil"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Risk</name>
+              <className>Risk</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">2</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -230,21 +300,10 @@
               <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
-              <name>1|8</name>
+              <name>1|7</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">"speed"</rawValue>
-          </FactMappingValue>
-          <FactMappingValue>
-            <factIdentifier>
-              <name>Violation</name>
-              <className>Violation</className>
-            </factIdentifier>
-            <expressionIdentifier>
-              <name>1|9</name>
-              <type>GIVEN</type>
-            </expressionIdentifier>
-            <rawValue class="string">100</rawValue>
+            <rawValue class="string">120</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -255,18 +314,18 @@
               <name>1|10</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">120</rawValue>
+            <rawValue class="string">100</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
-              <name>Fine</name>
-              <className>Fine</className>
+              <name>Violation</name>
+              <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
               <name>1|11</name>
-              <type>EXPECT</type>
+              <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">500</rawValue>
+            <rawValue class="string">"speed"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -277,6 +336,17 @@
               <name>1|12</name>
               <type>EXPECT</type>
             </expressionIdentifier>
+            <rawValue class="string">500</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|13</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
             <rawValue class="string">3</rawValue>
           </FactMappingValue>
           <FactMappingValue>
@@ -285,10 +355,10 @@
               <className>Should the driver be suspended?</className>
             </factIdentifier>
             <expressionIdentifier>
-              <name>1|13</name>
+              <name>1|14</name>
               <type>EXPECT</type>
             </expressionIdentifier>
-            <rawValue class="string">"No"</rawValue>
+            <rawValue class="string">"Yes"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -314,7 +384,18 @@
               <name>Description</name>
               <type>OTHER</type>
             </expressionIdentifier>
-            <rawValue class="string">Above speed limit: more than 30 km/h</rawValue>
+            <rawValue class="string">Imported DMN Model Test</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">20</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -325,7 +406,18 @@
               <name>1|5</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">10</rawValue>
+            <rawValue class="string">"Brazil"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Risk</name>
+              <className>Risk</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">2</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -333,21 +425,10 @@
               <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
-              <name>1|8</name>
+              <name>1|7</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">"speed"</rawValue>
-          </FactMappingValue>
-          <FactMappingValue>
-            <factIdentifier>
-              <name>Violation</name>
-              <className>Violation</className>
-            </factIdentifier>
-            <expressionIdentifier>
-              <name>1|9</name>
-              <type>GIVEN</type>
-            </expressionIdentifier>
-            <rawValue class="string">100</rawValue>
+            <rawValue class="string">150</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -358,18 +439,18 @@
               <name>1|10</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">150</rawValue>
+            <rawValue class="string">100</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
-              <name>Fine</name>
-              <className>Fine</className>
+              <name>Violation</name>
+              <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
               <name>1|11</name>
-              <type>EXPECT</type>
+              <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">1000</rawValue>
+            <rawValue class="string">"speed"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -380,6 +461,17 @@
               <name>1|12</name>
               <type>EXPECT</type>
             </expressionIdentifier>
+            <rawValue class="string">1000</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|13</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
             <rawValue class="string">7</rawValue>
           </FactMappingValue>
           <FactMappingValue>
@@ -388,10 +480,10 @@
               <className>Should the driver be suspended?</className>
             </factIdentifier>
             <expressionIdentifier>
-              <name>1|13</name>
+              <name>1|14</name>
               <type>EXPECT</type>
             </expressionIdentifier>
-            <rawValue class="string">"No"</rawValue>
+            <rawValue class="string">"Yes"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -417,7 +509,18 @@
               <name>Description</name>
               <type>OTHER</type>
             </expressionIdentifier>
-            <rawValue class="string">Parking violation</rawValue>
+            <rawValue class="string">Imported DMN Model Test</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">20</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -428,7 +531,18 @@
               <name>1|5</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">10</rawValue>
+            <rawValue class="string">"Brazil"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Risk</name>
+              <className>Risk</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">12</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -436,20 +550,10 @@
               <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
-              <name>1|8</name>
+              <name>1|7</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">"parking"</rawValue>
-          </FactMappingValue>
-          <FactMappingValue>
-            <factIdentifier>
-              <name>Violation</name>
-              <className>Violation</className>
-            </factIdentifier>
-            <expressionIdentifier>
-              <name>1|9</name>
-              <type>GIVEN</type>
-            </expressionIdentifier>
+            <rawValue class="string">120</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -460,17 +564,18 @@
               <name>1|10</name>
               <type>GIVEN</type>
             </expressionIdentifier>
+            <rawValue class="string">100</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
-              <name>Fine</name>
-              <className>Fine</className>
+              <name>Violation</name>
+              <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
               <name>1|11</name>
-              <type>EXPECT</type>
+              <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">100</rawValue>
+            <rawValue class="string">"speed"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -481,7 +586,18 @@
               <name>1|12</name>
               <type>EXPECT</type>
             </expressionIdentifier>
-            <rawValue class="string">1</rawValue>
+            <rawValue class="string">1500</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|13</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">6</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -489,10 +605,10 @@
               <className>Should the driver be suspended?</className>
             </factIdentifier>
             <expressionIdentifier>
-              <name>1|13</name>
+              <name>1|14</name>
               <type>EXPECT</type>
             </expressionIdentifier>
-            <rawValue class="string">"No"</rawValue>
+            <rawValue class="string">"Yes"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -518,7 +634,18 @@
               <name>Description</name>
               <type>OTHER</type>
             </expressionIdentifier>
-            <rawValue class="string">DUI violation</rawValue>
+            <rawValue class="string">Imported DMN Model Test</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">20</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -529,7 +656,18 @@
               <name>1|5</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">10</rawValue>
+            <rawValue class="string">"Brazil"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Risk</name>
+              <className>Risk</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">12</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -537,20 +675,10 @@
               <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
-              <name>1|8</name>
+              <name>1|7</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">"driving under the influence"</rawValue>
-          </FactMappingValue>
-          <FactMappingValue>
-            <factIdentifier>
-              <name>Violation</name>
-              <className>Violation</className>
-            </factIdentifier>
-            <expressionIdentifier>
-              <name>1|9</name>
-              <type>GIVEN</type>
-            </expressionIdentifier>
+            <rawValue class="string">150</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -561,17 +689,18 @@
               <name>1|10</name>
               <type>GIVEN</type>
             </expressionIdentifier>
+            <rawValue class="string">100</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
-              <name>Fine</name>
-              <className>Fine</className>
+              <name>Violation</name>
+              <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
               <name>1|11</name>
-              <type>EXPECT</type>
+              <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">1000</rawValue>
+            <rawValue class="string">"speed"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -582,7 +711,18 @@
               <name>1|12</name>
               <type>EXPECT</type>
             </expressionIdentifier>
-            <rawValue class="string">5</rawValue>
+            <rawValue class="string">2000</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|13</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">14</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -590,10 +730,10 @@
               <className>Should the driver be suspended?</className>
             </factIdentifier>
             <expressionIdentifier>
-              <name>1|13</name>
+              <name>1|14</name>
               <type>EXPECT</type>
             </expressionIdentifier>
-            <rawValue class="string">"No"</rawValue>
+            <rawValue class="string">"Yes"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -619,7 +759,18 @@
               <name>Description</name>
               <type>OTHER</type>
             </expressionIdentifier>
-            <rawValue class="string">Driver suspended</rawValue>
+            <rawValue class="string">Imported DMN Model Test</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">20</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -630,7 +781,18 @@
               <name>1|5</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">15</rawValue>
+            <rawValue class="string">"Italy"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Risk</name>
+              <className>Risk</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">2</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -638,21 +800,10 @@
               <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
-              <name>1|8</name>
+              <name>1|7</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">"speed"</rawValue>
-          </FactMappingValue>
-          <FactMappingValue>
-            <factIdentifier>
-              <name>Violation</name>
-              <className>Violation</className>
-            </factIdentifier>
-            <expressionIdentifier>
-              <name>1|9</name>
-              <type>GIVEN</type>
-            </expressionIdentifier>
-            <rawValue class="string">100</rawValue>
+            <rawValue class="string">120</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -663,18 +814,18 @@
               <name>1|10</name>
               <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">140</rawValue>
+            <rawValue class="string">100</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
-              <name>Fine</name>
-              <className>Fine</className>
+              <name>Violation</name>
+              <className>Violation</className>
             </factIdentifier>
             <expressionIdentifier>
               <name>1|11</name>
-              <type>EXPECT</type>
+              <type>GIVEN</type>
             </expressionIdentifier>
-            <rawValue class="string">1000</rawValue>
+            <rawValue class="string">"speed"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -685,6 +836,142 @@
               <name>1|12</name>
               <type>EXPECT</type>
             </expressionIdentifier>
+            <rawValue class="string">500</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|13</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">3</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Should the driver be suspended?</name>
+              <className>Should the driver be suspended?</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|14</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">"No"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>#</name>
+              <className>java.lang.Integer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Index</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+            <rawValue class="string">5</rawValue>
+          </FactMappingValue>
+        </factMappingValues>
+      </Scenario>
+      <Scenario>
+        <factMappingValues>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Scenario description</name>
+              <className>java.lang.String</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Description</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+            <rawValue class="string">Imported DMN Model Test</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">20</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|5</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">"Italy"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Risk</name>
+              <className>Risk</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">2</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Violation</name>
+              <className>Violation</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|7</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">150</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Violation</name>
+              <className>Violation</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|10</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">100</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Violation</name>
+              <className>Violation</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|11</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">"speed"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|12</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">1000</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|13</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
             <rawValue class="string">7</rawValue>
           </FactMappingValue>
           <FactMappingValue>
@@ -693,7 +980,257 @@
               <className>Should the driver be suspended?</className>
             </factIdentifier>
             <expressionIdentifier>
+              <name>1|14</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">"No"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>#</name>
+              <className>java.lang.Integer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Index</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+            <rawValue class="string">6</rawValue>
+          </FactMappingValue>
+        </factMappingValues>
+      </Scenario>
+      <Scenario>
+        <factMappingValues>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Scenario description</name>
+              <className>java.lang.String</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Description</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+            <rawValue class="string">Imported DMN Model Test</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">20</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|5</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">"Italy"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Risk</name>
+              <className>Risk</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">12</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Violation</name>
+              <className>Violation</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|7</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">120</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Violation</name>
+              <className>Violation</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|10</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">100</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Violation</name>
+              <className>Violation</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|11</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">"speed"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|12</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">1500</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
               <name>1|13</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">6</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Should the driver be suspended?</name>
+              <className>Should the driver be suspended?</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|14</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">"No"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>#</name>
+              <className>java.lang.Integer</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Index</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+            <rawValue class="string">7</rawValue>
+          </FactMappingValue>
+        </factMappingValues>
+      </Scenario>
+      <Scenario>
+        <factMappingValues>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Scenario description</name>
+              <className>java.lang.String</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>Description</name>
+              <type>OTHER</type>
+            </expressionIdentifier>
+            <rawValue class="string">Imported DMN Model Test</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|4</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">20</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Driver</name>
+              <className>Driver</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|5</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">"Italy"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Risk</name>
+              <className>Risk</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|6</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">12</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Violation</name>
+              <className>Violation</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|7</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">150</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Violation</name>
+              <className>Violation</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|10</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">100</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Violation</name>
+              <className>Violation</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|11</name>
+              <type>GIVEN</type>
+            </expressionIdentifier>
+            <rawValue class="string">"speed"</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|12</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">2000</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Fine</name>
+              <className>Fine</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|13</name>
+              <type>EXPECT</type>
+            </expressionIdentifier>
+            <rawValue class="string">14</rawValue>
+          </FactMappingValue>
+          <FactMappingValue>
+            <factIdentifier>
+              <name>Should the driver be suspended?</name>
+              <className>Should the driver be suspended?</className>
+            </factIdentifier>
+            <expressionIdentifier>
+              <name>1|14</name>
               <type>EXPECT</type>
             </expressionIdentifier>
             <rawValue class="string">"Yes"</rawValue>
@@ -707,7 +1244,7 @@
               <name>Index</name>
               <type>OTHER</type>
             </expressionIdentifier>
-            <rawValue class="string">5</rawValue>
+            <rawValue class="string">8</rawValue>
           </FactMappingValue>
         </factMappingValues>
       </Scenario>
@@ -752,7 +1289,7 @@
     </scesimData>
   </background>
   <settings>
-    <dmnFilePath>src/test/resources/sampleTest/Traffic Violation.dmn</dmnFilePath>
+    <dmnFilePath>src/test/resources/importedDMN/TrafficViolation.dmn</dmnFilePath>
     <type>DMN</type>
     <dmnNamespace>https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF</dmnNamespace>
     <dmnName>Traffic Violation</dmnName>
