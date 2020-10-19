@@ -56,6 +56,8 @@ pipeline {
                     if (isRelease()) {
                         assert getProjectVersion() != ''
                     }
+
+                    checkoutRepo('kogito-runtimes')
                 }
             }
             post {
@@ -69,19 +71,12 @@ pipeline {
                 }
             }
         }
-        stage('Clone repositories') { 
-            steps {
-                checkoutRepo('kogito-runtimes')
-                checkoutRepo('kogito-apps')
-            }
-        }
         stage('Prepare for PR'){
             when {
                 expression { return isRelease() }
             }
             steps {
                 prepareForPR('kogito-runtimes')
-                prepareForPR('kogito-apps')
             }
         }
         stage('Setup Maven release config'){
@@ -91,7 +86,7 @@ pipeline {
             steps {
                 echo 'Setup Maven release config'
                 configFileProvider([configFile(fileId: maven.getSubmarineSettingsXmlId(), targetLocation: 'maven-settings.xml', variable: 'MAVEN_SETTINGS_FILE')]){
-                    sh "echo '\n-B -s ${MAVEN_SETTINGS_FILE}' | tee -a kogito-{runtimes,apps}/.mvn/maven.config"
+                    sh "echo '\n-B -s ${MAVEN_SETTINGS_FILE}' | tee -a kogito-runtimes/.mvn/maven.config"
                 }
             }
         }
@@ -107,32 +102,12 @@ pipeline {
                     dir('kogito-runtimes') {
                         maven.mvnVersionsSet(getProjectVersion())
                     }
-                    // Step needed to have runtimes artifacts into the local repository, in order to set apps version correctly
-                    mavenCleanInstall('kogito-runtimes', true, [], '-U')
-                    
-                }
-
-                // kogito-apps
-                dir('kogito-apps') {
-                    script {
-                        maven.mvnVersionsUpdateParentAndChildModules(getProjectVersion())
-                    }
                 }
             }
         }
-        stage('Build kogito-runtimes') {
+        stage('Build & Test') {
             steps {
                 mavenCleanInstall('kogito-runtimes', params.SKIP_TESTS)
-            }
-            post {
-                always {
-                    saveReports(params.SKIP_TESTS)
-                }
-            }
-        }
-        stage('Build kogito-apps') {
-            steps {
-                mavenCleanInstall('kogito-apps', params.SKIP_TESTS)
             }
             post {
                 always {
@@ -143,7 +118,6 @@ pipeline {
         stage('Deploy artifacts') {
             steps {
                 mavenDeploy('kogito-runtimes')
-                mavenDeploy('kogito-apps')
             }
         }
         stage('Create PR'){
@@ -152,7 +126,6 @@ pipeline {
             }
             steps {
                 commitAndCreatePR('kogito-runtimes')
-                commitAndCreatePR('kogito-apps')
             }
             post {
                 success {
@@ -162,12 +135,6 @@ pipeline {
                         setDeployPropertyIfNeeded('kogito-runtimes.pr.source.ref', getBotBranch())
                         setDeployPropertyIfNeeded('kogito-runtimes.pr.target.uri', "https://github.com/${getGitAuthor()}/kogito-runtimes")
                         setDeployPropertyIfNeeded('kogito-runtimes.pr.target.ref', getBuildBranch())
-
-                        // Apps
-                        setDeployPropertyIfNeeded('kogito-apps.pr.source.uri', "https://github.com/${getBotAuthor()}/kogito-apps")
-                        setDeployPropertyIfNeeded('kogito-apps.pr.source.ref', getBotBranch())
-                        setDeployPropertyIfNeeded('kogito-apps.pr.target.uri', "https://github.com/${getGitAuthor()}/kogito-apps")
-                        setDeployPropertyIfNeeded('kogito-apps.pr.target.ref', getBuildBranch())
                     }
                 }
             }

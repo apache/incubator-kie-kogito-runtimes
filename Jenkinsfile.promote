@@ -72,7 +72,7 @@ pipeline {
                 }
             }
         }
-        stage('Merge runtimes deploy PR and tag') {
+        stage('Merge deploy PR and tag') {
             when {
                 expression { return isRelease() }
             }
@@ -86,21 +86,7 @@ pipeline {
                 }
             }
         }
-        stage('Merge apps deploy PR and tag') {
-            when {
-                expression { return isRelease() }
-            }
-            steps{
-                script {
-                    dir('kogito-apps') {
-                        checkoutRepo('kogito-apps')
-                        mergeAndPush('kogito-apps', getDeployPrLink('kogito-apps'))
-                        tagLatest()
-                    }
-                }
-            }
-        }
-        stage('Set runtimes next snapshot version'){
+        stage('Set next snapshot version'){
             when {
                 expression { return isRelease() }
             }
@@ -113,37 +99,13 @@ pipeline {
                         // first build&install the current version (usually SNAPSHOT) as it is needed later by other repos
                         sh 'mvn -B -U -Dfull clean install -DskipTests'
                         maven.mvnVersionsSet(getSnapshotVersion(), true)
-                        // Step needed to have runtimes artifacts into the local repository, in order to set apps version correctly
-                        sh 'mvn -B clean install -DskipTests'
 
                         commitAndCreatePR('kogito-runtimes')
                     }
                     dir('kogito-runtimes') {
                         sh "git checkout ${getBuildBranch()}"
                         mergeAndPush('kogito-runtimes', getPipelinePrLink('kogito-runtimes'))
-
-                        setupMavenConfig()
-                        deployArtifacts()
-                    }
-                }
-            }
-        }
-        stage('Set apps next snapshot version'){
-            when {
-                expression { return isRelease() }
-            }
-            steps {
-                script {
-                    dir('kogito-apps-bot') {
-                        prepareForPR('kogito-apps')
-                        setupMavenConfig()
-                        maven.mvnVersionsUpdateParentAndChildModules(getSnapshotVersion(), true)
-                        commitAndCreatePR('kogito-apps')
-                    }
-                    dir('kogito-apps') {
-                        sh "git checkout ${getBuildBranch()}"
-                        mergeAndPush('kogito-apps', getPipelinePrLink('kogito-apps'))
-
+                        
                         setupMavenConfig()
                         deployArtifacts()
                     }
