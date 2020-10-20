@@ -16,6 +16,7 @@ import org.kie.dmn.core.impl.DMNContextImpl;
 import org.kie.dmn.feel.lang.types.impl.ComparablePeriod;
 import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.DMNEvaluationErrorException;
+import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.dmn.rest.DMNResult;
 import org.kie.kogito.dmn.util.StronglyTypedUtils;
 
@@ -39,7 +40,7 @@ public class DMNRestResourceTemplate {
     public $outputType$ dmn($inputType$ variables) {
         org.kie.kogito.decision.DecisionModel decision = application.decisionModels().getDecisionModel("$modelNamespace$", "$modelName$");
         OutputSet outputSet = (OutputSet)StronglyTypedUtils.convertToOutputSet(variables, OutputSet.class);
-        org.kie.kogito.dmn.rest.DMNResult result = new org.kie.kogito.dmn.rest.DMNResult("$modelNamespace$", "$modelName$", decision.evaluateAll(decision.newContext($inputData$)));
+        org.kie.kogito.dmn.rest.DMNResult result = new org.kie.kogito.dmn.rest.DMNResult("$modelNamespace$", "$modelName$", decision.evaluateAll(DMNJSONUtils.ctx(decision, $inputData$)));
         return $extractContextMethod$(result);
     }
     

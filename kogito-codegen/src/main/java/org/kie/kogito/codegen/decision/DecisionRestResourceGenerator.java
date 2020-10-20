@@ -130,6 +130,8 @@ public class DecisionRestResourceGenerator {
             MethodCallExpr evaluateCall = clonedMethod.findFirst(MethodCallExpr.class, x -> x.getNameAsString().equals("evaluateAll")).orElseThrow(TEMPLATE_WAS_MODIFIED);
             evaluateCall.setName(new SimpleName("evaluateDecisionService"));
             evaluateCall.addArgument(new StringLiteralExpr(ds.getName()));
+            MethodCallExpr ctxCall = clonedMethod.findFirst(MethodCallExpr.class, x -> x.getNameAsString().equals("ctx")).orElseThrow(TEMPLATE_WAS_MODIFIED);
+            ctxCall.addArgument(new StringLiteralExpr(ds.getName()));
             clonedMethod.addAnnotation(new SingleMemberAnnotationExpr(new Name("javax.ws.rs.Path"), new StringLiteralExpr(ds.getName())));
             ReturnStmt returnStmt = clonedMethod.findFirst(ReturnStmt.class).orElseThrow(TEMPLATE_WAS_MODIFIED);
             if (ds.getOutputDecision().size() == 1) {
