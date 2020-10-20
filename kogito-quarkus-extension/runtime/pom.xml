@@ -47,6 +47,8 @@
       <artifactId>arc-processor</artifactId>
     </dependency>
 
+    <!-- Undertow is needed so that the static protobuf and dashboard files are exposed by the user's application.
+         See https://issues.redhat.com/browse/KOGITO-3477 -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-undertow</artifactId>
