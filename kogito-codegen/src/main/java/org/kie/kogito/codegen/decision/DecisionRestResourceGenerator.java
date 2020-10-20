@@ -42,8 +42,10 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.core.util.StringUtils;
 import org.kie.dmn.api.core.DMNModel;
+import org.kie.dmn.api.core.DMNType;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
 import org.kie.dmn.model.api.DecisionService;
+import org.kie.dmn.openapi.model.DMNModelIOSets;
 import org.kie.dmn.openapi.model.DMNOASResult;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
@@ -112,7 +114,7 @@ public class DecisionRestResourceGenerator {
         }
 
         MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
-        processOASAnn(dmnMethod);
+        processOASAnn(dmnMethod, null);
         template.addMember(cloneForDMNResult(dmnMethod, "dmn_dmnresult", "dmnresult"));
         for (DecisionService ds : dmnModel.getDefinitions().getDecisionService()) {
             if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
@@ -120,11 +122,7 @@ public class DecisionRestResourceGenerator {
             }
 
             MethodDeclaration clonedMethod = dmnMethod.clone();
-            // currently DS methods do not support $ref lookup
-            removeAnnFromMethod(clonedMethod, "org.eclipse.microprofile.openapi.annotations.parameters.RequestBody");
-            removeAnnFromMethod(clonedMethod, "io.swagger.v3.oas.annotations.parameters.RequestBody");
-            removeAnnFromMethod(clonedMethod, "org.eclipse.microprofile.openapi.annotations.responses.APIResponse");
-            removeAnnFromMethod(clonedMethod, "io.swagger.v3.oas.annotations.responses.ApiResponse");
+            processOASAnn(clonedMethod, ds);
             String name = CodegenStringUtil.escapeIdentifier("decisionService_" + ds.getName());
             clonedMethod.setName(name);
             MethodCallExpr evaluateCall = clonedMethod.findFirst(MethodCallExpr.class, x -> x.getNameAsString().equals("evaluateAll")).orElseThrow(TEMPLATE_WAS_MODIFIED);
@@ -163,12 +161,15 @@ public class DecisionRestResourceGenerator {
         return clazz.toString();
     }
 
-    private void processOASAnn(MethodDeclaration dmnMethod) {
+    private void processOASAnn(MethodDeclaration dmnMethod, DecisionService ds) {
         String inputRef = null;
         String outputRef = null;
         if (withOASResult!= null) {
-            inputRef = withOASResult.getNamingPolicy().getRef(withOASResult.lookupIOSetsByModel(dmnModel).getInputSet());
-            outputRef = withOASResult.getNamingPolicy().getRef(withOASResult.lookupIOSetsByModel(dmnModel).getOutputSet());
+            DMNModelIOSets ioSets = withOASResult.lookupIOSetsByModel(dmnModel);
+            DMNType identifyInputSet = ds != null ? ioSets.lookupDSIOSetsByName(ds.getName()).getDSInputSet() : ioSets.getInputSet();
+            DMNType identifyOutputSet = ds != null ? ioSets.lookupDSIOSetsByName(ds.getName()).getDSOutputSet() : ioSets.getOutputSet();
+            inputRef = withOASResult.getNamingPolicy().getRef(identifyInputSet);
+            outputRef = withOASResult.getNamingPolicy().getRef(identifyOutputSet);
         }
         // MP / Quarkus
         processAnnForRef(dmnMethod,
@@ -195,12 +196,19 @@ public class DecisionRestResourceGenerator {
     }
 
     private void processAnnForRef(MethodDeclaration dmnMethod, String parentName, String innerName, String ref, boolean removeIt) {
-        NormalAnnotationExpr mpInput = dmnMethod.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(parentName))
-                                                .get(0);
+        List<NormalAnnotationExpr> findAll = dmnMethod.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(parentName));
+        if (findAll.isEmpty()) {
+            if (removeIt) {
+                return; // nothing to do
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+        NormalAnnotationExpr parentExpr = findAll.get(0);
         if (removeIt || ref == null) {
-            mpInput.remove();
+            parentExpr.remove();
         } else {
-            NormalAnnotationExpr schemaAnn = mpInput.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(innerName))
+            NormalAnnotationExpr schemaAnn = parentExpr.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(innerName))
                                                     .get(0);
             schemaAnn.getPairs().removeIf(x -> true);
             schemaAnn.addPair("ref", new StringLiteralExpr(ref));
