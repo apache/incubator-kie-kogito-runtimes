@@ -352,8 +352,8 @@ void deployArtifacts() {
                 sh "sed -i 's|external:\\*|external:*,!staging|g' ${MAVEN_SETTINGS_FILE}" // Done to allow Maven to download release artificats from MAVEN_DEPENDENCIES_REPOSITORY
             }
         }
-        maven.runMaven('clean deploy', true)
+        maven.runMaven(mvnCmd, true)
     } else {
-        maven.runMavenWithSubmarineSettings('clean deploy', true)
+        maven.runMavenWithSubmarineSettings(mvnCmd, true)
     }
 }
