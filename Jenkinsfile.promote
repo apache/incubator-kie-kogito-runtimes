@@ -338,7 +338,7 @@ void forcePushProtectedBranch(String repo, String defaultBranch, String tempBran
 void deployArtifacts() {
     def mvnCmd = 'clean deploy'
     if (params.MAVEN_DEPLOY_REPOSITORY) {
-        mvnCmd += " -DaltDeploymentRepository=runtimes-artifacts::default::${params.MAVEN_DEPLOY_REPOSITORY}"
+        mvnCmd += " -DaltDeploymentRepository=runtimes-artifacts::default::${params.MAVEN_DEPLOY_REPOSITORY} -Denforcer.skip=true"
     }
 
     if (params.MAVEN_DEPENDENCIES_REPOSITORY != '') {
