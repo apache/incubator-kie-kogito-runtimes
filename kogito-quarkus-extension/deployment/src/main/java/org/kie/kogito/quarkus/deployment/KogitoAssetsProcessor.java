@@ -294,6 +294,11 @@ public class KogitoAssetsProcessor {
         GeneratorContext context = buildContext(appPaths, index);
         String persistenceType = context.getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
         Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(appPaths, index, usePersistence, parameters, context, persistenceType);
+
+        if(persistenceGeneratedFiles.stream().anyMatch(x -> !GeneratedFile.Type.CLASS.equals(x.getType()) && !GeneratedFile.Type.GENERATED_CP_RESOURCE.equals(x.getType()))) {
+            throw new IllegalStateException("Only type CLASS and GENERATED_CP_RESOURCE expected here");
+        }
+
         Collection<GeneratedFile> persistenceClasses = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.CLASS)).collect(Collectors.toList());
         Collection<GeneratedFile> persistenceProtoFiles = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.GENERATED_CP_RESOURCE)).collect(Collectors.toList());
 
