@@ -69,7 +69,6 @@ pipeline {
                     }
 
                     installGithubCLI()
-                    setupMavenConfig()
                 }
             }
         }
@@ -259,6 +258,7 @@ void checkoutRepo(String repo) {
     checkout(githubscm.resolveRepository(repo, getGitAuthor(), getBuildBranch(), false))
     // need to manually checkout branch since on a detached branch after checkout command
     sh "git checkout ${getBuildBranch()}"
+    setupMavenConfig()
 }
 
 void mergeAndPush(String repo, String prLink) {
