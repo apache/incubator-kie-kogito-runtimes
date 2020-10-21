@@ -59,19 +59,15 @@ public class SpringBootDecisionTracingConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "kogito.addon.tracing.decision.asyncEnabled", havingValue = "true", matchIfMissing = true)
     public SpringBootDecisionTracingCollector collectorForAsyncMode(final SpringBootTraceEventEmitter eventEmitter,
                                                                     final ConfigBean configBean,
-                                                                    final Application application) {
-        return new SpringBootDecisionTracingCollectorAsync(eventEmitter, configBean, application);
-    }
-
-    @Bean
-    @ConditionalOnProperty(value = "kogito.addon.tracing.decision.asyncEnabled", havingValue = "false")
-    public SpringBootDecisionTracingCollector collectorForSyncMode(final SpringBootTraceEventEmitter eventEmitter,
-                                                                   final ConfigBean configBean,
-                                                                   final Application application) {
-        return new SpringBootDecisionTracingCollectorAsync(eventEmitter, configBean, application);
+                                                                    final Application application,
+                                                                    @Value(value = "${kogito.addon.tracing.decision.asyncEnabled:true}") final boolean asyncEnabled) {
+        if (asyncEnabled) {
+            return new SpringBootDecisionTracingCollectorAsync(eventEmitter, configBean, application);
+        } else {
+            return new SpringBootDecisionTracingCollector(eventEmitter, configBean, application);
+        }
     }
 
     /**
