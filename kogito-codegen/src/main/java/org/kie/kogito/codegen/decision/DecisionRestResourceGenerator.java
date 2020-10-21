@@ -201,7 +201,7 @@ public class DecisionRestResourceGenerator {
             if (removeIt) {
                 return; // nothing to do
             } else {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Impossible to find annotation " + parentName + " on method " + dmnMethod.toString());
             }
         }
         NormalAnnotationExpr parentExpr = findAll.get(0);
