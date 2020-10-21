@@ -91,7 +91,7 @@ pipeline {
             steps {
                 echo 'Setup Maven release config'
                 configFileProvider([configFile(fileId: maven.getSubmarineSettingsXmlId(), targetLocation: 'maven-settings.xml', variable: 'MAVEN_SETTINGS_FILE')]){
-                    sh "echo '-B -s ${MAVEN_SETTINGS_FILE}' | tee kogito-{runtimes,apps}/.mvn/maven.config"
+                    sh "echo '-B -s ${MAVEN_SETTINGS_FILE}' | tee -a kogito-{runtimes,apps}/.mvn/maven.config"
                 }
             }
         }

@@ -320,8 +320,8 @@ void setupMavenConfig() {
     if (isSpecificMavenConfig()) {
         echo 'Setup Maven release config'
         configFileProvider([configFile(fileId: maven.getSubmarineSettingsXmlId(), targetLocation: 'maven-settings.xml', variable: 'MAVEN_SETTINGS_FILE')]){
-            sh "echo '-Denforcer.skip=true' | tee .mvn/maven.config"
-            sh "echo '-B -s ${MAVEN_SETTINGS_FILE}' | tee .mvn/maven.config"
+            sh "echo '-Denforcer.skip=true' | tee -a .mvn/maven.config"
+            sh "echo '-B -s ${MAVEN_SETTINGS_FILE}' | tee -a .mvn/maven.config"
             sh "sed -i 's|<repositories>|<repositories><repository><id>staging</id><name>Staging Repository</name><url>${params.MAVEN_DEPENDENCIES_REPOSITORY}</url><layout>default</layout><snapshots><enabled>true</enabled></snapshots><releases><enabled>true</enabled></releases></repository>|g' ${MAVEN_SETTINGS_FILE}"
             sh "sed -i 's|<pluginRepositories>|<pluginRepositories><pluginRepository><id>staging</id><name>Staging Repository</name><url>${params.MAVEN_DEPENDENCIES_REPOSITORY}</url><layout>default</layout><snapshots><enabled>true</enabled></snapshots><releases><enabled>true</enabled></releases></pluginRepository>|g' ${MAVEN_SETTINGS_FILE}"
             sh "sed -i 's|external:\\*|external:*,!staging|g' ${MAVEN_SETTINGS_FILE}" // Done to allow Maven to download release artificats from MAVEN_DEPENDENCIES_REPOSITORY
