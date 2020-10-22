@@ -15,7 +15,8 @@
     <properties>
         <java.version>@maven.compiler.release@</java.version>
         <version.infinispan.starter>@version.org.infinispan.starter@</version.infinispan.starter>
-        <version.infinispan>@version.org.infinispan@</version.infinispan>
+        <infinispan.version>@version.org.infinispan@</infinispan.version>
+        <rest-assured.version>@version.io.restassured@</rest-assured.version>
     </properties>
     
     <dependencyManagement>
@@ -46,6 +47,11 @@
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-springboot-starter</artifactId>
+        </dependency>
+        
+        <dependency>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-annotations</artifactId>
         </dependency>
 
         <dependency>
@@ -95,6 +101,7 @@
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-test-utils</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -147,7 +154,7 @@
                     <dependency>
                         <groupId>org.infinispan</groupId>
                         <artifactId>infinispan-bom</artifactId>
-                        <version>${version.infinispan}</version>
+                        <version>${infinispan.version}</version>
                         <type>pom</type>
                         <scope>import</scope>
                     </dependency>

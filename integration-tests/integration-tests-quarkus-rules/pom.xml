@@ -12,13 +12,7 @@
   
   <dependencyManagement>
     <dependencies>
-      <dependency> <!-- MUST keep these two together IN THIS FILE until Quarkus BOM defines Kogito dependencies -->
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+      <!-- MUST keep this IN THIS FILE until Quarkus BOM defines Kogito dependencies -->
       <dependency>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-bom</artifactId>
@@ -92,6 +86,15 @@
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-deployment</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
   <build>
     <pluginManagement>
