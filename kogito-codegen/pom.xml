@@ -28,20 +28,8 @@
   <artifactId>kogito-codegen</artifactId>
   <name>Kogito :: Codegen</name>
 
-  
-  <properties>
-    <version.org.infinispan.protostream>4.3.0.Alpha8</version.org.infinispan.protostream>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
       <!-- resteasy-core-spi is used for testing, and cannot be listed in kogito-runtimes or it would impact either Quarkus or SB platform version  -->
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
@@ -76,6 +64,10 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-dmn</artifactId> <!-- depend on the utility wrapper module to avoid repeating dependency exclusions -->
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-dmn-openapi</artifactId>
     </dependency>
     <!-- Json schema generator -->  
     <dependency>
