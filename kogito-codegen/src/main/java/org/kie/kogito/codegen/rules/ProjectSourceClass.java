@@ -40,9 +40,8 @@ public class ProjectSourceClass {
                         "\n" +
                         "    private final ProjectModel model = new ProjectModel();\n" +
                         "    private final java.util.Map<String, KieBase> kbases = new java.util.HashMap<>();\n" +
-                        "    public static final ProjectRuntime INSTANCE = new ProjectRuntime();\n" +
                         "\n" +
-                        "    private ProjectRuntime() { }" +
+                        "    public static final ProjectRuntime INSTANCE = new ProjectRuntime();\n" +
                         "\n");
         sb.append(modelMethod.toGetKieBaseMethods());
         sb.append("\n");
