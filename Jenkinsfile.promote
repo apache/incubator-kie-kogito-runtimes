@@ -108,6 +108,7 @@ pipeline {
                 script {
                     dir('kogito-runtimes-bot') {
                         prepareForPR('kogito-runtimes')
+                        setupMavenConfig()
 
                         // first build&install the current version (usually SNAPSHOT) as it is needed later by other repos
                         sh 'mvn -B -U -Dfull clean install -DskipTests'
@@ -121,6 +122,7 @@ pipeline {
                         sh "git checkout ${getBuildBranch()}"
                         mergeAndPush('kogito-runtimes', getPipelinePrLink('kogito-runtimes'))
 
+                        setupMavenConfig()
                         deployArtifacts()
                     }
                 }
@@ -134,6 +136,7 @@ pipeline {
                 script {
                     dir('kogito-apps-bot') {
                         prepareForPR('kogito-apps')
+                        setupMavenConfig()
                         maven.mvnVersionsUpdateParentAndChildModules(getSnapshotVersion(), true)
                         commitAndCreatePR('kogito-apps')
                     }
@@ -141,6 +144,7 @@ pipeline {
                         sh "git checkout ${getBuildBranch()}"
                         mergeAndPush('kogito-apps', getPipelinePrLink('kogito-apps'))
 
+                        setupMavenConfig()
                         deployArtifacts()
                     }
                 }
@@ -258,7 +262,6 @@ void checkoutRepo(String repo) {
     checkout(githubscm.resolveRepository(repo, getGitAuthor(), getBuildBranch(), false))
     // need to manually checkout branch since on a detached branch after checkout command
     sh "git checkout ${getBuildBranch()}"
-    setupMavenConfig()
 }
 
 void mergeAndPush(String repo, String prLink) {
