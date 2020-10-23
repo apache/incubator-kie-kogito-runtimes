@@ -61,8 +61,7 @@ public class BaseWorkflow {
 
     public static String toYaml(Workflow workflow) {
         try {
-            String jsonString = jsonObjectMapper.writeValueAsString(workflow);
-            JsonNode jsonNode = jsonObjectMapper.readTree(jsonString);
+            JsonNode jsonNode = jsonObjectMapper.valueToTree(workflow);
             YAMLFactory yamlFactory = new YAMLFactory()
                     .disable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
                     .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER);

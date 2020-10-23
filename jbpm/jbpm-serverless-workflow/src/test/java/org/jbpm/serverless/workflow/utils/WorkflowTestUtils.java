@@ -1,18 +1,16 @@
 package org.jbpm.serverless.workflow.utils;
 
-
-import org.jbpm.serverless.workflow.api.mapper.JsonObjectMapper;
-import org.jbpm.serverless.workflow.api.mapper.YamlObjectMapper;
-
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 
 public class WorkflowTestUtils {
-    private static JsonObjectMapper jsonObjectMapper = new JsonObjectMapper();
-    private static YamlObjectMapper yamlObjectMapper = new YamlObjectMapper();
 
     public static final Path resourceDirectory = Paths.get("src",
             "test",
