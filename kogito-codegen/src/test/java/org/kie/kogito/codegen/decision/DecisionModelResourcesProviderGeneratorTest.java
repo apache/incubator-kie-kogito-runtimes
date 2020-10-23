@@ -39,7 +39,10 @@ import org.kie.kogito.codegen.io.CollectedResource;
 import static com.github.javaparser.StaticJavaParser.parse;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DecisionModelResourcesProviderGeneratorTest {
 
