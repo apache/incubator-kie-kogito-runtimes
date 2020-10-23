@@ -21,14 +21,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.AddonsConfig;
@@ -38,6 +42,7 @@ import org.kie.kogito.codegen.io.CollectedResource;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -110,10 +115,28 @@ public class DecisionModelResourcesProviderGeneratorTest {
         assertEquals(nameExpr.getName().getIdentifier(), "resourcePaths");
 
         long numberOfAddStms = body.getStatements().stream()
-                .filter(stm -> stm.isExpressionStmt() &&
-                        stm.asExpressionStmt().getExpression().isMethodCallExpr() &&
-                        "add".equals(stm.asExpressionStmt().getExpression().asMethodCallExpr().getName().getIdentifier()))
+                .filter(this::isAddStatement)
                 .count();
         assertEquals(numberOfModels, numberOfAddStms);
+
+        List<NodeList<Expression>> defaultDecisionModelResources = body.getStatements().stream()
+                .filter(this::isAddStatement)
+                .map(stm -> stm.asExpressionStmt().getExpression().asMethodCallExpr().getArguments())
+                .collect(toList());
+
+        // verify .add(..) number of parameters
+        defaultDecisionModelResources.forEach(nodeList -> assertEquals(1, nodeList.size()));
+
+        Set<String> distinctDefaultDecisionModelResources = defaultDecisionModelResources.stream()
+                .map(nodeList -> nodeList.get(0).toString())
+                .collect(toSet());
+
+        assertEquals(defaultDecisionModelResources.size(), distinctDefaultDecisionModelResources.size());
+    }
+
+    private boolean isAddStatement(Statement stm) {
+        return stm.isExpressionStmt() &&
+                stm.asExpressionStmt().getExpression().isMethodCallExpr() &&
+                "add".equals(stm.asExpressionStmt().getExpression().asMethodCallExpr().getName().getIdentifier());
     }
 }
