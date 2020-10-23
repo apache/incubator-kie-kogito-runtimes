@@ -16,6 +16,7 @@ package org.kie.kogito.codegen.decision;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -29,26 +30,35 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import org.junit.jupiter.api.Test;
+import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.io.CollectedResource;
 
 import static com.github.javaparser.StaticJavaParser.parse;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class DecisionModelResourcesProviderCodegenTest {
+public class DecisionModelResourcesProviderGeneratorTest {
 
     @Test
     public void generateDecisionModelResourcesProvider() throws Exception {
 
         final GeneratorContext context = GeneratorContext.ofProperties(new Properties());
 
+        final Collection<CollectedResource> collectedResources = CollectedResource.fromPaths(
+                Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath(),
+                Paths.get("src/test/resources/decision/models/vacationDaysAlt").toAbsolutePath()
+        );
+
+        final long numberOfModels = collectedResources.stream()
+                .filter(r -> r.resource().getResourceType() == ResourceType.DMN)
+                .count();;
+
         final DecisionCodegen codeGenerator = DecisionCodegen
-                .ofCollectedResources(CollectedResource.fromPaths(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath()))
+                .ofCollectedResources(collectedResources)
                 .withAddons(new AddonsConfig().withTracing(true));
         codeGenerator.setContext(context);
 
@@ -57,9 +67,9 @@ public class DecisionModelResourcesProviderCodegenTest {
 
         // Align this FAI-215 test (#621) with unknown order of generated files (ie.: additional generated files might be present)
         //A Rest endpoint is always generated per model.
-        Optional<GeneratedFile> generatedRESTFile = generatedFiles.stream().filter(gf -> gf.getType() == GeneratedFile.Type.REST).findFirst();
-        assertTrue(generatedRESTFile.isPresent());
-        assertEquals("decision/VacationsResource.java", generatedRESTFile.get().relativePath());
+        List<GeneratedFile> generatedRESTFiles = generatedFiles.stream().filter(gf -> gf.getType() == GeneratedFile.Type.REST).collect(toList());
+        assertFalse(generatedRESTFiles.isEmpty());
+        assertEquals(numberOfModels, generatedRESTFiles.size());
 
         Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.getType() == GeneratedFile.Type.CLASS).findFirst();
         assertTrue(generatedCLASSFile.isPresent());
@@ -95,5 +105,12 @@ public class DecisionModelResourcesProviderCodegenTest {
 
         final NameExpr nameExpr = call.getScope().get().asNameExpr();
         assertEquals(nameExpr.getName().getIdentifier(), "resourcePaths");
+
+        long numberOfAddStms = body.getStatements().stream()
+                .filter(stm -> stm.isExpressionStmt() &&
+                        stm.asExpressionStmt().getExpression().isMethodCallExpr() &&
+                        "add".equals(stm.asExpressionStmt().getExpression().asMethodCallExpr().getName().getIdentifier()))
+                .count();
+        assertEquals(numberOfModels, numberOfAddStms);
     }
 }
