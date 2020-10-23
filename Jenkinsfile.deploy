@@ -79,14 +79,12 @@ pipeline {
                 prepareForPR('kogito-runtimes')
             }
         }
-        stage('Setup Maven release config'){
-            when {
-                expression { return isRelease() }
-            }
+        stage('Setup Maven config'){
             steps {
-                echo 'Setup Maven release config'
-                configFileProvider([configFile(fileId: maven.getSubmarineSettingsXmlId(), targetLocation: 'maven-settings.xml', variable: 'MAVEN_SETTINGS_FILE')]){
-                    sh "echo '\n-B -s ${MAVEN_SETTINGS_FILE}' | tee -a kogito-runtimes/.mvn/maven.config"
+                dir('kogito-runtimes'){
+                    configFileProvider([configFile(fileId: maven.getSubmarineSettingsXmlId(), targetLocation: 'maven-settings.xml', variable: 'MAVEN_SETTINGS_FILE')]){
+                        sh "echo '\n-B -s ${MAVEN_SETTINGS_FILE}' | tee -a .mvn/maven.config"
+                    }
                 }
             }
         }
