@@ -107,12 +107,12 @@ public class DecisionModelResourcesProviderGeneratorTest {
         assertTrue(expression.getExpression() instanceof MethodCallExpr);
 
         final MethodCallExpr call = (MethodCallExpr) expression.getExpression();
-        assertEquals(call.getName().getIdentifier(), "add");
+        assertEquals("add", call.getName().getIdentifier());
         assertTrue(call.getScope().isPresent());
         assertTrue(call.getScope().get().isNameExpr());
 
         final NameExpr nameExpr = call.getScope().get().asNameExpr();
-        assertEquals(nameExpr.getName().getIdentifier(), "resourcePaths");
+        assertEquals("resourcePaths", nameExpr.getName().getIdentifier());
 
         long numberOfAddStms = body.getStatements().stream()
                 .filter(this::isAddStatement)
