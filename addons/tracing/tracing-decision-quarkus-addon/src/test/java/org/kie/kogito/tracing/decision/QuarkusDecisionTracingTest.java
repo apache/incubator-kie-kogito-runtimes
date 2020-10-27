@@ -140,11 +140,15 @@ public class QuarkusDecisionTracingTest {
 
         subscriber.assertValueCount(1);
 
-        CloudEvent cloudEvent = CloudEventUtils.decode(subscriber.values().get(0)).orElseThrow(IllegalStateException::new);
+        CloudEvent cloudEvent = CloudEventUtils
+                .decode(subscriber.values().get(0))
+                .orElseThrow(() -> new IllegalStateException("Can't decode CloudEvent"));
+
         assertEquals(TEST_EXECUTION_ID, cloudEvent.getId());
         assertNotNull(cloudEvent.getData());
 
         TraceEvent traceEvent = MAPPER.readValue(cloudEvent.getData(), TraceEvent.class);
+
         assertNotNull(traceEvent);
         assertEquals(TEST_SERVICE_URL, traceEvent.getHeader().getResourceId().getServiceUrl());
     }

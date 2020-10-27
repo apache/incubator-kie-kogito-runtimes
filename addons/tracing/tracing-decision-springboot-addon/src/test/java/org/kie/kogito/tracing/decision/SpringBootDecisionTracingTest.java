@@ -144,11 +144,15 @@ public class SpringBootDecisionTracingTest {
         ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         verify(mockedTemplate).send(eq(TEST_KAFKA_TOPIC), payloadCaptor.capture());
 
-        CloudEvent cloudEvent = CloudEventUtils.decode(payloadCaptor.getValue()).orElseThrow(IllegalStateException::new);
+        CloudEvent cloudEvent = CloudEventUtils
+                .decode(payloadCaptor.getValue())
+                .orElseThrow(() -> new IllegalStateException("Can't decode CloudEvent"));
+
         assertEquals(TEST_EXECUTION_ID, cloudEvent.getId());
         assertNotNull(cloudEvent.getData());
 
         TraceEvent traceEvent = MAPPER.readValue(cloudEvent.getData(), TraceEvent.class);
+
         assertNotNull(traceEvent);
         assertEquals(TEST_SERVICE_URL, traceEvent.getHeader().getResourceId().getServiceUrl());
     }
