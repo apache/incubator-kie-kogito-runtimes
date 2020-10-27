@@ -12,13 +12,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency> <!-- MUST keep these two together IN THIS FILE until Quarkus BOM defines Kogito dependencies -->
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
       <dependency>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-bom</artifactId>
@@ -38,6 +31,10 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>process-management-addon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
     </dependency>
 
     <dependency>
@@ -136,6 +133,7 @@
             <include>org/kie/kogito/integrationtests/quarkus/*</include>
           </includes>
           <systemPropertyVariables>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
           </systemPropertyVariables>
         </configuration>
