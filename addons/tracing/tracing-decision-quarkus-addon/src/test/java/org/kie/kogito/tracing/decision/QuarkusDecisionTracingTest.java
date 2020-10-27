@@ -131,7 +131,7 @@ public class QuarkusDecisionTracingTest {
         when(mockedDecisionModels.getDecisionModel(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME)).thenReturn(model);
         final Application mockedApplication = mock(Application.class);
         when(mockedApplication.decisionModels()).thenReturn(mockedDecisionModels);
-        final ConfigBean configBean = new StaticConfigBean(TEST_SERVICE_URL);
+        final ConfigBean configBean = new StaticConfigBean(TEST_SERVICE_URL, true);
         final QuarkusTraceEventEmitter eventEmitter = new QuarkusTraceEventEmitter();
 
         QuarkusDecisionTracingCollector collector = new QuarkusDecisionTracingCollector(eventEmitter, configBean, mockedApplication);
