@@ -75,7 +75,7 @@ public class QuarkusDecisionTracingTest {
             .registerModule(JsonFormat.getCloudEventJacksonModule());
 
     @Test
-    void test_AsyncListenerAndCollector_UseRealEvents_Working() throws IOException {
+    void testAsyncListenerAndCollectorWithRealEventsIsWorking() throws IOException {
         final DMNRuntime runtime = buildDMNRuntime();
         final DecisionModel model = buildDecisionModel(runtime);
         final List<EvaluateEvent> events = testListener(true, runtime, model);
@@ -83,7 +83,7 @@ public class QuarkusDecisionTracingTest {
     }
 
     @Test
-    void test_SyncListenerAndCollector_UseRealEvents_Working() throws IOException {
+    void testSyncListenerAndCollectorWithRealEventsIsWorking() throws IOException {
         final DMNRuntime runtime = buildDMNRuntime();
         final DecisionModel model = buildDecisionModel(runtime);
         final List<EvaluateEvent> events = testListener(false, runtime, model);
