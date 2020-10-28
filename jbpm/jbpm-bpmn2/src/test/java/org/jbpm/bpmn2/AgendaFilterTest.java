@@ -19,7 +19,7 @@ package org.jbpm.bpmn2;
 import org.jbpm.bpmn2.objects.Order;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSession;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

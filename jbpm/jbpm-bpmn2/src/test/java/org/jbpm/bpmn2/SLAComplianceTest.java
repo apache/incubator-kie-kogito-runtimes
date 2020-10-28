@@ -31,14 +31,14 @@ import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.event.process.SLAViolatedEvent;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.SLAViolatedEvent;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 
 public class SLAComplianceTest extends JbpmBpmn2TestCase {
 

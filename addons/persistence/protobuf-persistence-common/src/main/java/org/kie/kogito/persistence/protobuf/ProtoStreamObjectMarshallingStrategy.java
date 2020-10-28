@@ -29,7 +29,7 @@ import org.infinispan.protostream.ProtobufUtil;
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.config.Configuration;
 import org.infinispan.protostream.impl.SerializationContextImpl;
-import org.kie.api.marshalling.ObjectMarshallingStrategy;
+import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
 import org.kie.kogito.persistence.protobuf.marshallers.BooleanMessageMarshaller;
 import org.kie.kogito.persistence.protobuf.marshallers.DateMessageMarshaller;
 import org.kie.kogito.persistence.protobuf.marshallers.DoubleMessageMarshaller;

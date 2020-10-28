@@ -60,9 +60,9 @@ import com.github.javaparser.ast.type.UnionType;
 import org.jbpm.process.core.ParameterDefinition;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 import org.kie.kogito.process.workitem.WorkItemExecutionError;
 
 public class ServiceTaskDescriptor {

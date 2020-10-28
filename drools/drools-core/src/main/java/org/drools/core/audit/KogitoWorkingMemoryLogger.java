@@ -145,7 +145,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
             StatelessKnowledgeSessionImpl statelessSession = (( StatelessKnowledgeSessionImpl ) session);
             statelessSession.addEventListener(( RuleRuntimeEventListener ) this);
             statelessSession.addEventListener( ( AgendaEventListener ) this );
-            statelessSession.getKnowledgeBase().addEventListener( ( KieBaseEventListener ) this );
+            statelessSession.getKnowledgeBase().addEventListener( this );
         } else if (session instanceof CommandBasedStatefulKnowledgeSession ) {
             StatefulKnowledgeSessionImpl statefulSession =
                     (( StatefulKnowledgeSessionImpl )(( RegistryContext )(( CommandBasedStatefulKnowledgeSession ) session).getRunner().createContext()).lookup( KieSession.class ));
@@ -162,11 +162,13 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void readExternal( ObjectInput in) throws IOException, ClassNotFoundException {
         filters = ( List<ILogEventFilter> ) in.readObject();
     }
 
+    @Override
     public void writeExternal( ObjectOutput out) throws IOException {
         out.writeObject(filters);
     }
@@ -178,6 +180,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
      * 
      * @param logEvent
      */
+    @Override
     public abstract void logEventCreated( LogEvent logEvent);
 
     /**
@@ -205,6 +208,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
      *
      * @param filter The filter that should be added.
      */
+    @Override
     public void addFilter(final ILogEventFilter filter) {
         if ( filter == null ) {
             throw new NullPointerException();
@@ -219,6 +223,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
      *
      * @param filter The filter that should be removed.
      */
+    @Override
     public void removeFilter(final ILogEventFilter filter) {
         this.filters.remove( filter );
     }
@@ -226,6 +231,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
     /**
      * Clears all filters of this event log.
      */
+    @Override
     public void clearFilters() {
         this.filters.clear();
     }
@@ -233,6 +239,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
     /**
      * @see RuleRuntimeEventListener
      */
+    @Override
     public void objectInserted(final ObjectInsertedEvent event) {
         filterLogEvent( new ObjectLogEvent( LogEvent.INSERTED,
                                             (( InternalFactHandle ) event.getFactHandle()).getId(),
@@ -242,6 +249,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
     /**
      * @see RuleRuntimeEventListener
      */
+    @Override
     public void objectUpdated(final ObjectUpdatedEvent event) {
         filterLogEvent( new ObjectLogEvent( LogEvent.UPDATED,
                                             (( InternalFactHandle ) event.getFactHandle()).getId(),
@@ -251,6 +259,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
     /**
      * @see RuleRuntimeEventListener
      */
+    @Override
     public void objectDeleted(final ObjectDeletedEvent event) {
         filterLogEvent( new ObjectLogEvent( LogEvent.RETRACTED,
                                             (( InternalFactHandle ) event.getFactHandle()).getId(),
@@ -260,6 +269,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
     /**
      * @see AgendaEventListener
      */
+    @Override
     public void matchCreated( MatchCreatedEvent event) {
         filterLogEvent( new ActivationLogEvent( LogEvent.ACTIVATION_CREATED,
                                                 getActivationId( event.getMatch() ),
@@ -272,6 +282,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
     /**
      * @see AgendaEventListener
      */
+    @Override
     public void matchCancelled( MatchCancelledEvent event) {
         filterLogEvent( new ActivationLogEvent( LogEvent.ACTIVATION_CANCELLED,
                                                 getActivationId( event.getMatch() ),
@@ -284,6 +295,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
     /**
      * @see AgendaEventListener
      */
+    @Override
     public void beforeMatchFired( BeforeMatchFiredEvent event) {
         filterLogEvent( new ActivationLogEvent( LogEvent.BEFORE_ACTIVATION_FIRE,
                                                 getActivationId( event.getMatch() ),
@@ -296,6 +308,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
     /**
      * @see AgendaEventListener
      */
+    @Override
     public void afterMatchFired(final AfterMatchFiredEvent event) {
         filterLogEvent( new ActivationLogEvent( LogEvent.AFTER_ACTIVATION_FIRE,
                                                 getActivationId( event.getMatch() ),
@@ -390,14 +403,17 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
         return result.append( "]" ).toString();
     }
     
+    @Override
     public void agendaGroupPopped( AgendaGroupPoppedEvent event) {
         // we don't audit this yet     
     }
 
+    @Override
     public void agendaGroupPushed( AgendaGroupPushedEvent event) {
         // we don't audit this yet        
     }
     
+    @Override
     public void beforeRuleFlowGroupActivated( RuleFlowGroupActivatedEvent event) {
         filterLogEvent(new RuleFlowGroupLogEvent(
                         LogEvent.BEFORE_RULEFLOW_GROUP_ACTIVATED,
@@ -405,6 +421,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
                         ((org.drools.core.spi.RuleFlowGroup)event.getRuleFlowGroup()).size()));
     }
     
+    @Override
     public void afterRuleFlowGroupActivated( RuleFlowGroupActivatedEvent event) {
         filterLogEvent(new RuleFlowGroupLogEvent(
                 LogEvent.AFTER_RULEFLOW_GROUP_ACTIVATED,
@@ -412,6 +429,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
                 ((org.drools.core.spi.RuleFlowGroup)event.getRuleFlowGroup()).size()));
     }
 
+    @Override
     public void beforeRuleFlowGroupDeactivated( RuleFlowGroupDeactivatedEvent event) {
         filterLogEvent(new RuleFlowGroupLogEvent(
                 LogEvent.BEFORE_RULEFLOW_GROUP_DEACTIVATED,
@@ -419,6 +437,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
                 ((org.drools.core.spi.RuleFlowGroup)event.getRuleFlowGroup()).size()));
     }
     
+    @Override
     public void afterRuleFlowGroupDeactivated( RuleFlowGroupDeactivatedEvent event) {
         filterLogEvent(new RuleFlowGroupLogEvent(
                 LogEvent.AFTER_RULEFLOW_GROUP_DEACTIVATED,
@@ -426,22 +445,27 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
                 ((org.drools.core.spi.RuleFlowGroup)event.getRuleFlowGroup()).size()));
     }
     
+    @Override
     public void beforeProcessStarted( ProcessStartedEvent event) {
         filterLogEvent( new KogitoRuleFlowLogEvent( LogEvent.BEFORE_RULEFLOW_CREATED, event.getProcessInstance() ) );
     }
 
+    @Override
     public void afterProcessStarted( ProcessStartedEvent event) {
         filterLogEvent(new KogitoRuleFlowLogEvent( LogEvent.AFTER_RULEFLOW_CREATED, event.getProcessInstance() ) );
     }
 
+    @Override
     public void beforeProcessCompleted( ProcessCompletedEvent event) {
         filterLogEvent( new KogitoRuleFlowLogEvent( LogEvent.BEFORE_RULEFLOW_COMPLETED, event.getProcessInstance() ) );
     }
     
+    @Override
     public void afterProcessCompleted( ProcessCompletedEvent event) {
         filterLogEvent(new KogitoRuleFlowLogEvent( LogEvent.AFTER_RULEFLOW_COMPLETED, event.getProcessInstance() ) );
     }
 
+    @Override
     public void beforeNodeTriggered( ProcessNodeTriggeredEvent event) {
         filterLogEvent(new KogitoRuleFlowNodeLogEvent( LogEvent.BEFORE_RULEFLOW_NODE_TRIGGERED,
                 createNodeId(event.getNodeInstance()),
@@ -450,6 +474,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
                 event.getProcessInstance()) );
     }
 
+    @Override
     public void afterNodeTriggered( ProcessNodeTriggeredEvent event) {
         filterLogEvent(new KogitoRuleFlowNodeLogEvent( LogEvent.AFTER_RULEFLOW_NODE_TRIGGERED,
                 createNodeId(event.getNodeInstance()),
@@ -470,11 +495,11 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
         } else { 
             nodeId = ( String ) uniqueIdObj;
         }
-        NodeContainer nodeContainer = node.getParentContainer();
+        NodeContainer nodeContainer = node.getNodeContainer();
         while (nodeContainer != null) {
             if (nodeContainer instanceof Node ) {
                 node = ( Node ) nodeContainer;
-                nodeContainer = node.getParentContainer();
+                nodeContainer = node.getNodeContainer();
                 // TODO fix this filter out hidden compositeNode inside ForEach node
                 if (!(nodeContainer.getClass().getName().endsWith("ForEachNode"))) {
                     nodeId = node.getId() + ":" + nodeId;
@@ -501,6 +526,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
         return nodeInstanceId;
     }
 
+    @Override
     public void beforeNodeLeft( ProcessNodeLeftEvent event) {
         filterLogEvent(new KogitoRuleFlowNodeLogEvent( LogEvent.BEFORE_RULEFLOW_NODE_EXITED,
             createNodeId(event.getNodeInstance()),
@@ -509,6 +535,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
             event.getProcessInstance()) );
     }
 
+    @Override
     public void afterNodeLeft( ProcessNodeLeftEvent event) {
         filterLogEvent(new KogitoRuleFlowNodeLogEvent( LogEvent.AFTER_RULEFLOW_NODE_EXITED,
             createNodeId(event.getNodeInstance()),
@@ -517,6 +544,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
             event.getProcessInstance()) );
     }
 
+    @Override
     public void beforeVariableChanged(ProcessVariableChangedEvent event) {
         filterLogEvent(new KogitoRuleFlowVariableLogEvent(LogEvent.BEFORE_VARIABLE_INSTANCE_CHANGED,
                 event.getVariableId(),
@@ -525,6 +553,7 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
                 event.getNewValue() == null ? "null" : event.getNewValue().toString()) );
     }
 
+    @Override
     public void afterVariableChanged(ProcessVariableChangedEvent event) {
         filterLogEvent(new KogitoRuleFlowVariableLogEvent(LogEvent.AFTER_VARIABLE_INSTANCE_CHANGED,
                 event.getVariableId(),
@@ -533,81 +562,99 @@ public abstract class KogitoWorkingMemoryLogger extends WorkingMemoryLogger {
                 event.getNewValue() == null ? "null" : event.getNewValue().toString()) );
     }
 
+    @Override
     public void afterKiePackageAdded( AfterKiePackageAddedEvent event) {
         filterLogEvent( new RuleBaseLogEvent( LogEvent.AFTER_PACKAGE_ADDED,
                                               event.getKiePackage().getName(),
                                               null ) );
     }
 
+    @Override
     public void afterKiePackageRemoved( AfterKiePackageRemovedEvent event) {
         filterLogEvent( new RuleBaseLogEvent( LogEvent.AFTER_PACKAGE_REMOVED,
                                               event.getKiePackage().getName(),
                                               null ) );
     }
 
+    @Override
     public void beforeKieBaseLocked( BeforeKieBaseLockedEvent event) {
     }
 
+    @Override
     public void afterKieBaseLocked( AfterKieBaseLockedEvent event) {
     }
 
+    @Override
     public void beforeKieBaseUnlocked( BeforeKieBaseUnlockedEvent event) {
     }
 
+    @Override
     public void afterKieBaseUnlocked( AfterKieBaseUnlockedEvent event) {
     }
 
+    @Override
     public void afterRuleAdded( AfterRuleAddedEvent event) {
         filterLogEvent( new RuleBaseLogEvent( LogEvent.AFTER_RULE_ADDED,
                                               event.getRule().getPackageName(),
                                               event.getRule().getName() ) );
     }
 
+    @Override
     public void afterRuleRemoved( AfterRuleRemovedEvent event) {
         filterLogEvent( new RuleBaseLogEvent( LogEvent.AFTER_RULE_REMOVED,
                                               event.getRule().getPackageName(),
                                               event.getRule().getName() ) );
     }
 
+    @Override
     public void beforeFunctionRemoved( BeforeFunctionRemovedEvent event) {
     }
 
+    @Override
     public void beforeKiePackageAdded( BeforeKiePackageAddedEvent event) {
         filterLogEvent( new RuleBaseLogEvent( LogEvent.BEFORE_PACKAGE_ADDED,
                                               event.getKiePackage().getName(),
                                               null ) );
     }
 
+    @Override
     public void beforeKiePackageRemoved( BeforeKiePackageRemovedEvent event) {
         filterLogEvent( new RuleBaseLogEvent( LogEvent.BEFORE_PACKAGE_REMOVED,
                                               event.getKiePackage().getName(),
                                               null ) );
     }
 
+    @Override
     public void beforeRuleAdded( BeforeRuleAddedEvent event) {
         filterLogEvent( new RuleBaseLogEvent( LogEvent.BEFORE_RULE_ADDED,
                                               event.getRule().getPackageName(),
                                               event.getRule().getName() ) );
     }
 
+    @Override
     public void beforeRuleRemoved( BeforeRuleRemovedEvent event) {
         filterLogEvent( new RuleBaseLogEvent( LogEvent.BEFORE_RULE_REMOVED,
                                               event.getRule().getPackageName(),
                                               event.getRule().getName() ) );
     }
     
+    @Override
     public void afterFunctionRemoved( AfterFunctionRemovedEvent event) {
     }
 
+    @Override
     public void beforeProcessAdded( BeforeProcessAddedEvent event) {
     }
 
+    @Override
     public void afterProcessAdded( AfterProcessAddedEvent event) {
     }
 
+    @Override
     public void beforeProcessRemoved( BeforeProcessRemovedEvent event) {
     }
 
+    @Override
     public void afterProcessRemoved( AfterProcessRemovedEvent event) {
     }
 }

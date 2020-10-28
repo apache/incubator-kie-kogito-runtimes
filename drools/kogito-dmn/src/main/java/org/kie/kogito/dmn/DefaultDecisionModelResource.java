@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.kie.api.management.GAV;
-import org.kie.internal.decision.DecisionModelResource;
 import org.kie.kogito.decision.DecisionModelType;
+import org.kie.kogito.internal.decision.DecisionModelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

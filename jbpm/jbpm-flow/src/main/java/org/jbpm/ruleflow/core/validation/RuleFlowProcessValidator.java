@@ -66,11 +66,11 @@ import org.jbpm.workflow.core.node.ThrowLinkNode;
 import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.Process;
 import org.kie.api.io.Resource;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
 import org.mvel2.ErrorDetail;
 
 /**

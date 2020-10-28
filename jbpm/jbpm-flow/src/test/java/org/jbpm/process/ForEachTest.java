@@ -25,7 +25,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSession;
 import org.slf4j.LoggerFactory;
 
 public class ForEachTest extends AbstractBaseTest {

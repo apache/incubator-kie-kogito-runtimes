@@ -25,9 +25,8 @@ import java.util.Set;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.core.node.TimerNode;
-import org.jbpm.workflow.instance.WorkflowProcessInstance;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
@@ -80,6 +79,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         timerId = jobService.scheduleProcessInstanceJob(jobDescription);
     }
 
+    @Override
     public void signalEvent(String type, Object event) {
         if (TIMER_TRIGGERED_EVENT.equals(type)) {
             TimerInstance timer = (TimerInstance) event;
@@ -89,10 +89,12 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         }
     }
 
+    @Override
     public String[] getEventTypes() {
         return new String[]{TIMER_TRIGGERED_EVENT};
     }
 
+    @Override
     public void triggerCompleted(boolean remove) {
         triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, remove);
     }
@@ -104,6 +106,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         super.cancel();
     }
 
+    @Override
     public void addEventListeners() {
         super.addEventListeners();
         if (getTimerInstances() == null) {
@@ -111,9 +114,10 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         }
     }
 
+    @Override
     public void removeEventListeners() {
         super.removeEventListeners();
-        ((WorkflowProcessInstance) getProcessInstance()).removeEventListener(TIMER_TRIGGERED_EVENT, this, false);
+        getProcessInstance().removeEventListener(TIMER_TRIGGERED_EVENT, this, false);
     }
 
     @Override

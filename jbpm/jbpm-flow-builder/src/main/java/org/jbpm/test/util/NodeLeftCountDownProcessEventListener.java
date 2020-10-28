@@ -16,7 +16,7 @@
 
 package org.jbpm.test.util;
 
-import org.kie.api.event.process.ProcessNodeLeftEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeLeftEvent;
 
 
 public class NodeLeftCountDownProcessEventListener extends NodeCountDownProcessEventListener {

@@ -24,7 +24,7 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 
 
 

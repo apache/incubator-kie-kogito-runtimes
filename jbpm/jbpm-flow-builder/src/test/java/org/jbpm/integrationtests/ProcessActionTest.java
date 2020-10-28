@@ -31,13 +31,14 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.ObjectFilter;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -100,7 +101,7 @@ public class ProcessActionTest  extends AbstractBaseTest {
             "</process>");
         kbuilder.add(new ReaderResource(source), ResourceType.DRF);
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
         List<String> list = new ArrayList<String>();
@@ -163,7 +164,7 @@ public class ProcessActionTest  extends AbstractBaseTest {
             "</process>");
         kbuilder.add(new ReaderResource(source), ResourceType.DRF);
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance =
@@ -172,7 +173,8 @@ public class ProcessActionTest  extends AbstractBaseTest {
         assertEquals("SomeText", list.get(0));
         assertEquals("MyActionNode", list.get(1));
         Collection<FactHandle> factHandles = ksession.getFactHandles(new ObjectFilter() {
-			public boolean accept(Object object) {
+			@Override
+            public boolean accept(Object object) {
 				return object instanceof Message;
 			}
         });
@@ -231,7 +233,7 @@ public class ProcessActionTest  extends AbstractBaseTest {
             fail( kbuilder.getErrors().toString() );
         }
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance =
@@ -240,7 +242,8 @@ public class ProcessActionTest  extends AbstractBaseTest {
         assertEquals("SomeText", list.get(0));
         assertEquals("MyActionNode", list.get(1));
         Collection<FactHandle> factHandles = ksession.getFactHandles(new ObjectFilter() {
-			public boolean accept(Object object) {
+			@Override
+            public boolean accept(Object object) {
 				return object instanceof Message;
 			}
         });
@@ -290,7 +293,7 @@ public class ProcessActionTest  extends AbstractBaseTest {
             "</process>");
         kbuilder.add(new ReaderResource(source), ResourceType.DRF);
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         TestVariable person = new TestVariable("John Doe");
@@ -345,7 +348,7 @@ public class ProcessActionTest  extends AbstractBaseTest {
             "</process>");
         kbuilder.add(new ReaderResource(source), ResourceType.DRF);
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         TestVariable person = new TestVariable("John Doe");
@@ -418,7 +421,7 @@ public class ProcessActionTest  extends AbstractBaseTest {
             "</process>");
         kbuilder.add(new ReaderResource(source), ResourceType.DRF);
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance =
@@ -480,7 +483,7 @@ public class ProcessActionTest  extends AbstractBaseTest {
             "</process>");
         kbuilder.add(new ReaderResource(source), ResourceType.DRF);
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance =
@@ -489,6 +492,7 @@ public class ProcessActionTest  extends AbstractBaseTest {
         assertEquals("SomeText", list.get(0));
         assertEquals("MyActionNode", list.get(1));
         Collection<FactHandle> factHandles = ksession.getFactHandles(new ObjectFilter() {
+            @Override
             public boolean accept(Object object) {
                 return object instanceof Message;
             }

@@ -37,14 +37,14 @@ import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
-import org.kie.api.definition.process.Node;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.ProcessRuntime;
 import org.kie.api.runtime.process.WorkItemNotFoundException;
-import org.kie.internal.process.CorrelationAwareProcessRuntime;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.process.CorrelationProperty;
 import org.kie.kogito.Model;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.process.CorrelationAwareProcessRuntime;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.ProcessRuntime;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
@@ -104,14 +104,14 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
      * @param variables
      * @param wpi
      */
-    public AbstractProcessInstance(AbstractProcess<T> process, T variables, org.kie.api.runtime.process.WorkflowProcessInstance wpi) {
+    public AbstractProcessInstance(AbstractProcess<T> process, T variables, org.kie.kogito.internal.runtime.process.WorkflowProcessInstance wpi) {
         this.process = process;
         this.variables = variables;
         syncProcessInstance((WorkflowProcessInstance) wpi);
         unbind(variables, processInstance.getVariables());
     }
 
-    public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt, org.kie.api.runtime.process.WorkflowProcessInstance wpi) {
+    public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt, org.kie.kogito.internal.runtime.process.WorkflowProcessInstance wpi) {
         this.process = process;
         this.rt = rt;
         this.variables = variables;
@@ -127,7 +127,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
         addCompletionEventListener();
 
-        for (org.kie.api.runtime.process.NodeInstance nodeInstance : processInstance.getNodeInstances()) {
+        for (org.kie.kogito.internal.runtime.process.NodeInstance nodeInstance : processInstance.getNodeInstances()) {
             if (nodeInstance instanceof WorkItemNodeInstance) {
                 ((WorkItemNodeInstance) nodeInstance).internalRegisterWorkItem();
             }
@@ -209,7 +209,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         ((InternalProcessRuntime) getProcessRuntime()).getProcessInstanceManager().addProcessInstance(this.processInstance);
         this.id = processInstance.getId();
         addCompletionEventListener();
-        org.kie.api.runtime.process.ProcessInstance processInstance = getProcessRuntime().startProcessInstance(this.id, trigger);
+        org.kie.kogito.internal.runtime.process.ProcessInstance processInstance = getProcessRuntime().startProcessInstance(this.id, trigger);
         addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).create(pi.id(), pi));
         unbind(variables, processInstance.getVariables());
         if (this.processInstance != null) {

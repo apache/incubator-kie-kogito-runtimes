@@ -32,7 +32,6 @@ import org.drools.core.WorkItemHandlerNotFoundException;
 import org.drools.core.process.instance.KogitoWorkItem;
 import org.drools.core.process.instance.KogitoWorkItemManager;
 import org.drools.core.process.instance.impl.KogitoWorkItemImpl;
-import org.drools.core.spi.KogitoProcessContext;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.ParameterDefinition;
@@ -45,6 +44,7 @@ import org.jbpm.process.core.impl.DataTransformerRegistry;
 import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.ProcessInstance;
+import org.jbpm.process.instance.context.KogitoProcessContext;
 import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.AssignmentAction;
@@ -61,27 +61,26 @@ import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.jbpm.workflow.instance.impl.WorkItemResolverFactory;
-import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.EnvironmentName;
-import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.DataTransformer;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessWorkItemHandlerException;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.runtime.KieRuntime;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.GroupedNamedDataType;
 import org.kie.kogito.process.IOEventDescription;
 import org.kie.kogito.process.NamedDataType;
 import org.kie.kogito.process.workitem.WorkItemExecutionError;
-import org.mvel2.MVEL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.jbpm.process.core.context.variable.VariableScope.VARIABLE_SCOPE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
-import static org.kie.api.runtime.process.WorkItem.ABORTED;
-import static org.kie.api.runtime.process.WorkItem.COMPLETED;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ABORTED;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_COMPLETED;
+import static org.kie.kogito.internal.runtime.process.WorkItem.ABORTED;
+import static org.kie.kogito.internal.runtime.process.WorkItem.COMPLETED;
 
 /**
  * Runtime counterpart of a work item node.
@@ -437,6 +436,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         }
     }
 
+    @Override
     public String[] getEventTypes() {
         if (exceptionHandlingProcessInstanceId != null) {
             return new String[] {"workItemCompleted", "processInstanceCompleted:" + exceptionHandlingProcessInstanceId };

@@ -19,16 +19,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.MarshallerWriteContext;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.common.KogitoInternalKnowledgeRuntime;
 import org.jbpm.process.instance.ProcessInstanceManager;
 import org.jbpm.process.instance.ProcessRuntimeImpl;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.kie.api.definition.process.Process;
-import org.kie.api.marshalling.ObjectMarshallingStrategy;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 /**
  * When using this strategy, knowledge session de/marshalling process will make sure that
@@ -49,10 +50,12 @@ public class ProcessInstanceResolverStrategy
         implements
         ObjectMarshallingStrategy {
 
+    @Override
     public boolean accept(Object object) {
         return object instanceof ProcessInstance;
     }
 
+    @Override
     public void write(ObjectOutputStream os,
                       Object object) throws IOException {
         ProcessInstance processInstance = (ProcessInstance) object;
@@ -62,6 +65,7 @@ public class ProcessInstanceResolverStrategy
         os.writeUTF( processInstance.getId() );
     }
 
+    @Override
     public Object read(ObjectInputStream is) throws IOException {
         String processInstanceId = is.readUTF();
         ProcessInstanceManager pim = retrieveProcessInstanceManager( is );
@@ -142,11 +146,11 @@ public class ProcessInstanceResolverStrategy
         InternalKnowledgeRuntime kruntime;
         if ( streamContext instanceof MarshallerWriteContext ) {
             MarshallerWriteContext context = (MarshallerWriteContext) streamContext;
-            kruntime = context.getWorkingMemory().getKnowledgeRuntime();
+            kruntime = new KogitoInternalKnowledgeRuntime(context.getWorkingMemory().getKnowledgeRuntime());
         }
         else if ( streamContext instanceof MarshallerReaderContext ) {
             MarshallerReaderContext context = (MarshallerReaderContext) streamContext;
-            kruntime = context.getWorkingMemory().getKnowledgeRuntime();
+            kruntime = new KogitoInternalKnowledgeRuntime(context.getWorkingMemory().getKnowledgeRuntime());
         }
         else {
             throw new UnsupportedOperationException( "Unable to retrieve " + ProcessInstanceManager.class.getSimpleName() + " from "
@@ -155,6 +159,7 @@ public class ProcessInstanceResolverStrategy
         return kruntime;
     }
 
+    @Override
     public byte[] marshal(Context context,
                           ObjectOutputStream os,
                           Object object) {
@@ -163,6 +168,7 @@ public class ProcessInstanceResolverStrategy
         return processInstance.getId().getBytes();
     }
 
+    @Override
     public Object unmarshal(String dataType,
                             Context context,
                             ObjectInputStream is,
@@ -183,6 +189,7 @@ public class ProcessInstanceResolverStrategy
         }
     }
 
+    @Override
     public Context createContext() {
         // no context needed
         return null;

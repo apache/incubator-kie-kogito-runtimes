@@ -19,14 +19,12 @@ import java.util.Map;
 
 import org.drools.core.common.EndOperationListener;
 import org.drools.core.common.InternalAgenda;
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.impl.EnvironmentImpl;
-import org.drools.core.runtime.process.InternalProcessRuntime;
 import org.drools.core.time.TimerService;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.workflow.instance.impl.CodegenNodeInstanceFactoryRegistry;
 import org.kie.api.KieBase;
-import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.event.rule.RuleRuntimeEventListener;
 import org.kie.api.logger.KieRuntimeLogger;
@@ -36,8 +34,6 @@ import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.Globals;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.ObjectFilter;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.runtime.rule.FactHandle;
@@ -45,6 +41,9 @@ import org.kie.api.runtime.rule.LiveQuery;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.kie.api.time.SessionClock;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 import org.kie.kogito.jobs.JobsService;
 
 /**

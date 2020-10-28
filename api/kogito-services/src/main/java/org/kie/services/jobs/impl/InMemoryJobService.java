@@ -24,15 +24,15 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.ProcessRuntime;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.ProcessRuntime;
 import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
-import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.timer.TimerInstance;
+import org.kie.kogito.uow.UnitOfWorkManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

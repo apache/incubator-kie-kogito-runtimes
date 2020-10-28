@@ -23,13 +23,12 @@ import java.util.function.BiFunction;
 
 import org.jbpm.process.core.Process;
 import org.jbpm.process.instance.ProcessInstance;
-import org.kie.api.definition.process.Node;
 
 /**
  * Represents a RuleFlow process. 
  * 
  */
-public interface WorkflowProcess extends org.kie.api.definition.process.WorkflowProcess, Process, NodeContainer {
+public interface WorkflowProcess extends org.kie.kogito.internal.definition.process.WorkflowProcess, Process, NodeContainer {
 
     int PROCESS_TYPE = 1;
     int CASE_TYPE = 2;
@@ -40,6 +39,7 @@ public interface WorkflowProcess extends org.kie.api.definition.process.Workflow
      * 
      * @return	the imports of this RuleFlow process
      */
+    @Override
     Set<String> getImports();
     
     /**
@@ -48,6 +48,7 @@ public interface WorkflowProcess extends org.kie.api.definition.process.Workflow
      * 
      * @return	the function imports of this RuleFlow process
      */
+    @Override
     List<String> getFunctionImports();
     
     /**
@@ -55,6 +56,7 @@ public interface WorkflowProcess extends org.kie.api.definition.process.Workflow
      * 
      * @param imports	the imports as a List of fully qualified class names
      */
+    @Override
     void setImports(Set<String> imports);
 
     /**
@@ -62,6 +64,7 @@ public interface WorkflowProcess extends org.kie.api.definition.process.Workflow
      * 
      * @param functionImports	the imports as a List of fully qualified class names
      */
+    @Override
     void setFunctionImports(List<String> functionImports);
 
     /**
@@ -70,6 +73,7 @@ public interface WorkflowProcess extends org.kie.api.definition.process.Workflow
      * 
      * @return	the imports of this RuleFlow process
      */
+    @Override
     Map<String, String> getGlobals();
     
     /**
@@ -77,6 +81,7 @@ public interface WorkflowProcess extends org.kie.api.definition.process.Workflow
      * 
      * @param globals	the globals as a Map with the name as key and the type as value
      */
+    @Override
     void setGlobals(Map<String, String> globals);
 
     /**
@@ -84,6 +89,7 @@ public interface WorkflowProcess extends org.kie.api.definition.process.Workflow
      * 
      * @return	the names of the globals of this RuleFlow process
      */
+    @Override
     String[] getGlobalNames();
     
     /**

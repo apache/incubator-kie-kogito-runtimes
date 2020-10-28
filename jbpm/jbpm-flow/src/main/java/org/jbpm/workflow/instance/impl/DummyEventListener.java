@@ -16,7 +16,7 @@
 
 package org.jbpm.workflow.instance.impl;
 
-import org.kie.api.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.EventListener;
 
 public class DummyEventListener implements EventListener {
 

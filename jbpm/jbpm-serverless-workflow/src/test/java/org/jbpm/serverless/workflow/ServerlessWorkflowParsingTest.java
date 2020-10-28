@@ -24,7 +24,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 import static org.junit.jupiter.api.Assertions.*;
 

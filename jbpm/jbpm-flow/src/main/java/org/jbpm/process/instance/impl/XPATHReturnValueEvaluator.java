@@ -36,7 +36,7 @@ import javax.xml.xpath.XPathFunctionException;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
 
 public class XPATHReturnValueEvaluator
     implements
@@ -56,12 +56,14 @@ public class XPATHReturnValueEvaluator
         this.id = id;
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
                                             ClassNotFoundException {
 //        id = in.readUTF();
         expression = (String) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
 //        out.writeUTF( id );
         out.writeObject(expression);
@@ -71,12 +73,14 @@ public class XPATHReturnValueEvaluator
         return this.id;
     }
 
+    @Override
     public Object evaluate(final ProcessContext context) throws Exception {        
     	XPathFactory factory = XPathFactory.newInstance();
     	XPath xpathEvaluator = factory.newXPath();
     	xpathEvaluator.setXPathFunctionResolver( 
     			new  XPathFunctionResolver() {
-    				public XPathFunction resolveFunction(QName functionName, int arity)
+    				@Override
+                    public XPathFunction resolveFunction(QName functionName, int arity)
     				{
     					String localName = functionName.getLocalPart();
     					if ("getVariable".equals(localName)) {
@@ -88,7 +92,8 @@ public class XPATHReturnValueEvaluator
     				}
 
     				class GetVariableData implements XPathFunction {
-    					public Object evaluate(List args) throws XPathFunctionException {
+    					@Override
+                        public Object evaluate(List args) throws XPathFunctionException {
     						String varname = (String) args.get(0);
     						return context.getVariable(varname);
     					}
@@ -97,6 +102,7 @@ public class XPATHReturnValueEvaluator
     	);
     	xpathEvaluator.setXPathVariableResolver(new XPathVariableResolver() {
             
+            @Override
             public Object resolveVariable(QName variableName) {
                 return context.getVariable(variableName.getLocalPart());
             }
@@ -131,6 +137,7 @@ public class XPATHReturnValueEvaluator
         return xpathEvaluator.evaluate(this.expression, builder.newDocument(), XPathConstants.BOOLEAN);
     }
 
+    @Override
     public String toString() {
         return this.expression;
     }

@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jbpm.process.instance.ProcessInstanceManager;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 public class DefaultProcessInstanceManager implements ProcessInstanceManager {
 

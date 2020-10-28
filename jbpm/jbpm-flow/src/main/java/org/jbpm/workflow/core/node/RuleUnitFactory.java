@@ -14,7 +14,7 @@
  */
 package org.jbpm.workflow.core.node;
 
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
 

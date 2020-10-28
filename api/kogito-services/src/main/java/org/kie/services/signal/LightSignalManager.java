@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.signal.SignalManagerHub;
 
@@ -37,7 +37,8 @@ public class LightSignalManager implements SignalManager {
 		this.signalManagerHub = signalManagerHub;
 	}
 	
-	public void addEventListener(String type, EventListener eventListener) {
+	@Override
+    public void addEventListener(String type, EventListener eventListener) {
 		listeners.compute(type, (k, v) -> {
 			if (v == null) {
 				v = new CopyOnWriteArrayList<>();
@@ -48,7 +49,8 @@ public class LightSignalManager implements SignalManager {
 		signalManagerHub.subscribe(type, this);
 	}
 	
-	public void removeEventListener(String type, EventListener eventListener) {
+	@Override
+    public void removeEventListener(String type, EventListener eventListener) {
 		listeners.computeIfPresent(type, (k, v) -> {
 			v.remove(eventListener);
 			if (v.isEmpty()) {
@@ -59,7 +61,8 @@ public class LightSignalManager implements SignalManager {
 		signalManagerHub.unsubscribe(type, this);
 	}
 	
-	public void signalEvent(String type, Object event) {
+	@Override
+    public void signalEvent(String type, Object event) {
 	    if (!listeners.containsKey(type)) {
 			if (event instanceof ProcessInstance && listeners.containsKey(((ProcessInstance) event).getProcessId())) {
 				listeners.getOrDefault(((ProcessInstance) event).getProcessId(), Collections.emptyList())
@@ -72,7 +75,8 @@ public class LightSignalManager implements SignalManager {
 				.forEach(e -> e.signalEvent(type, event));
 	}
 
-	public void signalEvent(String processInstanceId, String type, Object event) {
+	@Override
+    public void signalEvent(String processInstanceId, String type, Object event) {
 		instanceResolver.find(processInstanceId)
 				.ifPresent(signalable -> signalable.signalEvent(type, event));
 	}

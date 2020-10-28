@@ -34,12 +34,12 @@ import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.kogito.cloud.kubernetes.client.DefaultKogitoKubeClient;
 import org.kie.kogito.cloud.kubernetes.client.KogitoKubeClient;
 import org.kie.kogito.cloud.workitems.service.discovery.ServiceDiscovery;
 import org.kie.kogito.cloud.workitems.service.discovery.ServiceDiscoveryFactory;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

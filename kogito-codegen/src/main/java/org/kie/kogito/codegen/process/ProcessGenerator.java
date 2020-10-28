@@ -57,12 +57,12 @@ import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.kie.api.definition.process.Process;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.impl.AbstractProcess;
 

@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.kie.api.KieBase;
 import org.kie.api.io.Resource;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.internal.io.ResourceFactory;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_TIMER;
@@ -65,7 +65,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
         KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         ksession.startProcess("org.jbpm.process");
         ksession.dispose();
     }
@@ -112,7 +112,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
         KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         ProcessInstance pi = ksession.startProcess("org.jbpm.process");
 
         assertEquals(ProcessInstance.STATE_COMPLETED,
@@ -165,7 +165,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
         KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler testHandler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                                                               testHandler);
@@ -231,7 +231,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
         KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler testHandler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                                                               testHandler);
@@ -303,7 +303,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
         KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         ProcessInstance pi = ksession.startProcess("org.jbpm.process");
 
         assertNotNull(pi);
@@ -348,7 +348,7 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2");
         KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         ProcessInstance pi = ksession.startProcess("org.jbpm.process");
 
         assertNotNull(pi);

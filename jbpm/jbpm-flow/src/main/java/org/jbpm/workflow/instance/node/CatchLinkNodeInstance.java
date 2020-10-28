@@ -16,11 +16,10 @@
 
 package org.jbpm.workflow.instance.node;
 
-import org.kie.api.runtime.process.NodeInstance;
-
 import java.util.Date;
 
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 
 public class CatchLinkNodeInstance extends NodeInstanceImpl {
 

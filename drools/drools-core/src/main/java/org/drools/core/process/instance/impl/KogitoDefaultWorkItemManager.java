@@ -27,17 +27,17 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.drools.core.KogitoWorkItemHandlerNotFoundException;
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.process.instance.KogitoWorkItem;
 import org.drools.core.process.instance.KogitoWorkItemManager;
-import org.drools.core.process.instance.WorkItem;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItemHandler;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.process.instance.WorkItem;
 import org.kie.internal.runtime.Closeable;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
 import org.kie.kogito.process.workitem.Policy;
 
-import static org.kie.api.runtime.process.WorkItem.ABORTED;
-import static org.kie.api.runtime.process.WorkItem.COMPLETED;
+import static org.kie.kogito.internal.runtime.process.WorkItem.ABORTED;
+import static org.kie.kogito.internal.runtime.process.WorkItem.COMPLETED;
 
 public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Externalizable {
 
@@ -55,6 +55,7 @@ public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Exte
     public KogitoDefaultWorkItemManager() {
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         workItems = (Map<String, KogitoWorkItem>) in.readObject();
@@ -62,12 +63,14 @@ public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Exte
         workItemHandlers = (Map<String, WorkItemHandler>) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(workItems);
         out.writeObject(kruntime);
         out.writeObject(workItemHandlers);
     }
 
+    @Override
     public void internalExecuteWorkItem( KogitoWorkItem workItem) {
         (( KogitoWorkItemImpl ) workItem).setId(UUID.randomUUID().toString());
         internalAddWorkItem(workItem);
@@ -77,10 +80,12 @@ public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Exte
         } else throw new KogitoWorkItemHandlerNotFoundException(workItem.getName() );
     }
 
+    @Override
     public void internalAddWorkItem( KogitoWorkItem workItem) {
         workItems.put(workItem.getId(), workItem);
     }
 
+    @Override
     public void internalAbortWorkItem(String id) {
         KogitoWorkItemImpl workItem = ( KogitoWorkItemImpl ) workItems.get(id);
         // work item may have been aborted
@@ -120,10 +125,12 @@ public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Exte
         }
     }
 
+    @Override
     public KogitoWorkItem getWorkItem( String id) {
         return workItems.get(id);
     }
 
+    @Override
     public void completeWorkItem(String id, Map<String, Object> results, Policy<?>... policies) {
         KogitoWorkItem workItem = workItems.get(id);
         // work item may have been aborted
@@ -139,6 +146,7 @@ public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Exte
         }
     }
 
+    @Override
     public void abortWorkItem(String id, Policy<?>... policies) {
         KogitoWorkItemImpl workItem = ( KogitoWorkItemImpl ) workItems.get(id);
         // work item may have been aborted
@@ -153,29 +161,23 @@ public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Exte
         }
     }
 
+    @Override
     public void registerWorkItemHandler(String workItemName, WorkItemHandler handler) {
         this.workItemHandlers.put(workItemName, handler);
     }
 
-    @Override
-    public Set<WorkItem> getWorkItems() {
-        return new HashSet<>(workItems.values());
-    }
 
     @Override
-    public WorkItem getWorkItem( long id ) {
-        throw new UnsupportedOperationException( "org.drools.core.process.instance.impl.KogitoDefaultWorkItemManager.getWorkItem -> TODO" );
-
-    }
-
     public void clear() {
         this.workItems.clear();
     }
 
+    @Override
     public void signalEvent(String type, Object event) {
         this.kruntime.signalEvent(type, event);
     }
 
+    @Override
     public void signalEvent(String type, Object event, String processInstanceId) {
         this.kruntime.signalEvent(type, event, processInstanceId);
     }
@@ -229,5 +231,17 @@ public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager, Exte
     @Override
     public void signalEvent( String type, Object event, long processInstanceId ) {
         throw new UnsupportedOperationException();
+    }  
+    
+
+    @Override
+    public Set<WorkItem> getWorkItems() {
+        return new HashSet<>(workItems.values());
+    }
+
+    @Override
+    public WorkItem getWorkItem( long id ) {
+        throw new UnsupportedOperationException( "org.drools.core.process.instance.impl.KogitoDefaultWorkItemManager.getWorkItem -> TODO" );
+
     }
 }

@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.kie.api.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
 import org.kie.kogito.process.WorkItemHandlerConfig;
 
 public class CachedWorkItemHandlerConfig implements WorkItemHandlerConfig {

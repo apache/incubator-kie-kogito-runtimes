@@ -33,10 +33,10 @@ import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

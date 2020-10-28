@@ -20,7 +20,7 @@ import org.kie.api.definition.process.Process;
 
 public interface XmlProcessDumper {
 	
-	String dumpProcess(org.kie.api.definition.process.Process process);
+	String dumpProcess(Process process);
 	
 	Process readProcess(String processXml);
 

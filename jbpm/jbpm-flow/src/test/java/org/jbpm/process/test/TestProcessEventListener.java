@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
-import org.kie.api.event.process.ProcessCompletedEvent;
-import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessStartedEvent;
-import org.kie.api.event.process.ProcessVariableChangedEvent;
+import org.kie.kogito.internal.event.process.ProcessCompletedEvent;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessNodeLeftEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.event.process.ProcessStartedEvent;
+import org.kie.kogito.internal.event.process.ProcessVariableChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

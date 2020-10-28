@@ -21,9 +21,9 @@ package org.jbpm.workflow.instance.node;
 
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactory;
-import org.kie.api.definition.process.Node;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.NodeInstanceContainer;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstanceContainer;
 
 public class MockNodeInstanceFactory implements NodeInstanceFactory {
     

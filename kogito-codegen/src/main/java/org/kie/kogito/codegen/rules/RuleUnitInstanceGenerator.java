@@ -16,6 +16,7 @@
 package org.kie.kogito.codegen.rules;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 
 import com.github.javaparser.StaticJavaParser;
@@ -35,12 +36,12 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.api.runtime.KieSession;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.conf.DefaultEntryPoint;
 import org.kie.kogito.conf.EntryPoint;
+import org.kie.kogito.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
 import org.kie.kogito.rules.units.EntryPointDataProcessor;
@@ -98,7 +99,7 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
         try {
 
 
-            for (RuleUnitVariable m : ruleUnitDescription.getUnitVarDeclarations()) {
+            for (RuleUnitVariable m : (Collection<RuleUnitVariable>)ruleUnitDescription.getUnitVarDeclarations()) {
                 String methodName = m.getter();
                 String propertyName = m.getName();
 
@@ -170,7 +171,7 @@ public class RuleUnitInstanceGenerator implements FileGenerator {
             // fixme should transfer this config to RuleUnitVariable
             Field dataSourceField = ruleUnitClass.getDeclaredField(propertyName );
             if (dataSourceField.getAnnotation( DefaultEntryPoint.class ) != null) {
-                return org.kie.api.runtime.rule.EntryPoint.DEFAULT_NAME;
+                return "DEFAULT";
             }
             EntryPoint epAnn = dataSourceField.getAnnotation( EntryPoint.class );
             if (epAnn != null) {

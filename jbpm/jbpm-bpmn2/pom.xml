@@ -17,6 +17,7 @@
 
   <properties>
     <java.module.name>org.kie.kogito.jbpm.bpmn2</java.module.name>
+    <maven.test.skip>true</maven.test.skip>
   </properties>
 
   <dependencies>

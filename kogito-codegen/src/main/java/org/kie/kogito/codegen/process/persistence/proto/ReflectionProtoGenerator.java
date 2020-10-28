@@ -33,9 +33,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.infinispan.protostream.annotations.ProtoEnumValue;
-import org.kie.internal.kogito.codegen.Generated;
-import org.kie.internal.kogito.codegen.VariableInfo;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.internal.codegen.Generated;
+import org.kie.kogito.internal.codegen.VariableInfo;
 
 public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 

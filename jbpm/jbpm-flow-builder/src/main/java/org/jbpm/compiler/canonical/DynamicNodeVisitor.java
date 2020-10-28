@@ -25,7 +25,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.DynamicNodeFactory;
 import org.jbpm.workflow.core.node.DynamicNode;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_ACTIVATION_EXPRESSION;
 import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_COMPLETION_EXPRESSION;

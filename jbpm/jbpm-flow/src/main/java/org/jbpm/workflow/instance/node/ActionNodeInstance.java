@@ -19,16 +19,16 @@ package org.jbpm.workflow.instance.node;
 import java.util.Date;
 import java.util.List;
 
-import org.drools.core.spi.KogitoProcessContext;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.instance.context.KogitoProcessContext;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 
 /**
  * Runtime counterpart of an action node.
@@ -42,6 +42,7 @@ public class ActionNodeInstance extends NodeInstanceImpl {
         return (ActionNode) getNode();
     }
 
+    @Override
     public void internalTrigger(final NodeInstance from, String type) {
         triggerTime = new Date();
         if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {

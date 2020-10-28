@@ -20,9 +20,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.drools.core.process.instance.impl.KogitoWorkItemImpl;
-import org.kie.api.runtime.process.HumanTaskWorkItem;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.runtime.process.HumanTaskWorkItem;
 import org.kie.kogito.process.workitem.NotAuthorizedException;
 import org.kie.kogito.process.workitem.Policy;
 import org.slf4j.Logger;

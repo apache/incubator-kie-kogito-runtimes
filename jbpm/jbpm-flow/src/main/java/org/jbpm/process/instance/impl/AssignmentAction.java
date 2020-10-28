@@ -16,8 +16,9 @@
 
 package org.jbpm.process.instance.impl;
 
-import org.kie.api.runtime.process.ProcessContext;
+
 import org.drools.core.process.instance.KogitoWorkItem;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
 
 public interface AssignmentAction {
     

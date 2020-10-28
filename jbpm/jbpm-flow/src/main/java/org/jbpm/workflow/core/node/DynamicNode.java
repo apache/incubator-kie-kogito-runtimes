@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.kie.api.definition.process.Node;
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
 
 import static org.jbpm.ruleflow.core.Metadata.CUSTOM_AUTO_START;
 

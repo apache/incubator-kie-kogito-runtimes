@@ -24,8 +24,8 @@ import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.NodeInstance;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 
 /**
  * Default implementation of a constraint.

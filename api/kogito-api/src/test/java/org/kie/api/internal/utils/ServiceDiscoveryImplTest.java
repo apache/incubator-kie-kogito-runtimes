@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.internal.assembler.KieAssemblerService;
@@ -39,13 +40,10 @@ public class ServiceDiscoveryImplTest {
         serviceDiscovery.registerConfs( cl, getUrl( cl, "META-INF/kie.conf.test0" ) );
 
         Map<String, List<Object>> services = serviceDiscovery.getServices();
-        assertTrue(services.size() == 1);
+        Optional<Object> service = services.get("org.kie.api.internal.assembler.KieAssemblers").stream().filter(s -> s instanceof MockAssemblersImpl).findAny();
+        assertTrue(service.isPresent());
 
-        Object service = services.get("org.kie.api.internal.assembler.KieAssemblers").get(0);
-        assertNotNull(service);
-        assertTrue(service instanceof MockAssemblersImpl);
-
-        Map<ResourceType, KieAssemblerService> childServices = ((MockAssemblersImpl) service).getAssemblers();
+        Map<ResourceType, KieAssemblerService> childServices = ((MockAssemblersImpl) service.get()).getAssemblers();
         assertTrue(childServices.size() == 1);
         assertNotNull(childServices.get(ResourceType.DRL));
         assertTrue(childServices.get(ResourceType.DRL) instanceof MockChildAssemblerService);
@@ -70,16 +68,14 @@ public class ServiceDiscoveryImplTest {
     public void testLoadServiceWithHighestPriority() {
         ServiceDiscoveryImpl serviceDiscovery = new ServiceDiscoveryImpl();
         ClassLoader cl = ServiceDiscoveryImplTest.class.getClassLoader();
-
+        
         serviceDiscovery.registerConfs( cl, getUrl( cl, "META-INF/kie.conf.test3" ) );
         serviceDiscovery.registerConfs( cl, getUrl( cl, "META-INF/kie.conf.test1" ) );
         Map<String, List<Object>> services = serviceDiscovery.getServices();
 
         List<Object> service = services.get("org.kie.api.internal.assembler.KieAssemblers");
         assertNotNull(service);
-        assertEquals(2, service.size());
-        assertTrue(service.get(0) instanceof AnotherMockAssemblersImpl);
-        assertTrue(service.get(1) instanceof MockAssemblersImpl);
+        assertEquals (2,service.stream().filter(s -> s instanceof AnotherMockAssemblersImpl ||  s instanceof MockAssemblersImpl).count());
     }
 
     protected URL getUrl( ClassLoader cl, String resourceName ) {

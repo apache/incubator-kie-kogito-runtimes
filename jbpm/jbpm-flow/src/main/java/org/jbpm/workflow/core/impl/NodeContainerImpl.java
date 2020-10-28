@@ -18,7 +18,7 @@ package org.jbpm.workflow.core.impl;
 
 import org.jbpm.process.core.Context;
 import org.jbpm.workflow.core.NodeContainer;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 import java.util.HashMap;
 import java.util.Map;

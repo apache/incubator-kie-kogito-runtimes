@@ -46,10 +46,10 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.kie.api.definition.process.NodeContainer;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessContext;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;

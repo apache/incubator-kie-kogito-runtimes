@@ -69,14 +69,17 @@ public class InterpretedRuleUnit<T extends RuleUnitData> extends AbstractRuleUni
 
         RuleUnits ruleUnits = new RuleUnits();
 
+        @Override
         public Config config() {
             return null;
         }
 
+        @Override
         public UnitOfWorkManager unitOfWorkManager() {
             return null;
         }
 
+        @Override
         public RuleUnits ruleUnits() {
             return ruleUnits;
         }

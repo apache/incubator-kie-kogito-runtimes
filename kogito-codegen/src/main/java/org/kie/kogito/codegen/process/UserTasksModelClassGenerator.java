@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 public class UserTasksModelClassGenerator {
 

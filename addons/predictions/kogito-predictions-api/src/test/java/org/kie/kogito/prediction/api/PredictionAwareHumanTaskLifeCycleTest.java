@@ -16,8 +16,8 @@ package org.kie.kogito.prediction.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ACTIVE;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_COMPLETED;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,12 +64,12 @@ public class PredictionAwareHumanTaskLifeCycleTest {
         predictionService = new PredictionService() {
             
             @Override
-            public void train(org.kie.api.runtime.process.WorkItem task, Map<String, Object> inputData, Map<String, Object> outputData) {
+            public void train(org.kie.kogito.internal.runtime.process.WorkItem task, Map<String, Object> inputData, Map<String, Object> outputData) {
                 trainedTasks.add(task.getId());
             }
             
             @Override
-            public PredictionOutcome predict(org.kie.api.runtime.process.WorkItem task, Map<String, Object> inputData) {
+            public PredictionOutcome predict(org.kie.kogito.internal.runtime.process.WorkItem task, Map<String, Object> inputData) {
                 if (predictNow.get()) {
                     return new PredictionOutcome(95, 75, Collections.singletonMap("output", "predicted value"));
                 }

@@ -17,7 +17,7 @@ package org.jbpm.bpmn2.handler;
 
 import java.util.*;
 
-import org.kie.api.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
 
 
 /**

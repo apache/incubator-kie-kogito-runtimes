@@ -21,8 +21,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.marshalling.ObjectMarshallingStrategyAcceptor;
+import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
 
 public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMarshallingStrategy {
 
@@ -42,20 +42,24 @@ public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMars
         this.index = index;
     }
 
+    @Override
     public Object read(ObjectInputStream os) throws IOException,
             ClassNotFoundException {
         return  os.readObject();
     }
 
+    @Override
     public void write(ObjectOutputStream os,
                       Object object) throws IOException {
         os.writeObject( object );
     }
 
+    @Override
     public boolean accept(Object object) {
         return acceptor.accept( object );
     }
 
+    @Override
     public byte[] marshal(Context context,
                           ObjectOutputStream os,
                           Object object) throws IOException {
@@ -66,6 +70,7 @@ public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMars
         return MarshallingHelper.intToByteArray( index );
     }
 
+    @Override
     public Object unmarshal(String dataType,
                             Context context,
                             ObjectInputStream is,
@@ -75,6 +80,7 @@ public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMars
         return ctx.data.get( MarshallingHelper.byteArrayToInt( object ) );
     }
 
+    @Override
     public Context createContext() {
         return new SerializablePlaceholderStrategyContext();
     }
@@ -85,12 +91,14 @@ public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMars
         // the place.
         public List<Object> data = new ArrayList<Object>();
 
+        @Override
         @SuppressWarnings("unchecked")
         public void read(ObjectInputStream ois) throws IOException,
                 ClassNotFoundException {
             this.data = (List<Object>) ois.readObject();
         }
 
+        @Override
         public void write( ObjectOutputStream oos) throws IOException {
             oos.writeObject( this.data );
         }

@@ -24,7 +24,7 @@ import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSession;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

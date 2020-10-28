@@ -22,7 +22,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory;
 import org.jbpm.workflow.core.node.EventSubProcessNode;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;

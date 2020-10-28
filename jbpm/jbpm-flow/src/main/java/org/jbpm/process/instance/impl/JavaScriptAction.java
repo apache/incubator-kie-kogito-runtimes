@@ -30,7 +30,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.api.runtime.Globals;
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
 
 public class JavaScriptAction implements Action, Externalizable {
     
@@ -45,14 +45,17 @@ public class JavaScriptAction implements Action, Externalizable {
         this.expr = expr;
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         expr = in.readUTF();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeUTF( expr );
     }
     
+    @Override
     public void execute(ProcessContext context) throws Exception {
         ScriptEngineManager factory = new ScriptEngineManager();
         ScriptEngine engine = factory.getEngineByName("JavaScript");

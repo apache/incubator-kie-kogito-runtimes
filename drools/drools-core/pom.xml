@@ -25,14 +25,6 @@
       <artifactId>drools-core</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-internal</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>org.drools</groupId>
           <artifactId>drools-core-dynamic</artifactId>
         </exclusion>
@@ -41,14 +33,6 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-internal</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>

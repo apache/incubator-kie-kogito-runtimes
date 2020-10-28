@@ -17,10 +17,10 @@
 package org.jbpm.workflow.instance;
 
 import org.jbpm.process.instance.ProcessInstance;
-import org.kie.api.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.EventListener;
 
 public interface WorkflowProcessInstance extends ProcessInstance,
-                                                 org.kie.api.runtime.process.WorkflowProcessInstance,
+                                                 org.kie.kogito.internal.runtime.process.WorkflowProcessInstance,
                                                  NodeInstanceContainer {
 
     void addEventListener(String type, EventListener eventListener, boolean external);

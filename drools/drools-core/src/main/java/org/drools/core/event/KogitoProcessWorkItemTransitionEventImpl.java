@@ -15,13 +15,13 @@
 
 package org.drools.core.event;
 
-import org.kie.api.event.process.ProcessWorkItemTransitionEvent;
-import org.kie.api.runtime.KieRuntime;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.internal.event.process.ProcessWorkItemTransitionEvent;
+import org.kie.kogito.internal.runtime.KieRuntime;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
 import org.kie.kogito.process.workitem.Transition;
 
-public class KogitoProcessWorkItemTransitionEventImpl extends ProcessEvent implements ProcessWorkItemTransitionEvent {
+public class KogitoProcessWorkItemTransitionEventImpl extends org.drools.kogito.core.event.ProcessEvent implements ProcessWorkItemTransitionEvent {
 
     private static final long serialVersionUID = 510l;
 
@@ -37,6 +37,7 @@ public class KogitoProcessWorkItemTransitionEventImpl extends ProcessEvent imple
         this.transitioned = transitioned;
     }
 
+    @Override
     public String toString() {
         return "==>[WorkItemTransition(id=" + getWorkItem().getId() + " phase=" + getTransition().phase() + ")]";
     }

@@ -23,8 +23,8 @@ import java.util.Map;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 /**
  * This exception provides the context information of the error in execution of the flow. <br/>

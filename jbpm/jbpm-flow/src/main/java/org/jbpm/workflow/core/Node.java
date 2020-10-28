@@ -18,15 +18,15 @@ package org.jbpm.workflow.core;
 
 import java.io.Serializable;
 
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.NodeContainer;
 import org.jbpm.process.core.Contextable;
 
 /**
  * Represents a node in a RuleFlow. 
  * 
  */
-public interface Node extends org.kie.api.definition.process.Node, Contextable, Serializable {
+public interface Node extends org.kie.kogito.internal.definition.process.Node, Contextable, Serializable {
 
     String CONNECTION_DEFAULT_TYPE = "DROOLS_DEFAULT";
     

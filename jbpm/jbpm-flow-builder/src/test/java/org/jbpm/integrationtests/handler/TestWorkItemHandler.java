@@ -17,6 +17,9 @@
 package org.jbpm.integrationtests.handler;
 
 import org.kie.api.runtime.process.*;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 
 public class TestWorkItemHandler implements WorkItemHandler {
     private WorkItem workItem;

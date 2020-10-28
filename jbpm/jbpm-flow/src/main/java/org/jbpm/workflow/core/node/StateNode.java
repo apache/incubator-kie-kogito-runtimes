@@ -19,9 +19,9 @@ package org.jbpm.workflow.core.node;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.api.definition.process.Connection;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.impl.ConnectionRef;
+import org.kie.kogito.internal.definition.process.Connection;
 
 public class StateNode extends CompositeContextNode implements Constrainable {
 

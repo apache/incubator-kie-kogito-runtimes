@@ -23,7 +23,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSession;
 import org.kie.kogito.rules.KieRuntimeBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

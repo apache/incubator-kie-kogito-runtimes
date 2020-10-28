@@ -25,16 +25,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.drools.core.KogitoWorkingMemory;
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.MarshallerWriteContext;
 import org.drools.core.phreak.PropagationEntry;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.drools.serialization.protobuf.ProtobufMessages.ActionQueue.Action;
 import org.jbpm.process.instance.InternalProcessRuntime;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.kie.kogito.signal.SignalManager;
 
 public class DefaultSignalManager implements SignalManager {
@@ -46,7 +46,8 @@ public class DefaultSignalManager implements SignalManager {
 		this.kruntime = kruntime;
 	}
 	
-	public void addEventListener(String type, EventListener eventListener) {
+	@Override
+    public void addEventListener(String type, EventListener eventListener) {
 		List<EventListener> eventListeners = processEventListeners.get(type);
 		//this first "if" is not pretty, but allows to synchronize only when needed
 		if (eventListeners == null) {
@@ -61,7 +62,8 @@ public class DefaultSignalManager implements SignalManager {
 		eventListeners.add(eventListener);
 	}
 	
-	public void removeEventListener(String type, EventListener eventListener) {
+	@Override
+    public void removeEventListener(String type, EventListener eventListener) {
 		if (processEventListeners != null) {
 			List<EventListener> eventListeners = processEventListeners.get(type);
 			if (eventListeners != null) {
@@ -74,7 +76,8 @@ public class DefaultSignalManager implements SignalManager {
 		}
 	}
 	
-	public void signalEvent(String type, Object event) {
+	@Override
+    public void signalEvent(String type, Object event) {
 	    ((DefaultSignalManager) ((InternalProcessRuntime) kruntime.getProcessRuntime()).getSignalManager()).internalSignalEvent(type, event);
 	}
 	
@@ -88,7 +91,8 @@ public class DefaultSignalManager implements SignalManager {
 			}
 		}
 	}
-	public void signalEvent(String processInstanceId, String type, Object event) {
+	@Override
+    public void signalEvent(String processInstanceId, String type, Object event) {
 		ProcessInstance processInstance = kruntime.getProcessInstance(processInstanceId);
 		if (processInstance != null) {
 		    processInstance.signalEvent(type, event);
@@ -116,7 +120,8 @@ public class DefaultSignalManager implements SignalManager {
 			}
 		}
 		
-		public void execute(InternalWorkingMemory workingMemory) {
+		@Override
+        public void execute(InternalWorkingMemory workingMemory) {
 			ProcessInstance processInstance = ((KogitoWorkingMemory)workingMemory).getProcessInstance(processInstanceId);
 			if (processInstance != null) {
 				processInstance.signalEvent(type, event);
@@ -180,7 +185,8 @@ public class DefaultSignalManager implements SignalManager {
 			}
 		}
 		
-		public void execute(InternalWorkingMemory workingMemory) {
+		@Override
+        public void execute(InternalWorkingMemory workingMemory) {
 			((DefaultSignalManager) ((InternalProcessRuntime) workingMemory.getProcessRuntime()).getSignalManager()).internalSignalEvent(type, event);
 		}
 

@@ -16,8 +16,8 @@
 
 package org.jbpm.process.builder;
 
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.definition.process.Node;
 import org.drools.compiler.lang.descr.ProcessDescr;
 
 public interface ProcessNodeBuilder {

@@ -18,7 +18,7 @@ package org.kie.kogito.prediction.api;
 
 import java.util.Map;
 
-import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItem;
 
 
 /**

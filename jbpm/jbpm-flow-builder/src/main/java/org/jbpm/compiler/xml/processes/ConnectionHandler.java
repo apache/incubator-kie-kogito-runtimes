@@ -18,7 +18,6 @@ package org.jbpm.compiler.xml.processes;
 
 import java.util.HashSet;
 
-import org.kie.api.definition.process.Node;
 import org.drools.core.xml.BaseAbstractHandler;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.drools.core.xml.Handler;
@@ -26,6 +25,7 @@ import org.jbpm.workflow.core.Connection;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.NodeImpl;
+import org.kie.kogito.internal.definition.process.Node;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

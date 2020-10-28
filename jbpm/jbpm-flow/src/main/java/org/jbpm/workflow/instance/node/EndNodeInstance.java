@@ -18,16 +18,16 @@ package org.jbpm.workflow.instance.node;
 
 import java.util.Date;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
 import static org.jbpm.workflow.core.node.EndNode.PROCESS_SCOPE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_COMPLETED;
 
 /**
  * Runtime counterpart of an end node.
@@ -40,6 +40,7 @@ public class EndNodeInstance extends ExtendedNodeInstanceImpl {
         return (EndNode) getNode();
     }
 
+    @Override
     public void internalTrigger(final NodeInstance from, String type) {
         super.internalTrigger(from, type);
         if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {

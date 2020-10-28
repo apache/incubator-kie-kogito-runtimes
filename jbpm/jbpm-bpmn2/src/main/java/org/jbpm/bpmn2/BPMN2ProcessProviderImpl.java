@@ -26,12 +26,14 @@ import org.jbpm.bpmn2.xpath.XPATHProcessDialect;
 import org.jbpm.process.builder.dialect.ProcessDialectRegistry;
 import org.kie.internal.builder.KnowledgeBuilder;
 
+
 public class BPMN2ProcessProviderImpl implements BPMN2ProcessProvider {
 
 	static {
         ProcessDialectRegistry.setDialect("XPath", new XPATHProcessDialect());
 	}
 	
+    @Override
     public void configurePackageBuilder(KnowledgeBuilder knowledgeBuilder) {
         KnowledgeBuilderConfigurationImpl conf = ((KnowledgeBuilderImpl) knowledgeBuilder).getBuilderConfiguration();
         if (conf.getSemanticModules().getSemanticModule(BPMNSemanticModule.BPMN2_URI) == null) {

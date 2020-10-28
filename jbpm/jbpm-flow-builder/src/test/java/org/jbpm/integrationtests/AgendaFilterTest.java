@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.drools.core.command.runtime.rule.FireAllRulesCommand;
 import org.drools.core.definitions.rule.impl.RuleImpl;
-import org.drools.core.event.DebugProcessEventListener;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.jbpm.test.util.AbstractBaseTest;
@@ -31,13 +30,14 @@ import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.type.FactType;
 import org.kie.api.event.rule.DebugAgendaEventListener;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.Match;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.command.CommandFactory;
 import org.kie.internal.io.ResourceFactory;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,6 +164,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
 
         private Integer currentSalience = null;
 
+        @Override
         public boolean accept(Match activation) {
             RuleImpl rule = (RuleImpl)activation.getRule();
 
@@ -257,10 +258,10 @@ public class AgendaFilterTest extends AbstractBaseTest {
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( kbuilder.getKnowledgePackages() );
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
 
         ksession.addEventListener(new DebugAgendaEventListener());
-        ksession.addEventListener(new DebugProcessEventListener());
+//        ksession.addEventListener(new DebugProcessEventListener());
 
         List<Command<?>> commands = new ArrayList<Command<?>>();
         commands.add(CommandFactory.newInsert(newCancelFact(ksession, false)));
@@ -290,6 +291,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
     }
 
     public static class CancelAgendaFilter implements AgendaFilter {
+        @Override
         public boolean accept(Match activation) {
             return !"Cancel".equals(activation.getRule().getName());
         }
@@ -304,7 +306,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
             throw new RuntimeException(kbuilder.getErrors().toString());
         }
 
-        KieSession ksession = kbuilder.newKieBase().newKieSession();
+        KieSession ksession = new KieSessionBridge(kbuilder.newKieBase().newKieSession());
 
         ksession.getAgendaEventListeners();
         ksession.getProcessEventListeners();

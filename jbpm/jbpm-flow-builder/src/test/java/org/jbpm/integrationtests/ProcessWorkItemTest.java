@@ -30,15 +30,16 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -116,7 +117,7 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( kbuilder.getKnowledgePackages() );        
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
     	
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
@@ -232,7 +233,7 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
         Collection<KiePackage> kpkgs = kbuilder.getKnowledgePackages();
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( kpkgs );        
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
     	
         ImmediateTestWorkItemHandler handler = new ImmediateTestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
@@ -248,9 +249,11 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
     }
     
     private static class ImmediateTestWorkItemHandler implements WorkItemHandler {
+        @Override
         public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
             manager.completeWorkItem(workItem.getId(), null);
         }
+        @Override
         public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
         }
     }

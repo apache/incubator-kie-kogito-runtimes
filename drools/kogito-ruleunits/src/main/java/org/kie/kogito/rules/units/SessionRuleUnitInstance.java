@@ -25,6 +25,7 @@ public class SessionRuleUnitInstance extends AbstractRuleUnitInstance<SessionDat
         super( unit, memory, kieSession );
     }
 
+    @Override
     protected void bind( KieSession runtime, SessionData memory ) {
         memory.getDataSource().subscribe(new EntryPointDataProcessor( runtime ));
     }

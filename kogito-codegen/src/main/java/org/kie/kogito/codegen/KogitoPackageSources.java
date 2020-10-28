@@ -30,7 +30,8 @@ import org.drools.modelcompiler.builder.PackageModelWriter;
 import org.drools.modelcompiler.builder.PackageSources;
 import org.drools.modelcompiler.builder.QueryModel;
 import org.drools.modelcompiler.builder.RuleWriter;
-import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.internal.ruleunit.RuleUnitDescriptionConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,12 +66,12 @@ public class KogitoPackageSources extends PackageSources {
         RuleWriter rules = writeRules( pkgModel, sources, packageModelWriter );
         sources.rulesFileName = pkgModel.getRulesFileName();
 
-        sources.ruleUnits = pkgModel.getRuleUnits();
+        sources.ruleUnits = pkgModel.getRuleUnits().stream().map(RuleUnitDescriptionConverter::from).collect(Collectors.toList());
         if (!sources.ruleUnits.isEmpty()) {
             sources.queries = new HashMap<>();
             for (RuleUnitDescription ruleUnit : sources.ruleUnits) {
                 String ruleUnitCanonicalName = ruleUnit.getCanonicalName();
-                sources.queries.put(ruleUnitCanonicalName, pkgModel.getQueriesInRuleUnit(ruleUnit));
+                sources.queries.put(ruleUnitCanonicalName, pkgModel.getQueriesInRuleUnit(ruleUnit.getClass()));
             }
         }
 

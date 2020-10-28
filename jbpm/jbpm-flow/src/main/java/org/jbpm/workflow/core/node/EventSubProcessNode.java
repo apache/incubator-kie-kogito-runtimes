@@ -22,7 +22,7 @@ import java.util.function.Function;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.workflow.core.DroolsAction;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 public class EventSubProcessNode extends CompositeContextNode {
 

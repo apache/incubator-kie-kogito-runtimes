@@ -32,10 +32,11 @@ import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.MarshallerWriteContext;
-import org.drools.serialization.protobuf.ProtobufMessages.Header;
 import org.drools.core.process.instance.KogitoWorkItem;
 import org.drools.core.process.instance.impl.KogitoWorkItemImpl;
+import org.drools.kogito.core.common.KogitoInternalKnowledgeRuntime;
 import org.drools.serialization.protobuf.PersisterHelper;
+import org.drools.serialization.protobuf.ProtobufMessages.Header;
 import org.jbpm.marshalling.impl.JBPMMessages.ProcessInstance.NodeInstanceContent;
 import org.jbpm.marshalling.impl.JBPMMessages.ProcessInstance.NodeInstanceContent.RuleSetNode.TextMapEntry;
 import org.jbpm.marshalling.impl.JBPMMessages.ProcessInstance.NodeInstanceType;
@@ -65,13 +66,13 @@ import org.jbpm.workflow.instance.node.SubProcessNodeInstance;
 import org.jbpm.workflow.instance.node.TimerNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.definition.process.Process;
-import org.kie.api.runtime.process.HumanTaskWorkItem;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.NodeInstanceContainer;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.kogito.internal.runtime.process.HumanTaskWorkItem;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstanceContainer;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 
 /**
  * Default implementation of a process instance marshaller.
@@ -82,6 +83,7 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
         ProcessInstanceMarshaller {
 
     // Output methods
+    @Override
     public JBPMMessages.ProcessInstance writeProcessInstance(MarshallerWriteContext context,
                                                              ProcessInstance processInstance) throws IOException {
         WorkflowProcessInstanceImpl workFlow = (WorkflowProcessInstanceImpl) processInstance;
@@ -147,9 +149,10 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
         Collections.sort( nodeInstances,
                           new Comparator<NodeInstance>() {
 
-                              public int compare(NodeInstance o1,
+                              @Override
+                            public int compare(NodeInstance o1,
                                                  NodeInstance o2) {
-                                  return (int) (o1.getId().compareTo(o2.getId()));
+                                  return (o1.getId().compareTo(o2.getId()));
                               }
                           } );
         for ( NodeInstance nodeInstance : nodeInstances ) {
@@ -175,7 +178,8 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
         List<Map.Entry<String, Object>> variables = new ArrayList<Map.Entry<String, Object>>( variableScopeInstance.getVariables().entrySet() );
         Collections.sort( variables,
                           new Comparator<Map.Entry<String, Object>>() {
-                              public int compare(Map.Entry<String, Object> o1,
+                              @Override
+                            public int compare(Map.Entry<String, Object> o1,
                                                  Map.Entry<String, Object> o2) {
                                   return o1.getKey().compareTo( o2.getKey() );
                               }
@@ -190,7 +194,8 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
         List<Map.Entry<String, Integer>> iterationlevels = new ArrayList<Map.Entry<String, Integer>>( workFlow.getIterationLevels().entrySet() );
         Collections.sort( iterationlevels,
                           new Comparator<Map.Entry<String, Integer>>() {
-                              public int compare(Map.Entry<String, Integer> o1,
+                              @Override
+                            public int compare(Map.Entry<String, Integer> o1,
                                                  Map.Entry<String, Integer> o2) {
                                   return o1.getKey().compareTo( o2.getKey() );
                               }
@@ -208,6 +213,7 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
         return _instance.build();
     }
 
+    @Override
     public JBPMMessages.ProcessInstance.NodeInstance writeNodeInstance(MarshallerWriteContext context,
                                                                        NodeInstance nodeInstance) throws IOException {
         JBPMMessages.ProcessInstance.NodeInstance.Builder _node = JBPMMessages.ProcessInstance.NodeInstance.newBuilder()
@@ -348,7 +354,8 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
             List<Long> keys = new ArrayList<Long>( triggers.keySet() );
             Collections.sort( keys,
                               new Comparator<Long>() {
-                                  public int compare(Long o1,
+                                  @Override
+                                public int compare(Long o1,
                                                      Long o2) {
                                       return o1.compareTo( o2 );
                                   }
@@ -380,9 +387,10 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
             List<NodeInstance> nodeInstances = new ArrayList<NodeInstance>( forEachNodeInstance.getNodeInstances() );
             Collections.sort( nodeInstances,
                               new Comparator<NodeInstance>() {
-                                  public int compare(NodeInstance o1,
+                                  @Override
+                                public int compare(NodeInstance o1,
                                                      NodeInstance o2) {
-                                      return (int) (o1.getId().compareTo(o2.getId()));
+                                      return (o1.getId().compareTo(o2.getId()));
                                   }
                               } );
             for ( NodeInstance subNodeInstance : nodeInstances ) {
@@ -397,7 +405,8 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
                 List<Map.Entry<String, Object>> variables = new ArrayList<Map.Entry<String, Object>>( variableScopeInstance.getVariables().entrySet() );
                 Collections.sort( variables,
                                   new Comparator<Map.Entry<String, Object>>() {
-                                      public int compare(Map.Entry<String, Object> o1,
+                                      @Override
+                                    public int compare(Map.Entry<String, Object> o1,
                                                          Map.Entry<String, Object> o2) {
                                           return o1.getKey().compareTo( o2.getKey() );
                                       }
@@ -411,7 +420,8 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
             List<Map.Entry<String, Integer>> iterationlevels = new ArrayList<Map.Entry<String, Integer>>( forEachNodeInstance.getIterationLevels().entrySet() );
             Collections.sort( iterationlevels,
                               new Comparator<Map.Entry<String, Integer>>() {
-                                  public int compare(Map.Entry<String, Integer> o1,
+                                  @Override
+                                public int compare(Map.Entry<String, Integer> o1,
                                                      Map.Entry<String, Integer> o2) {
                                       return o1.getKey().compareTo( o2.getKey() );
                                   }
@@ -453,7 +463,8 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
                 List<Map.Entry<String, Object>> variables = new ArrayList<Map.Entry<String, Object>>( variableScopeInstance.getVariables().entrySet() );
                 Collections.sort( variables,
                                   new Comparator<Map.Entry<String, Object>>() {
-                                      public int compare(Map.Entry<String, Object> o1,
+                                      @Override
+                                    public int compare(Map.Entry<String, Object> o1,
                                                          Map.Entry<String, Object> o2) {
                                           return o1.getKey().compareTo( o2.getKey() );
                                       }
@@ -467,7 +478,8 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
             List<Map.Entry<String, Integer>> iterationlevels = new ArrayList<Map.Entry<String, Integer>>( compositeNodeInstance.getIterationLevels().entrySet() );
             Collections.sort( iterationlevels,
                               new Comparator<Map.Entry<String, Integer>>() {
-                                  public int compare(Map.Entry<String, Integer> o1,
+                                  @Override
+                                public int compare(Map.Entry<String, Integer> o1,
                                                      Map.Entry<String, Integer> o2) {
                                       return o1.getKey().compareTo( o2.getKey() );
                                   }
@@ -485,9 +497,10 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
             List<NodeInstance> nodeInstances = new ArrayList<NodeInstance>( compositeNodeInstance.getNodeInstances() );
             Collections.sort( nodeInstances,
                               new Comparator<NodeInstance>() {
-                                  public int compare(NodeInstance o1,
+                                  @Override
+                                public int compare(NodeInstance o1,
                                                      NodeInstance o2) {
-                                      return (int) (o1.getId().compareTo(o2.getId()));
+                                      return (o1.getId().compareTo(o2.getId()));
                                   }
                               } );
             for ( NodeInstance subNodeInstance : nodeInstances ) {
@@ -706,6 +719,7 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
     
     
     // Input methods
+    @Override
     public ProcessInstance readProcessInstance(MarshallerReaderContext context) throws IOException {
         InternalKnowledgeBase ruleBase = context.getKnowledgeBase();
         InternalWorkingMemory wm = context.getWorkingMemory();
@@ -761,7 +775,7 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
         }
         processInstance.internalSetSlaTimerId(_instance.getSlaTimerId());
         
-        processInstance.setKnowledgeRuntime( context.getWorkingMemory() != null ? context.getWorkingMemory().getKnowledgeRuntime() : null);
+        processInstance.setKnowledgeRuntime( context.getWorkingMemory() != null ? new KogitoInternalKnowledgeRuntime(context.getWorkingMemory().getKnowledgeRuntime()) : null);
         
         processInstance.internalSetErrorNodeId(_instance.getErrorNodeId());
         processInstance.internalSetErrorMessage(_instance.getErrorMessage());
@@ -826,6 +840,7 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
 
     protected abstract WorkflowProcessInstanceImpl createProcessInstance();
 
+    @Override
     public NodeInstance readNodeInstance(MarshallerReaderContext context,
                                          NodeInstanceContainer nodeInstanceContainer,
                                          WorkflowProcessInstance processInstance) throws IOException {

@@ -20,12 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.compiler.compiler.xml.XmlDumper;
-import org.kie.api.definition.process.Connection;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.jbpm.workflow.core.node.ForEachNode;
+import org.kie.kogito.internal.definition.process.Connection;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 

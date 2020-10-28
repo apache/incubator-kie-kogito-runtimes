@@ -16,7 +16,7 @@
 
 package org.jbpm.process.instance;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 
 public interface ProcessInstanceManagerFactory {
 	

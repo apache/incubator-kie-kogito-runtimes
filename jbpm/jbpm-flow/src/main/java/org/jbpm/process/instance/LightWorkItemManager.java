@@ -27,18 +27,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.drools.core.KogitoWorkItemHandlerNotFoundException;
 import org.drools.core.event.KogitoProcessEventSupport;
-import org.drools.core.event.ProcessEventSupport;
 import org.drools.core.process.instance.KogitoWorkItem;
 import org.drools.core.process.instance.KogitoWorkItemManager;
-import org.drools.core.process.instance.WorkItem;
 import org.drools.core.process.instance.impl.KogitoWorkItemImpl;
+import org.drools.kogito.core.event.ProcessEventSupport;
+import org.drools.kogito.core.process.instance.WorkItem;
 import org.jbpm.process.instance.impl.workitem.Abort;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemNotFoundException;
 import org.kie.internal.runtime.Closeable;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
 import org.kie.kogito.process.workitem.NotAuthorizedException;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
@@ -46,8 +46,8 @@ import org.kie.kogito.signal.SignalManager;
 
 import static org.jbpm.process.instance.impl.workitem.Abort.ID;
 import static org.jbpm.process.instance.impl.workitem.Abort.STATUS;
-import static org.kie.api.runtime.process.WorkItem.ABORTED;
-import static org.kie.api.runtime.process.WorkItem.COMPLETED;
+import static org.kie.kogito.internal.runtime.process.WorkItem.ABORTED;
+import static org.kie.kogito.internal.runtime.process.WorkItem.COMPLETED;
 
 public class LightWorkItemManager implements KogitoWorkItemManager {
  
@@ -67,6 +67,7 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
         this.eventSupport = (KogitoProcessEventSupport) eventSupport;
     }
 
+    @Override
     public void internalExecuteWorkItem( KogitoWorkItem workItem) {
         (( KogitoWorkItemImpl ) workItem).setId(UUID.randomUUID().toString());
         internalAddWorkItem(workItem);
@@ -82,10 +83,12 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
         } else throw new KogitoWorkItemHandlerNotFoundException(workItem.getName() );
     }    
 
+    @Override
     public void internalAddWorkItem( KogitoWorkItem workItem) {
         workItems.put(workItem.getId(), workItem);  
     }
 
+    @Override
     public void internalAbortWorkItem(String id) {
         KogitoWorkItemImpl workItem = ( KogitoWorkItemImpl ) workItems.get(id);
         // work item may have been aborted
@@ -134,14 +137,17 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
         }
     }
     
+    @Override
     public KogitoWorkItem getWorkItem( String id) {
         return workItems.get(id);
     }
 
+    @Override
     public void completeWorkItem(String id, Map<String, Object> results, Policy<?>... policies) {
         transitionWorkItem(id, new TransitionToComplete(results, Arrays.asList(policies)));
     }
     
+    @Override
     public void internalCompleteWorkItem( KogitoWorkItem workItem) {
         ProcessInstance processInstance = processInstanceManager.getProcessInstance(workItem.getProcessInstanceId());                    
         workItem.setState(COMPLETED);
@@ -187,6 +193,7 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
         }
     }
 
+    @Override
     public void abortWorkItem(String id, Policy<?>... policies) {
         KogitoWorkItemImpl workItem = ( KogitoWorkItemImpl ) workItems.get(id);
         // work item may have been aborted
@@ -211,6 +218,7 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
         }
     }
 
+    @Override
     public void registerWorkItemHandler(String workItemName, WorkItemHandler handler) {
         this.workItemHandlers.put(workItemName, handler);
     }
@@ -241,10 +249,12 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void clear() {
         this.workItems.clear();
     }
     
+    @Override
     public void signalEvent(String type, Object event) { 
         this.signalManager.signalEvent(type, event);
     }
@@ -255,6 +265,7 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
 
     }
 
+    @Override
     public void signalEvent(String type, Object event, String processInstanceId) { 
         this.signalManager.signalEvent(processInstanceId, type, event);
     }

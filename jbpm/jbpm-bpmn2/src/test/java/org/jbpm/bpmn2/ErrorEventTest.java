@@ -36,14 +36,14 @@ import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessNodeLeftEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 import org.kie.kogito.process.workitem.WorkItemExecutionError;
 
 public class ErrorEventTest extends JbpmBpmn2TestCase {

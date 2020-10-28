@@ -35,7 +35,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
-import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.SingletonStore;
 import org.kie.kogito.rules.units.AssignableChecker;

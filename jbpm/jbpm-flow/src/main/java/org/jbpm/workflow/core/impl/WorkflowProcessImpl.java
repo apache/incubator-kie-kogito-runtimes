@@ -31,8 +31,8 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.ProcessInstanceResolverFactory;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -22,8 +22,8 @@ import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.RuleUnitFactory;
-import org.kie.api.runtime.KieRuntime;
 import org.kie.kogito.decision.DecisionModel;
+import org.kie.kogito.internal.runtime.KieRuntime;
 
 import java.util.function.Supplier;
 

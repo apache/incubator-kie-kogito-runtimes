@@ -21,14 +21,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.drools.core.SessionConfiguration;
+import org.drools.core.impl.EnvironmentFactory;
 import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.util.DroolsStreamUtils;
-import org.drools.core.impl.EnvironmentFactory;
 import org.kie.api.marshalling.Marshaller;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
-import org.kie.api.runtime.KieSession;
 import org.kie.internal.marshalling.MarshallerFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.runtime.KieSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public class JbpmSerializationHelper extends SerializationHelper {
                                 null );
     }
 
-    public static StatefulKnowledgeSession getSerialisedStatefulKnowledgeSession(KieSession ksession) throws Exception { 
+    public static KieSession getSerialisedStatefulKnowledgeSession(KieSession ksession) throws Exception { 
         return SerializationHelper.getSerialisedStatefulKnowledgeSession(ksession, true);
     }
     

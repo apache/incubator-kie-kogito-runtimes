@@ -18,15 +18,15 @@ package org.jbpm.workflow.instance;
 
 import java.util.Collection;
 
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
 
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 
 /**
  *
  */
-public interface NodeInstanceContainer extends org.kie.api.runtime.process.NodeInstanceContainer {
+public interface NodeInstanceContainer extends org.kie.kogito.internal.runtime.process.NodeInstanceContainer {
 
     Collection<NodeInstance> getNodeInstances(boolean recursive);
 

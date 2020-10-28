@@ -18,8 +18,8 @@ package org.jbpm.workflow.instance.node;
 
 import java.util.List;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.impl.KnowledgeBaseFactory;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
@@ -29,8 +29,9 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactoryRegistry;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class StartNodeInstanceTest extends AbstractBaseTest {
     
+    @Override
     public void addLogger() { 
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -47,7 +49,7 @@ public class StartNodeInstanceTest extends AbstractBaseTest {
     public void testStartNode() {
         
         KieBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        KieSession ksession = kbase.newKieSession();        
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());        
         
         MockNode mockNode = new MockNode();
         MockNodeInstanceFactory mockNodeFactory = new MockNodeInstanceFactory( new MockNodeInstance( mockNode ) );

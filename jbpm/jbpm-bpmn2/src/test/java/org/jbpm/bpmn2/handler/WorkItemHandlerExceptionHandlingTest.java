@@ -26,10 +26,10 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.ProcessWorkItemHandlerException.HandlingStrategy;
-import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
 
 import static org.jbpm.process.core.context.variable.VariableScope.VARIABLE_STRICT_ENABLED_PROPERTY;
 import static org.junit.jupiter.api.Assertions.assertEquals;

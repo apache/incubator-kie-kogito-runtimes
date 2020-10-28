@@ -23,10 +23,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;

@@ -22,8 +22,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.InternalWorkingMemory;
+import org.drools.core.impl.EnvironmentFactory;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.impl.KnowledgeBaseImpl;
@@ -31,10 +31,10 @@ import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.io.impl.ClassPathResource;
 import org.drools.core.marshalling.impl.MarshallingConfigurationImpl;
 import org.drools.core.marshalling.impl.RuleBaseNodes;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.drools.serialization.protobuf.ProtobufMarshaller;
 import org.drools.serialization.protobuf.ProtobufMarshallerReaderContext;
 import org.drools.serialization.protobuf.ProtobufMarshallerWriteContext;
-import org.drools.core.impl.EnvironmentFactory;
 import org.jbpm.marshalling.impl.ProcessInstanceResolverStrategy;
 import org.jbpm.process.instance.ProcessInstanceManager;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
@@ -44,11 +44,12 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.io.ResourceType;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.marshalling.MarshallerFactory;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -60,7 +61,7 @@ public class ProcessInstanceResolverStrategyTest extends AbstractBaseTest {
     @Test
     public void testAccept() {
         KieBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         WorkflowProcessImpl process = new WorkflowProcessImpl();
 
         RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();
@@ -82,7 +83,7 @@ public class ProcessInstanceResolverStrategyTest extends AbstractBaseTest {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         kbuilder.add(new ClassPathResource(PROCESS_NAME, this.getClass()), ResourceType.DRF);
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         ProcessInstance processInstance = ksession.createProcessInstance("process name", new HashMap<String, Object>());
         ksession.insert(processInstance);
 

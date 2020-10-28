@@ -28,7 +28,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
 import org.drools.core.util.StringUtils;
 import org.jbpm.ruleflow.core.Metadata;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 import static org.jbpm.compiler.canonical.AbstractVisitor.KCONTEXT_VAR;
 import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;

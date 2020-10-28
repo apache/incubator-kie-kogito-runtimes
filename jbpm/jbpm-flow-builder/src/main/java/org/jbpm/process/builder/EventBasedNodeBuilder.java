@@ -18,8 +18,8 @@ package org.jbpm.process.builder;
 
 import java.util.Map;
 
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.definition.process.Node;
 import org.drools.compiler.lang.descr.ProcessDescr;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.workflow.core.DroolsAction;

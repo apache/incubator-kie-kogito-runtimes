@@ -22,7 +22,7 @@ import java.util.Map;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.impl.NodeImpl;
-import org.kie.api.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Connection;
 
 /**
  * Default implementation of a split node.

@@ -51,8 +51,8 @@ import org.jbpm.workflow.core.node.Split;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.core.node.TimerNode;
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.definition.process.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

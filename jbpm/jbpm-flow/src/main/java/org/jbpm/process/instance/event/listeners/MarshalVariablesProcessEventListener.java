@@ -25,10 +25,10 @@ import org.drools.serialization.protobuf.ProtobufProcessMarshallerWriteContext;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.EnvironmentName;
+import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessCompletedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

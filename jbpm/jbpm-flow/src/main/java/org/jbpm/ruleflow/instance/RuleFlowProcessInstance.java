@@ -21,7 +21,7 @@ import java.util.List;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 public class RuleFlowProcessInstance extends WorkflowProcessInstanceImpl {
 

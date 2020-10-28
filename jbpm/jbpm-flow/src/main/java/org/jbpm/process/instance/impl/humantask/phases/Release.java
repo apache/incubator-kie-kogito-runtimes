@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
-import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItem;
 import org.kie.kogito.process.workitem.LifeCyclePhase;
 import org.kie.kogito.process.workitem.Transition;
 

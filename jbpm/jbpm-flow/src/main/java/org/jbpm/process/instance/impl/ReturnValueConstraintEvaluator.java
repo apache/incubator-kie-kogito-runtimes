@@ -22,12 +22,12 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.drools.core.spi.CompiledInvoker;
-import org.drools.core.spi.KogitoProcessContext;
 import org.drools.core.spi.Wireable;
 import org.jbpm.process.instance.ProcessInstance;
+import org.jbpm.process.instance.context.KogitoProcessContext;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.instance.NodeInstance;
-import org.kie.api.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Connection;
 
 /**
  * Default implementation of a constraint.
@@ -54,59 +54,73 @@ public class ReturnValueConstraintEvaluator
 
     private ReturnValueEvaluator evaluator;
 
+    @Override
     public String getConstraint() {
         return this.constraint;
     }
 
+    @Override
     public void setConstraint(final String constraint) {
         this.constraint = constraint;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
 
+    @Override
     public void setName(final String name) {
         this.name = name;
     }
 
+    @Override
     public String toString() {
         return this.name;
     }
 
+    @Override
     public int getPriority() {
         return this.priority;
     }
 
+    @Override
     public void setPriority(final int priority) {
         this.priority = priority;
     }
 
+    @Override
     public String getDialect() {
         return dialect;
     }
 
+    @Override
     public void setDialect(String dialect) {
         this.dialect = dialect;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public void setType(String type) {
         this.type = type;
     }
 
+    @Override
     public boolean isDefault() {
 		return isDefault;
 	}
 
-	public void setDefault(boolean isDefault) {
+	@Override
+    public void setDefault(boolean isDefault) {
 		this.isDefault = isDefault;
 	}
 
-	public void wire(Object object) {
+	@Override
+    public void wire(Object object) {
         setEvaluator( (ReturnValueEvaluator) object );
     }
 
@@ -118,6 +132,7 @@ public class ReturnValueConstraintEvaluator
         return this.evaluator;
     }
 
+    @Override
     public boolean evaluate(NodeInstance instance,
                             Connection connection,
                             Constraint constraint) {
@@ -136,6 +151,7 @@ public class ReturnValueConstraintEvaluator
         return ((Boolean) value).booleanValue();
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException,
                                             ClassNotFoundException {
         this.evaluator = (ReturnValueEvaluator) in.readObject();
@@ -147,6 +163,7 @@ public class ReturnValueConstraintEvaluator
 
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         if ( this.evaluator instanceof CompiledInvoker ) {
             out.writeObject( null );
@@ -160,10 +177,12 @@ public class ReturnValueConstraintEvaluator
         out.writeObject( type );
     }
 
+    @Override
     public void setMetaData(String name, Object value) {
     	// Do nothing
     }
     
+    @Override
     public Object getMetaData(String name) {
         return null;
     }

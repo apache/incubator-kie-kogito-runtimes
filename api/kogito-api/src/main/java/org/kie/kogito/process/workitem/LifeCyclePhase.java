@@ -15,7 +15,7 @@
 
 package org.kie.kogito.process.workitem;
 
-import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItem;
 
 /**
  * Definition of the life cycle phase that work item can be connected to.

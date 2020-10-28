@@ -31,10 +31,12 @@ public class KogitoPhreakWorkingMemoryFactory implements WorkingMemoryFactory, S
         return INSTANCE;
     }
 
-    public InternalWorkingMemory createWorkingMemory(long id, InternalKnowledgeBase kBase, SessionConfiguration config, Environment environment) {
+    @Override
+    public InternalWorkingMemory createWorkingMemory(long id, InternalKnowledgeBase kBase, SessionConfiguration config, Environment environment) {  
         return new KogitoStatefulKnowledgeSessionImpl(id, kBase, true, config, environment);
     }
 
+    @Override
     public InternalWorkingMemory createWorkingMemory(long id, InternalKnowledgeBase kBase, FactHandleFactory handleFactory, long propagationContext, SessionConfiguration config, InternalAgenda agenda, Environment environment) {
         return new KogitoStatefulKnowledgeSessionImpl(id, kBase, handleFactory, propagationContext, config, agenda, environment);
     }

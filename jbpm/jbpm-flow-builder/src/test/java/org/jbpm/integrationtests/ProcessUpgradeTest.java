@@ -33,9 +33,10 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.jbpm.workflow.instance.WorkflowProcessInstanceUpgrader;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -85,7 +86,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( builder.getKnowledgePackages() );
-        KieSession session = kbase.newKieSession();
+        KieSession session = new KieSessionBridge(kbase.newKieSession());
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
         session.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
@@ -186,7 +187,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( builder.getKnowledgePackages() );
-        KieSession session = kbase.newKieSession();
+        KieSession session = new KieSessionBridge(kbase.newKieSession());
         TestWorkItemHandler handler = new TestWorkItemHandler();
         session.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
@@ -301,7 +302,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( builder.getKnowledgePackages() );
-        KieSession session = kbase.newKieSession();
+        KieSession session = new KieSessionBridge(kbase.newKieSession());
         TestWorkItemHandler handler = new TestWorkItemHandler();
         session.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
 

@@ -60,11 +60,11 @@ import org.jbpm.workflow.core.node.WorkItemNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Node;
 import org.kie.kogito.process.impl.AbstractProcess;
 
 import static org.jbpm.ruleflow.core.Metadata.ACTION;

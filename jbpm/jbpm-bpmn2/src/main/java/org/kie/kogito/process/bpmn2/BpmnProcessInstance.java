@@ -17,8 +17,8 @@ package org.kie.kogito.process.bpmn2;
 
 import java.util.Map;
 
-import org.kie.api.runtime.process.ProcessRuntime;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.internal.runtime.process.ProcessRuntime;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 

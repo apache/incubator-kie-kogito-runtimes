@@ -25,6 +25,10 @@ import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
 import org.kie.api.runtime.process.*;
+import org.kie.kogito.internal.runtime.process.HumanTaskWorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 import org.kie.kogito.process.workitem.Transition;
 
 public class TestWorkItemHandler implements WorkItemHandler {

@@ -38,7 +38,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
 import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.node.SubProcessNode;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.drools.core.util.StringUtils.ucFirst;

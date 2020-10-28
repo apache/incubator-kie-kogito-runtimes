@@ -22,13 +22,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.process.AbstractResourceGenerator;
 import org.kie.kogito.codegen.process.ReactiveResourceGenerator;
 import org.kie.kogito.codegen.process.ResourceGenerator;
 import org.kie.kogito.codegen.process.SpringResourceGenerator;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -64,7 +64,7 @@ class ResourceGeneratorFactoryTest {
                                                                     MODEL_FQCN,
                                                                     PROCESS_FQCN,
                                                                     APP_CANONICAL_NAME);
-        assertThat(context.isPresent()).isTrue();
+        assertThat(context).isPresent();
         assertThat(context.get()).isExactlyInstanceOf(ResourceGenerator.class);
     }
 

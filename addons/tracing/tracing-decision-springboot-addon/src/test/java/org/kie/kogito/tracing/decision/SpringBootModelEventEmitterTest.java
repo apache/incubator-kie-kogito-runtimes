@@ -25,9 +25,9 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.jackson.JsonFormat;
 import org.junit.jupiter.api.Test;
 import org.kie.api.management.GAV;
-import org.kie.internal.decision.DecisionModelResource;
-import org.kie.internal.decision.DecisionModelResourcesProvider;
 import org.kie.kogito.decision.DecisionModelType;
+import org.kie.kogito.internal.decision.DecisionModelResource;
+import org.kie.kogito.internal.decision.DecisionModelResourcesProvider;
 import org.mockito.ArgumentCaptor;
 import org.springframework.kafka.core.KafkaTemplate;
 

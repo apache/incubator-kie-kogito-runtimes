@@ -18,8 +18,8 @@ package org.kie.kogito.codegen.process;
 import java.util.Arrays;
 import java.util.List;
 
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.GeneratorContext;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 public class ResourceGenerator extends AbstractResourceGenerator {
 

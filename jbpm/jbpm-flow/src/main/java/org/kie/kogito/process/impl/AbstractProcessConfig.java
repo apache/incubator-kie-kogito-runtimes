@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.event.EventPublisher;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessEventListenerConfig;

@@ -26,7 +26,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.factory.ForEachNodeFactory;
 import org.jbpm.workflow.core.node.ForEachNode;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 import java.util.Map;
 

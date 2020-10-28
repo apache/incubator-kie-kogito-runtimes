@@ -20,19 +20,23 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.process.instance.KogitoWorkItemManager;
-import org.drools.core.process.instance.WorkItemManagerFactory;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.process.instance.WorkItemManagerFactory;
+
 
 public class DefaultWorkItemManagerFactory implements Externalizable, WorkItemManagerFactory {
 
+    @Override
     public KogitoWorkItemManager createWorkItemManager( InternalKnowledgeRuntime kruntime) {
         return new KogitoDefaultWorkItemManager(kruntime);
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
     }
 

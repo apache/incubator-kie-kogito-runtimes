@@ -29,7 +29,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.workflow.core.node.RuleSetNode;
-import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.units.AssignableChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

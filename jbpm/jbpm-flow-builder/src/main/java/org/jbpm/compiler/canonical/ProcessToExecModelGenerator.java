@@ -42,8 +42,8 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.HumanTaskNode;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;

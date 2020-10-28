@@ -36,8 +36,8 @@ import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Node;
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.SimpleValueResolver;
 
@@ -131,7 +131,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         }
 
         @Override
-        public void internalTrigger(org.kie.api.runtime.process.NodeInstance fromm, String type) {
+        public void internalTrigger(org.kie.kogito.internal.runtime.process.NodeInstance fromm, String type) {
             triggerTime = new Date();
             String collectionExpression = getForEachNode().getCollectionExpression();
             Collection<?> collection = evaluateCollectionExpression(collectionExpression);
@@ -169,7 +169,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
         @Override
         @SuppressWarnings({"unchecked", "rawtypes"})
-        public void internalTrigger(org.kie.api.runtime.process.NodeInstance from, String type) {
+        public void internalTrigger(org.kie.kogito.internal.runtime.process.NodeInstance from, String type) {
             triggerTime = new Date();
             Map<String, Object> tempVariables = new HashMap<>();
             VariableScopeInstance subprocessVariableScopeInstance = null;

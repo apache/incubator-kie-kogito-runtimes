@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.internal.ruleunit.RuleUnitVariable;
+import org.kie.kogito.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.RuleUnitConfig;
 
 public abstract class AbstractRuleUnitDescription implements RuleUnitDescription {

@@ -27,11 +27,10 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.kie.api.definition.KiePackage;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.internal.runtime.conf.ForceEagerActivationOption;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
 
 public abstract class AbstractBaseTest {
  
@@ -59,7 +58,7 @@ public abstract class AbstractBaseTest {
 
         KieSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
         conf.setOption( ForceEagerActivationOption.YES );
-        return kbase.newKieSession(conf, null);
+        return new KieSessionBridge(kbase.newKieSession(conf, null));
     }
     
     @BeforeAll

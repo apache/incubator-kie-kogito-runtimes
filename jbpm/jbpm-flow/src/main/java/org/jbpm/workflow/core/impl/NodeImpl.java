@@ -28,8 +28,8 @@ import org.jbpm.process.core.ContextResolver;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.CompositeNode;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.NodeContainer;
 
 /**
  * Default implementation of a node.

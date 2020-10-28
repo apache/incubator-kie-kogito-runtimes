@@ -19,7 +19,7 @@ package org.jbpm.test.util;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.kie.api.event.process.DefaultProcessEventListener;
+import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

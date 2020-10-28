@@ -16,12 +16,12 @@
 
 package org.jbpm.process.instance.context.exception;
 
-import org.drools.core.spi.KogitoProcessContext;
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.ExceptionHandler;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.ProcessInstance;
+import org.jbpm.process.instance.context.KogitoProcessContext;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.instance.NodeInstance;
 
@@ -29,11 +29,13 @@ public class DefaultExceptionScopeInstance extends ExceptionScopeInstance {
 
 	private static final long serialVersionUID = 510l;
 
+    @Override
     public String getContextType() {
         return ExceptionScope.EXCEPTION_SCOPE;
     }
 
-	public void handleException(ExceptionHandler handler, String exception, Object params) {
+	@Override
+    public void handleException(ExceptionHandler handler, String exception, Object params) {
 		
 		if (handler instanceof ActionExceptionHandler) {
 		    ActionExceptionHandler exceptionHandler = (ActionExceptionHandler) handler;

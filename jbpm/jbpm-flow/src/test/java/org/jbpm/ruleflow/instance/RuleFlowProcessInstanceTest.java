@@ -16,25 +16,24 @@
 
 package org.jbpm.ruleflow.instance;
 
-import org.drools.core.runtime.process.ProcessRuntimeFactory;
-import org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.slf4j.LoggerFactory;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class RuleFlowProcessInstanceTest extends AbstractBaseTest  {
 
     private static String PROCESS_ID = "process.test";
     static {
-        ProcessRuntimeFactory.setProcessRuntimeFactoryService(new ProcessRuntimeFactoryServiceImpl());
+       // ProcessRuntimeFactory.setProcessRuntimeFactoryService(new ProcessRuntimeFactoryServiceImpl());
     }
 
+    @Override
     public void addLogger() { 
         logger = LoggerFactory.getLogger(this.getClass());
     }

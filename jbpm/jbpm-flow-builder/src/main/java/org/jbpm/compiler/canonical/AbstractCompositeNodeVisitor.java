@@ -18,7 +18,7 @@ package org.jbpm.compiler.canonical;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.node.CompositeContextNode;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 import java.util.Map;
 

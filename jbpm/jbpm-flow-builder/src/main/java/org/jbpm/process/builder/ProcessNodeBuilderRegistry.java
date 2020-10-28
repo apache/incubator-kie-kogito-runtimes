@@ -38,7 +38,7 @@ import org.jbpm.workflow.core.node.StateNode;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 // Marco: extend this and extend the ActionNodeBuilder to also collection info.. 
 public class ProcessNodeBuilderRegistry {

@@ -16,9 +16,9 @@
 
 package org.jbpm.process.instance.impl;
 
-import org.kie.api.definition.process.Connection;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.instance.NodeInstance;
+import org.kie.kogito.internal.definition.process.Connection;
 
 public interface ConstraintEvaluator extends Constraint {
     

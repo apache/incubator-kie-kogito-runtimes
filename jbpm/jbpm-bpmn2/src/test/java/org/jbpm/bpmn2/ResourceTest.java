@@ -18,8 +18,7 @@ package org.jbpm.bpmn2;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

@@ -16,6 +16,7 @@
 
 package org.drools.modelcompiler.ruleunit;
 
+
 import org.kie.api.runtime.KieSession;
 import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
 

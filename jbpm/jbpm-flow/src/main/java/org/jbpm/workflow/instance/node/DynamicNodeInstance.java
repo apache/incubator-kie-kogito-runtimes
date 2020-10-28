@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.core.common.InternalAgenda;
-import org.drools.core.spi.KogitoProcessContext;
+import org.jbpm.process.instance.context.KogitoProcessContext;
 import org.jbpm.workflow.core.node.DynamicNode;
-import org.kie.api.definition.process.Node;
-import org.kie.api.event.process.ContextAwareEventListener;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.event.process.ContextAwareEventListener;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
 import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;

@@ -18,7 +18,7 @@ package org.jbpm.process.instance;
 
 import java.util.Map;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
@@ -27,7 +27,8 @@ import org.kie.internal.process.CorrelationKey;
 
 public abstract class AbstractProcessInstanceFactory implements ProcessInstanceFactory {
 	
-	public ProcessInstance createProcessInstance(Process process, CorrelationKey correlationKey, 
+	@Override
+    public ProcessInstance createProcessInstance(Process process, CorrelationKey correlationKey, 
 			                                     InternalKnowledgeRuntime kruntime,
 			                                     Map<String, Object> parameters) {
 		ProcessInstance processInstance = createProcessInstance();

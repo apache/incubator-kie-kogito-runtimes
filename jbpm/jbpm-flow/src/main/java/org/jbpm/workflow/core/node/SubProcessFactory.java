@@ -15,7 +15,7 @@
 
 package org.jbpm.workflow.core.node;
 
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
 import org.kie.kogito.process.ProcessInstance;
 
 public interface SubProcessFactory<T> {

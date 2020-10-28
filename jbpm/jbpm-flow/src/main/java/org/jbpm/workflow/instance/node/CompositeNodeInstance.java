@@ -39,15 +39,15 @@ import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactory;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactoryRegistry;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
 
 import static org.jbpm.ruleflow.core.Metadata.CUSTOM_ASYNC;
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ABORTED;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ACTIVE;
 
 /**
  * Runtime counterpart of a composite node.
@@ -112,7 +112,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     }
 
     @Override
-    public void internalTrigger(final org.kie.api.runtime.process.NodeInstance from, String type) {
+    public void internalTrigger(final org.kie.kogito.internal.runtime.process.NodeInstance from, String type) {
     	super.internalTrigger(from, type);
     	// if node instance was cancelled, abort
 		if (getNodeInstanceContainer().getNodeInstance(getId()) == null) {
@@ -154,7 +154,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
         }
     }
 
-    protected void internalTriggerOnlyParent(final org.kie.api.runtime.process.NodeInstance from, String type) {
+    protected void internalTriggerOnlyParent(final org.kie.kogito.internal.runtime.process.NodeInstance from, String type) {
         super.internalTrigger(from, type);
     }
 
@@ -196,7 +196,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
         this.nodeInstances.remove(nodeInstance);
     }
 
-    public Collection<org.kie.api.runtime.process.NodeInstance> getNodeInstances() {
+    public Collection<org.kie.kogito.internal.runtime.process.NodeInstance> getNodeInstances() {
         return new ArrayList<>(getNodeInstances(false));
     }
 
@@ -331,7 +331,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
             return (CompositeNode.CompositeNodeStart) getNode();
         }
 
-        public void internalTrigger(org.kie.api.runtime.process.NodeInstance from, String type) {
+        public void internalTrigger(org.kie.kogito.internal.runtime.process.NodeInstance from, String type) {
             triggerTime = new Date();
             triggerCompleted();
         }
@@ -350,7 +350,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
             return (CompositeNode.CompositeNodeEnd) getNode();
         }
 
-        public void internalTrigger(org.kie.api.runtime.process.NodeInstance from, String type) {
+        public void internalTrigger(org.kie.kogito.internal.runtime.process.NodeInstance from, String type) {
             triggerTime = new Date();
             triggerCompleted();
         }

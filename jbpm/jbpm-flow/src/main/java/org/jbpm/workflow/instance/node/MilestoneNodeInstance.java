@@ -16,10 +16,10 @@
 
 package org.jbpm.workflow.instance.node;
 
-import org.drools.core.spi.KogitoProcessContext;
+import org.jbpm.process.instance.context.KogitoProcessContext;
 import org.jbpm.workflow.core.node.MilestoneNode;
-import org.kie.api.event.process.ContextAwareEventListener;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.event.process.ContextAwareEventListener;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 
 /**
  * Runtime counterpart of a milestone node.

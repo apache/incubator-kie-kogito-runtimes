@@ -65,10 +65,10 @@ import org.jbpm.workflow.instance.node.SubProcessNodeInstance;
 import org.jbpm.workflow.instance.node.ThrowLinkNodeInstance;
 import org.jbpm.workflow.instance.node.TimerNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
-import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.Environment;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.NodeInstanceContainer;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstanceContainer;
 
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 

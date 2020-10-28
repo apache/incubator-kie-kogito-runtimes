@@ -17,8 +17,8 @@ package org.kie.kogito.services.event;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.event.AbstractDataEvent;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

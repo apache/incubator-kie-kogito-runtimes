@@ -32,14 +32,14 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -322,7 +322,7 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         assertEquals(1, session.getProcessInstances().size());
         session.halt();
         
-        final StatefulKnowledgeSession session2 = getSerialisedStatefulKnowledgeSession(session);
+        final StatefulKnowledgeSession session2 = (StatefulKnowledgeSession) getSerialisedStatefulKnowledgeSession(session);
        
         int sleeps = 3;
         int procInstsAlive = session2.getProcessInstances().size();
@@ -338,11 +338,13 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
   
     private static class TestListWorkItemHandler implements WorkItemHandler {
     	private List<WorkItem> workItems = new ArrayList<WorkItem>();
-    	public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
+    	@Override
+        public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
     	    logger.debug("Executing workItem {}", workItem.getParameter("TaskName"));
 			workItems.add(workItem);
 		}
-		public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
+		@Override
+        public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
 			workItems.remove(workItem);
 		}
 		public List<WorkItem> getWorkItems() {

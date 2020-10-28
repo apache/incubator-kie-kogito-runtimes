@@ -27,9 +27,9 @@ import org.drools.core.marshalling.impl.KogitoSerializablePlaceholderResolverStr
 import org.drools.serialization.protobuf.ProtobufMarshallerReaderContext;
 import org.drools.serialization.protobuf.TimersInputMarshaller;
 import org.kie.api.definition.process.Process;
-import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.marshalling.ObjectMarshallingStrategyStore;
 import org.kie.api.runtime.Environment;
+import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
 
 public class KogitoMarshallerReaderContext extends ProtobufMarshallerReaderContext {
 

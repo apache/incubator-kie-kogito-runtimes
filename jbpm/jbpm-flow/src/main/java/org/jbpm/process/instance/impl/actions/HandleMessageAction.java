@@ -23,7 +23,7 @@ import org.jbpm.process.core.event.EventTransformerImpl;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.process.instance.impl.util.VariableUtil;
 import org.jbpm.workflow.core.node.Transformation;
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
 
 public class HandleMessageAction implements Action, Serializable {
 
@@ -45,6 +45,7 @@ public class HandleMessageAction implements Action, Serializable {
         this.transformation = transformation;
     }
 
+    @Override
     public void execute(ProcessContext context) throws Exception {
         Object variable = VariableUtil.resolveVariable(variableName, context.getNodeInstance());
 

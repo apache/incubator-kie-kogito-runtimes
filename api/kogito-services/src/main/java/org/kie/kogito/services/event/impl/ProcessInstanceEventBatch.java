@@ -24,21 +24,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.kie.api.event.process.ProcessCompletedEvent;
-import org.kie.api.event.process.ProcessEvent;
-import org.kie.api.event.process.ProcessNodeEvent;
-import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.api.event.process.ProcessWorkItemTransitionEvent;
-import org.kie.api.runtime.process.HumanTaskWorkItem;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.Addons;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventBatch;
+import org.kie.kogito.internal.event.process.ProcessCompletedEvent;
+import org.kie.kogito.internal.event.process.ProcessEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeLeftEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.event.process.ProcessVariableChangedEvent;
+import org.kie.kogito.internal.event.process.ProcessWorkItemTransitionEvent;
+import org.kie.kogito.internal.runtime.process.HumanTaskWorkItem;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.services.event.ProcessInstanceDataEvent;
 import org.kie.kogito.services.event.UserTaskInstanceDataEvent;
 import org.kie.kogito.services.event.VariableInstanceDataEvent;
@@ -102,7 +102,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
     }
 
     protected void handleProcessNodeTriggeredEvent(ProcessNodeTriggeredEvent event, ProcessInstanceEventBody body) {
-        NodeInstanceEventBody nodeInstanceBody = create((ProcessNodeEvent) event);
+        NodeInstanceEventBody nodeInstanceBody = create(event);
         if (!body.getNodeInstances().contains(nodeInstanceBody)) {
             // add it only if it does not exist
             body.update().nodeInstance(nodeInstanceBody);
@@ -110,14 +110,15 @@ public class ProcessInstanceEventBatch implements EventBatch {
     }
 
     protected void handleProcessNodeLeftEvent(ProcessNodeLeftEvent event, ProcessInstanceEventBody body) {
-        NodeInstanceEventBody nodeInstanceBody = create((ProcessNodeEvent) event);
+        NodeInstanceEventBody nodeInstanceBody = create(event);
         // if it's already there, remove it
         body.getNodeInstances().remove(nodeInstanceBody);
         // and add it back as the node left event has latest information
         body.update().nodeInstance(nodeInstanceBody);
     }
 
-    protected void handleProcessWorkItemTransitionEvent(ProcessWorkItemTransitionEvent workItemTransitionEvent, Map<String, UserTaskInstanceEventBody> userTaskInstances) {
+    protected void handleProcessWorkItemTransitionEvent(ProcessWorkItemTransitionEvent workItemTransitionEvent,
+                                                        Map<String, UserTaskInstanceEventBody> userTaskInstances) {
         WorkItem workItem = workItemTransitionEvent.getWorkItem();
         if (workItem instanceof HumanTaskWorkItem && workItemTransitionEvent.isTransitioned()) {
             userTaskInstances.putIfAbsent(workItem.getId(), createUserTask(workItemTransitionEvent));

@@ -25,14 +25,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.drools.core.event.DefaultAgendaEventListener;
 import org.junit.jupiter.api.Test;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.data.Account;
 import org.kie.kogito.codegen.data.Person;
+import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessStartedEvent;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.uow.UnitOfWork;

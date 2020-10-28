@@ -22,7 +22,8 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.MilestoneNode;
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
+
 
 public class MilestoneNodeFactory extends StateBasedNodeFactory {
 
@@ -32,6 +33,7 @@ public class MilestoneNodeFactory extends StateBasedNodeFactory {
         super(nodeContainerFactory, nodeContainer, id);
     }
 
+    @Override
     protected Node createNode() {
         return new MilestoneNode();
     }

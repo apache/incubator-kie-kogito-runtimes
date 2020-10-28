@@ -37,20 +37,19 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.drools.core.common.InternalWorkingMemory;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
-import org.kie.api.event.process.ProcessCompletedEvent;
-import org.kie.api.event.process.ProcessEvent;
-import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessStartedEvent;
-import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.event.process.ProcessCompletedEvent;
+import org.kie.kogito.internal.event.process.ProcessEvent;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessNodeLeftEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.event.process.ProcessStartedEvent;
+import org.kie.kogito.internal.event.process.ProcessVariableChangedEvent;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +69,8 @@ public class ProcessEventListenerTest extends AbstractBaseTest {
 
         final ProcessEventListener listener = createProcessEventListener(processEventList);
 
-        ((InternalWorkingMemory)session).getProcessRuntime().addEventListener(listener);
-        ProcessInstance processInstance =
-        	((InternalWorkingMemory)session).getProcessRuntime().startProcess("org.drools.core.event");
+        session.addEventListener(listener);
+        ProcessInstance processInstance = session.startProcess("org.drools.core.event");
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals("MyValue", ((VariableScopeInstance)
                                     ((org.jbpm.process.instance.ProcessInstance) processInstance)
@@ -88,42 +86,52 @@ public class ProcessEventListenerTest extends AbstractBaseTest {
     private ProcessEventListener createProcessEventListener(final List<ProcessEvent> processEventList) {  
         return new ProcessEventListener() {
 
+            @Override
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterProcessCompleted(ProcessCompletedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterProcessStarted(ProcessStartedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeNodeLeft(ProcessNodeLeftEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeProcessCompleted(ProcessCompletedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeProcessStarted(ProcessStartedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeVariableChanged(ProcessVariableChangedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 processEventList.add(event);
             }

@@ -32,8 +32,8 @@ import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.AbstractContext;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 /**
  * Default implementation of a Process
@@ -58,43 +58,53 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     private List<String> functionImports = new ArrayList<>();
 
     
+    @Override
     public void setId(final String id) {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return this.id;
     }
 
+    @Override
     public void setName(final String name) {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
 
+    @Override
     public void setVersion(final String version) {
         this.version = version;
     }
 
+    @Override
     public String getVersion() {
         return this.version;
     }
 
+    @Override
     public String getType() {
         return this.type;
     }
 
+    @Override
     public void setType(final String type) {
         this.type = type;
     }
 
-	public String getPackageName() {
+	@Override
+    public String getPackageName() {
 		return packageName;
 	}
 
-	public void setPackageName(String packageName) {
+	@Override
+    public void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
 	
@@ -111,28 +121,34 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         this.visibility = visibility;
     }
 
+    @Override
     public List<Context> getContexts(String contextType) {
 	    return this.contextContainer.getContexts(contextType);
 	}
     
+    @Override
     public void addContext(Context context) {
         this.contextContainer.addContext(context);
         ((AbstractContext) context).setContextContainer(this);
     }
     
+    @Override
     public Context getContext(String contextType, long id) {
         return this.contextContainer.getContext(contextType, id);
     }
 
+    @Override
     public void setDefaultContext(Context context) {
         this.contextContainer.setDefaultContext(context);
         ((AbstractContext) context).setContextContainer(this);
     }
     
+    @Override
     public Context getDefaultContext(String contextType) {
         return this.contextContainer.getDefaultContext(contextType);
     }
 
+    @Override
     public boolean equals(final Object o) {
         if ( o instanceof ProcessImpl ) {
         	if (this.id == null) {
@@ -143,10 +159,12 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         return false;
     }
     
+    @Override
     public int hashCode() {
         return this.id == null ? 0 : 3 * this.id.hashCode();
     }
 
+    @Override
     public Context resolveContext(String contextId, Object param) {
         Context context = getDefaultContext(contextId);
         if (context != null) {
@@ -158,10 +176,12 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         return null;
     }
     
-	public Map<String, Object> getMetaData() {
+	@Override
+    public Map<String, Object> getMetaData() {
 		return this.metaData;
 	}
 
+    @Override
     public void setMetaData(String name, Object data) {
         this.metaData.put(name, data);
     }
@@ -170,18 +190,22 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         return this.metaData.get(name);
     }
 
+    @Override
     public Resource getResource() {
         return this.resource;
     }
 
+    @Override
     public void setResource(Resource resource) {
         this.resource = resource;        
     }
     
+    @Override
     public Set<String> getImports() {
         return imports;
     }
 
+    @Override
     public void setImports(Set<String> imports) {
         this.imports = imports;
     }
@@ -190,10 +214,12 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         this.imports.addAll(imports);
     }
     
+    @Override
     public List<String> getFunctionImports() {
         return functionImports;
     }
 
+    @Override
     public void setFunctionImports(List<String> functionImports) {
         this.functionImports = functionImports;
     }
@@ -202,14 +228,17 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         this.functionImports.addAll(functionImports);
     }
     
+    @Override
     public Map<String, String> getGlobals() {
         return globals;
     }
 
+    @Override
     public void setGlobals(Map<String, String> globals) {
         this.globals = globals;
     }
 
+    @Override
     public String[] getGlobalNames() {
         final List<String> result = new ArrayList<String>();
         if (this.globals != null) {
@@ -220,10 +249,12 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         return result.toArray(new String[result.size()]);
     }
 
+    @Override
     public KnowledgeType getKnowledgeType() {
         return KnowledgeType.PROCESS;
     }
 
+    @Override
     public String getNamespace() {
         return packageName;
     }

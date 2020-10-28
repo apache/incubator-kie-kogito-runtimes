@@ -23,7 +23,7 @@ import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.core.xml.SemanticModules;
 import org.jbpm.process.core.impl.XmlProcessDumper;
 import org.kie.api.definition.process.Process;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 public class XmlRuleFlowProcessDumper extends XmlWorkflowProcessDumper implements XmlProcessDumper {
     
@@ -38,7 +38,8 @@ public class XmlRuleFlowProcessDumper extends XmlWorkflowProcessDumper implement
         );
     }
 
-	public String dumpProcess(Process process) {
+	@Override
+    public String dumpProcess(Process process) {
 		return dump((WorkflowProcess) process, false);
 	}
 

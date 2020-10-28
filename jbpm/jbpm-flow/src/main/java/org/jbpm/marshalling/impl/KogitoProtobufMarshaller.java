@@ -34,9 +34,10 @@ import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.marshalling.MarshallingConfiguration;
 import org.kie.api.runtime.Environment;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.runtime.KieSession;
+
 
 /**
  * A Marshaller implementation that uses ProtoBuf as the marshalling
@@ -51,11 +52,13 @@ public class KogitoProtobufMarshaller extends ProtobufMarshaller {
         super(kbase, marshallingConfig);
     }
 
+    @Override
     public StatefulKnowledgeSession unmarshall( final InputStream stream) throws IOException,
             ClassNotFoundException {
         return unmarshall( stream, null, null );
     }
 
+    @Override
     public StatefulKnowledgeSession unmarshall( final InputStream stream,
                                                 KieSessionConfiguration config,
                                                 Environment environment) throws IOException, ClassNotFoundException {
@@ -91,10 +94,12 @@ public class KogitoProtobufMarshaller extends ProtobufMarshaller {
         context.close();
     }
 
+    @Override
     public MarshallingConfiguration getMarshallingConfiguration() {
         return marshallingConfig;
     }
 
+    @Override
     public ReadSessionResult unmarshallWithMessage( final InputStream stream,
                                                     KieSessionConfiguration config,
                                                     Environment environment) throws IOException, ClassNotFoundException {

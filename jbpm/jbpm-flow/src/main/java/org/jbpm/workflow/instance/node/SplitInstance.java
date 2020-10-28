@@ -25,10 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
-import org.kie.api.runtime.process.NodeInstance;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.context.exclusive.ExclusiveGroup;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.InternalProcessRuntime;
@@ -39,6 +36,9 @@ import org.jbpm.workflow.core.node.Split;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 
 /**
  * Runtime counterpart of a split node.
@@ -52,6 +52,7 @@ public class SplitInstance extends NodeInstanceImpl {
         return (Split) getNode();
     }
 
+    @Override
     public void internalTrigger(final NodeInstance from, String type) {
         if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
@@ -80,7 +81,7 @@ public class SplitInstance extends NodeInstanceImpl {
                 int priority = Integer.MAX_VALUE;
                 Connection selected = null;
                 for ( final Iterator<Connection> iterator = outgoing.iterator(); iterator.hasNext(); ) {
-                    final Connection connection = (Connection) iterator.next();
+                    final Connection connection = iterator.next();
                     ConstraintEvaluator constraint = (ConstraintEvaluator) split.getConstraint( connection );
                     if ( constraint != null && constraint.getPriority() < priority && !constraint.isDefault()) {
                         try {
@@ -101,7 +102,7 @@ public class SplitInstance extends NodeInstanceImpl {
                 ((NodeInstanceContainer) getNodeInstanceContainer()).removeNodeInstance(this);
                 if ( selected == null ) {
                 	for ( final Iterator<Connection> iterator = outgoing.iterator(); iterator.hasNext(); ) {
-                        final Connection connection = (Connection) iterator.next();
+                        final Connection connection = iterator.next();
                         if (split.isDefault(connection)) {
                             selected = connection;
                             break;
@@ -129,7 +130,7 @@ public class SplitInstance extends NodeInstanceImpl {
                     Connection selectedConnection = null;
                     ConstraintEvaluator selectedConstraint = null;
                     for ( final Iterator<Connection> iterator = outgoingCopy.iterator(); iterator.hasNext(); ) {
-                        final Connection connection = (Connection) iterator.next();
+                        final Connection connection = iterator.next();
                         ConstraintEvaluator constraint = (ConstraintEvaluator) split.getConstraint( connection );
     
                         if ( constraint != null  
@@ -161,7 +162,7 @@ public class SplitInstance extends NodeInstanceImpl {
     	        }
                 if ( !found ) {
                 	for ( final Iterator<Connection> iterator = outgoing.iterator(); iterator.hasNext(); ) {
-                        final Connection connection = (Connection) iterator.next();
+                        final Connection connection = iterator.next();
                         ConstraintEvaluator constraint = (ConstraintEvaluator) split.getConstraint( connection );
                         if ( constraint != null && constraint.isDefault() || split.isDefault(connection)) {
                         	triggerConnection(connection);
@@ -186,7 +187,7 @@ public class SplitInstance extends NodeInstanceImpl {
                 		.nodeInstanceCompleted(this, type);
                 } else {
                 	ExclusiveGroupInstance groupInstance = new ExclusiveGroupInstance();
-            		org.kie.api.runtime.process.NodeInstanceContainer parent = getNodeInstanceContainer();
+            		org.kie.kogito.internal.runtime.process.NodeInstanceContainer parent = getNodeInstanceContainer();
                 	if (parent instanceof ContextInstanceContainer) {
                 		((ContextInstanceContainer) parent).addContextInstance(ExclusiveGroup.EXCLUSIVE_GROUP, groupInstance);
                 	} else {
@@ -214,7 +215,7 @@ public class SplitInstance extends NodeInstanceImpl {
         	        		((InternalProcessRuntime) kruntime.getProcessRuntime())
         	        			.getProcessEventSupport().fireBeforeNodeLeft(this, kruntime);
         	        	}
-        	            ((org.jbpm.workflow.instance.NodeInstance) entry.getKey()).trigger(this, entry.getValue());
+        	            entry.getKey().trigger(this, entry.getValue());
         	            if (!hidden) {
         	            	((InternalProcessRuntime) kruntime.getProcessRuntime())
         	            		.getProcessEventSupport().fireAfterNodeLeft(this, kruntime);

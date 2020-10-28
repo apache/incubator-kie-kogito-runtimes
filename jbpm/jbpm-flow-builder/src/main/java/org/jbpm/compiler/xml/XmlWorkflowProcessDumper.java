@@ -22,11 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.compiler.compiler.xml.XmlDumper;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.jbpm.process.core.datatype.DataType;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.drools.core.xml.Handler;
 import org.drools.core.xml.SemanticModule;
 import org.jbpm.compiler.xml.processes.AbstractNodeHandler;
@@ -37,8 +32,13 @@ import org.jbpm.process.core.context.swimlane.Swimlane;
 import org.jbpm.process.core.context.swimlane.SwimlaneContext;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.NodeImpl;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 public class XmlWorkflowProcessDumper {
     

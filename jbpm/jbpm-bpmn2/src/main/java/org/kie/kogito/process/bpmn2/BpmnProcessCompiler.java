@@ -26,9 +26,9 @@ import org.jbpm.bpmn2.xml.BPMNExtensionsSemanticModule;
 import org.jbpm.bpmn2.xml.BPMNSemanticModule;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.workflow.core.WorkflowProcess;
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
 import org.kie.api.io.Resource;
+import org.kie.kogito.internal.definition.process.Node;
 import org.kie.kogito.process.ProcessConfig;
 
 public class BpmnProcessCompiler {

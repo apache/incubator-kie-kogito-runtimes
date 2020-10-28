@@ -23,18 +23,19 @@ import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.compiler.compiler.DialectCompiletimeRegistry;
 import org.drools.compiler.compiler.ReturnValueDescr;
 import org.drools.compiler.lang.descr.ProcessDescr;
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.definitions.impl.KnowledgePackageImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.builder.dialect.javascript.JavaScriptReturnValueEvaluatorBuilder;
 import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.instance.node.SplitInstance;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -77,7 +78,7 @@ public class JavaScriptReturnValueConstraintEvaluatorBuilderTest {
 
         final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages(Arrays.asList(pkgBuilder.getPackages()));
-        final KieSession ksession = kbase.newKieSession();
+        final KieSession ksession = new KieSessionBridge(kbase.newKieSession());
 
 
         RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();

@@ -17,10 +17,10 @@ package org.drools.core.process.instance;
 
 import java.util.Date;
 
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
-public interface KogitoWorkItem extends WorkItem {
+public interface KogitoWorkItem extends org.drools.kogito.core.process.instance.WorkItem {
 
     void setProcessInstanceId(String processInstanceId);
 

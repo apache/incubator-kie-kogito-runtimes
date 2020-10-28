@@ -24,7 +24,7 @@ import org.jbpm.process.instance.context.swimlane.SwimlaneContextInstance;
 import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
 import org.jbpm.workflow.core.node.HumanTaskNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.kie.api.runtime.process.HumanTaskWorkItem;
+import org.kie.kogito.internal.runtime.process.HumanTaskWorkItem;
 
 public class HumanTaskNodeInstance extends WorkItemNodeInstance {
 

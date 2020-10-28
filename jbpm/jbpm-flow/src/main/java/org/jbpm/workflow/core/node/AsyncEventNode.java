@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jbpm.workflow.core.impl.NodeImpl;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 
 public class AsyncEventNode extends EventNode {

@@ -15,8 +15,8 @@
 
 package org.kie.kogito.codegen.process;
 
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.GeneratorContext;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 public class ReactiveResourceGenerator extends ResourceGenerator {
 

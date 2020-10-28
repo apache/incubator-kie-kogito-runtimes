@@ -32,11 +32,10 @@ import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.node.EventNode;
-import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
@@ -53,6 +52,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Event
 
     private static final long serialVersionUID = 510l;
 
+    @Override
     public void signalEvent(String type, Object event) {
         if ("timerTriggered".equals(type)) {
             TimerInstance timerInstance = (TimerInstance) event;
@@ -82,6 +82,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Event
         }
     }
 
+    @Override
     public void internalTrigger(final NodeInstance from, String type) {
     	if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
@@ -92,6 +93,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Event
         // Do nothing, event activated
     }
     
+    @Override
     protected void configureSla() {
         String slaDueDateExpression = (String) getNode().getMetaData().get("customSLADueDate");
         if (slaDueDateExpression != null) {
@@ -127,15 +129,15 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Event
     
     protected void addTimerListener() {
         
-        ((WorkflowProcessInstance) getProcessInstance()).addEventListener("timerTriggered", new VariableExternalEventListener("timerTriggered"), false);
-        ((WorkflowProcessInstance) getProcessInstance()).addEventListener("timer", new VariableExternalEventListener("timer"), true);
-        ((WorkflowProcessInstance) getProcessInstance()).addEventListener("slaViolation:" + getId(), new VariableExternalEventListener("slaViolation"), true);
+        getProcessInstance().addEventListener("timerTriggered", new VariableExternalEventListener("timerTriggered"), false);
+        getProcessInstance().addEventListener("timer", new VariableExternalEventListener("timer"), true);
+        getProcessInstance().addEventListener("slaViolation:" + getId(), new VariableExternalEventListener("slaViolation"), true);
     }
     
     public void removeTimerListeners() {
-        ((WorkflowProcessInstance) getProcessInstance()).removeEventListener("timerTriggered", new VariableExternalEventListener("timerTriggered"), false);
-        ((WorkflowProcessInstance) getProcessInstance()).removeEventListener("timer", new VariableExternalEventListener("timer"), true);
-        ((WorkflowProcessInstance) getProcessInstance()).removeEventListener("slaViolation:" + getId(), new VariableExternalEventListener("slaViolation"), true);
+        getProcessInstance().removeEventListener("timerTriggered", new VariableExternalEventListener("timerTriggered"), false);
+        getProcessInstance().removeEventListener("timer", new VariableExternalEventListener("timer"), true);
+        getProcessInstance().removeEventListener("slaViolation:" + getId(), new VariableExternalEventListener("slaViolation"), true);
     }
 
     public EventNode getEventNode() {
@@ -183,9 +185,11 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Event
             this.eventType = eventType;
         }
 
+        @Override
         public String[] getEventTypes() {
             return new String[] {eventType};
         }
+        @Override
         public void signalEvent(String type, Object event) {
             callSignal(type, event);
         }

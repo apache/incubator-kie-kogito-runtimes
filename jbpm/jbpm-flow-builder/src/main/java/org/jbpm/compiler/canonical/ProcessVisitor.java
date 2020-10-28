@@ -70,9 +70,9 @@ import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.core.node.ThrowLinkNode;
 import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Process;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
@@ -93,7 +93,7 @@ public class ProcessVisitor extends AbstractVisitor {
 
     public static final String DEFAULT_VERSION = "1.0";
 
-    private Map<Class<?>, AbstractNodeVisitor<? extends org.kie.api.definition.process.Node>> nodesVisitors = new HashMap<>();
+    private Map<Class<?>, AbstractNodeVisitor<? extends org.kie.kogito.internal.definition.process.Node>> nodesVisitors = new HashMap<>();
 
     public ProcessVisitor(ClassLoader contextClassLoader) {
         this.nodesVisitors.put(StartNode.class, new StartNodeVisitor());
@@ -152,7 +152,7 @@ public class ProcessVisitor extends AbstractVisitor {
         visitHeader(process, body);
 
         List<Node> processNodes = new ArrayList<>();
-        for (org.kie.api.definition.process.Node procNode : process.getNodes()) {
+        for (org.kie.kogito.internal.definition.process.Node procNode : process.getNodes()) {
             processNodes.add((org.jbpm.workflow.core.Node) procNode);
         }
         visitNodes(processNodes, body, variableScope, metadata);
@@ -180,8 +180,8 @@ public class ProcessVisitor extends AbstractVisitor {
         }
     }
 
-    private void visitSubVariableScopes(org.kie.api.definition.process.Node[] nodes, BlockStmt body, Set<String> visitedVariables) {
-        for (org.kie.api.definition.process.Node node : nodes) {
+    private void visitSubVariableScopes(org.kie.kogito.internal.definition.process.Node[] nodes, BlockStmt body, Set<String> visitedVariables) {
+        for (org.kie.kogito.internal.definition.process.Node node : nodes) {
             if (node instanceof ContextContainer) {
                 VariableScope variableScope = (VariableScope)
                         ((ContextContainer) node).getDefaultContext(VariableScope.VARIABLE_SCOPE);
@@ -225,7 +225,7 @@ public class ProcessVisitor extends AbstractVisitor {
         return metaData;
     }
 
-    private <U extends org.kie.api.definition.process.Node> void visitNodes(List<U> nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+    private <U extends org.kie.kogito.internal.definition.process.Node> void visitNodes(List<U> nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         for (U node : nodes) {
             AbstractNodeVisitor<U> visitor = (AbstractNodeVisitor<U>) nodesVisitors.get(node.getClass());
             if (visitor == null) {
@@ -235,10 +235,10 @@ public class ProcessVisitor extends AbstractVisitor {
         }
     }
 
-    private void visitConnections(org.kie.api.definition.process.Node[] nodes, BlockStmt body) {
+    private void visitConnections(org.kie.kogito.internal.definition.process.Node[] nodes, BlockStmt body) {
 
         List<Connection> connections = new ArrayList<>();
-        for (org.kie.api.definition.process.Node node : nodes) {
+        for (org.kie.kogito.internal.definition.process.Node node : nodes) {
             for (List<Connection> connectionList : node.getIncomingConnections().values()) {
                 connections.addAll(connectionList);
             }
@@ -249,8 +249,8 @@ public class ProcessVisitor extends AbstractVisitor {
     }
 
     // KOGITO-1882 Finish implementation or delete completely
-    private void visitInterfaces(org.kie.api.definition.process.Node[] nodes, BlockStmt body) {
-        for (org.kie.api.definition.process.Node node : nodes) {
+    private void visitInterfaces(org.kie.kogito.internal.definition.process.Node[] nodes, BlockStmt body) {
+        for (org.kie.kogito.internal.definition.process.Node node : nodes) {
             if (node instanceof WorkItemNode) {
                 Work work = ((WorkItemNode) node).getWork();
                 if (work != null) {

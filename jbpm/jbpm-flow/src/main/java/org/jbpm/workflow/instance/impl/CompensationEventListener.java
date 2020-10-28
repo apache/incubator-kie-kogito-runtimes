@@ -32,9 +32,9 @@ import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.node.CompositeNodeInstance;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
-import org.kie.api.runtime.process.EventListener;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.runtime.process.EventListener;
 
 import static org.jbpm.process.core.context.exception.CompensationScope.COMPENSATION_SCOPE;
 import static org.jbpm.process.core.context.exception.CompensationScope.IMPLICIT_COMPENSATION_PREFIX;
@@ -61,6 +61,7 @@ class CompensationEventListener implements EventListener {
      *    (in the proper order, etc.) in the (sub-)process referred to by 
      *    the <node-container-containing-compensation-scope-id>. 
      */
+    @Override
     public void signalEvent(String compensationType, Object activityRefStr) {
         if(!(activityRefStr instanceof String) ) {
             throw new WorkflowRuntimeException(null, getProcessInstance(), 
@@ -190,6 +191,7 @@ class CompensationEventListener implements EventListener {
     }
     
     private final String [] eventTypes = { "Compensation" };
+    @Override
     public String[] getEventTypes() {
         return eventTypes;
     }

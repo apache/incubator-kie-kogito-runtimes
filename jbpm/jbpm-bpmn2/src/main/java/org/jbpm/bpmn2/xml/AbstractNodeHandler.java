@@ -132,7 +132,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 // id is not in the expected format, generating a new one
                 long newId = 0;
                 NodeContainer nodeContainer = (NodeContainer) parser.getParent();
-                for (org.kie.api.definition.process.Node n : nodeContainer.getNodes()) {
+                for (org.kie.kogito.internal.definition.process.Node n : nodeContainer.getNodes()) {
                     if (n.getId() > newId) {
                         newId = n.getId();
                     }
@@ -515,7 +515,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     protected String getErrorIdForErrorCode(String errorCode, Node node) {
-        org.kie.api.definition.process.NodeContainer parent = node.getParentContainer();
+        org.kie.kogito.internal.definition.process.NodeContainer parent = node.getParentContainer();
         while (!(parent instanceof RuleFlowProcess) && parent instanceof Node) {
             parent = ((Node) parent).getParentContainer();
         }

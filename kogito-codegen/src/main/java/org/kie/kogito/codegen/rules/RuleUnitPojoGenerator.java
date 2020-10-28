@@ -25,8 +25,8 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.modelcompiler.builder.JavaParserCompiler;
-import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.codegen.FileGenerator;
+import org.kie.kogito.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
@@ -41,6 +41,7 @@ public class RuleUnitPojoGenerator implements FileGenerator {
         this.ruleUnitHelper = ruleUnitHelper;
     }
 
+    @Override
     public String generate() {
         return JavaParserCompiler.toPojoSource(
                 ruleUnitDescription.getPackageName(),
@@ -80,6 +81,7 @@ public class RuleUnitPojoGenerator implements FileGenerator {
         return c;
     }
 
+    @Override
     public String generatedFilePath() {
         return ruleUnitDescription.getPackageName().replace('.', '/') + "/" + ruleUnitDescription.getSimpleName() + ".java";
     }

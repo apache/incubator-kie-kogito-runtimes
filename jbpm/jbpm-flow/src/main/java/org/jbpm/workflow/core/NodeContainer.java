@@ -16,10 +16,10 @@
 
 package org.jbpm.workflow.core;
 
-import org.kie.api.definition.process.Node;
 import org.jbpm.process.core.Context;
+import org.kie.kogito.internal.definition.process.Node;
 
-public interface NodeContainer extends org.kie.api.definition.process.NodeContainer {
+public interface NodeContainer extends org.kie.kogito.internal.definition.process.NodeContainer {
 
     /**
      * Method for adding a node to this node container. 

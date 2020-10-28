@@ -24,7 +24,7 @@ import org.jbpm.bpmn2.core.Error;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.FaultNode;
-import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.NodeContainer;
 import org.xml.sax.Attributes;
 
 public class FaultNodeHandler extends AbstractNodeHandler {

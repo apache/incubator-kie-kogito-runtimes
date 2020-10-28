@@ -23,7 +23,7 @@ import org.jbpm.bpmn2.core.Association;
 import org.jbpm.bpmn2.xml.AbstractNodeHandler;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.CompositeNode;
-import org.kie.api.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Connection;
 
 public abstract class AbstractCompositeNodeHandler extends AbstractNodeHandler {
 
@@ -45,7 +45,7 @@ public abstract class AbstractCompositeNodeHandler extends AbstractNodeHandler {
     
     protected List<Connection> getSubConnections(CompositeNode compositeNode) {
         List<Connection> connections = new ArrayList<Connection>();
-        for (org.kie.api.definition.process.Node subNode: compositeNode.getNodes()) {
+        for (org.kie.kogito.internal.definition.process.Node subNode: compositeNode.getNodes()) {
             // filter out composite start and end nodes as they can be regenerated
             if (!(subNode instanceof CompositeNode.CompositeNodeEnd)) {
                 for (Connection connection: subNode.getIncomingConnections(Node.CONNECTION_DEFAULT_TYPE)) {

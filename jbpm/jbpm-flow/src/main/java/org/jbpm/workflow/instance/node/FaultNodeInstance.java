@@ -19,7 +19,7 @@ package org.jbpm.workflow.instance.node;
 import java.util.Collection;
 import java.util.Date;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.InternalProcessRuntime;
@@ -29,8 +29,8 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.core.node.FaultNode;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +47,7 @@ public class FaultNodeInstance extends NodeInstanceImpl {
         return (FaultNode) getNode();
     }
     
+    @Override
     public void internalTrigger(final NodeInstance from, String type) {
         if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(

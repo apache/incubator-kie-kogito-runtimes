@@ -29,13 +29,14 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,7 +80,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         // start process
         WorkflowProcessInstance processInstance = (WorkflowProcessInstance)
             ksession.startProcess("org.drools.state");
@@ -171,7 +172,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance = ksession.startProcess("org.drools.state");
@@ -229,7 +230,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance = ksession.startProcess("org.drools.state");
@@ -287,7 +288,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance = ksession.startProcess("org.drools.state");
@@ -348,7 +349,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance = ksession.startProcess("org.drools.state");
@@ -414,7 +415,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance = ksession.startProcess("org.drools.state");
@@ -481,7 +482,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource(source), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance = ksession.startProcess("org.drools.state");
@@ -547,7 +548,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         ProcessInstance processInstance = ksession.startProcess("org.drools.state");
@@ -605,7 +606,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         // start process
@@ -674,11 +675,12 @@ public class ProcessStateTest extends AbstractBaseTest {
             "</process>");
         kbuilder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
         KieBase kbase = kbuilder.newKieBase();
-        final KieSession ksession = kbase.newKieSession();
+        final KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<String> list = new ArrayList<String>();
         ksession.setGlobal("list", list);
         new Thread(new Runnable() {
-			public void run() {
+			@Override
+            public void run() {
 				ksession.fireUntilHalt();
 			}
         }).start();

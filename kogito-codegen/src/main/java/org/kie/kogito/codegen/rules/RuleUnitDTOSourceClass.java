@@ -16,6 +16,8 @@
 
 package org.kie.kogito.codegen.rules;
 
+import java.util.Collection;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -25,9 +27,9 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.codegen.FileGenerator;
+import org.kie.kogito.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.SingletonStore;
 
 public class RuleUnitDTOSourceClass implements FileGenerator {
@@ -67,7 +69,7 @@ public class RuleUnitDTOSourceClass implements FileGenerator {
         BlockStmt supplierBlock = supplier.createBody();
         supplierBlock.addStatement(String.format("%s unit = new %s();", ruleUnit.getSimpleName(), ruleUnit.getSimpleName()));
 
-        for (RuleUnitVariable unitVarDeclaration : ruleUnit.getUnitVarDeclarations()) {
+        for (RuleUnitVariable unitVarDeclaration : (Collection<RuleUnitVariable>)ruleUnit.getUnitVarDeclarations()) {
             FieldProcessor fieldProcessor = new FieldProcessor(unitVarDeclaration, ruleUnitHelper );
             FieldDeclaration field = fieldProcessor.createField();
             supplierBlock.addStatement(fieldProcessor.fieldInitializer());

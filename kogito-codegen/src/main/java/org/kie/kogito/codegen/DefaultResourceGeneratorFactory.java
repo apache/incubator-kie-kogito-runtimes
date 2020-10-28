@@ -19,10 +19,10 @@ package org.kie.kogito.codegen;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.process.AbstractResourceGenerator;
 import org.kie.kogito.codegen.process.ReactiveResourceGenerator;
 import org.kie.kogito.codegen.process.ResourceGenerator;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 /**
  * This should be used to only create JAX-RS Resource Generators.

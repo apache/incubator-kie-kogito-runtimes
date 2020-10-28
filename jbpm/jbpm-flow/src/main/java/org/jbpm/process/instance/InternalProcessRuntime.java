@@ -16,16 +16,17 @@
 
 package org.jbpm.process.instance;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
-import org.drools.core.event.ProcessEventSupport;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.event.ProcessEventSupport;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
-public interface InternalProcessRuntime extends org.drools.core.runtime.process.InternalProcessRuntime {
+public interface InternalProcessRuntime extends org.drools.kogito.core.runtime.process.InternalProcessRuntime {
 
     ProcessInstanceManager getProcessInstanceManager();
 
     SignalManager getSignalManager();
+
 
     ProcessEventSupport getProcessEventSupport();
 

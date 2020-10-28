@@ -48,10 +48,10 @@ import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.event.rule.MatchCreatedEvent;
-import org.kie.api.runtime.KieRuntime;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.rule.Match;
+import org.kie.kogito.internal.runtime.KieRuntime;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
@@ -126,7 +126,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
             if (timer != null) {
                 this.slaTimerId = timer.getId();
                 this.slaDueDate = new Date(System.currentTimeMillis() + timer.getDelay());
-                this.slaCompliance = org.kie.api.runtime.process.ProcessInstance.SLA_PENDING;
+                this.slaCompliance = org.kie.kogito.internal.runtime.process.ProcessInstance.SLA_PENDING;
                 logger.debug("SLA for node instance {} is PENDING with due date {}", this.getId(), this.slaDueDate);
                 addTimerListener();
             }
@@ -284,11 +284,11 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
     }
 
     protected void handleSLAViolation() {
-        if (slaCompliance == org.kie.api.runtime.process.ProcessInstance.SLA_PENDING) {
+        if (slaCompliance == org.kie.kogito.internal.runtime.process.ProcessInstance.SLA_PENDING) {
             InternalProcessRuntime processRuntime = ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime());
             processRuntime.getProcessEventSupport().fireBeforeSLAViolated(getProcessInstance(), this, getProcessInstance().getKnowledgeRuntime());
             logger.debug("SLA violated on node instance {}", getId());
-            this.slaCompliance = org.kie.api.runtime.process.ProcessInstance.SLA_VIOLATED;
+            this.slaCompliance = org.kie.kogito.internal.runtime.process.ProcessInstance.SLA_VIOLATED;
             this.slaTimerId = null;
             processRuntime.getProcessEventSupport().fireAfterSLAViolated(getProcessInstance(), this, getProcessInstance().getKnowledgeRuntime());
         }
@@ -340,7 +340,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
         if (timerInstances != null && (!timerInstances.isEmpty()) || (this.slaTimerId != null && !this.slaTimerId.trim().isEmpty())) {
             addTimerListener();
         }
-        if (slaCompliance == org.kie.api.runtime.process.ProcessInstance.SLA_PENDING) {
+        if (slaCompliance == org.kie.kogito.internal.runtime.process.ProcessInstance.SLA_PENDING) {
             getProcessInstance().addEventListener("slaViolation:" + getId(), this, true);
         }
     }
@@ -360,12 +360,12 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     @Override
     public void triggerCompleted(String type, boolean remove) {
-        if (this.slaCompliance == org.kie.api.runtime.process.ProcessInstance.SLA_PENDING) {
+        if (this.slaCompliance == org.kie.kogito.internal.runtime.process.ProcessInstance.SLA_PENDING) {
             if (System.currentTimeMillis() > slaDueDate.getTime()) {
                 // completion of the node instance is after expected SLA due date, mark it accordingly
-                this.slaCompliance = org.kie.api.runtime.process.ProcessInstance.SLA_VIOLATED;
+                this.slaCompliance = org.kie.kogito.internal.runtime.process.ProcessInstance.SLA_VIOLATED;
             } else {
-                this.slaCompliance = org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
+                this.slaCompliance = org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_COMPLETED;
             }
         }
         cancelSlaTimer();
@@ -385,12 +385,12 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     @Override
     public void cancel() {
-        if (this.slaCompliance == org.kie.api.runtime.process.ProcessInstance.SLA_PENDING) {
+        if (this.slaCompliance == org.kie.kogito.internal.runtime.process.ProcessInstance.SLA_PENDING) {
             if (System.currentTimeMillis() > slaDueDate.getTime()) {
                 // completion of the process instance is after expected SLA due date, mark it accordingly
-                this.slaCompliance = org.kie.api.runtime.process.ProcessInstance.SLA_VIOLATED;
+                this.slaCompliance = org.kie.kogito.internal.runtime.process.ProcessInstance.SLA_VIOLATED;
             } else {
-                this.slaCompliance = org.kie.api.runtime.process.ProcessInstance.SLA_ABORTED;
+                this.slaCompliance = org.kie.kogito.internal.runtime.process.ProcessInstance.SLA_ABORTED;
             }
         }
         cancelSlaTimer();

@@ -44,7 +44,6 @@ import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.api.definition.process.Process;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.AddonsConfig;
@@ -61,6 +60,7 @@ import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsMessageProducerGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator;
 import org.kie.kogito.codegen.process.events.TopicsInformationResourceGenerator;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 import org.kie.kogito.rules.units.UndefinedGeneratedRuleUnitVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,12 +204,14 @@ public class ProcessCodegen extends AbstractGenerator {
         return packageName + ".ProcessEventListenerConfig";
     }
 
+    @Override
     public void setPackageName(String packageName) {
         this.moduleGenerator = new ProcessContainerGenerator(packageName);
         this.applicationCanonicalName = packageName + ".Application";
         this.packageName = packageName;
     }
 
+    @Override
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
         this.moduleGenerator.withDependencyInjection(annotator);
@@ -229,6 +231,7 @@ public class ProcessCodegen extends AbstractGenerator {
         return this;
     }
 
+    @Override
     public List<GeneratedFile> generate() {
         if (processes.isEmpty()) {
             return Collections.emptyList();

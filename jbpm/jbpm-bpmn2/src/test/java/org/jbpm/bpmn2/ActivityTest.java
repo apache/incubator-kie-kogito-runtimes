@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.script.ScriptEngineManager;
+
 import org.assertj.core.api.Assumptions;
 import org.drools.compiler.rule.builder.PackageBuildContext;
 import org.drools.core.process.instance.KogitoWorkItem;
@@ -66,29 +67,28 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.kie.api.KieBase;
 import org.kie.api.command.ExecutableCommand;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.Process;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessStartedEvent;
-import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.event.rule.BeforeMatchFiredEvent;
 import org.kie.api.event.rule.MatchCancelledEvent;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.runtime.Context;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.DataTransformer;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessContext;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.command.RegistryContext;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.event.process.ProcessStartedEvent;
+import org.kie.kogito.internal.event.process.ProcessVariableChangedEvent;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -153,7 +153,8 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         final List<String> list3 = new ArrayList<String>();
         final List<String> list4 = new ArrayList<String>();
         ksession.addEventListener(new DefaultProcessEventListener() {
-			public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
+			@Override
+            public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
 				logger.debug("before node");
 				Map<String, Object> metaData = event.getNodeInstance().getNode().getMetaData();
 				for (Map.Entry<String, Object> entry: metaData.entrySet()) {
@@ -168,7 +169,8 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 					list2.add(customTag2);
 				}
 			}
-			public void afterVariableChanged(ProcessVariableChangedEvent event) {
+			@Override
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
 				logger.debug("after variable");
 				VariableScope variableScope = (VariableScope)
 					((org.jbpm.process.core.impl.ProcessImpl) event.getProcessInstance().getProcess())
@@ -185,7 +187,8 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 					list3.add(customTag);
 				}
 			}
-			public void afterProcessStarted(ProcessStartedEvent event) {
+			@Override
+            public void afterProcessStarted(ProcessStartedEvent event) {
 				logger.debug("after process");
 	        	Map<String, Object> metaData = event.getProcessInstance().getProcess().getMetaData();
 	        	for (Map.Entry<String, Object> entry: metaData.entrySet()) {
@@ -323,40 +326,50 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         ksession = createKnowledgeSession(kbase);
 
         ksession.addEventListener(new AgendaEventListener() {
+            @Override
             public void matchCreated(MatchCreatedEvent event) {
             }
 
+            @Override
             public void matchCancelled(MatchCancelledEvent event) {
             }
 
+            @Override
             public void beforeRuleFlowGroupDeactivated(
                     org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent event) {
             }
 
+            @Override
             public void beforeRuleFlowGroupActivated(
                     org.kie.api.event.rule.RuleFlowGroupActivatedEvent event) {
             }
 
+            @Override
             public void beforeMatchFired(BeforeMatchFiredEvent event) {
             }
 
+            @Override
             public void agendaGroupPushed(
                     org.kie.api.event.rule.AgendaGroupPushedEvent event) {
             }
 
+            @Override
             public void agendaGroupPopped(
                     org.kie.api.event.rule.AgendaGroupPoppedEvent event) {
             }
 
+            @Override
             public void afterRuleFlowGroupDeactivated(
                     org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent event) {
             }
 
+            @Override
             public void afterRuleFlowGroupActivated(
                     org.kie.api.event.rule.RuleFlowGroupActivatedEvent event) {
                 ksession.fireAllRules();
             }
 
+            @Override
             public void afterMatchFired(AfterMatchFiredEvent event) {
             }
 
@@ -399,7 +412,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     @Test
     public void testUserTaskWithDataStoreScenario() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-UserTaskWithDataStore.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                 new DoNothingWorkItemHandler());
         ksession.startProcess("UserProcess");
@@ -634,14 +647,17 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KieBase kbase = createKnowledgeBase("BPMN2-SubProcess.bpmn2");
         ksession = createKnowledgeSession(kbase);
         ksession.addEventListener(new DefaultProcessEventListener() {
+            @Override
             public void afterProcessStarted(ProcessStartedEvent event) {
                 logger.debug(event.toString());
             }
 
+            @Override
             public void beforeVariableChanged(ProcessVariableChangedEvent event) {
                 logger.debug(event.toString());
             }
 
+            @Override
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 logger.debug(event.toString());
             }
@@ -701,6 +717,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<String>();
         ksession.addEventListener(new DefaultProcessEventListener() {
 
+            @Override
             public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
                 list.add(event.getNodeInstance().getNodeName());
             }
@@ -719,6 +736,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<String>();
         ksession.addEventListener(new DefaultProcessEventListener() {
 
+            @Override
             public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
                 list.add(event.getNodeInstance().getNodeName());
             }
@@ -1394,6 +1412,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<String>();
         ksession.addEventListener(new DefaultProcessEventListener() {
 
+            @Override
             public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
                 if (event.getNodeInstance().getNodeName().equals("Read Map")) {
                     list.add(event.getNodeInstance().getNodeName());

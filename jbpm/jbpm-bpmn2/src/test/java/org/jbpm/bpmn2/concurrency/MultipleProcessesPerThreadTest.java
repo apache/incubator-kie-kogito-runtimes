@@ -27,18 +27,19 @@ import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.api.event.process.ProcessCompletedEvent;
-import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessStartedEvent;
-import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.WorkItem;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
+import org.kie.kogito.internal.event.process.ProcessCompletedEvent;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessNodeLeftEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.event.process.ProcessStartedEvent;
+import org.kie.kogito.internal.event.process.ProcessVariableChangedEvent;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
+import org.kie.kogito.internal.runtime.process.WorkItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class MultipleProcessesPerThreadTest {
     private static final Logger logger = LoggerFactory.getLogger(MultipleProcessesPerThreadTest.class);
 
     protected static KieSession createStatefulKnowledgeSession(KieBase kbase) {
-        return kbase.newKieSession();
+        return new KieSessionBridge(kbase.newKieSession());
     }
     
     @Test
@@ -86,6 +87,7 @@ public class MultipleProcessesPerThreadTest {
             thread.start();
         }
 
+        @Override
         public void run() {
             this.status = Status.SUCCESS;
             KieSession ksession = null;
@@ -141,6 +143,7 @@ public class MultipleProcessesPerThreadTest {
             thread.start();
         }
 
+        @Override
         public void run() {
             this.status = Status.SUCCESS;
             KieSession ksession = null;
@@ -213,41 +216,51 @@ public class MultipleProcessesPerThreadTest {
             this.guard = guard;
         }
 
+        @Override
         public void beforeProcessStarted(ProcessStartedEvent event) {
         }
 
+        @Override
         public void afterProcessStarted(ProcessStartedEvent event) {
 
         }
 
+        @Override
         public void beforeProcessCompleted(ProcessCompletedEvent event) {
 
         }
 
+        @Override
         public void afterProcessCompleted(ProcessCompletedEvent event) {
             guard.countDown();
         }
 
+        @Override
         public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
 
         }
 
+        @Override
         public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
 
         }
 
+        @Override
         public void beforeNodeLeft(ProcessNodeLeftEvent event) {
 
         }
 
+        @Override
         public void afterNodeLeft(ProcessNodeLeftEvent event) {
 
         }
 
+        @Override
         public void beforeVariableChanged(ProcessVariableChangedEvent event) {
 
         }
 
+        @Override
         public void afterVariableChanged(ProcessVariableChangedEvent event) {
 
         }

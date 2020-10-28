@@ -23,9 +23,9 @@ import java.util.Optional;
 
 import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemHandler;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.kogito.Application;
 import org.kie.kogito.Config;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;

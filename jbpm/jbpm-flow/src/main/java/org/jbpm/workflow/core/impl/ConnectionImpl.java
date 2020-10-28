@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.kie.api.definition.process.Node;
 import org.jbpm.workflow.core.Connection;
+import org.kie.kogito.internal.definition.process.Node;
 
 /**
  * Default implementation of a connection.

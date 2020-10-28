@@ -14,7 +14,8 @@
  */
 package org.kie.kogito.rules.units;
 
-import org.kie.internal.ruleunit.RuleUnitVariable;
+
+import org.kie.kogito.internal.ruleunit.RuleUnitVariable;
 
 import static org.drools.reflective.util.ClassUtils.convertFromPrimitiveType;
 import static org.kie.kogito.rules.units.StringUtils.capitalize;
@@ -41,30 +42,37 @@ public final class SimpleRuleUnitVariable implements RuleUnitVariable {
         this(name, type, null, true);
     }
 
+    @Override
     public boolean isDataSource() {
         return dataSourceParameterType != null;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getter() {
         return getter;
     }
 
+    @Override
     public String setter() {
         return setter;
     }
 
+    @Override
     public Class<?> getType() {
         return type;
     }
 
+    @Override
     public Class<?> getDataSourceParameterType() {
         return dataSourceParameterType;
     }
 
+    @Override
     public Class<?> getBoxedVarType() {
         return boxedVarType;
     }

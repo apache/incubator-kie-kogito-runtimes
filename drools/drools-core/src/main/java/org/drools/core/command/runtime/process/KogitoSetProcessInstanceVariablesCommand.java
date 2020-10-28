@@ -23,8 +23,8 @@ import org.kie.api.runtime.Context;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
-import org.kie.internal.command.ProcessInstanceIdCommand;
 import org.kie.internal.command.RegistryContext;
+import org.kie.kogito.internal.command.ProcessInstanceIdCommand;
 
 public class KogitoSetProcessInstanceVariablesCommand implements ExecutableCommand<Void>,
         ProcessInstanceIdCommand {
@@ -65,9 +65,10 @@ public class KogitoSetProcessInstanceVariablesCommand implements ExecutableComma
         this.variables = variables;
     }
 
+    @Override
     public Void execute( Context context) {
         KieSession ksession = (( RegistryContext ) context).lookup( KieSession.class);
-        ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
+        ProcessInstance processInstance = ksession.getProcessInstance(Long.parseLong(processInstanceId));
         if (processInstance != null) {
             if (variables != null) {
                 for (Map.Entry<String, Object> entry : variables.entrySet()) {
@@ -78,6 +79,7 @@ public class KogitoSetProcessInstanceVariablesCommand implements ExecutableComma
         return null;
     }
 
+    @Override
     public String toString() {
         final StringBuilder result = new StringBuilder();
         result.append("WorkflowProcessInstance processInstance = (WorkflowProcessInstance) session.getProcessInstance(");

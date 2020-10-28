@@ -19,7 +19,7 @@ package org.jbpm.process.instance;
 import java.util.Date;
 import java.util.Map;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.rule.AgendaFilter;
@@ -29,12 +29,13 @@ import org.kie.api.runtime.rule.AgendaFilter;
  * It contains all the runtime status information about the running process.
  * A process can have multiple instances.
  */
-public interface ProcessInstance extends org.kie.api.runtime.process.ProcessInstance,
+public interface ProcessInstance extends org.kie.kogito.internal.runtime.process.ProcessInstance,
                                          ContextInstanceContainer,
                                          ContextableInstance {
 
     void setId(String id);
 
+    @Override
     Process getProcess();
 
     void setProcess(Process process);

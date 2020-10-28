@@ -15,6 +15,8 @@
 
 package org.jbpm.compiler.canonical;
 
+import java.util.Collection;
+
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -28,8 +30,8 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.internal.ruleunit.RuleUnitVariable;
+import org.kie.kogito.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataObserver;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;
@@ -67,7 +69,7 @@ public class RuleUnitMetaModel {
 
     public NodeList<Statement> hoistVars() {
         NodeList<Statement> statements = new NodeList<>();
-        for (RuleUnitVariable v : ruleUnitDescription.getUnitVarDeclarations()) {
+        for (RuleUnitVariable v : (Collection<RuleUnitVariable>)ruleUnitDescription.getUnitVarDeclarations()) {
             statements.add(new ExpressionStmt(assignVar(v)));
         }
         return statements;

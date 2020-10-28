@@ -16,7 +16,7 @@ package org.jbpm.serverless.workflow;
 
 import org.jbpm.process.core.Context;
 import org.jbpm.workflow.core.NodeContainer;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 public class TestNodeContainer implements NodeContainer {
     @Override

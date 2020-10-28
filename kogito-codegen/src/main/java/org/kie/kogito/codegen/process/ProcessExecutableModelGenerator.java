@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 import static org.kie.kogito.codegen.metadata.ImageMetaData.LABEL_PREFIX;
 

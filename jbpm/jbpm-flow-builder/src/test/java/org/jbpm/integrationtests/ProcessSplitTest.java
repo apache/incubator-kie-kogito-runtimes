@@ -34,12 +34,13 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderError;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,18 +115,15 @@ public class ProcessSplitTest extends AbstractBaseTest {
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", john.getName());
-        ProcessInstance processInstance1 = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance1 = workingMemory.startProcess("org.jbpm.process-split", params);
         
         params = new HashMap<String, Object>();
         params.put("name", jane.getName());
-        ProcessInstance processInstance2 = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance2 = workingMemory.startProcess("org.jbpm.process-split", params);
         
         params = new HashMap<String, Object>();
         params.put("name", julie.getName());
-        ProcessInstance processInstance3 = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance3 = workingMemory.startProcess("org.jbpm.process-split", params);
         
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance1.getState());
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance2.getState());
@@ -192,7 +190,7 @@ public class ProcessSplitTest extends AbstractBaseTest {
         Collection<KiePackage> kpkgs = kbuilder.getKnowledgePackages();
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( kpkgs );        
-        KieSession ksession = kbase.newKieSession();
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());
         List<Long> list = new ArrayList<Long>();
         ksession.setGlobal("list", list);
 
@@ -281,8 +279,7 @@ public class ProcessSplitTest extends AbstractBaseTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("person", new Person("John Doe"));
-        ProcessInstance processInstance = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance = workingMemory.startProcess("org.jbpm.process-split", params);
         
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(1, list.size());
@@ -346,8 +343,7 @@ public class ProcessSplitTest extends AbstractBaseTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", "John Doe");
-        ProcessInstance processInstance = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance = workingMemory.startProcess("org.jbpm.process-split", params);
         
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(1, list.size());
@@ -411,8 +407,7 @@ public class ProcessSplitTest extends AbstractBaseTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("person", new Person("John Doe"));
-        ProcessInstance processInstance = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance = workingMemory.startProcess("org.jbpm.process-split", params);
         
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(1, list.size());
@@ -476,8 +471,7 @@ public class ProcessSplitTest extends AbstractBaseTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", "John Doe");
-        ProcessInstance processInstance = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance = workingMemory.startProcess("org.jbpm.process-split", params);
         
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(1, list.size());
@@ -541,8 +535,7 @@ public class ProcessSplitTest extends AbstractBaseTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", "John Doe");
-        ProcessInstance processInstance = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance = workingMemory.startProcess("org.jbpm.process-split", params);
         
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(1, list.size());
@@ -606,8 +599,7 @@ public class ProcessSplitTest extends AbstractBaseTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", "John Doe");
-        ProcessInstance processInstance = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance = workingMemory.startProcess("org.jbpm.process-split", params);
         
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(1, list.size());
@@ -671,8 +663,7 @@ public class ProcessSplitTest extends AbstractBaseTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", "John Doe");
-        ProcessInstance processInstance = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split", params);
+        ProcessInstance processInstance = workingMemory.startProcess("org.jbpm.process-split", params);
         
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(1, list.size());
@@ -729,8 +720,7 @@ public class ProcessSplitTest extends AbstractBaseTest {
         List<Long> list = new ArrayList<Long>();
         workingMemory.setGlobal("list", list);
 
-        ProcessInstance processInstance = ( ProcessInstance )
-            workingMemory.startProcess("org.jbpm.process-split");
+        ProcessInstance processInstance = workingMemory.startProcess("org.jbpm.process-split");
         
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(1, list.size());

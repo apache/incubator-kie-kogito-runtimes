@@ -16,7 +16,7 @@
 
 package org.jbpm.workflow.instance.impl;
 
-import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.ImmutableDefaultFactory;
 import org.mvel2.integration.impl.SimpleValueResolver;

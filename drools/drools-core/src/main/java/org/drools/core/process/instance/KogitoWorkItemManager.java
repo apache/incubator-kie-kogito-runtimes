@@ -17,7 +17,7 @@ package org.drools.core.process.instance;
 
 import java.util.Map;
 
-public interface KogitoWorkItemManager extends WorkItemManager {
+public interface KogitoWorkItemManager extends org.drools.kogito.core.process.instance.WorkItemManager {
 
     void internalExecuteWorkItem( KogitoWorkItem workItem);
 

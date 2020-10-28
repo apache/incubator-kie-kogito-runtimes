@@ -27,7 +27,7 @@ import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.process.core.event.EventTransformer;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
-import org.kie.api.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Connection;
 
 /**
  * Default implementation of a start node.

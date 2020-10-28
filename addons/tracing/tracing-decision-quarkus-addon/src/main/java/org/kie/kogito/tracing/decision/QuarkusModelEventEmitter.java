@@ -22,7 +22,7 @@ import javax.inject.Singleton;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.subjects.PublishSubject;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
-import org.kie.internal.decision.DecisionModelResourcesProvider;
+import org.kie.kogito.internal.decision.DecisionModelResourcesProvider;
 import org.reactivestreams.Publisher;
 
 @Singleton

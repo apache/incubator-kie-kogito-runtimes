@@ -17,7 +17,7 @@
 package org.kie.kogito.codegen.rules;
 
 import com.github.javaparser.ast.stmt.BlockStmt;
-import org.kie.internal.ruleunit.RuleUnitVariable;
+import org.kie.kogito.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;
 import org.kie.kogito.rules.SingletonStore;

@@ -16,8 +16,8 @@
 
 package org.jbpm.workflow.instance.node;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.impl.KnowledgeBaseFactory;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.test.util.AbstractBaseTest;
@@ -28,13 +28,15 @@ import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactoryRegistry;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EndNodeInstanceTest extends AbstractBaseTest {
 	
+    @Override
     public void addLogger() { 
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -42,7 +44,7 @@ public class EndNodeInstanceTest extends AbstractBaseTest {
     @Test
     public void testEndNode() {
         KieBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        KieSession ksession = kbase.newKieSession();        
+        KieSession ksession = new KieSessionBridge(kbase.newKieSession());        
         
         MockNode mockNode = new MockNode();        
         MockNodeInstanceFactory factory = new MockNodeInstanceFactory( new MockNodeInstance( mockNode ) );

@@ -62,14 +62,13 @@ import org.kie.internal.builder.DecisionTableInputType;
 import org.kie.internal.builder.ResourceChangeSet;
 import org.kie.internal.builder.RuleTemplateConfiguration;
 import org.kie.internal.io.ResourceTypeImpl;
-import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
+import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.KogitoPackageSources;
-import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
@@ -77,13 +76,13 @@ import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.kogito.conf.ClockType;
 import org.kie.kogito.conf.EventProcessingType;
 import org.kie.kogito.grafana.GrafanaConfigurationWriter;
+import org.kie.kogito.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.units.AssignableChecker;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 
-import static java.util.stream.Collectors.toList;
-
 import static com.github.javaparser.StaticJavaParser.parse;
+import static java.util.stream.Collectors.toList;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 import static org.kie.kogito.codegen.ApplicationGenerator.log;
 import static org.kie.kogito.codegen.ApplicationGenerator.logger;
@@ -145,6 +144,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         this.packageName = packageName;
     }
 
+    @Override
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
     }
@@ -163,6 +163,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return moduleGenerator;
     }
 
+    @Override
     public List<org.kie.kogito.codegen.GeneratedFile> generate() {
         ReleaseIdImpl dummyReleaseId = new ReleaseIdImpl("dummy:dummy:0.0.0");
         if (!decisionTableSupported &&
@@ -423,7 +424,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         unitKieSessionModel.setType(KieSessionModel.KieSessionType.STATEFUL);
         ClockType clockType = config.getDefaultedClockType();
         if (clockType == ClockType.PSEUDO) {
-            unitKieSessionModel.setClockType(ClockTypeOption.PSEUDO);
+            unitKieSessionModel.setClockType(ClockTypeOption.get(ClockType.PSEUDO.toString().toLowerCase()));
         }
     }
 

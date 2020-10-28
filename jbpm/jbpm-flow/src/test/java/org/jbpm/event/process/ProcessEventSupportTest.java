@@ -16,8 +16,6 @@
 
 package org.jbpm.event.process;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,20 +39,24 @@ import org.jbpm.workflow.core.node.EventTrigger;
 import org.jbpm.workflow.core.node.StartNode;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.KiePackage;
-import org.kie.api.event.process.ProcessCompletedEvent;
-import org.kie.api.event.process.ProcessEvent;
-import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessStartedEvent;
-import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessContext;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.event.process.ProcessCompletedEvent;
+import org.kie.kogito.internal.event.process.ProcessEvent;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessNodeLeftEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.event.process.ProcessStartedEvent;
+import org.kie.kogito.internal.event.process.ProcessVariableChangedEvent;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessEventSupportTest extends AbstractBaseTest {
     
+    @Override
     public void addLogger() { 
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -78,7 +80,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         actionNode.setName("Print");
         DroolsAction action = new DroolsConsequenceAction("java", null);
         action.setMetaData("Action", new Action() {
-			public void execute(ProcessContext context) throws Exception {
+			@Override
+            public void execute(ProcessContext context) throws Exception {
             	logger.info("Executed action");
 			}
         });
@@ -104,47 +107,57 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         pkgs.add( pkg );
         kbase.addPackages( pkgs );
         
-        KieSession session = kbase.newKieSession();
+        KieSession session = new KieSessionBridge(kbase.newKieSession());
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
-        	public void afterNodeLeft(ProcessNodeLeftEvent event) {
+        	@Override
+            public void afterNodeLeft(ProcessNodeLeftEvent event) {
 				processEventList.add(event);
 			}
 
-			public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
+			@Override
+            public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
 				processEventList.add(event);
 			}
 
-			public void afterProcessCompleted(ProcessCompletedEvent event) {
+			@Override
+            public void afterProcessCompleted(ProcessCompletedEvent event) {
 				processEventList.add(event);
 			}
 
-			public void afterProcessStarted(ProcessStartedEvent event) {
+			@Override
+            public void afterProcessStarted(ProcessStartedEvent event) {
 				processEventList.add(event);
 			}
 
-			public void beforeNodeLeft(ProcessNodeLeftEvent event) {
+			@Override
+            public void beforeNodeLeft(ProcessNodeLeftEvent event) {
 				processEventList.add(event);
 			}
 
-			public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
+			@Override
+            public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
 				processEventList.add(event);
 			}
 
-			public void beforeProcessCompleted(ProcessCompletedEvent event) {
+			@Override
+            public void beforeProcessCompleted(ProcessCompletedEvent event) {
 				processEventList.add(event);
 			}
 
-			public void beforeProcessStarted(ProcessStartedEvent event) {
+			@Override
+            public void beforeProcessStarted(ProcessStartedEvent event) {
 				processEventList.add(event);
 			}
 
-			public void beforeVariableChanged(ProcessVariableChangedEvent event) {
+			@Override
+            public void beforeVariableChanged(ProcessVariableChangedEvent event) {
 				processEventList.add(event);
 			}
 
-			public void afterVariableChanged(ProcessVariableChangedEvent event) {
+			@Override
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
 				processEventList.add(event);
 			}
 
@@ -192,6 +205,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         DroolsAction action = new DroolsConsequenceAction("java", null);
         action.setMetaData("Action", new Action() {
 
+            @Override
             public void execute(ProcessContext context) throws Exception {
                 logger.info("Executed action");
             }
@@ -212,39 +226,49 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         pkgs.add(pkg);
         kbase.addPackages(pkgs);
 
-        KieSession session = kbase.newKieSession();
+        KieSession session = new KieSessionBridge(kbase.newKieSession());
         final List<Integer> processEventStatusList = new ArrayList<Integer>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
+            @Override
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
             }
 
+            @Override
             public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
             }
 
+            @Override
             public void afterProcessCompleted(ProcessCompletedEvent event) {
                 processEventStatusList.add(new Integer(event.getProcessInstance().getState()));
             }
 
+            @Override
             public void afterProcessStarted(ProcessStartedEvent event) {
             }
 
+            @Override
             public void beforeNodeLeft(ProcessNodeLeftEvent event) {
             }
 
+            @Override
             public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
             }
 
+            @Override
             public void beforeProcessCompleted(ProcessCompletedEvent event) {
                 processEventStatusList.add(new Integer(event.getProcessInstance().getState()));
             }
 
+            @Override
             public void beforeProcessStarted(ProcessStartedEvent event) {
             }
 
+            @Override
             public void beforeVariableChanged(ProcessVariableChangedEvent event) {
             }
 
+            @Override
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
             }
 
@@ -277,6 +301,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         actionNode.setName("Print");
         DroolsAction action = new DroolsConsequenceAction("java", null);
         action.setMetaData("Action", new Action() {
+            @Override
             public void execute(ProcessContext context) throws Exception {
                 logger.info("Executed action");
             }
@@ -318,46 +343,56 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         pkgs.add( pkg );
         kbase.addPackages( pkgs );
         
-        KieSession session = kbase.newKieSession();
+        KieSession session = new KieSessionBridge(kbase.newKieSession());
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
+            @Override
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterProcessCompleted(ProcessCompletedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterProcessStarted(ProcessStartedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeNodeLeft(ProcessNodeLeftEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeProcessCompleted(ProcessCompletedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeProcessStarted(ProcessStartedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeVariableChanged(ProcessVariableChangedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 processEventList.add(event);
             }
@@ -415,6 +450,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         actionNode.setName("Print");
         DroolsAction action = new DroolsConsequenceAction("java", null);
         action.setMetaData("Action", new Action() {
+            @Override
             public void execute(ProcessContext context) throws Exception {
                 logger.info("Executed action");
             }
@@ -442,46 +478,56 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         pkgs.add( pkg );
         kbase.addPackages( pkgs );
         
-        KieSession session = kbase.newKieSession();
+        KieSession session = new KieSessionBridge(kbase.newKieSession());
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
+            @Override
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterProcessCompleted(ProcessCompletedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterProcessStarted(ProcessStartedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeNodeLeft(ProcessNodeLeftEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeProcessCompleted(ProcessCompletedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeProcessStarted(ProcessStartedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeVariableChanged(ProcessVariableChangedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 processEventList.add(event);
             }
@@ -532,6 +578,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         actionNode.setName("Print");
         DroolsAction action = new DroolsConsequenceAction("java", null);
         action.setMetaData("Action", new Action() {
+            @Override
             public void execute(ProcessContext context) throws Exception {
                 logger.info("Executed action");
             }
@@ -558,46 +605,56 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         pkgs.add( pkg );
         kbase.addPackages( pkgs );
         
-        KieSession session = kbase.newKieSession();
+        KieSession session = new KieSessionBridge(kbase.newKieSession());
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
+            @Override
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterProcessCompleted(ProcessCompletedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterProcessStarted(ProcessStartedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeNodeLeft(ProcessNodeLeftEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeProcessCompleted(ProcessCompletedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeProcessStarted(ProcessStartedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void beforeVariableChanged(ProcessVariableChangedEvent event) {
                 processEventList.add(event);
             }
 
+            @Override
             public void afterVariableChanged(ProcessVariableChangedEvent event) {
                 processEventList.add(event);
             }

@@ -24,15 +24,12 @@ import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.InternalWorkingMemoryEntryPoint;
 import org.drools.core.factmodel.traits.Thing;
 import org.drools.core.kogito.factory.KogitoDefaultFactHandle;
-import org.drools.core.spi.AbstractProcessContext;
 import org.drools.core.spi.FactHandleFactory;
 import org.drools.core.spi.KnowledgeHelper;
-import org.drools.core.spi.KogitoProcessContext;
 import org.drools.core.time.KogitoTimerServiceFactory;
 import org.drools.core.time.TimerService;
 import org.drools.core.util.bitmask.BitMask;
 import org.kie.api.runtime.Environment;
-import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.Application;
@@ -63,26 +60,26 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
 
     @Override
     public ProcessInstance getProcessInstance(Object processInstanceId) {
-        return getProcessInstance( (String) processInstanceId );
+        return getProcessInstance( processInstanceId );
     }
 
     @Override
-    public ProcessInstance getProcessInstance(String processInstanceId) {
+    public ProcessInstance getProcessInstance(long processInstanceId) {
         return getProcessRuntime().getProcessInstance( processInstanceId );
     }
 
     @Override
-    public ProcessInstance startProcessInstance(String processInstanceId) {
+    public ProcessInstance startProcessInstance(long processInstanceId) {
         return getProcessRuntime().startProcessInstance( processInstanceId );
     }
 
     @Override
-    public void abortProcessInstance(String processInstanceId) {
+    public void abortProcessInstance(long processInstanceId) {
         getProcessRuntime().abortProcessInstance( processInstanceId );
     }
 
     @Override
-    public void signalEvent(String type, Object event, String processInstanceId) {
+    public void signalEvent(String type, Object event, long processInstanceId) {
         getProcessRuntime().signalEvent( type, event, processInstanceId );
     }
 
@@ -162,16 +159,6 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
         }
 
         @Override
-        protected boolean sameNodeInstance( NodeInstance subNodeInstance, String nodeInstanceId ) {
-            return subNodeInstance.getId().equals( nodeInstanceId );
-        }
-
-        @Override
-        protected AbstractProcessContext createProcessContext() {
-            return new KogitoProcessContext(workingMemory.getKnowledgeRuntime());
-        }
-
-        @Override
         protected WrappedStatefulKnowledgeSessionForRHS createWrappedSession( WorkingMemory workingMemory ) {
             return new KogitoWrappedStatefulKnowledgeSessionForRHS( (KogitoStatefulKnowledgeSessionImpl) workingMemory );
         }
@@ -184,7 +171,7 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
         }
 
         @Override
-        public ProcessInstance getProcessInstance(String id) {
+        public ProcessInstance getProcessInstance(long id) {
             return ((KogitoStatefulKnowledgeSessionImpl)delegate).getProcessInstance(id);
         }
     }

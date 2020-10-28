@@ -23,8 +23,8 @@ import java.util.Map;
 
 import org.kie.api.KieBase;
 import org.kie.api.definition.process.Process;
-import org.kie.api.runtime.KieRuntime;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.KieRuntime;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 public final class StartProcessHelper {
     

@@ -27,10 +27,10 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.TemplateInstantiationException;
 import org.kie.kogito.codegen.process.MessageProducerGenerator;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
@@ -45,6 +45,7 @@ public class CloudEventsMessageProducerGenerator extends MessageProducerGenerato
         super(process, modelfqcn, processfqcn, messageDataEventClassName, trigger);
     }
 
+    @Override
     public String generate() {
         CompilationUnit clazz = parse(
                 this.getClass().getResourceAsStream("/class-templates/events/CloudEventsMessageProducerTemplate.java"));

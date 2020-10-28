@@ -50,17 +50,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.kie.api.KieBase;
 import org.kie.api.command.ExecutableCommand;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.runtime.Context;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.command.RegistryContext;
+import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.event.process.ProcessStartedEvent;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1361,7 +1361,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         final List<Long> list = new ArrayList<Long>();
         ksession.addEventListener(new DefaultProcessEventListener() {
-            public void afterNodeTriggered(org.kie.api.event.process.ProcessNodeTriggeredEvent event) {
+            public void afterNodeTriggered(org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent event) {
                 if ("Task2".equals(event.getNodeInstance().getNodeName())) {
                     list.add(event.getNodeInstance().getNodeId());
                 }

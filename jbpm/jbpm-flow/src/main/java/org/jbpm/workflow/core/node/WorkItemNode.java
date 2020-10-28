@@ -23,13 +23,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.kie.api.definition.process.Connection;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.AbstractContext;
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.process.core.impl.ContextContainerImpl;
+import org.kie.kogito.internal.definition.process.Connection;
 
 /**
  * Default implementation of a task node.

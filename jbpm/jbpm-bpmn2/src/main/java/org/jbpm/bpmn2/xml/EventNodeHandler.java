@@ -25,7 +25,7 @@ import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.EventNode;
-import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.NodeContainer;
 import org.xml.sax.Attributes;
 
 public class EventNodeHandler extends AbstractNodeHandler {

@@ -17,12 +17,12 @@ package org.drools.core.event;
 
 import java.util.List;
 
-import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.api.runtime.KieRuntime;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.event.process.ProcessVariableChangedEvent;
+import org.kie.kogito.internal.runtime.KieRuntime;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
-public class KogitoProcessVariableChangedEventImpl extends ProcessVariableChangedEventImpl implements ProcessVariableChangedEvent {
+public class KogitoProcessVariableChangedEventImpl extends org.drools.kogito.core.event.ProcessVariableChangedEventImpl implements ProcessVariableChangedEvent {
 
     private NodeInstance nodeInstance;
 
@@ -38,6 +38,7 @@ public class KogitoProcessVariableChangedEventImpl extends ProcessVariableChange
         return this.nodeInstance;
     }
 
+    @Override
     public String toString() {
         return "==>[ProcessVariableChanged(id=" + getVariableId() + "; instanceId=" + getVariableInstanceId() + "; oldValue=" + getOldValue() + "; newValue=" + getNewValue()
                 + "; processName=" + getProcessInstance().getProcessName() + "; processId=" + getProcessInstance().getProcessId() + ")]";

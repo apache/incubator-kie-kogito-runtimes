@@ -25,15 +25,14 @@ import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.compiler.compiler.PackageRegistry;
 import org.drools.compiler.lang.descr.ActionDescr;
 import org.drools.compiler.rule.builder.PackageBuildContext;
-import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.definitions.impl.KnowledgePackageImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
-import org.drools.core.spi.ProcessContext;
 import org.drools.mvel.MVELDialectRuntimeData;
 import org.drools.mvel.builder.MVELDialect;
 import org.jbpm.process.builder.dialect.mvel.MVELActionBuilder;
+import org.jbpm.process.instance.context.KogitoProcessContext;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.process.instance.impl.MVELAction;
 import org.jbpm.test.util.AbstractBaseTest;
@@ -41,7 +40,8 @@ import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -76,16 +76,15 @@ public class MVELDecisionBuilderTest extends AbstractBaseTest {
 
         final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( Arrays.asList(pkgBuilder.getPackages()) );
-        final KieSession wm = kbase.newKieSession();
+        final KieSession wm = new KieSessionBridge(kbase.newKieSession());
 
         List<String> list = new ArrayList<String>();
         wm.setGlobal( "list", list );        
         
         MVELDialectRuntimeData data = (MVELDialectRuntimeData) pkgBuilder.getPackage("pkg1").getDialectRuntimeRegistry().getDialectData( "mvel");
         
-        ProcessContext processContext = new ProcessContext( ((InternalWorkingMemory) wm).getKnowledgeRuntime() );
         ((MVELAction) actionNode.getAction().getMetaData("Action")).compile( data );
-        ((Action)actionNode.getAction().getMetaData("Action")).execute( processContext );
+        ((Action)actionNode.getAction().getMetaData("Action")).execute( new KogitoProcessContext( wm ));
         
         assertEquals("hello world", list.get(0) );
     }    

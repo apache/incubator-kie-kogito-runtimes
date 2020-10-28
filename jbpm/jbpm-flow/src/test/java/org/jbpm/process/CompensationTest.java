@@ -48,10 +48,10 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.kie.api.definition.process.NodeContainer;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessContext;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.slf4j.LoggerFactory;
 
 import static org.jbpm.process.test.NodeCreator.connect;
@@ -60,6 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CompensationTest extends AbstractBaseTest {
 
+    @Override
     public void addLogger() { 
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -78,7 +79,7 @@ public class CompensationTest extends AbstractBaseTest {
      * General HELPER methods
      */
 
-    private void addCompensationScope(final Node node, final org.kie.api.definition.process.NodeContainer parentContainer,
+    private void addCompensationScope(final Node node, final org.kie.kogito.internal.definition.process.NodeContainer parentContainer,
             final String compensationHandlerId) {
         ContextContainer contextContainer = (ContextContainer) parentContainer;
         CompensationScope scope = null;
@@ -107,10 +108,10 @@ public class CompensationTest extends AbstractBaseTest {
 
     private Node findNode(RuleFlowProcess process, String nodeName) { 
         Node found = null;
-        Queue<org.kie.api.definition.process.Node> nodes = new LinkedList<org.kie.api.definition.process.Node>();
+        Queue<org.kie.kogito.internal.definition.process.Node> nodes = new LinkedList<org.kie.kogito.internal.definition.process.Node>();
         nodes.addAll(Arrays.asList(process.getNodes()));
         while( ! nodes.isEmpty() ) { 
-            org.kie.api.definition.process.Node node = nodes.poll();
+            org.kie.kogito.internal.definition.process.Node node = nodes.poll();
             if (node.getName().equals(nodeName) ) {
                 found = (Node) node;
             }
@@ -402,6 +403,7 @@ public class CompensationTest extends AbstractBaseTest {
         actionNode.setName("Execute");
         DroolsAction action = new DroolsConsequenceAction("java", null);
         action.setMetaData("Action", new Action() {
+            @Override
             public void execute(ProcessContext context) throws Exception {
                 eventList.add("Executed action");
             }
@@ -529,6 +531,7 @@ public class CompensationTest extends AbstractBaseTest {
             actionNode.setName("Execute");
             DroolsAction action = new DroolsConsequenceAction("java", null);
             action.setMetaData("Action", new Action() {
+                @Override
                 public void execute(ProcessContext context) throws Exception {
                     eventList.add("Executed action");
                 }
@@ -696,6 +699,7 @@ public class CompensationTest extends AbstractBaseTest {
         actionNode.setName("Execute");
         DroolsAction action = new DroolsConsequenceAction("java", null);
         action.setMetaData("Action", new Action() {
+            @Override
             public void execute(ProcessContext context) throws Exception {
                 eventList.add("action" + id);
             }

@@ -18,8 +18,9 @@ package org.kie.kogito.process.workitem;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
+
 
 /**
  * Complete life cycle that can be applied to work items. It defines

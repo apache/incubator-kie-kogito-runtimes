@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -71,14 +71,14 @@ import org.jbpm.workflow.instance.node.EventNodeInstanceInterface;
 import org.jbpm.workflow.instance.node.EventSubProcessNodeInstance;
 import org.jbpm.workflow.instance.node.FaultNodeInstance;
 import org.jbpm.workflow.instance.node.StateBasedNodeInstance;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.NodeInstanceContainer;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.internal.process.CorrelationKey;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.NodeInstanceContainer;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.process.BaseEventDescription;
@@ -190,7 +190,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     @Override
-    public Collection<org.kie.api.runtime.process.NodeInstance> getNodeInstances() {
+    public Collection<org.kie.kogito.internal.runtime.process.NodeInstance> getNodeInstances() {
         return new ArrayList<>(getNodeInstances(false));
     }
 
@@ -228,7 +228,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private void addActiveNodeIds(NodeInstanceContainer container, List<String> result) {
-        for (org.kie.api.runtime.process.NodeInstance nodeInstance : container.getNodeInstances()) {
+        for (org.kie.kogito.internal.runtime.process.NodeInstance nodeInstance : container.getNodeInstances()) {
             result.add(((NodeImpl) nodeInstance.getNode()).getUniqueId());
             if (nodeInstance instanceof NodeInstanceContainer) {
                 addActiveNodeIds((NodeInstanceContainer) nodeInstance, result);
@@ -948,6 +948,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         this.deploymentId = deploymentId;
     }
 
+    @Override
     public String getCorrelationKey() {
         if (correlationKey == null && getMetaData().get(CORRELATION_KEY) != null) {
             this.correlationKey = ((CorrelationKey) getMetaData().get(CORRELATION_KEY)).toExternalForm();
@@ -969,6 +970,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         return endDate;
     }
 
+    @Override
     public void setStartDate(Date startDate) {
         if (this.startDate == null) {
             this.startDate = startDate;

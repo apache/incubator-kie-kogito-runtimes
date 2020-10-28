@@ -33,7 +33,7 @@ import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.EventSubProcessNode;
 import org.jbpm.workflow.core.node.ForEachNode;
 import org.jbpm.workflow.core.node.StartNode;
-import org.kie.api.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Connection;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -85,7 +85,7 @@ public class SubProcessHandler extends AbstractNodeHandler {
 				
 				forEachNode.setAutoComplete(((CompositeContextNode) node).isAutoComplete());
 				
-				for (org.kie.api.definition.process.Node subNode: ((CompositeContextNode) node).getNodes()) {
+				for (org.kie.kogito.internal.definition.process.Node subNode: ((CompositeContextNode) node).getNodes()) {
 			
 					forEachNode.addNode(subNode);
 				}
@@ -182,7 +182,7 @@ public class SubProcessHandler extends AbstractNodeHandler {
     }  
     
     protected void applyAsync(Node node, boolean isAsync) {
-        for (org.kie.api.definition.process.Node subNode: ((CompositeContextNode) node).getNodes()) {
+        for (org.kie.kogito.internal.definition.process.Node subNode: ((CompositeContextNode) node).getNodes()) {
             if (isAsync) {
                 List<Connection> incoming = subNode.getIncomingConnections(NodeImpl.CONNECTION_DEFAULT_TYPE);
                 if (incoming != null) {

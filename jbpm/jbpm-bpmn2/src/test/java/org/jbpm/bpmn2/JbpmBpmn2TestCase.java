@@ -33,10 +33,10 @@ import org.drools.core.audit.KogitoWorkingMemoryInMemoryLogger;
 import org.drools.core.audit.event.KogitoRuleFlowLogEvent;
 import org.drools.core.audit.event.KogitoRuleFlowNodeLogEvent;
 import org.drools.core.audit.event.LogEvent;
+import org.drools.core.impl.EnvironmentFactory;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.util.DroolsStreamUtils;
 import org.drools.mvel.MVELSafeHelper;
-import org.drools.core.impl.EnvironmentFactory;
 import org.jbpm.process.instance.event.DefaultSignalManagerFactory;
 import org.jbpm.process.instance.impl.DefaultProcessInstanceManagerFactory;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
@@ -52,19 +52,20 @@ import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.KieRepository;
 import org.kie.api.builder.Message.Level;
 import org.kie.api.definition.KiePackage;
-import org.kie.api.definition.process.Node;
 import org.kie.api.io.Resource;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.NodeInstanceContainer;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.internal.runtime.conf.ForceEagerActivationOption;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstanceContainer;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 import org.slf4j.Logger;
@@ -212,19 +213,19 @@ public abstract class JbpmBpmn2TestCase {
         
     }
 
-    protected StatefulKnowledgeSession createKnowledgeSession(KieBase kbase)
+    protected KieSession createKnowledgeSession(KieBase kbase)
             throws Exception {
         return createKnowledgeSession(kbase, null, null);
     }
 
-    protected StatefulKnowledgeSession createKnowledgeSession(KieBase kbase,
+    protected KieSession createKnowledgeSession(KieBase kbase,
             Environment env) throws Exception {
         return createKnowledgeSession(kbase, null, env);
     }
 
-    protected StatefulKnowledgeSession createKnowledgeSession(KieBase kbase,
+    protected KieSession createKnowledgeSession(KieBase kbase,
             KieSessionConfiguration conf, Environment env) throws Exception {
-        StatefulKnowledgeSession result;
+        KieSession result;
         if (conf == null) {
             conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
         }
@@ -240,13 +241,14 @@ public abstract class JbpmBpmn2TestCase {
                 DefaultProcessInstanceManagerFactory.class.getName());
         conf = SessionConfiguration.newInstance(defaultProps);
         conf.setOption(ForceEagerActivationOption.YES);
-        result = (StatefulKnowledgeSession) kbase.newKieSession(conf, env);
-        workingMemoryLogger = new KogitoWorkingMemoryInMemoryLogger(result);
+        org.kie.api.runtime.KieSession v7Session = kbase.newKieSession(conf, env);
+        result =  new KieSessionBridge(v7Session);
+        workingMemoryLogger = new KogitoWorkingMemoryInMemoryLogger(v7Session);
         
         return result;
     }
 
-    protected StatefulKnowledgeSession createKnowledgeSession(String... process)
+    protected KieSession createKnowledgeSession(String... process)
             throws Exception {
         KieBase kbase = createKnowledgeBase(process);
         return createKnowledgeSession(kbase);

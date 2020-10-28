@@ -15,7 +15,7 @@
 
 package org.drools.core;
 
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 public interface KogitoWorkingMemory extends WorkingMemory {
 

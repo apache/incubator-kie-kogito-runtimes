@@ -32,8 +32,8 @@ import org.jbpm.workflow.core.node.ActionNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.api.definition.process.Node;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.definition.process.Node;
 import org.kie.kogito.persistence.KogitoProcessInstancesFactory;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
@@ -50,9 +50,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ERROR;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ACTIVE;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_COMPLETED;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ERROR;
 
 @Testcontainers
 class MongoDBProcessInstancesIT {

@@ -40,10 +40,10 @@ import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.Process;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
@@ -61,10 +61,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ERROR;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ABORTED;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ACTIVE;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_COMPLETED;
+import static org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ERROR;
 
 public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
@@ -473,7 +473,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         byte[] data = marshaller.marshallProcessInstance(processInstance);
         assertNotNull(data);
         
-        processInstance = (ProcessInstance<BpmnVariables>) marshaller.unmarshallProcessInstance(data, process);
+        processInstance = marshaller.unmarshallProcessInstance(data, process);
 
 
         WorkItem workItem = workItemHandler.getWorkItem();

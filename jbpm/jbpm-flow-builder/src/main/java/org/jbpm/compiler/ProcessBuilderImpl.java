@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.FactoryConfigurationError;
+
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.compiler.compiler.BaseKnowledgeBuilderResultImpl;
@@ -71,13 +72,13 @@ import org.jbpm.workflow.core.node.Split;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.StateNode;
 import org.jbpm.workflow.core.node.Trigger;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.Process;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +105,7 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
         }
     }
 
+    @Override
     public List<BaseKnowledgeBuilderResultImpl> getErrors() {
         return errors;
     }
@@ -115,10 +117,10 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
         boolean hasErrors = false;
         ProcessValidator validator = ProcessValidatorRegistry.getInstance().getValidator(process, resource);
         if (validator == null) {
-            logger.warn("Could not find validator for process {}.", ((Process) process).getType());
+            logger.warn("Could not find validator for process {}.", process.getType());
             logger.warn("Continuing without validation of the process {} [{}]", process.getName(), process.getId());
         } else {
-            ProcessValidationError[] errors = validator.validateProcess((WorkflowProcess) process);
+            ProcessValidationError[] errors = validator.validateProcess(process);
             if (errors.length != 0) {
                 hasErrors = true;
                 for (int i = 0; i < errors.length; i++) {
@@ -268,6 +270,7 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
         }
     }
 
+    @Override
     public List<Process> addProcessFromXml(final Resource resource) throws IOException {
         Reader reader = resource.getReader();
         KnowledgeBuilderConfigurationImpl configuration = knowledgeBuilder.getBuilderConfiguration();

@@ -18,8 +18,8 @@ package org.jbpm.workflow.core.node;
 
 import java.util.function.Predicate;
 
-import org.kie.api.definition.process.Connection;
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
 
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 
@@ -52,6 +52,7 @@ public class MilestoneNode extends StateBasedNode implements Constrainable {
         return conditionPredicate == null || conditionPredicate.test(context);
     }
 
+    @Override
     public void validateAddIncomingConnection(final String type, final Connection connection) {
         super.validateAddIncomingConnection(type, connection);
         if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
@@ -62,6 +63,7 @@ public class MilestoneNode extends StateBasedNode implements Constrainable {
         }
     }
 
+    @Override
     public void validateAddOutgoingConnection(final String type, final Connection connection) {
         super.validateAddOutgoingConnection(type, connection);
         if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {

@@ -29,7 +29,7 @@ import org.drools.mvel.MVELDialectRuntimeData;
 import org.drools.mvel.expr.MVELCompilationUnit;
 import org.drools.mvel.expr.MVELCompileable;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.runtime.process.ProcessContext;
 import org.mvel2.integration.VariableResolverFactory;
 
 public class MVELAction
@@ -53,20 +53,24 @@ public class MVELAction
         this.id = id;
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         id = in.readUTF();
         unit = ( MVELCompilationUnit ) in.readObject();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeUTF( id );
         out.writeObject( unit );
     }
     
+    @Override
     public void compile(MVELDialectRuntimeData data) {
         expr = unit.getCompiledExpression( data );
     } 
 
+    @Override
     public void compile(MVELDialectRuntimeData data, RuleImpl rule) {
         expr = unit.getCompiledExpression( data );
     }
@@ -75,6 +79,7 @@ public class MVELAction
         return id;
     }
     
+    @Override
     public void execute(ProcessContext context) throws Exception {
         int length = unit.getOtherIdentifiers().length;
         Object[] vars = new Object[ length ];

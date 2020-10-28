@@ -19,13 +19,16 @@ package org.jbpm.bpmn2.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.*;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.ProcessRuntime;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 
 public class ReceiveTaskHandler implements WorkItemHandler {
     
     // TODO: use correlation instead of message id
-    private Map<String, String> waiting = new HashMap<String, String>();
+    private Map<String, String> waiting = new HashMap<>();
     private ProcessRuntime ksession;
     
     public ReceiveTaskHandler(KieSession ksession) {
@@ -36,6 +39,7 @@ public class ReceiveTaskHandler implements WorkItemHandler {
     	this.ksession = ksession;
     }
 
+    @Override
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
         String messageId = (String) workItem.getParameter("MessageId");
         waiting.put(messageId, workItem.getId());
@@ -51,6 +55,7 @@ public class ReceiveTaskHandler implements WorkItemHandler {
         ksession.getWorkItemManager().completeWorkItem(workItemId, results);
     }
 
+    @Override
     public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
     	String messageId = (String) workItem.getParameter("MessageId");
         waiting.remove(messageId);

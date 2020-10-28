@@ -36,7 +36,7 @@ import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
 import org.jbpm.workflow.instance.node.EventSubProcessNodeInstance;
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 import static org.jbpm.process.core.context.exception.CompensationScope.IMPLICIT_COMPENSATION_PREFIX;
 
@@ -132,7 +132,7 @@ public class CompensationScopeInstance extends ExceptionScopeInstance  {
 
     private void throwWorkflowRuntimeException(NodeInstanceContainer nodeInstanceContainer, ProcessInstance processInstance, String msg, Exception e) { 
         if( nodeInstanceContainer instanceof NodeInstance ) { 
-            throw new WorkflowRuntimeException((org.kie.api.runtime.process.NodeInstance) nodeInstanceContainer, processInstance, msg, e );
+            throw new WorkflowRuntimeException((org.kie.kogito.internal.runtime.process.NodeInstance) nodeInstanceContainer, processInstance, msg, e );
         } else {
             throw new WorkflowRuntimeException(null, processInstance, msg, e );
         }

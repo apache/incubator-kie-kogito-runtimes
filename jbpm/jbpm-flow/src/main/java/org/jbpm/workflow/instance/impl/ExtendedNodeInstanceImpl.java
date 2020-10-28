@@ -22,7 +22,7 @@ import java.util.List;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
 import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;

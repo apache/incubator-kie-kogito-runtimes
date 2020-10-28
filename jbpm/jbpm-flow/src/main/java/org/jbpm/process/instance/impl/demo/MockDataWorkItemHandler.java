@@ -19,9 +19,9 @@ package org.jbpm.process.instance.impl.demo;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 
 /**
  * Simple work item handler that allows to provide output data or supplier

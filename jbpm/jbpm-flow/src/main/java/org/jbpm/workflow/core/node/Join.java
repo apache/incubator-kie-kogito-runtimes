@@ -16,8 +16,8 @@
 
 package org.jbpm.workflow.core.node;
 
-import org.kie.api.definition.process.Connection;
 import org.jbpm.workflow.core.impl.NodeImpl;
+import org.kie.kogito.internal.definition.process.Connection;
 
 /**
  * Default implementation of a join.

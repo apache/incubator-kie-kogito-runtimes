@@ -1,6 +1,6 @@
 import java.util.List;
 
-import org.kie.api.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessEventListenerConfig;

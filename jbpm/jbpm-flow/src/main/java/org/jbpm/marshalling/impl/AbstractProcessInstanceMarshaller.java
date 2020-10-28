@@ -33,6 +33,7 @@ import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.MarshallerWriteContext;
 import org.drools.core.marshalling.impl.PersisterEnums;
 import org.drools.core.util.StringUtils;
+import org.drools.kogito.core.common.KogitoInternalKnowledgeRuntime;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.context.exclusive.ExclusiveGroup;
 import org.jbpm.process.core.context.swimlane.SwimlaneContext;
@@ -43,13 +44,24 @@ import org.jbpm.process.instance.context.swimlane.SwimlaneContextInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
-import org.jbpm.workflow.instance.node.*;
+import org.jbpm.workflow.instance.node.CompositeContextNodeInstance;
+import org.jbpm.workflow.instance.node.DynamicNodeInstance;
+import org.jbpm.workflow.instance.node.EventNodeInstance;
+import org.jbpm.workflow.instance.node.ForEachNodeInstance;
+import org.jbpm.workflow.instance.node.HumanTaskNodeInstance;
+import org.jbpm.workflow.instance.node.JoinInstance;
+import org.jbpm.workflow.instance.node.MilestoneNodeInstance;
+import org.jbpm.workflow.instance.node.RuleSetNodeInstance;
+import org.jbpm.workflow.instance.node.StateNodeInstance;
+import org.jbpm.workflow.instance.node.SubProcessNodeInstance;
+import org.jbpm.workflow.instance.node.TimerNodeInstance;
+import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.definition.process.Process;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.NodeInstanceContainer;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstanceContainer;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 
 /**
  * Default implementation of a process instance marshaller.
@@ -59,6 +71,7 @@ public abstract class AbstractProcessInstanceMarshaller implements
         ProcessInstanceMarshaller {
 
     // Output methods
+    @Override
     public Object writeProcessInstance(MarshallerWriteContext context,
             ProcessInstance processInstance) throws IOException {        
         WorkflowProcessInstanceImpl workFlow = (WorkflowProcessInstanceImpl) processInstance;
@@ -83,9 +96,10 @@ public abstract class AbstractProcessInstanceMarshaller implements
         Collections.sort(nodeInstances,
                 new Comparator<NodeInstance>() {
 
+                    @Override
                     public int compare(NodeInstance o1,
                             NodeInstance o2) {
-                        return (int) (o1.getId().compareTo(o2.getId()));
+                        return (o1.getId().compareTo(o2.getId()));
                     }
                 });
         for (NodeInstance nodeInstance : nodeInstances) {
@@ -118,6 +132,7 @@ public abstract class AbstractProcessInstanceMarshaller implements
         Collections.sort(keys,
                 new Comparator<String>() {
 
+                    @Override
                     public int compare(String o1,
                             String o2) {
                         return o1.compareTo(o2);
@@ -156,6 +171,7 @@ public abstract class AbstractProcessInstanceMarshaller implements
 
     }
 
+    @Override
     public Object writeNodeInstance(MarshallerWriteContext context,
             NodeInstance nodeInstance) throws IOException {
         ObjectOutputStream stream = (ObjectOutputStream) context;
@@ -244,6 +260,7 @@ public abstract class AbstractProcessInstanceMarshaller implements
             Collections.sort(keys,
                     new Comparator<Long>() {
 
+                        @Override
                         public int compare(Long o1,
                                 Long o2) {
                             return o1.compareTo(o2);
@@ -290,7 +307,8 @@ public abstract class AbstractProcessInstanceMarshaller implements
 	            List<String> keys = new ArrayList<String>(variables.keySet());
 	            Collections.sort(keys,
 	                    new Comparator<String>() {
-	                        public int compare(String o1,
+	                        @Override
+                            public int compare(String o1,
 	                                String o2) {
 	                            return o1.compareTo(o2);
 	                        }
@@ -305,9 +323,10 @@ public abstract class AbstractProcessInstanceMarshaller implements
             Collections.sort(nodeInstances,
                     new Comparator<NodeInstance>() {
 
+                        @Override
                         public int compare(NodeInstance o1,
                                 NodeInstance o2) {
-                            return (int) (o1.getId().compareTo(o2.getId()));
+                            return (o1.getId().compareTo(o2.getId()));
                         }
                     });
             for (NodeInstance subNodeInstance : nodeInstances) {
@@ -337,9 +356,10 @@ public abstract class AbstractProcessInstanceMarshaller implements
             List<NodeInstance> nodeInstances = new ArrayList<NodeInstance>(forEachNodeInstance.getNodeInstances());
             Collections.sort(nodeInstances,
                     new Comparator<NodeInstance>() {
+                        @Override
                         public int compare(NodeInstance o1,
                                 NodeInstance o2) {
-                            return (int) (o1.getId().compareTo(o2.getId()));
+                            return (o1.getId().compareTo(o2.getId()));
                         }
                     });
             for (NodeInstance subNodeInstance : nodeInstances) {
@@ -356,6 +376,7 @@ public abstract class AbstractProcessInstanceMarshaller implements
     }
 
     // Input methods
+    @Override
     public ProcessInstance readProcessInstance(MarshallerReaderContext context) throws IOException {
         ObjectInputStream stream = (ObjectInputStream) context;
         InternalKnowledgeBase kBase = context.getKnowledgeBase();
@@ -371,7 +392,7 @@ public abstract class AbstractProcessInstanceMarshaller implements
         }
         processInstance.setState(stream.readInt());
         long nodeInstanceCounter = stream.readLong();
-        processInstance.setKnowledgeRuntime(wm.getKnowledgeRuntime());
+        processInstance.setKnowledgeRuntime(new KogitoInternalKnowledgeRuntime(wm.getKnowledgeRuntime()));
 
         int nbSwimlanes = stream.readInt();
         if (nbSwimlanes > 0) {
@@ -454,6 +475,7 @@ public abstract class AbstractProcessInstanceMarshaller implements
 
     protected abstract WorkflowProcessInstanceImpl createProcessInstance();
 
+    @Override
     public NodeInstance readNodeInstance(MarshallerReaderContext context,
             NodeInstanceContainer nodeInstanceContainer,
             WorkflowProcessInstance processInstance) throws IOException {

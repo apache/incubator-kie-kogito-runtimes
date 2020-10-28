@@ -18,7 +18,7 @@ package org.kie.kogito.process.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kie.api.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
 import org.kie.kogito.process.ProcessEventListenerConfig;
 
 public class CachedProcessEventListenerConfig implements ProcessEventListenerConfig {

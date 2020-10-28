@@ -15,11 +15,11 @@
 
 package org.drools.core.event;
 
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.runtime.KieRuntime;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.runtime.KieRuntime;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 
-public class KogitoProcessNodeTriggeredEventImpl extends ProcessEvent implements ProcessNodeTriggeredEvent {
+public class KogitoProcessNodeTriggeredEventImpl extends org.drools.kogito.core.event.ProcessEvent implements ProcessNodeTriggeredEvent {
 
     private static final long serialVersionUID = 510l;
 
@@ -30,10 +30,12 @@ public class KogitoProcessNodeTriggeredEventImpl extends ProcessEvent implements
         this.nodeInstance = nodeInstance;
     }
     
+    @Override
     public NodeInstance getNodeInstance() {
         return nodeInstance;
     }
 
+    @Override
     public String toString() {
         return "==>[ProcessNodeTriggered(nodeId=" + nodeInstance.getNodeId() + "; id=" + nodeInstance.getId() 
             + "; nodeName=" + getNodeInstance().getNodeName() + "; processName=" + getProcessInstance().getProcessName() + "; processId=" + getProcessInstance().getProcessId() + ")]";

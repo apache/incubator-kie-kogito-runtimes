@@ -16,14 +16,13 @@
 
 package org.jbpm.workflow.core.node;
 
-import org.kie.api.definition.process.Connection;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
+import org.kie.kogito.internal.definition.process.Connection;
 
 
 /**

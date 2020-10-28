@@ -18,7 +18,7 @@ package org.jbpm.process.core.context.exception;
 
 import java.io.Serializable;
 
-import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Node;
 
 public class CompensationHandler implements ExceptionHandler, Serializable {
 	

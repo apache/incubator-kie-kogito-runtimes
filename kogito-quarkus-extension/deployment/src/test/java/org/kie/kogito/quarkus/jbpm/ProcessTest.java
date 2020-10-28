@@ -55,6 +55,6 @@ public class ProcessTest {
 
         ProcessInstance<?> processInstance = process.createInstance(m);
         processInstance.start();
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_COMPLETED, processInstance.status());
     }
 }

@@ -17,7 +17,7 @@ package org.kie.kogito.process;
 
 import java.util.List;
 
-import org.kie.api.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
 
 public interface ProcessEventListenerConfig {
 

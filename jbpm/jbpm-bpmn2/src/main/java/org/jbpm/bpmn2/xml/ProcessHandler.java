@@ -84,9 +84,9 @@ import org.jbpm.workflow.core.node.StateNode;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -127,7 +127,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 		}
 	}
 
-	public Object start(final String uri, final String localName,
+	@Override
+    public Object start(final String uri, final String localName,
 			            final Attributes attrs, final ExtensibleXmlParser parser)
 			throws SAXException {
 		parser.startElementBuilder(localName, attrs);
@@ -183,7 +184,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 		return process;
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public Object end(final String uri, final String localName,
 			          final ExtensibleXmlParser parser) throws SAXException {
 		parser.endElementBuilder();
@@ -303,7 +305,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 	     return node;
 	 }
 
-	 public Class<?> generateNodeFor() {
+	 @Override
+    public Class<?> generateNodeFor() {
 		return RuleFlowProcess.class;
 	}
 	
@@ -712,12 +715,12 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         // - associated node does not have outgoingConnections of it's own
         compensationCheckPassed = true;
         NodeImpl targetNode = (NodeImpl) target;
-        Map<String, List<org.kie.api.definition.process.Connection>> connectionsMap = targetNode.getOutgoingConnections();
+        Map<String, List<org.kie.kogito.internal.definition.process.Connection>> connectionsMap = targetNode.getOutgoingConnections();
         ConnectionImpl outgoingConnection = null;
         for( String connectionType : connectionsMap.keySet() ) { 
-           List<org.kie.api.definition.process.Connection> connections = connectionsMap.get(connectionType); 
+           List<org.kie.kogito.internal.definition.process.Connection> connections = connectionsMap.get(connectionType); 
            if( connections != null && ! connections.isEmpty() ) { 
-              for( org.kie.api.definition.process.Connection connection : connections ) { 
+              for( org.kie.kogito.internal.definition.process.Connection connection : connections ) { 
                  Object hiddenObj = connection.getMetaData().get("hidden");
                  if( hiddenObj != null && ((Boolean) hiddenObj) ) { 
                      continue;
@@ -766,7 +769,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                 Constraint constraint = new ConstraintImpl();
                 constraint.setConstraint(condition);
                 constraint.setType("rule");
-                for (org.kie.api.definition.process.Connection connection: stateNode.getDefaultOutgoingConnections()) {
+                for (org.kie.kogito.internal.definition.process.Connection connection: stateNode.getDefaultOutgoingConnections()) {
                     stateNode.setConstraint(connection, constraint);
                 }
             } else if (node instanceof NodeContainer) {
@@ -939,7 +942,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 	}
 
     protected static void addCompensationScope(final RuleFlowProcess process, final Node node, 
-            final org.kie.api.definition.process.NodeContainer parentContainer, final String compensationHandlerId) {
+            final org.kie.kogito.internal.definition.process.NodeContainer parentContainer, final String compensationHandlerId) {
         process.getMetaData().put("Compensation", true);
         
         assert parentContainer instanceof ContextContainer 

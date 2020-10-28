@@ -22,12 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.event.KogitoProcessEventSupport;
-import org.drools.core.event.ProcessEventSupport;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.MarshallerWriteContext;
@@ -36,6 +34,8 @@ import org.drools.core.time.TimeUtils;
 import org.drools.core.time.TimerService;
 import org.drools.core.time.impl.CommandServiceTimerJobFactoryManager;
 import org.drools.core.time.impl.ThreadSafeTrackableTimeJobFactoryManager;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
+import org.drools.kogito.core.event.ProcessEventSupport;
 import org.drools.serialization.protobuf.ProtobufMessages.ActionQueue.Action;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTransformer;
@@ -50,23 +50,19 @@ import org.jbpm.workflow.core.node.EventTrigger;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.kie.api.KieBase;
-import org.kie.api.command.ExecutableCommand;
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
-import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
-import org.kie.api.runtime.Context;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.rule.AgendaFilter;
-import org.kie.internal.command.RegistryContext;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.internal.utils.CompositeClassLoader;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
@@ -152,7 +148,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
     }
 
     private ClassLoader getRootClassLoader() {
-        KieBase kbase = ((InternalKnowledgeBase) kruntime.getKieBase());
+        KieBase kbase = (kruntime.getKieBase());
         if (kbase != null) {
             return ((InternalKnowledgeBase) kbase).getRootClassLoader();
         }
@@ -223,6 +219,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         }
     }
 
+    @Override
     public ProcessInstance startProcessInstance(String processInstanceId) {
         return startProcessInstance(processInstanceId, null);
     }
@@ -262,26 +259,32 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
                                           parameters);
     }
 
+    @Override
     public ProcessInstanceManager getProcessInstanceManager() {
         return processInstanceManager;
     }
 
+    @Override
     public JobsService getJobsService() {
         return jobService;
     }
 
+    @Override
     public SignalManager getSignalManager() {
         return signalManager;
     }
 
+    @Override
     public Collection<ProcessInstance> getProcessInstances() {
         return processInstanceManager.getProcessInstances();
     }
 
+    @Override
     public ProcessInstance getProcessInstance(String id) {
         return getProcessInstance(id, false);
     }
 
+    @Override
     public ProcessInstance getProcessInstance(String id, boolean readOnly) {
         return processInstanceManager.getProcessInstance(id, readOnly);
     }
@@ -345,28 +348,34 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         }
     }
 
+    @Override
     public ProcessEventSupport getProcessEventSupport() {
         return processEventSupport;
     }
 
+    @Override
     public void setProcessEventSupport(ProcessEventSupport processEventSupport) {
         this.processEventSupport = processEventSupport;
     }
 
+    @Override
     public void addEventListener(final ProcessEventListener listener) {
         this.processEventSupport.addEventListener(listener);
     }
 
+    @Override
     public void removeEventListener(final ProcessEventListener listener) {
         this.processEventSupport.removeEventListener(listener);
     }
 
+    @Override
     public List<ProcessEventListener> getProcessEventListeners() {
         return processEventSupport.getEventListeners();
     }
 
     private void initProcessActivationListener() {
         kruntime.addEventListener(new DefaultAgendaEventListener() {
+            @Override
             public void matchCreated(MatchCreatedEvent event) {
                 String ruleFlowGroup = ((RuleImpl) event.getMatch().getRule()).getRuleFlowGroup();
                 if ("DROOLS_SYSTEM".equals(ruleFlowGroup)) {
@@ -401,6 +410,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         });
 
         kruntime.addEventListener(new DefaultAgendaEventListener() {
+            @Override
             public void afterRuleFlowGroupDeactivated(final RuleFlowGroupDeactivatedEvent event) {
                 if (kruntime instanceof StatefulKnowledgeSession) {
                     signalManager.signalEvent("RuleFlowGroup_" + event.getRuleFlowGroup().getName() + "_" + ((StatefulKnowledgeSession) kruntime).getIdentifier(),
@@ -417,6 +427,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         startProcess(processId, params, type);
     }
 
+    @Override
     public void abortProcessInstance(String processInstanceId) {
         ProcessInstance processInstance = getProcessInstance(processInstanceId);
         if (processInstance == null) {
@@ -425,6 +436,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         ((org.jbpm.process.instance.ProcessInstance) processInstance).setState(ProcessInstance.STATE_ABORTED);
     }
 
+    @Override
     public WorkItemManager getWorkItemManager() {
         return kruntime.getWorkItemManager();
     }
@@ -434,23 +446,28 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         return unitOfWorkManager;
     }
 
+    @Override
     public void signalEvent(String type, Object event) {
         signalManager.signalEvent(type, event);
     }
 
+    @Override
     public void signalEvent(String type, Object event, String processInstanceId) {
         signalManager.signalEvent(processInstanceId, type, event);
     }
 
+    @Override
     public void dispose() {
         this.processEventSupport.reset();
         kruntime = null;
     }
 
+    @Override
     public void clearProcessInstances() {
         this.processInstanceManager.clearProcessInstances();
     }
 
+    @Override
     public void clearProcessInstancesState() {
         this.processInstanceManager.clearProcessInstancesState();
     }
@@ -540,10 +557,12 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
             this.eventTransformer = eventTransformer;
         }
 
+        @Override
         public String[] getEventTypes() {
             return null;
         }
 
+        @Override
         public void signalEvent(final String type,
                                 Object event) {
             for (EventFilter filter : eventFilters) {
@@ -577,30 +596,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         }
     }
 
-    private class StartProcessWithTypeCommand implements ExecutableCommand<Void> {
-
-        private static final long serialVersionUID = -8890906804846111698L;
-
-        private String processId;
-        private Map<String, Object> params;
-        private String type;
-
-        private StartProcessWithTypeCommand(String processId, Map<String, Object> params, String type) {
-            this.processId = processId;
-            this.params = params;
-            this.type = type;
-        }
-
-        @Override
-        public Void execute(Context context) {
-            KieSession ksession = ((RegistryContext) context).lookup(KieSession.class);
-            ((ProcessRuntimeImpl) ((InternalKnowledgeRuntime) ksession).getProcessRuntime()).startProcess(processId,
-                                                                                                          params, type);
-
-            return null;
-        }
-    }
-
+  
     public class SignalManagerSignalAction extends PropagationEntry.AbstractPropagationEntry implements WorkingMemoryAction {
 
         private String type;
@@ -618,6 +614,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
             }
         }
 
+        @Override
         public void execute(InternalWorkingMemory workingMemory) {
 
             signalEvent(type, event);

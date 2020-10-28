@@ -23,11 +23,11 @@ import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.compiler.compiler.DialectCompiletimeRegistry;
 import org.drools.compiler.compiler.ReturnValueDescr;
 import org.drools.compiler.lang.descr.ProcessDescr;
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.definitions.impl.KnowledgePackageImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
+import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.process.builder.dialect.ProcessDialectRegistry;
 import org.jbpm.process.builder.dialect.java.JavaReturnValueEvaluatorBuilder;
@@ -37,7 +37,8 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.instance.node.SplitInstance;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionBridge;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -87,7 +88,7 @@ public class JavaReturnValueConstraintEvaluatorBuilderTest extends AbstractBaseT
 
         final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( Arrays.asList(pkgBuilder.getPackages()) );
-        final KieSession ksession = kbase.newKieSession();
+        final KieSession ksession = new KieSessionBridge(kbase.newKieSession());
 
         ksession.setGlobal( "value", true );
 

@@ -33,8 +33,6 @@ import org.jbpm.process.instance.impl.humantask.phases.Release;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
 import org.junit.jupiter.api.Test;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessWorkItemTransitionEvent;
 import org.kie.api.runtime.process.WorkItemNotFoundException;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
@@ -42,6 +40,8 @@ import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.data.Person;
+import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessWorkItemTransitionEvent;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.VariableViolationException;
@@ -405,7 +405,7 @@ public class UserTaskTest extends AbstractCodegenTest {
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
 
         StaticIdentityProvider identity = new StaticIdentityProvider("admin", Collections.singletonList("managers"));
         SecurityPolicy policy = SecurityPolicy.of(identity);
@@ -429,7 +429,7 @@ public class UserTaskTest extends AbstractCodegenTest {
         transition = new HumanTaskTransition(Complete.ID, null, identity);
         processInstance.transitionWorkItem(workItems.get(0).getId(), transition);
 
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_COMPLETED, processInstance.status());
     }
 
     @Test
@@ -446,7 +446,7 @@ public class UserTaskTest extends AbstractCodegenTest {
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
 
         StaticIdentityProvider identity = new StaticIdentityProvider("admin", Collections.singletonList("managers"));
         SecurityPolicy policy = SecurityPolicy.of(identity);
@@ -469,7 +469,7 @@ public class UserTaskTest extends AbstractCodegenTest {
 
         processInstance.completeWorkItem(workItems.get(0).getId(), null, policy);
 
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_COMPLETED, processInstance.status());
     }
 
     @Test
@@ -717,7 +717,7 @@ public class UserTaskTest extends AbstractCodegenTest {
 
         ProcessInstance processInstance = p.createInstance(m);
         processInstance.start();
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
 
         final Model updates = p.createModel();
         parameters = new HashMap<>();
@@ -728,7 +728,7 @@ public class UserTaskTest extends AbstractCodegenTest {
 
         processInstance.abort();
 
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ABORTED, processInstance.status());
     }
 
     @Test
@@ -750,11 +750,11 @@ public class UserTaskTest extends AbstractCodegenTest {
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
 
         processInstance.abort();
 
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ABORTED, processInstance.status());
     }
 
     @Test
@@ -807,11 +807,11 @@ public class UserTaskTest extends AbstractCodegenTest {
 
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ACTIVE, processInstance.status());
 
         processInstance.abort();
 
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED, processInstance.status());
+        assertEquals(org.kie.kogito.internal.runtime.process.ProcessInstance.STATE_ABORTED, processInstance.status());
     }
 
     @Test

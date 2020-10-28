@@ -16,7 +16,7 @@
 
 package org.kie.kogito.signal;
 
-import org.kie.api.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.EventListener;
 
 public interface SignalManager {
 	

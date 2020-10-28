@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.api.runtime.process.NodeInstance;
 import org.jbpm.process.core.context.exclusive.ExclusiveGroup;
 import org.jbpm.process.instance.context.AbstractContextInstance;
+import org.kie.kogito.internal.runtime.process.NodeInstance;
 
 public class ExclusiveGroupInstance extends AbstractContextInstance {
 

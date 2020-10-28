@@ -19,9 +19,9 @@ import java.nio.charset.StandardCharsets;
 
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.jbpm.compiler.canonical.ModelMetaData;
-import org.kie.api.runtime.process.ProcessRuntime;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
+import org.kie.kogito.internal.runtime.process.ProcessRuntime;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 
 import com.github.javaparser.ast.CompilationUnit;

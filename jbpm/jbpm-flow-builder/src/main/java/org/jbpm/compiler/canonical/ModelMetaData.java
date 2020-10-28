@@ -52,9 +52,9 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.process.core.context.variable.Variable;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.internal.kogito.codegen.Generated;
-import org.kie.internal.kogito.codegen.VariableInfo;
+import org.kie.kogito.internal.codegen.Generated;
+import org.kie.kogito.internal.codegen.VariableInfo;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;

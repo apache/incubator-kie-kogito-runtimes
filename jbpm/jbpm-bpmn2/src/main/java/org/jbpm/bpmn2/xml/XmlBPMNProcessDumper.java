@@ -49,6 +49,7 @@ import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.core.impl.XmlProcessDumper;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Constraint;
+import org.jbpm.workflow.core.WorkflowProcess;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -64,11 +65,10 @@ import org.jbpm.workflow.core.node.Split;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.Process;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.NodeContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,7 +193,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         if (packageName != null && !"org.drools.bpmn2".equals(packageName)) {
             xmlDump.append("tns:packageName=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(packageName) + "\" ");
         }
-        if (((org.jbpm.workflow.core.WorkflowProcess) process).isDynamic()) {
+        if (process.isDynamic()) {
         	xmlDump.append("tns:adHoc=\"true\" ");
         }
         String version = process.getVersion();
@@ -300,7 +300,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     private void visitLanes(WorkflowProcess process, StringBuilder xmlDump) {
         // lanes
         Collection<Swimlane> swimlanes = ((SwimlaneContext)
-            ((org.jbpm.workflow.core.WorkflowProcess) process)
+            process
                 .getDefaultContext(SwimlaneContext.SWIMLANE_SCOPE)).getSwimlanes();
         if (!swimlanes.isEmpty()) {
             xmlDump.append("    <laneSet>" + EOL);
@@ -669,17 +669,17 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     			height = 48;
     		}
     		if (node instanceof StartNode || node instanceof EndNode || node instanceof EventNode || node instanceof FaultNode) {
-    			int offsetX = (int) ((width - 48) / 2);
+    			int offsetX = (width - 48) / 2;
     			width = 48;
     	        x = x + offsetX;
-    	        int offsetY = (int) ((height - 48) / 2);
+    	        int offsetY = (height - 48) / 2;
     	        y = y + offsetY;
     	        height = 48;
     		} else if (node instanceof Join || node instanceof Split) {
-    			int offsetX = (int) ((width - 48) / 2);
+    			int offsetX = (width - 48) / 2;
     			width = 48;
     	        x = x + offsetX;
-    	        int offsetY = (int) ((height - 48) / 2);
+    	        int offsetY = (height - 48) / 2;
     	        y = y + offsetY;
     	        height = 48;
     		}

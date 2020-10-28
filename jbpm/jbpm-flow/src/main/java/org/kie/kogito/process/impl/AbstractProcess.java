@@ -28,13 +28,13 @@ import org.jbpm.process.instance.LightProcessRuntimeServiceProvider;
 import org.jbpm.process.instance.ProcessRuntimeServiceProvider;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.StartNode;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.ProcessRuntime;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
+import org.kie.kogito.internal.runtime.process.EventListener;
+import org.kie.kogito.internal.runtime.process.ProcessRuntime;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
@@ -98,6 +98,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T> {
         return process().getId();
     }
 
+    @Override
     public String name() {
         return process().getName();
     }
@@ -226,7 +227,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T> {
         @Override
         public void signalEvent(String type, Object event) {
             if (type.startsWith("processInstanceCompleted:")) {
-                org.kie.api.runtime.process.ProcessInstance pi = (org.kie.api.runtime.process.ProcessInstance) event;
+                org.kie.kogito.internal.runtime.process.ProcessInstance pi = (org.kie.kogito.internal.runtime.process.ProcessInstance) event;
                 if (!id().equals(pi.getProcessId()) && pi.getParentProcessInstanceId() != null) {
                     instances().findById(pi.getParentProcessInstanceId()).ifPresent(p -> p.send(Sig.of(type, event)));
                 }

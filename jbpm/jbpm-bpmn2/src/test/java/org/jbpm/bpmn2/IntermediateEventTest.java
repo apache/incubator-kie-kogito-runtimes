@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.drools.core.command.runtime.process.KogitoSetProcessInstanceVariablesCommand;
 import org.drools.core.process.instance.KogitoWorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.objects.Person;
@@ -44,21 +43,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.kie.api.KieBase;
 import org.kie.api.command.ExecutableCommand;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.runtime.Context;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.ObjectFilter;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.command.RegistryContext;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.process.ProcessNodeLeftEvent;
+import org.kie.kogito.internal.event.process.ProcessNodeTriggeredEvent;
+import org.kie.kogito.internal.event.process.ProcessStartedEvent;
+import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.runtime.process.WorkItem;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
 
@@ -101,7 +100,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KieBase kbase = createKnowledgeBase(
                 "BPMN2-BoundarySignalEventOnTaskbpmn2.bpmn",
                 "BPMN2-IntermediateThrowEventSignal.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                 handler);
@@ -135,7 +134,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         final AtomicBoolean eventAfterNodeLeftTriggered = new AtomicBoolean(false);
         KieBase kbase = createKnowledgeBase(
                 "BPMN2-BoundaryEventWithNonEffectiveSignal.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                 handler);
@@ -286,7 +285,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KieBase kbase = createKnowledgeBase(
                 "BPMN2-IntermediateCatchSignalSingle.bpmn2",
                 "BPMN2-IntermediateThrowEventSignal.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                 handler);
@@ -1615,8 +1614,9 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         final String piId = processInstance.getId();
         ksession.execute(new ExecutableCommand<Void>() {
 
+            @Override
             public Void execute(Context context) {
-                StatefulKnowledgeSession ksession = (StatefulKnowledgeSession) ((RegistryContext) context).lookup( KieSession.class );
+                KieSession ksession = ((RegistryContext) context).lookup( KieSession.class );
                 WorkflowProcessInstance processInstance = (WorkflowProcessInstance) ksession.getProcessInstance(piId);
                 processInstance.setVariable("x", 0);
                 return null;
@@ -1629,8 +1629,9 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         Integer xValue = ksession.execute(new ExecutableCommand<Integer>() {
 
+            @Override
             public Integer execute(Context context) {
-                StatefulKnowledgeSession ksession = (StatefulKnowledgeSession) ((RegistryContext) context).lookup( KieSession.class );
+                KieSession ksession = ((RegistryContext) context).lookup( KieSession.class );
                 WorkflowProcessInstance processInstance = (WorkflowProcessInstance) ksession.getProcessInstance(piId);
                 return (Integer) processInstance.getVariable("x");
 
@@ -1770,7 +1771,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     public void testSignalBoundaryEventOnSubprocessTakingDifferentPaths() throws Exception {
         KieBase kbase = createKnowledgeBase(
                 "BPMN2-SignalBoundaryOnSubProcess.bpmn");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
 
         ProcessInstance processInstance = ksession.startProcess("jbpm.testing.signal");
         assertProcessInstanceActive(processInstance);
@@ -1834,7 +1835,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     public void testSignalBoundaryEventOnMultiInstanceSubprocess() throws Exception {
         KieBase kbase = createKnowledgeBase(
                 "subprocess/BPMN2-MultiInstanceSubprocessWithBoundarySignal.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
@@ -1862,7 +1863,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     public void testSignalBoundaryEventNoInteruptOnMultiInstanceSubprocess() throws Exception {
         KieBase kbase = createKnowledgeBase(
                 "subprocess/BPMN2-MultiInstanceSubprocessWithBoundarySignalNoInterupting.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
@@ -1896,7 +1897,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     public void testErrorBoundaryEventOnMultiInstanceSubprocess() throws Exception {
         KieBase kbase = createKnowledgeBase(
                 "subprocess/BPMN2-MultiInstanceSubprocessWithBoundaryError.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
@@ -1962,7 +1963,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KieBase kbase = createKnowledgeBaseWithoutDumper(
                 "BPMN2-BoundarySignalEventOnTaskbpmn2.bpmn",
                 "BPMN2-IntermediateThrowEventSignalWithTransformation.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                 handler);
@@ -1986,7 +1987,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KieBase kbase = createKnowledgeBaseWithoutDumper(
                 "BPMN2-BoundarySignalEventOnTaskWithTransformation.bpmn",
                 "BPMN2-IntermediateThrowEventSignal.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                 handler);
@@ -2624,7 +2625,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testSignalEndWithData() throws Exception {
         KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-IntermediateThrowEventSignalWithData.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        KieSession ksession = createKnowledgeSession(kbase);
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                                                               new SystemOutWorkItemHandler());
         Map<String, Object> params = new HashMap<String, Object>();
