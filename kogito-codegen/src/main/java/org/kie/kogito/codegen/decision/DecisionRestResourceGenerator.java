@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -157,6 +158,21 @@ public class DecisionRestResourceGenerator {
             addMonitoringToMethod(dmnMethod, nameURL);
         }
 
+        if (!addonsConfig.useTracing()) {
+            MethodCallExpr enrichMethodCall = clazz
+                    .findFirst(MethodDeclaration.class, x -> "enrichResponseHeadersFromCoreDmnResult".equals(x.getNameAsString()))
+                    .flatMap(m -> m.findFirst(MethodCallExpr.class, x -> "enrichResponseHeadersWithExecutionId".equals(x.getNameAsString())))
+                    .orElseThrow(TEMPLATE_WAS_MODIFIED);
+
+            MethodDeclaration enrichMethodDeclaration = clazz
+                    .findFirst(MethodDeclaration.class, x -> "enrichResponseHeadersWithExecutionId".equals(x.getNameAsString()))
+                    .orElseThrow(TEMPLATE_WAS_MODIFIED);
+
+            if (!removeMethodCallExpr(enrichMethodCall) || !enrichMethodDeclaration.remove()) {
+                throw new IllegalStateException("Can't remove method call");
+            }
+        }
+
         template.getMembers().sort(new BodyDeclarationComparator());
         return clazz.toString();
     }
@@ -219,6 +235,24 @@ public class DecisionRestResourceGenerator {
         for (NormalAnnotationExpr ann : dmnMethod.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(fqn))) {
             dmnMethod.remove(ann);
         }
+    }
+
+    private boolean removeMethodCallExpr(MethodCallExpr methodCallExpr) {
+        // Simply calling methodCallExpr.remove() would return "false" and do nothing
+        // Check this: https://github.com/javaparser/javaparser/issues/858
+        // Here is the solution explained in this comment: https://github.com/javaparser/javaparser/issues/858#issuecomment-285906008
+        Node node = methodCallExpr;
+        boolean removed = false;
+        while (!removed) {
+            removed = node.remove();
+            if (!removed) {
+                node = node.getParentNode().orElse(null);
+                if (node == null) {
+                    break;
+                }
+            }
+        }
+        return removed;
     }
 
     private void chooseMethodForStronglyTyped(ClassOrInterfaceDeclaration template) {

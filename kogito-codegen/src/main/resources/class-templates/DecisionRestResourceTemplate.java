@@ -26,6 +26,7 @@ public class DMNRestResourceTemplate {
     Application application;
     
     private static final String KOGITO_DECISION_INFOWARN_HEADER = "X-Kogito-decision-messages";
+    private static final String KOGITO_EXECUTION_ID_HEADER = "X-Kogito-execution-id";
     
     @javax.ws.rs.core.Context
     private org.jboss.resteasy.spi.HttpResponse httpResponse;
@@ -39,8 +40,10 @@ public class DMNRestResourceTemplate {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",schema = @io.swagger.v3.oas.annotations.media.Schema(ref = "/dmnDefinitions.json#/definitions/OutputSet1")))
     public $outputType$ dmn($inputType$ variables) {
         org.kie.kogito.decision.DecisionModel decision = application.decisionModels().getDecisionModel("$modelNamespace$", "$modelName$");
-        OutputSet outputSet = (OutputSet)StronglyTypedUtils.convertToOutputSet(variables, OutputSet.class);
-        org.kie.kogito.dmn.rest.DMNResult result = new org.kie.kogito.dmn.rest.DMNResult("$modelNamespace$", "$modelName$", decision.evaluateAll(DMNJSONUtils.ctx(decision, $inputData$)));
+        OutputSet outputSet = (OutputSet) StronglyTypedUtils.convertToOutputSet(variables, OutputSet.class);
+        org.kie.dmn.api.core.DMNResult decisionResult = decision.evaluateAll(DMNJSONUtils.ctx(decision, $inputData$));
+        enrichResponseHeadersFromCoreDmnResult(decisionResult);
+        org.kie.kogito.dmn.rest.DMNResult result = new org.kie.kogito.dmn.rest.DMNResult("$modelNamespace$", "$modelName$", decisionResult);
         return $extractContextMethod$(result);
     }
     
@@ -63,7 +66,7 @@ public class DMNRestResourceTemplate {
     private Object extractContextIfSucceded(DMNResult result){
         if (!result.hasErrors()) {
             try {
-                enrichResponseHeaders(result);
+                enrichResponseHeadersFromRestDmnResult(result);
                 return objectMapper.writeValueAsString(result.getDmnContext());
             } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -75,7 +78,7 @@ public class DMNRestResourceTemplate {
 
     private OutputSet extractStronglyTypedContextIfSucceded(DMNResult result) {
         if (!result.hasErrors()) {
-            enrichResponseHeaders(result);
+            enrichResponseHeadersFromRestDmnResult(result);
             return (OutputSet)StronglyTypedUtils.extractOutputSet(result, OutputSet.class);
         } else {
             throw new DMNEvaluationErrorException(result);
@@ -93,7 +96,7 @@ public class DMNRestResourceTemplate {
     private Object extractSingletonDSIfSucceded(DMNResult result) {
         if (!result.hasErrors()) {
             try {
-                enrichResponseHeaders(result);
+                enrichResponseHeadersFromRestDmnResult(result);
                 return objectMapper.writeValueAsString(result.getDecisionResults().get(0).getResult());
             } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -102,11 +105,26 @@ public class DMNRestResourceTemplate {
             throw new DMNEvaluationErrorException(result);
         }
     }
-    
-    private void enrichResponseHeaders(DMNResult result) {
+
+    private void enrichResponseHeadersFromCoreDmnResult(org.kie.dmn.api.core.DMNResult result) {
+        enrichResponseHeadersWithExecutionId(result);
+    }
+
+    private void enrichResponseHeadersFromRestDmnResult(DMNResult result) {
+        enrichResponseHeadersWithDecisionInfowarn(result);
+    }
+
+    private void enrichResponseHeadersWithDecisionInfowarn(DMNResult result) {
         if (!result.getMessages().isEmpty()) {
             String infoWarns = result.getMessages().stream().map(m -> m.getLevel() + " " + m.getMessage()).collect(java.util.stream.Collectors.joining(", "));
             httpResponse.getOutputHeaders().add(KOGITO_DECISION_INFOWARN_HEADER, infoWarns);
         }
+    }
+
+    private void enrichResponseHeadersWithExecutionId(org.kie.dmn.api.core.DMNResult result) {
+        org.kie.kogito.decision.DecisionExecutionIdUtils.getOptional(result.getContext())
+                .ifPresent(executionId ->
+                        httpResponse.getOutputHeaders().add(KOGITO_EXECUTION_ID_HEADER, executionId)
+                );
     }
 }
