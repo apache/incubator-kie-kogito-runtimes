@@ -2,10 +2,10 @@ package $Package$;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.KogitoEventStreams;
 import org.kie.kogito.event.impl.DefaultEventConsumerFactory;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
-
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
@@ -17,7 +17,7 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
             Application application,
             @org.springframework.beans.factory.annotation.Qualifier("$ProcessName$") Process<$Type$> process,
             ConfigBean configBean,
-            @org.springframework.beans.factory.annotation.Qualifier("kogito_event_publisher") Publisher<String> eventPublisher) {
+            @org.springframework.beans.factory.annotation.Qualifier(KogitoEventStreams.PUBLISHER) Publisher<String> eventPublisher) {
         super(application,
               process,
               $DataType$.class,
@@ -27,8 +27,7 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
               configBean.useCloudEvents());
 
         Flux.from(eventPublisher)
-            .log()
-            .subscribe(this::consume);
+                .subscribe(this::consume);
     }
 
     protected $Type$ eventToModel($DataType$ event) {
@@ -36,5 +35,4 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
         model.set$DataType$(event);
         return model;
     }
-
 }

@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.kie.kogito.event.KogitoEventStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -50,7 +51,7 @@ public class SpringKafkaCloudEventPublisher {
     public SpringKafkaCloudEventPublisher(
             @Value(value = "${spring.kafka.bootstrap-servers}") String kafkaBootstrapAddress,
             @Value(value = "${spring.kafka.consumer.group-id}") String groupId,
-            @Value(value = "${kogito.addon.cloudevents.kafka.kogito_incoming_stream:kogito_incoming_stream}") String kafkaTopicName) {
+            @Value(value = "${kogito.addon.cloudevents.kafka." + KogitoEventStreams.INCOMING + ":" + KogitoEventStreams.INCOMING + "}") String kafkaTopicName) {
         this.topic = kafkaTopicName;
 
         Map<String, Object> props = new HashMap<>();
@@ -63,12 +64,8 @@ public class SpringKafkaCloudEventPublisher {
     }
 
     @Bean
-    @Qualifier("kogito_event_publisher")
-    public Flux<String> convert_to_demo_topic() {
-        return makeConsumer();
-    }
-
-    private Flux<String> makeConsumer() {
+    @Qualifier(KogitoEventStreams.PUBLISHER)
+    public Flux<String> makeConsumer() {
         ReceiverOptions<Integer, String> options = receiverOptions.subscription(Collections.singleton(topic))
                 .addAssignListener(partitions -> log.debug("onPartitionsAssigned {}", partitions))
                 .addRevokeListener(partitions -> log.debug("onPartitionsRevoked {}", partitions));
