@@ -44,8 +44,4 @@ public class SpringKafkaCloudEventEmitter implements CloudEventEmitter {
                 .thenApply(r -> null); // discard return to comply with the signature
     }
 
-    @Deprecated
-    public void emit(String topic, String message) {
-        emitter.send(topic, message);
-    }
 }
