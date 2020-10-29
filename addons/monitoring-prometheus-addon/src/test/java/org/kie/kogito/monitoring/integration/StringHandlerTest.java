@@ -36,7 +36,7 @@ public class StringHandlerTest {
     @BeforeEach
     public void setUp() {
         registry = new CollectorRegistry();
-        handler = new StringHandler("hello", registry);
+        handler = new StringHandler("hello");
     }
 
     @AfterEach

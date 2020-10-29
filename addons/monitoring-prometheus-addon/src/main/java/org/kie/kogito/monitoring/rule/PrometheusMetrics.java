@@ -15,10 +15,12 @@
 
 package org.kie.kogito.monitoring.rule;
 
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
 
-import io.prometheus.client.Histogram;
-
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.Tag;
+import org.kie.kogito.monitoring.MonitoringRegistry;
 
 public class PrometheusMetrics {
 
@@ -28,28 +30,19 @@ public class PrometheusMetrics {
         return second * NANOSECONDS_PER_MICROSECOND;
     }
 
-    private static double[] rangeMicro(int start, int end) {
-        return IntStream.range(start, end).mapToDouble(l -> toMicro((long) l)).toArray();
-    }
-
-    protected static double millisToSeconds(long millis) {
-        return millis / 1000.0;
-    }
-
-    private static final double[] RULE_TIME_BUCKETS;
-
-    static {
-        RULE_TIME_BUCKETS = rangeMicro(1, 10);
-    }
-
-    private static final Histogram droolsEvaluationTimeHistogram = Histogram.build()
-            .name("drl_match_fired_nanosecond")
-            .help("Drools Firing Time")
-            .labelNames("identifier", "rule_name")
-            .buckets(RULE_TIME_BUCKETS)
-            .register();
-
-    public static Histogram getDroolsEvaluationTimeHistogram() {
-        return droolsEvaluationTimeHistogram;
+    public static DistributionSummary getDroolsEvaluationTimeHistogram(String appId, String processId) {
+        List<Tag> tags = new ArrayList<Tag>() {
+            {
+                add(Tag.of("app_id", appId));
+                add(Tag.of("process_id", processId));
+            }
+        };
+        DistributionSummary distributionSummary = DistributionSummary.builder("drl_match_fired_nanosecond")
+                .minimumExpectedValue((double) toMicro(1))
+                .maximumExpectedValue((double) toMicro(10))
+                .description("Drools Firing Time")
+                .tags(tags)
+                .register(MonitoringRegistry.getCompositeMeterRegistry());
+        return distributionSummary;
     }
 }

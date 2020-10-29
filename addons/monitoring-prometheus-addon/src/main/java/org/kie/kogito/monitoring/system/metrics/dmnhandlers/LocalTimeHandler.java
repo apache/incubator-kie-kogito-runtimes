@@ -18,17 +18,13 @@ package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
 import java.time.LocalTime;
 
 import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Summary;
 
 public class LocalTimeHandler implements TypeHandlerWithSummary<LocalTime> {
 
-    private final Summary summary;
-
-    private String dmnType;
+    private final String dmnType;
 
     public LocalTimeHandler(String dmnType, CollectorRegistry registry) {
         this.dmnType = dmnType;
-        this.summary = initializeDefaultSummary(dmnType, registry);
     }
 
     public LocalTimeHandler(String dmnType) {
@@ -37,7 +33,7 @@ public class LocalTimeHandler implements TypeHandlerWithSummary<LocalTime> {
 
     @Override
     public void record(String type, String endpointName, LocalTime sample) {
-        summary.labels(type, endpointName).observe(sample.toSecondOfDay());
+        getDefaultSummary(dmnType, type, endpointName).record(sample.toSecondOfDay());
     }
 
     @Override

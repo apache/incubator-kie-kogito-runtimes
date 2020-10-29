@@ -15,28 +15,25 @@
 
 package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
 
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Counter;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Tag;
+import org.kie.kogito.monitoring.MonitoringRegistry;
 
 public class StringHandler implements TypeHandler<String> {
 
-    private final Counter counter;
-
-    private String dmnType;
-
-    public StringHandler(String dmnType, CollectorRegistry registry) {
-        this.dmnType = dmnType;
-        this.counter = initializeCounter(dmnType, registry);
-    }
+    private final String dmnType;
 
     public StringHandler(String dmnType) {
-        this(dmnType, null);
+        this.dmnType = dmnType;
     }
 
     @Override
     public void record(String decision, String endpointName, String sample) {
 
-        counter.labels(decision, endpointName, sample).inc();
+        getCounter(decision, endpointName, sample).increment();
     }
 
     @Override
@@ -44,11 +41,19 @@ public class StringHandler implements TypeHandler<String> {
         return dmnType;
     }
 
-    private Counter initializeCounter(String dmnType, CollectorRegistry registry) {
-        Counter.Builder builder = Counter.build().name(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
-                .help(DecisionConstants.DECISIONS_HELP)
-                .labelNames(DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS);
+    private Counter getCounter(String decision, String endpoint, String identifier) {
 
-        return registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
+        List<Tag> tags = new ArrayList<Tag>() {
+            {
+                add(Tag.of("decision", decision));
+                add(Tag.of("endpoint", endpoint));
+                add(Tag.of("identifier", identifier));
+            }
+        };
+        return Counter
+                .builder(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
+                .description(DecisionConstants.DECISIONS_HELP)
+                .tags(tags)
+                .register(MonitoringRegistry.getCompositeMeterRegistry());
     }
 }

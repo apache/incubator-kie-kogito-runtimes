@@ -15,10 +15,16 @@
  */
 package org.kie.kogito.monitoring.process;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import io.prometheus.client.Counter;
-import io.prometheus.client.Gauge;
-import io.prometheus.client.Summary;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Tag;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.event.process.DefaultProcessEventListener;
@@ -27,54 +33,108 @@ import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.SLAViolatedEvent;
 import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.monitoring.MonitoringRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.lang.String.valueOf;
 
-
 public class PrometheusProcessEventListener extends DefaultProcessEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PrometheusProcessEventListener.class);
 
-    protected static final Counter numberOfProcessInstancesStarted = Counter.build()
-            .name("kie_process_instance_started_total")
-            .help("Started Process Instances")
-            .labelNames("app_id", "process_id")
-            .register();
+    private static Counter getNumberOfProcessInstancesStartedCounter(String appId, String processId) {
+        List<Tag> tags = new ArrayList<Tag>() {
+            {
+                add(Tag.of("app_id", appId));
+                add(Tag.of("process_id", processId));
+            }
+        };
+        return Counter
+                .builder("kie_process_instance_started_total")
+                .description("Started Process Instances")
+                .tags(tags)
+                .register(MonitoringRegistry.getCompositeMeterRegistry());
+    }
 
-    protected static final Counter numberOfSLAsViolated = Counter.build()
-            .name("kie_process_instance_sla_violated_total")
-            .help("Process Instances SLA Violated")
-            .labelNames("app_id", "process_id", "node_name")
-            .register();
+    private static Counter getNumberOfSLAsViolatedCounter(String appId, String processId, String nodeName) {
+        List<Tag> tags = new ArrayList<Tag>() {
+            {
+                Tag.of("app_id", appId);
+                Tag.of("process_id", processId);
+                Tag.of("node_name", nodeName);
+            }
+        };
+        return Counter
+                .builder("kie_process_instance_sla_violated_total")
+                .description("Process Instances SLA Violated")
+                .tags(tags)
+                .register(MonitoringRegistry.getCompositeMeterRegistry());
+    }
 
-    protected static final Counter numberOfProcessInstancesCompleted = Counter.build()
-            .name("kie_process_instance_completed_total")
-            .help("Completed Process Instances")
-            .labelNames("app_id", "process_id", "status")
-            .register();
+    private static Map<String, AtomicInteger> gaugeMap = new HashMap<String, AtomicInteger>();
 
-    protected static final Gauge runningProcessInstances = Gauge.build()
-            .name("kie_process_instance_running_total")
-            .help("Running Process Instances")
-            .labelNames("app_id", "process_id")
-            .register();
+    private static Counter getNumberOfProcessInstancesCompletedCounter(String appId, String processId, String nodeName) {
+        List<Tag> tags = new ArrayList<Tag>() {
+            {
+                Tag.of("app_id", appId);
+                Tag.of("process_id", processId);
+                Tag.of("node_name", nodeName);
+            }
+        };
+        return Counter
+                .builder("kie_process_instance_completed_total")
+                .description("Completed Process Instances")
+                .tags(tags)
+                .register(MonitoringRegistry.getCompositeMeterRegistry());
+    }
 
-    protected static final Summary processInstancesDuration = Summary.build()
-            .name("kie_process_instance_duration_seconds")
-            .help("Process Instances Duration")
-            .labelNames("app_id", "process_id")
-            .register();
+    private static AtomicInteger getRunningProcessInstancesGauge(String appId, String processId) {
+        if (gaugeMap.containsKey(appId + processId)) {
+            return gaugeMap.get(appId + processId);
+        }
+        List<Tag> tags = new ArrayList<Tag>() {
+            {
+                add(Tag.of("app_id", appId));
+                add(Tag.of("process_id", processId));
+            }
+        };
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        Gauge.builder("kie_process_instance_running_total", atomicInteger, AtomicInteger::doubleValue)
+                .description("Running Process Instances")
+                .tags(tags)
+                .register(MonitoringRegistry.getCompositeMeterRegistry());
+        gaugeMap.put(appId + processId, atomicInteger);
+        return atomicInteger;
+    }
 
-    protected static final Summary workItemsDuration = Summary.build()
-            .name("kie_work_item_duration_seconds")
-            .help("Work Items Duration")
-            .labelNames("name")
-            .register();
+    private static DistributionSummary getProcessInstancesDurationSummary(String appId, String processId) {
+        List<Tag> tags = new ArrayList<Tag>() {
+            {
+                add(Tag.of("app_id", appId));
+                add(Tag.of("process_id", processId));
+            }
+        };
+        return DistributionSummary.builder("kie_process_instance_duration_seconds")
+                .description("Process Instances Duration")
+                .tags(tags)
+                .register(MonitoringRegistry.getCompositeMeterRegistry());
+    }
+
+    private static DistributionSummary getWorkItemsDurationSummary(String name) {
+        List<Tag> tags = new ArrayList<Tag>() {
+            {
+                add(Tag.of("name", name));
+            }
+        };
+        return DistributionSummary.builder("kie_work_item_duration_seconds")
+                .description("Work Items Duration")
+                .tags(tags)
+                .register(MonitoringRegistry.getCompositeMeterRegistry());
+    }
 
     protected static void recordRunningProcessInstance(String containerId, String processId) {
-        runningProcessInstances.labels(containerId, processId).inc();
+        getRunningProcessInstancesGauge(containerId, processId).incrementAndGet();
     }
 
     private String identifier;
@@ -87,7 +147,7 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
     public void afterProcessStarted(ProcessStartedEvent event) {
         LOGGER.debug("After process started event: {}", event);
         final WorkflowProcessInstanceImpl processInstance = (WorkflowProcessInstanceImpl) event.getProcessInstance();
-        numberOfProcessInstancesStarted.labels(identifier, processInstance.getProcessId()).inc();
+        getNumberOfProcessInstancesStartedCounter(identifier, processInstance.getProcessId()).increment();
         recordRunningProcessInstance(identifier, processInstance.getProcessId());
     }
 
@@ -95,13 +155,13 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
     public void afterProcessCompleted(ProcessCompletedEvent event) {
         LOGGER.debug("After process completed event: {}", event);
         final WorkflowProcessInstanceImpl processInstance = (WorkflowProcessInstanceImpl) event.getProcessInstance();
-        runningProcessInstances.labels(identifier, processInstance.getProcessId()).dec();
+        getRunningProcessInstancesGauge(identifier, processInstance.getProcessId()).decrementAndGet();
 
-        numberOfProcessInstancesCompleted.labels(identifier, processInstance.getProcessId(), valueOf(processInstance.getState())).inc();
+        getNumberOfProcessInstancesCompletedCounter(identifier, processInstance.getProcessId(), valueOf(processInstance.getState())).increment();
 
         if (processInstance.getStartDate() != null) {
             final double duration = millisToSeconds(processInstance.getEndDate().getTime() - processInstance.getStartDate().getTime());
-            processInstancesDuration.labels(identifier, processInstance.getProcessId()).observe(duration);
+            getProcessInstancesDurationSummary(identifier, processInstance.getProcessId()).record(duration);
             LOGGER.debug("Process Instance duration: {}s", duration);
         }
     }
@@ -113,9 +173,9 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
         if (nodeInstance instanceof WorkItemNodeInstance) {
             WorkItemNodeInstance wi = (WorkItemNodeInstance) nodeInstance;
             if (wi.getTriggerTime() != null) {
-                final String name = (String)wi.getWorkItem().getParameters().getOrDefault("TaskName", wi.getWorkItem().getName());
+                final String name = (String) wi.getWorkItem().getParameters().getOrDefault("TaskName", wi.getWorkItem().getName());
                 final double duration = millisToSeconds(wi.getLeaveTime().getTime() - wi.getTriggerTime().getTime());
-                workItemsDuration.labels(name).observe(duration);
+                getWorkItemsDurationSummary(name).record(duration);
                 LOGGER.debug("Work Item {}, duration: {}s", name, duration);
             }
         }
@@ -126,7 +186,7 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
         LOGGER.debug("After SLA violated event: {}", event);
         final WorkflowProcessInstanceImpl processInstance = (WorkflowProcessInstanceImpl) event.getProcessInstance();
         if (processInstance != null && event.getNodeInstance() != null) {
-            numberOfSLAsViolated.labels(identifier, processInstance.getProcessId(), event.getNodeInstance().getNodeName()).inc();
+            getNumberOfSLAsViolatedCounter(identifier, processInstance.getProcessId(), event.getNodeInstance().getNodeName()).increment();
         }
     }
 

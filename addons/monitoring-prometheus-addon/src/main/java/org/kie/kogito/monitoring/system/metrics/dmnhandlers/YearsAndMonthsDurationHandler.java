@@ -18,17 +18,13 @@ package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
 import java.time.Period;
 
 import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Summary;
 
 public class YearsAndMonthsDurationHandler implements TypeHandlerWithSummary<Period> {
 
-    private final Summary summary;
-
-    private String dmnType;
+    private final String dmnType;
 
     public YearsAndMonthsDurationHandler(String dmnType, CollectorRegistry registry) {
         this.dmnType = dmnType;
-        this.summary = initializeDefaultSummary(dmnType, registry);
     }
 
     public YearsAndMonthsDurationHandler(String dmnType) {
@@ -37,7 +33,7 @@ public class YearsAndMonthsDurationHandler implements TypeHandlerWithSummary<Per
 
     @Override
     public void record(String type, String endpointName, Period sample) {
-        summary.labels(type, endpointName).observe(sample.toTotalMonths());
+        getDefaultSummary(dmnType, type, endpointName).record(sample.toTotalMonths());
     }
 
     @Override

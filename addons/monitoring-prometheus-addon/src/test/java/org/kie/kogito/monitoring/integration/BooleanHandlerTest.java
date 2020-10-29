@@ -36,7 +36,7 @@ public class BooleanHandlerTest {
     @BeforeEach
     public void setUp() {
         registry = new CollectorRegistry();
-        handler = new BooleanHandler("hello", registry);
+        handler = new BooleanHandler("hello");
     }
 
     @AfterEach

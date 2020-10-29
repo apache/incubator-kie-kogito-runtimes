@@ -15,21 +15,26 @@
 
 package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
 
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Summary;
+import java.util.ArrayList;
+
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.Tag;
+import org.kie.kogito.monitoring.MonitoringRegistry;
 
 public interface TypeHandlerWithSummary<T> extends TypeHandler<T> {
-    default Summary initializeDefaultSummary(String dmnType, CollectorRegistry registry) {
-        Summary.Builder builder = Summary.build() // Calculate quantiles over a sliding window of time - default = 10 minutes
-                .quantile(0.1, 0.01)   // Add 10th percentile with 1% tolerated error
-                .quantile(0.25, 0.05)
-                .quantile(0.50, 0.05)   // Add 50th percentile (= median) with 5% tolerated error
-                .quantile(0.75, 0.05)
-                .quantile(0.9, 0.05)
-                .quantile(0.99, 0.01)
-                .name(dmnType.replace(" ", "_") + DecisionConstants.DECISIONS_NAME_SUFFIX)
-                .help(DecisionConstants.DECISIONS_HELP)
-                .labelNames(DecisionConstants.DECISION_ENDPOINT_LABELS);
-        return registry == null ? builder.register(CollectorRegistry.defaultRegistry) : builder.register(registry);
+
+    default DistributionSummary getDefaultSummary(String dmnType, String decision, String endpoint) {
+        ArrayList<Tag> tags = new ArrayList<Tag>() {
+            {
+                add(Tag.of("decision", decision));
+                add(Tag.of("endpoint", endpoint));
+            }
+        };
+        DistributionSummary summary = DistributionSummary
+                .builder(dmnType.replace(" ", "_") + DecisionConstants.DECISIONS_NAME_SUFFIX)
+                .description(DecisionConstants.DECISIONS_HELP)
+                .tags(tags)
+                .register(MonitoringRegistry.getCompositeMeterRegistry());
+        return summary;
     }
 }

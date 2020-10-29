@@ -15,8 +15,6 @@
 
 package org.kie.kogito.monitoring.rule;
 
-import static org.kie.kogito.monitoring.rule.PrometheusMetrics.getDroolsEvaluationTimeHistogram;
-
 import org.drools.core.event.rule.impl.AfterActivationFiredEventImpl;
 import org.drools.core.event.rule.impl.BeforeActivationFiredEventImpl;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
@@ -24,6 +22,8 @@ import org.kie.api.event.rule.BeforeMatchFiredEvent;
 import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.kie.kogito.monitoring.rule.PrometheusMetrics.getDroolsEvaluationTimeHistogram;
 
 public class PrometheusMetricsDroolsListener extends DefaultAgendaEventListener {
 
@@ -49,19 +49,17 @@ public class PrometheusMetricsDroolsListener extends DefaultAgendaEventListener 
         long elapsed = System.nanoTime() - startTime;
         String ruleName = event.getMatch().getRule().getName();
 
-        getDroolsEvaluationTimeHistogram()
-                .labels(identifier, ruleName)
-                .observe(elapsed);
+        getDroolsEvaluationTimeHistogram(identifier, ruleName).record(elapsed);
         if (logger.isDebugEnabled()) {
             logger.debug("Elapsed time: " + elapsed);
         }
     }
 
     public BeforeActivationFiredEventImpl getBeforeImpl(BeforeMatchFiredEvent e) {
-        return (BeforeActivationFiredEventImpl)e;
+        return (BeforeActivationFiredEventImpl) e;
     }
 
     public AfterActivationFiredEventImpl getAfterImpl(AfterMatchFiredEvent e) {
-        return (AfterActivationFiredEventImpl)e;
+        return (AfterActivationFiredEventImpl) e;
     }
 }
