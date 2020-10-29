@@ -34,8 +34,9 @@ public class DMNRestResourceTemplate {
     public $outputType$ dmn($inputType$ variables) {
         org.kie.kogito.decision.DecisionModel decision = application.decisionModels().getDecisionModel("$modelNamespace$", "$modelName$");
         OutputSet outputSet = (OutputSet) StronglyTypedUtils.convertToOutputSet(variables, OutputSet.class);
-        org.kie.kogito.dmn.rest.DMNResult result = new org.kie.kogito.dmn.rest.DMNResult("$modelNamespace$", "$modelName$", decision.evaluateAll(DMNJSONUtils.ctx(decision, $inputData$)));
-        enrichResponseHeaders(result);
+        org.kie.dmn.api.core.DMNResult decisionResult = decision.evaluateAll(DMNJSONUtils.ctx(decision, $inputData$));
+        enrichResponseHeaders(decisionResult);
+        org.kie.kogito.dmn.rest.DMNResult result = new org.kie.kogito.dmn.rest.DMNResult("$modelNamespace$", "$modelName$", decisionResult);
         return $extractContextMethod$(result);
     }
 
@@ -95,7 +96,7 @@ public class DMNRestResourceTemplate {
         }
     }
 
-    private DMNResult enrichResponseHeaders(DMNResult result) {
+    private void enrichResponseHeaders(org.kie.dmn.api.core.DMNResult result) {
         if (!result.hasErrors() && !result.getMessages().isEmpty()) {
             String infoWarns = result.getMessages().stream().map(m -> m.getLevel() + " " + m.getMessage()).collect(java.util.stream.Collectors.joining(", "));
             httpResponse.getOutputHeaders().add(KOGITO_DECISION_INFOWARN_HEADER, infoWarns);
@@ -105,7 +106,5 @@ public class DMNRestResourceTemplate {
                 .ifPresent(executionId ->
                         httpResponse.getOutputHeaders().add(KOGITO_EXECUTION_ID_HEADER, executionId)
                 );
-
-        return result;
     }
 }
