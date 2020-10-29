@@ -9,7 +9,7 @@ public class DecisionModelResourcesProvider implements org.kie.internal.decision
         }
 
         try {
-            byte[] bytes = readAllBytes(stream);
+            byte[] bytes = org.drools.core.util.IoUtils.readBytesFromInputStream(stream);
             java.io.ByteArrayInputStream byteArrayInputStream = new java.io.ByteArrayInputStream(bytes);
             return new java.io.InputStreamReader(byteArrayInputStream);
         } catch (java.io.IOException e) {
@@ -29,28 +29,4 @@ public class DecisionModelResourcesProvider implements org.kie.internal.decision
         return resourcePaths;
     }
 
-    private static byte[] readAllBytes(java.io.InputStream inputStream) throws IOException {
-        java.io.BufferedInputStream bis = null;
-        java.io.ByteArrayOutputStream buf = null;
-        try {
-            bis = new java.io.BufferedInputStream(inputStream);
-            buf = new java.io.ByteArrayOutputStream();
-            int result = bis.read();
-            while (result != -1) {
-                buf.write((byte) result);
-                result = bis.read();
-            }
-            return buf.toByteArray();
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (bis != null) {
-                bis.close();
-            }
-            if (buf != null) {
-                buf.close();
-            }
-        }
-    }
 }
