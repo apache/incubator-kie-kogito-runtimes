@@ -14,5 +14,6 @@
   <description>Monitoring addons for runtime</description>
   <modules>
     <module>monitoring-core</module>
+    <module>monitoring-prometheus-addon</module>
   </modules>
 </project>

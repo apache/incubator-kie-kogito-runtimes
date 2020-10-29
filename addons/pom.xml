@@ -21,7 +21,6 @@
     <module>tracing</module>
     <module>explainability</module>
     <module>monitoring-addon</module>
-    <module>monitoring-prometheus-addon</module>
   </modules>
 
   <dependencyManagement>
