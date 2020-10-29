@@ -175,23 +175,23 @@ public class DecisionRestResourceGenerator {
         processAnnForRef(dmnMethod,
                          "org.eclipse.microprofile.openapi.annotations.parameters.RequestBody",
                          "org.eclipse.microprofile.openapi.annotations.media.Schema",
-                         "/dmnDefinitions.json" + inputRef,
+                         "dmnDefinitions.json" + inputRef,
                          !mpAnnPresent);
         processAnnForRef(dmnMethod,
                          "org.eclipse.microprofile.openapi.annotations.responses.APIResponse",
                          "org.eclipse.microprofile.openapi.annotations.media.Schema",
-                         "/dmnDefinitions.json" + outputRef,
+                         "dmnDefinitions.json" + outputRef,
                          !mpAnnPresent);
         // io.swagger / SB
         processAnnForRef(dmnMethod,
                          "io.swagger.v3.oas.annotations.parameters.RequestBody",
                          "io.swagger.v3.oas.annotations.media.Schema",
-                         "/docs/dmnDefinitions.json" + inputRef,
+                         "dmnDefinitions.json" + inputRef,
                          !swaggerAnnPresent);
         processAnnForRef(dmnMethod,
                          "io.swagger.v3.oas.annotations.responses.ApiResponse",
                          "io.swagger.v3.oas.annotations.media.Schema",
-                         "/docs/dmnDefinitions.json" + outputRef,
+                         "dmnDefinitions.json" + outputRef,
                          !swaggerAnnPresent);
     }
 
