@@ -32,7 +32,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 
 @QuarkusTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
-@Disabled("Must rewrite with cloud event support ! https://issues.redhat.com/browse/KOGITO-3591")
 public class PingPongMessageTest {
 
     static {
