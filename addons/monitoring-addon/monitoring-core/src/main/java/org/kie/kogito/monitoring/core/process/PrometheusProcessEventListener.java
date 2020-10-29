@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.process;
+package org.kie.kogito.monitoring.core.process;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,11 +33,9 @@ import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.SLAViolatedEvent;
 import org.kie.api.runtime.process.NodeInstance;
-import org.kie.kogito.monitoring.MonitoringRegistry;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.lang.String.valueOf;
 
 public class PrometheusProcessEventListener extends DefaultProcessEventListener {
 
@@ -157,7 +155,7 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
         final WorkflowProcessInstanceImpl processInstance = (WorkflowProcessInstanceImpl) event.getProcessInstance();
         getRunningProcessInstancesGauge(identifier, processInstance.getProcessId()).decrementAndGet();
 
-        getNumberOfProcessInstancesCompletedCounter(identifier, processInstance.getProcessId(), valueOf(processInstance.getState())).increment();
+        getNumberOfProcessInstancesCompletedCounter(identifier, processInstance.getProcessId(), String.valueOf(processInstance.getState())).increment();
 
         if (processInstance.getStartDate() != null) {
             final double duration = millisToSeconds(processInstance.getEndDate().getTime() - processInstance.getStartDate().getTime());

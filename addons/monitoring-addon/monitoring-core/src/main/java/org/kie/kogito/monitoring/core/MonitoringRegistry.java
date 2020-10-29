@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.rest;
+package org.kie.kogito.monitoring.core;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
-import org.kie.kogito.monitoring.PrometheusRegistryProvider;
+public class MonitoringRegistry {
 
-@Path("/metrics")
-public class MetricsResource {
+    private static CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
 
-    public static PrometheusMeterRegistry prometheusRegistry = PrometheusRegistryProvider.getPrometheusMeterRegistry();
+    private MonitoringRegistry(){}
+    
+    public static void addRegistry(MeterRegistry registry){
+        compositeMeterRegistry.add(registry);
+    }
 
-    @GET
-    @Produces({MediaType.TEXT_PLAIN})
-    public Response getMetrics() {
-        return Response.ok(prometheusRegistry.scrape()).build();
-
+    public static CompositeMeterRegistry getCompositeMeterRegistry(){
+        return compositeMeterRegistry;
     }
 }

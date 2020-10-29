@@ -13,27 +13,22 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
+package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
-import java.time.Period;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
-import io.prometheus.client.CollectorRegistry;
-
-public class YearsAndMonthsDurationHandler implements TypeHandlerWithSummary<Period> {
+public class LocalDateTimeHandler implements TypeHandlerWithSummary<LocalDateTime> {
 
     private final String dmnType;
 
-    public YearsAndMonthsDurationHandler(String dmnType, CollectorRegistry registry) {
+    public LocalDateTimeHandler(String dmnType) {
         this.dmnType = dmnType;
     }
 
-    public YearsAndMonthsDurationHandler(String dmnType) {
-        this(dmnType, null);
-    }
-
     @Override
-    public void record(String type, String endpointName, Period sample) {
-        getDefaultSummary(dmnType, type, endpointName).record(sample.toTotalMonths());
+    public void record(String type, String endpointName, LocalDateTime sample) {
+        getDefaultSummary(dmnType, type, endpointName).record(sample.toInstant(ZoneOffset.UTC).toEpochMilli());
     }
 
     @Override

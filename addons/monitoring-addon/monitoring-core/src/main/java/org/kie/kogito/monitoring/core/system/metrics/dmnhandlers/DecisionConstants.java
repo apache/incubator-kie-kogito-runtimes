@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
+package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
 public class DecisionConstants {
 

@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.rule;
+package org.kie.kogito.monitoring.core.rule;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Tag;
-import org.kie.kogito.monitoring.MonitoringRegistry;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
 public class PrometheusMetrics {
 

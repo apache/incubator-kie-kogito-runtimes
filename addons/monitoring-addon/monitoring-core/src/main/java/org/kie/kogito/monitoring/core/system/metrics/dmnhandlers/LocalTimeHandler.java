@@ -13,27 +13,22 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
+package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
-import java.math.BigDecimal;
+import java.time.LocalTime;
 
-import io.prometheus.client.CollectorRegistry;
 
-public class BigDecimalHandler implements TypeHandlerWithSummary<BigDecimal> {
+public class LocalTimeHandler implements TypeHandlerWithSummary<LocalTime> {
 
     private final String dmnType;
 
-    public BigDecimalHandler(String dmnType, CollectorRegistry registry) {
+    public LocalTimeHandler(String dmnType) {
         this.dmnType = dmnType;
     }
 
-    public BigDecimalHandler(String dmnType) {
-        this(dmnType, null);
-    }
-
     @Override
-    public void record(String decision, String endpointName, BigDecimal sample) {
-        getDefaultSummary(dmnType, decision, endpointName).record(sample.doubleValue());
+    public void record(String type, String endpointName, LocalTime sample) {
+        getDefaultSummary(dmnType, type, endpointName).record(sample.toSecondOfDay());
     }
 
     @Override

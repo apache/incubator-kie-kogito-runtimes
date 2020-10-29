@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.rule;
+package org.kie.kogito.monitoring.core.rule;
 
 import org.drools.core.event.rule.impl.AfterActivationFiredEventImpl;
 import org.drools.core.event.rule.impl.BeforeActivationFiredEventImpl;
@@ -23,7 +23,7 @@ import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.kie.kogito.monitoring.rule.PrometheusMetrics.getDroolsEvaluationTimeHistogram;
+import static org.kie.kogito.monitoring.core.rule.PrometheusMetrics.getDroolsEvaluationTimeHistogram;
 
 public class PrometheusMetricsDroolsListener extends DefaultAgendaEventListener {
 

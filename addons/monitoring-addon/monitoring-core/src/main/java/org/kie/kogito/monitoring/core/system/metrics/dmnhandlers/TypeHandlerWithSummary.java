@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
+package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
 import java.util.ArrayList;
 
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Tag;
-import org.kie.kogito.monitoring.MonitoringRegistry;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
 public interface TypeHandlerWithSummary<T> extends TypeHandler<T> {
 

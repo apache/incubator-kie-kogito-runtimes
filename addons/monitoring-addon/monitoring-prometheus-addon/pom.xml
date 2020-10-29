@@ -39,6 +39,11 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>grafana-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>monitoring-core</artifactId>
+    </dependency>
+
     <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus -->
     <dependency>
       <groupId>io.micrometer</groupId>

@@ -13,27 +13,21 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
+package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
-import java.time.LocalTime;
+import java.time.Period;
 
-import io.prometheus.client.CollectorRegistry;
-
-public class LocalTimeHandler implements TypeHandlerWithSummary<LocalTime> {
+public class YearsAndMonthsDurationHandler implements TypeHandlerWithSummary<Period> {
 
     private final String dmnType;
 
-    public LocalTimeHandler(String dmnType, CollectorRegistry registry) {
+    public YearsAndMonthsDurationHandler(String dmnType) {
         this.dmnType = dmnType;
     }
 
-    public LocalTimeHandler(String dmnType) {
-        this(dmnType, null);
-    }
-
     @Override
-    public void record(String type, String endpointName, LocalTime sample) {
-        getDefaultSummary(dmnType, type, endpointName).record(sample.toSecondOfDay());
+    public void record(String type, String endpointName, Period sample) {
+        getDefaultSummary(dmnType, type, endpointName).record(sample.toTotalMonths());
     }
 
     @Override

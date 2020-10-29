@@ -13,23 +13,17 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
+package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-
-import io.prometheus.client.CollectorRegistry;
 
 public class LocalDateHandler implements TypeHandlerWithSummary<LocalDate> {
 
     private final String dmnType;
 
-    public LocalDateHandler(String dmnType, CollectorRegistry registry) {
-        this.dmnType = dmnType;
-    }
-
     public LocalDateHandler(String dmnType) {
-        this(dmnType, null);
+        this.dmnType = dmnType;
     }
 
     @Override

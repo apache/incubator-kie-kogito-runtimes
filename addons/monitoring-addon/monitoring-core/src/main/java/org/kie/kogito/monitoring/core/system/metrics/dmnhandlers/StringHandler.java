@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.system.metrics.dmnhandlers;
+package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Tag;
-import org.kie.kogito.monitoring.MonitoringRegistry;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
 public class StringHandler implements TypeHandler<String> {
 

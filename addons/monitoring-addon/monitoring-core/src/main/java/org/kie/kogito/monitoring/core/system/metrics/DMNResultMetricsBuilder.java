@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.system.metrics;
+package org.kie.kogito.monitoring.core.system.metrics;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -28,15 +28,15 @@ import java.util.Map;
 import org.kie.dmn.api.core.DMNDecisionResult;
 import org.kie.kogito.dmn.rest.DMNResult;
 import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BooleanHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DaysAndTimeDurationHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalDateHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalDateTimeHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalTimeHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.StringHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.TypeHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.YearsAndMonthsDurationHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.BigDecimalHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.BooleanHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.DaysAndTimeDurationHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.LocalDateHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.LocalDateTimeHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.LocalTimeHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.StringHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.TypeHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.YearsAndMonthsDurationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
