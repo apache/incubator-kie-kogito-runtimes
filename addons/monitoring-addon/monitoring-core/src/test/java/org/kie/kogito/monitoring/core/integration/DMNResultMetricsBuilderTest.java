@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.integration;
+package org.kie.kogito.monitoring.core.integration;
 
 import java.math.BigDecimal;
 import java.time.Duration;

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.integration;
+package org.kie.kogito.monitoring.core.integration;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;

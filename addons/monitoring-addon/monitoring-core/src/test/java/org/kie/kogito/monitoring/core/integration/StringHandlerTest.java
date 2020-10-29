@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.integration;
+package org.kie.kogito.monitoring.core.integration;
 
 import java.util.stream.IntStream;
 
@@ -21,22 +21,22 @@ import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BooleanHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.StringHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BooleanHandlerTest {
+public class StringHandlerTest {
 
     private static final String ENDPOINT_NAME = "hello";
-
+    private static final String DECISION_NAME = "decision";
     CollectorRegistry registry;
-    BooleanHandler handler;
+    StringHandler handler;
 
     @BeforeEach
     public void setUp() {
         registry = new CollectorRegistry();
-        handler = new BooleanHandler("hello");
+        handler = new StringHandler("hello");
     }
 
     @AfterEach
@@ -45,18 +45,21 @@ public class BooleanHandlerTest {
     }
 
     @Test
-    public void givenSomeBooleanMetricsWhenMetricsAreStoredThenTheCountIsCorrect() {
+    public void givenSomeStringMetricsWhenMetricsAreStoredThenTheCountIsCorrect() {
         // Arrange
-        Double expectedTrue = 3.0;
-        Double expectedFalse = 2.0;
+        Double expectedCountStringA = 3.0;
+        Double expectedCountStringB = 2.0;
+        Double expectedCountStringC = 5.0;
 
         // Act
-        IntStream.rangeClosed(1, 3).forEach(x -> handler.record("decision", ENDPOINT_NAME, true));
-        IntStream.rangeClosed(1, 2).forEach(x -> handler.record("decision", ENDPOINT_NAME, false));
+        IntStream.rangeClosed(1, 3).forEach(x -> handler.record(DECISION_NAME, ENDPOINT_NAME, "A"));
+        IntStream.rangeClosed(1, 2).forEach(x -> handler.record(DECISION_NAME, ENDPOINT_NAME, "B"));
+        IntStream.rangeClosed(1, 5).forEach(x -> handler.record(DECISION_NAME, ENDPOINT_NAME, "C"));
 
         // Assert
-        assertEquals(expectedTrue, getLabelsValue("decision", ENDPOINT_NAME, "true"));
-        assertEquals(expectedFalse, getLabelsValue("decision", ENDPOINT_NAME, "false"));
+        assertEquals(expectedCountStringA, getLabelsValue(DECISION_NAME, ENDPOINT_NAME, "A"));
+        assertEquals(expectedCountStringB, getLabelsValue(DECISION_NAME, ENDPOINT_NAME, "B"));
+        assertEquals(expectedCountStringC, getLabelsValue(DECISION_NAME, ENDPOINT_NAME, "C"));
     }
 
     private Double getLabelsValue(String decision, String name, String labelValue) {

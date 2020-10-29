@@ -13,25 +13,26 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.integration;
+package org.kie.kogito.monitoring.core.integration;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalTimeHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalDateHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LocalTimeHandlerTest extends AbstractQuantilesTest<LocalTimeHandler> {
+public class LocalDateHandlerTest extends AbstractQuantilesTest<LocalDateHandler> {
 
     @BeforeEach
     public void setUp() {
         registry = new CollectorRegistry();
-        handler = new LocalTimeHandler("hello", registry);
+        handler = new LocalDateHandler("hello", registry);
     }
 
     @AfterEach
@@ -40,10 +41,10 @@ public class LocalTimeHandlerTest extends AbstractQuantilesTest<LocalTimeHandler
     }
 
     @Test
-    public void givenLocalTimeMetricsWhenMetricsAreStoredThenTheQuantilesAreCorrect() {
+    public void givenLocalDateMetricsWhenMetricsAreStoredThenTheQuantilesAreCorrect() {
         // Arrange
-        LocalTime now = LocalTime.now();
-        int expectedValue = now.toSecondOfDay();
+        LocalDate now = LocalDate.now();
+        Long expectedValue = now.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
         Double[] quantiles = new Double[]{0.1, 0.25, 0.5, 0.75, 0.9, 0.99};
 
         // Act

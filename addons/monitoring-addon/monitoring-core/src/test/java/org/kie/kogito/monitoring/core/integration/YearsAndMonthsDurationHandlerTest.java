@@ -13,26 +13,25 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.monitoring.integration;
+package org.kie.kogito.monitoring.core.integration;
 
-import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.Period;
 
 import io.prometheus.client.CollectorRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalDateHandler;
+import org.kie.kogito.monitoring.system.metrics.dmnhandlers.YearsAndMonthsDurationHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LocalDateHandlerTest extends AbstractQuantilesTest<LocalDateHandler> {
+public class YearsAndMonthsDurationHandlerTest extends AbstractQuantilesTest<YearsAndMonthsDurationHandler> {
 
     @BeforeEach
     public void setUp() {
         registry = new CollectorRegistry();
-        handler = new LocalDateHandler("hello", registry);
+        handler = new YearsAndMonthsDurationHandler("hello", registry);
     }
 
     @AfterEach
@@ -41,14 +40,14 @@ public class LocalDateHandlerTest extends AbstractQuantilesTest<LocalDateHandler
     }
 
     @Test
-    public void givenLocalDateMetricsWhenMetricsAreStoredThenTheQuantilesAreCorrect() {
+    public void givenYearsAndMonthsMetricsWhenMetricsAreStoredThenTheQuantilesAreCorrect() {
         // Arrange
-        LocalDate now = LocalDate.now();
-        Long expectedValue = now.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
+        Integer expectedValue = 12;
+        Period period = Period.ofMonths(expectedValue);
         Double[] quantiles = new Double[]{0.1, 0.25, 0.5, 0.75, 0.9, 0.99};
 
         // Act
-        handler.record("decision", ENDPOINT_NAME, now);
+        handler.record("decision", ENDPOINT_NAME, period);
 
         // Assert
         for (Double key : quantiles) {
@@ -56,3 +55,4 @@ public class LocalDateHandlerTest extends AbstractQuantilesTest<LocalDateHandler
         }
     }
 }
+
