@@ -41,6 +41,8 @@ public class DMNResult implements Serializable, org.kie.dmn.api.core.DMNResult {
 
     private Map<String, Object> dmnContext = new HashMap<>();
 
+    private Map<String, Object> dmnContextMetadata = new HashMap<>();
+
     private List<DMNMessageSQ> messages = new ArrayList<>();
 
     private Map<String, DMNDecisionResultSQ> decisionResults = new HashMap<>();
@@ -53,6 +55,7 @@ public class DMNResult implements Serializable, org.kie.dmn.api.core.DMNResult {
         this.namespace = namespace;
         this.modelName = modelName;
         this.setDmnContext(dmnResult.getContext().getAll());
+        this.setDmnContextMetadata(dmnResult.getContext().getMetadata().asMap());
         this.setMessages(dmnResult.getMessages());
         this.setDecisionResults(dmnResult.getDecisionResults());
     }
@@ -84,6 +87,12 @@ public class DMNResult implements Serializable, org.kie.dmn.api.core.DMNResult {
         }
     }
 
+    public void setDmnContextMetadata(Map<String, Object> dmnContextMetadata) {
+        for (Entry<String, Object> kv : dmnContextMetadata.entrySet()) {
+            this.dmnContextMetadata.put(kv.getKey(), MarshallingStubUtils.stubDMNResult(kv.getValue(), String::valueOf));
+        }
+    }
+
     public void setMessages(List<DMNMessage> messages) {
         for (DMNMessage m : messages) {
             this.messages.add(DMNMessageSQ.of(m));
@@ -99,7 +108,7 @@ public class DMNResult implements Serializable, org.kie.dmn.api.core.DMNResult {
     @JsonIgnore
     @Override
     public DMNContext getContext() {
-        return MapBackedDMNContext.of(dmnContext);
+        return MapBackedDMNContext.of(dmnContext, dmnContextMetadata);
     }
 
     @Override
