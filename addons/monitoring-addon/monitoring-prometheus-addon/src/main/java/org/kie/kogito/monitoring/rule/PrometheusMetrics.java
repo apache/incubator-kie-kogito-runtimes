@@ -13,23 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.core;
+package org.kie.kogito.monitoring.rule;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import org.kie.kogito.monitoring.core.rule.RuleMetrics;
 
-public class MonitoringRegistry {
+public class PrometheusMetrics extends RuleMetrics {
 
-    private static CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
-
-    private MonitoringRegistry() {
-    }
-
-    public static void addRegistry(MeterRegistry registry) {
-        compositeMeterRegistry.add(registry);
-    }
-
-    public static CompositeMeterRegistry getDefaultMeterRegistry() {
-        return compositeMeterRegistry;
-    }
 }

@@ -22,7 +22,7 @@ import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Tag;
 import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
-public class PrometheusMetrics {
+public class RuleMetrics {
 
     private static final long NANOSECONDS_PER_MICROSECOND = 1_000_000;
 

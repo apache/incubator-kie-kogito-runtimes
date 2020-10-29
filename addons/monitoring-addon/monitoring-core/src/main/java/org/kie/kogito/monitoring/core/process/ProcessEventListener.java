@@ -37,9 +37,15 @@ import org.kie.kogito.monitoring.core.MonitoringRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PrometheusProcessEventListener extends DefaultProcessEventListener {
+public class ProcessEventListener extends DefaultProcessEventListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PrometheusProcessEventListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessEventListener.class);
+    private static Map<String, AtomicInteger> gaugeMap = new HashMap<String, AtomicInteger>();
+    private String identifier;
+
+    public ProcessEventListener(String identifier) {
+        this.identifier = identifier;
+    }
 
     private static Counter getNumberOfProcessInstancesStartedCounter(String appId, String processId) {
         List<Tag> tags = new ArrayList<Tag>() {
@@ -58,9 +64,9 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
     private static Counter getNumberOfSLAsViolatedCounter(String appId, String processId, String nodeName) {
         List<Tag> tags = new ArrayList<Tag>() {
             {
-                Tag.of("app_id", appId);
-                Tag.of("process_id", processId);
-                Tag.of("node_name", nodeName);
+                add(Tag.of("app_id", appId));
+                add(Tag.of("process_id", processId));
+                add(Tag.of("node_name", nodeName));
             }
         };
         return Counter
@@ -70,14 +76,12 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
                 .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
-    private static Map<String, AtomicInteger> gaugeMap = new HashMap<String, AtomicInteger>();
-
     private static Counter getNumberOfProcessInstancesCompletedCounter(String appId, String processId, String nodeName) {
         List<Tag> tags = new ArrayList<Tag>() {
             {
-                Tag.of("app_id", appId);
-                Tag.of("process_id", processId);
-                Tag.of("node_name", nodeName);
+                add(Tag.of("app_id", appId));
+                add(Tag.of("process_id", processId));
+                add(Tag.of("node_name", nodeName));
             }
         };
         return Counter
@@ -135,10 +139,8 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
         getRunningProcessInstancesGauge(containerId, processId).incrementAndGet();
     }
 
-    private String identifier;
-
-    public PrometheusProcessEventListener(String identifier) {
-        this.identifier = identifier;
+    protected static double millisToSeconds(long millis) {
+        return millis / 1000.0;
     }
 
     @Override
@@ -186,9 +188,5 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
         if (processInstance != null && event.getNodeInstance() != null) {
             getNumberOfSLAsViolatedCounter(identifier, processInstance.getProcessId(), event.getNodeInstance().getNodeName()).increment();
         }
-    }
-
-    protected static double millisToSeconds(long millis) {
-        return millis / 1000.0;
     }
 }

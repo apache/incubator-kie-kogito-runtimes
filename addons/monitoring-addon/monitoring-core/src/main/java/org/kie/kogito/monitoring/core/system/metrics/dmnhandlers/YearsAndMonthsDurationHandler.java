@@ -28,7 +28,7 @@ public class YearsAndMonthsDurationHandler extends TypeHandlerWithSummary<Period
         this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
     }
 
-    public YearsAndMonthsDurationHandler(String dmnType, MeterRegistry meterRegistry){
+    public YearsAndMonthsDurationHandler(String dmnType, MeterRegistry meterRegistry) {
         this.dmnType = dmnType;
         this.registry = meterRegistry;
     }

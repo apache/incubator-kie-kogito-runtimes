@@ -33,7 +33,7 @@ public class BooleanHandler implements TypeHandler<Boolean> {
         this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
     }
 
-    public BooleanHandler(String dmnType, MeterRegistry registry){
+    public BooleanHandler(String dmnType, MeterRegistry registry) {
         this.dmnType = dmnType;
         this.meterRegistry = registry;
     }

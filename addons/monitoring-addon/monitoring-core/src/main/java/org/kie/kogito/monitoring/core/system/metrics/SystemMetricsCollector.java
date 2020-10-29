@@ -40,7 +40,10 @@ public class SystemMetricsCollector {
 
     private static MeterRegistry registry = MonitoringRegistry.getDefaultMeterRegistry();
 
-    private static Counter getRequestStatusCodeCounter(String endpoint, String identifier){
+    private SystemMetricsCollector() {
+    }
+
+    private static Counter getRequestStatusCodeCounter(String endpoint, String identifier) {
         List<Tag> tags = new ArrayList<Tag>() {
             {
                 add(Tag.of("endpoint", endpoint));
@@ -54,7 +57,7 @@ public class SystemMetricsCollector {
                 .register(registry);
     }
 
-    private static Counter getExceptionsCounter(String endpoint, String identifier){
+    private static Counter getExceptionsCounter(String endpoint, String identifier) {
         List<Tag> tags = new ArrayList<Tag>() {
             {
                 add(Tag.of("endpoint", endpoint));
@@ -68,7 +71,7 @@ public class SystemMetricsCollector {
                 .register(registry);
     }
 
-    private static DistributionSummary getElapsedTimeSummary(String endpoint){
+    private static DistributionSummary getElapsedTimeSummary(String endpoint) {
         List<Tag> tags = new ArrayList<Tag>() {
             {
                 add(Tag.of("endpoint", endpoint));
@@ -79,9 +82,6 @@ public class SystemMetricsCollector {
                 .description(ELAPSED_TIME_HELP)
                 .tags(tags)
                 .register(registry);
-    }
-
-    private SystemMetricsCollector() {
     }
 
     public static void registerStatusCodeRequest(String endpoint, String statusCode) {
@@ -96,7 +96,7 @@ public class SystemMetricsCollector {
         getExceptionsCounter(endpoint, stackTrace).increment();
     }
 
-    public static void setRegistry(MeterRegistry meterRegistry){
+    public static void setRegistry(MeterRegistry meterRegistry) {
         registry = meterRegistry;
     }
 }

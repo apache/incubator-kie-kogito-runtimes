@@ -13,25 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.rest;
+package org.kie.kogito.monitoring.process;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import org.kie.kogito.monitoring.core.process.ProcessEventListener;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
-import org.kie.kogito.monitoring.PrometheusRegistryProvider;
+public class PrometheusProcessEventListener extends ProcessEventListener {
 
-@Path("/metrics")
-public class MetricsResource {
-
-    public static PrometheusMeterRegistry prometheusRegistry = PrometheusRegistryProvider.getPrometheusMeterRegistry();
-
-    @GET
-    @Produces({MediaType.TEXT_PLAIN})
-    public Response getMetrics() {
-        return Response.ok(prometheusRegistry.scrape()).build();
+    public PrometheusProcessEventListener(String identifier) {
+        super(identifier);
     }
 }

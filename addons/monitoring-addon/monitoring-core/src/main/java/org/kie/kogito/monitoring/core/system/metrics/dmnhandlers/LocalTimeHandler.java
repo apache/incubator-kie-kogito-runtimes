@@ -28,7 +28,7 @@ public class LocalTimeHandler extends TypeHandlerWithSummary<LocalTime> {
         this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
     }
 
-    public LocalTimeHandler(String dmnType, MeterRegistry meterRegistry){
+    public LocalTimeHandler(String dmnType, MeterRegistry meterRegistry) {
         this.dmnType = dmnType;
         this.registry = meterRegistry;
     }

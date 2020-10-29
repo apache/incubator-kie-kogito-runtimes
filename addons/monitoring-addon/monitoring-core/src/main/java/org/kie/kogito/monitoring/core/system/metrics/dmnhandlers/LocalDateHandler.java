@@ -29,7 +29,7 @@ public class LocalDateHandler extends TypeHandlerWithSummary<LocalDate> {
         this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
     }
 
-    public LocalDateHandler(String dmnType, MeterRegistry registry){
+    public LocalDateHandler(String dmnType, MeterRegistry registry) {
         this.dmnType = dmnType;
         this.registry = registry;
     }

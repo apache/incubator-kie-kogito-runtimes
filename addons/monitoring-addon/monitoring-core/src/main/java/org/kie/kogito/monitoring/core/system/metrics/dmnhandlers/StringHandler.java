@@ -33,7 +33,7 @@ public class StringHandler implements TypeHandler<String> {
         this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
     }
 
-    public StringHandler(String dmnType, MeterRegistry meterRegistry){
+    public StringHandler(String dmnType, MeterRegistry meterRegistry) {
         this.dmnType = dmnType;
         this.meterRegistry = meterRegistry;
     }

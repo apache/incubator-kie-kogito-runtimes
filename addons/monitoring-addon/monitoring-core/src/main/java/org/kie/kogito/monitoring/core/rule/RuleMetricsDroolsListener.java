@@ -23,14 +23,14 @@ import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.kie.kogito.monitoring.core.rule.PrometheusMetrics.getDroolsEvaluationTimeHistogram;
+import static org.kie.kogito.monitoring.core.rule.RuleMetrics.getDroolsEvaluationTimeHistogram;
 
-public class PrometheusMetricsDroolsListener extends DefaultAgendaEventListener {
+public class RuleMetricsDroolsListener extends DefaultAgendaEventListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(PrometheusMetricsDroolsListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(RuleMetricsDroolsListener.class);
     private final String identifier;
 
-    public PrometheusMetricsDroolsListener(String identifier) {
+    public RuleMetricsDroolsListener(String identifier) {
         this.identifier = identifier;
     }
 

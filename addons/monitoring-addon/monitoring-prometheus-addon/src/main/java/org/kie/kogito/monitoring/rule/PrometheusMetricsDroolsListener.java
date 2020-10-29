@@ -13,25 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.rest;
+package org.kie.kogito.monitoring.rule;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import org.kie.kogito.monitoring.core.rule.RuleMetricsDroolsListener;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
-import org.kie.kogito.monitoring.PrometheusRegistryProvider;
+public class PrometheusMetricsDroolsListener extends RuleMetricsDroolsListener {
 
-@Path("/metrics")
-public class MetricsResource {
-
-    public static PrometheusMeterRegistry prometheusRegistry = PrometheusRegistryProvider.getPrometheusMeterRegistry();
-
-    @GET
-    @Produces({MediaType.TEXT_PLAIN})
-    public Response getMetrics() {
-        return Response.ok(prometheusRegistry.scrape()).build();
+    public PrometheusMetricsDroolsListener(String identifier) {
+        super(identifier);
     }
 }
