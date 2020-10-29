@@ -52,7 +52,7 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
                 .builder("kie_process_instance_started_total")
                 .description("Started Process Instances")
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
     private static Counter getNumberOfSLAsViolatedCounter(String appId, String processId, String nodeName) {
@@ -67,7 +67,7 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
                 .builder("kie_process_instance_sla_violated_total")
                 .description("Process Instances SLA Violated")
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
     private static Map<String, AtomicInteger> gaugeMap = new HashMap<String, AtomicInteger>();
@@ -84,7 +84,7 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
                 .builder("kie_process_instance_completed_total")
                 .description("Completed Process Instances")
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
     private static AtomicInteger getRunningProcessInstancesGauge(String appId, String processId) {
@@ -101,7 +101,7 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
         Gauge.builder("kie_process_instance_running_total", atomicInteger, AtomicInteger::doubleValue)
                 .description("Running Process Instances")
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(MonitoringRegistry.getDefaultMeterRegistry());
         gaugeMap.put(appId + processId, atomicInteger);
         return atomicInteger;
     }
@@ -116,7 +116,7 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
         return DistributionSummary.builder("kie_process_instance_duration_seconds")
                 .description("Process Instances Duration")
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
     private static DistributionSummary getWorkItemsDurationSummary(String name) {
@@ -128,7 +128,7 @@ public class PrometheusProcessEventListener extends DefaultProcessEventListener 
         return DistributionSummary.builder("kie_work_item_duration_seconds")
                 .description("Work Items Duration")
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
     protected static void recordRunningProcessInstance(String containerId, String processId) {

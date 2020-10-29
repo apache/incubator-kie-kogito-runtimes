@@ -23,12 +23,12 @@ public class MonitoringRegistry {
     private static CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
 
     private MonitoringRegistry(){}
-    
+
     public static void addRegistry(MeterRegistry registry){
         compositeMeterRegistry.add(registry);
     }
 
-    public static CompositeMeterRegistry getCompositeMeterRegistry(){
+    public static CompositeMeterRegistry getDefaultMeterRegistry(){
         return compositeMeterRegistry;
     }
 }

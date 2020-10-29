@@ -17,21 +17,22 @@ package org.kie.kogito.monitoring.core.integration;
 
 import java.time.Duration;
 
-import io.prometheus.client.CollectorRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DaysAndTimeDurationHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.DaysAndTimeDurationHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.DecisionConstants;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DaysAndTimeDurationHandlerTest extends AbstractQuantilesTest<DaysAndTimeDurationHandler> {
 
     @BeforeEach
     public void setUp() {
-        registry = new CollectorRegistry();
-        handler = new DaysAndTimeDurationHandler("hello", registry);
+        dmnType = "daysandtimeduration";
+        registry = new SimpleMeterRegistry();
+        handler = new DaysAndTimeDurationHandler(dmnType, registry);
     }
 
     @AfterEach
@@ -44,14 +45,12 @@ public class DaysAndTimeDurationHandlerTest extends AbstractQuantilesTest<DaysAn
         // Arrange
         Integer expectedValue = 10000;
         Duration duration = Duration.ofMillis(expectedValue);
-        Double[] quantiles = new Double[]{0.1, 0.25, 0.5, 0.75, 0.9, 0.99};
 
         // Act
         handler.record("decision", ENDPOINT_NAME, duration);
 
         // Assert
-        for (Double key : quantiles) {
-            assertEquals(expectedValue, getQuantile("decision", ENDPOINT_NAME + DecisionConstants.DECISIONS_NAME_SUFFIX, ENDPOINT_NAME, key), 5);
-        }
+        assertTrue(registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().max() >= 5);
+        assertTrue(registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().mean() >= 2);
     }
 }

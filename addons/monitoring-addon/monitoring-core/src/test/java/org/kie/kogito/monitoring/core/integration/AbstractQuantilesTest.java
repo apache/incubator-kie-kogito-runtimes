@@ -15,10 +15,9 @@
 
 package org.kie.kogito.monitoring.core.integration;
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.CollectorRegistry;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.TypeHandler;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.DecisionConstants;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.TypeHandler;
 
 public abstract class AbstractQuantilesTest<T extends TypeHandler> {
 
@@ -29,10 +28,7 @@ public abstract class AbstractQuantilesTest<T extends TypeHandler> {
                     "quantile"
             };
     protected static final String ENDPOINT_NAME = "hello";
-    protected CollectorRegistry registry;
+    protected SimpleMeterRegistry registry;
     protected T handler;
-
-    protected double getQuantile(String decision, String name, String labelValue, double q) {
-        return registry.getSampleValue(name, INTERNAL_PROMETHEUS_LABELS, new String[]{decision, labelValue, Collector.doubleToGoString(q)}).doubleValue();
-    }
+    protected String dmnType;
 }

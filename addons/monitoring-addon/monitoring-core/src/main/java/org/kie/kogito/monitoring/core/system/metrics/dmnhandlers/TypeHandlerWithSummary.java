@@ -18,12 +18,14 @@ package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 import java.util.ArrayList;
 
 import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
-public interface TypeHandlerWithSummary<T> extends TypeHandler<T> {
+public abstract class TypeHandlerWithSummary<T> implements TypeHandler<T> {
 
-    default DistributionSummary getDefaultSummary(String dmnType, String decision, String endpoint) {
+    protected MeterRegistry registry;
+
+    protected DistributionSummary getDefaultSummary(String dmnType, String decision, String endpoint) {
         ArrayList<Tag> tags = new ArrayList<Tag>() {
             {
                 add(Tag.of("decision", decision));
@@ -34,7 +36,7 @@ public interface TypeHandlerWithSummary<T> extends TypeHandler<T> {
                 .builder(dmnType.replace(" ", "_") + DecisionConstants.DECISIONS_NAME_SUFFIX)
                 .description(DecisionConstants.DECISIONS_HELP)
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(registry);
         return summary;
     }
 }

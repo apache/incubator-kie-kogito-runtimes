@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
@@ -26,13 +27,19 @@ public class StringHandler implements TypeHandler<String> {
 
     private final String dmnType;
 
+    private final MeterRegistry meterRegistry;
+
     public StringHandler(String dmnType) {
+        this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
+    }
+
+    public StringHandler(String dmnType, MeterRegistry meterRegistry){
         this.dmnType = dmnType;
+        this.meterRegistry = meterRegistry;
     }
 
     @Override
     public void record(String decision, String endpointName, String sample) {
-
         getCounter(decision, endpointName, sample).increment();
     }
 
@@ -54,6 +61,6 @@ public class StringHandler implements TypeHandler<String> {
                 .builder(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
                 .description(DecisionConstants.DECISIONS_HELP)
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(meterRegistry);
     }
 }

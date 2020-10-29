@@ -17,24 +17,23 @@ package org.kie.kogito.monitoring.core.integration;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.HashMap;
 
 import ch.obermuhlner.math.big.stream.BigDecimalStream;
-import io.prometheus.client.CollectorRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.BigDecimalHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.DecisionConstants;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BigDecimalHandlerTest extends AbstractQuantilesTest<BigDecimalHandler> {
-
     @BeforeEach
     public void setUp() {
-        registry = new CollectorRegistry();
-        handler = new BigDecimalHandler("hello", registry);
+        dmnType = "bigdecimal";
+        registry = new SimpleMeterRegistry();
+        handler = new BigDecimalHandler(dmnType, registry);
     }
 
     @AfterEach
@@ -44,21 +43,9 @@ public class BigDecimalHandlerTest extends AbstractQuantilesTest<BigDecimalHandl
 
     @Test
     public void givenSomeSamplesWhenQuantilesAreCalculatedThenTheQuantilesAreCorrect() {
-        // Arrange
-        HashMap<Double, Double> expectedQuantiles = new HashMap<>();
-        expectedQuantiles.put(0.1, 999.0);
-        expectedQuantiles.put(0.25, 2525.0);
-        expectedQuantiles.put(0.5, 5042.0);
-        expectedQuantiles.put(0.75, 7551.0);
-        expectedQuantiles.put(0.9, 9062.0);
-        expectedQuantiles.put(0.99, 10000.0);
-
         // Act
         BigDecimalStream.range(BigDecimal.valueOf(1), BigDecimal.valueOf(10001), BigDecimal.ONE, MathContext.DECIMAL64).forEach(x -> handler.record("decision", ENDPOINT_NAME, x));
-
-        // Assert
-        for (Double key : expectedQuantiles.keySet()) {
-            assertEquals(expectedQuantiles.get(key), getQuantile("decision", ENDPOINT_NAME + DecisionConstants.DECISIONS_NAME_SUFFIX, ENDPOINT_NAME, key), 5);
-        }
+        assertTrue(registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().max() >= 10000);
+        assertTrue(registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().mean() > 0);
     }
 }

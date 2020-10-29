@@ -18,22 +18,31 @@ package org.kie.kogito.monitoring.core.integration;
 import java.util.HashMap;
 import java.util.stream.IntStream;
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.CollectorRegistry;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.system.metrics.SystemMetricsCollector;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
+import org.kie.kogito.monitoring.core.system.metrics.SystemMetricsCollector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SystemMetricsCollectorTest {
 
     private static final String handler = "hello";
-    CollectorRegistry registry;
+    MeterRegistry registry;
 
     @BeforeEach
     public void setUp() {
-        registry = CollectorRegistry.defaultRegistry;
+        registry = new SimpleMeterRegistry();
+        SystemMetricsCollector.setRegistry(registry);
+    }
+
+    @AfterEach
+    public void cleanUp(){
+        SystemMetricsCollector.setRegistry(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
     @Test
@@ -48,8 +57,8 @@ public class SystemMetricsCollectorTest {
         IntStream.range(0, mapCodeRepetition.get("404")).forEach(x -> SystemMetricsCollector.registerStatusCodeRequest(handler, "404"));
 
         // Assert
-        assertEquals(mapCodeRepetition.get("400"), getLabelsValue("api_http_response_code", handler, "400").intValue());
-        assertEquals(mapCodeRepetition.get("404"), getLabelsValue("api_http_response_code", handler, "404").intValue());
+        assertEquals(mapCodeRepetition.get("400"), (int)registry.find("api_http_response_code").tag("identifier", "400").counter().count());
+        assertEquals(mapCodeRepetition.get("404"), (int)registry.find("api_http_response_code").tag("identifier", "404").counter().count());
     }
 
     @Test
@@ -64,35 +73,23 @@ public class SystemMetricsCollectorTest {
         IntStream.range(0, mapExceptionRepetition.get("Exception")).forEach(x -> SystemMetricsCollector.registerException(handler, "Exception"));
 
         // Assert
-        assertEquals(mapExceptionRepetition.get("NoSuchElement"), getLabelsValue("api_http_stacktrace_exceptions", handler, "NoSuchElement").intValue());
-        assertEquals(mapExceptionRepetition.get("Exception"), getLabelsValue("api_http_stacktrace_exceptions", handler, "Exception").intValue());
+        assertEquals(mapExceptionRepetition.get("NoSuchElement"), (int)registry.find("api_http_stacktrace_exceptions")
+                .tag("identifier", "NoSuchElement")
+                .counter().count());
+        assertEquals(mapExceptionRepetition.get("Exception"), (int)registry.find("api_http_stacktrace_exceptions")
+                .tag("identifier", "Exception")
+                .counter().count());
     }
 
     @Test
     public void givenAnElapsedTimeSampleWhenRegisterElapsedTimeSampleMetricsThenTheStatusCodeIsExportedToPrometheus() {
-        // Arrange
-        HashMap<Double, Double> expectedQuantiles = new HashMap<>();
-        expectedQuantiles.put(0.1, 999.0);
-        expectedQuantiles.put(0.25, 2525.0);
-        expectedQuantiles.put(0.5, 5042.0);
-        expectedQuantiles.put(0.75, 7551.0);
-        expectedQuantiles.put(0.9, 9062.0);
-        expectedQuantiles.put(0.99, 10000.0);
-
         // Act
         IntStream.range(1, 10001).forEach(x -> SystemMetricsCollector.registerElapsedTimeSampleMetrics(handler, x));
 
+        System.out.println(registry.find("api_execution_elapsed_nanosecond")
+                                   .summary().mean());
         // Assert
-        for (Double key : expectedQuantiles.keySet()) {
-            assertEquals(expectedQuantiles.get(key), getQuantile("api_execution_elapsed_nanosecond", handler, key), 5);
-        }
-    }
-
-    private double getQuantile(String name, String labelValue, double q) {
-        return registry.getSampleValue(name, new String[]{"endpoint", "quantile"}, new String[]{labelValue, Collector.doubleToGoString(q)}).doubleValue();
-    }
-
-    private Double getLabelsValue(String name, String handler, String identifier) {
-        return registry.getSampleValue(name, new String[]{"endpoint", "identifier"}, new String[]{handler, identifier});
+        assertTrue(registry.find("api_execution_elapsed_nanosecond")
+                           .summary().mean() >= 5000);
     }
 }

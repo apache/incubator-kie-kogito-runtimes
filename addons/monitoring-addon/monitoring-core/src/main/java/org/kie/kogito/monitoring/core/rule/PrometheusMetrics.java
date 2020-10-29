@@ -42,7 +42,7 @@ public class PrometheusMetrics {
                 .maximumExpectedValue((double) toMicro(10))
                 .description("Drools Firing Time")
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(MonitoringRegistry.getDefaultMeterRegistry());
         return distributionSummary;
     }
 }

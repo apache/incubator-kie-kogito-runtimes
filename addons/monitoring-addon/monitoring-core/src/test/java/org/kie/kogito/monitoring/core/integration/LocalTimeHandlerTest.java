@@ -17,20 +17,20 @@ package org.kie.kogito.monitoring.core.integration;
 
 import java.time.LocalTime;
 
-import io.prometheus.client.CollectorRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.LocalTimeHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.DecisionConstants;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.LocalTimeHandler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LocalTimeHandlerTest extends AbstractQuantilesTest<LocalTimeHandler> {
 
     @BeforeEach
     public void setUp() {
-        registry = new CollectorRegistry();
+        registry = new SimpleMeterRegistry();
         handler = new LocalTimeHandler("hello", registry);
     }
 
@@ -50,8 +50,7 @@ public class LocalTimeHandlerTest extends AbstractQuantilesTest<LocalTimeHandler
         handler.record("decision", ENDPOINT_NAME, now);
 
         // Assert
-        for (Double key : quantiles) {
-            assertEquals(expectedValue, getQuantile("decision", ENDPOINT_NAME + DecisionConstants.DECISIONS_NAME_SUFFIX, ENDPOINT_NAME, key), 5);
-        }
+        assertTrue(registry.find(ENDPOINT_NAME + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().max() >= 5);
+        assertTrue(registry.find(ENDPOINT_NAME + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().mean() >= 2);
     }
 }

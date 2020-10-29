@@ -17,12 +17,20 @@ package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
 import java.math.BigDecimal;
 
-public class BigDecimalHandler implements TypeHandlerWithSummary<BigDecimal> {
+import io.micrometer.core.instrument.MeterRegistry;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
+
+public class BigDecimalHandler extends TypeHandlerWithSummary<BigDecimal> {
 
     private final String dmnType;
 
     public BigDecimalHandler(String dmnType) {
+        this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
+    }
+
+    public BigDecimalHandler(String dmnType, MeterRegistry registry) {
         this.dmnType = dmnType;
+        this.registry = registry;
     }
 
     @Override

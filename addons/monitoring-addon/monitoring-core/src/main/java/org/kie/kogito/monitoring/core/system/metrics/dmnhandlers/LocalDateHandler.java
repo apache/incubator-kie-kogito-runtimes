@@ -18,12 +18,20 @@ package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
-public class LocalDateHandler implements TypeHandlerWithSummary<LocalDate> {
+import io.micrometer.core.instrument.MeterRegistry;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
+
+public class LocalDateHandler extends TypeHandlerWithSummary<LocalDate> {
 
     private final String dmnType;
 
     public LocalDateHandler(String dmnType) {
+        this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
+    }
+
+    public LocalDateHandler(String dmnType, MeterRegistry registry){
         this.dmnType = dmnType;
+        this.registry = registry;
     }
 
     @Override

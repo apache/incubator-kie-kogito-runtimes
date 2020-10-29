@@ -20,6 +20,7 @@ import java.util.List;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
@@ -37,6 +38,8 @@ public class SystemMetricsCollector {
 
     private static final String EXCEPTIONS_HELP = "System exceptions details.";
 
+    private static MeterRegistry registry = MonitoringRegistry.getDefaultMeterRegistry();
+
     private static Counter getRequestStatusCodeCounter(String endpoint, String identifier){
         List<Tag> tags = new ArrayList<Tag>() {
             {
@@ -48,7 +51,7 @@ public class SystemMetricsCollector {
         return Counter.builder(STATUS_CODE_NAME)
                 .description(STATUS_CODE_HELP)
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(registry);
     }
 
     private static Counter getExceptionsCounter(String endpoint, String identifier){
@@ -62,7 +65,7 @@ public class SystemMetricsCollector {
         return Counter.builder(EXCEPTIONS_NAME)
                 .description(EXCEPTIONS_HELP)
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(registry);
     }
 
     private static DistributionSummary getElapsedTimeSummary(String endpoint){
@@ -75,7 +78,7 @@ public class SystemMetricsCollector {
         return DistributionSummary.builder(ELAPSED_TIME_NAME)
                 .description(ELAPSED_TIME_HELP)
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(registry);
     }
 
     private SystemMetricsCollector() {
@@ -91,5 +94,9 @@ public class SystemMetricsCollector {
 
     public static void registerException(String endpoint, String stackTrace) {
         getExceptionsCounter(endpoint, stackTrace).increment();
+    }
+
+    public static void setRegistry(MeterRegistry meterRegistry){
+        registry = meterRegistry;
     }
 }

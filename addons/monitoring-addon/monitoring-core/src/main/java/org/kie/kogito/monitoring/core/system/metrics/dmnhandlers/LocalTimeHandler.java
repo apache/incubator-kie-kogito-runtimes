@@ -17,13 +17,20 @@ package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
 import java.time.LocalTime;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
-public class LocalTimeHandler implements TypeHandlerWithSummary<LocalTime> {
+public class LocalTimeHandler extends TypeHandlerWithSummary<LocalTime> {
 
     private final String dmnType;
 
     public LocalTimeHandler(String dmnType) {
+        this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
+    }
+
+    public LocalTimeHandler(String dmnType, MeterRegistry meterRegistry){
         this.dmnType = dmnType;
+        this.registry = meterRegistry;
     }
 
     @Override

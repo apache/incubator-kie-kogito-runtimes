@@ -17,12 +17,12 @@ package org.kie.kogito.monitoring.core.integration;
 
 import java.util.stream.IntStream;
 
-import io.prometheus.client.CollectorRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.StringHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.DecisionConstants;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.StringHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,13 +30,15 @@ public class StringHandlerTest {
 
     private static final String ENDPOINT_NAME = "hello";
     private static final String DECISION_NAME = "decision";
-    CollectorRegistry registry;
+    SimpleMeterRegistry registry;
     StringHandler handler;
+    String dmnType;
 
     @BeforeEach
     public void setUp() {
-        registry = new CollectorRegistry();
-        handler = new StringHandler("hello");
+        dmnType = "string";
+        registry = new SimpleMeterRegistry();
+        handler = new StringHandler(dmnType, registry);
     }
 
     @AfterEach
@@ -57,12 +59,16 @@ public class StringHandlerTest {
         IntStream.rangeClosed(1, 5).forEach(x -> handler.record(DECISION_NAME, ENDPOINT_NAME, "C"));
 
         // Assert
-        assertEquals(expectedCountStringA, getLabelsValue(DECISION_NAME, ENDPOINT_NAME, "A"));
-        assertEquals(expectedCountStringB, getLabelsValue(DECISION_NAME, ENDPOINT_NAME, "B"));
-        assertEquals(expectedCountStringC, getLabelsValue(DECISION_NAME, ENDPOINT_NAME, "C"));
-    }
+        assertEquals(expectedCountStringA, registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
+                .tag("identifier", "A")
+                .counter().count());
 
-    private Double getLabelsValue(String decision, String name, String labelValue) {
-        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS, new String[]{decision, name, labelValue});
+        assertEquals(expectedCountStringB, registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
+                .tag("identifier", "B")
+                .counter().count());
+
+        assertEquals(expectedCountStringC, registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
+                .tag("identifier", "C")
+                .counter().count());
     }
 }

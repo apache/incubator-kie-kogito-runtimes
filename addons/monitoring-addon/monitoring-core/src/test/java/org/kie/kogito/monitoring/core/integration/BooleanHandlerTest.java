@@ -17,12 +17,12 @@ package org.kie.kogito.monitoring.core.integration;
 
 import java.util.stream.IntStream;
 
-import io.prometheus.client.CollectorRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BooleanHandler;
-import org.kie.kogito.monitoring.system.metrics.dmnhandlers.DecisionConstants;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.BooleanHandler;
+import org.kie.kogito.monitoring.core.system.metrics.dmnhandlers.DecisionConstants;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,13 +30,15 @@ public class BooleanHandlerTest {
 
     private static final String ENDPOINT_NAME = "hello";
 
-    CollectorRegistry registry;
+    SimpleMeterRegistry registry;
     BooleanHandler handler;
+    String dmnType;
 
     @BeforeEach
     public void setUp() {
-        registry = new CollectorRegistry();
-        handler = new BooleanHandler("hello");
+        dmnType = "boolean";
+        registry = new SimpleMeterRegistry();
+        handler = new BooleanHandler(dmnType, registry);
     }
 
     @AfterEach
@@ -54,12 +56,14 @@ public class BooleanHandlerTest {
         IntStream.rangeClosed(1, 3).forEach(x -> handler.record("decision", ENDPOINT_NAME, true));
         IntStream.rangeClosed(1, 2).forEach(x -> handler.record("decision", ENDPOINT_NAME, false));
 
-        // Assert
-        assertEquals(expectedTrue, getLabelsValue("decision", ENDPOINT_NAME, "true"));
-        assertEquals(expectedFalse, getLabelsValue("decision", ENDPOINT_NAME, "false"));
-    }
+        assertEquals(expectedTrue, registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
+                .tag("identifier", "true")
+                .counter()
+                .count());
 
-    private Double getLabelsValue(String decision, String name, String labelValue) {
-        return registry.getSampleValue(name + DecisionConstants.DECISIONS_NAME_SUFFIX, DecisionConstants.DECISION_ENDPOINT_IDENTIFIER_LABELS, new String[]{decision, name, labelValue});
+        assertEquals(expectedFalse, registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
+                .tag("identifier", "false")
+                .counter()
+                .count());
     }
 }

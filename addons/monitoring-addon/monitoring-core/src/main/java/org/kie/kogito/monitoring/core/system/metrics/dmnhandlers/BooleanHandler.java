@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
@@ -26,8 +27,15 @@ public class BooleanHandler implements TypeHandler<Boolean> {
 
     private final String dmnType;
 
+    private final MeterRegistry meterRegistry;
+
     public BooleanHandler(String dmnType) {
+        this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
+    }
+
+    public BooleanHandler(String dmnType, MeterRegistry registry){
         this.dmnType = dmnType;
+        this.meterRegistry = registry;
     }
 
     @Override
@@ -52,6 +60,6 @@ public class BooleanHandler implements TypeHandler<Boolean> {
                 .builder(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
                 .description(DecisionConstants.DECISIONS_HELP)
                 .tags(tags)
-                .register(MonitoringRegistry.getCompositeMeterRegistry());
+                .register(meterRegistry);
     }
 }

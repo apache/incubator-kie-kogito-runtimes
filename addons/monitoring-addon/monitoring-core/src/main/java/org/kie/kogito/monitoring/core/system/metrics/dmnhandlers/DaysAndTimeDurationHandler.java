@@ -17,12 +17,20 @@ package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
 import java.time.Duration;
 
-public class DaysAndTimeDurationHandler implements TypeHandlerWithSummary<Duration> {
+import io.micrometer.core.instrument.MeterRegistry;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
+
+public class DaysAndTimeDurationHandler extends TypeHandlerWithSummary<Duration> {
 
     private final String dmnType;
 
     public DaysAndTimeDurationHandler(String dmnType) {
+        this(dmnType, MonitoringRegistry.getDefaultMeterRegistry());
+    }
+
+    public DaysAndTimeDurationHandler(String dmnType, MeterRegistry meterRegistry) {
         this.dmnType = dmnType;
+        this.registry = meterRegistry;
     }
 
     @Override
