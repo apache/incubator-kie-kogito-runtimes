@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,7 @@ import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.JsonSchemaGenerator;
+import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
@@ -203,6 +205,9 @@ public class KogitoAssetsProcessor {
         // real work occurs here: invoke the code-generation procedure
         Collection<GeneratedFile> generatedFiles = appGen.generate();
 
+        Optional<GeneratedFile> dashboardsListFile = DashboardGeneratedFileUtils.list(generatedFiles);
+        dashboardsListFile.ifPresent(generatedFiles::add);
+
         // dump files to disk
         for (Path projectPath : appPaths.projectPaths) {
             generatedFileWriterBuilder
@@ -224,11 +229,26 @@ public class KogitoAssetsProcessor {
         }
 
         // further processing
-        generatePersistenceInfo(appPaths, index);
+        Collection<GeneratedFile> persistenceGeneratedFiles = generatePersistenceInfo(appPaths, index);
+        generatedFiles.addAll(persistenceGeneratedFiles);
+
+        // Write files to disk
+        dumpFilesToDisk(appPaths, generatedFiles);
+
+        // register resources to the Quarkus environment
+        registerResources(generatedFiles);
 
         registerDataEventsForReflection(index);
 
         writeJsonSchema(appPaths, index);
+    }
+
+    private void dumpFilesToDisk(AppPaths appPaths, Collection<GeneratedFile> generatedFiles){
+        for (Path projectPath : appPaths.projectPaths) {
+            generatedFileWriterBuilder
+                    .build(projectPath)
+                    .writeAll(generatedFiles);
+        }
     }
 
     private void registerResources(Collection<GeneratedFile> generatedFiles) {
@@ -266,7 +286,7 @@ public class KogitoAssetsProcessor {
         return indexBuildItems(generatedBeanBuildItems);
     }
 
-    private void generatePersistenceInfo(AppPaths appPaths, IndexView inputIndex) throws IOException {
+    private Collection<GeneratedFile> generatePersistenceInfo(AppPaths appPaths, IndexView inputIndex) throws IOException {
 
         CompositeIndex index = CompositeIndex.create(combinedIndexBuildItem.getIndex(), inputIndex);
 
@@ -285,12 +305,19 @@ public class KogitoAssetsProcessor {
         }
         GeneratorContext context = buildContext(appPaths, index);
         String persistenceType = context.getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
-        Collection<GeneratedFile> generatedFiles = getGeneratedPersistenceFiles(appPaths, index, usePersistence, parameters, context, persistenceType);
+        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(appPaths, index, usePersistence, parameters, context, persistenceType);
 
-        if (!generatedFiles.isEmpty()) {
+        if(persistenceGeneratedFiles.stream().anyMatch(x -> !GeneratedFile.Type.CLASS.equals(x.getType()) && !GeneratedFile.Type.GENERATED_CP_RESOURCE.equals(x.getType()))) {
+            throw new IllegalStateException("Only type CLASS and GENERATED_CP_RESOURCE expected here");
+        }
+
+        Collection<GeneratedFile> persistenceClasses = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.CLASS)).collect(Collectors.toList());
+        Collection<GeneratedFile> persistenceProtoFiles = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.GENERATED_CP_RESOURCE)).collect(Collectors.toList());
+
+        if (!persistenceClasses.isEmpty()) {
             InMemoryCompiler inMemoryCompiler = new InMemoryCompiler(appPaths.classesPaths,
                                                                      curateOutcomeBuildItem.getEffectiveModel().getUserDependencies());
-            inMemoryCompiler.compile(generatedFiles);
+            inMemoryCompiler.compile(persistenceClasses);
             Collection<GeneratedBeanBuildItem> generatedBeanBuildItems = makeBuildItems(appPaths, inMemoryCompiler.getTargetFileSystem());
             generatedBeanBuildItems.forEach(generatedBeans::produce);
         }
@@ -303,6 +330,8 @@ public class KogitoAssetsProcessor {
             addInnerClasses(org.jbpm.marshalling.impl.JBPMMessages.class, reflectiveClass);
             reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "java.lang.String"));
         }
+
+        return persistenceProtoFiles;
     }
     
     private void addInnerClasses(Class<?> superClass, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
@@ -421,6 +450,11 @@ public class KogitoAssetsProcessor {
     public NativeImageResourceBuildItem predictionSPI() {
         logger.debug("predictionSPI()");
         return new NativeImageResourceBuildItem("META-INF/services/org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator");
+    }
+
+    @BuildStep
+    public ReflectiveClassBuildItem reflectionJobsManagement() {
+        return new ReflectiveClassBuildItem(true, true, "org.kie.kogito.jobs.api.Job");
     }
 
     private void writeJsonSchema(AppPaths appPaths, Index index) throws IOException {
