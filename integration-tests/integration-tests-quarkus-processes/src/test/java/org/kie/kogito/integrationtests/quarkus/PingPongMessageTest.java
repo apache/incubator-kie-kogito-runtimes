@@ -48,6 +48,8 @@ public class PingPongMessageTest {
                 .statusCode(201)
                 .extract().body().path("id");
 
+        validateSubProcess();
+
         await().atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> given()
                         .contentType(ContentType.JSON)
@@ -68,6 +70,41 @@ public class PingPongMessageTest {
                 .contentType(ContentType.JSON)
                 .when()
                 .get("/ping_message/{pId}", pId)
+                .then()
+                .statusCode(404);
+    }
+
+
+    private void validateSubProcess(){
+        await().atMost(Duration.ofSeconds(5))
+                .untilAsserted(() -> given()
+                        .contentType(ContentType.JSON)
+                        .when()
+                        .get("/pong_message/")
+                        .then()
+                        .statusCode(200)
+                        .body("$.size", equalTo(1)));
+
+        String pId = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/pong_message/")
+                .then()
+                .statusCode(200)
+                .body("$.size", equalTo(1))
+                .extract().body().path("[0].id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/pong_message/{pId}/end", pId)
+                .then()
+                .statusCode(200);
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/pong_message/{pId}", pId)
                 .then()
                 .statusCode(404);
     }
