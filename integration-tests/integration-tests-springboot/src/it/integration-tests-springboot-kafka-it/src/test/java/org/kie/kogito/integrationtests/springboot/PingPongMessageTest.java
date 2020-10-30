@@ -74,8 +74,6 @@ public class PingPongMessageTest extends BaseRestTest {
                 .statusCode(201)
                 .extract().body().path("id");
 
-        latch.await(5, TimeUnit.SECONDS);
-
         await().atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> given()
                         .contentType(ContentType.JSON)
@@ -98,5 +96,8 @@ public class PingPongMessageTest extends BaseRestTest {
                 .get("/ping_message/{pId}", pId)
                 .then()
                 .statusCode(404);
+
+        latch.await(5, TimeUnit.SECONDS);
+
     }
 }
