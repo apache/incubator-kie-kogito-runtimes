@@ -53,8 +53,8 @@ public abstract class ConditionalQuarkusTestResource implements QuarkusTestResou
     @Override
     public Map<String, String> start() {
         if (condition.isEnabled()) {
-            //testResource.start();
-            //return Collections.singletonMap(getKogitoProperty(), getKogitoPropertyValue());
+            testResource.start();
+            return Collections.singletonMap(getKogitoProperty(), getKogitoPropertyValue());
         }
 
         return Collections.emptyMap();
@@ -63,7 +63,7 @@ public abstract class ConditionalQuarkusTestResource implements QuarkusTestResou
     @Override
     public void stop() {
         if (condition.isEnabled()) {
-            //testResource.stop();
+            testResource.stop();
         }
     }
 
