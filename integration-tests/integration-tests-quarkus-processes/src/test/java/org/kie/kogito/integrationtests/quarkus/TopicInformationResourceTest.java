@@ -40,6 +40,5 @@ public class TopicInformationResourceTest {
         LOGGER.info("Topics registered in the service are {}", topics);
         assertThat(topics).isNotEmpty();
         assertThat(topics.stream().anyMatch(t -> t.getType() == ChannelType.INCOMING && t.getName().equals("pingpong"))).isTrue();
-        assertThat(topics.stream().anyMatch(t -> t.getType() == ChannelType.OUTGOING && t.getName().equals("pingpong"))).isTrue();
     }
 }
