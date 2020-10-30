@@ -15,11 +15,17 @@
 
 package org.kie.kogito.codegen.process.events;
 
+import java.util.List;
+import java.util.Map;
+
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.ProcessGenerationUtils;
-import org.kie.kogito.event.TopicType;
+import org.kie.kogito.event.EventKind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,9 +49,9 @@ class TopicsInformationResourceGeneratorTest {
         assertThat(clazz.getDefaultConstructor()).isPresent();
         assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(3);
         assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString())
-                .contains("customers").contains(TopicType.CONSUMED.name());
+                .contains("customers").contains(EventKind.CONSUMED.name());
         assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(2).toExpressionStmt().get().getExpression().toString())
-                .contains("processedcustomers").contains(TopicType.PRODUCED.name());
+                .contains("processedcustomers").contains(EventKind.PRODUCED.name());
     }
 
     @Test
@@ -56,7 +62,7 @@ class TopicsInformationResourceGeneratorTest {
         assertThat(clazz.getDefaultConstructor()).isPresent();
         assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(2);
         assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString())
-                .contains("customers").contains(TopicType.PRODUCED.name());
+                .contains("customers").contains(EventKind.PRODUCED.name());
     }
 
     @Test
@@ -67,7 +73,7 @@ class TopicsInformationResourceGeneratorTest {
         assertThat(clazz.getDefaultConstructor()).isPresent();
         assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(2);
         assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString())
-                .contains("customers").contains(TopicType.CONSUMED.name());
+                .contains("customers").contains(EventKind.CONSUMED.name());
     }
 
     @Test
@@ -81,8 +87,17 @@ class TopicsInformationResourceGeneratorTest {
 
     private ClassOrInterfaceDeclaration generateAndParseClass(String bpmnFile, int expectedTriggers) {
         final TopicsInformationResourceGenerator generator =
-                new TopicsInformationResourceGenerator(ProcessGenerationUtils.execModelFromProcessFile(bpmnFile));
-        assertThat(generator.getTriggers()).hasSize(expectedTriggers);
+                new TopicsInformationResourceGenerator(ProcessGenerationUtils.execModelFromProcessFile(bpmnFile), new CDIDependencyInjectionAnnotator(), AddonsConfig.DEFAULT.withCloudEvents(true));
+        if (expectedTriggers > 0) {
+            assertThat(generator.getTriggers()).isNotEmpty();
+            int triggersCount = 0;
+            for (Map.Entry<String, List<TriggerMetaData>> entry : generator.getTriggers().entrySet()) {
+                triggersCount += entry.getValue().size();
+            }
+            assertThat(triggersCount).isEqualTo(expectedTriggers);
+        } else {
+            assertThat(generator.getTriggers()).isEmpty();
+        }
         final String source = generator.generate();
         assertThat(source).isNotNull();
         final ClassOrInterfaceDeclaration clazz = StaticJavaParser
