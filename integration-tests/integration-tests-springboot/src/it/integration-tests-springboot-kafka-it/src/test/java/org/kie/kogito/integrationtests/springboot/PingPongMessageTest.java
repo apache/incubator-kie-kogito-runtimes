@@ -63,7 +63,6 @@ public class PingPongMessageTest extends BaseRestTest {
                 })
                 .filter(m -> "hello world".equals(m.get("data")) &&
                         m.getOrDefault("source", "").startsWith("/process/pong_message/"))
-                .log("Found message")
                 .subscribe(x -> latch.countDown());
 
         String pId = given().body("{ \"message\": \"hello\" }")
