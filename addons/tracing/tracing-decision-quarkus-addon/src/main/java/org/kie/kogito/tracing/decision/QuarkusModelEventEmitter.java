@@ -24,13 +24,9 @@ import io.reactivex.subjects.PublishSubject;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.kie.internal.decision.DecisionModelResourcesProvider;
 import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Singleton
 public class QuarkusModelEventEmitter extends BaseModelEventEmitter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(QuarkusModelEventEmitter.class);
 
     private final PublishSubject<String> eventSubject;
 
