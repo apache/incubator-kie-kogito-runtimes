@@ -61,7 +61,7 @@ public class CloudEventConsumer<D, M extends Model, T extends AbstractProcessDat
             }
             UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
                 if (cloudEvent.getKogitoReferenceId() != null) {
-                    logger.info("Received message with reference id '{}' going to use it to send signal '{}'",
+                    logger.debug("Received message with reference id '{}' going to use it to send signal '{}'",
                                  cloudEvent.getKogitoReferenceId(),
                                  trigger);
                     Optional<ProcessInstance<M>> instance = process.instances().findById(cloudEvent.getKogitoReferenceId());
