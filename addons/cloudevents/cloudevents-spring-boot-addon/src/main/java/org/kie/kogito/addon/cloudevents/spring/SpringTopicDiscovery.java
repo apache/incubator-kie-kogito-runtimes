@@ -3,9 +3,9 @@ package org.kie.kogito.addon.cloudevents.spring;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kie.kogito.addon.cloudevents.AbstractTopicDiscovery;
 import org.kie.kogito.event.KogitoEventStreams;
 import org.kie.kogito.event.Topic;
-import org.kie.kogito.services.event.impl.AbstractTopicDiscovery;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

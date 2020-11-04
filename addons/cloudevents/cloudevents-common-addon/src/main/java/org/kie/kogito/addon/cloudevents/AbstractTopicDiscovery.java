@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.services.event.impl;
+package org.kie.kogito.addon.cloudevents;
 
 import java.util.List;
 import java.util.stream.Collectors;

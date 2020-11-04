@@ -22,9 +22,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.AddonsConfig;
@@ -77,6 +79,11 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
             annotator.withApplicationComponent(template);
             template.findAll(FieldDeclaration.class, fd -> fd.getVariables().get(0).getNameAsString().contains("discovery"))
                     .forEach(annotator::withInjection);
+        } else {
+            template.findFirst(MethodDeclaration.class, md -> md.getName().toString().equals("getTopics"))
+                    .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain method getTopics!"))
+                    .getBody().orElseThrow(() -> new NoSuchElementException("getTopics method doesn't have a body!"))
+                    .addStatement(0, StaticJavaParser.parseStatement("discovery = new org.kie.kogito.services.event.impl.NoOpTopicDiscovery();"));
         }
 
         template.getMembers().sort(new BodyDeclarationComparator());
@@ -87,22 +94,20 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
     private void addEventsMeta(final ClassOrInterfaceDeclaration template) {
         final BlockStmt constructorBlock = template.getDefaultConstructor().orElseThrow(() -> new IllegalArgumentException("No body found in setup method!")).getBody();
         final List<String> repeatLines = extractRepeatLinesFromMethod(constructorBlock);
-        this.triggers.forEach((processId, triggers) -> {
-            triggers.forEach(t -> {
-                String eventKind = EventKind.class.getName() + "." + EventKind.CONSUMED.name();
-                String eventType = t.getName();
-                // we don't know the source of a consumed event, should be provided by the producer
-                String eventSource = "";
-                if (TriggerMetaData.TriggerType.ProduceMessage.equals(t.getType())) {
-                    eventType = DataEventAttrBuilder.toType(t.getName(), processId);
-                    eventKind = EventKind.class.getName() + "." + EventKind.PRODUCED.name();
-                    eventSource = DataEventAttrBuilder.toSource(processId);
-                }
-                for (String l : repeatLines) {
-                    constructorBlock.addStatement(l.replace("$type$", eventType).replace("$source$", eventSource).replace("$kind$", eventKind));
-                }
-            });
-        });
+        this.triggers.forEach((processId, triggers) -> triggers.forEach(t -> {
+            String eventKind = EventKind.class.getName() + "." + EventKind.CONSUMED.name();
+            String eventType = t.getName();
+            // we don't know the source of a consumed event, should be provided by the producer
+            String eventSource = "";
+            if (TriggerMetaData.TriggerType.ProduceMessage.equals(t.getType())) {
+                eventType = DataEventAttrBuilder.toType(t.getName(), processId);
+                eventKind = EventKind.class.getName() + "." + EventKind.PRODUCED.name();
+                eventSource = DataEventAttrBuilder.toSource(processId);
+            }
+            for (String l : repeatLines) {
+                constructorBlock.addStatement(l.replace("$type$", eventType).replace("$source$", eventSource).replace("$kind$", eventKind));
+            }
+        }));
     }
 
     private Map<String, List<TriggerMetaData>> filterTriggers(final List<ProcessExecutableModelGenerator> generators) {
@@ -111,12 +116,10 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
             generators
                     .stream()
                     .filter(m -> m.generate().getTriggers() != null && !m.generate().getTriggers().isEmpty())
-                    .forEach(m -> {
-                        filteredTriggers.put(m.getProcessId(),
-                                             m.generate().getTriggers().stream()
-                                                     .filter(t -> !TriggerMetaData.TriggerType.Signal.equals(t.getType()))
-                                                     .collect(Collectors.toList()));
-                    });
+                    .forEach(m -> filteredTriggers.put(m.getProcessId(),
+                                                   m.generate().getTriggers().stream()
+                                                 .filter(t -> !TriggerMetaData.TriggerType.Signal.equals(t.getType()))
+                                                 .collect(Collectors.toList())));
             return filteredTriggers;
         }
         return Collections.emptyMap();

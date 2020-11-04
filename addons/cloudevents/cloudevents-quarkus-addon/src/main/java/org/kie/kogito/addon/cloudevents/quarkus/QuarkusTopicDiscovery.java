@@ -23,10 +23,10 @@ import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.kie.kogito.addon.cloudevents.AbstractTopicDiscovery;
 import org.kie.kogito.event.ChannelType;
 import org.kie.kogito.event.KogitoEventStreams;
 import org.kie.kogito.event.Topic;
-import org.kie.kogito.services.event.impl.AbstractTopicDiscovery;
 
 @ApplicationScoped
 @Priority(0)

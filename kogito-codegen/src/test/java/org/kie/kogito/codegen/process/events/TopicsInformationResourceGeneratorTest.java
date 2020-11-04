@@ -20,10 +20,13 @@ import java.util.Map;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.ProcessGenerationUtils;
 import org.kie.kogito.event.EventKind;
 
@@ -33,7 +36,7 @@ class TopicsInformationResourceGeneratorTest {
 
     @Test
     void verifyProcessWithMessageEvent() {
-        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateCatchEventMessage.bpmn2", 1);
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateCatchEventMessage.bpmn2", 1, true);
 
         assertThat(clazz).isNotNull();
         assertThat(clazz.getDefaultConstructor()).isPresent();
@@ -42,8 +45,21 @@ class TopicsInformationResourceGeneratorTest {
     }
 
     @Test
+    void verifyProcessWithMessageEventNoInjection() {
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateCatchEventMessage.bpmn2", 1, false);
+
+        assertThat(clazz).isNotNull();
+        assertThat(clazz.findFirst(MethodDeclaration.class,
+                                   md -> md.getName().toString().equals("getTopics"))
+                           .get().getBody().get()
+                           .findFirst(BlockStmt.class,
+                                      b -> b.getStatements().get(0).asExpressionStmt().getExpression().toString().contains("NoOpTopicDiscovery")))
+                .isPresent();
+    }
+
+    @Test
     void verifyProcessWithStartAndEndMessageEvent() {
-        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messagestartevent/MessageStartAndEndEvent.bpmn2", 2);
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messagestartevent/MessageStartAndEndEvent.bpmn2", 2, true);
 
         assertThat(clazz).isNotNull();
         assertThat(clazz.getDefaultConstructor()).isPresent();
@@ -56,7 +72,7 @@ class TopicsInformationResourceGeneratorTest {
 
     @Test
     void verifyProcessWithIntermediateThrowEventMessageEvent() {
-        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateThrowEventMessage.bpmn2", 1);
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateThrowEventMessage.bpmn2", 1, true);
 
         assertThat(clazz).isNotNull();
         assertThat(clazz.getDefaultConstructor()).isPresent();
@@ -67,7 +83,7 @@ class TopicsInformationResourceGeneratorTest {
 
     @Test
     void verifyProcessWithBoundaryEventMessageEvent() {
-        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/BoundaryMessageEventOnTask.bpmn2", 1);
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/BoundaryMessageEventOnTask.bpmn2", 1, true);
 
         assertThat(clazz).isNotNull();
         assertThat(clazz.getDefaultConstructor()).isPresent();
@@ -78,16 +94,20 @@ class TopicsInformationResourceGeneratorTest {
 
     @Test
     void verifyProcessWithoutMessageEvent() {
-        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/usertask/approval.bpmn2", 0);
+        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/usertask/approval.bpmn2", 0, true);
 
         assertThat(clazz).isNotNull();
         assertThat(clazz.getDefaultConstructor()).isPresent();
         assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(1);
     }
 
-    private ClassOrInterfaceDeclaration generateAndParseClass(String bpmnFile, int expectedTriggers) {
+    private ClassOrInterfaceDeclaration generateAndParseClass(String bpmnFile, int expectedTriggers, boolean withInjection) {
+        DependencyInjectionAnnotator annotator = null;
+        if (withInjection) {
+            annotator = new CDIDependencyInjectionAnnotator();
+        }
         final TopicsInformationResourceGenerator generator =
-                new TopicsInformationResourceGenerator(ProcessGenerationUtils.execModelFromProcessFile(bpmnFile), new CDIDependencyInjectionAnnotator(), AddonsConfig.DEFAULT.withCloudEvents(true));
+                new TopicsInformationResourceGenerator(ProcessGenerationUtils.execModelFromProcessFile(bpmnFile), annotator, AddonsConfig.DEFAULT.withCloudEvents(true));
         if (expectedTriggers > 0) {
             assertThat(generator.getTriggers()).isNotEmpty();
             int triggersCount = 0;

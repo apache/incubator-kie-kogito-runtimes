@@ -10,7 +10,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.services.event.TopicDiscovery;
-import org.kie.kogito.services.event.impl.NoOpTopicDiscovery;
 
 @Path("/messaging/topics")
 public class TopicsInformationResource {
@@ -31,9 +30,6 @@ public class TopicsInformationResource {
     @GET()
     @Produces(MediaType.APPLICATION_JSON)
     public javax.ws.rs.core.Response getTopics() {
-        if (discovery == null) {
-            discovery = new NoOpTopicDiscovery();
-        }
         return javax.ws.rs.core.Response.ok(discovery.getTopics(eventsMeta)).build();
     }
 }
