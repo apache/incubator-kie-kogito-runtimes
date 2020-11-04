@@ -29,13 +29,10 @@
       <artifactId>grafana-api</artifactId>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-core -->
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-core</artifactId>
-      <version>1.5.5</version>
     </dependency>
-
 
     <dependency>
       <groupId>org.jboss.spec.javax.ws.rs</groupId>

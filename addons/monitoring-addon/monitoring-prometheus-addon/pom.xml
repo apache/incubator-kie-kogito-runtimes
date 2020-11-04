@@ -44,11 +44,9 @@
       <artifactId>monitoring-core</artifactId>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus -->
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-registry-prometheus</artifactId>
-      <version>1.5.4</version>
     </dependency>
 
     <dependency>

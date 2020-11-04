@@ -347,8 +347,8 @@ public class DecisionRestResourceGenerator {
         BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("This method should be invoked only with concrete classes and not with abstract methods or interfaces."));
         NodeList<Statement> statements = body.getStatements();
         ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("Return statement not found: can't add monitoring to endpoint. Template was modified."));
-        statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
-        statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt);
+        statements.addFirst(parseStatement("long startTime = System.nanoTime();"));
+        statements.addBefore(parseStatement("long endTime = System.nanoTime();"), returnStmt);
         statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt);
         statements.addBefore(parseStatement(String.format("DMNResultMetricsBuilder.generateMetrics(result, \"%s\");", nameURL)), returnStmt);
     }

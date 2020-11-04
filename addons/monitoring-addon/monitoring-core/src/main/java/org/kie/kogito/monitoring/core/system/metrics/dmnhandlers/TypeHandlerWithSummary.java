@@ -35,6 +35,8 @@ public abstract class TypeHandlerWithSummary<T> implements TypeHandler<T> {
         DistributionSummary summary = DistributionSummary
                 .builder(dmnType.replace(" ", "_") + DecisionConstants.DECISIONS_NAME_SUFFIX)
                 .description(DecisionConstants.DECISIONS_HELP)
+                .publishPercentiles(DecisionConstants.SUMMARY_PERCENTILES)
+                .distributionStatisticExpiry(DecisionConstants.SUMMARY_EXPIRATION)
                 .tags(tags)
                 .register(registry);
         return summary;
