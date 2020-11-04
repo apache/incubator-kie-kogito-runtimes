@@ -16,6 +16,7 @@
 package org.kie.kogito.monitoring.core.integration;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -86,10 +87,8 @@ public class SystemMetricsCollectorTest {
         // Act
         IntStream.range(1, 10001).forEach(x -> SystemMetricsCollector.registerElapsedTimeSampleMetrics(handler, x));
 
-        System.out.println(registry.find("api_execution_elapsed_nanosecond")
-                                   .summary().mean());
         // Assert
-        assertTrue(registry.find("api_execution_elapsed_nanosecond")
-                           .summary().mean() >= 5000);
+        assertTrue(registry.find("api_execution_elapsed")
+                           .timer().max(TimeUnit.NANOSECONDS) >= 5000);
     }
 }
