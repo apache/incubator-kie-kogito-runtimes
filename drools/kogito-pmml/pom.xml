@@ -43,6 +43,12 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-pmml-dependencies</artifactId>
       <type>pom</type>
+      <exclusions>
+          <exclusion>
+              <groupId>org.drools</groupId>
+              <artifactId>drools-mvel</artifactId>
+          </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- test -->
