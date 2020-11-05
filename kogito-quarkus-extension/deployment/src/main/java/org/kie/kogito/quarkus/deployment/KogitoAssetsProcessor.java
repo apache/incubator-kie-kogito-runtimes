@@ -33,6 +33,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -47,7 +49,6 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyIgnoreWarningBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
-import javax.inject.Inject;
 import org.drools.compiler.builder.impl.KogitoKieModuleModelImpl;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.jboss.jandex.AnnotationInstance;
@@ -67,10 +68,10 @@ import org.kie.kogito.Model;
 import org.kie.kogito.UserTask;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
+import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.JsonSchemaGenerator;
-import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
@@ -105,7 +106,8 @@ public class KogitoAssetsProcessor {
 
     private static final String appPackageName = "org.kie.kogito.app";
     private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
-    private static final DotName metricsClass = DotName.createSimple("org.kie.kogito.monitoring.rest.MetricsResource");
+    private static final DotName prometheusClass = DotName.createSimple("org.kie.kogito.monitoring.rest.MetricsResource");
+    private static final DotName monitoringCoreClass = DotName.createSimple("org.kie.kogito.monitoring.core.MonitoringRegistry");
     private static final DotName tracingClass = DotName.createSimple("org.kie.kogito.tracing.decision.DecisionTracingListener");
     private static final DotName knativeEventingClass = DotName.createSimple("org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension");
     private static final DotName dmnJpmmlClass = DotName.createSimple( "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
@@ -155,7 +157,8 @@ public class KogitoAssetsProcessor {
         boolean usePersistence = combinedIndexBuildItem.getIndex()
                 .getClassByName(persistenceFactoryClass) != null;
         boolean useMonitoring = combinedIndexBuildItem.getIndex()
-                .getClassByName(metricsClass) != null;
+                .getClassByName(prometheusClass) != null || combinedIndexBuildItem.getIndex()
+                .getClassByName(monitoringCoreClass) != null;
         boolean useTracing = !combinedIndexBuildItem.getIndex()
                 .getAllKnownSubclasses(tracingClass).isEmpty();
         boolean useKnativeEventing = combinedIndexBuildItem.getIndex()
@@ -325,7 +328,7 @@ public class KogitoAssetsProcessor {
         if (usePersistence) {
             resource.produce(new NativeImageResourceBuildItem("kogito-types.proto"));
         }
-       
+
         if(persistenceType.equals(PersistenceGenerator.MONGODB_PERSISTENCE_TYPE)) {
             addInnerClasses(org.jbpm.marshalling.impl.JBPMMessages.class, reflectiveClass);
             reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "java.lang.String"));
@@ -333,7 +336,7 @@ public class KogitoAssetsProcessor {
 
         return persistenceProtoFiles;
     }
-    
+
     private void addInnerClasses(Class<?> superClass, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         Arrays.asList(superClass.getDeclaredClasses()).forEach(c -> {
             reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, c.getName()));
@@ -496,7 +499,7 @@ public class KogitoAssetsProcessor {
         addChildrenClasses(index, org.kie.kogito.event.AbstractDataEvent.class, reflectiveClass);
         addChildrenClasses(index, org.kie.kogito.services.event.AbstractProcessDataEvent.class, reflectiveClass);
     }
-    
+
     private void addChildrenClasses(Index index,
                                     Class<?> superClass,
                                     BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
