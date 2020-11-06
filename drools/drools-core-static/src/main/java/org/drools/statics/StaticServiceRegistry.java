@@ -51,7 +51,7 @@ public class StaticServiceRegistry implements ServiceRegistry {
         registerService("org.kie.api.concurrent.KieExecutors", "org.drools.core.concurrent.ExecutorProviderImpl", true);
         registerService("org.kie.api.KieServices", "org.drools.compiler.kie.builder.impl.KieServicesImpl", false);
         registerService("org.kie.internal.builder.KnowledgeBuilderFactoryService", "org.drools.compiler.builder.impl.KnowledgeBuilderFactoryServiceImpl", true);
-        registerService("org.kie.kogito.rules.DataSource.Factory", "org.kie.kogito.rules.units.impl.DataSourceFactoryImpl", false);
+        registerService("org.kie.kogito.rules.DataSource$Factory", "org.kie.kogito.rules.units.impl.DataSourceFactoryImpl", false);
         registerService("org.kie.internal.ruleunit.RuleUnitComponentFactory", "org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl", false);
         registerService("org.kie.api.internal.assembler.KieAssemblers", "org.drools.statics.StaticKieAssemblers", true);
         registerService("org.kie.api.internal.runtime.KieRuntimes", "org.kie.internal.services.KieRuntimesImpl", true);
