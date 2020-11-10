@@ -17,12 +17,14 @@
 
 package org.kie.kogito.addon.cloudevents.quarkus;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
 import io.quarkus.runtime.Startup;
 import io.smallrye.mutiny.Multi;
 import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.kie.kogito.event.KogitoEventStreams;
 import org.reactivestreams.Publisher;
 
 /**
@@ -30,14 +32,16 @@ import org.reactivestreams.Publisher;
  * (a subclass of {@link Publisher})
  */
 @Startup
+@ApplicationScoped
 public class QuarkusCloudEventPublisher {
-    @Channel("kogito_incoming_stream")
+    @Channel(KogitoEventStreams.INCOMING)
     Multi<String> events;
 
     @Produces
-    @Named("kogito_event_publisher")
+    @ApplicationScoped
+    @Named(KogitoEventStreams.PUBLISHER)
     public Multi<String> makeMulti() {
-        return events;
+        return events.broadcast().toAllSubscribers();
     }
 
 }

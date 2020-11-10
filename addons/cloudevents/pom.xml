@@ -33,6 +33,7 @@
   <modules>
     <module>cloudevents-quarkus-addon</module>
     <module>cloudevents-spring-boot-addon</module>
+    <module>cloudevents-common-addon</module>
   </modules>
 
 </project>

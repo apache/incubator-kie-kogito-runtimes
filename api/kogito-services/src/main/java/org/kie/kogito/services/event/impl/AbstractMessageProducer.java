@@ -23,11 +23,16 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.kie.kogito.services.event.CloudEventEmitter;
 import org.kie.kogito.services.event.EventMarshaller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMessageProducer<D, T extends AbstractProcessDataEvent<D>> {
 
+    private static final Logger logger = LoggerFactory.getLogger(AbstractMessageProducer.class);
+
     private Optional<Boolean> useCloudEvents;
     private EventMarshaller marshaller;
+    private String trigger;
     private CloudEventEmitter emitter;
 
     // in general we should favor the non-empty constructor
@@ -39,30 +44,38 @@ public abstract class AbstractMessageProducer<D, T extends AbstractProcessDataEv
     public AbstractMessageProducer(
             CloudEventEmitter emitter,
             EventMarshaller marshaller,
+            String trigger,
             Optional<Boolean> useCloudEvents) {
         this.emitter = emitter;
         this.marshaller = marshaller;
+        this.trigger = trigger;
         this.useCloudEvents = useCloudEvents;
     }
 
     protected void setParams(
             CloudEventEmitter emitter,
             EventMarshaller marshaller,
+            String trigger,
             Optional<Boolean> useCloudEvents) {
         this.emitter = emitter;
         this.marshaller = marshaller;
+        this.trigger = trigger;
         this.useCloudEvents = useCloudEvents;
     }
 
     public void produce(ProcessInstance pi, D eventData) {
-        emitter.emit(this.marshall(pi, eventData));
+        emitter.emit(this.marshall(pi, eventData))
+                .exceptionally(ex -> {
+                    logger.error("An error was caught while process " + pi.getProcessId() + " produced message " + eventData, ex);
+                    return null;
+                });
     }
 
     protected String marshall(ProcessInstance pi, D eventData) {
         return marshaller.marshall(eventData,
-                                   e -> dataEventTypeConstructor(e, pi),
+                                   e -> dataEventTypeConstructor(e, pi, trigger),
                                    useCloudEvents);
     }
 
-    protected abstract T dataEventTypeConstructor(D e, ProcessInstance pi);
+    protected abstract T dataEventTypeConstructor(D e, ProcessInstance pi, String trigger);
 }
