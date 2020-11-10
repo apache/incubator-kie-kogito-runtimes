@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.dmn.rest.DMNResult;
@@ -49,6 +50,11 @@ public class DMNResultMetricsBuilderTest {
     public void setUp() {
         registry = new SimpleMeterRegistry();
         MonitoringRegistry.addRegistry(registry);
+    }
+
+    @AfterEach
+    public void cleanUp() {
+        MonitoringRegistry.getDefaultMeterRegistry().remove(registry);
     }
 
     @Test
