@@ -15,24 +15,13 @@
   <modules>
     <module>persistence</module>
     <module>events</module>
+    <module>cloudevents</module>
     <module>jobs</module>
     <module>predictions</module>
     <module>process-management</module>
     <module>tracing</module>
-    <module>explainability</module>
     <module>monitoring-addon</module>
+    <module>explainability-addon</module>
   </modules>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-bom</artifactId>
-        <version>${version.io.quarkus}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
 </project>
