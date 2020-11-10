@@ -107,12 +107,11 @@
 
     <version.io.cloudevents>2.0.0-milestone3</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>4.8.0</version.io.fabric8.kubernetes-client>
-    <version.io.prometheus>0.5.0</version.io.prometheus>
+    <version.io.micrometer>1.5.5</version.io.micrometer>
     <version.io.restassured>4.3.0</version.io.restassured>
     <version.io.restassured.springboot>3.3.0</version.io.restassured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
     <version.io.smallrye.reactive>2.4.0</version.io.smallrye.reactive>
     <version.io.swagger.core.v3>2.0.6</version.io.swagger.core.v3>
-    <version.io.micrometer>1.5.5</version.io.micrometer>
 
     <version.org.antlr>3.5.2</version.org.antlr>
     <version.org.antlr4>4.8</version.org.antlr4>
@@ -406,16 +405,16 @@
         <artifactId>openshift-client</artifactId>
         <version>${version.io.fabric8.kubernetes-client}</version>
       </dependency>
-      <!-- metrics - prometheus -->
+      <!-- metrics - monitoring -->
       <dependency>
-        <groupId>io.prometheus</groupId>
-        <artifactId>simpleclient</artifactId>
-        <version>${version.io.prometheus}</version>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-core</artifactId>
+        <version>${version.io.micrometer}</version>
       </dependency>
       <dependency>
-        <groupId>io.prometheus</groupId>
-        <artifactId>simpleclient_common</artifactId>
-        <version>${version.io.prometheus}</version>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-prometheus</artifactId>
+        <version>${version.io.micrometer}</version>
       </dependency>
 
       <dependency>
