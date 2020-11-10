@@ -99,6 +99,6 @@ public class QuarkusDataIndexClientTest {
 
     @Test
     public void testGetTokenWithoutSecurityIdentity(){
-         assertThat(client.getToken()).isEqualTo("");
+         assertThat(client.getToken()).isEmpty();
     }
 }

@@ -27,6 +27,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class ProcessSvgServiceTest {
@@ -39,7 +41,7 @@ public abstract class ProcessSvgServiceTest {
     }
 
     @Test
-    public void getProcessSvgFromFileSystemFailTest() throws Exception {
+    public void getProcessSvgWithoutSvgResourcePathTest() throws Exception {
         String fileContent = getTravelsSVGFile();
         Optional<String> svgContent = getTestedProcessSvgService().getProcessSvg(PROCESS_ID);
         assertThat(svgContent).isPresent().hasValue(fileContent);
@@ -51,6 +53,12 @@ public abstract class ProcessSvgServiceTest {
         getTestedProcessSvgService().setSvgResourcesPath(Optional.of("./src/test/resources/META-INF/processSVG/"));
         Optional<String> svgContent = getTestedProcessSvgService().getProcessSvg(PROCESS_ID);
         assertThat(svgContent).isPresent().hasValue(fileContent);
+    }
+
+    @Test
+    public void getProcessSvgFromFileSystemFailTest() throws Exception {
+        getTestedProcessSvgService().setSvgResourcesPath(Optional.of("./src/test/resources/META-INF/processSVG/"));
+        assertThat(getTestedProcessSvgService().getProcessSvg("UnexistingProcessId")).isEmpty();
     }
 
     @Test
@@ -73,6 +81,14 @@ public abstract class ProcessSvgServiceTest {
     public void readFileFromClassPathTest() throws Exception {
         assertThat(getTestedProcessSvgService().readFileContentFromClassPath("undefined")).isEmpty();
         assertThat(getTravelsSVGFile()).isEqualTo(getTestedProcessSvgService().readFileContentFromClassPath("travels.svg").get());
+    }
+
+    @Test
+    public void readFileFromClassPathFailTest() throws Exception {
+        assertThrows(ProcessSVGException.class, () -> getTestedProcessSvgService().annotateExecutedPath(
+                "wrongSVGContent",
+                Arrays.asList("_1A708F87-11C0-42A0-A464-0B7E259C426F"),
+                Collections.emptyList()));
     }
 
     public String getTravelsSVGFile() throws Exception {
