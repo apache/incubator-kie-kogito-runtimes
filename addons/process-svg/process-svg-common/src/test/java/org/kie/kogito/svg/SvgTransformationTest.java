@@ -20,7 +20,9 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -105,8 +107,11 @@ public class SvgTransformationTest {
         completed.add("_1A708F87-11C0-42A0-A464-0B7E259C426F");
         List<String> active = new ArrayList<String>();
         active.add("_24FBB8D6-EF2D-4DCC-846D-D8C5E21849D2");
+        Map<String, String> links = new HashMap<>();
+        links.put("_1A708F87-11C0-42A0-A464-0B7E259C426F", "http://localhost/svg/processes/1");
+
         String svg = SVGImageProcessor.transform(readTestFileContent(),
-                                                 completed, active, null, "#888888",
+                                                 completed, active, links, "#888888",
                                                  "#888887", "#888886");
 
         Document svgDocument = readSVG(svg);

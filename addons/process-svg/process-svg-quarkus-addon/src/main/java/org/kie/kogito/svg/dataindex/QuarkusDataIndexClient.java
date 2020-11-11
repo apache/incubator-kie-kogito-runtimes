@@ -60,7 +60,7 @@ public class QuarkusDataIndexClient implements DataIndexClient {
     }
 
     @PostConstruct
-    protected void setup() throws Exception {
+    protected void setup() throws MalformedURLException {
         client = WebClient.create(vertx, getWebClientToURLOptions(this.dataIndexHttpURL));
         LOGGER.debug("Creating new instance of web client");
     }

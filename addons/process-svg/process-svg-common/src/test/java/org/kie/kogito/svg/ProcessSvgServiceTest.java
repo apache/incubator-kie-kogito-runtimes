@@ -27,8 +27,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class ProcessSvgServiceTest {
@@ -84,11 +83,16 @@ public abstract class ProcessSvgServiceTest {
     }
 
     @Test
-    public void readFileFromClassPathFailTest() throws Exception {
-        assertThrows(ProcessSVGException.class, () -> getTestedProcessSvgService().annotateExecutedPath(
-                "wrongSVGContent",
-                Arrays.asList("_1A708F87-11C0-42A0-A464-0B7E259C426F"),
-                Collections.emptyList()));
+    public void testWrongSVGContentThrowsException() {
+        try {
+            getTestedProcessSvgService().annotateExecutedPath(
+                    "wrongSVGContent",
+                    Arrays.asList("_1A708F87-11C0-42A0-A464-0B7E259C426F"),
+                    Collections.emptyList());
+            fail("Expected an ProcessSVGException to be thrown");
+        } catch (ProcessSVGException e) {
+            assertThat(e.getMessage()).isEqualTo("Failed to annotated SVG for process instance");
+        }
     }
 
     public String getTravelsSVGFile() throws Exception {

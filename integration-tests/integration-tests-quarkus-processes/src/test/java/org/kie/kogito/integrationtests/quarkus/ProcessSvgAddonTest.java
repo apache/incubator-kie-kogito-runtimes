@@ -80,7 +80,7 @@ public class ProcessSvgAddonTest {
                 .get("/svg/processes/{processId}/instances/{processInstanceId}", "approvals", pId)
                 .then()
                 .statusCode(200)
-                .body(equalTo(readFileContent("approvals-expected.svg")));
+                .body(equalTo(readFileContent("META-INF/processSVG/approvals-expected.svg")));
 
         given()
                 .contentType(ContentType.JSON)
@@ -93,6 +93,6 @@ public class ProcessSvgAddonTest {
                 .get("/svg/processes/{processId}/instances/{processInstanceId}", "approvals", pId)
                 .then()
                 .statusCode(200)
-                .body(equalTo(readFileContent("approvals-expected.svg")));
+                .body(equalTo(readFileContent("META-INF/processSVG/approvals-expected.svg")));
     }
 }

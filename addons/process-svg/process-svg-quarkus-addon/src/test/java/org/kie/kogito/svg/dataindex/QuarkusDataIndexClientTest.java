@@ -79,6 +79,12 @@ public class QuarkusDataIndexClientTest {
     }
 
     @Test
+    public void testSetupMalformedURL() {
+        QuarkusDataIndexClient testClient = new QuarkusDataIndexClient("malformedURL", null, null);
+        assertThrows(MalformedURLException.class, () -> testClient.setup());
+    }
+
+    @Test
     public void testWebClientToURLOptions() throws MalformedURLException {
         String defaultHost = "localhost";
         int defaultPort = 8180;
