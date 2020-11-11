@@ -15,8 +15,7 @@
 
 package org.kie.kogito.monitoring.core.rule;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Tag;
@@ -31,17 +30,11 @@ public class RuleMetrics {
     }
 
     public static DistributionSummary getDroolsEvaluationTimeHistogram(String appId, String processId) {
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("app_id", appId));
-                add(Tag.of("process_id", processId));
-            }
-        };
         DistributionSummary distributionSummary = DistributionSummary.builder("drl_match_fired_nanosecond")
                 .minimumExpectedValue((double) toMicro(1))
                 .maximumExpectedValue((double) toMicro(10))
                 .description("Drools Firing Time")
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("app_id", appId), Tag.of("process_id", processId)))
                 .register(MonitoringRegistry.getDefaultMeterRegistry());
         return distributionSummary;
     }

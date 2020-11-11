@@ -15,9 +15,8 @@
  */
 package org.kie.kogito.monitoring.core.process;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,46 +47,26 @@ public class ProcessEventListener extends DefaultProcessEventListener {
     }
 
     private static Counter getNumberOfProcessInstancesStartedCounter(String appId, String processId) {
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("app_id", appId));
-                add(Tag.of("process_id", processId));
-            }
-        };
         return Counter
                 .builder("kie_process_instance_started_total")
                 .description("Started Process Instances")
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("app_id", appId), (Tag.of("process_id", processId))))
                 .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
     private static Counter getNumberOfSLAsViolatedCounter(String appId, String processId, String nodeName) {
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("app_id", appId));
-                add(Tag.of("process_id", processId));
-                add(Tag.of("node_name", nodeName));
-            }
-        };
         return Counter
                 .builder("kie_process_instance_sla_violated_total")
                 .description("Process Instances SLA Violated")
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("app_id", appId), Tag.of("process_id", processId), Tag.of("node_name", nodeName)))
                 .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
     private static Counter getNumberOfProcessInstancesCompletedCounter(String appId, String processId, String nodeName) {
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("app_id", appId));
-                add(Tag.of("process_id", processId));
-                add(Tag.of("node_name", nodeName));
-            }
-        };
         return Counter
                 .builder("kie_process_instance_completed_total")
                 .description("Completed Process Instances")
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("app_id", appId), Tag.of("process_id", processId), Tag.of("node_name", nodeName)))
                 .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
@@ -95,43 +74,26 @@ public class ProcessEventListener extends DefaultProcessEventListener {
         if (gaugeMap.containsKey(appId + processId)) {
             return gaugeMap.get(appId + processId);
         }
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("app_id", appId));
-                add(Tag.of("process_id", processId));
-            }
-        };
         AtomicInteger atomicInteger = new AtomicInteger(0);
         Gauge.builder("kie_process_instance_running_total", atomicInteger, AtomicInteger::doubleValue)
                 .description("Running Process Instances")
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("app_id", appId), (Tag.of("process_id", processId))))
                 .register(MonitoringRegistry.getDefaultMeterRegistry());
         gaugeMap.put(appId + processId, atomicInteger);
         return atomicInteger;
     }
 
     private static DistributionSummary getProcessInstancesDurationSummary(String appId, String processId) {
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("app_id", appId));
-                add(Tag.of("process_id", processId));
-            }
-        };
         return DistributionSummary.builder("kie_process_instance_duration_seconds")
                 .description("Process Instances Duration")
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("app_id", appId), (Tag.of("process_id", processId))))
                 .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
     private static DistributionSummary getWorkItemsDurationSummary(String name) {
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("name", name));
-            }
-        };
         return DistributionSummary.builder("kie_work_item_duration_seconds")
                 .description("Work Items Duration")
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("name", name)))
                 .register(MonitoringRegistry.getDefaultMeterRegistry());
     }
 

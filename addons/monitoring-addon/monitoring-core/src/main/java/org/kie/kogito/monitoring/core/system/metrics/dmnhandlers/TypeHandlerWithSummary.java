@@ -15,7 +15,7 @@
 
 package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -26,18 +26,12 @@ public abstract class TypeHandlerWithSummary<T> implements TypeHandler<T> {
     protected MeterRegistry registry;
 
     protected DistributionSummary getDefaultSummary(String dmnType, String decision, String endpoint) {
-        ArrayList<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("decision", decision));
-                add(Tag.of("endpoint", endpoint));
-            }
-        };
         DistributionSummary summary = DistributionSummary
                 .builder(dmnType.replace(" ", "_") + DecisionConstants.DECISIONS_NAME_SUFFIX)
                 .description(DecisionConstants.DECISIONS_HELP)
                 .publishPercentiles(DecisionConstants.SUMMARY_PERCENTILES)
                 .distributionStatisticExpiry(DecisionConstants.SUMMARY_EXPIRATION)
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("decision", decision), Tag.of("endpoint", endpoint)))
                 .register(registry);
         return summary;
     }

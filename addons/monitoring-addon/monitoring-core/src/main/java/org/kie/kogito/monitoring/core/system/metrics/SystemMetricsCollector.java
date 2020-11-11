@@ -16,8 +16,7 @@
 package org.kie.kogito.monitoring.core.system.metrics;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.Counter;
@@ -48,45 +47,25 @@ public class SystemMetricsCollector {
     }
 
     private static Counter getRequestStatusCodeCounter(String endpoint, String identifier) {
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("endpoint", endpoint));
-                add(Tag.of("identifier", identifier));
-            }
-        };
-
         return Counter.builder(STATUS_CODE_NAME)
                 .description(STATUS_CODE_HELP)
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("endpoint", endpoint), Tag.of("identifier", identifier)))
                 .register(registry);
     }
 
     private static Counter getExceptionsCounter(String endpoint, String identifier) {
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("endpoint", endpoint));
-                add(Tag.of("identifier", identifier));
-            }
-        };
-
         return Counter.builder(EXCEPTIONS_NAME)
                 .description(EXCEPTIONS_HELP)
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("endpoint", endpoint), Tag.of("identifier", identifier)))
                 .register(registry);
     }
 
     private static Timer getElapsedTimeSummary(String endpoint) {
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("endpoint", endpoint));
-            }
-        };
-
         return Timer.builder(ELAPSED_TIME_NAME)
                 .description(ELAPSED_TIME_HELP)
                 .publishPercentiles(ELAPSED_TIME_PERCENTILES)
                 .distributionStatisticExpiry(Duration.ofMinutes(3))
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("endpoint", endpoint)))
                 .register(registry);
     }
 

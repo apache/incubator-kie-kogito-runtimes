@@ -15,8 +15,7 @@
 
 package org.kie.kogito.monitoring.core.system.metrics.dmnhandlers;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -49,18 +48,10 @@ public class StringHandler implements TypeHandler<String> {
     }
 
     private Counter getCounter(String decision, String endpoint, String identifier) {
-
-        List<Tag> tags = new ArrayList<Tag>() {
-            {
-                add(Tag.of("decision", decision));
-                add(Tag.of("endpoint", endpoint));
-                add(Tag.of("identifier", identifier));
-            }
-        };
         return Counter
                 .builder(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX)
                 .description(DecisionConstants.DECISIONS_HELP)
-                .tags(tags)
+                .tags(Arrays.asList(Tag.of("decision", decision), Tag.of("endpoint", endpoint), Tag.of("identifier", identifier)))
                 .register(meterRegistry);
     }
 }
