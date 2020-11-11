@@ -75,7 +75,7 @@
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <version.versions.plugin>2.1</version.versions.plugin>
     <version.jayway.jsonpath>2.4.0</version.jayway.jsonpath>
-    <version.vertx.web.client>3.9.3</version.vertx.web.client>
+    <version.vertx.web.client>3.9.4</version.vertx.web.client>
 
     <!-- this version property is used in plugins but also in dependencies too -->
     <version.io.quarkus>1.10.0.CR1</version.io.quarkus>
