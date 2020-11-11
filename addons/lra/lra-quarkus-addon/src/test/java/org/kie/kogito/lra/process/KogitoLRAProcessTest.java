@@ -23,16 +23,18 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.UriBuilder;
 
 import io.narayana.lra.client.NarayanaLRAClient;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
+import org.eclipse.microprofile.lra.annotation.ws.rs.LRA;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.lra.KogitoLRA;
 import org.kie.kogito.lra.model.LRAContext;
-import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
@@ -51,10 +53,11 @@ class KogitoLRAProcessTest {
 
     static final UriBuilder URI_TEMPLATE = UriBuilder.fromPath("http://localhost:8080").path("lra-process").path(KogitoLRA.LRA_RESOURCE).path("{action}");
     final URI lraUri = URI.create("org.example/lra-process/0001");
+    private static final String PROCESS_NAME = "lra-process";
 
     @Inject
-    @Named("lra-process")
-    Process<LRAProcessModel> process;
+    @Named(PROCESS_NAME)
+    LRAProcess process;
 
     NarayanaLRAClient lraClient;
 
@@ -62,11 +65,12 @@ class KogitoLRAProcessTest {
     void init() {
         lraClient = Mockito.mock(NarayanaLRAClient.class, KogitoLRA.BEAN_NAME);
         QuarkusMock.installMockForType(lraClient, NarayanaLRAClient.class);
-        when(lraClient.startLRA(null, "lra-process", 0L, ChronoUnit.SECONDS)).thenReturn(lraUri);
+        when(lraClient.startLRA(null, PROCESS_NAME, 0L, ChronoUnit.SECONDS)).thenReturn(lraUri);
+        process.setLraType(null);
     }
 
     @Test
-    void testStartLRA() {
+    void testStartDefaultLRA() {
         Map<String, Object> params = new HashMap<>();
         params.put("message", "hello");
         params.put("history", new ArrayList<>());
@@ -84,8 +88,175 @@ class KogitoLRAProcessTest {
     }
 
     @Test
-    void testJoinLRA() {
-        final URI recoveryUri = URI.create("recovery/org.example.com/lra-rocess/0001");
+    void testStartRequiredLRA() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("message", "hello");
+        params.put("history", new ArrayList<>());
+        process.setLraType(LRA.Type.REQUIRED);
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        instance.start();
+        verifyStartLRA();
+
+        completeTask(instance);
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verify(lraClient, times(1)).closeLRA(lraUri);
+    }
+
+    @Test
+    void testStartRequiresNewLRA() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("message", "hello");
+        params.put("history", new ArrayList<>());
+        process.setLraType(LRA.Type.REQUIRES_NEW);
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        instance.start();
+        verifyStartLRA();
+
+        completeTask(instance);
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verify(lraClient, times(1)).closeLRA(lraUri);
+    }
+
+    @Test
+    void testStartMandatoryLRA() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("message", "hello");
+        params.put("history", new ArrayList<>());
+        process.setLraType(LRA.Type.MANDATORY);
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        Assertions.assertThrows(ClientErrorException.class, () -> instance.start());
+        Mockito.verifyNoInteractions(lraClient);
+    }
+
+    @Test
+    void testStartSupportsLRA() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("message", "hello");
+        params.put("history", new ArrayList<>());
+        process.setLraType(LRA.Type.SUPPORTS);
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        instance.start();
+        completeTask(instance);
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verifyNoInteractions(lraClient);
+    }
+
+    @Test
+    void testStartNotSupportedLRA() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("message", "hello");
+        params.put("history", new ArrayList<>());
+        process.setLraType(LRA.Type.NOT_SUPPORTED);
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        instance.start();
+        completeTask(instance);
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verifyNoInteractions(lraClient);
+    }
+
+    @Test
+    void testStartNeverLRA() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("message", "hello");
+        params.put("history", new ArrayList<>());
+        process.setLraType(LRA.Type.NEVER);
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        instance.start();
+        completeTask(instance);
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verifyNoInteractions(lraClient);
+    }
+
+    @Test
+    void testJoinDefaultLRA() {
+        final URI recoveryUri = URI.create("recovery/org.example.com/lra-process/0001");
+        when(lraClient.joinLRA(eq(lraUri), anyLong(), any(URI.class), any(URI.class), any(URI.class), any(URI.class), any(URI.class), nullable(URI.class), nullable(String.class)))
+                .thenReturn(recoveryUri);
+        Map<String, Object> params = new HashMap<>();
+        params.put("history", new ArrayList<>());
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+        //Added by code generation
+        LRAContext context = new LRAContext().setUri(lraUri).setBasePath(UriBuilder.fromPath("http://localhost:8080").path(process.id()).build());
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        ((AbstractProcessInstance<LRAProcessModel>) instance).internalGetProcessInstance().setMetaData(KogitoLRA.LRA_CONTEXT, context);
+        instance.start();
+        verifyJoinLRA();
+
+        completeTask(instance);
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verify(lraClient, times(0)).closeLRA(lraUri);
+    }
+    @Test
+    void testJoinSupportsLRA() {
+        final URI recoveryUri = URI.create("recovery/org.example.com/lra-process/0001");
+        when(lraClient.joinLRA(eq(lraUri), anyLong(), any(URI.class), any(URI.class), any(URI.class), any(URI.class), any(URI.class), nullable(URI.class), nullable(String.class)))
+                .thenReturn(recoveryUri);
+        process.setLraType(LRA.Type.SUPPORTS);
+        Map<String, Object> params = new HashMap<>();
+        params.put("history", new ArrayList<>());
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+        //Added by code generation
+        LRAContext context = new LRAContext().setUri(lraUri).setBasePath(UriBuilder.fromPath("http://localhost:8080").path(process.id()).build());
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        ((AbstractProcessInstance<LRAProcessModel>) instance).internalGetProcessInstance().setMetaData(KogitoLRA.LRA_CONTEXT, context);
+        instance.start();
+        verifyJoinLRA();
+
+        completeTask(instance);
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verify(lraClient, times(0)).closeLRA(lraUri);
+    }
+    @Test
+    void testJoinMandatoryLRA() {
+        final URI recoveryUri = URI.create("recovery/org.example.com/lra-process/0001");
+        when(lraClient.joinLRA(eq(lraUri), anyLong(), any(URI.class), any(URI.class), any(URI.class), any(URI.class), any(URI.class), nullable(URI.class), nullable(String.class)))
+                .thenReturn(recoveryUri);
+        process.setLraType(LRA.Type.MANDATORY);
+        Map<String, Object> params = new HashMap<>();
+        params.put("history", new ArrayList<>());
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+        //Added by code generation
+        LRAContext context = new LRAContext().setUri(lraUri).setBasePath(UriBuilder.fromPath("http://localhost:8080").path(process.id()).build());
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        ((AbstractProcessInstance<LRAProcessModel>) instance).internalGetProcessInstance().setMetaData(KogitoLRA.LRA_CONTEXT, context);
+        instance.start();
+        verifyJoinLRA();
+
+        completeTask(instance);
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verify(lraClient, times(0)).closeLRA(lraUri);
+    }
+
+    @Test
+    void testJoinRequiredLRA() {
+        final URI recoveryUri = URI.create("recovery/org.example.com/lra-process/0001");
+        process.setLraType(LRA.Type.REQUIRED);
         when(lraClient.joinLRA(eq(lraUri), anyLong(), any(URI.class), any(URI.class), any(URI.class), any(URI.class), any(URI.class), nullable(URI.class), nullable(String.class)))
                 .thenReturn(recoveryUri);
         Map<String, Object> params = new HashMap<>();
@@ -105,6 +276,87 @@ class KogitoLRAProcessTest {
         Mockito.verify(lraClient, times(0)).closeLRA(lraUri);
     }
 
+    @Test
+    void testJoinNotSupportedLRA() {
+        process.setLraType(LRA.Type.NOT_SUPPORTED);
+        Map<String, Object> params = new HashMap<>();
+        params.put("history", new ArrayList<>());
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+        //Added by code generation
+        LRAContext context = new LRAContext().setUri(lraUri).setBasePath(UriBuilder.fromPath("http://localhost:8080").path(process.id()).build());
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        ((AbstractProcessInstance<LRAProcessModel>) instance).internalGetProcessInstance().setMetaData(KogitoLRA.LRA_CONTEXT, context);
+        instance.start();
+
+        completeTask(instance);
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verifyNoInteractions(lraClient);
+    }
+
+    @Test
+    void testJoinNeverLRA() {
+        process.setLraType(LRA.Type.NEVER);
+        Map<String, Object> params = new HashMap<>();
+        params.put("history", new ArrayList<>());
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+        //Added by code generation
+        LRAContext context = new LRAContext().setUri(lraUri).setBasePath(UriBuilder.fromPath("http://localhost:8080").path(process.id()).build());
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        ((AbstractProcessInstance<LRAProcessModel>) instance).internalGetProcessInstance().setMetaData(KogitoLRA.LRA_CONTEXT, context);
+
+        Assertions.assertThrows(ClientErrorException.class, () -> instance.start());
+        Mockito.verifyNoInteractions(lraClient);
+    }
+
+    @Test
+    void testJoinRequiresNewLRA() {
+        final URI newUri = URI.create("new/org.example.com/lra-process/0001");
+        process.setLraType(LRA.Type.REQUIRES_NEW);
+        when(lraClient.startLRA(null,PROCESS_NAME, 0L, ChronoUnit.SECONDS))
+                .thenReturn(newUri);
+        Map<String, Object> params = new HashMap<>();
+        params.put("history", new ArrayList<>());
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+        //Added by code generation
+        LRAContext context = new LRAContext().setUri(lraUri).setBasePath(UriBuilder.fromPath("http://localhost:8080").path(process.id()).build());
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        ((AbstractProcessInstance<LRAProcessModel>) instance).internalGetProcessInstance().setMetaData(KogitoLRA.LRA_CONTEXT, context);
+        instance.start();
+        Mockito.verify(lraClient, times(1)).startLRA(null, PROCESS_NAME, 0L, ChronoUnit.SECONDS);
+
+        completeTask(instance);
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verify(lraClient, times(1)).closeLRA(newUri);
+    }
+
+    @Test
+    void testJoinNestedLRA() {
+        final URI childUrl = URI.create("child/org.example.com/lra-process/0001");
+        
+        process.setLraType(LRA.Type.NESTED);
+        when(lraClient.startLRA(lraUri, PROCESS_NAME, 0L,ChronoUnit.SECONDS))
+                .thenReturn(childUrl);
+        Map<String, Object> params = new HashMap<>();
+        params.put("history", new ArrayList<>());
+        LRAProcessModel model = this.process.createModel();
+        model.fromMap(params);
+        //Added by code generation
+        LRAContext context = new LRAContext().setUri(lraUri).setBasePath(UriBuilder.fromPath("http://localhost:8080").path(process.id()).build());
+        ProcessInstance<LRAProcessModel> instance = this.process.createInstance(model);
+        ((AbstractProcessInstance<LRAProcessModel>) instance).internalGetProcessInstance().setMetaData(KogitoLRA.LRA_CONTEXT, context);
+        instance.start();
+        Mockito.verify(lraClient, times(1)).startLRA(lraUri, PROCESS_NAME, 0L, ChronoUnit.SECONDS);
+
+        completeTask(instance);
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Mockito.verify(lraClient, times(1)).closeLRA(childUrl);
+    }
 
     @Test
     void testCancelLRAWithAbortedProcess() {
@@ -152,7 +404,7 @@ class KogitoLRAProcessTest {
     }
 
     private void verifyStartLRA() {
-        Mockito.verify(lraClient, times(1)).startLRA(null, "lra-process", 0L, ChronoUnit.SECONDS);
+        Mockito.verify(lraClient, times(1)).startLRA(null, PROCESS_NAME, 0L, ChronoUnit.SECONDS);
     }
 
     private void verifyJoinLRA() {

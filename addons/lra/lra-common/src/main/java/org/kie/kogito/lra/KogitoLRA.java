@@ -15,11 +15,14 @@
 
 package org.kie.kogito.lra;
 
+import org.eclipse.microprofile.lra.annotation.ws.rs.LRA.Type;
+
 public class KogitoLRA {
 
     public static final String BEAN_NAME = "kogito-lra";
     public static final String METADATA_TIMEOUT = "LRA_timeout";
     public static final String METADATA_TYPE = "LRA_type";
+    public static final Type DEFAULT_LRA_TYPE = Type.REQUIRED;
     public static final String LRA_CONTEXT = "lra_context";
     public static final String LRA_RESOURCE = "lra";
 

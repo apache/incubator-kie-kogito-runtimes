@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.narayana.lra.client.NarayanaLRAClient;
+import org.eclipse.microprofile.lra.annotation.ws.rs.LRA;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.core.datatype.impl.type.StringDataType;
 import org.jbpm.process.core.event.EventTypeFilter;
@@ -38,6 +39,7 @@ import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 
 import static org.kie.kogito.lra.KogitoLRA.METADATA_TIMEOUT;
+import static org.kie.kogito.lra.KogitoLRA.METADATA_TYPE;
 
 @ApplicationScoped
 @Named("lra-process")
@@ -45,9 +47,15 @@ public class LRAProcess extends AbstractProcess<LRAProcessModel> {
 
     public static final Long LRA_TIMEOUT = 1000L;
 
+    private LRA.Type lraType;
+
     @Inject
     protected LRAProcess(@Named(KogitoLRA.BEAN_NAME) NarayanaLRAClient lraClient) {
         super(new StaticProcessConfig(new DefaultWorkItemHandlerConfig(), new LRAEventListenerConfig(lraClient), new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()), null));
+    }
+
+    public void setLraType(LRA.Type lraType) {
+        this.lraType = lraType;
     }
 
     @Override
@@ -70,47 +78,37 @@ public class LRAProcess extends AbstractProcess<LRAProcessModel> {
         EventTypeFilter lraCompensateFilter = new EventTypeFilter();
         lraCompensateFilter.setType("LRA-compensate");
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("lra-process");
+        if(lraType != null) {
+            factory.metaData(METADATA_TYPE, lraType.name());
+        }
         factory.variable("history", new ObjectDataType(List.class.getName()))
                 .variable("message", new StringDataType())
                 .name("LRA")
                 .metaData(METADATA_TIMEOUT, LRA_TIMEOUT)
                 .packageName("org.kie.kogito.lra.test")
                 .startNode(1).name("Start").done()
-                    .humanTaskNode(2)
-                    .name("Human Task")
-                    .outMapping("message", "message")
-                    .done()
+                .humanTaskNode(2)
+                .name("Human Task")
+                .outMapping("message", "message")
+                .done()
                 .actionNode(3)
-                    .name("Script Task")
-                    .action(kcontext -> {
-                        List<String> history = (List<String>) kcontext.getVariable("history");
-                        String message = (String) kcontext.getVariable("message");
-                        if (message.equalsIgnoreCase("fail")) {
-                            throw new RuntimeException("Failing on purpose");
-                        }
-                        history.add(message);
-                        System.out.println("Script task");
-                    })
-                    .done()
+                .name("Script Task")
+                .action(kcontext -> {
+                    List<String> history = (List<String>) kcontext.getVariable("history");
+                    String message = (String) kcontext.getVariable("message");
+                    if (message.equalsIgnoreCase("fail")) {
+                        throw new RuntimeException("Failing on purpose");
+                    }
+                    history.add(message);
+                    System.out.println("Script task");
+                })
+                .done()
                 .endNode(4)
-                    .name("End")
-                    .done()
-                .eventNode(5)
-                    .name("LRA Compensate")
-                    .eventFilter(lraCompensateFilter)
-                    .done()
-                .actionNode(6)
-                    .name("LRA Compensation Script")
-                    .action(kcontext -> System.out.println("Compensate LRA"))
-                    .done()
-                .endNode(7)
-                    .name("End LRA Compensate")
-                    .done()
+                .name("End")
+                .done()
                 .connection(1, 2)
                 .connection(2, 3)
-                .connection(3, 4)
-                .connection(5, 6)
-                .connection(6, 7);
+                .connection(3, 4);
         return factory.validate().getProcess();
     }
 

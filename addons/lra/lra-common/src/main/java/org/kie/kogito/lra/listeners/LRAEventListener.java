@@ -17,10 +17,13 @@ package org.kie.kogito.lra.listeners;
 
 import java.net.URI;
 import java.time.temporal.ChronoUnit;
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import io.narayana.lra.LRAConstants;
 import io.narayana.lra.client.NarayanaLRAClient;
+import org.eclipse.microprofile.lra.annotation.ws.rs.LRA.Type;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessCompletedEvent;
@@ -57,13 +60,43 @@ public class LRAEventListener extends DefaultProcessEventListener {
             context = new LRAContext();
             wfInstance.setMetaData(LRA_CONTEXT, context);
         }
-        //TODO: Implement all cases for org.eclipse.microprofile.lra.annotation.ws.rs.LRA#Type
+        Type lraType = getType(instance);
         if (context.getUri() == null) {
-            context.setUri(lraClient.startLRA(null, event.getProcessInstance().getProcessId(), 0L, ChronoUnit.SECONDS));
-            LOGGER.debug("started LRA: {}", context.getUri());
+            switch (lraType) {
+                case MANDATORY:
+                    throw new ClientErrorException(Response.Status.PRECONDITION_FAILED);
+                case SUPPORTS:
+                case NOT_SUPPORTED:
+                case NEVER:
+                    return;
+                case REQUIRES_NEW:
+                case REQUIRED:
+                    context.setUri(lraClient.startLRA(null, event.getProcessInstance().getProcessId(), 0L, ChronoUnit.SECONDS));
+                    LOGGER.debug("started LRA: {}", context.getUri());
+            }
         } else {
-            context.setRecoverUri(join(context, instance));
-            LOGGER.debug("joined existing LRA: {}", context.getUri());
+            switch (lraType) {
+                case NEVER:
+                    throw new ClientErrorException(Response.Status.PRECONDITION_FAILED);
+                case NOT_SUPPORTED:
+                    context.setUri(null);
+                    return;
+                case SUPPORTS:
+                case MANDATORY:
+                case REQUIRED:
+                    context.setRecoverUri(join(context, instance));
+                    LOGGER.debug("joined existing LRA: {}", context.getUri());
+                    break;
+                case REQUIRES_NEW:
+                    context.setUri(lraClient.startLRA(null, event.getProcessInstance().getProcessId(), 0L, ChronoUnit.SECONDS));
+                    LOGGER.debug("started new LRA, ignoring existing: {}", context.getUri());
+                    break;
+                case NESTED:
+                    context.setParentUri(context.getUri());
+                    context.setUri(lraClient.startLRA(context.getUri(), event.getProcessInstance().getProcessId(), 0L, ChronoUnit.SECONDS));
+                    LOGGER.debug("started nested LRA: {}", context.getUri());
+                    break;
+            }
         }
     }
 
@@ -77,7 +110,7 @@ public class LRAEventListener extends DefaultProcessEventListener {
         }
         RuleFlowProcessInstance wfInstance = (RuleFlowProcessInstance) instance;
         LRAContext context = (LRAContext) wfInstance.getMetaData().get(LRA_CONTEXT);
-        if (context == null || context.getRecoverUri() != null) {
+        if (context == null || context.getRecoverUri() != null || context.getUri() == null) {
             return;
         }
         if (ProcessInstance.STATE_COMPLETED == event.getProcessInstance().getState()) {
@@ -103,5 +136,15 @@ public class LRAEventListener extends DefaultProcessEventListener {
                 uriBuilder.build(LRAConstants.AFTER),
                 null,
                 null);
+    }
+
+    private Type getType(ProcessInstance instance) {
+        try {
+            String lraType = (String) instance.getProcess().getMetaData().get(KogitoLRA.METADATA_TYPE);
+            return Type.valueOf(lraType);
+        } catch (Exception e) {
+            LOGGER.warn("Unable to retrieve/parse Kogito LRA Type, using default: {}", KogitoLRA.DEFAULT_LRA_TYPE);
+        }
+        return KogitoLRA.DEFAULT_LRA_TYPE;
     }
 }
