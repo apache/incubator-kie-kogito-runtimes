@@ -1,4 +1,4 @@
-version: "1.0"
+version: "2.0"
 dependencies:
   - project: kiegroup/kogito-runtimes
 
@@ -9,9 +9,13 @@ dependencies:
   - project: kiegroup/kogito-examples
     dependencies:
       - project: kiegroup/kogito-runtimes
-        mapping:
+    mapping:
+      dependencies:
+        default:
           source: stable
           target: master
+      source: master
+      target: stable
 
   - project: kiegroup/kogito-tooling
 
@@ -19,14 +23,8 @@ dependencies:
     dependencies:
       - project: kiegroup/kogito-apps
       - project: kiegroup/kogito-examples
-        mapping:
-          source: master
-          target: stable
 
   - project: kiegroup/kogito-cloud-operator
     dependencies:
       - project: kiegroup/kogito-images
       - project: kiegroup/kogito-examples
-        mapping:
-          source: master
-          target: stable

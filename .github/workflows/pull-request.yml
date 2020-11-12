@@ -37,7 +37,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build Chain ${{ matrix.java-version }}
         id: build-chain
-        uses: kiegroup/github-action-build-chain@v2.1
+        uses: kiegroup/github-action-build-chain@v2.2
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-runtimes/${BRANCH}/.ci/pull-request-config.yaml
         env:
