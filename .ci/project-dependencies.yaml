@@ -9,13 +9,6 @@ dependencies:
   - project: kiegroup/kogito-examples
     dependencies:
       - project: kiegroup/kogito-runtimes
-    mapping:
-      dependencies:
-        default:
-          source: stable
-          target: master
-      source: master
-      target: stable
 
   - project: kiegroup/kogito-tooling
 
