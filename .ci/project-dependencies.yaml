@@ -9,15 +9,3 @@ dependencies:
   - project: kiegroup/kogito-examples
     dependencies:
       - project: kiegroup/kogito-runtimes
-
-  - project: kiegroup/kogito-tooling
-
-  - project: kiegroup/kogito-images
-    dependencies:
-      - project: kiegroup/kogito-apps
-      - project: kiegroup/kogito-examples
-
-  - project: kiegroup/kogito-cloud-operator
-    dependencies:
-      - project: kiegroup/kogito-images
-      - project: kiegroup/kogito-examples
