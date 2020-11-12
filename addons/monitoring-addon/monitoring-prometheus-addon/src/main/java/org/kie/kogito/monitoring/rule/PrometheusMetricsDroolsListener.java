@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.monitoring.rule;
 
-import org.kie.kogito.monitoring.core.rule.RuleMetricsDroolsListener;
+import org.kie.kogito.monitoring.core.api.rule.RuleMetricsDroolsListener;
 
 public class PrometheusMetricsDroolsListener extends RuleMetricsDroolsListener {
 

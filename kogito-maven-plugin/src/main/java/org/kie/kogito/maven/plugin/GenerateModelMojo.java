@@ -237,7 +237,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
         boolean usePersistence = persistence || hasClassOnClasspath(project, "org.kie.kogito.persistence.KogitoProcessInstancesFactory");
         boolean useMonitoring = hasClassOnClasspath(project, "org.kie.kogito.monitoring.rest.MetricsResource") ||
-                hasClassOnClasspath(project, "org.kie.kogito.monitoring.core.MonitoringRegistry");
+                hasClassOnClasspath(project, "org.kie.kogito.monitoring.core.api.MonitoringRegistry");
         boolean useTracing = hasClassOnClasspath(project, "org.kie.kogito.tracing.decision.DecisionTracingListener");
         boolean useKnativeEventing = hasClassOnClasspath(project, "org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension");
         boolean useCloudEvents = hasClassOnClasspath(project, "org.kie.kogito.addon.cloudevents.AbstractTopicDiscovery");

@@ -15,10 +15,10 @@
  */
 package org.kie.kogito.monitoring.integration;
 
+import org.kie.kogito.monitoring.core.api.system.metrics.SystemMetricsCollector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.PrometheusRegistryProvider;
-import org.kie.kogito.monitoring.core.system.metrics.SystemMetricsCollector;
 
 public class PrometheusRegistryProviderTest {
 

@@ -182,12 +182,34 @@
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>monitoring-core</artifactId>
+        <artifactId>monitoring-core-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>monitoring-core</artifactId>
+        <artifactId>monitoring-core-api</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>monitoring-core-quarkus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>monitoring-core-quarkus</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>monitoring-core-springboot</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>monitoring-core-springboot</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>

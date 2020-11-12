@@ -13,13 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.process;
+package org.kie.kogito.monitoring.core.api;
 
-import org.kie.kogito.monitoring.core.api.process.ProcessEventListener;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
-public class PrometheusProcessEventListener extends ProcessEventListener {
+public class MonitoringRegistry {
 
-    public PrometheusProcessEventListener(String identifier) {
-        super(identifier);
+    private static CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
+
+    private MonitoringRegistry() {
+    }
+
+    public static void addRegistry(MeterRegistry registry) {
+        compositeMeterRegistry.add(registry);
+    }
+
+    public static CompositeMeterRegistry getDefaultMeterRegistry() {
+        return compositeMeterRegistry;
     }
 }
