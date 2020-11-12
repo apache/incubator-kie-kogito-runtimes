@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -84,11 +85,11 @@ public abstract class ProcessSvgServiceTest {
 
     @Test
     public void testWrongSVGContentThrowsException() {
+        AbstractProcessSvgService testedProcessSvgService = getTestedProcessSvgService();
+        List completedNodes = Arrays.asList("_1A708F87-11C0-42A0-A464-0B7E259C426F");
+        List activeNodes = Collections.emptyList();
         try {
-            getTestedProcessSvgService().annotateExecutedPath(
-                    "wrongSVGContent",
-                    Arrays.asList("_1A708F87-11C0-42A0-A464-0B7E259C426F"),
-                    Collections.emptyList());
+            testedProcessSvgService.annotateExecutedPath("wrongSVGContent", completedNodes, activeNodes);
             fail("Expected an ProcessSVGException to be thrown");
         } catch (ProcessSVGException e) {
             assertThat(e.getMessage()).isEqualTo("Failed to annotated SVG for process instance");

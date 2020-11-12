@@ -34,6 +34,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.svg.ProcessSVGException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +88,7 @@ public class QuarkusDataIndexClient implements DataIndexClient {
         try {
             return cf.get();
         } catch (Exception e) {
-            throw new RuntimeException("Exception while trying to get data from Data Index service", e);
+            throw new ProcessSVGException("Exception while trying to get data from Data Index service", e);
         }
     }
 
