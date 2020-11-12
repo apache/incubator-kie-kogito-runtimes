@@ -16,10 +16,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java-version }}
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v3
-        with:
-          maven-version: 3.6.2
       # See https://docs.github.com/en/actions/guides/building-and-testing-java-with-maven#caching-dependencies
       - name: Cache Maven packages
         uses: actions/cache@v2
