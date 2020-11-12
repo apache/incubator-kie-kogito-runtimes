@@ -108,7 +108,7 @@
     <version.io.cloudevents>2.0.0-milestone3</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>4.8.0</version.io.fabric8.kubernetes-client>
     <version.io.prometheus>0.5.0</version.io.prometheus>
-    <version.io.restassured>4.3.2</version.io.restassured>
+    <version.io.restassured>4.3.0</version.io.restassured>
     <version.io.restassured.springboot>3.3.0</version.io.restassured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
     <version.io.smallrye.reactive>2.5.0</version.io.smallrye.reactive>
     <version.io.swagger.core.v3>2.0.6</version.io.swagger.core.v3>
