@@ -17,7 +17,7 @@ package org.kie.kogito.monitoring.prometheus;
 
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
-import org.kie.kogito.monitoring.prometheus.core.MonitoringRegistry;
+import org.kie.kogito.monitoring.core.MonitoringRegistry;
 
 public class PrometheusRegistryProvider {
 
