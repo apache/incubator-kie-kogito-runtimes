@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -475,9 +476,10 @@ public class KogitoAssetsProcessor {
         resource.produce(new NativeImageResourceBuildItem("org/apache/batik/util/resources/XMLResourceDescriptor.properties"));
 
         Path resolvedPath = targetClasses.resolve(relativePath);
-        List<String> svgs = Files.find(resolvedPath, Integer.MAX_VALUE, (filePath, attrs) -> svgFileMatcher.matches(filePath))
-            .map(svgPath -> targetClasses.relativize(svgPath).toString()).collect(toList());;
-        resource.produce(new NativeImageResourceBuildItem(svgs));
+        try (Stream<Path> filePathFound = Files.find(resolvedPath, Integer.MAX_VALUE, (filePath, attrs) -> svgFileMatcher.matches(filePath))) {
+            List<String> svgs = filePathFound.map(svgPath -> targetClasses.relativize(svgPath).toString()).collect(toList());
+            resource.produce(new NativeImageResourceBuildItem(svgs));
+        }
     }
 
     private void writeJsonSchema(AppPaths appPaths, Index index) throws IOException {
