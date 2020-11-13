@@ -106,7 +106,7 @@ public class KogitoAssetsProcessor {
 
     private static final String appPackageName = "org.kie.kogito.app";
     private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
-    private static final DotName prometheusClass = DotName.createSimple("org.kie.kogito.monitoring.rest.MetricsResource");
+    private static final DotName prometheusClass = DotName.createSimple("org.kie.kogito.monitoring.prometheus.rest.MetricsResource");
     private static final DotName monitoringCoreClass = DotName.createSimple("org.kie.kogito.monitoring.core.MonitoringRegistry");
     private static final DotName tracingClass = DotName.createSimple("org.kie.kogito.tracing.decision.DecisionTracingListener");
     private static final DotName knativeEventingClass = DotName.createSimple("org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension");
@@ -157,8 +157,9 @@ public class KogitoAssetsProcessor {
         // enable addons looking at available classes
         boolean usePersistence = combinedIndexBuildItem.getIndex()
                 .getClassByName(persistenceFactoryClass) != null;
-        boolean useMonitoring = combinedIndexBuildItem.getIndex()
-                .getClassByName(prometheusClass) != null || combinedIndexBuildItem.getIndex()
+        boolean usePrometheusMonitoring = combinedIndexBuildItem.getIndex()
+                .getClassByName(prometheusClass) != null;
+        boolean useMonitoring = usePrometheusMonitoring || combinedIndexBuildItem.getIndex()
                 .getClassByName(monitoringCoreClass) != null;
         boolean useTracing = !combinedIndexBuildItem.getIndex()
                 .getAllKnownSubclasses(tracingClass).isEmpty();
@@ -172,6 +173,7 @@ public class KogitoAssetsProcessor {
         AddonsConfig addonsConfig = new AddonsConfig()
                 .withPersistence(usePersistence)
                 .withMonitoring(useMonitoring)
+                .withPrometheusMonitoring(usePrometheusMonitoring)
                 .withTracing(useTracing)
                 .withKnativeEventing(useKnativeEventing)
                 .withCloudEvents(useCloudEvents);
