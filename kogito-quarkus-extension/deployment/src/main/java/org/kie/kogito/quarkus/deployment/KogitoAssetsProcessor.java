@@ -247,7 +247,7 @@ public class KogitoAssetsProcessor {
         // register resources to the Quarkus environment
         registerResources(generatedFiles);
 
-        registerDataEventsForReflection(index);
+        registerDataEventsForReflection(index, addonsConfig);
 
         writeJsonSchema(appPaths, index);
     }
@@ -479,7 +479,7 @@ public class KogitoAssetsProcessor {
         }
     }
 
-    private void registerDataEventsForReflection(Index index) {
+    private void registerDataEventsForReflection(Index index, AddonsConfig addonsConfig) {
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.event.AbstractDataEvent"));
         reflectiveClass.produce(
@@ -500,6 +500,12 @@ public class KogitoAssetsProcessor {
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.UserTaskInstanceDataEvent"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskInstanceEventBody"));
+        if (addonsConfig.useMonitoring()){
+            reflectiveClass.produce(
+                    new ReflectiveClassBuildItem(true, true, "org.HdrHistogram.Histogram"));
+            reflectiveClass.produce(
+                    new ReflectiveClassBuildItem(true, true, "org.HdrHistogram.ConcurrentHistogram"));
+        }
 
         // not sure there is any generated class directly inheriting from AbstractDataEvent, keeping just in case
         addChildrenClasses(index, org.kie.kogito.event.AbstractDataEvent.class, reflectiveClass);
