@@ -351,7 +351,6 @@ public class DecisionRestResourceGenerator {
         statements.addFirst(parseStatement("double startTime = System.nanoTime();"));
         statements.addBefore(parseStatement("double endTime = System.nanoTime();"), returnStmt);
         statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt);
-        statements.addBefore(parseStatement(String.format("DMNResultMetricsBuilder.generateMetrics(result, \"%s\");", nameURL)), returnStmt);
     }
 
     private void initializeApplicationField(FieldDeclaration fd) {

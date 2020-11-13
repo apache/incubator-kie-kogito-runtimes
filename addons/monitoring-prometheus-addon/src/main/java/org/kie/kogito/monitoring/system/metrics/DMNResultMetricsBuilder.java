@@ -24,9 +24,10 @@ import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 import org.kie.dmn.api.core.DMNDecisionResult;
-import org.kie.kogito.dmn.rest.DMNResult;
 import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BooleanHandler;
@@ -67,18 +68,26 @@ public class DMNResultMetricsBuilder {
         return handlers;
     }
 
-    public static void generateMetrics(DMNResult dmnResult, String endpointName) {
-        if (dmnResult == null) {
-            LOGGER.warn("DMNResultMetricsBuilder can't register the metrics because the dmn result is null.");
-            return;
-        }
+    public static void generateMetrics(org.kie.kogito.dmn.rest.DMNResult dmnResult, String endpointName) {
+        generateMetrics(dmnResult, endpointName, org.kie.kogito.dmn.rest.DMNResult::getDecisionResults);
+    }
 
-        List<DMNDecisionResult> decisionResults = dmnResult.getDecisionResults();
-        for (DMNDecisionResult decision : decisionResults) {
-            Object result = decision.getResult();
-            if (result != null && SupportedDecisionTypes.isSupported(result.getClass())) {
-                handlers.get(result.getClass()).record(decision.getDecisionName(), endpointName, result);
+    public static void generateMetrics(org.kie.dmn.api.core.DMNResult dmnResult, String endpointName) {
+        generateMetrics(dmnResult, endpointName, org.kie.dmn.api.core.DMNResult::getDecisionResults);
+    }
+
+    private static <T> void generateMetrics(T dmnResult, String endpointName, Function<T, List<DMNDecisionResult>> getDecisionResults) {
+        Optional<List<DMNDecisionResult>> optDecisionResults = Optional.ofNullable(dmnResult).map(getDecisionResults);
+
+        if (optDecisionResults.isPresent()) {
+            for (DMNDecisionResult decision : optDecisionResults.get()) {
+                Object result = decision.getResult();
+                if (result != null && SupportedDecisionTypes.isSupported(result.getClass())) {
+                    handlers.get(result.getClass()).record(decision.getDecisionName(), endpointName, result);
+                }
             }
+        } else {
+            LOGGER.warn("DMNResultMetricsBuilder can't register the metrics because the dmn result is null.");
         }
     }
 }

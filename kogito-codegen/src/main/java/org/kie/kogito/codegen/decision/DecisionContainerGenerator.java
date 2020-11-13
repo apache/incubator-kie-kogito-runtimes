@@ -25,6 +25,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.AddonsConfig;
@@ -59,6 +60,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         CompilationUnit clazz = StaticJavaParser.parse(this.getClass().getResourceAsStream(TEMPLATE_JAVA));
         ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
         ClassOrInterfaceType applicationClass = StaticJavaParser.parseClassOrInterfaceType(applicationCanonicalName);
+
         for (CollectedResource resource : resources) {
             MethodCallExpr getResAsStream = getReadResourceMethod(applicationClass, resource);
             MethodCallExpr isr = new MethodCallExpr("readResource").addArgument(getResAsStream);
@@ -69,6 +71,14 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
             } else {
                 throw new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
             }
+        }
+
+        if (addonsConfig.useMonitoring()) {
+            typeDeclaration.getMethodsByName("getDecisionModel").stream().findFirst()
+                    .flatMap(md -> md.findFirst(ReturnStmt.class))
+                    .ifPresent(rs -> rs.getExpression().ifPresent(rsExp ->
+                            rs.setExpression(newObject("org.kie.kogito.monitoring.decision.MonitoringDecisionModel", rsExp))
+                    ));
         }
 
         if (addonsConfig.useTracing()) {
