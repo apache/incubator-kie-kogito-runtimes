@@ -48,7 +48,7 @@ public class LRAEventListener extends DefaultProcessEventListener {
 
     @Override
     public void beforeProcessStarted(ProcessStartedEvent event) {
-        super.afterProcessStarted(event);
+        super.beforeProcessStarted(event);
         ProcessInstance instance = event.getProcessInstance();
         if (!(instance instanceof RuleFlowProcessInstance)) {
             LOGGER.warn("Unable to start/join LRA. Process instance is not a RuleFlowProcessInstance");
@@ -102,7 +102,7 @@ public class LRAEventListener extends DefaultProcessEventListener {
 
     @Override
     public void afterProcessCompleted(ProcessCompletedEvent event) {
-        super.beforeProcessCompleted(event);
+        super.afterProcessCompleted(event);
         ProcessInstance instance = event.getProcessInstance();
         if (!(instance instanceof RuleFlowProcessInstance)) {
             LOGGER.warn("Unable to close LRA. Process instance is not a RuleFlowProcessInstance");
