@@ -74,11 +74,16 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         }
 
         if (addonsConfig.useMonitoring()) {
-            typeDeclaration.getMethodsByName("getDecisionModel").stream().findFirst()
-                    .flatMap(md -> md.findFirst(ReturnStmt.class))
-                    .ifPresent(rs -> rs.getExpression().ifPresent(rsExp ->
-                            rs.setExpression(newObject("org.kie.kogito.monitoring.decision.MonitoringDecisionModel", rsExp))
-                    ));
+            Optional<ReturnStmt> optReturnStmt = typeDeclaration.getMethodsByName("getDecisionModel").stream().findFirst()
+                    .flatMap(md -> md.findFirst(ReturnStmt.class));
+
+            if (optReturnStmt.isPresent() && optReturnStmt.get().getExpression().isPresent()) {
+                ReturnStmt returnStmt = optReturnStmt.get();
+                Expression returnExpr = returnStmt.getExpression().get();
+                returnStmt.setExpression(newObject("org.kie.kogito.monitoring.decision.MonitoredDecisionModel", returnExpr));
+            } else {
+                throw new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
+            }
         }
 
         if (addonsConfig.useTracing()) {

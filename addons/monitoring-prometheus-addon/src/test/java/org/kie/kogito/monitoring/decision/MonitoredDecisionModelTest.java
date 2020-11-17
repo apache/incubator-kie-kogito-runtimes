@@ -39,7 +39,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class MonitoringDecisionModelTest {
+class MonitoredDecisionModelTest {
 
     private static final String TEST_MODEL_NAME = "TestModel";
     private static final String TEST_SERVICE_NAME = "TestService";
@@ -56,30 +56,30 @@ class MonitoringDecisionModelTest {
             DecisionModel mockedDecisionModel = mock(DecisionModel.class);
             resetMockedDecisionModel(mockedDecisionModel, mockedDMNModel, mockedEvaluateAllResult, mockedEvaluateDecisionServiceResult);
 
-            MonitoringDecisionModel testObject = new MonitoringDecisionModel(mockedDecisionModel);
+            MonitoredDecisionModel testObject = new MonitoredDecisionModel(mockedDecisionModel);
 
-            // test MonitoringDecisionModel#newContext with Map input
+            // test MonitoredDecisionModel#newContext with Map input
             Map<String, Object> inputSet1 = new HashMap<>();
             testObject.newContext(inputSet1);
             verify(mockedDecisionModel).newContext(refEq(inputSet1));
 
             resetMockedDecisionModel(mockedDecisionModel, mockedDMNModel, mockedEvaluateAllResult, mockedEvaluateDecisionServiceResult);
 
-            // test MonitoringDecisionModel#newContext with FEELPropertyAccessible input
+            // test MonitoredDecisionModel#newContext with FEELPropertyAccessible input
             FEELPropertyAccessible inputSet2 = mock(FEELPropertyAccessible.class);
             testObject.newContext(inputSet2);
             verify(mockedDecisionModel).newContext(refEq(inputSet2));
 
             resetMockedDecisionModel(mockedDecisionModel, mockedDMNModel, mockedEvaluateAllResult, mockedEvaluateDecisionServiceResult);
 
-            // test MonitoringDecisionModel#getDMNModel
+            // test MonitoredDecisionModel#getDMNModel
             DMNModel outputModel = testObject.getDMNModel();
             verify(mockedDecisionModel).getDMNModel();
             assertSame(mockedDMNModel, outputModel);
 
             resetMockedDecisionModel(mockedDecisionModel, mockedDMNModel, mockedEvaluateAllResult, mockedEvaluateDecisionServiceResult);
 
-            // test MonitoringDecisionModel#evaluateAll
+            // test MonitoredDecisionModel#evaluateAll
             DMNContext ctx1 = mock(DMNContext.class);
             DMNResult res1 = testObject.evaluateAll(ctx1);
             verify(mockedDecisionModel).evaluateAll(refEq(ctx1));
@@ -89,7 +89,7 @@ class MonitoringDecisionModelTest {
             resetMockedDecisionModel(mockedDecisionModel, mockedDMNModel, mockedEvaluateAllResult, mockedEvaluateDecisionServiceResult);
             mockedMetricsBuilder.reset();
 
-            // test MonitoringDecisionModel#evaluateDecisionService
+            // test MonitoredDecisionModel#evaluateDecisionService
             DMNContext ctx2 = mock(DMNContext.class);
             DMNResult res2 = testObject.evaluateDecisionService(ctx2, TEST_SERVICE_NAME);
             verify(mockedDecisionModel).evaluateDecisionService(refEq(ctx2), eq(TEST_SERVICE_NAME));

@@ -25,40 +25,44 @@ import org.kie.dmn.api.core.FEELPropertyAccessible;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.monitoring.system.metrics.DMNResultMetricsBuilder;
 
-public class MonitoringDecisionModel implements DecisionModel {
+/**
+ * This class must always have exact FQCN as <code>org.kie.kogito.monitoring.decision.MonitoredDecisionModel</code>
+ * for code generation plugins to inject this class.
+ */
+public class MonitoredDecisionModel implements DecisionModel {
 
-    private final DecisionModel wrapped;
+    private final DecisionModel originalModel;
 
-    public MonitoringDecisionModel(DecisionModel wrapped) {
-        this.wrapped = wrapped;
+    public MonitoredDecisionModel(DecisionModel originalModel) {
+        this.originalModel = originalModel;
     }
 
     @Override
     public DMNContext newContext(Map<String, Object> inputSet) {
-        return wrapped.newContext(inputSet);
+        return originalModel.newContext(inputSet);
     }
 
     @Override
     public DMNContext newContext(FEELPropertyAccessible inputSet) {
-        return wrapped.newContext(inputSet);
+        return originalModel.newContext(inputSet);
     }
 
     @Override
     public DMNResult evaluateAll(DMNContext context) {
-        DMNResult result = wrapped.evaluateAll(context);
-        DMNResultMetricsBuilder.generateMetrics(result, wrapped.getDMNModel().getName());
+        DMNResult result = originalModel.evaluateAll(context);
+        DMNResultMetricsBuilder.generateMetrics(result, originalModel.getDMNModel().getName());
         return result;
     }
 
     @Override
     public DMNResult evaluateDecisionService(DMNContext context, String decisionServiceName) {
-        DMNResult result = wrapped.evaluateDecisionService(context, decisionServiceName);
-        DMNResultMetricsBuilder.generateMetrics(result, wrapped.getDMNModel().getName());
+        DMNResult result = originalModel.evaluateDecisionService(context, decisionServiceName);
+        DMNResultMetricsBuilder.generateMetrics(result, originalModel.getDMNModel().getName());
         return result;
     }
 
     @Override
     public DMNModel getDMNModel() {
-        return wrapped.getDMNModel();
+        return originalModel.getDMNModel();
     }
 }
