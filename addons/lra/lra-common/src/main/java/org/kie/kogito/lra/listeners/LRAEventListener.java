@@ -18,11 +18,14 @@ package org.kie.kogito.lra.listeners;
 import java.net.URI;
 import java.time.temporal.ChronoUnit;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import io.narayana.lra.LRAConstants;
 import io.narayana.lra.client.NarayanaLRAClient;
+import org.eclipse.microprofile.lra.annotation.LRAStatus;
+import org.eclipse.microprofile.lra.annotation.ws.rs.LRA;
 import org.eclipse.microprofile.lra.annotation.ws.rs.LRA.Type;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.kie.api.event.process.DefaultProcessEventListener;
@@ -113,12 +116,18 @@ public class LRAEventListener extends DefaultProcessEventListener {
         if (context == null || context.getRecoverUri() != null || context.getUri() == null) {
             return;
         }
-        if (ProcessInstance.STATE_COMPLETED == event.getProcessInstance().getState()) {
-            lraClient.closeLRA(context.getUri());
-            LOGGER.debug("Completed LRA {}", context.getUri());
-        } else {
-            lraClient.cancelLRA(context.getUri());
-            LOGGER.debug("Cancelled LRA {}", context.getUri());
+        try {
+            if (lraClient.getStatus(context.getUri()).equals(LRAStatus.Active)) {
+                if (ProcessInstance.STATE_COMPLETED == event.getProcessInstance().getState()) {
+                    lraClient.closeLRA(context.getUri());
+                    LOGGER.debug("Completed LRA {}", context.getUri());
+                } else {
+                    lraClient.cancelLRA(context.getUri());
+                    LOGGER.debug("Cancelled LRA {}", context.getUri());
+                }
+            }
+        } catch (NotFoundException e) {
+            // closed already. ignore
         }
     }
 
