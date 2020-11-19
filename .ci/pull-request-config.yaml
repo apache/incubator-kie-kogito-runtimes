@@ -8,9 +8,8 @@ build:
       upstream: |
         mvn clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
       current: |
-        mvn clean install -Prun-code-coverage -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
-        mvn validate -Psonarcloud-analysis -e -nsu -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
-        mvn -f kogito-runtimes-integration-tests/pom.xml clean install -Pintegration-tests -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+        mvn clean
+        mvn -f kogito-runtimes-integration-tests/pom.xml clean
     clone:
       - kogito-runtimes-integration-tests
 
