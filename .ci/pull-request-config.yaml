@@ -12,7 +12,7 @@ build:
         mvn validate -Psonarcloud-analysis -e -nsu -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
         mvn -f integration-tests/pom.xml clean install -Pintegration-tests -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
     clone:
-      - integration-tests
+      - kogito-runtimes-integration-tests
 
   - project: kiegroup/kogito-apps
     build-command:
