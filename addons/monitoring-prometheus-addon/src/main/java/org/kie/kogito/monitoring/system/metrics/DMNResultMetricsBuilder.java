@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.kie.dmn.api.core.DMNDecisionResult;
+import org.kie.dmn.api.core.DMNResult;
 import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BigDecimalHandler;
 import org.kie.kogito.monitoring.system.metrics.dmnhandlers.BooleanHandler;
@@ -68,16 +68,8 @@ public class DMNResultMetricsBuilder {
         return handlers;
     }
 
-    public static void generateMetrics(org.kie.kogito.dmn.rest.DMNResult dmnResult, String endpointName) {
-        generateMetrics(dmnResult, endpointName, org.kie.kogito.dmn.rest.DMNResult::getDecisionResults);
-    }
-
-    public static void generateMetrics(org.kie.dmn.api.core.DMNResult dmnResult, String endpointName) {
-        generateMetrics(dmnResult, endpointName, org.kie.dmn.api.core.DMNResult::getDecisionResults);
-    }
-
-    private static <T> void generateMetrics(T dmnResult, String endpointName, Function<T, List<DMNDecisionResult>> getDecisionResults) {
-        Optional<List<DMNDecisionResult>> optDecisionResults = Optional.ofNullable(dmnResult).map(getDecisionResults);
+    public static void generateMetrics(DMNResult dmnResult, String endpointName) {
+        Optional<List<DMNDecisionResult>> optDecisionResults = Optional.ofNullable(dmnResult).map(DMNResult::getDecisionResults);
 
         if (optDecisionResults.isPresent()) {
             for (DMNDecisionResult decision : optDecisionResults.get()) {
