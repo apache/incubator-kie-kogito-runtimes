@@ -1,6 +1,6 @@
 name: Build Chain Full Downstream
 
-on: [pull_request]
+on: [pull_request_target]
 
 jobs:
   build-chain:
@@ -31,3 +31,4 @@ jobs:
           flow-type: full-downstream
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          SONAR_TOKEN: "${{ secrets.SONAR_TOKEN }}"
