@@ -529,31 +529,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>testcontainers</artifactId>
-        <version>${version.testcontainers}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>kafka</artifactId>
-        <version>${version.testcontainers}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <version>${version.testcontainers}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>mongodb</artifactId>
-        <version>${version.testcontainers}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
         <version>${version.maven}</version>
