@@ -10,7 +10,7 @@ build:
       current: |
         echo "trying..."
         echo $SONAR_TOKEN
-        mvn clean install -Prun-code-coverage -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+        mvn clean install sonar $SONAR_TOKEN -Prun-code-coverage -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
         mvn validate -Psonarcloud-analysis -e -nsu -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
         mvn -f kogito-runtimes-integration-tests/pom.xml clean
     clone:
