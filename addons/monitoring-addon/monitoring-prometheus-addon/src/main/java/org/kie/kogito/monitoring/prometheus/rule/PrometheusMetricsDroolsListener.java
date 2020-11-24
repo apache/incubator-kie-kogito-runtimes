@@ -15,9 +15,9 @@
  */
 package org.kie.kogito.monitoring.prometheus.rule;
 
-import org.kie.kogito.monitoring.core.rule.RuleMetricsDroolsListener;
+import org.kie.kogito.monitoring.core.rule.RuleMetricListener;
 
-public class PrometheusMetricsDroolsListener extends RuleMetricsDroolsListener {
+public class PrometheusMetricsDroolsListener extends RuleMetricListener {
 
     public PrometheusMetricsDroolsListener(String identifier) {
         super(identifier);

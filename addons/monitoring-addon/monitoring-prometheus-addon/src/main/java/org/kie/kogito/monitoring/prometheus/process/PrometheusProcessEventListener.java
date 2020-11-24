@@ -15,9 +15,9 @@
  */
 package org.kie.kogito.monitoring.prometheus.process;
 
-import org.kie.kogito.monitoring.core.process.ProcessEventListener;
+import org.kie.kogito.monitoring.core.process.MetricsProcessEventListener;
 
-public class PrometheusProcessEventListener extends ProcessEventListener {
+public class PrometheusProcessEventListener extends MetricsProcessEventListener {
 
     public PrometheusProcessEventListener(String identifier) {
         super(identifier);

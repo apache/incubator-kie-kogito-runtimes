@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class MetricsProcessEventListener extends DefaultProcessEventListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessEventListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetricsProcessEventListener.class);
     private static Map<String, AtomicInteger> gaugeMap = new HashMap<String, AtomicInteger>();
     private String identifier;
 

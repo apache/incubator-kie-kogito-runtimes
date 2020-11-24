@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class RuleMetricListener extends DefaultAgendaEventListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(RuleMetricsDroolsListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(RuleMetricListener.class);
     private final String identifier;
 
     public RuleMetricListener(String identifier) {
