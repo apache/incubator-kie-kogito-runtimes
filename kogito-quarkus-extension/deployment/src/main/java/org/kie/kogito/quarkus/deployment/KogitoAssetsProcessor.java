@@ -21,8 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +33,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 import javax.inject.Inject;
 
@@ -86,6 +90,8 @@ import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Main class of the Kogito extension
  */
@@ -112,6 +118,9 @@ public class KogitoAssetsProcessor {
     private static final DotName knativeEventingClass = DotName.createSimple("org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension");
     private static final DotName dmnJpmmlClass = DotName.createSimple( "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
     private static final DotName quarkusCloudEvents = DotName.createSimple("org.kie.kogito.addon.cloudevents.quarkus.QuarkusCloudEventEmitter");
+    private static final DotName quarkusSVGService = DotName.createSimple("org.kie.kogito.svg.service.QuarkusProcessSvgService");
+
+    private static final PathMatcher svgFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.svg");
 
     @Inject
     ArchiveRootBuildItem root;
@@ -155,20 +164,14 @@ public class KogitoAssetsProcessor {
         AppPaths appPaths = new AppPaths(root.getPaths());
 
         // enable addons looking at available classes
-        boolean usePersistence = combinedIndexBuildItem.getIndex()
-                .getClassByName(persistenceFactoryClass) != null;
-        boolean usePrometheusMonitoring = combinedIndexBuildItem.getIndex()
-                .getClassByName(prometheusClass) != null;
-        boolean useMonitoring = usePrometheusMonitoring || combinedIndexBuildItem.getIndex()
-                .getClassByName(monitoringCoreClass) != null;
-        boolean useTracing = !combinedIndexBuildItem.getIndex()
-                .getAllKnownSubclasses(tracingClass).isEmpty();
-        boolean useKnativeEventing = combinedIndexBuildItem.getIndex()
-                .getClassByName(knativeEventingClass) != null;
-        boolean isJPMMLAvailable =combinedIndexBuildItem.getIndex()
-                .getClassByName(dmnJpmmlClass) != null;
-        boolean useCloudEvents = combinedIndexBuildItem.getIndex()
-                .getClassByName(quarkusCloudEvents) != null;
+        boolean usePersistence = combinedIndexBuildItem.getIndex().getClassByName(persistenceFactoryClass) != null;
+        boolean usePrometheusMonitoring = combinedIndexBuildItem.getIndex().getClassByName(prometheusClass) != null;
+        boolean useMonitoring = usePrometheusMonitoring || combinedIndexBuildItem.getIndex().getClassByName(monitoringCoreClass) != null;
+        boolean useTracing = !combinedIndexBuildItem.getIndex().getAllKnownSubclasses(tracingClass).isEmpty();
+        boolean useKnativeEventing = combinedIndexBuildItem.getIndex().getClassByName(knativeEventingClass) != null;
+        boolean isJPMMLAvailable = combinedIndexBuildItem.getIndex().getClassByName(dmnJpmmlClass) != null;
+        boolean useCloudEvents = combinedIndexBuildItem.getIndex().getClassByName(quarkusCloudEvents) != null;
+        boolean useProcessSVG = combinedIndexBuildItem.getIndex().getClassByName(quarkusSVGService) != null;
 
         AddonsConfig addonsConfig = new AddonsConfig()
                 .withPersistence(usePersistence)
@@ -250,6 +253,10 @@ public class KogitoAssetsProcessor {
         registerDataEventsForReflection(index, addonsConfig);
 
         writeJsonSchema(appPaths, index);
+
+        if (useProcessSVG) {
+            registerProcessSVG(appPaths);
+        }
     }
 
     private void dumpFilesToDisk(AppPaths appPaths, Collection<GeneratedFile> generatedFiles){
@@ -278,7 +285,7 @@ public class KogitoAssetsProcessor {
         Collection<GeneratedFile> javaFiles =
                 generatedFiles.stream()
                         .filter(f -> f.relativePath().endsWith(".java"))
-                        .collect(Collectors.toList());
+                        .collect(toList());
 
         if (javaFiles.isEmpty()) {
             return null;
@@ -307,7 +314,7 @@ public class KogitoAssetsProcessor {
         if (usePersistence) {
             for (MethodInfo mi : persistenceClass.methods()) {
                 if (mi.name().equals("<init>") && !mi.parameters().isEmpty()) {
-                    parameters = mi.parameters().stream().map(p -> p.name().toString()).collect(Collectors.toList());
+                    parameters = mi.parameters().stream().map(p -> p.name().toString()).collect(toList());
                     break;
                 }
             }
@@ -320,8 +327,8 @@ public class KogitoAssetsProcessor {
             throw new IllegalStateException("Only type CLASS and GENERATED_CP_RESOURCE expected here");
         }
 
-        Collection<GeneratedFile> persistenceClasses = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.CLASS)).collect(Collectors.toList());
-        Collection<GeneratedFile> persistenceProtoFiles = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.GENERATED_CP_RESOURCE)).collect(Collectors.toList());
+        Collection<GeneratedFile> persistenceClasses = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.CLASS)).collect(toList());
+        Collection<GeneratedFile> persistenceProtoFiles = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.GENERATED_CP_RESOURCE)).collect(toList());
 
         if (!persistenceClasses.isEmpty()) {
             InMemoryCompiler inMemoryCompiler = new InMemoryCompiler(appPaths.classesPaths,
@@ -464,6 +471,20 @@ public class KogitoAssetsProcessor {
     @BuildStep
     public ReflectiveClassBuildItem reflectionJobsManagement() {
         return new ReflectiveClassBuildItem(true, true, "org.kie.kogito.jobs.api.Job");
+    }
+
+    private void registerProcessSVG(AppPaths appPaths) throws IOException {
+        Path relativePath = Paths.get("META-INF", "processSVG");
+        Path targetClasses = appPaths.getFirstProjectPath().resolve(targetClassesDir);
+
+        //batik
+        resource.produce(new NativeImageResourceBuildItem("org/apache/batik/util/resources/XMLResourceDescriptor.properties"));
+
+        Path resolvedPath = targetClasses.resolve(relativePath);
+        try (Stream<Path> filePathFound = Files.find(resolvedPath, Integer.MAX_VALUE, (filePath, attrs) -> svgFileMatcher.matches(filePath))) {
+            List<String> svgs = filePathFound.map(svgPath -> targetClasses.relativize(svgPath).toString()).collect(toList());
+            resource.produce(new NativeImageResourceBuildItem(svgs));
+        }
     }
 
     private void writeJsonSchema(AppPaths appPaths, Index index) throws IOException {
