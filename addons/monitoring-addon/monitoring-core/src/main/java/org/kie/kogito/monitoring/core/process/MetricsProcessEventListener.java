@@ -36,13 +36,13 @@ import org.kie.kogito.monitoring.core.MonitoringRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessEventListener extends DefaultProcessEventListener {
+public class MetricsProcessEventListener extends DefaultProcessEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessEventListener.class);
     private static Map<String, AtomicInteger> gaugeMap = new HashMap<String, AtomicInteger>();
     private String identifier;
 
-    public ProcessEventListener(String identifier) {
+    public MetricsProcessEventListener(String identifier) {
         this.identifier = identifier;
     }
 

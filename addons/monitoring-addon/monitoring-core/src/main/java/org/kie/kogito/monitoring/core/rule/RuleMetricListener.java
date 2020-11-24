@@ -23,12 +23,12 @@ import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RuleMetricsDroolsListener extends DefaultAgendaEventListener {
+public class RuleMetricListener extends DefaultAgendaEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(RuleMetricsDroolsListener.class);
     private final String identifier;
 
-    public RuleMetricsDroolsListener(String identifier) {
+    public RuleMetricListener(String identifier) {
         this.identifier = identifier;
     }
 
