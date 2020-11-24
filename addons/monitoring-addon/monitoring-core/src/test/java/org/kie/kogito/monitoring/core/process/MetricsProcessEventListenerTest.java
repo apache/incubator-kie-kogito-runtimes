@@ -47,7 +47,7 @@ public class MetricsProcessEventListenerTest {
     @Test
     public void testGaugeRunningProcesses() {
         // Arrange
-        ProcessEventListener eventListener = new ProcessEventListener("myId");
+        MetricsProcessEventListener eventListener = new MetricsProcessEventListener("myId");
         ProcessInstance processInstanceMock = mock(WorkflowProcessInstanceImpl.class);
         when(processInstanceMock.getProcessId()).thenReturn("myProcessId");
 
