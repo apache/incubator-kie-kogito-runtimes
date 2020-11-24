@@ -25,6 +25,7 @@ import org.jbpm.bpmn2.core.Error;
 import org.jbpm.bpmn2.core.Escalation;
 import org.jbpm.bpmn2.core.Message;
 import org.jbpm.bpmn2.core.Signal;
+import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTransformerImpl;
@@ -45,6 +46,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING;
 
 public class StartEventHandler extends AbstractNodeHandler {
 
@@ -116,7 +119,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     addTriggerWithInMappings(startNode, type);
                 }
                 startNode.setMetaData(MESSAGE_TYPE, type);
-                startNode.setMetaData(TRIGGER_TYPE, "Signal");
+                startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.Signal.name());
                 Signal signal = findSignalByName(parser, type);
                 if (signal != null) {
                     String eventType = signal.getStructureRef();
@@ -135,7 +138,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     throw new IllegalArgumentException("Could not find message " + messageRef);
                 }
                 startNode.setMetaData(MESSAGE_TYPE, message.getType());
-                startNode.setMetaData(TRIGGER_TYPE, "ConsumeMessage");
+                startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.ConsumeMessage.name());
                 startNode.setMetaData(TRIGGER_REF, message.getName());
 
                 addTriggerWithInMappings(startNode, "Message-" + message.getName());
@@ -148,7 +151,8 @@ public class StartEventHandler extends AbstractNodeHandler {
                     //   - a <startEvent> in an Event Sub-Process
                     //    - *without* the 'isInterupting' attribute always interrupts (containing process)
                     String errorMsg = "Error Start Events in an Event Sub-Process always interrupt the containing (sub)process(es).";
-                    throw new IllegalArgumentException(errorMsg);
+                    startNode.setInterrupting(true);
+                    //throw new IllegalArgumentException(errorMsg);
                 }
                 String errorRef = ((Element) xmlNode).getAttribute("errorRef");
                 if (errorRef != null && errorRef.trim().length() > 0) {
@@ -166,6 +170,12 @@ public class StartEventHandler extends AbstractNodeHandler {
                         throw new IllegalArgumentException("Could not find error " + errorRef);
                     }
                     startNode.setMetaData("FaultCode", error.getErrorCode());
+
+                    //TODO: review the paramters
+                    startNode.setMetaData(MESSAGE_TYPE, error.getId());
+                    startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.Signal.name());
+                    startNode.setMetaData(TRIGGER_REF, error.getId());
+
                     addTriggerWithInMappings(startNode, "Error-" + error.getErrorCode());
                 }
             } else if ("escalationEventDefinition".equals(nodeName)) {
@@ -195,7 +205,7 @@ public class StartEventHandler extends AbstractNodeHandler {
         eventFilter.setType(triggerEventType);
         trigger.addEventFilter(eventFilter);
 
-        String mapping = (String) startNode.getMetaData("TriggerMapping");
+        String mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
         if (mapping != null) {
             trigger.addInMapping(mapping, startNode.getOutMapping(mapping));
         }
@@ -220,7 +230,7 @@ public class StartEventHandler extends AbstractNodeHandler {
             throw new IllegalArgumentException("No targetRef found in dataOutputAssociation in startEvent");
         }
         String target = subNode.getTextContent();
-        startNode.setMetaData("TriggerMapping", target);
+        startNode.setMetaData(TRIGGER_MAPPING, target);
         // transformation
         Transformation transformation = null;
         subNode = subNode.getNextSibling();
@@ -288,7 +298,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     mapping = eventTrigger.getInMappings().keySet().iterator().next();
                     nameMapping = eventTrigger.getInMappings().values().iterator().next();
                 } else {
-                    mapping = (String) startNode.getMetaData("TriggerMapping");
+                    mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
                 }
 
                 if (mapping != null) {
@@ -410,7 +420,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     EventTypeFilter eventFilter = new EventTypeFilter();
                     eventFilter.setType("Timer-" + ((EventSubProcessNode) parser.getParent()).getId());
                     trigger.addEventFilter(eventFilter);
-                    String mapping = (String) startNode.getMetaData("TriggerMapping");
+                    String mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
                     if (mapping != null) {
                         trigger.addInMapping(mapping, "event");
                     }
@@ -457,7 +467,7 @@ public class StartEventHandler extends AbstractNodeHandler {
         List<Trigger> startTriggers = new ArrayList<>();
         startTriggers.add(startTrigger);
         startNode.setTriggers(startTriggers);
-        String mapping = (String) startNode.getMetaData("TriggerMapping");
+        String mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
         if (mapping != null) {
             startTrigger.addInMapping(mapping, startNode.getOutMapping(mapping));
         }
