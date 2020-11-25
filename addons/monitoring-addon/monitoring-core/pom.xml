@@ -3,6 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <packaging>pom</packaging>
+  <modules>
+    <module>monitoring-core-quarkus</module>
+    <module>monitoring-core-springboot</module>
+  </modules>
   <parent>
     <artifactId>monitoring-addon</artifactId>
     <groupId>org.kie.kogito</groupId>

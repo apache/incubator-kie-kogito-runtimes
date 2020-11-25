@@ -2,6 +2,11 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <packaging>pom</packaging>
+  <modules>
+    <module>monitoring-prometheus-common</module>
+    <module>monitoring-prometheus-springboot</module>
+  </modules>
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>monitoring-addon</artifactId>
