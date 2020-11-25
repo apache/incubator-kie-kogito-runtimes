@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnProperty(
-        value = "org.kie.kogito.monitoring.process.deafult.bean.create",
+        value = "kogito.addon.monitoring.process.deafult.bean.create",
         havingValue = "true",
         matchIfMissing = true)
 public class SpringbootProcessEventListenerFactory {

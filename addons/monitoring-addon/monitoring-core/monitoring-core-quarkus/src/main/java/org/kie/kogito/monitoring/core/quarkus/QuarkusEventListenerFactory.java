@@ -17,14 +17,14 @@ public class QuarkusEventListenerFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(QuarkusEventListenerFactory.class);
 
     @Produces
-    @IfBuildProperty(name = "org.kie.kogito.monitoring.rule.deafult.bean.create", stringValue = "true", enableIfMissing = true)
+    @IfBuildProperty(name = "kogito.addon.monitoring.rule.deafult.bean.create", stringValue = "true", enableIfMissing = true)
     public DefaultRuleEventListenerConfig produceRuleListener() {
         LOGGER.info("Producing default listener for rule monitoring.");
         return new RuleMetricsListenerConfig();
     }
 
     @Produces
-    @IfBuildProperty(name = "org.kie.kogito.monitoring.process.deafult.bean.create", stringValue = "true", enableIfMissing = true)
+    @IfBuildProperty(name = "kogito.addon.monitoring.process.deafult.bean.create", stringValue = "true", enableIfMissing = true)
     public DefaultProcessEventListenerConfig produceProcessListener() {
         LOGGER.info("Producing default listener for process monitoring.");
         return new MonitoringProcessEventListenerConfig();
