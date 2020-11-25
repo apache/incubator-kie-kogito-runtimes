@@ -40,6 +40,9 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
 
     private static final String TEMPLATE_JAVA = "/class-templates/DecisionContainerTemplate.java";
 
+    private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION =
+            new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
+
     private String applicationCanonicalName;
     private final List<CollectedResource> resources;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
@@ -69,7 +72,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
             if (initalizer.isPresent()) {
                 initalizer.get().asMethodCallExpr().addArgument(isr);
             } else {
-                throw new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
+                throw MODIFIED_TEMPLATE_EXCEPTION;
             }
         }
 
@@ -77,12 +80,16 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
             Optional<ReturnStmt> optReturnStmt = typeDeclaration.getMethodsByName("getDecisionModel").stream().findFirst()
                     .flatMap(md -> md.findFirst(ReturnStmt.class));
 
-            if (optReturnStmt.isPresent() && optReturnStmt.get().getExpression().isPresent()) {
+            if (optReturnStmt.isPresent()) {
                 ReturnStmt returnStmt = optReturnStmt.get();
-                Expression returnExpr = returnStmt.getExpression().get();
-                returnStmt.setExpression(newObject("org.kie.kogito.monitoring.decision.MonitoredDecisionModel", returnExpr));
+                Optional<Expression> optReturnExpr = returnStmt.getExpression();
+                if (optReturnExpr.isPresent()) {
+                    returnStmt.setExpression(newObject("org.kie.kogito.monitoring.decision.MonitoredDecisionModel", optReturnExpr.get()));
+                } else {
+                    throw MODIFIED_TEMPLATE_EXCEPTION;
+                }
             } else {
-                throw new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
+                throw MODIFIED_TEMPLATE_EXCEPTION;
             }
         }
 
