@@ -15,7 +15,5 @@
   <modules>
     <module>monitoring-core</module>
     <module>monitoring-prometheus-addon</module>
-    <module>monitoring-core-common</module>
-    <module>monitoring-prometheus-quarkus</module>
   </modules>
 </project>
