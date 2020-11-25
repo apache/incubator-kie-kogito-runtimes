@@ -75,10 +75,10 @@
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <version.versions.plugin>2.1</version.versions.plugin>
     <version.jayway.jsonpath>2.4.0</version.jayway.jsonpath>
-    <version.vertx.web.client>3.9.3</version.vertx.web.client>
+    <version.vertx.web.client>3.9.4</version.vertx.web.client>
 
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>1.9.0.Final</version.io.quarkus>
+    <version.io.quarkus>1.10.0.Final</version.io.quarkus>
 
     <!-- dependencies versions -->
     <version.ch.obermuhlner>2.0.1</version.ch.obermuhlner>
@@ -107,10 +107,10 @@
 
     <version.io.cloudevents>2.0.0-milestone3</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>4.8.0</version.io.fabric8.kubernetes-client>
-    <version.io.prometheus>0.5.0</version.io.prometheus>
+    <version.io.micrometer>1.5.5</version.io.micrometer>
     <version.io.restassured>4.3.0</version.io.restassured>
     <version.io.restassured.springboot>3.3.0</version.io.restassured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
-    <version.io.smallrye.reactive>2.4.0</version.io.smallrye.reactive>
+    <version.io.smallrye.reactive>2.5.0</version.io.smallrye.reactive>
     <version.io.swagger.core.v3>2.0.6</version.io.swagger.core.v3>
 
     <version.org.antlr>3.5.2</version.org.antlr>
@@ -129,13 +129,14 @@
     <version.org.junit.vintage>${version.org.junit}</version.org.junit.vintage>
     <version.org.junit.platform>1.${version.org.junit.minor}</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.junit.pioneer>1.0.0</version.org.junit.pioneer>
-    <version.org.keycloak>11.0.1</version.org.keycloak>
-    <version.org.mockito>3.5.13</version.org.mockito>
+    <version.org.keycloak>11.0.2</version.org.keycloak>
+    <version.org.mockito>3.6.0</version.org.mockito>
     <version.org.mvel>2.4.10.Final</version.org.mvel>
-    <version.org.kie7>7.46.0.Beta1</version.org.kie7>
+    <version.org.kie7>7.46.0.Final</version.org.kie7>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
-    <version.testcontainers>1.14.3</version.testcontainers>
+    <version.wiremock>2.27.2</version.wiremock>
+    <version.testcontainers>1.15.0</version.testcontainers>
     <version.resteasy.springboot>4.6.0.Final</version.resteasy.springboot>
     <version.springboot>2.3.1.RELEASE</version.springboot>
     <version.spring.kafka>2.5.2.RELEASE</version.spring.kafka>
@@ -148,10 +149,12 @@
     <version.com.github.java-json-tools>2.2.10</version.com.github.java-json-tools>
     <version.json>20200518</version.json>
     <version.org.mongo>4.1.0</version.org.mongo>
+    <version.org.apache.xmlgraphics.batik>1.13</version.org.apache.xmlgraphics.batik>
+    <version.xerces>2.11.0</version.xerces>
 
     <!-- container images for testing -->
-    <container.image.infinispan>quay.io/infinispan/server:${version.org.infinispan}</container.image.infinispan>
-    <container.image.keycloak>quay.io/keycloak/keycloak:${version.org.keycloak}</container.image.keycloak>
+    <container.image.infinispan>infinispan/server:${version.org.infinispan}</container.image.infinispan>
+    <container.image.keycloak>jboss/keycloak:${version.org.keycloak}</container.image.keycloak>
   </properties>
 
   <dependencyManagement>
@@ -405,16 +408,16 @@
         <artifactId>openshift-client</artifactId>
         <version>${version.io.fabric8.kubernetes-client}</version>
       </dependency>
-      <!-- metrics - prometheus -->
+      <!-- metrics - monitoring -->
       <dependency>
-        <groupId>io.prometheus</groupId>
-        <artifactId>simpleclient</artifactId>
-        <version>${version.io.prometheus}</version>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-core</artifactId>
+        <version>${version.io.micrometer}</version>
       </dependency>
       <dependency>
-        <groupId>io.prometheus</groupId>
-        <artifactId>simpleclient_common</artifactId>
-        <version>${version.io.prometheus}</version>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-prometheus</artifactId>
+        <version>${version.io.micrometer}</version>
       </dependency>
 
       <dependency>
@@ -535,28 +538,10 @@
         <scope>test</scope>
       </dependency>
 
-      <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>testcontainers</artifactId>
-        <version>${version.testcontainers}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>kafka</artifactId>
-        <version>${version.testcontainers}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <version>${version.testcontainers}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>mongodb</artifactId>
-        <version>${version.testcontainers}</version>
+     <dependency>
+        <groupId>com.github.tomakehurst</groupId>
+        <artifactId>wiremock-jre8</artifactId>
+        <version>${version.wiremock}</version>
         <scope>test</scope>
       </dependency>
 
@@ -802,6 +787,23 @@
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>${version.json}</version>
+      </dependency>
+
+      <!-- Process SVG -->
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-util</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-anim</artifactId>
+        <version>${version.org.apache.xmlgraphics.batik}</version>
+      </dependency>
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>${version.xerces}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
