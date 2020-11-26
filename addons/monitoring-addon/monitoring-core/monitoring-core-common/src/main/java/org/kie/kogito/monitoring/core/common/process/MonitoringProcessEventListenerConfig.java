@@ -5,7 +5,7 @@ import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
 public class MonitoringProcessEventListenerConfig extends DefaultProcessEventListenerConfig {
 
     public MonitoringProcessEventListenerConfig() {
-        super(new MetricsProcessEventListener("deafault-process-monitoring-listener"));
+        super(new MetricsProcessEventListener("default-process-monitoring-listener"));
     }
 }
 
