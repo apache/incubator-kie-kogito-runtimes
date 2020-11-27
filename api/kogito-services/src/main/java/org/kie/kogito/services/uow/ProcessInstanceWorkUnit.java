@@ -16,24 +16,25 @@
 
 package org.kie.kogito.services.uow;
 
-import java.util.function.Consumer;
-
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.uow.WorkUnit;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 
 public class ProcessInstanceWorkUnit<T> implements WorkUnit<ProcessInstance<T>> {
-    
+
     private ProcessInstance<T> data;
-    private Consumer<Object> action;
+    private BiConsumer<Object, Object[]> action;
     private Consumer<Object> compensation;
 
-    public ProcessInstanceWorkUnit(ProcessInstance<T> data, Consumer<Object> action) {
+    public ProcessInstanceWorkUnit(ProcessInstance<T> data, BiConsumer<Object, Object[]> action) {
         this.data = data;
         this.action = action;
     }
-    
-    public ProcessInstanceWorkUnit(ProcessInstance<T> data, Consumer<Object> action, Consumer<Object> compensation) {
+
+    public ProcessInstanceWorkUnit(ProcessInstance<T> data, BiConsumer<Object, Object[]> action, Consumer<Object> compensation) {
         this.data = data;
         this.action = action;
         this.compensation = compensation;
@@ -45,8 +46,8 @@ public class ProcessInstanceWorkUnit<T> implements WorkUnit<ProcessInstance<T>> 
     }
 
     @Override
-    public void perform() {
-        action.accept(data());
+    public void perform(Object ... options) {
+        action.accept(data(), options);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class ProcessInstanceWorkUnit<T> implements WorkUnit<ProcessInstance<T>> 
             compensation.accept(data());
         }
     }
-    
+
     @Override
     public Integer priority() {
         return 10;
@@ -86,5 +87,5 @@ public class ProcessInstanceWorkUnit<T> implements WorkUnit<ProcessInstance<T>> 
         return true;
     }
 
-    
+
 }

@@ -58,7 +58,7 @@ public class KafkaEventPublisher implements EventPublisher {
     }
     
     @Override
-    public void publish(DataEvent<?> event) {
+    public void publish(DataEvent<?> event, Object ... options) {
         if (event.getType().equals("ProcessInstanceEvent") && processInstancesEvents) {
             
             publishToTopic(event, eventsEmitter, PI_TOPIC_NAME);
@@ -74,7 +74,7 @@ public class KafkaEventPublisher implements EventPublisher {
     }
 
     @Override
-    public void publish(Collection<DataEvent<?>> events) {
+    public void publish(Collection<DataEvent<?>> events, Object ... options) {
         for (DataEvent<?> event : events) {
             publish(event);
         }

@@ -32,12 +32,12 @@ public interface EventPublisher {
      * Publishes individual event
      * @param event event to be published
      */
-    void publish(DataEvent<?> event);
+    void publish(DataEvent<?> event, Object ... options);
     
     /**
      * Publish collection of events. It's up to implementation to publish them
      * individually or as complete collection. 
      * @param events events to be published
      */
-    void publish(Collection<DataEvent<?>> events);
+    void publish(Collection<DataEvent<?>> events, Object ... options);
 }

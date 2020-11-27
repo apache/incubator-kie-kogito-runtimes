@@ -1,0 +1,30 @@
+{
+  "name": "kogito-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "tasks.max": "1",
+    "mongodb.hosts": "rs0/mongodb:27017",
+    "mongodb.name": "dbserver1",
+    "mongodb.user": "debezium",
+    "mongodb.password": "dbz",
+    "database.whitelist": "inventory",
+    "database.history.kafka.bootstrap.servers": "kafka:9092",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "collection.include.list": "inventory.kogitoprocessinstancesevents,inventory.kogitousertaskinstancesevents,inventory.kogitovariablesevents",
+    "transforms": "unwrap,reroute",
+    "transforms.unwrap.type": "io.debezium.connector.mongodb.transforms.ExtractNewDocumentState",
+    "transforms.unwrap.array.encoding": "array",
+    "transforms.unwrap.drop.tombstones": "false",
+    "transforms.unwrap.delete.handling.mode": "drop",
+    "transforms.unwrap.operation.header": "false",
+    "transforms.reroute.type": "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.reroute.topic.regex": "(.*)kogito(.*)events(.*)",
+    "transforms.reroute.topic.replacement": "kogito-$2-events",
+    "transforms.reroute.key.enforce.uniqueness": "false",
+    "skipped.operations": "u,d",
+    "tombstones.on.delete": "false"
+  }
+}

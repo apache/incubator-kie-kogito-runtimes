@@ -33,7 +33,7 @@ public interface WorkUnit<T> {
     /**
      * Performs action associated with the work unit usually consuming data
      */
-    void perform();
+    void perform(Object ... options);
     
     /**
      * Optional abort logic associated with the work unit
@@ -65,7 +65,7 @@ public interface WorkUnit<T> {
             }
 
             @Override
-            public void perform() {
+            public void perform(Object ... options) {
                 action.accept(data());
             }
             
@@ -89,7 +89,7 @@ public interface WorkUnit<T> {
             }
 
             @Override
-            public void perform() {
+            public void perform(Object ... options) {
                 action.accept(data());
             }
             

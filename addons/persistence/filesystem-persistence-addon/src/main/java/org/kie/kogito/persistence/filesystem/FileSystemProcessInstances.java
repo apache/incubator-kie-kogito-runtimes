@@ -108,13 +108,13 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public boolean exists(String id) {
+    public boolean exists(String id, Object... options) {
         return Files.exists(Paths.get(storage.toString(), id));
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void create(String id, ProcessInstance instance) {
+    public void create(String id, ProcessInstance instance, Object... options) {
         if (isActive(instance)) {
             Path processInstanceStorage = Paths.get(storage.toString(), id);
             if (Files.exists(processInstanceStorage)) {
@@ -126,7 +126,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void update(String id, ProcessInstance instance) {
+    public void update(String id, ProcessInstance instance, Object... options) {
         if (isActive(instance)) {
             Path processInstanceStorage = Paths.get(storage.toString(), id);
             if (Files.exists(processInstanceStorage)) {
@@ -136,7 +136,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public void remove(String id) {
+    public void remove(String id, Object... options) {
         Path processInstanceStorage = Paths.get(storage.toString(), id);
         try {
             Files.deleteIfExists(processInstanceStorage);

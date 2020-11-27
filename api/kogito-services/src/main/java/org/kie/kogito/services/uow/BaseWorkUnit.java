@@ -44,7 +44,7 @@ public class BaseWorkUnit implements WorkUnit<Object> {
     }
 
     @Override
-    public void perform() {
+    public void perform(Object ... options) {
         action.accept(data());
     }
 

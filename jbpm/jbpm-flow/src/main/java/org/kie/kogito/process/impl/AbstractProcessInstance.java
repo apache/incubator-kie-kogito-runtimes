@@ -15,20 +15,6 @@
 
 package org.kie.kogito.process.impl;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.instance.NodeInstance;
@@ -45,21 +31,20 @@ import org.kie.internal.process.CorrelationAwareProcessRuntime;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.process.CorrelationProperty;
 import org.kie.kogito.Model;
-import org.kie.kogito.process.EventDescription;
-import org.kie.kogito.process.MutableProcessInstances;
-import org.kie.kogito.process.NodeInstanceNotFoundException;
-import org.kie.kogito.process.NodeNotFoundException;
 import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessError;
-import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstanceNotFoundException;
-import org.kie.kogito.process.Signal;
-import org.kie.kogito.process.WorkItem;
+import org.kie.kogito.process.*;
 import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
 import org.kie.kogito.services.uow.ProcessInstanceWorkUnit;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public abstract class AbstractProcessInstance<T extends Model> implements ProcessInstance<T> {
 
@@ -100,6 +85,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     /**
      * Without providing a ProcessRuntime the ProcessInstance can only be used as read-only
+     *
      * @param process
      * @param variables
      * @param wpi
@@ -167,7 +153,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         setCorrelationKey(wpi.getCorrelationKey());
     }
 
-    private void setCorrelationKey(String businessKey){
+    private void setCorrelationKey(String businessKey) {
         if (businessKey != null && !businessKey.trim().isEmpty()) {
             correlationKey = new StringCorrelationKey(businessKey);
         }
@@ -210,7 +196,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.id = processInstance.getId();
         addCompletionEventListener();
         org.kie.api.runtime.process.ProcessInstance processInstance = getProcessRuntime().startProcessInstance(this.id, trigger);
-        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).create(pi.id(), pi));
+        addToUnitOfWork((pi, options) -> ((MutableProcessInstances<T>) process.instances()).create(pi.id(), pi, options));
         unbind(variables, processInstance.getVariables());
         if (this.processInstance != null) {
             this.status = this.processInstance.getState();
@@ -218,7 +204,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected void addToUnitOfWork(Consumer<ProcessInstance<T>> action) {
+    protected void addToUnitOfWork(BiConsumer<ProcessInstance<T>, Object[]> action) {
         ((InternalProcessRuntime) getProcessRuntime()).getUnitOfWorkManager().currentUnitOfWork().intercept(new ProcessInstanceWorkUnit(this, action));
     }
 
@@ -228,7 +214,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         unbind(variables, processInstance().getVariables());
         getProcessRuntime().abortProcessInstance(pid);
         this.status = processInstance.getState();
-        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));
+        addToUnitOfWork((pi, options) -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id(), options));
     }
 
     private ProcessRuntime getProcessRuntime() {
@@ -291,7 +277,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             processInstance().setVariable(entry.getKey(), entry.getValue());
         }
         this.variables.update(map);
-        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
+        addToUnitOfWork((pi, options) -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi, options));
         return variables;
     }
 
@@ -341,7 +327,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         nodeInstanceContainerNode.getNodeInstance(node).trigger(null, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
 
-        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
+        addToUnitOfWork((pi, options) -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi, options));
     }
 
     @Override
@@ -375,7 +361,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             this.processInstance = reloadSupplier.get();
             if (this.processInstance == null) {
                 throw new ProcessInstanceNotFoundException(id);
-            } else if(getProcessRuntime() != null) {
+            } else if (getProcessRuntime() != null) {
                 reconnect();
             }
         }
@@ -406,13 +392,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 .stream()
                 .filter(ni -> ni instanceof WorkItemNodeInstance && ((WorkItemNodeInstance) ni).getWorkItem().enforce(policies))
                 .map(ni -> new BaseWorkItem(ni.getId(),
-                                            ((WorkItemNodeInstance) ni).getWorkItemId(),
-                                            (String) ((WorkItemNodeInstance) ni).getWorkItem().getParameters().getOrDefault("TaskName", ni.getNodeName()),
-                                            ((WorkItemNodeInstance) ni).getWorkItem().getState(),
-                                            ((WorkItemNodeInstance) ni).getWorkItem().getPhaseId(),
-                                            ((WorkItemNodeInstance) ni).getWorkItem().getPhaseStatus(),
-                                            ((WorkItemNodeInstance) ni).getWorkItem().getParameters(),
-                                            ((WorkItemNodeInstance) ni).getWorkItem().getResults()))
+                        ((WorkItemNodeInstance) ni).getWorkItemId(),
+                        (String) ((WorkItemNodeInstance) ni).getWorkItem().getParameters().getOrDefault("TaskName", ni.getNodeName()),
+                        ((WorkItemNodeInstance) ni).getWorkItem().getState(),
+                        ((WorkItemNodeInstance) ni).getWorkItem().getPhaseId(),
+                        ((WorkItemNodeInstance) ni).getWorkItem().getPhaseStatus(),
+                        ((WorkItemNodeInstance) ni).getWorkItem().getParameters(),
+                        ((WorkItemNodeInstance) ni).getWorkItem().getResults()))
                 .collect(Collectors.toList());
     }
 
@@ -453,9 +439,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (processInstance.getState() != ProcessInstance.STATE_ACTIVE && processInstance.getState() != ProcessInstance.STATE_ERROR) {
             removeCompletionListener();
             syncProcessInstance(processInstance);
-            addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));
+            addToUnitOfWork((pi, options) -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));
         } else {
-            addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
+            addToUnitOfWork((pi, options) -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
         }
         unbind(this.variables, processInstance().getVariables());
         this.status = processInstance.getState();

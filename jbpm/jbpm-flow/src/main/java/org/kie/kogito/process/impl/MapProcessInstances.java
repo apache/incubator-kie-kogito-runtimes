@@ -44,7 +44,7 @@ class MapProcessInstances<T> implements MutableProcessInstances<T> {
     }
 
     @Override
-    public void create(String id, ProcessInstance<T> instance) {
+    public void create(String id, ProcessInstance<T> instance, Object... options) {
         if (isActive(instance)) {
             ProcessInstance<T> existing = instances.putIfAbsent(id, instance);
             if (existing != null) {
@@ -54,19 +54,19 @@ class MapProcessInstances<T> implements MutableProcessInstances<T> {
     }
 
     @Override
-    public void update(String id, ProcessInstance<T> instance) {
+    public void update(String id, ProcessInstance<T> instance, Object... options) {
         if (isActive(instance)) {
             instances.put(id, instance);
         }
     }
 
     @Override
-    public void remove(String id) {
+    public void remove(String id, Object... options) {
         instances.remove(id);
     }
 
     @Override
-    public boolean exists(String id) {
+    public boolean exists(String id, Object... options) {
         return instances.containsKey(id);
     }
 }

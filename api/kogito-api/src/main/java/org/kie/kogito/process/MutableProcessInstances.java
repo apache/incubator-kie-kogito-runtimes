@@ -15,18 +15,28 @@
 
 package org.kie.kogito.process;
 
+import java.io.Closeable;
+
 public interface MutableProcessInstances<T> extends ProcessInstances<T> {
-    
-    boolean exists(String id);
-    
-    void create(String id, ProcessInstance<T> instance);
-    
-    void update(String id, ProcessInstance<T> instance);
-    
-    void remove(String id);
-    
+
+    boolean exists(String id, Object... options);
+
+    void create(String id, ProcessInstance<T> instance, Object... options);
+
+    void update(String id, ProcessInstance<T> instance, Object... options);
+
+    void remove(String id, Object... options);
+
+    default Closeable startTransaction() {
+        return null;
+    }
+
+    default void commitTransaction(Closeable closeable) {
+
+    }
+
     default boolean isActive(ProcessInstance<T> instance) {
-        return instance.status() == ProcessInstance.STATE_ACTIVE || instance.status() == ProcessInstance.STATE_ERROR;        
+        return instance.status() == ProcessInstance.STATE_ACTIVE || instance.status() == ProcessInstance.STATE_ERROR;
     }
 
 }

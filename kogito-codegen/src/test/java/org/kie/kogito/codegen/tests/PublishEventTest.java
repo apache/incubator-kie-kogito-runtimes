@@ -651,12 +651,12 @@ public class PublishEventTest extends AbstractCodegenTest {
         private List<DataEvent<?>> events = new ArrayList<>();
         
         @Override
-        public void publish(DataEvent<?> event) {
+        public void publish(DataEvent<?> event, Object ... options) {
             this.events.add(event);
         }
 
         @Override
-        public void publish(Collection<DataEvent<?>> events) {
+        public void publish(Collection<DataEvent<?>> events, Object ... options) {
             this.events.addAll(events);
         }
         

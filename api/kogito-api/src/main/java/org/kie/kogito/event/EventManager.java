@@ -36,7 +36,7 @@ public interface EventManager {
      * processed only when there are any publishers available. 
      * @param batch batch to be published
      */
-    void publish(EventBatch batch);
+    void publish(EventBatch batch, Object ... options);
     
     /**
      * Adds given publisher to the event manager's list of publishers.

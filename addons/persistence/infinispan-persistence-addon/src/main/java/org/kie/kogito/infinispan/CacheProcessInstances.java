@@ -74,12 +74,12 @@ public class CacheProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public void update(String id, ProcessInstance instance) {
+    public void update(String id, ProcessInstance instance, Object... options) {
         updateStorage(id, instance, false);
     }
 
     @Override
-    public void remove(String id) {
+    public void remove(String id, Object... options) {
         cache.remove(id);
     }
 
@@ -92,7 +92,7 @@ public class CacheProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public void create(String id, ProcessInstance instance) {
+    public void create(String id, ProcessInstance instance, Object... options) {
         updateStorage(id, instance, true);
     }
 
@@ -121,7 +121,7 @@ public class CacheProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public boolean exists(String id) {
+    public boolean exists(String id, Object... options) {
         return cache.containsKey(id);
     }
 }
