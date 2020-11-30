@@ -30,7 +30,7 @@ import org.drools.core.process.instance.KogitoWorkItem;
 import org.drools.core.process.instance.impl.KogitoWorkItemImpl;
 import org.jbpm.marshalling.impl.JBPMMessages.Variable;
 import org.jbpm.marshalling.impl.JBPMMessages.VariableContainer;
-import org.kie.api.marshalling.ObjectMarshallingStrategy;
+import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
 import org.kie.kogito.internal.runtime.process.WorkItem;
 
 public class ProtobufProcessMarshaller {
@@ -103,7 +103,7 @@ public class ProtobufProcessMarshaller {
     
     private static String getType (ObjectMarshallingStrategy strategy, Class<?> clazz) {
         return strategy instanceof org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy
-                ? ((org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy) strategy).getType(clazz)
+                ? strategy.getType(clazz)
                 : clazz.getCanonicalName();
     }
 

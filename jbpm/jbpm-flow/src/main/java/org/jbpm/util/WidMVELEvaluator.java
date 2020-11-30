@@ -20,7 +20,7 @@ import java.security.PrivilegedAction;
 import java.util.HashMap;
 
 import org.drools.core.util.StringUtils;
-import org.kie.internal.security.KiePolicyHelper;
+import org.kie.kogito.internal.security.KiePolicyHelper;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 import org.mvel2.compiler.ExpressionCompiler;

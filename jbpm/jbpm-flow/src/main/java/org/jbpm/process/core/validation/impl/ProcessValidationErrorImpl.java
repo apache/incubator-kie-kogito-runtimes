@@ -16,8 +16,8 @@
 
 package org.jbpm.process.core.validation.impl;
 
-import org.kie.api.definition.process.Process;
 import org.jbpm.process.core.validation.ProcessValidationError;
+import org.kie.kogito.internal.definition.process.Process;
 
 public class ProcessValidationErrorImpl implements ProcessValidationError {
 
@@ -29,14 +29,17 @@ public class ProcessValidationErrorImpl implements ProcessValidationError {
         this.message = message;
     }
     
+    @Override
     public String getMessage() {
         return message;
     }
 
+    @Override
     public Process getProcess() {
         return process;
     }
     
+    @Override
     public String toString() {
         return "Process '" + process.getName() + "' [" + process.getId() + "]: " + getMessage();
     }

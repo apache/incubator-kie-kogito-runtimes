@@ -15,9 +15,43 @@
  */
 package org.kie.kogito.internal.ruleunit;
 
+import java.util.Collection;
+import java.util.Optional;
+
 import org.kie.kogito.rules.RuleUnitConfig;
 
-public interface RuleUnitDescription extends org.kie.internal.ruleunit.RuleUnitDescription {
+public interface RuleUnitDescription  {
+    
+    Class<?> getRuleUnitClass();
+
+    default String getRuleUnitName() {
+        return getRuleUnitClass().getName();
+    }
+
+    default String getCanonicalName() {
+        return getRuleUnitClass().getCanonicalName();
+    }
+    
+    default String getEntryPointName(String name) {
+        return getRuleUnitName() + "." + name;
+    }
+
+    
+    String getSimpleName();
+
+    String getPackageName();
+
+    Optional<Class<?>> getDatasourceType(String name );
+
+    Optional<Class<?>> getVarType( String name );
+
+    boolean hasVar( String name );
+
+    Collection<String> getUnitVars();
+
+    Collection<? extends RuleUnitVariable> getUnitVarDeclarations();
+
+    boolean hasDataSource( String name );
 
     RuleUnitVariable getVar(String name);
     

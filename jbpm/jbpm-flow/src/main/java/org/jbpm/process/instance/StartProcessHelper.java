@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
-import org.kie.api.KieBase;
-import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.KieBase;
+import org.kie.kogito.internal.definition.process.Process;
 import org.kie.kogito.internal.runtime.KieRuntime;
 import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
@@ -111,6 +111,7 @@ public final class StartProcessHelper {
             this.processName = processName;
         }
         
+        @Override
         public int compare(Process o1, Process o2) {
             // first match by process name
             if (o1.getName().equals(processName) && o2.getName().equals(processName)) {

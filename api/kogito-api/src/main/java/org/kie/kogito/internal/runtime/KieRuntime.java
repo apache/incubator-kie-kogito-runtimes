@@ -18,16 +18,11 @@ package org.kie.kogito.internal.runtime;
 
 import java.util.Map;
 
-import org.kie.api.KieBase;
-import org.kie.api.runtime.Calendars;
-import org.kie.api.runtime.Channel;
-import org.kie.api.runtime.Environment;
-import org.kie.api.runtime.Globals;
-import org.kie.api.runtime.KieSessionConfiguration;
-import org.kie.api.runtime.rule.RuleRuntime;
-import org.kie.api.time.SessionClock;
+import org.kie.kogito.internal.KieBase;
 import org.kie.kogito.internal.event.KieRuntimeEventManager;
 import org.kie.kogito.internal.runtime.process.ProcessRuntime;
+import org.kie.kogito.internal.runtime.rule.RuleRuntime;
+import org.kie.kogito.internal.time.SessionClock;
 
 public interface KieRuntime
     extends
@@ -55,11 +50,9 @@ public interface KieRuntime
     Calendars getCalendars();
 
     Environment getEnvironment();
-
-    /**
-     * @return the KieBase reference from which this stateful session was created.
-     */
+    
     KieBase getKieBase();
+
 
     void registerChannel(String name,
                          Channel channel);

@@ -200,7 +200,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T> {
         }
     }
 
-    public abstract org.kie.api.definition.process.Process process();
+    public abstract org.kie.kogito.internal.definition.process.Process process();
 
     protected ProcessRuntime createProcessRuntime() {
         return new LightProcessRuntime(new LightProcessRuntimeContext(Collections.singletonList(process())), services);

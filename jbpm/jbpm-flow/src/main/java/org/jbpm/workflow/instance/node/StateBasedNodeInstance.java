@@ -47,11 +47,11 @@ import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
-import org.kie.api.event.rule.MatchCreatedEvent;
-import org.kie.api.runtime.rule.Match;
+import org.kie.kogito.internal.event.rule.MatchCreatedEvent;
 import org.kie.kogito.internal.runtime.KieRuntime;
 import org.kie.kogito.internal.runtime.process.EventListener;
 import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.rule.Match;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
@@ -60,8 +60,6 @@ import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.timer.TimerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 
 public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl implements EventBasedNodeInstanceInterface,
                                                                                          EventListener {

@@ -22,11 +22,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.script.ScriptEngineFactory;
-import javax.script.ScriptEngineManager;
 
 import org.jbpm.process.core.transformation.JavaScriptingDataTransformer;
 import org.jbpm.process.core.transformation.MVELDataTransformer;
-import org.kie.api.runtime.process.DataTransformer;
+import org.kie.kogito.internal.runtime.process.DataTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,11 +16,10 @@
 
 package org.kie.kogito.internal.runtime;
 
-import org.kie.api.runtime.CommandExecutor;
-import org.kie.api.runtime.Globals;
-import org.kie.api.runtime.KieSession.AtomicAction;
-import org.kie.api.runtime.process.StatefulProcessSession;
-import org.kie.api.runtime.rule.StatefulRuleSession;
+
+
+import org.kie.kogito.internal.runtime.process.StatefulProcessSession;
+import org.kie.kogito.internal.runtime.rule.StatefulRuleSession;
 
 /**
  * KieSession is the most common way to interact with the engine. A KieSession
@@ -123,13 +122,6 @@ public interface KieSession
      *  as it applies only to persistent sessions
      */
     void destroy();
-
-    /**
-     * Submit an action that will be executed atomically on this session.
-     * This is useful when using fireUntilHalt to avoid evaluations against
-     * partially modified objects.
-     */
-    void submit(AtomicAction action);
 
     /**
      * Returns a runtime for the given interface. This method is used to retrieve runtime

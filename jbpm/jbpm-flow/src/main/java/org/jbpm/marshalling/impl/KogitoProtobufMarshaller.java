@@ -22,21 +22,19 @@ import java.io.OutputStream;
 import org.drools.core.SessionConfiguration;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.core.impl.StatefulKnowledgeSessionImpl;
+import org.drools.core.marshalling.impl.MarshallingConfigurationImpl;
 import org.drools.core.marshalling.impl.RuleBaseNodes;
 import org.drools.serialization.protobuf.ProtobufInputMarshaller;
 import org.drools.serialization.protobuf.ProtobufMarshaller;
 import org.drools.serialization.protobuf.ProtobufOutputMarshaller;
 import org.drools.serialization.protobuf.ReadSessionResult;
-import org.kie.api.KieBase;
-import org.kie.api.KieServices;
-import org.kie.api.marshalling.MarshallingConfiguration;
-import org.kie.api.runtime.Environment;
-import org.kie.api.runtime.KieSessionConfiguration;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.KieBase;
+import org.kie.kogito.internal.marshalling.MarshallingConfiguration;
+import org.kie.kogito.internal.runtime.Environment;
 import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.KieSessionConfiguration;
 
 
 /**
@@ -48,18 +46,18 @@ import org.kie.kogito.internal.runtime.KieSession;
 public class KogitoProtobufMarshaller extends ProtobufMarshaller {
 
     public KogitoProtobufMarshaller( KieBase kbase,
-                                     MarshallingConfiguration marshallingConfig) {
-        super(kbase, marshallingConfig);
+                                     MarshallingConfigurationImpl marshallingConfig) {
+        super(null, marshallingConfig);
     }
 
     @Override
-    public StatefulKnowledgeSession unmarshall( final InputStream stream) throws IOException,
+    public StatefulKnowledgeSessionImpl unmarshall( final InputStream stream) throws IOException,
             ClassNotFoundException {
         return unmarshall( stream, null, null );
     }
 
     @Override
-    public StatefulKnowledgeSession unmarshall( final InputStream stream,
+    public StatefulKnowledgeSessionImpl unmarshall( final InputStream stream,
                                                 KieSessionConfiguration config,
                                                 Environment environment) throws IOException, ClassNotFoundException {
         return unmarshallWithMessage(stream, config, environment).getSession();
@@ -103,14 +101,6 @@ public class KogitoProtobufMarshaller extends ProtobufMarshaller {
     public ReadSessionResult unmarshallWithMessage( final InputStream stream,
                                                     KieSessionConfiguration config,
                                                     Environment environment) throws IOException, ClassNotFoundException {
-        if ( config == null ) {
-            config = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
-        }
-
-        if ( environment == null ) {
-            environment = KieServices.get().newEnvironment();
-        }
-
         KogitoMarshallerReaderContext context = getMarshallerReaderContext(stream, environment);
         int id = (( KnowledgeBaseImpl ) this.kbase).nextWorkingMemoryCounter();
         ReadSessionResult readSessionResult = ProtobufInputMarshaller.readSession(context,

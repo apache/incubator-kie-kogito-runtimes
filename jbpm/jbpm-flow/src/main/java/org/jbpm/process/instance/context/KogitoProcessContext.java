@@ -5,9 +5,9 @@ package org.jbpm.process.instance.context;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.kie.api.runtime.process.CaseAssignment;
-import org.kie.api.runtime.process.CaseData;
 import org.kie.kogito.internal.runtime.KieRuntime;
+import org.kie.kogito.internal.runtime.process.CaseAssignment;
+import org.kie.kogito.internal.runtime.process.CaseData;
 import org.kie.kogito.internal.runtime.process.NodeInstance;
 import org.kie.kogito.internal.runtime.process.ProcessContext;
 import org.kie.kogito.internal.runtime.process.ProcessInstance;

@@ -66,11 +66,11 @@ import org.jbpm.workflow.core.node.ThrowLinkNode;
 import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
-import org.kie.api.definition.process.Process;
-import org.kie.api.io.Resource;
 import org.kie.kogito.internal.definition.process.Connection;
 import org.kie.kogito.internal.definition.process.Node;
 import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.Process;
+import org.kie.kogito.internal.io.Resource;
 import org.mvel2.ErrorDetail;
 
 /**
@@ -886,6 +886,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         }
     }
 
+    @Override
     public ProcessValidationError[] validateProcess(Process process) {
         if (!(process instanceof RuleFlowProcess)) {
             throw new IllegalArgumentException(

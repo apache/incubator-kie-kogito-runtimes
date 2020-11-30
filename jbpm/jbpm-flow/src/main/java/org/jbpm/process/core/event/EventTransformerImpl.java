@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import org.jbpm.process.core.impl.DataTransformerRegistry;
 import org.jbpm.workflow.core.node.Transformation;
-import org.kie.api.runtime.process.DataTransformer;
+import org.kie.kogito.internal.runtime.process.DataTransformer;
 
 public class EventTransformerImpl implements EventTransformer, Serializable {
 	

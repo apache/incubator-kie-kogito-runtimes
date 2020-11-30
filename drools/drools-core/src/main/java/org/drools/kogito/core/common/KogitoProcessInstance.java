@@ -3,7 +3,7 @@ package org.drools.kogito.core.common;
 import java.util.Collections;
 import java.util.Map;
 
-import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.definition.process.Process;
 import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 public class KogitoProcessInstance implements ProcessInstance {
@@ -33,7 +33,7 @@ public class KogitoProcessInstance implements ProcessInstance {
 
     @Override
     public Process getProcess() {
-        return impl.getProcess();
+        throw new UnsupportedOperationException();
     }
 
     @Override

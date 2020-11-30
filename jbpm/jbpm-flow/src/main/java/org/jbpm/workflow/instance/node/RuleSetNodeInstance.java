@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.KogitoInternalAgenda;
+import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
@@ -53,19 +54,19 @@ import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
-import org.kie.api.runtime.process.DataTransformer;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.rule.FactHandle;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNMessage.Severity;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.dmn.api.core.DMNRuntime;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.internal.runtime.KieRuntime;
 import org.kie.kogito.internal.runtime.KieSession;
+import org.kie.kogito.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.runtime.process.DataTransformer;
+import org.kie.kogito.internal.runtime.process.EventListener;
 import org.kie.kogito.internal.runtime.process.NodeInstance;
+import org.kie.kogito.internal.runtime.rule.FactHandle;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
@@ -232,7 +233,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
 
     private String getRuleSetEventType() {
         InternalKnowledgeRuntime kruntime = getProcessInstance().getKnowledgeRuntime();
-        if (kruntime instanceof StatefulKnowledgeSession) {
+        if (kruntime instanceof StatefulKnowledgeSessionImpl) {
             return "RuleFlowGroup_" + getRuleFlowGroup() + "_" + ((StatefulKnowledgeSession) kruntime).getIdentifier();
         } else {
             return "RuleFlowGroup_" + getRuleFlowGroup();

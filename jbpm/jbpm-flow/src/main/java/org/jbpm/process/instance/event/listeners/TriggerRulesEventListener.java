@@ -15,15 +15,16 @@
  */
 package org.jbpm.process.instance.event.listeners;
 
-import org.kie.api.event.rule.AfterMatchFiredEvent;
-import org.kie.api.event.rule.AgendaEventListener;
-import org.kie.api.event.rule.AgendaGroupPoppedEvent;
-import org.kie.api.event.rule.AgendaGroupPushedEvent;
-import org.kie.api.event.rule.BeforeMatchFiredEvent;
-import org.kie.api.event.rule.MatchCancelledEvent;
-import org.kie.api.event.rule.MatchCreatedEvent;
-import org.kie.api.event.rule.RuleFlowGroupActivatedEvent;
-import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
+
+import org.kie.kogito.internal.event.rule.AfterMatchFiredEvent;
+import org.kie.kogito.internal.event.rule.AgendaEventListener;
+import org.kie.kogito.internal.event.rule.AgendaGroupPoppedEvent;
+import org.kie.kogito.internal.event.rule.AgendaGroupPushedEvent;
+import org.kie.kogito.internal.event.rule.BeforeMatchFiredEvent;
+import org.kie.kogito.internal.event.rule.MatchCancelledEvent;
+import org.kie.kogito.internal.event.rule.MatchCreatedEvent;
+import org.kie.kogito.internal.event.rule.RuleFlowGroupActivatedEvent;
+import org.kie.kogito.internal.event.rule.RuleFlowGroupDeactivatedEvent;
 import org.kie.kogito.internal.runtime.KieSession;
 
 /**

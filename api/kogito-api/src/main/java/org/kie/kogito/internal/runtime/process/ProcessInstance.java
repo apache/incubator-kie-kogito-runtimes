@@ -18,7 +18,7 @@ package org.kie.kogito.internal.runtime.process;
 
 import java.util.Map;
 
-import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.definition.process.Process;
 
 /**
  * A process instance represents one specific instance of a process

@@ -18,9 +18,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 
 import org.junit.jupiter.api.Test;
-import org.kie.api.management.GAV;
 import org.kie.kogito.decision.DecisionModelType;
 import org.kie.kogito.internal.decision.DecisionModelResource;
+import org.kie.kogito.internal.management.GAV;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

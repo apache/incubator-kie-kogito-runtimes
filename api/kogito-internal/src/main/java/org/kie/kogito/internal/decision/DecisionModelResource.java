@@ -16,8 +16,8 @@ package org.kie.kogito.internal.decision;
 
 import java.util.function.Supplier;
 
-import org.kie.api.management.GAV;
 import org.kie.kogito.decision.DecisionModelType;
+import org.kie.kogito.internal.management.GAV;
 
 public interface DecisionModelResource extends Supplier<String> {
 

@@ -16,8 +16,7 @@
 
 package org.kie.kogito.internal.runtime.process;
 
-import org.kie.api.runtime.process.CaseAssignment;
-import org.kie.api.runtime.process.CaseData;
+
 import org.kie.kogito.internal.runtime.KieContext;
 
 /**

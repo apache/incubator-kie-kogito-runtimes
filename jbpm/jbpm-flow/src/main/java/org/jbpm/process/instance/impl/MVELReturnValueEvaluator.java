@@ -30,7 +30,7 @@ import org.drools.mvel.MVELDialectRuntimeData;
 import org.drools.mvel.expr.MVELCompilationUnit;
 import org.drools.mvel.expr.MVELCompileable;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
-import org.kie.api.definition.KiePackage;
+import org.kie.kogito.internal.definition.KiePackage;
 import org.kie.kogito.internal.runtime.process.ProcessContext;
 import org.mvel2.integration.VariableResolverFactory;
 

@@ -29,10 +29,10 @@ import org.jbpm.bpmn2.xml.di.BPMNShapeHandler.NodeInfo;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
-import org.kie.api.definition.process.Process;
 import org.kie.kogito.internal.definition.process.Connection;
 import org.kie.kogito.internal.definition.process.Node;
 import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.Process;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -55,6 +55,7 @@ public class BPMNPlaneHandler extends BaseAbstractHandler implements Handler {
         this.validPeers.add(Process.class);
     }
     
+    @Override
     public Object start(final String uri, final String localName,
                         final Attributes attrs, final ExtensibleXmlParser parser)
             throws SAXException {
@@ -65,6 +66,7 @@ public class BPMNPlaneHandler extends BaseAbstractHandler implements Handler {
         return info;
     }
 
+    @Override
     public Object end(final String uri, final String localName,
                       final ExtensibleXmlParser parser) throws SAXException {
         parser.endElementBuilder();
@@ -152,6 +154,7 @@ public class BPMNPlaneHandler extends BaseAbstractHandler implements Handler {
         return false;
     }
 
+    @Override
     public Class<?> generateNodeFor() {
         return ProcessInfo.class;
     }

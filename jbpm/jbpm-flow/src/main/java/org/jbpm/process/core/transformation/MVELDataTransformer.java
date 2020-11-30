@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
-import org.kie.api.runtime.process.DataTransformer;
+import org.kie.kogito.internal.runtime.process.DataTransformer;
 import org.mvel2.MVEL;
 import org.mvel2.ParserConfiguration;
 import org.mvel2.ParserContext;

@@ -43,7 +43,7 @@ import org.jbpm.workflow.core.node.ForEachNode;
 import org.jbpm.workflow.core.node.MilestoneNode;
 import org.jbpm.workflow.core.node.Transformation;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.kie.api.runtime.process.DataTransformer;
+import org.kie.kogito.internal.runtime.process.DataTransformer;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
@@ -60,14 +60,17 @@ public class TaskHandler extends AbstractNodeHandler {
 	 Map<String, String> dataTypeInputs = new LinkedHashMap<String, String>();
      Map<String, String> dataTypeOutputs = new LinkedHashMap<String, String>();
 
+    @Override
     protected Node createNode(Attributes attrs) {
         return new WorkItemNode();
     }
     
-	public Class<?> generateNodeFor() {
+	@Override
+    public Class<?> generateNodeFor() {
         return Node.class;
     }
 
+    @Override
     protected void handleNode(final Node node, final Element element, final String uri, 
             final String localName, final ExtensibleXmlParser parser) throws SAXException {
     	super.handleNode(node, element, uri, localName, parser);
@@ -300,6 +303,7 @@ public class TaskHandler extends AbstractNodeHandler {
             "Writing out should be handled by the WorkItemNodeHandler");
     }
     
+    @Override
     public Object end(final String uri, final String localName,
             final ExtensibleXmlParser parser) throws SAXException {
 		final Element element = parser.endElementBuilder();

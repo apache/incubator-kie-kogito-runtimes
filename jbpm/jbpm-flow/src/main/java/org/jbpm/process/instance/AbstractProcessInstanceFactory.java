@@ -22,8 +22,9 @@ import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
-import org.kie.api.definition.process.Process;
-import org.kie.internal.process.CorrelationKey;
+import org.kie.kogito.internal.definition.process.Process;
+import org.kie.kogito.internal.process.CorrelationKey;
+
 
 public abstract class AbstractProcessInstanceFactory implements ProcessInstanceFactory {
 	

@@ -18,7 +18,6 @@ package org.jbpm.process.instance.event.listeners;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.internal.event.process.ProcessCompletedEvent;
 import org.kie.kogito.internal.event.process.ProcessEventListener;
 import org.kie.kogito.internal.event.process.ProcessNodeLeftEvent;
@@ -27,6 +26,7 @@ import org.kie.kogito.internal.event.process.ProcessStartedEvent;
 import org.kie.kogito.internal.event.process.ProcessVariableChangedEvent;
 import org.kie.kogito.internal.runtime.KieRuntime;
 import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.internal.runtime.rule.FactHandle;
 
 /**
  * Process event listener that is responsible for managing process instance as fact
@@ -39,20 +39,24 @@ public class RuleAwareProcessEventListener implements ProcessEventListener {
     
     private ConcurrentHashMap<String, FactHandle> store = new ConcurrentHashMap<>();
 
+    @Override
     public void beforeProcessStarted(ProcessStartedEvent event) {
         
         FactHandle handle = event.getKieRuntime().insert(event.getProcessInstance());
         store.put(event.getProcessInstance().getId(), handle);
     }
 
+    @Override
     public void afterProcessStarted(ProcessStartedEvent event) {
         // do nothing
     }
 
+    @Override
     public void beforeProcessCompleted(ProcessCompletedEvent event) {
         // do nothing
     }
 
+    @Override
     public void afterProcessCompleted(ProcessCompletedEvent event) {
         FactHandle handle = getProcessInstanceFactHandle(event.getProcessInstance().getId(), event.getKieRuntime());
         
@@ -61,26 +65,32 @@ public class RuleAwareProcessEventListener implements ProcessEventListener {
         }
     }
 
+    @Override
     public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
         // do nothing
     }
 
+    @Override
     public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
         // do nothing
     }
 
+    @Override
     public void beforeNodeLeft(ProcessNodeLeftEvent event) {
         // do nothing
     }
 
+    @Override
     public void afterNodeLeft(ProcessNodeLeftEvent event) {
         // do nothing
     }
 
+    @Override
     public void beforeVariableChanged(ProcessVariableChangedEvent event) {
         // do nothing
     }
 
+    @Override
     public void afterVariableChanged(ProcessVariableChangedEvent event) {
         FactHandle handle = getProcessInstanceFactHandle(event.getProcessInstance().getId(), event.getKieRuntime());
         

@@ -21,9 +21,9 @@ import java.util.Objects;
 
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.WorkflowProcess;
-import org.kie.api.definition.process.Process;
-import org.kie.api.io.Resource;
 import org.kie.kogito.Model;
+import org.kie.kogito.internal.definition.process.Process;
+import org.kie.kogito.internal.io.Resource;
 import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;

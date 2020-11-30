@@ -24,7 +24,7 @@ import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.ProcessInstanceResolverFactory;
-import org.kie.api.runtime.EnvironmentName;
+import org.kie.kogito.internal.runtime.EnvironmentName;
 import org.kie.kogito.internal.runtime.KieRuntime;
 import org.kie.kogito.internal.runtime.process.WorkItem;
 import org.slf4j.Logger;

@@ -18,10 +18,14 @@ package org.kie.kogito.rules;
 
 import java.util.Iterator;
 
-import org.kie.api.internal.utils.ServiceRegistry;
+import org.kie.kogito.internal.utils.ServiceRegistry;
+
+
+
 
 public interface DataSource<T> extends Iterable<T> {
 
+    @Override
     default Iterator<T> iterator() {
         throw new UnsupportedOperationException();
     }

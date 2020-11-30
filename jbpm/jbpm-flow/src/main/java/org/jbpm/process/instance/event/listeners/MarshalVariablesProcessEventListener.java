@@ -19,16 +19,16 @@ package org.jbpm.process.instance.event.listeners;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
-import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
 import org.drools.core.marshalling.impl.SerializablePlaceholderResolverStrategy;
 import org.drools.serialization.protobuf.ProtobufProcessMarshallerWriteContext;
+import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
-import org.kie.api.marshalling.ObjectMarshallingStrategy;
-import org.kie.api.runtime.EnvironmentName;
 import org.kie.kogito.internal.event.process.DefaultProcessEventListener;
 import org.kie.kogito.internal.event.process.ProcessCompletedEvent;
+import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
+import org.kie.kogito.internal.runtime.EnvironmentName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +43,7 @@ public class MarshalVariablesProcessEventListener extends DefaultProcessEventLis
 
     private static final Logger logger = LoggerFactory.getLogger(MarshalVariablesProcessEventListener.class);
 
+    @Override
     public void afterProcessCompleted(ProcessCompletedEvent event) {
         ObjectMarshallingStrategy[] strategies = (ObjectMarshallingStrategy[]) event.getKieRuntime().getEnvironment().get(EnvironmentName.OBJECT_MARSHALLING_STRATEGIES);
 

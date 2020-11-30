@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface Process extends org.kie.api.definition.process.Process, ContextContainer {
+public interface Process extends org.kie.kogito.internal.definition.process.Process, ContextContainer {
 
     /**
      * Sets the id of this process.

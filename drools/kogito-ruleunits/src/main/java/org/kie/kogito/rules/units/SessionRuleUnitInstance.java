@@ -16,6 +16,7 @@
 
 package org.kie.kogito.rules.units;
 
+
 import org.kie.api.runtime.KieSession;
 import org.kie.kogito.rules.RuleUnit;
 

@@ -25,9 +25,9 @@ import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
-import org.kie.api.definition.process.Process;
 import org.kie.kogito.internal.definition.process.Node;
 import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.Process;
 import org.kie.kogito.internal.definition.process.WorkflowProcess;
 import org.kie.kogito.internal.runtime.KieRuntime;
 import org.kie.kogito.internal.runtime.process.NodeInstance;
@@ -56,7 +56,7 @@ public class WorkflowProcessInstanceUpgrader {
             return;
         }
         synchronized (processInstance) {
-            org.kie.api.definition.process.Process oldProcess = processInstance.getProcess();
+            Process oldProcess = processInstance.getProcess();
             processInstance.disconnect();
             processInstance.setProcess(oldProcess);
             updateNodeInstances(processInstance, nodeMapping);

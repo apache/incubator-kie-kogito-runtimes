@@ -19,6 +19,10 @@ import java.util.function.Consumer;
 
 import org.kie.api.runtime.rule.FactHandle;
 
+
+
+
+
 public interface DataObserver {
 
     static <T> DataProcessor<T> of(Consumer<T> consumer) {

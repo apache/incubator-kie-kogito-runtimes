@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.jbpm.workflow.core.Node;
-import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.definition.process.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

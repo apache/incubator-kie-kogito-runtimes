@@ -17,7 +17,6 @@ package org.kie.kogito.internal.process;
 
 import java.util.Map;
 
-import org.kie.internal.process.CorrelationKey;
 import org.kie.kogito.internal.runtime.process.ProcessInstance;
 
 /**

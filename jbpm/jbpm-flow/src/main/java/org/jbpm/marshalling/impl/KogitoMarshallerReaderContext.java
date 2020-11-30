@@ -26,10 +26,10 @@ import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
 import org.drools.core.marshalling.impl.KogitoSerializablePlaceholderResolverStrategy;
 import org.drools.serialization.protobuf.ProtobufMarshallerReaderContext;
 import org.drools.serialization.protobuf.TimersInputMarshaller;
-import org.kie.api.definition.process.Process;
-import org.kie.api.marshalling.ObjectMarshallingStrategyStore;
-import org.kie.api.runtime.Environment;
+import org.kie.kogito.internal.definition.process.Process;
 import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
+import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategyStore;
+import org.kie.kogito.internal.runtime.Environment;
 
 public class KogitoMarshallerReaderContext extends ProtobufMarshallerReaderContext {
 
@@ -38,7 +38,7 @@ public class KogitoMarshallerReaderContext extends ProtobufMarshallerReaderConte
     public KogitoMarshallerReaderContext(InputStream stream,
                                          InternalKnowledgeBase kBase,
                                          Map<Integer, BaseNode> sinks,
-                                         ObjectMarshallingStrategyStore resolverStrategyFactory,
+                                         ObjectMarshallingStrategy resolverStrategyFactory,
                                          Map<Integer, TimersInputMarshaller> timerReaders,
                                          Environment env) throws IOException {
         this( stream,

@@ -18,9 +18,10 @@ package org.kie.kogito.internal.event;
 
 
 
-import org.kie.api.event.rule.RuleRuntimeEventManager;
-import org.kie.api.logger.KieRuntimeLogger;
+
 import org.kie.kogito.internal.event.process.ProcessEventManager;
+import org.kie.kogito.internal.event.rule.RuleRuntimeEventManager;
+import org.kie.kogito.internal.logger.KieRuntimeLogger;
 
 /**
  * A manager for runtime events.

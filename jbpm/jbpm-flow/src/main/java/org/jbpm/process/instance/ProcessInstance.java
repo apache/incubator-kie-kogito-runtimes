@@ -21,8 +21,8 @@ import java.util.Map;
 
 import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.workflow.instance.NodeInstance;
-import org.kie.api.definition.process.Process;
-import org.kie.api.runtime.rule.AgendaFilter;
+import org.kie.kogito.internal.definition.process.Process;
+import org.kie.kogito.internal.runtime.rule.AgendaFilter;
 
 /**
  * A process instance is the representation of a process during its execution.

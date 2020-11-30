@@ -65,14 +65,14 @@ import org.jbpm.workflow.instance.node.StateNodeInstance;
 import org.jbpm.workflow.instance.node.SubProcessNodeInstance;
 import org.jbpm.workflow.instance.node.TimerNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
-import org.kie.api.definition.process.Process;
-import org.kie.api.runtime.rule.FactHandle;
+import org.kie.kogito.internal.definition.process.Process;
 import org.kie.kogito.internal.runtime.process.HumanTaskWorkItem;
 import org.kie.kogito.internal.runtime.process.NodeInstance;
 import org.kie.kogito.internal.runtime.process.NodeInstanceContainer;
 import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.kie.kogito.internal.runtime.process.WorkItem;
 import org.kie.kogito.internal.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.internal.runtime.rule.FactHandle;
 
 /**
  * Default implementation of a process instance marshaller.

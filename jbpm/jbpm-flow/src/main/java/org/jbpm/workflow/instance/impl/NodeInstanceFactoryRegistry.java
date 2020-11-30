@@ -65,8 +65,8 @@ import org.jbpm.workflow.instance.node.SubProcessNodeInstance;
 import org.jbpm.workflow.instance.node.ThrowLinkNodeInstance;
 import org.jbpm.workflow.instance.node.TimerNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
-import org.kie.api.runtime.Environment;
 import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.runtime.Environment;
 import org.kie.kogito.internal.runtime.process.NodeInstance;
 import org.kie.kogito.internal.runtime.process.NodeInstanceContainer;
 

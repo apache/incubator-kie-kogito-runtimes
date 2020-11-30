@@ -18,32 +18,32 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.drools.core.common.EndOperationListener;
-import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.impl.EnvironmentImpl;
 import org.drools.core.time.TimerService;
 import org.drools.kogito.core.common.InternalKnowledgeRuntime;
 import org.jbpm.workflow.instance.impl.CodegenNodeInstanceFactoryRegistry;
-import org.kie.api.KieBase;
-import org.kie.api.event.rule.AgendaEventListener;
-import org.kie.api.event.rule.RuleRuntimeEventListener;
-import org.kie.api.logger.KieRuntimeLogger;
-import org.kie.api.runtime.Calendars;
-import org.kie.api.runtime.Channel;
-import org.kie.api.runtime.Environment;
-import org.kie.api.runtime.Globals;
-import org.kie.api.runtime.KieSessionConfiguration;
-import org.kie.api.runtime.ObjectFilter;
-import org.kie.api.runtime.rule.AgendaFilter;
-import org.kie.api.runtime.rule.EntryPoint;
-import org.kie.api.runtime.rule.FactHandle;
-import org.kie.api.runtime.rule.LiveQuery;
-import org.kie.api.runtime.rule.QueryResults;
-import org.kie.api.runtime.rule.ViewChangedEventListener;
-import org.kie.api.time.SessionClock;
+import org.kie.kogito.internal.KieBase;
 import org.kie.kogito.internal.event.process.ProcessEventListener;
+import org.kie.kogito.internal.event.rule.AgendaEventListener;
+import org.kie.kogito.internal.event.rule.RuleRuntimeEventListener;
+import org.kie.kogito.internal.logger.KieRuntimeLogger;
+import org.kie.kogito.internal.runtime.Calendars;
+import org.kie.kogito.internal.runtime.Channel;
+import org.kie.kogito.internal.runtime.Environment;
+import org.kie.kogito.internal.runtime.Globals;
+import org.kie.kogito.internal.runtime.KieSessionConfiguration;
+import org.kie.kogito.internal.runtime.ObjectFilter;
 import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.kie.kogito.internal.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.runtime.rule.Agenda;
+import org.kie.kogito.internal.runtime.rule.AgendaFilter;
+import org.kie.kogito.internal.runtime.rule.EntryPoint;
+import org.kie.kogito.internal.runtime.rule.FactHandle;
+import org.kie.kogito.internal.runtime.rule.LiveQuery;
+import org.kie.kogito.internal.runtime.rule.QueryResults;
+import org.kie.kogito.internal.runtime.rule.ViewChangedEventListener;
+import org.kie.kogito.internal.time.SessionClock;
 import org.kie.kogito.jobs.JobsService;
 
 /**
@@ -52,7 +52,7 @@ import org.kie.kogito.jobs.JobsService;
  */
 class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
 
-    private final EnvironmentImpl environment;
+    private final Environment environment;
     private InternalProcessRuntime processRuntime;
 
     DummyKnowledgeRuntime(InternalProcessRuntime processRuntime) {
@@ -63,7 +63,7 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
-    public InternalAgenda getAgenda() {
+    public  Agenda getAgenda() {
         return null;
     }
 
@@ -142,11 +142,7 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
         return null;
     }
 
-    @Override
-    public KieBase getKieBase() {
-        return null;
-    }
-
+    
     @Override
     public void registerChannel(String name, Channel channel) {
 
@@ -385,5 +381,10 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     @Override
     public TimerService getTimerService() {
         return null;
+    }
+    
+    @Override
+    public KieBase getKieBase() {
+        
     }
 }

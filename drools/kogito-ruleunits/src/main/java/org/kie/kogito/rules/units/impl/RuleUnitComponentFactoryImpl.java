@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.drools.core.definitions.InternalKnowledgePackage;
-import org.kie.api.definition.KiePackage;
-import org.kie.internal.ruleunit.ApplyPmmlModelCommandExecutor;
-import org.kie.internal.ruleunit.RuleUnitComponentFactory;
+import org.kie.kogito.internal.definition.KiePackage;
+import org.kie.kogito.internal.ruleunit.ApplyPmmlModelCommandExecutor;
+import org.kie.kogito.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.kogito.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnitData;

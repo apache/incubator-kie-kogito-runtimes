@@ -65,10 +65,10 @@ import org.jbpm.workflow.core.node.Split;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.kie.api.definition.process.Process;
 import org.kie.kogito.internal.definition.process.Connection;
 import org.kie.kogito.internal.definition.process.Node;
 import org.kie.kogito.internal.definition.process.NodeContainer;
+import org.kie.kogito.internal.definition.process.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

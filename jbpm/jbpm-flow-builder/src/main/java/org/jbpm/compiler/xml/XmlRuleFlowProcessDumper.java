@@ -22,7 +22,7 @@ import java.util.List;
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.core.xml.SemanticModules;
 import org.jbpm.process.core.impl.XmlProcessDumper;
-import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.definition.process.Process;
 import org.kie.kogito.internal.definition.process.WorkflowProcess;
 
 public class XmlRuleFlowProcessDumper extends XmlWorkflowProcessDumper implements XmlProcessDumper {

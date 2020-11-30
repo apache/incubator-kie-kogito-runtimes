@@ -31,8 +31,8 @@ import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.workflow.core.WorkflowProcess;
-import org.kie.api.definition.process.Process;
-import org.kie.api.runtime.rule.Agenda;
+import org.kie.kogito.internal.definition.process.Process;
+import org.kie.kogito.internal.runtime.rule.Agenda;
 
 /**
  * Default implementation of a process instance.

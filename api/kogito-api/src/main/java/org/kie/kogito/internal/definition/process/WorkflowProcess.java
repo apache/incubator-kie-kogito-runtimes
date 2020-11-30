@@ -18,8 +18,6 @@ package org.kie.kogito.internal.definition.process;
 
 import java.util.List;
 
-import org.kie.api.definition.process.Process;
-
 /**
  * A WorkflowProcess is a type of Process that uses a flow chart (as a collection of Nodes and Connections)
  * to model the business logic.

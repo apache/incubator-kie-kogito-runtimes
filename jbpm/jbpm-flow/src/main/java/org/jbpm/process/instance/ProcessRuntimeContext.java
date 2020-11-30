@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.drools.core.common.WorkingMemoryAction;
-import org.kie.api.definition.process.Process;
-import org.kie.api.event.rule.DefaultAgendaEventListener;
-import org.kie.internal.process.CorrelationKey;
+import org.drools.core.event.DefaultAgendaEventListener;
+import org.kie.kogito.internal.definition.process.Process;
+import org.kie.kogito.internal.process.CorrelationKey;
 
 public interface ProcessRuntimeContext {
 

@@ -19,9 +19,9 @@ package org.jbpm.process.instance;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.api.definition.process.Process;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstanceFactory;
+import org.kie.kogito.internal.definition.process.Process;
 
 public class ProcessInstanceFactoryRegistry {
     

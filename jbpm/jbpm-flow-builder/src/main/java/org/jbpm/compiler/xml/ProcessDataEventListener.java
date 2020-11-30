@@ -17,7 +17,7 @@
 package org.jbpm.compiler.xml;
 
 import org.jbpm.workflow.core.Node;
-import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.definition.process.Process;
 
 
 public interface ProcessDataEventListener {

@@ -16,8 +16,6 @@
 
 package org.jbpm.bpmn2.xml;
 
-import static org.jbpm.workflow.core.node.RuleSetNode.DMN_LANG;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,12 +30,14 @@ import org.jbpm.workflow.core.node.Assignment;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.Transformation;
-import org.kie.api.runtime.process.DataTransformer;
+import org.kie.kogito.internal.runtime.process.DataTransformer;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import static org.jbpm.workflow.core.node.RuleSetNode.DMN_LANG;
 
 public class BusinessRuleTaskHandler extends AbstractNodeHandler {
 	
@@ -46,15 +46,18 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
     private static final String DECISION_PROP = "decision";
 	private DataTransformerRegistry transformerRegistry = DataTransformerRegistry.get();
     
+    @Override
     protected Node createNode(Attributes attrs) {
         return new RuleSetNode();
     }
     
+    @Override
     @SuppressWarnings("unchecked")
 	public Class generateNodeFor() {
         return RuleSetNode.class;
     }
 
+    @Override
     protected void handleNode(final Node node, final Element element, final String uri, 
             final String localName, final ExtensibleXmlParser parser) throws SAXException {
     	super.handleNode(node, element, uri, localName, parser);
@@ -96,7 +99,8 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
         handleScript(ruleSetNode, element, "onExit");
 	}
 
-	public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
+	@Override
+    public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
 		RuleSetNode ruleSetNode = (RuleSetNode) node;
 		writeNode("businessRuleTask", ruleSetNode, xmlDump, metaDataType);
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();

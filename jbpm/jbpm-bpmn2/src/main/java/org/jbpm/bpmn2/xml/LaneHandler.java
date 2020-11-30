@@ -29,7 +29,7 @@ import org.jbpm.bpmn2.core.SequenceFlow;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Node;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.internal.definition.process.WorkflowProcess;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -57,7 +57,8 @@ public class LaneHandler extends BaseAbstractHandler implements Handler {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
     public Object start(final String uri, final String localName,
 			            final Attributes attrs, final ExtensibleXmlParser parser)
 			throws SAXException {
@@ -80,7 +81,8 @@ public class LaneHandler extends BaseAbstractHandler implements Handler {
 		return lane;
 	}
 
-	public Object end(final String uri, final String localName,
+	@Override
+    public Object end(final String uri, final String localName,
 			          final ExtensibleXmlParser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
         Lane lane = (Lane) parser.getCurrent();
@@ -97,7 +99,8 @@ public class LaneHandler extends BaseAbstractHandler implements Handler {
         return lane;
     }
 
-	public Class<?> generateNodeFor() {
+	@Override
+    public Class<?> generateNodeFor() {
 		return Lane.class;
 	}
 

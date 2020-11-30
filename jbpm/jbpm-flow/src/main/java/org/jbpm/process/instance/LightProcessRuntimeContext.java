@@ -21,13 +21,14 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.drools.core.common.WorkingMemoryAction;
+import org.drools.core.event.DefaultAgendaEventListener;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
-import org.kie.api.definition.process.Process;
-import org.kie.api.event.rule.DefaultAgendaEventListener;
-import org.kie.internal.process.CorrelationKey;
+import org.kie.kogito.internal.definition.process.Process;
+import org.kie.kogito.internal.process.CorrelationKey;
+
 
 public class LightProcessRuntimeContext implements ProcessRuntimeContext {
 

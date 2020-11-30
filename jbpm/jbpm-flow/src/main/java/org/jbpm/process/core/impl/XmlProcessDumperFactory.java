@@ -16,7 +16,7 @@
 
 package org.jbpm.process.core.impl;
 
-import org.kie.api.internal.utils.ServiceRegistry;
+import org.kie.kogito.internal.utils.ServiceRegistry;
 
 public class XmlProcessDumperFactory {
 

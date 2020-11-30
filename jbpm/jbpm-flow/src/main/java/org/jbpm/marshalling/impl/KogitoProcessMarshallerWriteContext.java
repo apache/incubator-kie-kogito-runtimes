@@ -23,8 +23,9 @@ import org.drools.core.common.BaseNode;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.serialization.protobuf.ProtobufMarshallerWriteContext;
-import org.kie.api.marshalling.ObjectMarshallingStrategyStore;
-import org.kie.api.runtime.Environment;
+import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategyStore;
+import org.kie.kogito.internal.runtime.Environment;
+
 
 /**
  * Extension to default <code>MarshallerWriteContext</code> that allows to pass additional

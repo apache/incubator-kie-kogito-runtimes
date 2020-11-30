@@ -40,5 +40,4 @@ public interface InternalKnowledgeRuntime extends KieRuntime {
     void setEndOperationListener(EndOperationListener listener);
 
     long getLastIdleTimestamp();
-
 }

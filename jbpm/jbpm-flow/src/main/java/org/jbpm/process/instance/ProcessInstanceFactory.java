@@ -19,8 +19,9 @@ package org.jbpm.process.instance;
 import java.util.Map;
 
 import org.drools.kogito.core.common.InternalKnowledgeRuntime;
-import org.kie.api.definition.process.Process;
-import org.kie.internal.process.CorrelationKey;
+import org.kie.kogito.internal.definition.process.Process;
+import org.kie.kogito.internal.process.CorrelationKey;
+
 
 /**
  * 

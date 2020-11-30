@@ -27,7 +27,7 @@ import org.jbpm.process.instance.ProcessInstanceManager;
 import org.jbpm.process.instance.ProcessRuntimeImpl;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
-import org.kie.api.definition.process.Process;
+import org.kie.kogito.internal.definition.process.Process;
 import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
 import org.kie.kogito.internal.runtime.process.ProcessInstance;
 

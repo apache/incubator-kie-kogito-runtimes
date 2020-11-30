@@ -21,8 +21,10 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.marshalling.ObjectMarshallingStrategyAcceptor;
-import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
+
+
 
 public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMarshallingStrategy {
 
@@ -71,8 +73,8 @@ public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMars
     }
 
     @Override
-    public Object unmarshal(String dataType,
-                            Context context,
+    public Object unmarshal (
+                             Context context,
                             ObjectInputStream is,
                             byte[] object,
                             ClassLoader classloader) throws IOException, ClassNotFoundException {

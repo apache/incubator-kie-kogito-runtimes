@@ -23,9 +23,9 @@ import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.core.node.StateNode;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
-import org.kie.api.event.rule.MatchCreatedEvent;
-import org.kie.api.runtime.process.EventListener;
 import org.kie.kogito.internal.definition.process.Connection;
+import org.kie.kogito.internal.event.rule.MatchCreatedEvent;
+import org.kie.kogito.internal.runtime.process.EventListener;
 import org.kie.kogito.internal.runtime.process.NodeInstance;
 
 public class StateNodeInstance extends CompositeContextNodeInstance implements EventListener {
@@ -71,11 +71,13 @@ public class StateNodeInstance extends CompositeContextNodeInstance implements E
         }
 	}
 	
+    @Override
     protected boolean isLinkedIncomingNodeRequired() {
     	return false;
     }
     
-	public void signalEvent(String type, Object event) {
+	@Override
+    public void signalEvent(String type, Object event) {
 		if ("signal".equals(type)) {
 			if (event instanceof String) {
 				for (Connection connection: getStateNode().getOutgoingConnections(NodeImpl.CONNECTION_DEFAULT_TYPE)) {
@@ -115,18 +117,21 @@ public class StateNodeInstance extends CompositeContextNodeInstance implements E
     	getProcessInstance().addEventListener(getActivationEventType(), this, true);
     }
 
+    @Override
     public void addEventListeners() {
         super.addEventListeners();
         addTriggerListener();
         addActivationListener();
     }
     
+    @Override
     public void removeEventListeners() {
         super.removeEventListeners();
         getProcessInstance().removeEventListener("signal", this, false);
         getProcessInstance().removeEventListener(getActivationEventType(), this, true);
     }
 
+    @Override
     public String[] getEventTypes() {
     	return new String[] { "signal", getActivationEventType() };
     }

@@ -20,12 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.kie.api.command.BatchExecutionCommand;
-import org.kie.api.command.Command;
-import org.kie.api.command.Setter;
-import org.kie.api.runtime.ObjectFilter;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.rule.FactHandle;
+import org.kie.kogito.internal.runtime.ObjectFilter;
+import org.kie.kogito.internal.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.runtime.rule.FactHandle;
+
 
 /**
  * KieCommands is a factory for Commands that can be used by classes that implement CommandExecutor. Typically more than one Command

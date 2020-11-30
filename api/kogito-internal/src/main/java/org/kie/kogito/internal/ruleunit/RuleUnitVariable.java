@@ -14,6 +14,19 @@
  * limitations under the License.
  */package org.kie.kogito.internal.ruleunit;
 
-public interface RuleUnitVariable extends org.kie.internal.ruleunit.RuleUnitVariable {
+public interface RuleUnitVariable  {
+    
+    boolean isDataSource();
+
+    String getName();
+
+    String getter();
+
+    Class<?> getType();
+
+    Class<?> getDataSourceParameterType();
+
+    Class<?> getBoxedVarType();
+    
     String setter();
 }

@@ -19,7 +19,7 @@ package org.kie.kogito.internal.runtime.process;
 import java.util.Collection;
 import java.util.Map;
 
-import org.kie.api.runtime.rule.AgendaFilter;
+import org.kie.kogito.internal.runtime.rule.AgendaFilter;
 import org.kie.kogito.jobs.JobsService;
 
 /**

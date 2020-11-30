@@ -17,9 +17,10 @@ package org.drools.core.impl;
 
 import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
 import org.drools.core.marshalling.impl.KogitoSerializablePlaceholderResolverStrategy;
+import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.EnvironmentName;
-import org.kie.kogito.internal.marshalling.ObjectMarshallingStrategy;
+
 
 public class EnvironmentFactory {
 

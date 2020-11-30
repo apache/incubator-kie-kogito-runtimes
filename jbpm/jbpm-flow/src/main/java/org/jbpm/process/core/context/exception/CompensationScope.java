@@ -16,20 +16,12 @@
 
 package org.jbpm.process.core.context.exception;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.NodeContainer;
-import org.jbpm.workflow.core.WorkflowProcess;
 import org.jbpm.workflow.core.impl.NodeImpl;
-import org.kie.api.definition.process.Process;
-import org.kie.kogito.internal.definition.process.Node;
+import org.kie.kogito.internal.definition.process.Process;
 
 
 /**
@@ -46,10 +38,12 @@ public class CompensationScope extends ExceptionScope {
     
     private String containerId; 
     
+    @Override
     public String getType() {
         return COMPENSATION_SCOPE;
     }
 
+    @Override
     public void setContextContainer(ContextContainer contextContainer) { 
         assert contextContainer instanceof NodeContainer 
             : "CompensationScope context container instance is NOT an instance of a node container! " +
@@ -70,6 +64,7 @@ public class CompensationScope extends ExceptionScope {
         return containerId;
     }
     
+    @Override
     public ExceptionHandler getExceptionHandler(String exception) {
         return exceptionHandlers.get(exception);
     }
@@ -84,6 +79,7 @@ public class CompensationScope extends ExceptionScope {
      *    broadcast/general compensation. 
      */
      
+    @Override
     public Context resolveContext(Object activityRefStr) {
         if( activityRefStr == null || ! (activityRefStr instanceof String) ) {
             throw new IllegalArgumentException(

@@ -15,8 +15,8 @@
 
 package org.drools.core.config;
 
-import org.kie.api.event.rule.AgendaEventListener;
-import org.kie.api.event.rule.RuleRuntimeEventListener;
+import org.kie.kogito.internal.event.rule.AgendaEventListener;
+import org.kie.kogito.internal.event.rule.RuleRuntimeEventListener;
 
 public class DefaultRuleEventListenerConfig extends CachedRuleEventListenerConfig {
 

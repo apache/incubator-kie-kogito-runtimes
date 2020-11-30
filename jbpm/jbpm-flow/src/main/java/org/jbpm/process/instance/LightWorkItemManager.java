@@ -36,7 +36,7 @@ import org.jbpm.process.instance.impl.workitem.Abort;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
 import org.kie.api.runtime.process.WorkItemNotFoundException;
-import org.kie.internal.runtime.Closeable;
+import org.kie.kogito.internal.runtime.Closeable;
 import org.kie.kogito.internal.runtime.process.ProcessInstance;
 import org.kie.kogito.internal.runtime.process.WorkItemHandler;
 import org.kie.kogito.process.workitem.NotAuthorizedException;

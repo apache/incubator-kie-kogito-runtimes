@@ -16,7 +16,7 @@
 
 package org.jbpm.process.core.impl;
 
-import org.kie.api.Service;
+import org.kie.kogito.internal.Service;
 
 public interface XmlProcessDumperFactoryService extends Service {
 

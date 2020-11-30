@@ -19,16 +19,16 @@ package org.jbpm.compiler.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.List;
-import java.util.LinkedList;
-
 import java.text.MessageFormat;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.xml.parsers.SAXParser;
 
-import org.kie.api.definition.process.Process;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.drools.core.xml.SemanticModules;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.kie.kogito.internal.definition.process.Process;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -57,14 +57,17 @@ public class XmlProcessReader {
                 return processParserMessage(super.getParents(), super.getAttrs(), super.buildPrintMessage(x));
             }
 
+            @Override
             public void warning(final SAXParseException x) {
                 logger.debug( buildPrintMessage( x ) );
             }
 
+            @Override
             public void error(final SAXParseException x) {
                 logger.debug( buildPrintMessage( x ) );
             }
 
+            @Override
             public void fatalError(final SAXParseException x) throws SAXParseException {
                 logger.debug( buildPrintMessage( x ) );
                 throw x;

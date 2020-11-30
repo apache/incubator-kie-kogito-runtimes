@@ -18,8 +18,8 @@ package org.drools.core.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kie.api.event.rule.AgendaEventListener;
-import org.kie.api.event.rule.RuleRuntimeEventListener;
+import org.kie.kogito.internal.event.rule.AgendaEventListener;
+import org.kie.kogito.internal.event.rule.RuleRuntimeEventListener;
 import org.kie.kogito.rules.RuleEventListenerConfig;
 
 public class CachedRuleEventListenerConfig implements RuleEventListenerConfig {
