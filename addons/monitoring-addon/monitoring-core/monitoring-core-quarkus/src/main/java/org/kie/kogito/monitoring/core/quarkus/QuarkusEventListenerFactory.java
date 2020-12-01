@@ -35,7 +35,7 @@ public class QuarkusEventListenerFactory {
     @Produces
     @IfBuildProperty(name = Constants.MONITORING_RULE_USE_DEFAULT, stringValue = "true", enableIfMissing = true)
     public DefaultRuleEventListenerConfig produceRuleListener() {
-        LOGGER.info("Producing default listener for rule monitoring.");
+        LOGGER.debug("Producing default listener for rule monitoring.");
         return new RuleMetricsListenerConfig();
     }
 
