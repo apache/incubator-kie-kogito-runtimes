@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.prometheus.common.rest;
+package org.kie.kogito.monitoring.prometheus.springboot.rest;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
-import org.kie.kogito.monitoring.prometheus.common.PrometheusRegistryProvider;
+import org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-public abstract class MetricsResource {
+@RestController
+public class SpringbootMetricsResource extends MetricsResource {
 
-    protected static final PrometheusMeterRegistry prometheusRegistry = PrometheusRegistryProvider.getPrometheusMeterRegistry();
-
-    public String scrape() {
-        return prometheusRegistry.scrape();
+    @RequestMapping(path = "/metrics", produces="text/plain")
+    public ResponseEntity<String> getMetrics() {
+        return ResponseEntity.ok(scrape());
     }
 }
+

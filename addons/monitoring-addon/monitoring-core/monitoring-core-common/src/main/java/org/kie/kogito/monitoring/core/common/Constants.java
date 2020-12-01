@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.prometheus.common.rest;
+package org.kie.kogito.monitoring.core.common;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
-import org.kie.kogito.monitoring.prometheus.common.PrometheusRegistryProvider;
+public class Constants {
 
-public abstract class MetricsResource {
-
-    protected static final PrometheusMeterRegistry prometheusRegistry = PrometheusRegistryProvider.getPrometheusMeterRegistry();
-
-    public String scrape() {
-        return prometheusRegistry.scrape();
-    }
+    public static final String MONITORING_RULE_USE_DEFAULT = "kogito.monitoring.rule.useDefault";
+    public static final String MONITORING_PROCESS_USE_DEFAULT = "kogito.monitoring.process.useDefault";
 }

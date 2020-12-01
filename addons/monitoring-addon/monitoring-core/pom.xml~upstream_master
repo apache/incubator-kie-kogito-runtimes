@@ -2,25 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>monitoring-core</artifactId>
+    <artifactId>monitoring-addon</artifactId>
     <groupId>org.kie.kogito</groupId>
     <version>2.0.0-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <name>Kogito :: Add-Ons :: Monitoring Core Api</name>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-bom</artifactId>
-        <version>${version.io.quarkus}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <artifactId>monitoring-core-common</artifactId>
+  <name>Kogito :: Add-Ons :: Monitoring Core</name>
+
+  <description>Core Module for monitoring addon</description>
+  <artifactId>monitoring-core</artifactId>
 
   <dependencies>
     <dependency>

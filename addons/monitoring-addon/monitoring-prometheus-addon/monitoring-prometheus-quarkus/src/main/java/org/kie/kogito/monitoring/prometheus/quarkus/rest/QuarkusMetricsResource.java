@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.prometheus.common.rest;
+package org.kie.kogito.monitoring.prometheus.quarkus.rest;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
-import org.kie.kogito.monitoring.prometheus.common.PrometheusRegistryProvider;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-public abstract class MetricsResource {
+import org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource;
 
-    protected static final PrometheusMeterRegistry prometheusRegistry = PrometheusRegistryProvider.getPrometheusMeterRegistry();
+@Path("/metrics")
+public class QuarkusMetricsResource extends MetricsResource {
 
-    public String scrape() {
-        return prometheusRegistry.scrape();
+    @GET
+    @Produces({MediaType.TEXT_PLAIN})
+    public Response getMetrics() {
+        return Response.ok(scrape()).build();
     }
 }
