@@ -35,7 +35,7 @@ public class SpringbootRuleEventListenerFactory {
 
     @Bean
     public DefaultRuleEventListenerConfig produceRuleListener() {
-        LOGGER.info("Producing default listener for rule monitoring.");
+        LOGGER.debug("Producing default listener for rule monitoring.");
         return new RuleMetricsListenerConfig();
     }
 }
