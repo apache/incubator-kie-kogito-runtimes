@@ -19,4 +19,5 @@ public class Constants {
 
     public static final String MONITORING_RULE_USE_DEFAULT = "kogito.monitoring.rule.useDefault";
     public static final String MONITORING_PROCESS_USE_DEFAULT = "kogito.monitoring.process.useDefault";
+    public static final String HTTP_INTERCEPTOR_USE_DEFAULT = "kogito.monitoring.interceptor.useDefault";
 }
