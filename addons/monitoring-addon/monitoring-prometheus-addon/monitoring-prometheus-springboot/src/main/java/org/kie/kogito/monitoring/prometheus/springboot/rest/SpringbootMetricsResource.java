@@ -18,12 +18,13 @@ package org.kie.kogito.monitoring.prometheus.springboot.rest;
 import org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SpringbootMetricsResource extends MetricsResource {
 
-    @RequestMapping(path = "/metrics", produces="text/plain")
+    @RequestMapping(path = "/metrics", produces="text/plain", method = RequestMethod.GET)
     public ResponseEntity<String> getMetrics() {
         return ResponseEntity.ok(scrape());
     }
