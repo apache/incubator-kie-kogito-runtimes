@@ -9,17 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <name>Kogito :: Add-Ons :: Monitoring Core Api</name>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-bom</artifactId>
-        <version>${version.io.quarkus}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+
   <artifactId>monitoring-core-common</artifactId>
 
   <dependencies>
