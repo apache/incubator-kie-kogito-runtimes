@@ -42,7 +42,7 @@ public class QuarkusEventListenerFactory {
     @Produces
     @IfBuildProperty(name = Constants.MONITORING_PROCESS_USE_DEFAULT, stringValue = "true", enableIfMissing = true)
     public DefaultProcessEventListenerConfig produceProcessListener() {
-        LOGGER.info("Producing default listener for process monitoring.");
+        LOGGER.debug("Producing default listener for process monitoring.");
         return new MonitoringProcessEventListenerConfig();
     }
 }
