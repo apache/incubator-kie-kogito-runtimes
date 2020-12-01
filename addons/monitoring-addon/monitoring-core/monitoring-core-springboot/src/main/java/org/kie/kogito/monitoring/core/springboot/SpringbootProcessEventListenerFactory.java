@@ -35,7 +35,7 @@ public class SpringbootProcessEventListenerFactory {
 
     @Bean
     public DefaultProcessEventListenerConfig produceProcessListener() {
-        LOGGER.info("Producing default listener for process monitoring.");
+        LOGGER.debug("Producing default listener for process monitoring.");
         return new MonitoringProcessEventListenerConfig();
     }
 }
