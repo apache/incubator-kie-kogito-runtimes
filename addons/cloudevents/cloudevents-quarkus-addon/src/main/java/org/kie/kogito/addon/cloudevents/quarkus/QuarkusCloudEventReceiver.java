@@ -38,4 +38,9 @@ public class QuarkusCloudEventReceiver implements CloudEventReceiver {
     public void subscribe(Consumer<String> consumer) {
         Multi.createFrom().publisher(eventPublisher).subscribe().with(consumer);
     }
+
+    @Override
+    public Publisher<String> getEventPublisher() {
+        return eventPublisher;
+    }
 }

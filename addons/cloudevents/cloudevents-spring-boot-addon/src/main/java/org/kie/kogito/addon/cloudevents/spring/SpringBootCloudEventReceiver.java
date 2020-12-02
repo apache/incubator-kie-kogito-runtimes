@@ -37,4 +37,9 @@ public class SpringBootCloudEventReceiver implements CloudEventReceiver {
     public void subscribe(Consumer<String> consumer) {
         Flux.from(eventPublisher).subscribe(consumer);
     }
+
+    @Override
+    public Publisher<String> getEventPublisher() {
+        return eventPublisher;
+    }
 }
