@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.services.event;
+package org.kie.kogito.event;
 
 import java.util.function.Consumer;
 

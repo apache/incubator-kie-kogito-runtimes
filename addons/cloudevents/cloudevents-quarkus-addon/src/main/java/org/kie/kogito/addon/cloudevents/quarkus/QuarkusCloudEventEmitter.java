@@ -24,8 +24,8 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.KogitoEventStreams;
-import org.kie.kogito.services.event.CloudEventEmitter;
 
 /**
  * the quarkus implementation just delegates to a real emitter,

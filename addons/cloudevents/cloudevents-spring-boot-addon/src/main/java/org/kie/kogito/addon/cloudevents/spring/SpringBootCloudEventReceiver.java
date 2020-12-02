@@ -18,8 +18,8 @@ package org.kie.kogito.addon.cloudevents.spring;
 
 import java.util.function.Consumer;
 
+import org.kie.kogito.event.CloudEventReceiver;
 import org.kie.kogito.event.KogitoEventStreams;
-import org.kie.kogito.services.event.CloudEventReceiver;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

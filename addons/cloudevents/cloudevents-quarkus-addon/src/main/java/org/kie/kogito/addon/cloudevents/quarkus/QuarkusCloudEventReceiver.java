@@ -23,8 +23,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.smallrye.mutiny.Multi;
+import org.kie.kogito.event.CloudEventReceiver;
 import org.kie.kogito.event.KogitoEventStreams;
-import org.kie.kogito.services.event.CloudEventReceiver;
 import org.reactivestreams.Publisher;
 
 @ApplicationScoped
