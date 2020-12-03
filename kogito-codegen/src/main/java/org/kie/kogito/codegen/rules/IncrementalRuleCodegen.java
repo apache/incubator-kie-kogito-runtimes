@@ -73,9 +73,8 @@ import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.stream.Collectors.toList;
-
 import static com.github.javaparser.StaticJavaParser.parse;
+import static java.util.stream.Collectors.toList;
 import static org.drools.compiler.kie.builder.impl.AbstractKieModule.addDTableToCompiler;
 import static org.drools.compiler.kie.builder.impl.AbstractKieModule.loadResourceConfiguration;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
@@ -120,6 +119,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private boolean hotReloadMode = false;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     private boolean useRestServices = true;
+    private boolean useRequestHandlers = false;
     private String packageName = KnowledgeBuilderConfigurationImpl.DEFAULT_PACKAGE;
     private final boolean decisionTableSupported;
     private final Map<String, RuleUnitConfig> configs;
@@ -322,9 +322,14 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
             List<String> queryClasses = useRestServices ? generateQueriesEndpoint( errors, generatedFiles, ruleUnitHelper, ruleUnit ) : Collections.emptyList();
 
+            List<String> handlerClasses = useRequestHandlers ? generateHandlers( errors, generatedFiles, ruleUnitHelper, ruleUnit ) : Collections.emptyList();
+
+            List<String> allClasses = queryClasses;
+            allClasses.addAll(handlerClasses);
+
             generatedFiles.add( ruleUnit.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
 
-            RuleUnitInstanceGenerator ruleUnitInstance = ruleUnit.instance(ruleUnitHelper, queryClasses);
+            RuleUnitInstanceGenerator ruleUnitInstance = ruleUnit.instance(ruleUnitHelper, allClasses);
             generatedFiles.add( ruleUnitInstance.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
 
             ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE)));
@@ -345,6 +350,21 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 .flatMap( o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty() ).collect( toList() );
     }
 
+    private List<String> generateHandlers( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles,
+                                    RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit ) {
+        List<QueryRequestHandlerGenerator> queries = ruleUnit.queriesAsRequests();
+        if (queries.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if (annotator == null) {
+            generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription(), ruleUnitHelper ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.DTO) );
+        }
+
+        return queries.stream().map( q -> generateQueryRequestHandlers( errors, generatedFiles, q ) )
+                .flatMap( o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty() ).collect( toList() );
+    }
+
     private void initRuleUnitHelper( RuleUnitHelper ruleUnitHelper, RuleUnitDescription ruleUnitDesc ) {
         if (ruleUnitDesc instanceof ReflectiveRuleUnitDescription ) {
             ruleUnitHelper.setAssignableChecker( ( ( ReflectiveRuleUnitDescription ) ruleUnitDesc).getAssignableChecker() );
@@ -359,6 +379,25 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         if (addonsConfig.usePrometheusMonitoring()){
             String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, query.getEndpointName(), addonsConfig.useTracing());
             generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, query.getEndpointName() + ".json"));
+        }
+
+        if (query.validate()) {
+            generatedFiles.add( query.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
+            QueryGenerator queryGenerator = query.getQueryGenerator();
+            generatedFiles.add( query.getQueryGenerator().generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
+            return Optional.of( queryGenerator.getQueryClassName() );
+        }
+
+        errors.add( query.getError() );
+        return Optional.empty();
+    }
+
+    private Optional<String> generateQueryRequestHandlers( List<DroolsError> errors,
+                                                           List<org.kie.kogito.codegen.GeneratedFile> generatedFiles,
+                                                           QueryRequestHandlerGenerator query ) {
+        if (addonsConfig.usePrometheusMonitoring()){
+            String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, query.getRequestHandlerName(), addonsConfig.useTracing());
+            generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, query.getRequestHandlerName() + ".json"));
         }
 
         if (query.validate()) {
@@ -455,6 +494,11 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     public IncrementalRuleCodegen withRestServices(boolean useRestServices) {
         this.useRestServices = useRestServices;
+        return this;
+    }
+
+    public IncrementalRuleCodegen withRequestHandlers(boolean useRequestHandlers) {
+        this.useRequestHandlers = useRequestHandlers;
         return this;
     }
 }
