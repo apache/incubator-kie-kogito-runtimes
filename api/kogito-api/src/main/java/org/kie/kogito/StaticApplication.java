@@ -17,17 +17,18 @@ package org.kie.kogito;
 
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.prediction.PredictionModels;
+import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.RuleUnits;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StaticApplication implements Application {
 
     protected Config config;
-    protected Processes processes;
-    protected RuleUnits ruleUnits;
-    protected DecisionModels decisionModels;
-    protected PredictionModels predictionModels;
+    private final Map<String, KogitoEngine> engineMap = new HashMap<>();
 
     public StaticApplication() {
 
@@ -40,38 +41,34 @@ public class StaticApplication implements Application {
             DecisionModels decisionModels,
             PredictionModels predictionModels) {
         this.config = config;
-        this.processes = processes;
-        this.ruleUnits = ruleUnits;
-        this.decisionModels = decisionModels;
-        this.predictionModels = predictionModels;
+        loadEngine(processes);
+        loadEngine(ruleUnits);
+        loadEngine(decisionModels);
+        loadEngine(predictionModels);
+
+        if (config().get(org.kie.kogito.process.ProcessConfig.class) != null) {
+            unitOfWorkManager().eventManager().setAddons(config().addons());
+        }
     }
 
     public Config config() {
         return config;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Processes processes() {
-        return processes;
+    public <T extends KogitoEngine> T get(Class<T> clazz) {
+        return (T) engineMap.get(clazz.getCanonicalName());
     }
 
-    @Override
-    public RuleUnits ruleUnits() {
-        return ruleUnits;
-    }
-
-    @Override
-    public DecisionModels decisionModels() {
-        return decisionModels;
-    }
-
-    @Override
-    public PredictionModels predictionModels() {
-        return predictionModels;
+    private void loadEngine(KogitoEngine engine) {
+        if(engine != null) {
+            engineMap.put(engine.getClass().getCanonicalName(), engine);
+        }
     }
 
     public UnitOfWorkManager unitOfWorkManager() {
-        return config().process().unitOfWorkManager();
+        return config().get(ProcessConfig.class).unitOfWorkManager();
     }
 
 }

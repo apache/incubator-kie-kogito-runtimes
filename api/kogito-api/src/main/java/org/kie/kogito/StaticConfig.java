@@ -20,48 +20,40 @@ import org.kie.kogito.prediction.PredictionConfig;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.rules.RuleConfig;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StaticConfig implements Config {
 
     private final Addons addons;
-    private final ProcessConfig processConfig;
-    private final RuleConfig ruleConfig;
-    private final PredictionConfig predictionConfig;
-    private final DecisionConfig decisionConfig;
+    private final Map<String, KogitoConfig> configMap = new HashMap<>();
 
     public StaticConfig(Addons addons, ProcessConfig processConfig, RuleConfig ruleConfig, DecisionConfig decisionConfig, PredictionConfig predictionConfig) {
         this.addons = addons;
-        this.processConfig = processConfig;
-        this.ruleConfig = ruleConfig;
-        this.decisionConfig = decisionConfig;
-        this.predictionConfig = predictionConfig;
+        loadConfig(processConfig);
+        loadConfig(ruleConfig);
+        loadConfig(decisionConfig);
+        loadConfig(predictionConfig);
 
         if (processConfig != null) {
             processConfig.unitOfWorkManager().eventManager().setAddons(addons);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ProcessConfig process() {
-        return this.processConfig;
-    }
-
-    @Override
-    public RuleConfig rule() {
-        return this.ruleConfig;
-    }
-
-    @Override
-    public PredictionConfig prediction() {
-        return predictionConfig;
-    }
-
-    @Override
-    public DecisionConfig decision() {
-        return decisionConfig;
+    public <T extends KogitoConfig> T get(Class<T> clazz) {
+        return (T) configMap.get(clazz.getCanonicalName());
     }
 
     @Override
     public Addons addons() {
         return addons;
+    }
+
+    private void loadConfig(KogitoConfig config) {
+        if(config != null) {
+            configMap.put(config.getClass().getCanonicalName(), config);
+        }
     }
 }

@@ -12,19 +12,14 @@ public class Application extends StaticApplication {
     public Application(
             Config config,
             javax.enterprise.inject.Instance<Processes> processes,
-            javax.enterprise.inject.Instance<RuleUnits> ruleUnits/*,
+            javax.enterprise.inject.Instance<RuleUnits> ruleUnits,
             javax.enterprise.inject.Instance<DecisionModels> decisionModels,
-            java.util.Collection<PredictionModels> predictionModels
-            */) {
-        this.config = config;
-        this.processes = orNull(processes);
-        this.ruleUnits = orNull(ruleUnits);
-        this.decisionModels = null /* $DecisionModels$ */;
-        this.predictionModels = null /* $PredictionModels$ */;
-
-        if (config().process() != null) {
-            unitOfWorkManager().eventManager().setAddons(config().addons());
-        }
+            java.util.Collection<PredictionModels> predictionModels) {
+        super(config,
+                orNull(processes),
+                orNull(ruleUnits),
+                orNull(decisionModels),
+                orNull(predictionModels);
     }
 
     private static <T> T orNull(javax.enterprise.inject.Instance<T> instance) {

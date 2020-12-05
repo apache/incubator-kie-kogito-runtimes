@@ -81,6 +81,10 @@ public class ApplicationContainerGenerator extends TemplatedGenerator {
         return optionalCompilationUnit;
     }
 
+    // FIXME After all wiring this is needed only for ApplicationTemplate (no CDI/Spring)
+    // FIXME but it has to call super so need to review the replacement mechanism
+    // FIXME super(null /* $SectionName$ */, ...)
+    FIXME
     private void replaceSectionPlaceHolder(ClassOrInterfaceDeclaration cls, String sectionClassName) {
         // look for an expression of the form: foo = ... /* $SectionName$ */ ;
         //      e.g.: this.processes = null /* $Processes$ */;

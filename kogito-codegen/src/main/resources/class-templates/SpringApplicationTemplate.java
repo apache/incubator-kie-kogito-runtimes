@@ -13,19 +13,14 @@ public class Application extends StaticApplication {
     public Application(
             Config config,
             java.util.Collection<Processes> processes,
-            java.util.Collection<RuleUnits> ruleUnits/*,
+            java.util.Collection<RuleUnits> ruleUnits,
             java.util.Collection<DecisionModels> decisionModels,
-            java.util.Collection<PredictionModels> predictionModels,
-            */) {
-        this.config = config;
-        this.processes = orNull(processes);
-        this.ruleUnits = orNull(ruleUnits);
-        this.decisionModels = null /* $DecisionModels$ */;
-        this.predictionModels = null /* $PredictionModels$ */;
-
-        if (config().process() != null) {
-            unitOfWorkManager().eventManager().setAddons(config().addons());
-        }
+            java.util.Collection<PredictionModels> predictionModels) {
+        super(config,
+                orNull(processes),
+                orNull(ruleUnits),
+                orNull(decisionModels),
+                orNull(predictionModels));
     }
 
     private static <T> T orNull(java.util.Collection<T> collection) {

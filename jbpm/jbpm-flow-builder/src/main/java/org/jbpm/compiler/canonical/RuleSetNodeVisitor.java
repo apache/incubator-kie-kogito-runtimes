@@ -175,7 +175,8 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
 
         MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(
                 new NameExpr("org.drools.project.model.ProjectRuntime.INSTANCE"), "newKieSession",
-                NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"), new NameExpr("app.config().rule()")));
+                NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"),
+                        new NameExpr("app.config().get(org.kie.kogito.rules.RuleConfig.class)")));
         actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
 
         return new MethodCallExpr("ruleFlowGroup")
