@@ -318,10 +318,14 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             // add the label id of the rule unit with value set to `rules` as resource type
             this.addLabel(ruleUnit.label(), "rules");
             ruleUnit.setApplicationPackageName(packageName);
+            
+            if (annotator == null) {
+                generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.DTO));
+            }
+            
+            List<String> queryClasses = useRestServices ? generateQueriesEndpoint(errors, generatedFiles, ruleUnit) : Collections.emptyList();
 
-            List<String> queryClasses = useRestServices ? generateQueriesEndpoint(errors, generatedFiles, ruleUnitHelper, ruleUnit) : Collections.emptyList();
-
-            List<String> handlerClasses = useRequestHandlers ? generateHandlers(errors, generatedFiles, ruleUnitHelper, ruleUnit) : Collections.emptyList();
+            List<String> handlerClasses = useRequestHandlers ? generateHandlers(errors, generatedFiles, ruleUnit) : Collections.emptyList();
 
             List<String> allClasses = queryClasses;
             allClasses.addAll(handlerClasses);
@@ -335,29 +339,20 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
     }
 
-    private List<String> generateQueriesEndpoint(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit) {
+    private List<String> generateQueriesEndpoint(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitGenerator ruleUnit) {
         List<QueryEndpointGenerator> queries = ruleUnit.queries();
         if (queries.isEmpty()) {
             return Collections.emptyList();
-        }
-
-        if (annotator == null) {
-            generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.DTO));
         }
 
         return queries.stream().map(q -> generateQueryEndpoint(errors, generatedFiles, q))
                 .flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty()).collect(toList());
     }
 
-    private List<String> generateHandlers(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles,
-                                          RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit) {
+    private List<String> generateHandlers(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitGenerator ruleUnit) {
         List<QueryRequestHandlerGenerator> queries = ruleUnit.queriesAsRequests();
         if (queries.isEmpty()) {
             return Collections.emptyList();
-        }
-
-        if (annotator == null) {
-            generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.DTO));
         }
 
         return queries.stream().map(q -> generateQueryRequestHandlers(errors, generatedFiles, q))
