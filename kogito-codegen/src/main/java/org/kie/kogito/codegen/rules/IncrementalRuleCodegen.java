@@ -346,7 +346,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
 
         return queries.stream().map(q -> generateQueryEndpoint(errors, generatedFiles, q))
-                .flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty()).collect(toList());
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty)).collect(toList());
     }
 
     private List<String> generateHandlers(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitGenerator ruleUnit) {
@@ -356,7 +356,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
 
         return queries.stream().map(q -> generateQueryRequestHandlers(errors, generatedFiles, q))
-                .flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty()).collect(toList());
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty)).collect(toList());
     }
 
     private void initRuleUnitHelper(RuleUnitHelper ruleUnitHelper, RuleUnitDescription ruleUnitDesc) {
