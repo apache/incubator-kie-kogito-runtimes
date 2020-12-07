@@ -1,3 +1,5 @@
+@org.springframework.stereotype.Component
+@org.springframework.web.context.annotation.ApplicationScope
 public class PredictionModels extends org.kie.kogito.pmml.AbstractPredictionModels {
 
     public final static java.util.function.Function<java.lang.String, org.kie.api.runtime.KieRuntimeFactory> sKieRuntimeFactoryFunction;
@@ -16,9 +18,7 @@ public class PredictionModels extends org.kie.kogito.pmml.AbstractPredictionMode
         };
     }
 
-    // Application parameter is needed to match expected behavior of ApplicationTemplate:
-    //       $PredictionModels$ is replaced with new PredictionModels(this)
-    public PredictionModels(org.kie.kogito.Application application) {
+    public PredictionModels() {
         super();
         setKieRuntimeFactoryFunction(sKieRuntimeFactoryFunction);
     }

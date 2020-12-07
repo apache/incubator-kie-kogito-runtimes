@@ -75,13 +75,13 @@ public class PredictionCodegen extends AbstractGenerator {
 
         // set default package name
         setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
-        this.moduleGenerator = new PredictionModelsGenerator(applicationCanonicalName, resources);
+        this.moduleGenerator = new PredictionModelsGenerator(packageName, applicationCanonicalName, resources);
     }
 
     public static PredictionCodegen ofCollectedResources(boolean isJPMMLAvailable,
                                                          Collection<CollectedResource> resources) {
         if (isJPMMLAvailable) {
-            logger.info("jpmml libraries available on classpath, skipping kie-pmml parsing and compilation");
+            logger.info("jpmml libraries available on classpath, skipping kogito-pmml parsing and compilation");
             return ofPredictions(Collections.emptyList());
         }
         List<PMMLResource> pmmlResources = resources.stream()
@@ -127,6 +127,11 @@ public class PredictionCodegen extends AbstractGenerator {
     public PredictionCodegen withAddons(AddonsConfig addonsConfig) {
         this.moduleGenerator.withAddons(addonsConfig);
         this.addonsConfig = addonsConfig;
+        return this;
+    }
+
+    public PredictionCodegen withDependencyInjection(DependencyInjectionAnnotator annotator) {
+        this.moduleGenerator.withDependencyInjection(annotator);
         return this;
     }
 

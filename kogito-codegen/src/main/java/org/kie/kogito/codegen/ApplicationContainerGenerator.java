@@ -15,17 +15,22 @@
 
 package org.kie.kogito.codegen;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 public class ApplicationContainerGenerator extends TemplatedGenerator {
 
@@ -57,6 +62,7 @@ public class ApplicationContainerGenerator extends TemplatedGenerator {
                         "Cannot find template for " + super.typeName()));
     }
 
+    @Override
     public Optional<CompilationUnit> compilationUnit() {
         Optional<CompilationUnit> optionalCompilationUnit = super.compilationUnit();
         CompilationUnit compilationUnit =
@@ -73,32 +79,50 @@ public class ApplicationContainerGenerator extends TemplatedGenerator {
                         templatePath(),
                         "Compilation unit doesn't contain a class or interface declaration!"));
 
-        for (String section : sections) {
-            replaceSectionPlaceHolder(cls, section);
+        if (annotator == null) {
+            replacePlaceholder(getSuperArguments(cls), sections);
         }
 
         cls.getMembers().sort(new BodyDeclarationComparator());
         return optionalCompilationUnit;
     }
 
-    private void replaceSectionPlaceHolder(ClassOrInterfaceDeclaration cls, String sectionClassName) {
-        // look for an expression of the form: foo = ... /* $SectionName$ */ ;
-        //      e.g.: this.processes = null /* $Processes$ */;
-        // and replaces the entire expression with an initializer; e.g.:
-        //      e.g.: this.processes = new Processes(this);
+    private NodeList<Expression> getSuperArguments(ClassOrInterfaceDeclaration cls) {
+        return cls.findFirst(ExplicitConstructorInvocationStmt.class)
+                    .map(ExplicitConstructorInvocationStmt::getArguments)
+                    .orElseThrow(() -> new InvalidTemplateException(
+                            APPLICATION_CLASS_NAME,
+                            templatePath(),
+                            "Impossible to find super invocation"));
+    }
 
-        // new $SectionName$(this)
-        ObjectCreationExpr sectionCreationExpr = new ObjectCreationExpr()
-                .setType(sectionClassName)
-                .addArgument(new ThisExpr());
+    private void replacePlaceholder(NodeList<Expression> expressions, List<String> sections) {
+        // look for expressions that contain $ and replace them with an initializer or null
+        //      e.g.: $Processes$
+        // is replaced with:
+        //      e.g.: new Processes(this)
+        // or null if Process section is not available
 
-        cls.findFirst(
-                BlockComment.class, c -> c.getContent().trim().equals('$' + sectionClassName + '$'))
-                .flatMap(Node::getParentNode)
-                .map(ExpressionStmt.class::cast)
-                .map(e -> e.getExpression().asAssignExpr())
-                .ifPresent(assignExpr -> assignExpr.setValue(sectionCreationExpr));
-        // else ignore: there is no such templated argument
+        Map<String, Expression> replacementMap = sections.stream()
+                .collect(toMap(
+                        identity(),
+                        sectionClassName -> new ObjectCreationExpr()
+                                .setType(sectionClassName)
+                                .addArgument(new ThisExpr())
+                ));
 
+        expressions.stream()
+                .filter(exp -> exp.toString().contains("$"))
+                .forEach(argument -> replaceOrNull(argument, replacementMap));
+    }
+
+    private void replaceOrNull(Expression originalExpression, Map<String, Expression> expressionMap) {
+        for (Map.Entry<String, Expression> entry : expressionMap.entrySet()) {
+            if (originalExpression.toString().contains(entry.getKey())) {
+                originalExpression.replace(entry.getValue());
+                return;
+            }
+        }
+        originalExpression.replace(new NullLiteralExpr());
     }
 }

@@ -1,3 +1,5 @@
+@org.springframework.stereotype.Component
+@org.springframework.web.context.annotation.ApplicationScope
 public class DecisionModels extends org.kie.kogito.dmn.AbstractDecisionModels {
 
     private final static java.util.function.Function<java.lang.String, org.kie.api.runtime.KieRuntimeFactory> sKieRuntimeFactoryFunction = PredictionModels.sKieRuntimeFactoryFunction;
