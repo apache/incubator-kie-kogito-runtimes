@@ -456,7 +456,7 @@ public class ProcessGenerator {
                         .addVariable(new VariableDeclarator(modelType, fieldName));
                     annotator.withInjection(subprocessFieldDeclaration);
                 } else {
-                    // app.processes().processById()
+                    // app.get(Processes.class)().processById()
                     MethodCallExpr initSubProcessField = new MethodCallExpr(
                             new MethodCallExpr(new NameExpr(APPLICATION), "processes"),
                             "processById").addArgument(new StringLiteralExpr(subProcess.getKey()));

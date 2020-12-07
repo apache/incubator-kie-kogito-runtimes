@@ -27,8 +27,8 @@ public class InjectPredictionModels {
 
     @Inject
     public InjectPredictionModels(PredictionModels predictionModels, Application application) {
-        if(predictionModels != application.predictionModels()) {
-            throw new IllegalStateException("PredictionModels should be injectable and same instance application.predictionModels()");
+        if(predictionModels != application.get(PredictionModels.class)) {
+            throw new IllegalStateException("PredictionModels should be injectable and same instance application.get(PredictionModels.class)");
         }
     }
 }

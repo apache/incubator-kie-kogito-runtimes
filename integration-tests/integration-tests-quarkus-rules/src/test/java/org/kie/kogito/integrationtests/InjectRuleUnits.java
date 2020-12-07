@@ -27,8 +27,8 @@ public class InjectRuleUnits {
 
     @Inject
     public InjectRuleUnits(RuleUnits ruleUnits, Application application) {
-        if (ruleUnits != application.ruleUnits()) {
-            throw new IllegalStateException("RuleUnits should be injectable and same instance application.ruleUnits()");
+        if (ruleUnits != application.get(RuleUnits.class)) {
+            throw new IllegalStateException("RuleUnits should be injectable and same instance application.get(RuleUnits.class)");
         }
     }
 }
