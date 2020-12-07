@@ -16,12 +16,31 @@
 
 package org.kie.kogito.codegen.rules;
 
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.ClassExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.CatchClause;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.ThrowStmt;
+import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import org.drools.compiler.compiler.DroolsError;
@@ -32,12 +51,9 @@ import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.github.javaparser.StaticJavaParser.*;
+import static com.github.javaparser.StaticJavaParser.parse;
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static com.github.javaparser.StaticJavaParser.parseStatement;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classNameToReferenceType;
 
 public class QueryRequestHandlerGenerator implements FileGenerator {
@@ -83,17 +99,18 @@ public class QueryRequestHandlerGenerator implements FileGenerator {
     @Override
     public DroolsError getError() {
         if (query.getBindings().isEmpty()) {
-            return new NoBindingQuery( query );
+            return new NoBindingQuery(query);
         }
         return null;
     }
 
     public static class NoBindingQuery extends DroolsError {
+
         private static final int[] ERROR_LINES = new int[0];
 
         private final QueryModel query;
 
-        public NoBindingQuery( QueryModel query ) {
+        public NoBindingQuery(QueryModel query) {
             this.query = query;
         }
 
@@ -153,7 +170,7 @@ public class QueryRequestHandlerGenerator implements FileGenerator {
     private void generateInterfaces(ClassOrInterfaceDeclaration clazz, String returnType) {
         ClassOrInterfaceType implementedTypes = clazz.getImplementedTypes(0);
         implementedTypes.asClassOrInterfaceType().setTypeArguments(classNameToReferenceType(ruleUnit.getCanonicalName()),
-                classNameToReferenceType(returnType));
+                                                                   classNameToReferenceType(returnType));
     }
 
     private void generateHandleRequestMethods(CompilationUnit cu, ClassOrInterfaceDeclaration clazz, String returnType) {
@@ -168,14 +185,14 @@ public class QueryRequestHandlerGenerator implements FileGenerator {
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
                 .getStatement(0);
         statement.findAll(VariableDeclarator.class).forEach(decl -> setUnitGeneric(decl.getType()));
-        statement.findAll( MethodCallExpr.class ).forEach(m -> m.addArgument( hasDI ? "unitDTO" : "unitDTO.get()" ) );
+        statement.findAll(MethodCallExpr.class).forEach(m -> m.addArgument(hasDI ? "unitDTO" : "unitDTO.get()"));
 
         Statement secondStatementListResults = handleRequestMethod
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
                 .getStatement(1);
         secondStatementListResults.findAll(VariableDeclarator.class).forEach(decl -> setGeneric(decl.getType(), returnType));
-        secondStatementListResults.findAll(ClassExpr.class).forEach(expr -> expr.setType( queryClassName ) );
+        secondStatementListResults.findAll(ClassExpr.class).forEach(expr -> expr.setType(queryClassName));
 
         Statement returnMethodSingle = handleRequestMethod
                 .getBody()

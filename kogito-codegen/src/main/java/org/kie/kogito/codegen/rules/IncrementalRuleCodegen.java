@@ -124,7 +124,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private final boolean decisionTableSupported;
     private final Map<String, RuleUnitConfig> configs;
 
-
     private IncrementalRuleCodegen(Collection<Resource> resources) {
         this.resources = resources;
         this.kieModuleModel = new KieModuleModelImpl();
@@ -170,10 +169,10 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         KnowledgeBuilderConfigurationImpl configuration =
                 new KogitoKnowledgeBuilderConfigurationImpl(contextClassLoader);
 
-        ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<>( KogitoPackageSources::dumpSources, configuration, dummyReleaseId, true, hotReloadMode );
+        ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<>(KogitoPackageSources::dumpSources, configuration, dummyReleaseId, true, hotReloadMode);
 
         CompositeKnowledgeBuilder batch = modelBuilder.batch();
-        resources.forEach(f -> addResource( batch, f ) );
+        resources.forEach(f -> addResource(batch, f));
 
         try {
             batch.build();
@@ -196,7 +195,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         List<org.drools.modelcompiler.builder.GeneratedFile> modelFiles = new ArrayList<>();
         Map<String, String> modelsByUnit = new HashMap<>();
 
-        boolean hasRuleUnits = generateModels( modelBuilder, unitsMap, modelFiles, modelsByUnit );
+        boolean hasRuleUnits = generateModels(modelBuilder, unitsMap, modelFiles, modelsByUnit);
 
         List<org.kie.kogito.codegen.GeneratedFile> generatedFiles =
                 modelFiles.stream().map(f -> new org.kie.kogito.codegen.GeneratedFile(
@@ -206,12 +205,12 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         List<DroolsError> errors = new ArrayList<>();
 
         if (hasRuleUnits) {
-            generateRuleUnits( errors, generatedFiles );
+            generateRuleUnits(errors, generatedFiles);
         } else {
             if (annotator != null && !hotReloadMode) {
-                generateSessionUnits( generatedFiles );
+                generateSessionUnits(generatedFiles);
             }
-            generateProject( dummyReleaseId, modelsByUnit, generatedFiles );
+            generateProject(dummyReleaseId, modelsByUnit, generatedFiles);
         }
 
         if (!errors.isEmpty()) {
@@ -221,39 +220,39 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private void addResource( CompositeKnowledgeBuilder batch, Resource resource ) {
+    private void addResource(CompositeKnowledgeBuilder batch, Resource resource) {
         if (resource.getResourceType() == ResourceType.PROPERTIES) {
             return;
         }
         if (resource.getResourceType() == ResourceType.DTABLE) {
             Resource resourceProps = findPropertiesResource(resource);
             if (resourceProps != null) {
-                ResourceConfiguration conf = loadResourceConfiguration( resource.getSourcePath(), x -> true, x -> {
+                ResourceConfiguration conf = loadResourceConfiguration(resource.getSourcePath(), x -> true, x -> {
                     try {
                         return resourceProps.getInputStream();
                     } catch (IOException ioe) {
                         throw new RuntimeException(ioe);
                     }
-                } );
-                if  (conf instanceof DecisionTableConfiguration ) {
-                    addDTableToCompiler( batch, resource, (( DecisionTableConfiguration ) conf) );
+                });
+                if (conf instanceof DecisionTableConfiguration) {
+                    addDTableToCompiler(batch, resource, ((DecisionTableConfiguration) conf));
                     return;
                 }
             }
         }
-        batch.add( resource, resource.getResourceType() );
+        batch.add(resource, resource.getResourceType());
     }
 
     private Resource findPropertiesResource(Resource resource) {
-        return resources.stream().filter( r -> r.getSourcePath().equals( resource.getSourcePath() + ".properties" ) ).findFirst().orElse( null );
+        return resources.stream().filter(r -> r.getSourcePath().equals(resource.getSourcePath() + ".properties")).findFirst().orElse(null);
     }
 
-    private boolean generateModels( ModelBuilderImpl<KogitoPackageSources> modelBuilder, Map<String, String> unitsMap, List<GeneratedFile> modelFiles, Map<String, String> modelsByUnit ) {
+    private boolean generateModels(ModelBuilderImpl<KogitoPackageSources> modelBuilder, Map<String, String> unitsMap, List<GeneratedFile> modelFiles, Map<String, String> modelsByUnit) {
         boolean hasRuleUnits = false;
         for (KogitoPackageSources pkgSources : modelBuilder.getPackageSources()) {
-            pkgSources.getModelsByUnit().forEach( (unit, model) -> modelsByUnit.put( ruleUnit2KieBaseName( unit ), model ) );
+            pkgSources.getModelsByUnit().forEach((unit, model) -> modelsByUnit.put(ruleUnit2KieBaseName(unit), model));
 
-            pkgSources.collectGeneratedFiles( modelFiles );
+            pkgSources.collectGeneratedFiles(modelFiles);
 
             GeneratedFile reflectConfigSource = pkgSources.getReflectConfigSource();
             if (reflectConfigSource != null) {
@@ -281,13 +280,13 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return hasRuleUnits;
     }
 
-    private void generateProject( ReleaseIdImpl dummyReleaseId, Map<String, String> modelsByUnit, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles ) {
+    private void generateProject(ReleaseIdImpl dummyReleaseId, Map<String, String> modelsByUnit, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles) {
         Map<String, List<String>> modelsByKBase = new HashMap<>();
         for (Map.Entry<String, String> entry : modelsByUnit.entrySet()) {
-            modelsByKBase.put( entry.getKey(), Collections.singletonList( entry.getValue() ) );
+            modelsByKBase.put(entry.getKey(), Collections.singletonList(entry.getValue()));
         }
 
-        ModelSourceClass modelSourceClass = new ModelSourceClass( dummyReleaseId, kieModuleModel.getKieBaseModels(), modelsByKBase );
+        ModelSourceClass modelSourceClass = new ModelSourceClass(dummyReleaseId, kieModuleModel.getKieBaseModels(), modelsByKBase);
 
         generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(
                 org.kie.kogito.codegen.GeneratedFile.Type.RULE,
@@ -305,123 +304,123 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 projectSourceClass.generate()));
     }
 
-    private void generateRuleUnits( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles ) {
+    private void generateRuleUnits(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles) {
         RuleUnitHelper ruleUnitHelper = new RuleUnitHelper();
 
         if (annotator != null) {
-            generatedFiles.add( new org.kie.kogito.codegen.GeneratedFile( org.kie.kogito.codegen.GeneratedFile.Type.JSON_MAPPER,
-                    packageName.replace('.', '/') + "/KogitoObjectMapper.java", annotator.objectMapperInjectorSource(packageName) ) );
+            generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(org.kie.kogito.codegen.GeneratedFile.Type.JSON_MAPPER,
+                                                                        packageName.replace('.', '/') + "/KogitoObjectMapper.java", annotator.objectMapperInjectorSource(packageName)));
         }
 
         for (RuleUnitGenerator ruleUnit : moduleGenerator.getRuleUnits()) {
-            initRuleUnitHelper( ruleUnitHelper, ruleUnit.getRuleUnitDescription() );
+            initRuleUnitHelper(ruleUnitHelper, ruleUnit.getRuleUnitDescription());
 
             // add the label id of the rule unit with value set to `rules` as resource type
             this.addLabel(ruleUnit.label(), "rules");
             ruleUnit.setApplicationPackageName(packageName);
 
-            List<String> queryClasses = useRestServices ? generateQueriesEndpoint( errors, generatedFiles, ruleUnitHelper, ruleUnit ) : Collections.emptyList();
+            List<String> queryClasses = useRestServices ? generateQueriesEndpoint(errors, generatedFiles, ruleUnitHelper, ruleUnit) : Collections.emptyList();
 
-            List<String> handlerClasses = useRequestHandlers ? generateHandlers( errors, generatedFiles, ruleUnitHelper, ruleUnit ) : Collections.emptyList();
+            List<String> handlerClasses = useRequestHandlers ? generateHandlers(errors, generatedFiles, ruleUnitHelper, ruleUnit) : Collections.emptyList();
 
             List<String> allClasses = queryClasses;
             allClasses.addAll(handlerClasses);
 
-            generatedFiles.add( ruleUnit.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
+            generatedFiles.add(ruleUnit.generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE));
 
             RuleUnitInstanceGenerator ruleUnitInstance = ruleUnit.instance(ruleUnitHelper, allClasses);
-            generatedFiles.add( ruleUnitInstance.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
+            generatedFiles.add(ruleUnitInstance.generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE));
 
-            ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE)));
+            ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE)));
         }
     }
 
-    private List<String> generateQueriesEndpoint( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit ) {
+    private List<String> generateQueriesEndpoint(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit) {
         List<QueryEndpointGenerator> queries = ruleUnit.queries();
         if (queries.isEmpty()) {
             return Collections.emptyList();
         }
 
         if (annotator == null) {
-            generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription(), ruleUnitHelper ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.DTO) );
+            generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.DTO));
         }
 
-        return queries.stream().map( q -> generateQueryEndpoint( errors, generatedFiles, q ) )
-                .flatMap( o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty() ).collect( toList() );
+        return queries.stream().map(q -> generateQueryEndpoint(errors, generatedFiles, q))
+                .flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty()).collect(toList());
     }
 
-    private List<String> generateHandlers( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles,
-                                    RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit ) {
+    private List<String> generateHandlers(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles,
+                                          RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit) {
         List<QueryRequestHandlerGenerator> queries = ruleUnit.queriesAsRequests();
         if (queries.isEmpty()) {
             return Collections.emptyList();
         }
 
         if (annotator == null) {
-            generatedFiles.add( new RuleUnitDTOSourceClass( ruleUnit.getRuleUnitDescription(), ruleUnitHelper ).generateFile( org.kie.kogito.codegen.GeneratedFile.Type.DTO) );
+            generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.DTO));
         }
 
-        return queries.stream().map( q -> generateQueryRequestHandlers( errors, generatedFiles, q ) )
-                .flatMap( o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty() ).collect( toList() );
+        return queries.stream().map(q -> generateQueryRequestHandlers(errors, generatedFiles, q))
+                .flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty()).collect(toList());
     }
 
-    private void initRuleUnitHelper( RuleUnitHelper ruleUnitHelper, RuleUnitDescription ruleUnitDesc ) {
-        if (ruleUnitDesc instanceof ReflectiveRuleUnitDescription ) {
-            ruleUnitHelper.setAssignableChecker( ( ( ReflectiveRuleUnitDescription ) ruleUnitDesc).getAssignableChecker() );
+    private void initRuleUnitHelper(RuleUnitHelper ruleUnitHelper, RuleUnitDescription ruleUnitDesc) {
+        if (ruleUnitDesc instanceof ReflectiveRuleUnitDescription) {
+            ruleUnitHelper.setAssignableChecker(((ReflectiveRuleUnitDescription) ruleUnitDesc).getAssignableChecker());
         } else {
             if (ruleUnitHelper.getAssignableChecker() == null) {
-                ruleUnitHelper.setAssignableChecker( AssignableChecker.create(contextClassLoader, hotReloadMode) );
+                ruleUnitHelper.setAssignableChecker(AssignableChecker.create(contextClassLoader, hotReloadMode));
             }
         }
     }
 
-    private Optional<String> generateQueryEndpoint( List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, QueryEndpointGenerator query ) {
-        if (addonsConfig.usePrometheusMonitoring()){
+    private Optional<String> generateQueryEndpoint(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, QueryEndpointGenerator query) {
+        if (addonsConfig.usePrometheusMonitoring()) {
             String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, query.getEndpointName(), addonsConfig.useTracing());
             generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, query.getEndpointName() + ".json"));
         }
 
         if (query.validate()) {
-            generatedFiles.add( query.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
+            generatedFiles.add(query.generateFile(org.kie.kogito.codegen.GeneratedFile.Type.QUERY));
             QueryGenerator queryGenerator = query.getQueryGenerator();
-            generatedFiles.add( query.getQueryGenerator().generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
-            return Optional.of( queryGenerator.getQueryClassName() );
+            generatedFiles.add(query.getQueryGenerator().generateFile(org.kie.kogito.codegen.GeneratedFile.Type.QUERY));
+            return Optional.of(queryGenerator.getQueryClassName());
         }
 
-        errors.add( query.getError() );
+        errors.add(query.getError());
         return Optional.empty();
     }
 
-    private Optional<String> generateQueryRequestHandlers( List<DroolsError> errors,
-                                                           List<org.kie.kogito.codegen.GeneratedFile> generatedFiles,
-                                                           QueryRequestHandlerGenerator query ) {
-        if (addonsConfig.usePrometheusMonitoring()){
+    private Optional<String> generateQueryRequestHandlers(List<DroolsError> errors,
+                                                          List<org.kie.kogito.codegen.GeneratedFile> generatedFiles,
+                                                          QueryRequestHandlerGenerator query) {
+        if (addonsConfig.usePrometheusMonitoring()) {
             String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(operationalDashboardDmnTemplate, query.getRequestHandlerName(), addonsConfig.useTracing());
             generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, query.getRequestHandlerName() + ".json"));
         }
 
         if (query.validate()) {
-            generatedFiles.add( query.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
+            generatedFiles.add(query.generateFile(org.kie.kogito.codegen.GeneratedFile.Type.QUERY));
             QueryGenerator queryGenerator = query.getQueryGenerator();
-            generatedFiles.add( query.getQueryGenerator().generateFile( org.kie.kogito.codegen.GeneratedFile.Type.QUERY ) );
-            return Optional.of( queryGenerator.getQueryClassName() );
+            generatedFiles.add(query.getQueryGenerator().generateFile(org.kie.kogito.codegen.GeneratedFile.Type.QUERY));
+            return Optional.of(queryGenerator.getQueryClassName());
         }
 
-        errors.add( query.getError() );
+        errors.add(query.getError());
         return Optional.empty();
     }
 
-    private void generateSessionUnits( List<org.kie.kogito.codegen.GeneratedFile> generatedFiles ) {
+    private void generateSessionUnits(List<org.kie.kogito.codegen.GeneratedFile> generatedFiles) {
         for (KieBaseModel kBaseModel : kieModuleModel.getKieBaseModels().values()) {
             for (String sessionName : kBaseModel.getKieSessionModels().keySet()) {
-                CompilationUnit cu = parse( getClass().getResourceAsStream( "/class-templates/SessionRuleUnitTemplate.java" ) );
-                ClassOrInterfaceDeclaration template = cu.findFirst( ClassOrInterfaceDeclaration.class ).get();
+                CompilationUnit cu = parse(getClass().getResourceAsStream("/class-templates/SessionRuleUnitTemplate.java"));
+                ClassOrInterfaceDeclaration template = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
                 annotator.withNamedSingletonComponent(template, "$SessionName$");
-                template.setName( "SessionRuleUnit_" + sessionName );
+                template.setName("SessionRuleUnit_" + sessionName);
 
-                template.findAll( FieldDeclaration.class).stream().filter( fd -> fd.getVariable(0).getNameAsString().equals("runtimeBuilder")).forEach( fd -> annotator.withInjection(fd));
+                template.findAll(FieldDeclaration.class).stream().filter(fd -> fd.getVariable(0).getNameAsString().equals("runtimeBuilder")).forEach(fd -> annotator.withInjection(fd));
 
-                template.findAll( StringLiteralExpr.class ).forEach( s -> s.setString( s.getValue().replace( "$SessionName$", sessionName ) ) );
+                template.findAll(StringLiteralExpr.class).forEach(s -> s.setString(s.getValue().replace("$SessionName$", sessionName)));
                 generatedFiles.add(new org.kie.kogito.codegen.GeneratedFile(
                         org.kie.kogito.codegen.GeneratedFile.Type.RULE,
                         "org/drools/project/model/SessionRuleUnit_" + sessionName + ".java",
@@ -459,11 +458,11 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     }
 
     private String ruleUnit2KieBaseName(String ruleUnit) {
-        return ruleUnit.replace( '.', '$' )  + "KieBase";
+        return ruleUnit.replace('.', '$') + "KieBase";
     }
 
     private String ruleUnit2KieSessionName(String ruleUnit) {
-        return ruleUnit.replace( '.', '$' )  + "KieSession";
+        return ruleUnit.replace('.', '$') + "KieSession";
     }
 
     @Override

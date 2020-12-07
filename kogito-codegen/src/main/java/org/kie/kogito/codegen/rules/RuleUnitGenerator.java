@@ -15,29 +15,10 @@
 
 package org.kie.kogito.codegen.rules;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-import static com.github.javaparser.StaticJavaParser.parseExpression;
-import static com.github.javaparser.ast.NodeList.nodeList;
-import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.metadata.ImageMetaData.LABEL_PREFIX;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import org.drools.modelcompiler.builder.QueryModel;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
-import org.kie.kogito.codegen.FileGenerator;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.conf.ClockType;
-import org.kie.kogito.conf.EventProcessingType;
-import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitConfig;
-import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
-import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -51,6 +32,24 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.TypeParameter;
+import org.drools.modelcompiler.builder.QueryModel;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.ApplicationGenerator;
+import org.kie.kogito.codegen.FileGenerator;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.conf.ClockType;
+import org.kie.kogito.conf.EventProcessingType;
+import org.kie.kogito.rules.RuleUnit;
+import org.kie.kogito.rules.RuleUnitConfig;
+import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
+import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
+
+import static com.github.javaparser.StaticJavaParser.parse;
+import static com.github.javaparser.StaticJavaParser.parseExpression;
+import static com.github.javaparser.ast.NodeList.nodeList;
+import static java.util.stream.Collectors.toList;
+import static org.kie.kogito.codegen.metadata.ImageMetaData.LABEL_PREFIX;
 
 public class RuleUnitGenerator implements FileGenerator {
 
