@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,10 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.MetaDataWriter;
@@ -106,6 +110,15 @@ public class ApplicationGeneratorTest {
         assertImageMetadata(targetDirectory, labels);
     }
 
+    @Test
+    public void applicationSectionReplace() {
+        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(PACKAGE_NAME);
+        assertApplicationPlaceholderReplace(appGenerator, 4);
+
+        appGenerator.withSections(Arrays.asList("Processes", "DecisionModels"));
+        assertApplicationPlaceholderReplace(appGenerator, 2);
+    }
+
     private void assertImageMetadata(final Path directory, final Map<String, String> expectedLabels) throws IOException {
         try (Stream<Path> stream = Files.walk(directory, 1)) {
             final Optional<Path> generatedFile = stream
@@ -163,5 +176,22 @@ public class ApplicationGeneratorTest {
                 }
             }
         }
+    }
+
+    private void assertApplicationPlaceholderReplace(ApplicationContainerGenerator appGenerator, long expectedNulls) {
+        Optional<CompilationUnit> compilationUnit = appGenerator.compilationUnit();
+        assertThat(compilationUnit).isPresent();
+
+        Optional<NodeList<Expression>> expressions = compilationUnit.get().findFirst(ExplicitConstructorInvocationStmt.class)
+                .map(ExplicitConstructorInvocationStmt::getArguments);
+        assertThat(expressions).isPresent();
+
+        expressions.get()
+                .forEach(expression -> assertThat(expression.toString()).doesNotContain("$"));
+
+        long numberOfNull = expressions.get().stream()
+                .filter(Expression::isNullLiteralExpr)
+                .count();
+        assertThat(numberOfNull).isEqualTo(expectedNulls);
     }
 }

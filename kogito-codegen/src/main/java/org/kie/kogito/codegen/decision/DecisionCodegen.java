@@ -104,7 +104,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
         // set default package name
         setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
-        this.decisionContainerGenerator = new DecisionContainerGenerator(applicationCanonicalName, this.cResources);
+        this.decisionContainerGenerator = new DecisionContainerGenerator(packageName, applicationCanonicalName, this.cResources);
     }
 
     private void loadModelsAndValidate() {
@@ -310,6 +310,11 @@ public class DecisionCodegen extends AbstractGenerator {
 
     public DecisionCodegen withPCLResolverFn(PCLResolverFn fn) {
         this.pclResolverFn = fn;
+        return this;
+    }
+
+    public DecisionCodegen withDependencyInjection(DependencyInjectionAnnotator annotator) {
+        this.decisionContainerGenerator.withDependencyInjection(annotator);
         return this;
     }
 }

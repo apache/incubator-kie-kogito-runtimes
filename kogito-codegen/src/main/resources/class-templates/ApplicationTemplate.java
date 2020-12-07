@@ -6,9 +6,9 @@ public class Application extends StaticApplication {
 
     public Application() {
         super(new ApplicationConfig(),
-                null /* $Processes$ */,
-                null /* $RuleUnits$ */,
-                null /* $DecisionModels$ */,
-                null /* $PredictionModels$ */;
+                $Processes$,
+                $RuleUnits$,
+                $DecisionModels$,
+                $PredictionModels$);
     }
 }

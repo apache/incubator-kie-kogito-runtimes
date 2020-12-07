@@ -34,10 +34,10 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.pmml.commons.model.KiePMMLModel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,8 +50,9 @@ class PredictionContainerGeneratorTest {
 
     @BeforeAll
     public static void setup() {
-        predictionContainerGenerator = new PredictionModelsGenerator(APP_CANONICAL_NAME,
-                                                                     PMML_RESOURCES);
+        predictionContainerGenerator = new PredictionModelsGenerator(ApplicationGenerator.DEFAULT_PACKAGE_NAME,
+                APP_CANONICAL_NAME,
+                PMML_RESOURCES);
         assertNotNull(predictionContainerGenerator);
     }
 
@@ -77,7 +78,7 @@ class PredictionContainerGeneratorTest {
         String retrievedString = retrieved.toString();
         String expected = PMML_RESOURCES
                 .stream()
-                .map(pmmlResource ->  "\"" + pmmlResource.getModelPath() + "\"")
+                .map(pmmlResource -> "\"" + pmmlResource.getModelPath() + "\"")
                 .collect(Collectors.joining(", "));
         expected = String.format("org.kie.kogito.pmml.PMMLKogito.createKieRuntimeFactories(%s);", expected);
         assertTrue(retrievedString.contains(expected));

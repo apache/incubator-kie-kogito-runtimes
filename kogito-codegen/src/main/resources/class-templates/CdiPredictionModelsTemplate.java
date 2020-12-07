@@ -1,6 +1,7 @@
+@javax.enterprise.context.ApplicationScoped()
 public class PredictionModels extends org.kie.kogito.pmml.AbstractPredictionModels {
 
-    public final static java.util.function.Function<java.lang.String, org.kie.api.runtime.KieRuntimeFactory> sKieRuntimeFactoryFunction;
+    public final static java.util.function.Function<String, org.kie.api.runtime.KieRuntimeFactory> sKieRuntimeFactoryFunction;
 
     static {
         final java.util.Map<org.kie.api.KieBase, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactories = org.kie.kogito.pmml.PMMLKogito.createKieRuntimeFactories();
@@ -16,9 +17,7 @@ public class PredictionModels extends org.kie.kogito.pmml.AbstractPredictionMode
         };
     }
 
-    // Application parameter is needed to match expected behavior of ApplicationTemplate:
-    //       $PredictionModels$ is replaced with new PredictionModels(this)
-    public PredictionModels(org.kie.kogito.Application application) {
+    public PredictionModels() {
         super();
         setKieRuntimeFactoryFunction(sKieRuntimeFactoryFunction);
     }

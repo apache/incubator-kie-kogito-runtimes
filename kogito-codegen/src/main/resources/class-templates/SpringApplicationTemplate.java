@@ -1,26 +1,17 @@
 package $Package$;
 
-import org.kie.kogito.Config;
-import org.kie.kogito.StaticApplication;
-import org.kie.kogito.process.Processes;
-import org.kie.kogito.rules.RuleUnits;
-
 @org.springframework.stereotype.Component
 @org.springframework.web.context.annotation.ApplicationScope
-public class Application extends StaticApplication {
+public class Application extends org.kie.kogito.StaticApplication {
 
     @org.springframework.beans.factory.annotation.Autowired()
     public Application(
-            Config config,
-            java.util.Collection<Processes> processes,
-            java.util.Collection<RuleUnits> ruleUnits,
-            java.util.Collection<DecisionModels> decisionModels,
-            java.util.Collection<PredictionModels> predictionModels) {
-        super(config,
-                orNull(processes),
-                orNull(ruleUnits),
-                orNull(decisionModels),
-                orNull(predictionModels));
+            org.kie.kogito.Config config,
+            java.util.Collection<org.kie.kogito.process.Processes> processes,
+            java.util.Collection<org.kie.kogito.rules.RuleUnits> ruleUnits,
+            java.util.Collection<org.kie.kogito.decision.DecisionModels> decisionModels,
+            java.util.Collection<org.kie.kogito.prediction.PredictionModels> predictionModels) {
+        super(config, orNull(processes), orNull(ruleUnits), orNull(decisionModels), orNull(predictionModels));
     }
 
     private static <T> T orNull(java.util.Collection<T> collection) {

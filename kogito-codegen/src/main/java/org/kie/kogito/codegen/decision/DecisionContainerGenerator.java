@@ -28,6 +28,9 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.InvalidTemplateException;
+import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DmnExecutionIdSupplier;
@@ -37,16 +40,26 @@ import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMe
 
 public class DecisionContainerGenerator extends AbstractApplicationSection {
 
-    private static final String TEMPLATE_JAVA = "/class-templates/DecisionContainerTemplate.java";
+    private static final String RESOURCE = "/class-templates/DecisionContainerTemplate.java";
+    private static final String RESOURCE_CDI = "/class-templates/CdiDecisionContainerTemplate.java";
+    private static final String RESOURCE_SPRING = "/class-templates/spring/SpringDecisionContainerTemplate.java";
+    private static final String SECTION_CLASS_NAME = "DecisionModels";
 
     private String applicationCanonicalName;
     private final List<CollectedResource> resources;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
+    private final TemplatedGenerator templatedGenerator;
 
-    public DecisionContainerGenerator(String applicationCanonicalName, List<CollectedResource> cResources) {
-        super("DecisionModels", "decisionModels", DecisionModels.class);
+    public DecisionContainerGenerator(String packageName, String applicationCanonicalName, List<CollectedResource> cResources) {
+        super(SECTION_CLASS_NAME, "decisionModels", DecisionModels.class);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = cResources;
+        this.templatedGenerator = new TemplatedGenerator(
+                packageName,
+                SECTION_CLASS_NAME,
+                RESOURCE_CDI,
+                RESOURCE_SPRING,
+                RESOURCE);
     }
 
     public DecisionContainerGenerator withAddons(AddonsConfig addonsConfig) {
@@ -54,20 +67,32 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         return this;
     }
 
+    public DecisionContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
+        this.templatedGenerator.withDependencyInjection(annotator);
+        return this;
+    }
+
     @Override
     public ClassOrInterfaceDeclaration classDeclaration() {
-        CompilationUnit clazz = StaticJavaParser.parse(this.getClass().getResourceAsStream(TEMPLATE_JAVA));
+        CompilationUnit clazz = templatedGenerator.compilationUnit()
+                .orElseThrow(() -> new InvalidTemplateException(
+                        SECTION_CLASS_NAME,
+                        templatedGenerator.templatePath(),
+                        "Invalid Template: No CompilationUnit"));
         ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
         ClassOrInterfaceType applicationClass = StaticJavaParser.parseClassOrInterfaceType(applicationCanonicalName);
         for (CollectedResource resource : resources) {
             MethodCallExpr getResAsStream = getReadResourceMethod(applicationClass, resource);
             MethodCallExpr isr = new MethodCallExpr("readResource").addArgument(getResAsStream);
-            Optional<FieldDeclaration> dmnRuntimeField = typeDeclaration.getFieldByName("dmnRuntime");
+            Optional<FieldDeclaration> dmnRuntimeField = typeDeclaration.getFieldByName("sDmnRuntime");
             Optional<Expression> initalizer = dmnRuntimeField.flatMap(x -> x.getVariable(0).getInitializer());
             if (initalizer.isPresent()) {
                 initalizer.get().asMethodCallExpr().addArgument(isr);
             } else {
-                throw new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
+                throw new InvalidTemplateException(
+                        SECTION_CLASS_NAME,
+                        templatedGenerator.templatePath(),
+                        "Template has been modified.");
             }
         }
 
@@ -78,9 +103,12 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     }
 
     private void setupExecIdSupplierVariable(ClassOrInterfaceDeclaration typeDeclaration) {
-        VariableDeclarator execIdSupplierVariable = typeDeclaration.getFieldByName("execIdSupplier")
+        VariableDeclarator execIdSupplierVariable = typeDeclaration.getFieldByName("sExecIdSupplier")
                 .map(x -> x.getVariable(0))
-                .orElseThrow(() -> new RuntimeException("Can't find \"execIdSupplier\" field in " + TEMPLATE_JAVA));
+                .orElseThrow(() -> new InvalidTemplateException(
+                        SECTION_CLASS_NAME,
+                        templatedGenerator.templatePath(),
+                        "Can't find \"sExecIdSupplier\" field"));
         execIdSupplierVariable.setInitializer(newObject(DmnExecutionIdSupplier.class));
     }
 }

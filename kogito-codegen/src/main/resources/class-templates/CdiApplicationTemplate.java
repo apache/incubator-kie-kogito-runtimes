@@ -1,25 +1,16 @@
 package $Package$;
 
-import org.kie.kogito.Config;
-import org.kie.kogito.StaticApplication;
-import org.kie.kogito.process.Processes;
-import org.kie.kogito.rules.RuleUnits;
-
 @javax.inject.Singleton
-public class Application extends StaticApplication {
+public class Application extends org.kie.kogito.StaticApplication {
 
     @javax.inject.Inject
     public Application(
-            Config config,
-            javax.enterprise.inject.Instance<Processes> processes,
-            javax.enterprise.inject.Instance<RuleUnits> ruleUnits,
-            javax.enterprise.inject.Instance<DecisionModels> decisionModels,
-            java.util.Collection<PredictionModels> predictionModels) {
-        super(config,
-                orNull(processes),
-                orNull(ruleUnits),
-                orNull(decisionModels),
-                orNull(predictionModels);
+            org.kie.kogito.Config config,
+            javax.enterprise.inject.Instance<org.kie.kogito.process.Processes> processes,
+            javax.enterprise.inject.Instance<org.kie.kogito.rules.RuleUnits> ruleUnits,
+            javax.enterprise.inject.Instance<org.kie.kogito.decision.DecisionModels> decisionModels,
+            javax.enterprise.inject.Instance<org.kie.kogito.prediction.PredictionModels> predictionModels) {
+        super(config, orNull(processes), orNull(ruleUnits), orNull(decisionModels), orNull(predictionModels));
     }
 
     private static <T> T orNull(javax.enterprise.inject.Instance<T> instance) {
