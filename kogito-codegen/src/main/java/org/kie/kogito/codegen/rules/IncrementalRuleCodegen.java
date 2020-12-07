@@ -327,7 +327,8 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
             List<String> handlerClasses = useRequestHandlers ? generateHandlers(errors, generatedFiles, ruleUnit) : Collections.emptyList();
 
-            List<String> allClasses = queryClasses;
+            List<String> allClasses = new ArrayList<>(queryClasses);
+            
             allClasses.addAll(handlerClasses);
 
             generatedFiles.add(ruleUnit.generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE));
