@@ -123,6 +123,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private String packageName = KnowledgeBuilderConfigurationImpl.DEFAULT_PACKAGE;
     private final boolean decisionTableSupported;
     private final Map<String, RuleUnitConfig> configs;
+    private boolean ruleUnitDtoSourceClassCreated = false;
 
     private IncrementalRuleCodegen(Collection<Resource> resources) {
         this.resources = resources;
@@ -318,17 +319,13 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             // add the label id of the rule unit with value set to `rules` as resource type
             this.addLabel(ruleUnit.label(), "rules");
             ruleUnit.setApplicationPackageName(packageName);
-            
-            if (annotator == null) {
-                generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.DTO));
-            }
-            
-            List<String> queryClasses = useRestServices ? generateQueriesEndpoint(errors, generatedFiles, ruleUnit) : Collections.emptyList();
 
-            List<String> handlerClasses = useRequestHandlers ? generateHandlers(errors, generatedFiles, ruleUnit) : Collections.emptyList();
+            List<String> queryClasses = useRestServices ? generateQueriesEndpoint(errors, generatedFiles, ruleUnitHelper, ruleUnit) : Collections.emptyList();
+
+            List<String> handlerClasses = useRequestHandlers ? generateHandlers(errors, generatedFiles, ruleUnitHelper, ruleUnit) : Collections.emptyList();
 
             List<String> allClasses = new ArrayList<>(queryClasses);
-            
+
             allClasses.addAll(handlerClasses);
 
             generatedFiles.add(ruleUnit.generateFile(org.kie.kogito.codegen.GeneratedFile.Type.RULE));
@@ -340,24 +337,35 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
     }
 
-    private List<String> generateQueriesEndpoint(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitGenerator ruleUnit) {
+    private List<String> generateQueriesEndpoint(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit) {
         List<QueryEndpointGenerator> queries = ruleUnit.queries();
         if (queries.isEmpty()) {
             return Collections.emptyList();
         }
 
+        generateRuleUnitDTOSourceClass(generatedFiles, ruleUnitHelper, ruleUnit);
+
         return queries.stream().map(q -> generateQueryEndpoint(errors, generatedFiles, q))
                 .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty)).collect(toList());
     }
 
-    private List<String> generateHandlers(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitGenerator ruleUnit) {
+    private List<String> generateHandlers(List<DroolsError> errors, List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit) {
         List<QueryRequestHandlerGenerator> queries = ruleUnit.queriesAsRequests();
         if (queries.isEmpty()) {
             return Collections.emptyList();
         }
 
+        generateRuleUnitDTOSourceClass(generatedFiles, ruleUnitHelper, ruleUnit);
+
         return queries.stream().map(q -> generateQueryRequestHandlers(errors, generatedFiles, q))
                 .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty)).collect(toList());
+    }
+
+    private void generateRuleUnitDTOSourceClass(List<org.kie.kogito.codegen.GeneratedFile> generatedFiles, RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit) {
+        if (annotator == null && !ruleUnitDtoSourceClassCreated) {
+            generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generateFile(org.kie.kogito.codegen.GeneratedFile.Type.DTO));
+            ruleUnitDtoSourceClassCreated = true;
+        }
     }
 
     private void initRuleUnitHelper(RuleUnitHelper ruleUnitHelper, RuleUnitDescription ruleUnitDesc) {
