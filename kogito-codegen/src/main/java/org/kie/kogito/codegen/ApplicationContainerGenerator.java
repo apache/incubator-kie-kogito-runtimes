@@ -16,13 +16,11 @@
 package org.kie.kogito.codegen;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
-import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public class ApplicationContainerGenerator extends TemplatedGenerator {
@@ -80,28 +79,27 @@ public class ApplicationContainerGenerator extends TemplatedGenerator {
                         "Compilation unit doesn't contain a class or interface declaration!"));
 
         if (annotator == null) {
-            replacePlaceholder(getSuperArguments(cls), sections);
+            replacePlaceholder(getLoadEnginesMethod(cls), sections);
         }
 
         cls.getMembers().sort(new BodyDeclarationComparator());
         return optionalCompilationUnit;
     }
 
-    private NodeList<Expression> getSuperArguments(ClassOrInterfaceDeclaration cls) {
-        return cls.findFirst(ExplicitConstructorInvocationStmt.class)
-                    .map(ExplicitConstructorInvocationStmt::getArguments)
+    private MethodCallExpr getLoadEnginesMethod(ClassOrInterfaceDeclaration cls) {
+        return cls.findFirst(MethodCallExpr.class, mtd -> "loadEngines".equals(mtd.getNameAsString()))
                     .orElseThrow(() -> new InvalidTemplateException(
                             APPLICATION_CLASS_NAME,
                             templatePath(),
                             "Impossible to find super invocation"));
     }
 
-    private void replacePlaceholder(NodeList<Expression> expressions, List<String> sections) {
-        // look for expressions that contain $ and replace them with an initializer or null
+    private void replacePlaceholder(MethodCallExpr methodCallExpr, List<String> sections) {
+        // look for expressions that contain $ and replace them with an initializer
         //      e.g.: $Processes$
         // is replaced with:
         //      e.g.: new Processes(this)
-        // or null if Process section is not available
+        // or remove the parameter if section is not available
 
         Map<String, Expression> replacementMap = sections.stream()
                 .collect(toMap(
@@ -111,18 +109,22 @@ public class ApplicationContainerGenerator extends TemplatedGenerator {
                                 .addArgument(new ThisExpr())
                 ));
 
-        expressions.stream()
+        List<Expression> toBeRemoved = methodCallExpr.getArguments().stream()
                 .filter(exp -> exp.toString().contains("$"))
-                .forEach(argument -> replaceOrNull(argument, replacementMap));
+                .filter(argument -> !replace(argument, replacementMap))
+                .collect(toList());
+
+        // remove using parentNode.remove(node) instead of node.remove() to prevent ConcurrentModificationException
+        toBeRemoved.forEach(methodCallExpr::remove);
     }
 
-    private void replaceOrNull(Expression originalExpression, Map<String, Expression> expressionMap) {
+    private boolean replace(Expression originalExpression, Map<String, Expression> expressionMap) {
         for (Map.Entry<String, Expression> entry : expressionMap.entrySet()) {
-            if (originalExpression.toString().contains(entry.getKey())) {
+            if (originalExpression.toString().contains("$" + entry.getKey() + "$")) {
                 originalExpression.replace(entry.getValue());
-                return;
+                return true;
             }
         }
-        originalExpression.replace(new NullLiteralExpr());
+        return false;
     }
 }

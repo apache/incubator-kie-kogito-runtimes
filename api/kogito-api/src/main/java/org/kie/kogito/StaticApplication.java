@@ -15,20 +15,17 @@
 
 package org.kie.kogito;
 
-import org.kie.kogito.decision.DecisionModels;
-import org.kie.kogito.prediction.PredictionModels;
 import org.kie.kogito.process.ProcessConfig;
-import org.kie.kogito.process.Processes;
-import org.kie.kogito.rules.RuleUnits;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class StaticApplication implements Application {
 
     protected Config config;
-    private final Map<String, KogitoEngine> engineMap = new HashMap<>();
+    private final Map<Class<? extends KogitoEngine>, KogitoEngine> engineMap = new HashMap<>();
 
     public StaticApplication() {
 
@@ -36,19 +33,9 @@ public class StaticApplication implements Application {
 
     public StaticApplication(
             Config config,
-            Processes processes,
-            RuleUnits ruleUnits,
-            DecisionModels decisionModels,
-            PredictionModels predictionModels) {
+            KogitoEngine ... engines) {
         this.config = config;
-        loadEngine(processes);
-        loadEngine(ruleUnits);
-        loadEngine(decisionModels);
-        loadEngine(predictionModels);
-
-        if (config().get(org.kie.kogito.process.ProcessConfig.class) != null) {
-            unitOfWorkManager().eventManager().setAddons(config().addons());
-        }
+        loadEngines(engines);
     }
 
     public Config config() {
@@ -58,12 +45,24 @@ public class StaticApplication implements Application {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends KogitoEngine> T get(Class<T> clazz) {
-        return (T) engineMap.get(clazz.getCanonicalName());
+        return (T) engineMap.entrySet().stream()
+                .filter(entry -> clazz.isAssignableFrom(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
-    private void loadEngine(KogitoEngine engine) {
+    protected void loadEngines(KogitoEngine ... engines) {
+        Arrays.stream(engines).forEach(this::loadEngine);
+
+        if (config().get(org.kie.kogito.process.ProcessConfig.class) != null) {
+            unitOfWorkManager().eventManager().setAddons(config().addons());
+        }
+    }
+
+    protected void loadEngine(KogitoEngine engine) {
         if(engine != null) {
-            engineMap.put(engine.getClass().getCanonicalName(), engine);
+            engineMap.put(engine.getClass(), engine);
         }
     }
 

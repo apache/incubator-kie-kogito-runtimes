@@ -15,35 +15,29 @@
 
 package org.kie.kogito;
 
-import org.kie.kogito.decision.DecisionConfig;
-import org.kie.kogito.prediction.PredictionConfig;
-import org.kie.kogito.process.ProcessConfig;
-import org.kie.kogito.rules.RuleConfig;
-
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class StaticConfig implements Config {
 
     private final Addons addons;
-    private final Map<String, KogitoConfig> configMap = new HashMap<>();
+    private final Map<Class<? extends KogitoConfig>, KogitoConfig> configMap = new HashMap<>();
 
-    public StaticConfig(Addons addons, ProcessConfig processConfig, RuleConfig ruleConfig, DecisionConfig decisionConfig, PredictionConfig predictionConfig) {
+    public StaticConfig(Addons addons,
+                        KogitoConfig ... configs) {
         this.addons = addons;
-        loadConfig(processConfig);
-        loadConfig(ruleConfig);
-        loadConfig(decisionConfig);
-        loadConfig(predictionConfig);
-
-        if (processConfig != null) {
-            processConfig.unitOfWorkManager().eventManager().setAddons(addons);
-        }
+        Arrays.stream(configs).forEach(this::loadConfig);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends KogitoConfig> T get(Class<T> clazz) {
-        return (T) configMap.get(clazz.getCanonicalName());
+        return (T) configMap.entrySet().stream()
+                .filter(entry -> clazz.isAssignableFrom(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -53,7 +47,7 @@ public class StaticConfig implements Config {
 
     private void loadConfig(KogitoConfig config) {
         if(config != null) {
-            configMap.put(config.getClass().getCanonicalName(), config);
+            configMap.put(config.getClass(), config);
         }
     }
 }

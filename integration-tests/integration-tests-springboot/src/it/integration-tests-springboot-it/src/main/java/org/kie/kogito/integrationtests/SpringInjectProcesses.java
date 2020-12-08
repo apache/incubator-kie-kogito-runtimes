@@ -16,15 +16,15 @@
 
 package org.kie.kogito.integrationtests;
 
-import org.kie.kogito.Application;
-import org.kie.kogito.process.Processes;
-
 public class SpringInjectProcesses {
 
     @org.springframework.beans.factory.annotation.Autowired
-    public SpringInjectProcesses(Processes processes, Application application) {
-        if(processes != application.get(Processes.class)) {
+    public SpringInjectProcesses(org.kie.kogito.process.Processes processes, org.kie.kogito.Application application) {
+        if(processes != application.get(org.kie.kogito.process.Processes.class)) {
             throw new IllegalStateException("Processes should be injectable and same instance application.get(Processes.class)");
+        }
+        if(application.config().get(org.kie.kogito.process.ProcessConfig.class) == null) {
+            throw new IllegalStateException("ProcessConfig not available");
         }
     }
 }

@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
@@ -36,6 +37,7 @@ import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.SingletonStore;
 import org.kie.kogito.rules.units.AssignableChecker;
@@ -112,8 +114,10 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
         Expression decision = ruleType.getDecision() == null ?
                 new NullLiteralExpr() : new StringLiteralExpr(ruleType.getDecision());
 
+        // app.get(org.kie.kogito.decision.DecisionModels.class).getDecisionModel(namespace, model)
         MethodCallExpr decisionModels =
-                new MethodCallExpr(new NameExpr("app"), "decisionModels");
+                new MethodCallExpr(new NameExpr("app"), "get")
+                        .addArgument(new ClassExpr().setType(DecisionModels.class.getCanonicalName()));
         MethodCallExpr decisionModel =
                 new MethodCallExpr(decisionModels, "getDecisionModel")
                         .addArgument(namespace)

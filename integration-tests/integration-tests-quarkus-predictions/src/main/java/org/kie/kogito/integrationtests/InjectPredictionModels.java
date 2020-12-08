@@ -16,19 +16,16 @@
 
 package org.kie.kogito.integrationtests;
 
-import io.quarkus.runtime.Startup;
-import org.kie.kogito.Application;
-import org.kie.kogito.prediction.PredictionModels;
-
-import javax.inject.Inject;
-
-@Startup
+@io.quarkus.runtime.Startup
 public class InjectPredictionModels {
 
-    @Inject
-    public InjectPredictionModels(PredictionModels predictionModels, Application application) {
-        if(predictionModels != application.get(PredictionModels.class)) {
+    @javax.inject.Inject
+    public InjectPredictionModels(org.kie.kogito.prediction.PredictionModels predictionModels, org.kie.kogito.Application application) {
+        if(predictionModels != application.get(org.kie.kogito.prediction.PredictionModels.class)) {
             throw new IllegalStateException("PredictionModels should be injectable and same instance application.get(PredictionModels.class)");
+        }
+        if(application.config().get(org.kie.kogito.prediction.PredictionConfig.class) == null) {
+            throw new IllegalStateException("PredictionConfig not available");
         }
     }
 }

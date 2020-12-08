@@ -5,7 +5,8 @@ import org.kie.kogito.StaticApplication;
 public class Application extends StaticApplication {
 
     public Application() {
-        super(new ApplicationConfig(),
+        super(new ApplicationConfig());
+        loadEngines(
                 $Processes$,
                 $RuleUnits$,
                 $DecisionModels$,
