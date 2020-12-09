@@ -45,7 +45,7 @@ public class StaticApplication implements Application {
         this.decisionModels = decisionModels;
         this.predictionModels = predictionModels;
 
-        if (config().process() != null) {
+        if (config() != null && config().process() != null) {
             unitOfWorkManager().eventManager().setAddons(config().addons());
         }
     }
