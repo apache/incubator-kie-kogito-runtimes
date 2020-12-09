@@ -16,6 +16,7 @@
 package org.kie.kogito.codegen;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class GeneratedFile {
@@ -98,11 +99,13 @@ public class GeneratedFile {
             return false;
         }
         GeneratedFile that = (GeneratedFile) o;
-        return Objects.equals(relativePath, that.relativePath) && type == that.type;
+        return Objects.equals(relativePath, that.relativePath) && Arrays.equals(contents, that.contents) && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(relativePath, type);
+        int result = Objects.hash(relativePath, type);
+        result = 31 * result + Arrays.hashCode(contents);
+        return result;
     }
 }
