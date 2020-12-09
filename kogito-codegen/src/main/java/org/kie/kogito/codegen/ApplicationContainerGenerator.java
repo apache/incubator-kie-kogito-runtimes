@@ -91,7 +91,7 @@ public class ApplicationContainerGenerator extends TemplatedGenerator {
                     .orElseThrow(() -> new InvalidTemplateException(
                             APPLICATION_CLASS_NAME,
                             templatePath(),
-                            "Impossible to find super invocation"));
+                            "Impossible to find loadEngines invocation"));
     }
 
     private void replacePlaceholder(MethodCallExpr methodCallExpr, List<String> sections) {
