@@ -480,7 +480,11 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     private void storeFile(Type type, String path, String source) {
-        generatedFiles.add(new GeneratedFile(type, path, log(source).getBytes(StandardCharsets.UTF_8)));
+        if (generatedFiles.stream().anyMatch(f -> path.equals(f.relativePath()))) {
+            LOGGER.warn("There's already a generated file named {} to be compiled. Ignoring.", path);
+        } else {
+            generatedFiles.add(new GeneratedFile(type, path, log(source).getBytes(StandardCharsets.UTF_8)));
+        }
     }
 
     public Set<GeneratedFile> getGeneratedFiles() {

@@ -99,13 +99,11 @@ public class GeneratedFile {
             return false;
         }
         GeneratedFile that = (GeneratedFile) o;
-        return Objects.equals(relativePath, that.relativePath) && Arrays.equals(contents, that.contents) && type == that.type;
+        return Objects.equals(relativePath, that.relativePath);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(relativePath, type);
-        result = 31 * result + Arrays.hashCode(contents);
-        return result;
+        return Objects.hash(relativePath);
     }
 }
