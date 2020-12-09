@@ -5,10 +5,10 @@ import org.kie.kogito.StaticApplication;
 public class Application extends StaticApplication {
 
     public Application() {
-        super(new ApplicationConfig(),
-                $Processes$,
-                $RuleUnits$,
-                $DecisionModels$,
-                $PredictionModels$);
+        this.config = new ApplicationConfig();
+        this.processes = null /* $Processes$ */;
+        this.ruleUnits = null /* $RuleUnits$ */;
+        this.decisionModels = null /* $DecisionModels$ */;
+        this.predictionModels = null /* $PredictionModels$ */;
     }
 }
