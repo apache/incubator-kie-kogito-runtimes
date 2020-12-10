@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -110,6 +109,8 @@ public class ApplicationGenerator {
         generatedFiles.addAll(configGenerator.generate());
 
         this.labelers.values().forEach(l -> MetaDataWriter.writeLabelsImageMetadata(targetDirectory, l.generateLabels()));
+        logGeneratedFiles(generatedFiles);
+
         return generatedFiles;
     }
 
@@ -181,5 +182,17 @@ public class ApplicationGenerator {
             logger.warn("Unexpected exception during loading of kogito.addon files", e);
         }
         return addons;
+    }
+
+    private void logGeneratedFiles(Collection<GeneratedFile> files) {
+        if (logger.isDebugEnabled()) {
+            for (GeneratedFile file : files) {
+                logger.debug("=====");
+                logger.debug(file.getType() + ": " + file.relativePath());
+                logger.debug("=====");
+                logger.debug(new String(file.contents()));
+                logger.debug("=====");
+            }
+        }
     }
 }

@@ -15,15 +15,10 @@
 
 package org.kie.kogito.codegen;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class GeneratedFile {
-
-    private static final Logger logger = LoggerFactory.getLogger(GeneratedFile.class);
 
     public enum Type {
         APPLICATION( false ),
@@ -71,7 +66,7 @@ public class GeneratedFile {
     public GeneratedFile(Type type, String relativePath, byte[] contents) {
         this.type = type;
         this.relativePath = relativePath;
-        this.contents = log(type, relativePath, contents);
+        this.contents = contents;
     }
 
     public String relativePath() {
@@ -109,16 +104,5 @@ public class GeneratedFile {
     @Override
     public int hashCode() {
         return Objects.hash(relativePath);
-    }
-
-    private static byte[] log(Type type, String relativePath, byte[] source) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("=====");
-            logger.debug(type + ": " + relativePath);
-            logger.debug("=====");
-            logger.debug(new String(source));
-            logger.debug("=====");
-        }
-        return source;
     }
 }
