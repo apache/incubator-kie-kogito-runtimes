@@ -25,6 +25,7 @@ import java.util.Set;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.Generator;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
+import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 
 public class DMNCompilationProvider extends KogitoCompilationProvider {
@@ -39,6 +40,7 @@ public class DMNCompilationProvider extends KogitoCompilationProvider {
         Path path = context.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
         return appGen.withGenerator(DecisionCodegen.ofCollectedResources(
                 CollectedResource.fromDirectory(path)))
-                .withClassLoader(cl);
+                .withClassLoader(cl)
+                .withDependencyInjection(new CDIDependencyInjectionAnnotator());
     }
 }
