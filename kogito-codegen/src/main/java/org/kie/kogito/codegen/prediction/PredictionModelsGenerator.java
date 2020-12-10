@@ -16,14 +16,10 @@
 package org.kie.kogito.codegen.prediction;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.InvalidTemplateException;
@@ -81,35 +77,22 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
     }
 
     private void populateStaticKieRuntimeFactoryFunctionInit(ClassOrInterfaceDeclaration typeDeclaration) {
-        final InitializerDeclaration staticDeclaration = typeDeclaration.getMembers()
-                .stream()
-                .filter(member -> member instanceof InitializerDeclaration)
-                .findFirst()
-                .map(member -> (InitializerDeclaration) member)
+        final InitializerDeclaration staticDeclaration = typeDeclaration
+                .findFirst(InitializerDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(
                         SECTION_CLASS_NAME,
                         templatedGenerator.templatePath(),
-                        "Template has been modified."));
-        final NodeList<Statement> statements = staticDeclaration.getBody().getStatements();
-        final VariableDeclarationExpr kieRuntimeFactories = statements.stream()
-                .filter(statement -> statement instanceof ExpressionStmt && ((ExpressionStmt) statement).getExpression() instanceof VariableDeclarationExpr)
-                .map(statement -> (VariableDeclarationExpr) ((ExpressionStmt) statement).getExpression())
-                .filter(expression -> expression.getVariable(0).getName().asString().equals("kieRuntimeFactories"))
-                .findFirst()
+                        "Missing static block"));
+        final MethodCallExpr initMethod = staticDeclaration
+                .findFirst(MethodCallExpr.class, mtd -> "init".equals(mtd.getNameAsString()))
                 .orElseThrow(() -> new InvalidTemplateException(
                         SECTION_CLASS_NAME,
                         templatedGenerator.templatePath(),
-                        "Template has been modified."));
-        MethodCallExpr methodCallExpr = kieRuntimeFactories.getVariable(0)
-                .getInitializer()
-                .map(expression -> (MethodCallExpr) expression)
-                .orElseThrow(() -> new InvalidTemplateException(
-                        SECTION_CLASS_NAME,
-                        templatedGenerator.templatePath(),
-                        "Template has been modified."));
+                        "Missing init() method"));
+
         for (PMMLResource resource : resources) {
             StringLiteralExpr getResAsStream = getReadResourceMethod(resource);
-            methodCallExpr.addArgument(getResAsStream);
+            initMethod.addArgument(getResAsStream);
         }
     }
 

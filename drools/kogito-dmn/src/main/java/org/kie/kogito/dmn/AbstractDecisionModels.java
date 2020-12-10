@@ -14,50 +14,41 @@
  */
 package org.kie.kogito.dmn;
 
+import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.dmn.api.core.DMNRuntime;
-import org.kie.kogito.Application;
 import org.kie.kogito.ExecutionIdSupplier;
-import org.kie.kogito.decision.DecisionConfig;
 import org.kie.kogito.decision.DecisionModels;
+
+import java.io.Reader;
+import java.util.function.Function;
 
 public abstract class AbstractDecisionModels implements DecisionModels {
 
-    private final static boolean IS_NATIVE_IMAGE = System.getProperty("org.graalvm.nativeimage.imagecode") != null;
+    private final static boolean IS_NATIVE_IMAGE = org.kie.dmn.feel.util.ClassLoaderUtil.CAN_PLATFORM_CLASSLOAD;
+    private static DMNRuntime dmnRuntime = null;
+    private static ExecutionIdSupplier execIdSupplier = null;
 
-    private DMNRuntime dmnRuntime;
-    private ExecutionIdSupplier executionIdSupplier;
-    private Application application;
-
-    public org.kie.kogito.decision.DecisionModel getDecisionModel(java.lang.String namespace, java.lang.String name) {
-        return new org.kie.kogito.dmn.DmnDecisionModel(getDmnRuntime(), namespace, name, getExecutionIdSupplier());
+    protected static void init(Function<String, KieRuntimeFactory> sKieRuntimeFactoryFunction,
+                               ExecutionIdSupplier executionIdSupplier,
+                               Reader... readers) {
+        dmnRuntime = DMNKogito.createGenericDMNRuntime(sKieRuntimeFactoryFunction, readers);
+        execIdSupplier = executionIdSupplier;
     }
 
-    protected DMNRuntime getDmnRuntime() {
-        return dmnRuntime;
+    public org.kie.kogito.decision.DecisionModel getDecisionModel(String namespace, String name) {
+        return new org.kie.kogito.dmn.DmnDecisionModel(dmnRuntime, namespace, name, execIdSupplier);
     }
 
-    protected void setDmnRuntime(DMNRuntime dmnRuntime) {
-        if(getApplication() == null) {
-            throw new IllegalStateException("Application should be provided before configuring DMNRuntime");
-        }
-        this.dmnRuntime = dmnRuntime;
-        getApplication().config().get(DecisionConfig.class).decisionEventListeners().listeners().forEach(this.dmnRuntime::addListener);
+    public AbstractDecisionModels() {
+        // needed by CDI
     }
 
-    protected ExecutionIdSupplier getExecutionIdSupplier() {
-        return executionIdSupplier;
+    public AbstractDecisionModels(org.kie.kogito.Application app) {
+        initApplication(app);
     }
 
-    protected void setExecutionIdSupplier(ExecutionIdSupplier executionIdSupplier) {
-        this.executionIdSupplier = executionIdSupplier;
-    }
-
-    protected Application getApplication() {
-        return application;
-    }
-
-    protected void setApplication(Application application) {
-        this.application = application;
+    protected void initApplication(org.kie.kogito.Application app) {
+        app.config().decision().decisionEventListeners().listeners().forEach(dmnRuntime::addListener);
     }
 
     protected static java.io.InputStreamReader readResource(java.io.InputStream stream) {

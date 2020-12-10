@@ -80,7 +80,7 @@ class PredictionContainerGeneratorTest {
                 .stream()
                 .map(pmmlResource -> "\"" + pmmlResource.getModelPath() + "\"")
                 .collect(Collectors.joining(", "));
-        expected = String.format("org.kie.kogito.pmml.PMMLKogito.createKieRuntimeFactories(%s);", expected);
+        expected = String.format("init(%s);", expected);
         assertTrue(retrievedString.contains(expected));
 
     }

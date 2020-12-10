@@ -14,28 +14,27 @@
  */
 package org.kie.kogito.pmml;
 
-import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.kogito.prediction.PredictionModels;
-
-import java.util.function.Function;
 
 public abstract class AbstractPredictionModels implements PredictionModels {
 
-    private java.util.function.Function<String, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactoryFunction;
+    public static java.util.function.Function<String, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactoryFunction;
+
+    protected static void init(String ... pmmlFiles) {
+        final java.util.Map<org.kie.api.KieBase, org.kie.api.runtime.KieRuntimeFactory> kieRuntimeFactories = org.kie.kogito.pmml.PMMLKogito.createKieRuntimeFactories(pmmlFiles);
+        kieRuntimeFactoryFunction = s -> kieRuntimeFactories.keySet().stream()
+                .filter(kieBase -> org.kie.pmml.evaluator.core.utils.KnowledgeBaseUtils.getModel(kieBase, s).isPresent())
+                .map(kieRuntimeFactories::get)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Failed to find KieRuntimeFactory for model " +s));
+
+    }
 
     public org.kie.kogito.prediction.PredictionModel getPredictionModel(java.lang.String modelName) {
         return new org.kie.kogito.pmml.PmmlPredictionModel(getPMMLRuntime(modelName), modelName);
     }
 
-    protected Function<String, KieRuntimeFactory> getKieRuntimeFactoryFunction() {
-        return kieRuntimeFactoryFunction;
-    }
-
-    protected void setKieRuntimeFactoryFunction(Function<String, KieRuntimeFactory> kieRuntimeFactoryFunction) {
-        this.kieRuntimeFactoryFunction = kieRuntimeFactoryFunction;
-    }
-
     private org.kie.pmml.api.runtime.PMMLRuntime getPMMLRuntime(java.lang.String modelName) {
-        return getKieRuntimeFactoryFunction().apply(modelName).get(org.kie.pmml.api.runtime.PMMLRuntime.class);
+        return kieRuntimeFactoryFunction.apply(modelName).get(org.kie.pmml.api.runtime.PMMLRuntime.class);
     }
 }
