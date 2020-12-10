@@ -3,22 +3,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>monitoring-prometheus-addon</artifactId>
+    <artifactId>monitoring-prometheus</artifactId>
     <groupId>org.kie.kogito</groupId>
     <version>2.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <name>Kogito :: Add-Ons :: Monitoring Prometheus Springboot</name>
 
-  <description>Prometheus monitoring for Springboot</description>
-  <artifactId>monitoring-prometheus-springboot</artifactId>
+  <artifactId>monitoring-prometheus-quarkus-addon</artifactId>
+  <name>Kogito :: Add-Ons :: Monitoring Prometheus Quarkus</name>
 
+  <description>Prometheus monitoring for Quarkus</description>
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${version.springboot}</version>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>${version.io.quarkus}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -27,8 +27,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jersey</artifactId>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -36,8 +36,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>monitoring-core-springboot</artifactId>
+      <artifactId>monitoring-core-quarkus-addon</artifactId>
     </dependency>
   </dependencies>
-
 </project>
