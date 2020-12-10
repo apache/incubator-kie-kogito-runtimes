@@ -36,7 +36,7 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
+import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.metadata.MetaDataWriter;
 import org.kie.kogito.codegen.metadata.PrometheusLabeler;
 
@@ -77,14 +77,13 @@ public class ApplicationGeneratorTest {
 
     @Test
     public void compilationUnit() {
-        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(PACKAGE_NAME);
+        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(null, PACKAGE_NAME);
         assertCompilationUnit(appGenerator.getCompilationUnitOrThrow(), false);
     }
 
     @Test
     public void compilationUnitWithCDI() {
-        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(PACKAGE_NAME);
-        appGenerator.withDependencyInjection(new CDIDependencyInjectionAnnotator());
+        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(new QuarkusKogitoBuildContext(s -> false), PACKAGE_NAME);
         assertCompilationUnit(appGenerator.getCompilationUnitOrThrow(), true);
     }
 
@@ -112,7 +111,7 @@ public class ApplicationGeneratorTest {
 
     @Test
     public void applicationSectionReplace() {
-        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(PACKAGE_NAME);
+        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(null, PACKAGE_NAME);
         assertApplicationPlaceholderReplace(appGenerator, 0);
 
         appGenerator.withSections(Arrays.asList("Processes", "DecisionModels"));
@@ -179,10 +178,9 @@ public class ApplicationGeneratorTest {
     }
 
     private void assertApplicationPlaceholderReplace(ApplicationContainerGenerator appGenerator, long expectedParams) {
-        Optional<CompilationUnit> compilationUnit = appGenerator.compilationUnit();
-        assertThat(compilationUnit).isPresent();
+        CompilationUnit compilationUnit = appGenerator.getCompilationUnitOrThrow();
 
-        Optional<NodeList<Expression>> expressions = compilationUnit.get().findFirst(MethodCallExpr.class, mtd -> "loadEngines".equals(mtd.getNameAsString()))
+        Optional<NodeList<Expression>> expressions = compilationUnit.findFirst(MethodCallExpr.class, mtd -> "loadEngines".equals(mtd.getNameAsString()))
                 .map(MethodCallExpr::getArguments);
         assertThat(expressions).isPresent();
 

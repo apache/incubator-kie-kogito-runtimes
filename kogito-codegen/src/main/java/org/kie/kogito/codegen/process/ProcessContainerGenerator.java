@@ -40,6 +40,7 @@ import com.github.javaparser.ast.type.UnknownType;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.process.Processes;
 
@@ -62,13 +63,14 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
     private BlockStmt processesBody = new BlockStmt();
     private final TemplatedGenerator templatedGenerator;
 
-    public ProcessContainerGenerator(String packageName) {
+    public ProcessContainerGenerator(KogitoBuildContext buildContext, String packageName) {
         super(SECTION_CLASS_NAME, "processes", Processes.class);
         this.packageName = packageName;
         this.processes = new ArrayList<>();
         this.factoryMethods = new ArrayList<>();
 
         this.templatedGenerator = new TemplatedGenerator(
+                buildContext,
                 packageName,
                 SECTION_CLASS_NAME,
                 RESOURCE_CDI,
@@ -98,14 +100,12 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
 
     public ProcessContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
-        this.templatedGenerator.withDependencyInjection(annotator);
         return this;
     }
 
     @Override
     public ClassOrInterfaceDeclaration classDeclaration() {
-        CompilationUnit compilationUnit = templatedGenerator.compilationUnit()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Template: No CompilationUnit"));
+        CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
 
         registerProcessesExplicitly(compilationUnit);
         return compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)

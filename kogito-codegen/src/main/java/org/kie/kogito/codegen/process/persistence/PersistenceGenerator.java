@@ -50,7 +50,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.ConfigGenerator;
+import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
@@ -145,7 +145,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     }
 
     @Override
-    public void updateConfig(ConfigGenerator cfg) {
+    public void updateConfig(ApplicationConfigGenerator cfg) {
     }
 
     @Override

@@ -66,7 +66,7 @@ import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.ConfigGenerator;
+import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
@@ -170,7 +170,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             throw new MissingDecisionTableDependencyError();
         }
 
-        moduleGenerator = new RuleUnitContainerGenerator(packageName);
+        moduleGenerator = new RuleUnitContainerGenerator(context.getBuildContext(), packageName);
         moduleGenerator.withDependencyInjection(annotator);
 
         KnowledgeBuilderConfigurationImpl configuration =
@@ -273,7 +273,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 hasRuleUnits = true;
                 for (RuleUnitDescription ruleUnit : ruleUnits) {
                     String canonicalName = ruleUnit.getCanonicalName();
-                    RuleUnitGenerator ruSource = new RuleUnitGenerator(ruleUnit, pkgSources.getRulesFileName())
+                    RuleUnitGenerator ruSource = new RuleUnitGenerator(ruleUnit, pkgSources.getRulesFileName(), context.getBuildContext())
                             .withDependencyInjection(annotator)
                             .withQueries(pkgSources.getQueriesInRuleUnit(canonicalName))
                             .withAddons(addonsConfig)
@@ -436,8 +436,8 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void updateConfig(ConfigGenerator cfg) {
-        cfg.withRuleConfig(new RuleConfigGenerator(packageName));
+    public void updateConfig(ApplicationConfigGenerator cfg) {
+        cfg.withRuleConfig(new RuleConfigGenerator(context().getBuildContext(), packageName));
     }
 
     public IncrementalRuleCodegen withKModule(KieModuleModel model) {

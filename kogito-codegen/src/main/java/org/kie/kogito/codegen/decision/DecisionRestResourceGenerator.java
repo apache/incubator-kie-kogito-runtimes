@@ -50,8 +50,8 @@ import org.kie.dmn.openapi.model.DMNOASResult;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.CodegenUtils;
-import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import static com.github.javaparser.StaticJavaParser.parseStatement;
@@ -78,7 +78,7 @@ public class DecisionRestResourceGenerator {
 
     private static final Supplier<RuntimeException> TEMPLATE_WAS_MODIFIED = () -> new RuntimeException("Template was modified!");
 
-    public DecisionRestResourceGenerator(DMNModel model, String appCanonicalName) {
+    public DecisionRestResourceGenerator(KogitoBuildContext buildContext, DMNModel model, String appCanonicalName) {
         this.dmnModel = model;
         this.packageName = CodegenStringUtil.escapeIdentifier(model.getNamespace());
         this.decisionId = model.getDefinitions().getId();
@@ -88,13 +88,11 @@ public class DecisionRestResourceGenerator {
         String classPrefix = StringUtils.ucFirst(decisionName);
         this.resourceClazzName = classPrefix + "Resource";
         this.relativePath = packageName.replace(".", "/") + "/" + resourceClazzName + ".java";
-        generator = new TemplatedGenerator(packageName, "DecisionRestResource",CDI_TEMPLATE, SPRING_TEMPLATE, CDI_TEMPLATE);
+        generator = new TemplatedGenerator(buildContext, packageName, "DecisionRestResource",CDI_TEMPLATE, SPRING_TEMPLATE, CDI_TEMPLATE);
     }
 
     public String generate() {
-        CompilationUnit clazz = generator.compilationUnit()
-                .orElseThrow(() -> new InvalidTemplateException(resourceClazzName, generator.templatePath(), "Cannot " +
-                        "generate Decision REST Resource"));
+        CompilationUnit clazz = generator.compilationUnitOrThrow("Cannot generate Decision REST Resource");
 
         ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
@@ -339,7 +337,6 @@ public class DecisionRestResourceGenerator {
 
     public DecisionRestResourceGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
-        this.generator.withDependencyInjection(annotator);
         return this;
     }
 

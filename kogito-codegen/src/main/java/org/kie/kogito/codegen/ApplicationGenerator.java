@@ -54,7 +54,7 @@ public class ApplicationGenerator {
 
     private boolean hasRuleUnits;
     private final ApplicationContainerGenerator applicationMainGenerator;
-    private ConfigGenerator configGenerator;
+    private ApplicationConfigGenerator configGenerator;
     private List<Generator> generators = new ArrayList<>();
     private Map<Class, Labeler> labelers = new HashMap<>();
 
@@ -66,9 +66,9 @@ public class ApplicationGenerator {
         this.packageName = packageName;
         this.targetDirectory = targetDirectory;
         this.classLoader = Thread.currentThread().getContextClassLoader();
-        this.applicationMainGenerator = new ApplicationContainerGenerator(packageName);
+        this.applicationMainGenerator = new ApplicationContainerGenerator(context.getBuildContext(), packageName);
 
-        this.configGenerator = new ConfigGenerator(packageName);
+        this.configGenerator = new ApplicationConfigGenerator(context.getBuildContext(), packageName);
         this.configGenerator.withAddons(loadAddonList());
     }
 
@@ -82,8 +82,6 @@ public class ApplicationGenerator {
 
     public ApplicationGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
-        this.applicationMainGenerator.withDependencyInjection(annotator);
-        this.configGenerator.withDependencyInjection(annotator);
         return this;
     }
 
@@ -133,10 +131,7 @@ public class ApplicationGenerator {
                 .collect(Collectors.toList());
 
         applicationMainGenerator.withSections(sections);
-        CompilationUnit compilationUnit = applicationMainGenerator.getCompilationUnitOrThrow();
-        return new GeneratedFile(GeneratedFile.Type.APPLICATION,
-                                 applicationMainGenerator.generatedFilePath(),
-                                 log(compilationUnit.toString()).getBytes(StandardCharsets.UTF_8));
+        return applicationMainGenerator.generate();
     }
 
     private List<GeneratedFile> generateApplicationSections() {

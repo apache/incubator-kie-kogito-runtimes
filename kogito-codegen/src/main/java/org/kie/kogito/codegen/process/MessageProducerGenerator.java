@@ -24,8 +24,8 @@ import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
@@ -50,6 +50,7 @@ public class MessageProducerGenerator {
     protected TriggerMetaData trigger;
 
     public MessageProducerGenerator(
+            KogitoBuildContext buildContext,
             WorkflowProcess process,
             String modelfqcn,
             String processfqcn,
@@ -65,6 +66,7 @@ public class MessageProducerGenerator {
         this.messageDataEventClassName = messageDataEventClassName;
 
         this.generator = new TemplatedGenerator(
+                buildContext,
                 packageName,
                 resourceClazzName,
                 RESOURCE_CDI,
@@ -74,13 +76,11 @@ public class MessageProducerGenerator {
 
     public MessageProducerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
-        generator.withDependencyInjection(annotator);
         return this;
     }
 
     public String generate() {
-        CompilationUnit clazz = generator.compilationUnit()
-                .orElseThrow(() -> new InvalidTemplateException(resourceClazzName, generator.templatePath(), "Cannot generate message producer"));
+        CompilationUnit clazz = generator.compilationUnitOrThrow("Cannot generate message producer");
         clazz.setPackageDeclaration(process.getPackageName());
 
         ClassOrInterfaceDeclaration template = clazz.findFirst(ClassOrInterfaceDeclaration.class).get();

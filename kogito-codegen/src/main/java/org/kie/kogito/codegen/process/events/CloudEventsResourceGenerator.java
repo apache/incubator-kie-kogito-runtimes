@@ -29,6 +29,7 @@ import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
@@ -43,10 +44,16 @@ public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator
     private final DependencyInjectionAnnotator annotator;
     private final List<TriggerMetaData> triggers;
 
-    public CloudEventsResourceGenerator(final List<ProcessExecutableModelGenerator> generators, final DependencyInjectionAnnotator annotator) {
-        super(new TemplatedGenerator(ApplicationGenerator.DEFAULT_PACKAGE_NAME, CLASS_NAME, CDI_TEMPLATE,
-                                     null, CDI_TEMPLATE)
-                      .withDependencyInjection(annotator));
+    public CloudEventsResourceGenerator(final List<ProcessExecutableModelGenerator> generators,
+                                        final DependencyInjectionAnnotator annotator,
+                                        final KogitoBuildContext buildContext) {
+        super(new TemplatedGenerator(
+                buildContext,
+                ApplicationGenerator.DEFAULT_PACKAGE_NAME,
+                CLASS_NAME,
+                CDI_TEMPLATE,
+                null,
+                CDI_TEMPLATE));
         this.triggers = this.filterTriggers(generators);
         this.annotator = annotator;
     }
@@ -66,9 +73,7 @@ public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator
      * @return
      */
     public String generate() {
-        final CompilationUnit clazz = generator.compilationUnit()
-                .orElseThrow(() -> new InvalidTemplateException(CLASS_NAME, generator.templatePath(),
-                                                                "Cannot generate CloudEvents REST Resource"));
+        final CompilationUnit clazz = generator.compilationUnitOrThrow("Cannot generate CloudEvents REST Resource");
         final ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));

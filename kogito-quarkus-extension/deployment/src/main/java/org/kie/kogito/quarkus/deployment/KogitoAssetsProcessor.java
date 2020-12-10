@@ -209,12 +209,10 @@ public class KogitoAssetsProcessor {
                 .withClassLoader(classLoader);
 
         appGen.withGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromPaths(paths)))
-                .withAddons(addonsConfig)
-                .withDependencyInjection(dependencyInjectionAnnotator);
+                .withAddons(addonsConfig);
 
         appGen.withGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
                 .withAddons(addonsConfig)
-                .withDependencyInjection(dependencyInjectionAnnotator)
                 .withClassLoader(classLoader);
 
         // real work occurs here: invoke the code-generation procedure

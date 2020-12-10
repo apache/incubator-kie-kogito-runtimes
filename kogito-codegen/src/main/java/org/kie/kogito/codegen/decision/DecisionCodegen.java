@@ -50,7 +50,7 @@ import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.ConfigGenerator;
+import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
@@ -104,7 +104,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
         // set default package name
         setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
-        this.decisionContainerGenerator = new DecisionContainerGenerator(packageName, applicationCanonicalName, this.cResources);
+        this.decisionContainerGenerator = new DecisionContainerGenerator(packageName, context.getBuildContext(), applicationCanonicalName, this.cResources);
     }
 
     private void loadModelsAndValidate() {
@@ -172,10 +172,11 @@ public class DecisionCodegen extends AbstractGenerator {
             if (stronglyTypedEnabled) {
                 generateStronglyTypedInput(model);
             }
-            DecisionRestResourceGenerator resourceGenerator = new DecisionRestResourceGenerator(model, applicationCanonicalName).withDependencyInjection(annotator)
-                                                                                                                                .withAddons(addonsConfig)
-                                                                                                                                .withStronglyTyped(stronglyTypedEnabled)
-                                                                                                                                .withOASResult(oasResult, isMPAnnotationsPresent(), isIOSwaggerOASv3AnnotationsPresent());
+            DecisionRestResourceGenerator resourceGenerator = new DecisionRestResourceGenerator(context.getBuildContext(), model, applicationCanonicalName)
+                    .withDependencyInjection(annotator)
+                    .withAddons(addonsConfig)
+                    .withStronglyTyped(stronglyTypedEnabled)
+                    .withOASResult(oasResult, isMPAnnotationsPresent(), isIOSwaggerOASv3AnnotationsPresent());
             rgs.add(resourceGenerator);
         }
 
@@ -278,9 +279,9 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void updateConfig(ConfigGenerator cfg) {
+    public void updateConfig(ApplicationConfigGenerator cfg) {
         if (!cResources.isEmpty()) {
-            cfg.withDecisionConfig(new DecisionConfigGenerator(packageName));
+            cfg.withDecisionConfig(new DecisionConfigGenerator(context().getBuildContext(), packageName));
         }
     }
 
@@ -310,11 +311,6 @@ public class DecisionCodegen extends AbstractGenerator {
 
     public DecisionCodegen withPCLResolverFn(PCLResolverFn fn) {
         this.pclResolverFn = fn;
-        return this;
-    }
-
-    public DecisionCodegen withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.decisionContainerGenerator.withDependencyInjection(annotator);
         return this;
     }
 }

@@ -57,7 +57,7 @@ class PMMLRestResourceGeneratorTest {
 
     @BeforeAll
     public static void setup() {
-        pmmlRestResourceGenerator = new PMMLRestResourceGenerator(KIE_PMML_MODEL, APP_CANONICAL_NAME);
+        pmmlRestResourceGenerator = new PMMLRestResourceGenerator(null, KIE_PMML_MODEL, APP_CANONICAL_NAME);
         assertNotNull(pmmlRestResourceGenerator);
     }
 

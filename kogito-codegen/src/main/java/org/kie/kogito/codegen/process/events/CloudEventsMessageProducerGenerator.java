@@ -30,6 +30,7 @@ import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.TemplateInstantiationException;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.MessageProducerGenerator;
 
 import static com.github.javaparser.StaticJavaParser.parse;
@@ -41,8 +42,13 @@ import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
 @Deprecated
 public class CloudEventsMessageProducerGenerator extends MessageProducerGenerator {
 
-    public CloudEventsMessageProducerGenerator(WorkflowProcess process, String modelfqcn, String processfqcn, String messageDataEventClassName, TriggerMetaData trigger) {
-        super(process, modelfqcn, processfqcn, messageDataEventClassName, trigger);
+    public CloudEventsMessageProducerGenerator(KogitoBuildContext buildContext,
+                                               WorkflowProcess process,
+                                               String modelfqcn,
+                                               String processfqcn,
+                                               String messageDataEventClassName,
+                                               TriggerMetaData trigger) {
+        super(buildContext, process, modelfqcn, processfqcn, messageDataEventClassName, trigger);
     }
 
     public String generate() {

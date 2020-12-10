@@ -289,15 +289,13 @@ public class GenerateModelMojo extends AbstractKieMojo {
         boolean isJPMMLAvailable = hasClassOnClasspath(project, "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
         if(generatePredictions()) {
             appGen.withGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
-                    .withAddons(addonsConfig)
-                    .withDependencyInjection(dependencyInjectionAnnotator);
+                    .withAddons(addonsConfig);
         }
 
         if (generateDecisions()) {
             appGen.withGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
                     .withAddons(addonsConfig)
                     .withClassLoader(projectClassLoader)
-                    .withDependencyInjection(dependencyInjectionAnnotator)
                     .withPCLResolverFn(x -> hasClassOnClasspath(project, x));
         }
 

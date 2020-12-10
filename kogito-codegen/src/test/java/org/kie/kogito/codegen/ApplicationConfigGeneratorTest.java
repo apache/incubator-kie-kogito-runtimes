@@ -21,24 +21,21 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.mockito.Mockito;
 
-import com.github.javaparser.ast.expr.NullLiteralExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-
-public class ConfigGeneratorTest {
+public class ApplicationConfigGeneratorTest {
 
     @Test
     public void withProcessConfig() {
-        final ConfigGenerator generator = new ConfigGenerator("org.kie.kogito.test");
+        final ApplicationConfigGenerator generator = new ApplicationConfigGenerator(null, "org.kie.kogito.test");
         final ProcessConfigGenerator processConfigGenerator = Mockito.mock(ProcessConfigGenerator.class);
-        final ConfigGenerator returnedConfigGenerator = generator.withProcessConfig(processConfigGenerator);
+        final ApplicationConfigGenerator returnedConfigGenerator = generator.withProcessConfig(processConfigGenerator);
         assertThat(returnedConfigGenerator).isNotNull();
         assertThat(returnedConfigGenerator).isSameAs(generator);
     }
 
     @Test
     public void withProcessConfigNull() {
-        final ConfigGenerator generator = new ConfigGenerator("org.kie.kogito.test");
-        final ConfigGenerator returnedConfigGenerator = generator.withProcessConfig(null);
+        final ApplicationConfigGenerator generator = new ApplicationConfigGenerator(null, "org.kie.kogito.test");
+        final ApplicationConfigGenerator returnedConfigGenerator = generator.withProcessConfig(null);
         assertThat(returnedConfigGenerator).isNotNull();
         assertThat(returnedConfigGenerator).isSameAs(generator);
     }

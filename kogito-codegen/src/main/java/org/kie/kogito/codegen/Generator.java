@@ -41,12 +41,12 @@ public interface Generator {
     Collection<GeneratedFile> generate();
 
     /**
-     * Consumes the given ConfigGenerator so that it can enrich it with
+     * Consumes the given ApplicationConfigGenerator so that it can enrich it with
      * further, Generator-specific details.
      *
      * This is automatically called by the ApplicationGenerator.
      */
-    void updateConfig(ConfigGenerator cfg);
+    void updateConfig(ApplicationConfigGenerator cfg);
 
     void setPackageName(String packageName);
 

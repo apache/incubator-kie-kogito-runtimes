@@ -50,11 +50,10 @@ import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.ConfigGenerator;
+import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.ResourceGeneratorFactory;
-import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
@@ -203,7 +202,7 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     public void setPackageName(String packageName) {
-        this.moduleGenerator = new ProcessContainerGenerator(packageName);
+        this.moduleGenerator = new ProcessContainerGenerator(context.getBuildContext(), packageName);
         this.applicationCanonicalName = packageName + ".Application";
         this.packageName = packageName;
     }
@@ -344,6 +343,7 @@ public class ProcessCodegen extends AbstractGenerator {
                         mdegs.add(msgDataEventGenerator);
 
                         megs.add(new MessageConsumerGenerator(
+                                context.getBuildContext(),
                                 workFlowProcess,
                                 modelClassGenerator.className(),
                                 execModelGen.className(),
@@ -363,6 +363,7 @@ public class ProcessCodegen extends AbstractGenerator {
                         // see: https://issues.redhat.com/browse/KOGITO-1767
                         if (addonsConfig.useKnativeEventing()) {
                             mpgs.add(new CloudEventsMessageProducerGenerator(
+                                    context.getBuildContext(),
                                     workFlowProcess,
                                     modelClassGenerator.className(),
                                     execModelGen.className(),
@@ -371,6 +372,7 @@ public class ProcessCodegen extends AbstractGenerator {
                                              .withDependencyInjection(annotator));
                         } else {
                             mpgs.add(new MessageProducerGenerator(
+                                    context.getBuildContext(),
                                     workFlowProcess,
                                     modelClassGenerator.className(),
                                     execModelGen.className(),
@@ -449,12 +451,12 @@ public class ProcessCodegen extends AbstractGenerator {
         if (this.addonsConfig.useKnativeEventing()) {
             LOGGER.info("Knative Eventing addon enabled, generating CloudEvent HTTP listener");
             final CloudEventsResourceGenerator ceGenerator =
-                    new CloudEventsResourceGenerator(processExecutableModelGenerators, annotator);
+                    new CloudEventsResourceGenerator(processExecutableModelGenerators, annotator, context.getBuildContext());
             storeFile(Type.REST, ceGenerator.generatedFilePath(), ceGenerator.generate());
         }
 
         final TopicsInformationResourceGenerator topicsGenerator =
-                new TopicsInformationResourceGenerator(processExecutableModelGenerators, annotator, addonsConfig);
+                new TopicsInformationResourceGenerator(processExecutableModelGenerators, annotator, context.getBuildContext(), addonsConfig);
         storeFile(Type.REST, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
 
 
@@ -473,9 +475,9 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void updateConfig(ConfigGenerator cfg) {
+    public void updateConfig(ApplicationConfigGenerator cfg) {
         if (!processes.isEmpty()) {
-            cfg.withProcessConfig(new ProcessConfigGenerator(packageName));
+            cfg.withProcessConfig(new ProcessConfigGenerator(context().getBuildContext(), packageName));
         }
     }
 

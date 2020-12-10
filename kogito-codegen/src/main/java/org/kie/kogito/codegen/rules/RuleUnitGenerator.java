@@ -37,6 +37,7 @@ import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.FileGenerator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.conf.ClockType;
 import org.kie.kogito.conf.EventProcessingType;
@@ -59,6 +60,7 @@ public class RuleUnitGenerator implements FileGenerator {
     private final String packageName;
     private final String typeName;
     private final String generatedSourceFile;
+    private KogitoBuildContext buildContext;
     private final String generatedFilePath;
     private final String targetCanonicalName;
     private RuleUnitConfig config;
@@ -68,11 +70,12 @@ public class RuleUnitGenerator implements FileGenerator {
     private String applicationPackageName;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
-    public RuleUnitGenerator(RuleUnitDescription ruleUnit, String generatedSourceFile) {
+    public RuleUnitGenerator(RuleUnitDescription ruleUnit, String generatedSourceFile, KogitoBuildContext buildContext) {
         this.ruleUnit = ruleUnit;
         this.packageName = ruleUnit.getPackageName();
         this.typeName = ruleUnit.getSimpleName();
         this.generatedSourceFile = generatedSourceFile;
+        this.buildContext = buildContext;
         this.targetTypeName = typeName + "RuleUnit";
         this.targetCanonicalName = packageName + "." + targetTypeName;
         this.generatedFilePath = targetCanonicalName.replace('.', '/') + ".java";
@@ -95,7 +98,7 @@ public class RuleUnitGenerator implements FileGenerator {
     public List<QueryEndpointGenerator> queries() {
         return queries.stream()
                 .filter(query -> !query.hasParameters())
-                .map(query -> new QueryEndpointGenerator(ruleUnit, query, annotator, addonsConfig))
+                .map(query -> new QueryEndpointGenerator(ruleUnit, query, annotator, buildContext, addonsConfig))
                 .collect(toList());
     }
 

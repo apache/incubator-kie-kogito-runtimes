@@ -40,7 +40,7 @@ import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.ConfigGenerator;
+import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
@@ -75,7 +75,7 @@ public class PredictionCodegen extends AbstractGenerator {
 
         // set default package name
         setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
-        this.moduleGenerator = new PredictionModelsGenerator(packageName, applicationCanonicalName, resources);
+        this.moduleGenerator = new PredictionModelsGenerator(context.getBuildContext(), packageName, applicationCanonicalName, resources);
     }
 
     public static PredictionCodegen ofCollectedResources(boolean isJPMMLAvailable,
@@ -109,9 +109,9 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void updateConfig(ConfigGenerator cfg) {
+    public void updateConfig(ApplicationConfigGenerator cfg) {
         if (!resources.isEmpty()) {
-            cfg.withPredictionConfig(new PredictionConfigGenerator(packageName));
+            cfg.withPredictionConfig(new PredictionConfigGenerator(context().getBuildContext(), packageName));
         }
     }
 
@@ -127,11 +127,6 @@ public class PredictionCodegen extends AbstractGenerator {
     public PredictionCodegen withAddons(AddonsConfig addonsConfig) {
         this.moduleGenerator.withAddons(addonsConfig);
         this.addonsConfig = addonsConfig;
-        return this;
-    }
-
-    public PredictionCodegen withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.moduleGenerator.withDependencyInjection(annotator);
         return this;
     }
 
@@ -188,8 +183,7 @@ public class PredictionCodegen extends AbstractGenerator {
                     batch.add( new DescrResource( packageDescr ), ResourceType.DESCR );
                 }
                 if (!(model instanceof KiePMMLFactoryModel)) {
-                PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(model,
-                                                                                            applicationCanonicalName)
+                PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(context.getBuildContext(), model, applicationCanonicalName)
                         .withDependencyInjection(annotator);
                     storeFile(GeneratedFile.Type.PMML, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
             }

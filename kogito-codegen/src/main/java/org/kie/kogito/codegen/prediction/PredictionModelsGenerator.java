@@ -24,7 +24,7 @@ import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.prediction.PredictionModels;
 
 import java.util.List;
@@ -41,12 +41,13 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
     protected AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     protected final TemplatedGenerator templatedGenerator;
 
-    public PredictionModelsGenerator(String packageName, String applicationCanonicalName, List<PMMLResource> resources) {
+    public PredictionModelsGenerator(KogitoBuildContext buildContext, String packageName, String applicationCanonicalName, List<PMMLResource> resources) {
         super(SECTION_CLASS_NAME, "predictionModels", PredictionModels.class);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = resources;
 
         this.templatedGenerator = new TemplatedGenerator(
+                buildContext,
                 packageName,
                 SECTION_CLASS_NAME,
                 RESOURCE_CDI,
@@ -59,18 +60,9 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
         return this;
     }
 
-    public PredictionModelsGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.templatedGenerator.withDependencyInjection(annotator);
-        return this;
-    }
-
     @Override
     public ClassOrInterfaceDeclaration classDeclaration() {
-        CompilationUnit clazz = templatedGenerator.compilationUnit()
-                .orElseThrow(() -> new InvalidTemplateException(
-                        SECTION_CLASS_NAME,
-                        templatedGenerator.templatePath(),
-                        "Invalid Template: No CompilationUnit"));
+        CompilationUnit clazz = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
         ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
         populateStaticKieRuntimeFactoryFunctionInit(typeDeclaration);
         return typeDeclaration;

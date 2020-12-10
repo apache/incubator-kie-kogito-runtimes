@@ -50,6 +50,7 @@ import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.TemplateInstantiationException;
 import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
@@ -74,7 +75,11 @@ public class QueryEndpointGenerator implements FileGenerator {
     private final AddonsConfig addonsConfig;
     private final TemplatedGenerator generator;
 
-    public QueryEndpointGenerator(RuleUnitDescription ruleUnit, QueryModel query, DependencyInjectionAnnotator annotator, AddonsConfig addonsConfig) {
+    public QueryEndpointGenerator(RuleUnitDescription ruleUnit,
+                                  QueryModel query,
+                                  DependencyInjectionAnnotator annotator,
+                                  KogitoBuildContext buildContext,
+                                  AddonsConfig addonsConfig) {
         this.ruleUnit = ruleUnit;
         this.query = query;
         this.name = toCamelCase(query.getName());
@@ -86,8 +91,7 @@ public class QueryEndpointGenerator implements FileGenerator {
         this.generatedFilePath = (query.getNamespace() + "." + targetCanonicalName).replace('.', '/') + ".java";
         this.addonsConfig = addonsConfig;
         this.generator =
-                new TemplatedGenerator(query.getNamespace(), targetCanonicalName, RESOURCE_CDI, RESOURCE_SPRING, RESOURCE_DEFAULT)
-                        .withDependencyInjection(annotator);
+                new TemplatedGenerator(buildContext, query.getNamespace(), targetCanonicalName, RESOURCE_CDI, RESOURCE_SPRING, RESOURCE_DEFAULT);
     }
 
     public QueryGenerator getQueryGenerator() {
@@ -134,11 +138,7 @@ public class QueryEndpointGenerator implements FileGenerator {
 
     @Override
     public String generate() {
-        CompilationUnit cu = generator.compilationUnit()
-                .orElseThrow(() -> {
-                    throw new TemplateInstantiationException(
-                            generator.typeName(), generator.templatePath(), "Could not create CompilationUnit");
-                });
+        CompilationUnit cu = generator.compilationUnitOrThrow("Could not create CompilationUnit");
         cu.setPackageDeclaration(query.getNamespace());
 
         ClassOrInterfaceDeclaration clazz = cu
