@@ -152,23 +152,22 @@ public class AbstractCodegenTest {
     protected Application generateCodeProcessesOnly(String... processes) throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Arrays.asList(processes));
-        return generateCode(resourcesTypeMap, false);
+        return generateCode(resourcesTypeMap);
     }
 
     protected Application generateCodeRulesOnly(String... rules) throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.RULES, Arrays.asList(rules));
-        return generateCode(resourcesTypeMap, true);
+        return generateCode(resourcesTypeMap);
     }
 
     protected Application generateRulesFromJava(String... javaSourceCode) throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.JAVA, Arrays.asList(javaSourceCode));
-        return generateCode(resourcesTypeMap, true);
+        return generateCode(resourcesTypeMap);
     }
 
-    protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap,
-            boolean hasRuleUnit) throws Exception {
+    protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap) throws Exception {
         GeneratorContext context = GeneratorContext.ofResourcePath(new File(TEST_RESOURCES));
 
         //Testing based on Quarkus as Default
@@ -180,7 +179,6 @@ public class AbstractCodegenTest {
         ApplicationGenerator appGen =
                 new ApplicationGenerator(this.getClass().getPackage().getName(), new File("target/codegen-tests"))
                         .withGeneratorContext(context)
-                        .withRuleUnits(hasRuleUnit)
                         .withDependencyInjection(null);
 
         // Hack just to avoid test breaking

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationGenerator {
 
-    public static final Logger logger = LoggerFactory.getLogger(ApplicationGenerator.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationGenerator.class);
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
     public static final String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
@@ -52,7 +52,6 @@ public class ApplicationGenerator {
 
     private DependencyInjectionAnnotator annotator;
 
-    private boolean hasRuleUnits;
     private final ApplicationContainerGenerator applicationMainGenerator;
     private ConfigGenerator configGenerator;
     private List<Generator> generators = new ArrayList<>();
@@ -89,11 +88,6 @@ public class ApplicationGenerator {
 
     public ApplicationGenerator withGeneratorContext(GeneratorContext context) {
         this.context = context;
-        return this;
-    }
-
-    public ApplicationGenerator withRuleUnits(boolean hasRuleUnits) {
-        this.hasRuleUnits = hasRuleUnits;
         return this;
     }
 
@@ -136,7 +130,7 @@ public class ApplicationGenerator {
         CompilationUnit compilationUnit = applicationMainGenerator.getCompilationUnitOrThrow();
         return new GeneratedFile(GeneratedFile.Type.APPLICATION,
                                  applicationMainGenerator.generatedFilePath(),
-                                 log(compilationUnit.toString()).getBytes(StandardCharsets.UTF_8));
+                                 compilationUnit.toString());
     }
 
     private List<GeneratedFile> generateApplicationSections() {
@@ -165,23 +159,6 @@ public class ApplicationGenerator {
         generator.setProjectDirectory(targetDirectory.getParentFile().toPath());
         generator.setContext(context);
         return generator;
-    }
-
-    public static String log(String source) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("=====");
-            logger.debug(source);
-            logger.debug("=====");
-        }
-        return source;
-    }
-
-    public static void log(byte[] source) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("=====");
-            logger.debug(new String(source));
-            logger.debug("=====");
-        }
     }
 
     public ApplicationGenerator withClassLoader(ClassLoader classLoader) {

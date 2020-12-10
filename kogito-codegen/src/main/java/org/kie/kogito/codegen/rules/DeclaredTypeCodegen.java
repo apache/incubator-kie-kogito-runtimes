@@ -46,11 +46,14 @@ import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.ApplicationGenerator.logger;
 
 public class DeclaredTypeCodegen extends AbstractGenerator {
+
+    private static final Logger logger = LoggerFactory.getLogger(DeclaredTypeCodegen.class);
 
     public static DeclaredTypeCodegen ofPath(Path basePath) {
         try {

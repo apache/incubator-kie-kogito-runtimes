@@ -61,8 +61,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.ApplicationGenerator.log;
-import static org.kie.kogito.codegen.ApplicationGenerator.logger;
 
 public class DecisionCodegen extends AbstractGenerator {
 
@@ -222,17 +220,17 @@ public class DecisionCodegen extends AbstractGenerator {
             DMNTypeSafeTypeGenerator generator = new DMNTypeSafeTypeGenerator(model, index, factory).withJacksonAnnotation();
             boolean useMPAnnotations = isMPAnnotationsPresent();
             if (useMPAnnotations) {
-                logger.debug("useMPAnnotations");
+                LOG.debug("useMPAnnotations");
                 generator.withMPAnnotation();
             } else {
-                logger.debug("NO useMPAnnotations");
+                LOG.debug("NO useMPAnnotations");
             }
             boolean useIOSwaggerOASv3Annotations = isIOSwaggerOASv3AnnotationsPresent();
             if (useIOSwaggerOASv3Annotations) {
-                logger.debug("useIOSwaggerOASv3Annotations");
+                LOG.debug("useIOSwaggerOASv3Annotations");
                 generator.withIOSwaggerOASv3();
             } else {
-                logger.debug("NO useIOSwaggerOASv3Annotations");
+                LOG.debug("NO useIOSwaggerOASv3Annotations");
             }
             Map<String, String> allTypesSourceCode = generator
                     .processTypes()
@@ -240,7 +238,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
             allTypesSourceCode.forEach((k, v) -> storeFile(GeneratedFile.Type.CLASS, k.replace(".", "/") + ".java", v));
         } catch (Exception e) {
-            logger.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
+            LOG.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
             throw e;
         }
     }
@@ -285,7 +283,7 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private void storeFile(GeneratedFile.Type type, String path, String source) {
-        generatedFiles.add(new GeneratedFile(type, path, log(source).getBytes(StandardCharsets.UTF_8)));
+        generatedFiles.add(new GeneratedFile(type, path, source));
     }
 
     public List<GeneratedFile> getGeneratedFiles() {
