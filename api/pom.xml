@@ -40,8 +40,8 @@
   </repositories>
 
   <modules>
+    <module>kogito-events-api</module>
     <module>kogito-api</module>
-    <module>kogito-events</module>
     <module>kogito-internal</module>
     <module>kogito-services</module>
     <module>kogito-timer</module>
