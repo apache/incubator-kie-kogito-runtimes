@@ -78,7 +78,7 @@
     <version.vertx.web.client>3.9.4</version.vertx.web.client>
 
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>1.10.0.Final</version.io.quarkus>
+    <version.io.quarkus>1.10.3.Final</version.io.quarkus>
     <quarkus.logging.manager>org.jboss.logmanager.LogManager</quarkus.logging.manager>
 
     <!-- dependencies versions -->
@@ -133,7 +133,7 @@
     <version.org.keycloak>11.0.2</version.org.keycloak>
     <version.org.mockito>3.6.0</version.org.mockito>
     <version.org.mvel>2.4.10.Final</version.org.mvel>
-    <version.org.kie7>7.46.0.Final</version.org.kie7>
+    <version.org.kie7>7.47.0.Final</version.org.kie7>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
     <version.wiremock>2.27.2</version.wiremock>
