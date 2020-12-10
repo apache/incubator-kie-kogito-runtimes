@@ -37,7 +37,7 @@ public class PredictionCodegenTest extends AbstractCodegenTest {
     private static final Path FULL_SOURCE = BASE_PATH.resolve(SOURCE);
 
     @Test
-    public void generateAllFiles() throws Exception {
+    public void generateAllFiles() {
 
         GeneratorContext context = GeneratorContext.ofProperties(new Properties());
 
