@@ -40,7 +40,6 @@ public class DMNCompilationProvider extends KogitoCompilationProvider {
         Path path = context.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
         return appGen.registerAndInitGenerator(DecisionCodegen.ofCollectedResources(
                 CollectedResource.fromDirectory(path)))
-                .withClassLoader(cl)
-                .withDependencyInjection(new CDIDependencyInjectionAnnotator());
+                .withClassLoader(cl);
     }
 }
