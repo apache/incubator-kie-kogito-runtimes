@@ -50,7 +50,7 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         Map<AbstractCodegenTest.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTask.bpmn2"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/BusinessRuleTask.drl"));
-        Application app = generateCode(resourcesTypeMap, false);
+        Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
 
         Process<? extends Model> p = app.get(Processes.class).processById("BusinessRuleTask");
@@ -72,7 +72,7 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         Map<AbstractCodegenTest.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTask.bpmn2"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/BusinessRuleTask.drl"));
-        Application app = generateCode(resourcesTypeMap, false);
+        Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
         final AtomicInteger counter = new AtomicInteger();
         app.config().get(RuleConfig.class).ruleEventListeners().agendaListeners().add(new DefaultAgendaEventListener() {
@@ -104,7 +104,7 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         Map<AbstractCodegenTest.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTask.bpmn2"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/BusinessRuleTask.drl"));
-        Application app = generateCode(resourcesTypeMap, false);
+        Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
         final List<String> startedProcesses = new ArrayList<>();
         // add custom event listener that collects data
@@ -144,7 +144,7 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         Map<AbstractCodegenTest.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("decision/models/dmnprocess.bpmn2"));
         resourcesTypeMap.put(TYPE.DECISION, Collections.singletonList("decision/models/vacationDaysAlt/vacationDaysAlt.dmn"));
-        Application app = generateCode(resourcesTypeMap, false);
+        Application app = generateCode(resourcesTypeMap);
         Process<? extends Model> p =
                 app.get(Processes.class)
                         .processById("DmnProcess");
@@ -212,7 +212,7 @@ public class BusinessRuleTaskTest extends AbstractCodegenTest {
         Map<AbstractCodegenTest.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/BusinessRuleTaskWithIOExpression.bpmn2"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/BusinessRuleTask.drl"));
-        Application app = generateCode(resourcesTypeMap, false);
+        Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
 
         Process<? extends Model> p = app.get(Processes.class).processById("BusinessRuleTask");

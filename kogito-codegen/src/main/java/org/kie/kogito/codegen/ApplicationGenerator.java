@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -41,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationGenerator {
 
-    public static final Logger logger = LoggerFactory.getLogger(ApplicationGenerator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGenerator.class);
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
     public static final String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
@@ -52,7 +51,6 @@ public class ApplicationGenerator {
 
     private DependencyInjectionAnnotator annotator;
 
-    private boolean hasRuleUnits;
     private final ApplicationContainerGenerator applicationMainGenerator;
     private ConfigGenerator configGenerator;
     private List<Generator> generators = new ArrayList<>();
@@ -93,11 +91,6 @@ public class ApplicationGenerator {
         return this;
     }
 
-    public ApplicationGenerator withRuleUnits(boolean hasRuleUnits) {
-        this.hasRuleUnits = hasRuleUnits;
-        return this;
-    }
-
     public ApplicationGenerator withAddons(AddonsConfig addonsConfig) {
         if (addonsConfig.usePrometheusMonitoring()) {
             this.labelers.put(PrometheusLabeler.class, new PrometheusLabeler());
@@ -118,6 +111,8 @@ public class ApplicationGenerator {
         generatedFiles.addAll(configGenerator.generate());
 
         this.labelers.values().forEach(l -> MetaDataWriter.writeLabelsImageMetadata(targetDirectory, l.generateLabels()));
+        logGeneratedFiles(generatedFiles);
+
         return generatedFiles;
     }
 
@@ -138,7 +133,7 @@ public class ApplicationGenerator {
         CompilationUnit compilationUnit = applicationMainGenerator.getCompilationUnitOrThrow();
         return new GeneratedFile(GeneratedFile.Type.APPLICATION,
                                  applicationMainGenerator.generatedFilePath(),
-                                 log(compilationUnit.toString()).getBytes(StandardCharsets.UTF_8));
+                                 compilationUnit.toString());
     }
 
     private List<GeneratedFile> generateApplicationSections() {
@@ -160,7 +155,7 @@ public class ApplicationGenerator {
         return generatedFiles;
     }
 
-    public <G extends Generator> G registerAndInitGenerator(G generator) {
+    public <G extends Generator> G withGenerator(G generator) {
         this.generators.add(generator);
         generator.setPackageName(packageName);
         generator.setDependencyInjection(annotator);
@@ -168,23 +163,6 @@ public class ApplicationGenerator {
         generator.setContext(context);
         generator.setAddonsConfig(addonsConfig);
         return generator;
-    }
-
-    public static String log(String source) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("=====");
-            logger.debug(source);
-            logger.debug("=====");
-        }
-        return source;
-    }
-
-    public static void log(byte[] source) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("=====");
-            logger.debug(new String(source));
-            logger.debug("=====");
-        }
     }
 
     public ApplicationGenerator withClassLoader(ClassLoader classLoader) {
@@ -204,8 +182,20 @@ public class ApplicationGenerator {
                 }
             }
         } catch (IOException e) {
-            logger.warn("Unexpected exception during loading of kogito.addon files", e);
+            LOGGER.warn("Unexpected exception during loading of kogito.addon files", e);
         }
         return addons;
+    }
+
+    private void logGeneratedFiles(Collection<GeneratedFile> files) {
+        if (LOGGER.isDebugEnabled()) {
+            for (GeneratedFile file : files) {
+                LOGGER.debug("=====");
+                LOGGER.debug(file.getType() + ": " + file.relativePath());
+                LOGGER.debug("=====");
+                LOGGER.debug(new String(file.contents()));
+                LOGGER.debug("=====");
+            }
+        }
     }
 }

@@ -38,7 +38,7 @@ public class SplitGatewayTest extends AbstractCodegenTest {
     public void testMultilineGateway() throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("gateway/SplitMultilineExpression.bpmn2"));
-        Application app = generateCode(resourcesTypeMap, false);
+        Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
 
         Process<? extends Model> p = app.get(Processes.class).processById("SplitMultilineExpression");
