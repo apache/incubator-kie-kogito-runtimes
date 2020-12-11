@@ -37,8 +37,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import javax.inject.Inject;
-
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;

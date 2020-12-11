@@ -118,12 +118,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 String namespace = resolveVariable(decisionModel.getNamespace());
                 String model = resolveVariable(decisionModel.getModel());
 
-                DecisionModel modelInstance =
-                        Optional.ofNullable(getRuleSetNode().getDecisionModel())
-                                .orElse(() -> new DmnDecisionModel(
-                                        ((KieSession) kruntime).getKieRuntime(DMNRuntime.class),
-                                        namespace,
-                                        model)).get();
+                DecisionModel modelInstance = getRuleSetNode().getDecisionModel().get();
 
                 DMNContext context = modelInstance.newContext(inputs);
                 DMNResult dmnResult = modelInstance.evaluateAll(context);
