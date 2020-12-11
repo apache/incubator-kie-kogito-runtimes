@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationGenerator {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationGenerator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGenerator.class);
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
     public static final String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
@@ -179,19 +179,19 @@ public class ApplicationGenerator {
                 }
             }
         } catch (IOException e) {
-            logger.warn("Unexpected exception during loading of kogito.addon files", e);
+            LOGGER.warn("Unexpected exception during loading of kogito.addon files", e);
         }
         return addons;
     }
 
     private void logGeneratedFiles(Collection<GeneratedFile> files) {
-        if (logger.isDebugEnabled()) {
+        if (LOGGER.isDebugEnabled()) {
             for (GeneratedFile file : files) {
-                logger.debug("=====");
-                logger.debug(file.getType() + ": " + file.relativePath());
-                logger.debug("=====");
-                logger.debug(new String(file.contents()));
-                logger.debug("=====");
+                LOGGER.debug("=====");
+                LOGGER.debug(file.getType() + ": " + file.relativePath());
+                LOGGER.debug("=====");
+                LOGGER.debug(new String(file.contents()));
+                LOGGER.debug("=====");
             }
         }
     }

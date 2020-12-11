@@ -16,7 +16,6 @@
 package org.kie.kogito.codegen.decision;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,7 +63,7 @@ import static java.util.stream.Collectors.toList;
 
 public class DecisionCodegen extends AbstractGenerator {
 
-    public static final Logger LOG = LoggerFactory.getLogger(DecisionCodegen.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(DecisionCodegen.class);
 
     public static String STRONGLY_TYPED_CONFIGURATION_KEY = "kogito.decisions.stronglytyped";
     public static String VALIDATION_CONFIGURATION_KEY = "kogito.decisions.validation";
@@ -153,7 +152,7 @@ public class DecisionCodegen extends AbstractGenerator {
             String jsonContent = new ObjectMapper().writeValueAsString(oasResult.getJsonSchemaNode());
             storeFile(GeneratedFile.Type.GENERATED_CP_RESOURCE, "META-INF/resources/dmnDefinitions.json", jsonContent);
         } catch (Exception e) {
-            LOG.error("Error while trying to generate OpenAPI specification for the DMN models", e);
+            LOGGER.error("Error while trying to generate OpenAPI specification for the DMN models", e);
         }
 
         for (DMNResource resource : resources) {
@@ -220,17 +219,17 @@ public class DecisionCodegen extends AbstractGenerator {
             DMNTypeSafeTypeGenerator generator = new DMNTypeSafeTypeGenerator(model, index, factory).withJacksonAnnotation();
             boolean useMPAnnotations = isMPAnnotationsPresent();
             if (useMPAnnotations) {
-                LOG.debug("useMPAnnotations");
+                LOGGER.debug("useMPAnnotations");
                 generator.withMPAnnotation();
             } else {
-                LOG.debug("NO useMPAnnotations");
+                LOGGER.debug("NO useMPAnnotations");
             }
             boolean useIOSwaggerOASv3Annotations = isIOSwaggerOASv3AnnotationsPresent();
             if (useIOSwaggerOASv3Annotations) {
-                LOG.debug("useIOSwaggerOASv3Annotations");
+                LOGGER.debug("useIOSwaggerOASv3Annotations");
                 generator.withIOSwaggerOASv3();
             } else {
-                LOG.debug("NO useIOSwaggerOASv3Annotations");
+                LOGGER.debug("NO useIOSwaggerOASv3Annotations");
             }
             Map<String, String> allTypesSourceCode = generator
                     .processTypes()
@@ -238,7 +237,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
             allTypesSourceCode.forEach((k, v) -> storeFile(GeneratedFile.Type.CLASS, k.replace(".", "/") + ".java", v));
         } catch (Exception e) {
-            LOG.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
+            LOGGER.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
             throw e;
         }
     }

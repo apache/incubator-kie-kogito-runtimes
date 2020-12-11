@@ -53,7 +53,7 @@ import static java.util.stream.Collectors.toList;
 
 public class DeclaredTypeCodegen extends AbstractGenerator {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeclaredTypeCodegen.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeclaredTypeCodegen.class);
 
     public static DeclaredTypeCodegen ofPath(Path basePath) {
         try {
@@ -142,15 +142,15 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
             batch.build();
         } catch (RuntimeException e) {
             for (DroolsError error : modelBuilder.getErrors().getErrors()) {
-                logger.error(error.toString());
+                LOGGER.error(error.toString());
             }
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new RuleCodegenError(e, modelBuilder.getErrors().getErrors());
         }
 
         if (modelBuilder.hasErrors()) {
             for (DroolsError error : modelBuilder.getErrors().getErrors()) {
-                logger.error(error.toString());
+                LOGGER.error(error.toString());
             }
             throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
         }

@@ -90,7 +90,7 @@ import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsfor
 
 public class IncrementalRuleCodegen extends AbstractGenerator {
 
-    private static final Logger logger = LoggerFactory.getLogger(IncrementalRuleCodegen.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IncrementalRuleCodegen.class);
 
     public static IncrementalRuleCodegen ofCollectedResources(Collection<CollectedResource> resources) {
         List<Resource> dmnResources = resources.stream()
@@ -187,15 +187,15 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             batch.build();
         } catch (RuntimeException e) {
             for (DroolsError error : modelBuilder.getErrors().getErrors()) {
-                logger.error(error.toString());
+                LOGGER.error(error.toString());
             }
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new RuleCodegenError(e, modelBuilder.getErrors().getErrors());
         }
 
         if (modelBuilder.hasErrors()) {
             for (DroolsError error : modelBuilder.getErrors().getErrors()) {
-                logger.error(error.toString());
+                LOGGER.error(error.toString());
             }
             throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
         }

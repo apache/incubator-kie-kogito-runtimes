@@ -56,10 +56,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractCodegenTest {
     
-    private static final Logger logger = LoggerFactory.getLogger(AbstractCodegenTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCodegenTest.class);
 
     /**
-     * Order matters here because inside {@link AbstractCodegenTest#generateCode(Map, boolean)} it is the order used to invoke
+     * Order matters here because inside {@link AbstractCodegenTest#generateCode(Map)} it is the order used to invoke
      *
      * {@link ApplicationGenerator#withGenerator(Generator) }
      */
@@ -215,9 +215,9 @@ public class AbstractCodegenTest {
             srcMfs.write( "org/drools/project/model/ProjectRuntime.java", DUMMY_PROCESS_RUNTIME.getBytes() );
         }
 
-        if (logger.isDebugEnabled()) {
+        if (LOGGER.isDebugEnabled()) {
             Path temp = Files.createTempDirectory("KOGITO_TESTS");
-            logger.debug("Dumping generated files in " + temp);
+            LOGGER.debug("Dumping generated files in " + temp);
             for (GeneratedFile entry : generatedFiles) {
                 Path fpath = temp.resolve(entry.relativePath());
                 fpath.getParent().toFile().mkdirs();
@@ -243,7 +243,7 @@ public class AbstractCodegenTest {
     }
     
     protected void log(String content) {
-        logger.debug(content);
+        LOGGER.debug(content);
     }
 
     private static class TestClassLoader extends URLClassLoader {
