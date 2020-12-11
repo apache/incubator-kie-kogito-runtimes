@@ -84,4 +84,8 @@ public abstract class AbstractGenerator implements Generator {
     public void setAddonsConfig(AddonsConfig addonsConfig) {
         this.addonsConfig = addonsConfig;
     }
+
+    protected String applicationCanonicalName() {
+        return packageName + ".Application";
+    }
 }

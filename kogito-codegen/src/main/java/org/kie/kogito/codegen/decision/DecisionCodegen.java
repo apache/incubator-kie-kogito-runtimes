@@ -46,14 +46,11 @@ import org.kie.dmn.typesafe.DMNAllTypesIndex;
 import org.kie.dmn.typesafe.DMNTypeSafePackageName;
 import org.kie.dmn.typesafe.DMNTypeSafeTypeGenerator;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 import org.slf4j.Logger;
@@ -83,8 +80,6 @@ public class DecisionCodegen extends AbstractGenerator {
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
 
-    private DecisionContainerGenerator decisionContainerGenerator;
-
     private final List<CollectedResource> cResources;
     private final List<DMNResource> resources = new ArrayList<>();
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
@@ -93,7 +88,6 @@ public class DecisionCodegen extends AbstractGenerator {
 
     public DecisionCodegen(List<CollectedResource> cResources) {
         this.cResources = cResources;
-        this.decisionContainerGenerator = new DecisionContainerGenerator(packageName, applicationCanonicalName(), this.cResources);
     }
 
     private void loadModelsAndValidate() {
@@ -112,12 +106,6 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        super.setDependencyInjection(annotator);
-        this.decisionContainerGenerator.withDependencyInjection(annotator);
-    }
-
-    @Override
     public List<GeneratedFile> generate() {
         if (cResources.isEmpty()) {
             return Collections.emptyList();
@@ -127,10 +115,6 @@ public class DecisionCodegen extends AbstractGenerator {
         generateAndStoreDecisionModelResourcesProvider();
 
         return generatedFiles;
-    }
-
-    protected String applicationCanonicalName() {
-        return packageName + ".Application";
     }
 
     private void generateAndStoreRestResources() {
@@ -282,13 +266,10 @@ public class DecisionCodegen extends AbstractGenerator {
 
     @Override
     public ApplicationSection section() {
+        DecisionContainerGenerator decisionContainerGenerator = new DecisionContainerGenerator(packageName, applicationCanonicalName(), this.cResources);
+        decisionContainerGenerator.withDependencyInjection(annotator);
+        decisionContainerGenerator.withAddons(addonsConfig);
         return decisionContainerGenerator;
-    }
-
-    @Override
-    public void setAddonsConfig(AddonsConfig addonsConfig) {
-        super.setAddonsConfig(addonsConfig);
-        this.decisionContainerGenerator.withAddons(addonsConfig);
     }
 
     public DecisionCodegen withClassLoader(ClassLoader classLoader) {

@@ -61,7 +61,7 @@ public class AbstractCodegenTest {
     /**
      * Order matters here because inside {@link AbstractCodegenTest#generateCode(Map)} it is the order used to invoke
      *
-     * {@link ApplicationGenerator#withGenerator(Generator) }
+     * {@link ApplicationGenerator#setupGenerator(Generator) }
      */
     protected enum TYPE {
         PROCESS,
@@ -168,6 +168,10 @@ public class AbstractCodegenTest {
     }
 
     protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap) throws Exception {
+        return generateCode(resourcesTypeMap, this.getClass().getPackage().getName());
+    }
+
+    protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap, String packageName) throws Exception {
         GeneratorContext context = GeneratorContext.ofResourcePath(new File(TEST_RESOURCES));
 
         //Testing based on Quarkus as Default
@@ -177,7 +181,7 @@ public class AbstractCodegenTest {
                                          .orElse(new QuarkusKogitoBuildContext((className -> true))));
 
         ApplicationGenerator appGen =
-                new ApplicationGenerator(this.getClass().getPackage().getName(), new File("target/codegen-tests"))
+                new ApplicationGenerator(packageName, new File("target/codegen-tests"))
                         .withGeneratorContext(context)
                         .withDependencyInjection(null);
 
@@ -185,13 +189,13 @@ public class AbstractCodegenTest {
         Set<TYPE> generatedTypes = new HashSet<>();
         for (TYPE type :  TYPE.values()) {
             if (resourcesTypeMap.containsKey(type) && !resourcesTypeMap.get(type).isEmpty()) {
-                appGen.withGenerator(generatorTypeMap.get(type).apply(resourcesTypeMap.get(type)));
+                appGen.setupGenerator(generatorTypeMap.get(type).apply(resourcesTypeMap.get(type)));
                 generatedTypes.add(type);
             }
         }
         // Hack just to avoid test breaking
         if (generatedTypes.contains(TYPE.DECISION) && !generatedTypes.contains(TYPE.PREDICTION)) {
-            appGen.withGenerator(generatorTypeMap.get(TYPE.PREDICTION).apply(Collections.EMPTY_LIST));
+            appGen.setupGenerator(generatorTypeMap.get(TYPE.PREDICTION).apply(Collections.EMPTY_LIST));
         }
 
         Collection<GeneratedFile> generatedFiles = appGen.generate();
@@ -232,7 +236,7 @@ public class AbstractCodegenTest {
         classloader = new TestClassLoader(this.getClass().getClassLoader(), trgMfs.getMap());
 
         @SuppressWarnings("unchecked")
-        Class<Application> app = (Class<Application>) Class.forName(this.getClass().getPackage().getName() + ".Application", true, classloader);
+        Class<Application> app = (Class<Application>) Class.forName(packageName + ".Application", true, classloader);
 
         Application application = app.getDeclaredConstructor().newInstance();
         return application;

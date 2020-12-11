@@ -37,12 +37,10 @@ import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.KogitoPackageSources;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.rules.RuleCodegenError;
@@ -62,12 +60,9 @@ public class PredictionCodegen extends AbstractGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PredictionCodegen.class);
     private final List<PMMLResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
-    private PredictionModelsGenerator moduleGenerator;
 
     public PredictionCodegen(List<PMMLResource> resources) {
         this.resources = resources;
-
-        this.moduleGenerator = new PredictionModelsGenerator(packageName, applicationCanonicalName(), resources);
     }
 
     public static PredictionCodegen ofCollectedResources(boolean isJPMMLAvailable,
@@ -109,6 +104,9 @@ public class PredictionCodegen extends AbstractGenerator {
 
     @Override
     public ApplicationSection section() {
+        PredictionModelsGenerator moduleGenerator = new PredictionModelsGenerator(packageName, applicationCanonicalName(), resources);
+        moduleGenerator.withDependencyInjection(annotator);
+        moduleGenerator.withAddons(addonsConfig);
         return moduleGenerator;
     }
 
@@ -117,21 +115,6 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        this.moduleGenerator.withDependencyInjection(annotator);
-    }
-
-    @Override
-    public void setAddonsConfig(AddonsConfig addonsConfig) {
-        super.setAddonsConfig(addonsConfig);
-        this.moduleGenerator.withAddons(addonsConfig);
-    }
-
-    public PredictionModelsGenerator moduleGenerator() {
-        return moduleGenerator;
-    }
-
     public List<GeneratedFile> generate() {
         if (resources.isEmpty()) {
             return Collections.emptyList();
@@ -147,10 +130,6 @@ public class PredictionCodegen extends AbstractGenerator {
             generatedFiles.addAll(generateRules(modelBuilder, batch));
         }
         return generatedFiles;
-    }
-
-    protected String applicationCanonicalName() {
-        return packageName + packageName + ".Application";
     }
 
     private void addModels(final List<KiePMMLModel> kiepmmlModels, final PMMLResource resource,
@@ -187,8 +166,6 @@ public class PredictionCodegen extends AbstractGenerator {
         }
     }
 
-
-
     private List<GeneratedFile> generateRules(ModelBuilderImpl<KogitoPackageSources> modelBuilder,
                                               CompositeKnowledgeBuilder batch) {
         try {
@@ -224,7 +201,6 @@ public class PredictionCodegen extends AbstractGenerator {
         }
         return toReturn;
     }
-
 
     private void storeFile(GeneratedFile.Type type, String path, String source) {
         generatedFiles.add(new GeneratedFile(type, path, source));
