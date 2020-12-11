@@ -86,8 +86,6 @@ public class DecisionCodegen extends AbstractGenerator {
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
 
-    private String applicationCanonicalName;
-
     private DecisionContainerGenerator decisionContainerGenerator;
 
     private final List<CollectedResource> cResources;
@@ -98,7 +96,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
     public DecisionCodegen(List<CollectedResource> cResources) {
         this.cResources = cResources;
-        this.decisionContainerGenerator = new DecisionContainerGenerator(packageName, applicationCanonicalName, this.cResources);
+        this.decisionContainerGenerator = new DecisionContainerGenerator(packageName, applicationCanonicalName(), this.cResources);
     }
 
     private void loadModelsAndValidate() {
@@ -117,12 +115,6 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void setPackageName(String packageName) {
-        super.setPackageName(packageName);
-        this.applicationCanonicalName = packageName + ".Application";
-    }
-
-    @Override
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
         super.setDependencyInjection(annotator);
         this.decisionContainerGenerator.withDependencyInjection(annotator);
@@ -138,6 +130,10 @@ public class DecisionCodegen extends AbstractGenerator {
         generateAndStoreDecisionModelResourcesProvider();
 
         return generatedFiles;
+    }
+
+    protected String applicationCanonicalName() {
+        return packageName + ".Application";
     }
 
     private void generateAndStoreRestResources() {
@@ -167,10 +163,10 @@ public class DecisionCodegen extends AbstractGenerator {
             if (stronglyTypedEnabled) {
                 generateStronglyTypedInput(model);
             }
-            DecisionRestResourceGenerator resourceGenerator = new DecisionRestResourceGenerator(model, applicationCanonicalName).withDependencyInjection(annotator)
-                                                                                                                                .withAddons(addonsConfig)
-                                                                                                                                .withStronglyTyped(stronglyTypedEnabled)
-                                                                                                                                .withOASResult(oasResult, isMPAnnotationsPresent(), isIOSwaggerOASv3AnnotationsPresent());
+            DecisionRestResourceGenerator resourceGenerator = new DecisionRestResourceGenerator(model, applicationCanonicalName()).withDependencyInjection(annotator)
+                                                                                                                                  .withAddons(addonsConfig)
+                                                                                                                                  .withStronglyTyped(stronglyTypedEnabled)
+                                                                                                                                  .withOASResult(oasResult, isMPAnnotationsPresent(), isIOSwaggerOASv3AnnotationsPresent());
             rgs.add(resourceGenerator);
         }
 
@@ -202,7 +198,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
     private void generateAndStoreDecisionModelResourcesProvider() {
         final DecisionModelResourcesProviderGenerator generator = new DecisionModelResourcesProviderGenerator(packageName,
-                                                                                                              applicationCanonicalName,
+                                                                                                              applicationCanonicalName(),
                                                                                                               resources)
                 .withDependencyInjection(annotator)
                 .withAddons(addonsConfig);

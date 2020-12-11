@@ -63,13 +63,12 @@ public class PredictionCodegen extends AbstractGenerator {
     private static final Logger logger = LoggerFactory.getLogger(PredictionCodegen.class);
     private final List<PMMLResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
-    private String applicationCanonicalName;
     private PredictionModelsGenerator moduleGenerator;
 
     public PredictionCodegen(List<PMMLResource> resources) {
         this.resources = resources;
 
-        this.moduleGenerator = new PredictionModelsGenerator(packageName, applicationCanonicalName, resources);
+        this.moduleGenerator = new PredictionModelsGenerator(packageName, applicationCanonicalName(), resources);
     }
 
     public static PredictionCodegen ofCollectedResources(boolean isJPMMLAvailable,
@@ -119,12 +118,6 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void setPackageName(String packageName) {
-        super.setPackageName(packageName);
-        this.applicationCanonicalName = packageName + ".Application";
-    }
-
-    @Override
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
         this.moduleGenerator.withDependencyInjection(annotator);
@@ -157,6 +150,10 @@ public class PredictionCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
+    protected String applicationCanonicalName() {
+        return packageName + packageName + ".Application";
+    }
+
     private void addModels(final List<KiePMMLModel> kiepmmlModels, final PMMLResource resource,
                            final CompositeKnowledgeBuilder batch) {
         for (KiePMMLModel model : kiepmmlModels) {
@@ -181,7 +178,7 @@ public class PredictionCodegen extends AbstractGenerator {
                 }
                 if (!(model instanceof KiePMMLFactoryModel)) {
                 PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(model,
-                                                                                            applicationCanonicalName)
+                                                                                            applicationCanonicalName())
                         .withDependencyInjection(annotator);
                     storeFile(GeneratedFile.Type.PMML, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
             }

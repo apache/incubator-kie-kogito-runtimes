@@ -66,9 +66,9 @@ public class DecisionModelResourcesProviderGeneratorTest {
                 .count();;
 
         final DecisionCodegen codeGenerator = DecisionCodegen
-                .ofCollectedResources(collectedResources)
-                .withAddons(new AddonsConfig().withTracing(true));
+                .ofCollectedResources(collectedResources);
         codeGenerator.setContext(context);
+        codeGenerator.setAddonsConfig(new AddonsConfig().withTracing(true));
 
         final List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(2); // the two resources below, see https://github.com/kiegroup/kogito-runtimes/commit/18ec525f530b1ff1bddcf18c0083f14f86aff171#diff-edd3a09d62dc627ee10fe37925944217R53

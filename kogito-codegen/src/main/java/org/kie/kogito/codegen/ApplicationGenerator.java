@@ -60,7 +60,7 @@ public class ApplicationGenerator {
 
     private GeneratorContext context;
     private ClassLoader classLoader;
-    private AddonsConfig addonsConfig;
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public ApplicationGenerator(String packageName, File targetDirectory) {
 
