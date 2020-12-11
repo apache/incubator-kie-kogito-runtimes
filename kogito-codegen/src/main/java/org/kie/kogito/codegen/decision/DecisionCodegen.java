@@ -267,7 +267,11 @@ public class DecisionCodegen extends AbstractGenerator {
 
     @Override
     public ApplicationSection section() {
-        DecisionContainerGenerator decisionContainerGenerator = new DecisionContainerGenerator(packageName, context.getBuildContext(), applicationCanonicalName(), this.cResources);
+        DecisionContainerGenerator decisionContainerGenerator = new DecisionContainerGenerator(
+                context.getBuildContext(),
+                packageName,
+                applicationCanonicalName(),
+                this.cResources);
         decisionContainerGenerator.withAddons(addonsConfig);
         return decisionContainerGenerator;
     }

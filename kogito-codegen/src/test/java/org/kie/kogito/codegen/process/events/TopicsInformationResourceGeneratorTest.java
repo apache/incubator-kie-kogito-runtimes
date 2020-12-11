@@ -113,7 +113,11 @@ class TopicsInformationResourceGeneratorTest {
         }
         final TopicsInformationResourceGenerator generator =
                 new TopicsInformationResourceGenerator(
-                        ApplicationGenerator.DEFAULT_PACKAGE_NAME,ProcessGenerationUtils.execModelFromProcessFile(bpmnFile), annotator, buildContext, AddonsConfig.DEFAULT.withCloudEvents(true));
+                        buildContext,
+                        ApplicationGenerator.DEFAULT_PACKAGE_NAME,
+                        ProcessGenerationUtils.execModelFromProcessFile(bpmnFile),
+                        annotator,
+                        AddonsConfig.DEFAULT.withCloudEvents(true));
         if (expectedTriggers > 0) {
             assertThat(generator.getTriggers()).isNotEmpty();
             int triggersCount = 0;

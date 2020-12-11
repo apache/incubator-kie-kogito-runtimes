@@ -422,7 +422,7 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         final TopicsInformationResourceGenerator topicsGenerator =
-                new TopicsInformationResourceGenerator(packageName, processExecutableModelGenerators, annotator, context.getBuildContext(), addonsConfig);
+                new TopicsInformationResourceGenerator(context.getBuildContext(), packageName, processExecutableModelGenerators, annotator, addonsConfig);
         storeFile(Type.REST, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
 
 
@@ -464,9 +464,5 @@ public class ProcessCodegen extends AbstractGenerator {
         ProcessContainerGenerator moduleGenerator = new ProcessContainerGenerator(context.getBuildContext(), packageName);
         processGenerators.forEach(moduleGenerator::addProcess);
         return moduleGenerator;
-    }
-
-    private String applicationCanonicalName() {
-        return packageName + ".Application";
     }
 }

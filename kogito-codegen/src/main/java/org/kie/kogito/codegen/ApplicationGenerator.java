@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.CompilationUnit;
 import org.drools.core.util.StringUtils;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.Labeler;

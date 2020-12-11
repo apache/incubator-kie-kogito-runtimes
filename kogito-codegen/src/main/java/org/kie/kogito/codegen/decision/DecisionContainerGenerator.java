@@ -47,7 +47,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     private final TemplatedGenerator templatedGenerator;
 
-    public DecisionContainerGenerator(String packageName, KogitoBuildContext buildContext, String applicationCanonicalName, List<CollectedResource> cResources) {
+    public DecisionContainerGenerator(KogitoBuildContext buildContext, String packageName, String applicationCanonicalName, List<CollectedResource> cResources) {
         super(SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = cResources;

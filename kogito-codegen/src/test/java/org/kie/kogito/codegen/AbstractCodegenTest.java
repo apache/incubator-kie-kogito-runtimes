@@ -181,8 +181,7 @@ public class AbstractCodegenTest {
                                          .orElse(new QuarkusKogitoBuildContext((className -> true))));
 
         ApplicationGenerator appGen =
-                new ApplicationGenerator(packageName, new File("target/codegen-tests"))
-                        .withGeneratorContext(context)
+                new ApplicationGenerator(context, packageName, new File("target/codegen-tests"))
                         .withDependencyInjection(null);
 
         // Hack just to avoid test breaking
