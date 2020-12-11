@@ -91,7 +91,7 @@ public class ApplicationConfigGenerator {
 
         asList(processConfig, ruleConfig, predictionConfig, decisionConfig, configBean)
                 .forEach(configGenerator -> ofNullable(configGenerator)
-                        .map(AbstractConfigGenerator::generate)
+                        .flatMap(AbstractConfigGenerator::generate)
                         .ifPresent(generatedFiles::add));
 
         return generatedFiles;

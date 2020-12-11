@@ -15,6 +15,7 @@
 package org.kie.kogito.codegen.prediction.config;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.github.javaparser.ast.body.BodyDeclaration;
 import org.junit.jupiter.api.BeforeAll;
@@ -40,9 +41,10 @@ class PredictionConfigGeneratorTest {
     @Test
     void compilationUnitWithCDI() {
         predictionConfigGenerator = new PredictionConfigGenerator(new QuarkusKogitoBuildContext(s -> false), PACKAGE_NAME);
-        final GeneratedFile retrievedOpt = predictionConfigGenerator.generate();
+        Optional<GeneratedFile> retrievedOpt = predictionConfigGenerator.generate();
         assertNotNull(retrievedOpt);
-        String retrieved = new String(retrievedOpt.contents());
+        assertTrue(retrievedOpt.isPresent());
+        String retrieved = new String(retrievedOpt.get().contents());
         String expected = "@javax.inject.Singleton";
         assertTrue(retrieved.contains(expected));
         expected = "@javax.inject.Inject";
@@ -56,9 +58,10 @@ class PredictionConfigGeneratorTest {
     @Test
     void compilationUnitWithSpring() {
         predictionConfigGenerator = new PredictionConfigGenerator(new SpringBootKogitoBuildContext(s -> false), PACKAGE_NAME);
-        final GeneratedFile retrievedOpt = predictionConfigGenerator.generate();
+        Optional<GeneratedFile> retrievedOpt = predictionConfigGenerator.generate();
         assertNotNull(retrievedOpt);
-        String retrieved = new String(retrievedOpt.contents());
+        assertTrue(retrievedOpt.isPresent());
+        String retrieved = new String(retrievedOpt.get().contents());
         String expected = "@org.springframework.stereotype.Component";
         assertTrue(retrieved.contains(expected));
         expected = "@org.springframework.beans.factory.annotation.Autowired";
