@@ -25,6 +25,7 @@ public class DMNRestResourceTemplate {
     private org.jboss.resteasy.spi.HttpResponse httpResponse;
 
     @POST
+    @Path("/$dmnMethodUrl$")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @org.eclipse.microprofile.openapi.annotations.parameters.RequestBody(content = @org.eclipse.microprofile.openapi.annotations.media.Content(mediaType = "application/json",schema = @org.eclipse.microprofile.openapi.annotations.media.Schema(ref = "/dmnDefinitions.json#/definitions/InputSet1")), description = "DMN input")

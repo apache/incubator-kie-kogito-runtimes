@@ -236,8 +236,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
 
         boolean usePersistence = persistence || hasClassOnClasspath(project, "org.kie.kogito.persistence.KogitoProcessInstancesFactory");
-        boolean usePrometheusMonitoring = hasClassOnClasspath(project, "org.kie.kogito.monitoring.prometheus.rest.MetricsResource");
-        boolean useMonitoring = usePrometheusMonitoring || hasClassOnClasspath(project, "org.kie.kogito.monitoring.core.MonitoringRegistry");
+        boolean usePrometheusMonitoring = hasClassOnClasspath(project, "org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource");
+        boolean useMonitoring = usePrometheusMonitoring || hasClassOnClasspath(project, "org.kie.kogito.monitoring.core.common.MonitoringRegistry");
         boolean useTracing = hasClassOnClasspath(project, "org.kie.kogito.tracing.decision.DecisionTracingListener");
         boolean useKnativeEventing = hasClassOnClasspath(project, "org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension");
         boolean useCloudEvents = hasClassOnClasspath(project, "org.kie.kogito.addon.cloudevents.AbstractTopicDiscovery");
@@ -275,7 +275,8 @@ public class GenerateModelMojo extends AbstractKieMojo {
         }
 
         if (generateRules()) {
-            boolean useRestServices = hasClassOnClasspath(project, "javax.ws.rs.Path");
+            boolean useRestServices = hasClassOnClasspath(project, "javax.ws.rs.Path")
+                    || hasClassOnClasspath(project, "org.springframework.web.bind.annotation.RestController");
             appGen.withGenerator(IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
                     .withKModule(getKModuleModel())
                     .withClassLoader(projectClassLoader)
