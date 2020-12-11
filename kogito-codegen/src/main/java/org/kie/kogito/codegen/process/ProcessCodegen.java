@@ -18,7 +18,6 @@ package org.kie.kogito.codegen.process;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,14 +46,11 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.ResourceGeneratorFactory;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsMessageProducerGenerator;
@@ -95,6 +91,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private ClassLoader contextClassLoader;
     private ResourceGeneratorFactory resourceGeneratorFactory;
+    private List<ProcessGenerator> processGenerators = new ArrayList<>();
 
     public static ProcessCodegen ofCollectedResources(Collection<CollectedResource> resources) {
         List<Process> processes = resources.stream()
@@ -165,8 +162,6 @@ public class ProcessCodegen extends AbstractGenerator {
         }
     }
 
-    private ProcessContainerGenerator moduleGenerator;
-
     private final Map<String, WorkflowProcess> processes;
     private final Set<GeneratedFile> generatedFiles = new HashSet<>();
 
@@ -190,18 +185,6 @@ public class ProcessCodegen extends AbstractGenerator {
 
     public static String defaultProcessListenerConfigClass(String packageName) {
         return packageName + ".ProcessEventListenerConfig";
-    }
-
-    @Override
-    public void setPackageName(String packageName) {
-        super.setPackageName(packageName);
-        this.moduleGenerator = new ProcessContainerGenerator(context.getBuildContext(), packageName);
-    }
-
-    @Override
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        super.setDependencyInjection(annotator);
-        this.moduleGenerator.withDependencyInjection(annotator);
     }
 
     public ProcessCodegen withClassLoader(ClassLoader projectClassLoader) {
@@ -367,7 +350,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 }
             }
 
-            moduleGenerator.addProcess(p);
+            processGenerators.add(p);
 
             ps.add(p);
             pis.add(pi);
@@ -434,12 +417,12 @@ public class ProcessCodegen extends AbstractGenerator {
         if (this.addonsConfig.useKnativeEventing()) {
             LOGGER.info("Knative Eventing addon enabled, generating CloudEvent HTTP listener");
             final CloudEventsResourceGenerator ceGenerator =
-                    new CloudEventsResourceGenerator(processExecutableModelGenerators, annotator, context.getBuildContext());
+                    new CloudEventsResourceGenerator(packageName, processExecutableModelGenerators, annotator, context.getBuildContext());
             storeFile(Type.REST, ceGenerator.generatedFilePath(), ceGenerator.generate());
         }
 
         final TopicsInformationResourceGenerator topicsGenerator =
-                new TopicsInformationResourceGenerator(processExecutableModelGenerators, annotator, context.getBuildContext(), addonsConfig);
+                new TopicsInformationResourceGenerator(packageName, processExecutableModelGenerators, annotator, context.getBuildContext(), addonsConfig);
         storeFile(Type.REST, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
 
 
@@ -478,6 +461,8 @@ public class ProcessCodegen extends AbstractGenerator {
 
     @Override
     public ApplicationSection section() {
+        ProcessContainerGenerator moduleGenerator = new ProcessContainerGenerator(context.getBuildContext(), packageName);
+        processGenerators.forEach(moduleGenerator::addProcess);
         return moduleGenerator;
     }
 

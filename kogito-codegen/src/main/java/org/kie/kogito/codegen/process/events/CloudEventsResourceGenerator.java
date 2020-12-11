@@ -44,12 +44,13 @@ public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator
     private final DependencyInjectionAnnotator annotator;
     private final List<TriggerMetaData> triggers;
 
-    public CloudEventsResourceGenerator(final List<ProcessExecutableModelGenerator> generators,
+    public CloudEventsResourceGenerator(final String packageName,
+                                        final List<ProcessExecutableModelGenerator> generators,
                                         final DependencyInjectionAnnotator annotator,
                                         final KogitoBuildContext buildContext) {
         super(new TemplatedGenerator(
                 buildContext,
-                ApplicationGenerator.DEFAULT_PACKAGE_NAME,
+                packageName,
                 CLASS_NAME,
                 CDI_TEMPLATE,
                 null,

@@ -17,7 +17,6 @@ package org.kie.kogito.codegen.decision;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -29,7 +28,6 @@ import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.io.CollectedResource;
-import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DmnExecutionIdSupplier;
 
 import java.util.List;
@@ -50,7 +48,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     private final TemplatedGenerator templatedGenerator;
 
     public DecisionContainerGenerator(String packageName, KogitoBuildContext buildContext, String applicationCanonicalName, List<CollectedResource> cResources) {
-        super(SECTION_CLASS_NAME, "decisionModels", DecisionModels.class);
+        super(SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = cResources;
         this.templatedGenerator = new TemplatedGenerator(
@@ -68,13 +66,13 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     }
 
     @Override
-    public ClassOrInterfaceDeclaration classDeclaration() {
-        CompilationUnit clazz = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
+    public CompilationUnit compilationUnit() {
+        CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
 
-        ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
+
         ClassOrInterfaceType applicationClass = StaticJavaParser.parseClassOrInterfaceType(applicationCanonicalName);
 
-        final InitializerDeclaration staticDeclaration = typeDeclaration
+        final InitializerDeclaration staticDeclaration = compilationUnit
                 .findFirst(InitializerDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(
                         SECTION_CLASS_NAME,
@@ -95,7 +93,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
             initMethod.addArgument(isr);
         }
 
-        return typeDeclaration;
+        return compilationUnit;
     }
 
     private void setupExecIdSupplierVariable(MethodCallExpr initMethod) {

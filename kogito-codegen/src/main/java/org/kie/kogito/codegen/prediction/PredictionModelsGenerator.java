@@ -16,7 +16,6 @@
 package org.kie.kogito.codegen.prediction;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -25,7 +24,6 @@ import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.prediction.PredictionModels;
 
 import java.util.List;
 
@@ -42,7 +40,7 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
     protected final TemplatedGenerator templatedGenerator;
 
     public PredictionModelsGenerator(KogitoBuildContext buildContext, String packageName, String applicationCanonicalName, List<PMMLResource> resources) {
-        super(SECTION_CLASS_NAME, "predictionModels", PredictionModels.class);
+        super(SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = resources;
 
@@ -61,15 +59,14 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
     }
 
     @Override
-    public ClassOrInterfaceDeclaration classDeclaration() {
-        CompilationUnit clazz = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
-        ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
-        populateStaticKieRuntimeFactoryFunctionInit(typeDeclaration);
-        return typeDeclaration;
+    public CompilationUnit compilationUnit() {
+        CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
+        populateStaticKieRuntimeFactoryFunctionInit(compilationUnit);
+        return compilationUnit;
     }
 
-    private void populateStaticKieRuntimeFactoryFunctionInit(ClassOrInterfaceDeclaration typeDeclaration) {
-        final InitializerDeclaration staticDeclaration = typeDeclaration
+    private void populateStaticKieRuntimeFactoryFunctionInit(CompilationUnit compilationUnit) {
+        final InitializerDeclaration staticDeclaration = compilationUnit
                 .findFirst(InitializerDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(
                         SECTION_CLASS_NAME,

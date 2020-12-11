@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
@@ -74,7 +74,7 @@ class PredictionContainerGeneratorTest {
 
     @Test
     void classDeclaration() {
-        ClassOrInterfaceDeclaration retrieved = predictionContainerGenerator.classDeclaration();
+        CompilationUnit retrieved = predictionContainerGenerator.compilationUnit();
         assertNotNull(retrieved);
         String retrievedString = retrieved.toString();
         String expected = PMML_RESOURCES

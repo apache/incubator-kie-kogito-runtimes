@@ -20,14 +20,11 @@ import java.util.List;
 
 import com.github.javaparser.ast.CompilationUnit;
 import org.kie.kogito.codegen.AbstractApplicationSection;
-import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.rules.units.impl.AbstractRuleUnits;
 
 import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
@@ -51,7 +48,7 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
     private List<BodyDeclaration<?>> factoryMethods = new ArrayList<>();
 
     public RuleUnitContainerGenerator(KogitoBuildContext buildContext, String packageName) {
-        super(SECTION_CLASS_NAME, "ruleUnits", AbstractRuleUnits.class);
+        super(SECTION_CLASS_NAME);
         this.ruleUnits = new ArrayList<>();
         this.templatedGenerator = new TemplatedGenerator(
                 buildContext,
@@ -89,7 +86,7 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
     }
 
     @Override
-    public ClassOrInterfaceDeclaration classDeclaration() {
+    public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("No CompilationUnit");
 
         if (annotator == null) {
@@ -98,11 +95,7 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
                     .ifPresent(m -> m.setBody(factoryByIdBody())); // ignore if missing
         }
 
-        return compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new InvalidTemplateException(
-                        SECTION_CLASS_NAME,
-                        templatedGenerator.templatePath(),
-                        "No class declaration"));
+        return compilationUnit;
     }
 
     public RuleUnitContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {

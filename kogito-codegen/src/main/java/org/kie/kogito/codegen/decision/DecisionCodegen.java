@@ -46,7 +46,6 @@ import org.kie.dmn.typesafe.DMNAllTypesIndex;
 import org.kie.dmn.typesafe.DMNTypeSafePackageName;
 import org.kie.dmn.typesafe.DMNTypeSafeTypeGenerator;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
@@ -81,8 +80,6 @@ public class DecisionCodegen extends AbstractGenerator {
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
 
-    private DecisionContainerGenerator decisionContainerGenerator;
-
     private final List<CollectedResource> cResources;
     private final List<DMNResource> resources = new ArrayList<>();
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
@@ -91,7 +88,6 @@ public class DecisionCodegen extends AbstractGenerator {
 
     public DecisionCodegen(List<CollectedResource> cResources) {
         this.cResources = cResources;
-        this.decisionContainerGenerator = new DecisionContainerGenerator(packageName, context.getBuildContext(), applicationCanonicalName(), this.cResources);
     }
 
     private void loadModelsAndValidate() {
@@ -119,10 +115,6 @@ public class DecisionCodegen extends AbstractGenerator {
         generateAndStoreDecisionModelResourcesProvider();
 
         return generatedFiles;
-    }
-
-    protected String applicationCanonicalName() {
-        return packageName + ".Application";
     }
 
     private void generateAndStoreRestResources() {
@@ -275,13 +267,9 @@ public class DecisionCodegen extends AbstractGenerator {
 
     @Override
     public ApplicationSection section() {
+        DecisionContainerGenerator decisionContainerGenerator = new DecisionContainerGenerator(packageName, context.getBuildContext(), applicationCanonicalName(), this.cResources);
+        decisionContainerGenerator.withAddons(addonsConfig);
         return decisionContainerGenerator;
-    }
-
-    @Override
-    public void setAddonsConfig(AddonsConfig addonsConfig) {
-        super.setAddonsConfig(addonsConfig);
-        this.decisionContainerGenerator.withAddons(addonsConfig);
     }
 
     public DecisionCodegen withClassLoader(ClassLoader classLoader) {

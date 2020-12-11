@@ -30,7 +30,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
@@ -49,17 +48,13 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
     private final Map<String, List<TriggerMetaData>> triggers;
     private final AddonsConfig addonsConfig;
 
-    public TopicsInformationResourceGenerator(final List<ProcessExecutableModelGenerator> generators,
+    public TopicsInformationResourceGenerator(final KogitoBuildContext buildContext,
+                                              final String packageName,
+                                              final List<ProcessExecutableModelGenerator> generators,
                                               final DependencyInjectionAnnotator annotator,
-                                              final KogitoBuildContext buildContext,
                                               final AddonsConfig addonsConfig) {
-        super(new TemplatedGenerator(
-                buildContext,
-                ApplicationGenerator.DEFAULT_PACKAGE_NAME,
-                CLASS_NAME,
-                CDI_TEMPLATE,
-                SPRING_TEMPLATE,
-                CDI_TEMPLATE));
+        super(new TemplatedGenerator(buildContext, packageName, CLASS_NAME,
+                                     CDI_TEMPLATE, SPRING_TEMPLATE, CDI_TEMPLATE));
         this.triggers = this.filterTriggers(generators);
         this.annotator = annotator;
         this.addonsConfig = addonsConfig;

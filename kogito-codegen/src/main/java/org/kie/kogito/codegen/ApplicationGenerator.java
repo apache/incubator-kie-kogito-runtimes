@@ -134,18 +134,21 @@ public class ApplicationGenerator {
             if (section == null) {
                 continue;
             }
-            CompilationUnit sectionUnit = new CompilationUnit();
-            sectionUnit.setPackageDeclaration(this.packageName);
-            sectionUnit.addType(section.classDeclaration());
             generatedFiles.add(
                     new GeneratedFile(GeneratedFile.Type.APPLICATION_SECTION,
                                       getFilePath(section.sectionClassName()),
-                                      sectionUnit.toString()));
+                                      section.compilationUnit().toString()));
         }
         return generatedFiles;
     }
 
-    public <G extends Generator> G withGenerator(G generator) {
+    /**
+     * Method to wire Generator with ApplicationGenerator and initialize it with common parameters
+     * @param generator
+     * @param <G>
+     * @return
+     */
+    public <G extends Generator> G setupGenerator(G generator) {
         this.generators.add(generator);
         generator.setPackageName(packageName);
         generator.setDependencyInjection(annotator);

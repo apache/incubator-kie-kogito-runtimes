@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.Expression;
@@ -42,7 +41,6 @@ import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
-import org.kie.kogito.process.Processes;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
 
@@ -64,7 +62,7 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
     private final TemplatedGenerator templatedGenerator;
 
     public ProcessContainerGenerator(KogitoBuildContext buildContext, String packageName) {
-        super(SECTION_CLASS_NAME, "processes", Processes.class);
+        super(SECTION_CLASS_NAME);
         this.packageName = packageName;
         this.processes = new ArrayList<>();
         this.factoryMethods = new ArrayList<>();
@@ -104,15 +102,11 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
     }
 
     @Override
-    public ClassOrInterfaceDeclaration classDeclaration() {
+    public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
 
         registerProcessesExplicitly(compilationUnit);
-        return compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new InvalidTemplateException(
-                        SECTION_CLASS_NAME,
-                        templatedGenerator.templatePath(),
-                        "Cannot find class definition"));
+        return compilationUnit;
     }
 
     private void registerProcessesExplicitly(CompilationUnit compilationUnit) {
