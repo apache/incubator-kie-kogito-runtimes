@@ -30,30 +30,29 @@ import org.kie.kogito.monitoring.elastic.common.KogitoElasticConfig;
 
 @Singleton
 @Startup
-@ConfigProperties(prefix = "kogito.addon.monitoring.elastic")
 public class QuarkusElasticRegistryProvider extends ElasticRegistry {
 
-    @ConfigProperty(name = "host")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.host")
     public Optional<String> elasticHost;
-    @ConfigProperty(name = "index")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.index")
     public Optional<String> index;
-    @ConfigProperty(name = "step")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.step")
     public Optional<String> step;
-    @ConfigProperty(name = "indexDateFormat")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.indexDateFormat")
     public Optional<String> indexDateFormat;
-    @ConfigProperty(name = "timestampFieldName")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.timestampFieldName")
     public Optional<String> timestampFieldName;
-    @ConfigProperty(name = "autoCreateIndex")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.autoCreateIndex")
     public Optional<String> autoCreateIndex;
-    @ConfigProperty(name = "userName")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.userName")
     public Optional<String> userName;
-    @ConfigProperty(name = "password")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.password")
     public Optional<String> password;
-    @ConfigProperty(name = "pipeline")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.pipeline")
     public Optional<String> pipeline;
-    @ConfigProperty(name = "indexDateSeparator")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.indexDateSeparator")
     public Optional<String> indexDateSeparator;
-    @ConfigProperty(name = "documentType")
+    @ConfigProperty(name = "kogito.addon.monitoring.elastic.documentType")
     public Optional<String> documentType;
 
     public void config(@Observes StartupEvent event) {
