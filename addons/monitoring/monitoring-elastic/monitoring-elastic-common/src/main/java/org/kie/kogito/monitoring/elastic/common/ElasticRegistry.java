@@ -34,8 +34,7 @@ public class ElasticRegistry {
     protected void start(ElasticConfig elasticConfig) {
         registry = ElasticMeterRegistry.builder(elasticConfig).build();
         MonitoringRegistry.addRegistry(registry);
-        logger.info("Micrometer Elastic Registry added to monitoring addon.");
         registry.start(Executors.defaultThreadFactory());
-        logger.info("Micrometer elastic publisher started.");
+        logger.debug("Micrometer elastic publisher started.");
     }
 } 
