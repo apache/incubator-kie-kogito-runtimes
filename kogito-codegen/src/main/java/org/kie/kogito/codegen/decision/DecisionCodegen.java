@@ -86,24 +86,18 @@ public class DecisionCodegen extends AbstractGenerator {
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
 
-    private String packageName;
     private String applicationCanonicalName;
-    private DependencyInjectionAnnotator annotator;
 
     private DecisionContainerGenerator decisionContainerGenerator;
 
     private final List<CollectedResource> cResources;
     private final List<DMNResource> resources = new ArrayList<>();
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
-    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     private ClassLoader notPCLClassloader; // Kogito CodeGen design as of 2020-10-09
     private PCLResolverFn pclResolverFn = this::trueIFFClassIsPresent;
 
     public DecisionCodegen(List<CollectedResource> cResources) {
         this.cResources = cResources;
-
-        // set default package name
-        setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
         this.decisionContainerGenerator = new DecisionContainerGenerator(packageName, applicationCanonicalName, this.cResources);
     }
 
@@ -124,13 +118,14 @@ public class DecisionCodegen extends AbstractGenerator {
 
     @Override
     public void setPackageName(String packageName) {
-        this.packageName = packageName;
+        super.setPackageName(packageName);
         this.applicationCanonicalName = packageName + ".Application";
     }
 
     @Override
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
+        super.setDependencyInjection(annotator);
+        this.decisionContainerGenerator.withDependencyInjection(annotator);
     }
 
     @Override
@@ -297,10 +292,10 @@ public class DecisionCodegen extends AbstractGenerator {
         return decisionContainerGenerator;
     }
 
-    public DecisionCodegen withAddons(AddonsConfig addonsConfig) {
+    @Override
+    public void setAddonsConfig(AddonsConfig addonsConfig) {
+        super.setAddonsConfig(addonsConfig);
         this.decisionContainerGenerator.withAddons(addonsConfig);
-        this.addonsConfig = addonsConfig;
-        return this;
     }
 
     public DecisionCodegen withClassLoader(ClassLoader classLoader) {
@@ -310,11 +305,6 @@ public class DecisionCodegen extends AbstractGenerator {
 
     public DecisionCodegen withPCLResolverFn(PCLResolverFn fn) {
         this.pclResolverFn = fn;
-        return this;
-    }
-
-    public DecisionCodegen withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.decisionContainerGenerator.withDependencyInjection(annotator);
         return this;
     }
 }

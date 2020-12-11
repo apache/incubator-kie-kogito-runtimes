@@ -199,22 +199,16 @@ public class KogitoAssetsProcessor {
 
         // configure each individual generator. Ordering is relevant.
 
-        appGen.withGenerator(ProcessCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
-                .withAddons(addonsConfig)
+        appGen.registerAndInitGenerator(ProcessCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
                 .withClassLoader(classLoader);
 
-        appGen.withGenerator(IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
+        appGen.registerAndInitGenerator(IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
                 .withKModule(findKieModuleModel(appPaths))
-                .withAddons(addonsConfig)
                 .withClassLoader(classLoader);
 
-        appGen.withGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromPaths(paths)))
-                .withAddons(addonsConfig)
-                .withDependencyInjection(dependencyInjectionAnnotator);
+        appGen.registerAndInitGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromPaths(paths)));
 
-        appGen.withGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
-                .withAddons(addonsConfig)
-                .withDependencyInjection(dependencyInjectionAnnotator)
+        appGen.registerAndInitGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
                 .withClassLoader(classLoader);
 
         // real work occurs here: invoke the code-generation procedure
