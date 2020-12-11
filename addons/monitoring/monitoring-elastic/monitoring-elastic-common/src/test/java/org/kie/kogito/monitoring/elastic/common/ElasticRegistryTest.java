@@ -46,7 +46,6 @@ public class ElasticRegistryTest {
         configMap.keySet().forEach(x -> countDownLatchMap.put(x, new CountDownLatch(1)));
 
         ElasticConfig elasticConfig = s -> {
-            System.out.println(s);
             countDownLatchMap.computeIfPresent(s, (k, v) -> {
                 v.countDown();
                 return v;
