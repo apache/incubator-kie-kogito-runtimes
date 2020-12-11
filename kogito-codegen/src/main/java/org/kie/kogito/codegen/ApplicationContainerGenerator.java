@@ -78,6 +78,7 @@ public class ApplicationContainerGenerator extends TemplatedGenerator {
                         templatePath(),
                         "Compilation unit doesn't contain a class or interface declaration!"));
 
+        // ApplicationTemplate (no CDI/Spring) has placeholders to replace
         if (annotator == null) {
             replacePlaceholder(getLoadEnginesMethod(cls), sections);
         }

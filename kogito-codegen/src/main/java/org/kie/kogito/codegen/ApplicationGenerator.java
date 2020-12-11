@@ -60,6 +60,7 @@ public class ApplicationGenerator {
 
     private GeneratorContext context;
     private ClassLoader classLoader;
+    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
     public ApplicationGenerator(String packageName, File targetDirectory) {
 
@@ -101,6 +102,7 @@ public class ApplicationGenerator {
         if (addonsConfig.usePrometheusMonitoring()) {
             this.labelers.put(PrometheusLabeler.class, new PrometheusLabeler());
         }
+        this.addonsConfig = addonsConfig;
         return this;
     }
 
@@ -158,12 +160,13 @@ public class ApplicationGenerator {
         return generatedFiles;
     }
 
-    public <G extends Generator> G withGenerator(G generator) {
+    public <G extends Generator> G registerAndInitGenerator(G generator) {
         this.generators.add(generator);
         generator.setPackageName(packageName);
         generator.setDependencyInjection(annotator);
         generator.setProjectDirectory(targetDirectory.getParentFile().toPath());
         generator.setContext(context);
+        generator.setAddonsConfig(addonsConfig);
         return generator;
     }
 

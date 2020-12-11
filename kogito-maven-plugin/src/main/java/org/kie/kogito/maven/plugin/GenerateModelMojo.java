@@ -271,33 +271,27 @@ public class GenerateModelMojo extends AbstractKieMojo {
         // if not null, the property has been overridden, and we should use the specified value
 
         if (generateProcesses()) {
-            appGen.withGenerator(ProcessCodegen.ofCollectedResources(CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
-                    .withAddons(addonsConfig)
+            appGen.registerAndInitGenerator(ProcessCodegen.ofCollectedResources(CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
                     .withClassLoader(projectClassLoader);
         }
 
         if (generateRules()) {
             boolean useRestServices = hasClassOnClasspath(project, "javax.ws.rs.Path")
                     || hasClassOnClasspath(project, "org.springframework.web.bind.annotation.RestController");
-            appGen.withGenerator(IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
+            appGen.registerAndInitGenerator(IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
                     .withKModule(getKModuleModel())
                     .withClassLoader(projectClassLoader)
-                    .withAddons(addonsConfig)
                     .withRestServices(useRestServices);
         }
 
         boolean isJPMMLAvailable = hasClassOnClasspath(project, "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
         if(generatePredictions()) {
-            appGen.withGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
-                    .withAddons(addonsConfig)
-                    .withDependencyInjection(dependencyInjectionAnnotator);
+            appGen.registerAndInitGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromDirectory(kieSourcesDirectory.toPath())));
         }
 
         if (generateDecisions()) {
-            appGen.withGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
-                    .withAddons(addonsConfig)
+            appGen.registerAndInitGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromDirectory(kieSourcesDirectory.toPath())))
                     .withClassLoader(projectClassLoader)
-                    .withDependencyInjection(dependencyInjectionAnnotator)
                     .withPCLResolverFn(x -> hasClassOnClasspath(project, x));
         }
 

@@ -64,13 +64,11 @@ import org.kie.internal.builder.RuleTemplateConfiguration;
 import org.kie.internal.io.ResourceTypeImpl;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
@@ -116,7 +114,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private final Collection<Resource> resources;
     private RuleUnitContainerGenerator moduleGenerator;
 
-    private DependencyInjectionAnnotator annotator;
     /**
      * used for type-resolving during codegen/type-checking
      */
@@ -124,9 +121,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     private KieModuleModel kieModuleModel;
     private boolean hotReloadMode = false;
-    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     private boolean useRestServices = true;
-    private String packageName = KnowledgeBuilderConfigurationImpl.DEFAULT_PACKAGE;
     private final boolean decisionTableSupported;
     private final Map<String, RuleUnitConfig> configs;
 
@@ -138,15 +133,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         this.contextClassLoader = getClass().getClassLoader();
         this.decisionTableSupported = DecisionTableFactory.getDecisionTableProvider() != null;
         this.configs = new HashMap<>();
-    }
-
-    @Override
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
+        setPackageName(KnowledgeBuilderConfigurationImpl.DEFAULT_PACKAGE);
     }
 
     @Override
@@ -453,11 +440,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     public IncrementalRuleCodegen withHotReloadMode() {
         this.hotReloadMode = true;
-        return this;
-    }
-
-    public IncrementalRuleCodegen withAddons(AddonsConfig addonsConfig) {
-        this.addonsConfig = addonsConfig;
         return this;
     }
 

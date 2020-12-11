@@ -44,7 +44,6 @@ import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.KogitoPackageSources;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 
 import static java.util.stream.Collectors.toList;
@@ -96,15 +95,6 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
     private DeclaredTypeCodegen(Collection<Resource> resources) {
         this.resources = resources;
         this.contextClassLoader = getClass().getClassLoader();
-    }
-
-    @Override
-    public void setPackageName(String packageName) {
-        // not used
-    }
-
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        // not used
     }
 
     @Override

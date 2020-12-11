@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
-import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.grafana.JGrafana;
 
@@ -130,15 +129,13 @@ public class DecisionCodegenTest {
     @Test
     public void emptyName() throws Exception {
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-empty-name");
-        RuntimeException re = Assertions.assertThrows(RuntimeException.class, () -> {
-            codeGenerator.generate();
-        });
+        RuntimeException re = Assertions.assertThrows(RuntimeException.class, codeGenerator::generate);
         assertEquals("Model name should not be empty", re.getMessage());
     }
 
     private List<GeneratedFile> generateTestDashboards(AddonsConfig addonsConfig) throws IOException {
-        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays")
-                .withAddons(addonsConfig);
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays");
+        codeGenerator.setAddonsConfig(addonsConfig);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
 
