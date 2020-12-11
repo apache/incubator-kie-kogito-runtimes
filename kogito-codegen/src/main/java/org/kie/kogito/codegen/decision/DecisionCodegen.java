@@ -129,10 +129,6 @@ public class DecisionCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    protected String applicationCanonicalName() {
-        return packageName + ".Application";
-    }
-
     private void generateAndStoreRestResources() {
         List<DecisionRestResourceGenerator> rgs = new ArrayList<>(); // REST resources
         

@@ -96,6 +96,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private ClassLoader contextClassLoader;
     private ResourceGeneratorFactory resourceGeneratorFactory;
+    private List<ProcessGenerator> processGenerators = new ArrayList<>();
 
     public static ProcessCodegen ofCollectedResources(Collection<CollectedResource> resources) {
         List<Process> processes = resources.stream()
@@ -166,10 +167,6 @@ public class ProcessCodegen extends AbstractGenerator {
         }
     }
 
-    private String applicationCanonicalName;
-
-    private ProcessContainerGenerator moduleGenerator;
-
     private final Map<String, WorkflowProcess> processes;
     private final Set<GeneratedFile> generatedFiles = new HashSet<>();
 
@@ -193,23 +190,6 @@ public class ProcessCodegen extends AbstractGenerator {
 
     public static String defaultProcessListenerConfigClass(String packageName) {
         return packageName + ".ProcessEventListenerConfig";
-    }
-
-    @Override
-    public void setPackageName(String packageName) {
-        super.setPackageName(packageName);
-        this.moduleGenerator = new ProcessContainerGenerator(packageName);
-        this.applicationCanonicalName = packageName + ".Application";
-    }
-
-    @Override
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        super.setDependencyInjection(annotator);
-        this.moduleGenerator.withDependencyInjection(annotator);
-    }
-
-    public ProcessContainerGenerator moduleGenerator() {
-        return moduleGenerator;
     }
 
     public ProcessCodegen withClassLoader(ClassLoader projectClassLoader) {
@@ -296,7 +276,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     execModelGen,
                     classPrefix,
                     modelClassGenerator.className(),
-                    applicationCanonicalName
+                    applicationCanonicalName()
             )
                     .withDependencyInjection(annotator)
                     .withAddons(addonsConfig);
@@ -313,7 +293,7 @@ public class ProcessCodegen extends AbstractGenerator {
                                             workFlowProcess,
                                             modelClassGenerator.className(),
                                             execModelGen.className(),
-                                            applicationCanonicalName)
+                                            applicationCanonicalName())
                     .map(r -> r
                             .withDependencyInjection(annotator)
                             .withUserTasks(processIdToUserTaskModel.get(workFlowProcess.getId()))
@@ -337,7 +317,7 @@ public class ProcessCodegen extends AbstractGenerator {
                                 workFlowProcess,
                                 modelClassGenerator.className(),
                                 execModelGen.className(),
-                                applicationCanonicalName,
+                                applicationCanonicalName(),
                                 msgDataEventGenerator.className(),
                                 trigger)
                                          .withDependencyInjection(annotator));
@@ -372,7 +352,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 }
             }
 
-            moduleGenerator.addProcess(p);
+            processGenerators.add(p);
 
             ps.add(p);
             pis.add(pi);
@@ -483,6 +463,9 @@ public class ProcessCodegen extends AbstractGenerator {
 
     @Override
     public ApplicationSection section() {
+        ProcessContainerGenerator moduleGenerator = new ProcessContainerGenerator(packageName);
+        moduleGenerator.withDependencyInjection(annotator);
+        processGenerators.forEach(moduleGenerator::addProcess);
         return moduleGenerator;
     }
 }

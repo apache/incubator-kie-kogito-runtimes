@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.GeneratedFile;
@@ -48,8 +48,8 @@ public class PredictionCodegenTest extends AbstractCodegenTest {
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertEquals(4, generatedFiles.size());
 
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.moduleGenerator().classDeclaration();
-        assertNotNull(classDeclaration);
+        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        assertNotNull(compilationUnit);
     }
 
 }

@@ -144,13 +144,10 @@ public class ApplicationGenerator {
             if (section == null) {
                 continue;
             }
-            CompilationUnit sectionUnit = new CompilationUnit();
-            sectionUnit.setPackageDeclaration(this.packageName);
-            sectionUnit.addType(section.classDeclaration());
             generatedFiles.add(
                     new GeneratedFile(GeneratedFile.Type.APPLICATION_SECTION,
                                       getFilePath(section.sectionClassName()),
-                                      sectionUnit.toString()));
+                                      section.compilationUnit().toString()));
         }
         return generatedFiles;
     }

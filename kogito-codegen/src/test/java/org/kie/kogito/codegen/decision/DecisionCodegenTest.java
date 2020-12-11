@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
@@ -51,8 +51,8 @@ public class DecisionCodegenTest {
                                                                         "decision/VacationsResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
-        assertNotNull(classDeclaration);
+        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        assertNotNull(compilationUnit );
     }
 
     public DecisionCodegen getDecisionCodegen(String s) {
@@ -83,8 +83,8 @@ public class DecisionCodegenTest {
                                                                         "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
-        assertNotNull(classDeclaration);
+        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        assertNotNull(compilationUnit );
     }
 
     @Test
@@ -122,8 +122,8 @@ public class DecisionCodegenTest {
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(3);
 
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
-        assertNotNull(classDeclaration);
+        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        assertNotNull(compilationUnit );
     }
 
     @Test
