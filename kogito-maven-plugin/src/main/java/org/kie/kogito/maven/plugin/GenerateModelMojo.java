@@ -261,11 +261,10 @@ public class GenerateModelMojo extends AbstractKieMojo {
         context.withBuildContext(discoverKogitoRuntimeContext(project));
 
         ApplicationGenerator appGen =
-                new ApplicationGenerator(appPackageName, targetDirectory)
+                new ApplicationGenerator(context, appPackageName, targetDirectory)
                         .withDependencyInjection(dependencyInjectionAnnotator)
                         .withAddons(addonsConfig)
-                        .withClassLoader(projectClassLoader)
-                        .withGeneratorContext(context);
+                        .withClassLoader(projectClassLoader);
 
         // if unspecified, then default to checking for file type existence
         // if not null, the property has been overridden, and we should use the specified value

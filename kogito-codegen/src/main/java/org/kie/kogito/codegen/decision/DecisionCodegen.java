@@ -47,13 +47,11 @@ import org.kie.dmn.typesafe.DMNTypeSafePackageName;
 import org.kie.dmn.typesafe.DMNTypeSafeTypeGenerator;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 import org.slf4j.Logger;
@@ -109,12 +107,6 @@ public class DecisionCodegen extends AbstractGenerator {
         DecisionValidation.dmnValidateDecisionTablesInModels(context(), dmnRuntime.getModels());
         List<DMNResource> dmnResources = dmnRuntime.getModels().stream().map(model -> new DMNResource(model, r2cr.get(model.getResource()))).collect(toList());
         resources.addAll(dmnResources);
-    }
-
-    @Override
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        super.setDependencyInjection(annotator);
-        this.decisionContainerGenerator.withDependencyInjection(annotator);
     }
 
     @Override

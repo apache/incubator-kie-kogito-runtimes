@@ -155,10 +155,9 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
         context.withBuildContext(discoverKogitoRuntimeContext(project));
 
         ApplicationGenerator appGen =
-                new ApplicationGenerator(appPackageName, targetDirectory)
+                new ApplicationGenerator(context, appPackageName, targetDirectory)
                         .withDependencyInjection(discoverDependencyInjectionAnnotator(project))
-                        .withClassLoader(projectClassLoader)
-                        .withGeneratorContext(context);
+                        .withClassLoader(projectClassLoader);
 
         if (generateRuleUnits) {
             appGen.withGenerator(DeclaredTypeCodegen.ofPath(kieSourcesDirectory.toPath()))

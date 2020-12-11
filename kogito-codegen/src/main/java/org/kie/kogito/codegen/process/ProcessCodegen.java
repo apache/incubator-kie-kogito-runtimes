@@ -165,8 +165,6 @@ public class ProcessCodegen extends AbstractGenerator {
         }
     }
 
-    private String applicationCanonicalName;
-
     private ProcessContainerGenerator moduleGenerator;
 
     private final Map<String, WorkflowProcess> processes;
@@ -198,17 +196,12 @@ public class ProcessCodegen extends AbstractGenerator {
     public void setPackageName(String packageName) {
         super.setPackageName(packageName);
         this.moduleGenerator = new ProcessContainerGenerator(context.getBuildContext(), packageName);
-        this.applicationCanonicalName = packageName + ".Application";
     }
 
     @Override
     public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
         super.setDependencyInjection(annotator);
         this.moduleGenerator.withDependencyInjection(annotator);
-    }
-
-    public ProcessContainerGenerator moduleGenerator() {
-        return moduleGenerator;
     }
 
     public ProcessCodegen withClassLoader(ClassLoader projectClassLoader) {
@@ -295,7 +288,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     execModelGen,
                     classPrefix,
                     modelClassGenerator.className(),
-                    applicationCanonicalName
+                    applicationCanonicalName()
             )
                     .withDependencyInjection(annotator)
                     .withAddons(addonsConfig);
@@ -312,7 +305,7 @@ public class ProcessCodegen extends AbstractGenerator {
                                             workFlowProcess,
                                             modelClassGenerator.className(),
                                             execModelGen.className(),
-                                            applicationCanonicalName)
+                                            applicationCanonicalName())
                     .map(r -> r
                             .withDependencyInjection(annotator)
                             .withUserTasks(processIdToUserTaskModel.get(workFlowProcess.getId()))
@@ -337,7 +330,7 @@ public class ProcessCodegen extends AbstractGenerator {
                                 workFlowProcess,
                                 modelClassGenerator.className(),
                                 execModelGen.className(),
-                                applicationCanonicalName,
+                                applicationCanonicalName(),
                                 msgDataEventGenerator.className(),
                                 trigger)
                                          .withDependencyInjection(annotator));
@@ -486,5 +479,9 @@ public class ProcessCodegen extends AbstractGenerator {
     @Override
     public ApplicationSection section() {
         return moduleGenerator;
+    }
+
+    private String applicationCanonicalName() {
+        return packageName + ".Application";
     }
 }

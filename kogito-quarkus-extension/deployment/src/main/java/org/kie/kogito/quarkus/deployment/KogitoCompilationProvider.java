@@ -66,9 +66,8 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
             generationContext
                     .withBuildContext(new QuarkusKogitoBuildContext(className -> hasClassOnClasspath(cl, className)));
 
-            ApplicationGenerator appGen = new ApplicationGenerator(appPackageName, outputDirectory)
-                    .withDependencyInjection(new CDIDependencyInjectionAnnotator())
-                    .withGeneratorContext(generationContext);
+            ApplicationGenerator appGen = new ApplicationGenerator(generationContext, appPackageName, outputDirectory)
+                    .withDependencyInjection(new CDIDependencyInjectionAnnotator());
 
             addGenerator(appGen, filesToCompile, context, cl);
 

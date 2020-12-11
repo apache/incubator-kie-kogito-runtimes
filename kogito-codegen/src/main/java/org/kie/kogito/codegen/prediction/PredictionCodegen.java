@@ -42,7 +42,6 @@ import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.KogitoPackageSources;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.rules.RuleCodegenError;
@@ -114,12 +113,6 @@ public class PredictionCodegen extends AbstractGenerator {
 
     public List<GeneratedFile> getGeneratedFiles() {
         return generatedFiles;
-    }
-
-    @Override
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        this.moduleGenerator.withDependencyInjection(annotator);
     }
 
     @Override

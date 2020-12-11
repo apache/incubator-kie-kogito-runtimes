@@ -15,7 +15,6 @@
 
 package org.kie.kogito.codegen;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +34,6 @@ import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
-import static org.kie.kogito.codegen.ApplicationGenerator.log;
 import static org.kie.kogito.codegen.CodegenUtils.newObject;
 
 public class ApplicationConfigGenerator {
@@ -55,17 +53,7 @@ public class ApplicationConfigGenerator {
     private PredictionConfigGenerator predictionConfig;
     private ConfigBeanGenerator configBean;
 
-    private String packageName;
-    private final String sourceFilePath;
-    private final String targetTypeName;
-    private final String targetCanonicalName;
-
     public ApplicationConfigGenerator(KogitoBuildContext buildContext, String packageName) {
-        this.packageName = packageName;
-        this.targetTypeName = "ApplicationConfig";
-        this.targetCanonicalName = this.packageName + "." + targetTypeName;
-        this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
-
         this.templatedGenerator = new TemplatedGenerator(
                 buildContext,
                 packageName,
@@ -117,7 +105,7 @@ public class ApplicationConfigGenerator {
 
         return new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
                                  templatedGenerator.generatedFilePath(),
-                                 log(compilationUnit.toString()).getBytes(StandardCharsets.UTF_8));
+                                 compilationUnit.toString());
     }
 
     private void replaceAddonPlaceHolder(ClassOrInterfaceDeclaration cls) {

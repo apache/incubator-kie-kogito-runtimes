@@ -47,29 +47,30 @@ public class ApplicationGeneratorTest {
 
     private static final String PACKAGE_NAME = "org.drools.test";
     private static final String EXPECTED_APPLICATION_NAME = PACKAGE_NAME + ".Application";
+    private static final GeneratorContext context = GeneratorContext.ofResourcePath();
 
     @Test
     public void targetCanonicalName() {
-        final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, new File(""));
+        final ApplicationGenerator appGenerator = new ApplicationGenerator(context, PACKAGE_NAME, new File(""));
         assertThat(appGenerator.targetCanonicalName()).isNotNull();
         assertThat(appGenerator.targetCanonicalName()).isEqualTo(EXPECTED_APPLICATION_NAME);
     }
 
     @Test
     public void packageNameNull() {
-        assertThatThrownBy(() -> new ApplicationGenerator(null, new File("")))
+        assertThatThrownBy(() -> new ApplicationGenerator(context, null, new File("")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void packageNameInvalid() {
-        assertThatThrownBy(() -> new ApplicationGenerator("i.am.an-invalid.package-name.sorry", new File("")))
+        assertThatThrownBy(() -> new ApplicationGenerator(context, "i.am.an-invalid.package-name.sorry", new File("")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void generatedFilePath() {
-        final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, new File(""));
+        final ApplicationGenerator appGenerator = new ApplicationGenerator(context, PACKAGE_NAME, new File(""));
         String path = appGenerator.generateApplicationDescriptor().relativePath();
         assertThat(path).isNotNull();
         assertThat(path).isEqualTo(EXPECTED_APPLICATION_NAME.replace(".", "/") + ".java");
@@ -77,7 +78,7 @@ public class ApplicationGeneratorTest {
 
     @Test
     public void compilationUnit() {
-        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(null, PACKAGE_NAME);
+        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(context.getBuildContext(), PACKAGE_NAME);
         assertCompilationUnit(appGenerator.getCompilationUnitOrThrow(), false);
     }
 
@@ -90,7 +91,8 @@ public class ApplicationGeneratorTest {
     @Test
     public void generateWithMonitoring() throws IOException {
         final Path targetDirectory = Paths.get("target");
-        final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, targetDirectory.toFile()).withAddons(new AddonsConfig().withPrometheusMonitoring(true));
+        final ApplicationGenerator appGenerator = new ApplicationGenerator(context, PACKAGE_NAME, targetDirectory.toFile())
+                .withAddons(new AddonsConfig().withPrometheusMonitoring(true));
         appGenerator.generate();
         assertImageMetadata(targetDirectory, new PrometheusLabeler().generateLabels());
     }
@@ -98,7 +100,7 @@ public class ApplicationGeneratorTest {
     @Test
     public void writeLabelsImageMetadata() throws IOException {
         final Path targetDirectory = Paths.get("target");
-        final ApplicationGenerator appGenerator = new ApplicationGenerator(PACKAGE_NAME, targetDirectory.toFile());
+        final ApplicationGenerator appGenerator = new ApplicationGenerator(context, PACKAGE_NAME, targetDirectory.toFile());
 
         final Map<String, String> labels = new HashMap<>();
         labels.put("testKey1", "testValue1");
@@ -111,7 +113,7 @@ public class ApplicationGeneratorTest {
 
     @Test
     public void applicationSectionReplace() {
-        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(null, PACKAGE_NAME);
+        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(context.getBuildContext(), PACKAGE_NAME);
         assertApplicationPlaceholderReplace(appGenerator, 0);
 
         appGenerator.withSections(Arrays.asList("Processes", "DecisionModels"));

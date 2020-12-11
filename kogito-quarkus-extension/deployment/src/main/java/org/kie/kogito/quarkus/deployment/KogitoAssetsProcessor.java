@@ -188,11 +188,11 @@ public class KogitoAssetsProcessor {
 
         ApplicationGenerator appGen =
                 new ApplicationGenerator(
+                        context,
                         appPackageName,
                         new File(appPaths.getFirstProjectPath().toFile(), "target"))
                         .withDependencyInjection(dependencyInjectionAnnotator)
-                        .withAddons(addonsConfig)
-                        .withGeneratorContext(context);
+                        .withAddons(addonsConfig);
 
         // configure each individual generator. Ordering is relevant.
 

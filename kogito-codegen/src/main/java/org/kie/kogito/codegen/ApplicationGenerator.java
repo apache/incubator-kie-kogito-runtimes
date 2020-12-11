@@ -60,8 +60,8 @@ public class ApplicationGenerator {
     private ClassLoader classLoader;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
-    public ApplicationGenerator(String packageName, File targetDirectory) {
-
+    public ApplicationGenerator(GeneratorContext context, String packageName, File targetDirectory) {
+        this.context = context;
         this.packageName = packageName;
         this.targetDirectory = targetDirectory;
         this.classLoader = Thread.currentThread().getContextClassLoader();
@@ -81,11 +81,6 @@ public class ApplicationGenerator {
 
     public ApplicationGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
         this.annotator = annotator;
-        return this;
-    }
-
-    public ApplicationGenerator withGeneratorContext(GeneratorContext context) {
-        this.context = context;
         return this;
     }
 
@@ -128,10 +123,6 @@ public class ApplicationGenerator {
                 .collect(Collectors.toList());
 
         applicationMainGenerator.withSections(sections);
-        CompilationUnit compilationUnit = applicationMainGenerator.getCompilationUnitOrThrow();
-        return new GeneratedFile(GeneratedFile.Type.APPLICATION,
-                                 applicationMainGenerator.generatedFilePath(),
-                                 compilationUnit.toString());
         return applicationMainGenerator.generate();
     }
 
