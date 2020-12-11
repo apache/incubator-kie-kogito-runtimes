@@ -18,7 +18,6 @@ package org.kie.kogito.codegen.process;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,15 +46,11 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.ResourceGeneratorFactory;
-import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsMessageProducerGenerator;
@@ -419,12 +414,12 @@ public class ProcessCodegen extends AbstractGenerator {
         if (this.addonsConfig.useKnativeEventing()) {
             LOGGER.info("Knative Eventing addon enabled, generating CloudEvent HTTP listener");
             final CloudEventsResourceGenerator ceGenerator =
-                    new CloudEventsResourceGenerator(processExecutableModelGenerators, annotator);
+                    new CloudEventsResourceGenerator(packageName, processExecutableModelGenerators, annotator);
             storeFile(Type.REST, ceGenerator.generatedFilePath(), ceGenerator.generate());
         }
 
         final TopicsInformationResourceGenerator topicsGenerator =
-                new TopicsInformationResourceGenerator(processExecutableModelGenerators, annotator, addonsConfig);
+                new TopicsInformationResourceGenerator(packageName, processExecutableModelGenerators, annotator, addonsConfig);
         storeFile(Type.REST, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
 
 

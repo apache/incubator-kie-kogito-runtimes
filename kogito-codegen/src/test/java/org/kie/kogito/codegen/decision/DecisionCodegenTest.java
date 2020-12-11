@@ -26,6 +26,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.io.CollectedResource;
@@ -59,6 +60,7 @@ public class DecisionCodegenTest {
         GeneratorContext context = stronglyTypedContext();
         DecisionCodegen codeGenerator = DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get(s).toAbsolutePath()));
         codeGenerator.setContext(context);
+        codeGenerator.setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
         return codeGenerator;
     }
 
