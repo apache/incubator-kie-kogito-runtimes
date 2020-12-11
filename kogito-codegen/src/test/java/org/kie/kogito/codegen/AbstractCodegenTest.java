@@ -61,7 +61,7 @@ public class AbstractCodegenTest {
     /**
      * Order matters here because inside {@link AbstractCodegenTest#generateCode(Map, boolean)} it is the order used to invoke
      *
-     * {@link ApplicationGenerator#registerAndInitGenerator(Generator) }
+     * {@link ApplicationGenerator#withGenerator(Generator) }
      */
     protected enum TYPE {
         PROCESS,
@@ -187,13 +187,13 @@ public class AbstractCodegenTest {
         Set<TYPE> generatedTypes = new HashSet<>();
         for (TYPE type :  TYPE.values()) {
             if (resourcesTypeMap.containsKey(type) && !resourcesTypeMap.get(type).isEmpty()) {
-                appGen.registerAndInitGenerator(generatorTypeMap.get(type).apply(resourcesTypeMap.get(type)));
+                appGen.withGenerator(generatorTypeMap.get(type).apply(resourcesTypeMap.get(type)));
                 generatedTypes.add(type);
             }
         }
         // Hack just to avoid test breaking
         if (generatedTypes.contains(TYPE.DECISION) && !generatedTypes.contains(TYPE.PREDICTION)) {
-            appGen.registerAndInitGenerator(generatorTypeMap.get(TYPE.PREDICTION).apply(Collections.EMPTY_LIST));
+            appGen.withGenerator(generatorTypeMap.get(TYPE.PREDICTION).apply(Collections.EMPTY_LIST));
         }
 
         Collection<GeneratedFile> generatedFiles = appGen.generate();

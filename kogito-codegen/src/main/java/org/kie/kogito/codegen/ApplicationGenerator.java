@@ -160,7 +160,7 @@ public class ApplicationGenerator {
         return generatedFiles;
     }
 
-    public <G extends Generator> G registerAndInitGenerator(G generator) {
+    public <G extends Generator> G withGenerator(G generator) {
         this.generators.add(generator);
         generator.setPackageName(packageName);
         generator.setDependencyInjection(annotator);

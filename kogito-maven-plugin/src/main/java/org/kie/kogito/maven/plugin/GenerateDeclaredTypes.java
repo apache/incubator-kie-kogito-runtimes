@@ -161,7 +161,7 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
                         .withGeneratorContext(context);
 
         if (generateRuleUnits) {
-            appGen.registerAndInitGenerator(DeclaredTypeCodegen.ofPath(kieSourcesDirectory.toPath()))
+            appGen.withGenerator(DeclaredTypeCodegen.ofPath(kieSourcesDirectory.toPath()))
                     .withClassLoader(projectClassLoader);
         }
         
