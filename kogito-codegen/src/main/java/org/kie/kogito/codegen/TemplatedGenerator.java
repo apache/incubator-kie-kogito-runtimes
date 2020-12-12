@@ -126,11 +126,7 @@ public class TemplatedGenerator {
 
     private String selectResource() {
         if (buildContext == null) {
-            if (resourceDefault == null) {
-                return null;
-            } else {
-                return resourceDefault;
-            }
+            return resourceDefault;
         } else if (buildContext instanceof QuarkusKogitoBuildContext) {
             return resourceCdi;
         } else if (buildContext instanceof SpringBootKogitoBuildContext) {
