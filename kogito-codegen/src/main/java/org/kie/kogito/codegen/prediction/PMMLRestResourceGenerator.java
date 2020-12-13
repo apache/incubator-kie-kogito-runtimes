@@ -29,7 +29,6 @@ import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.CodegenUtils;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.pmml.commons.model.KiePMMLModel;
 
 import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
@@ -42,13 +41,14 @@ public class PMMLRestResourceGenerator {
     private final String nameURL;
     final String packageName;
     final String appCanonicalName;
-    DependencyInjectionAnnotator annotator;
     private final String resourceClazzName;
     private final String relativePath;
+    private final KogitoBuildContext buildContext;
     private final KiePMMLModel kiePMMLModel;
     private final TemplatedGenerator generator;
 
     public PMMLRestResourceGenerator(KogitoBuildContext buildContext, KiePMMLModel model, String appCanonicalName) {
+        this.buildContext = buildContext;
         this.kiePMMLModel = model;
         this.packageName = "org.kie.kogito." + CodegenStringUtil.escapeIdentifier(model.getClass().getPackage().getName());
         String classPrefix = getSanitizedClassName(model.getName());
@@ -72,9 +72,9 @@ public class PMMLRestResourceGenerator {
         setPathValue(template);
         setPredictionModelName(template);
 
-        if (useInjection()) {
+        if (buildContext.hasDI()) {
             template.findAll(FieldDeclaration.class,
-                             CodegenUtils::isApplicationField).forEach(fd -> annotator.withInjection(fd));
+                             CodegenUtils::isApplicationField).forEach(fd -> buildContext.getDependencyInjectionAnnotator().withInjection(fd));
         } else {
             template.findAll(FieldDeclaration.class,
                              CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
@@ -92,21 +92,12 @@ public class PMMLRestResourceGenerator {
         return this.kiePMMLModel;
     }
 
-    public PMMLRestResourceGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        return this;
-    }
-
     public String className() {
         return resourceClazzName;
     }
 
     public String generatedFilePath() {
         return relativePath;
-    }
-
-    protected boolean useInjection() {
-        return this.annotator != null;
     }
 
     void setPathValue(ClassOrInterfaceDeclaration template) {

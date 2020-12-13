@@ -22,6 +22,7 @@ import javax.lang.model.SourceVersion;
 
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
+import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
@@ -125,7 +126,7 @@ public class TemplatedGenerator {
     }
 
     private String selectResource() {
-        if (buildContext == null) {
+        if (buildContext == null || buildContext instanceof JavaKogitoBuildContext) {
             return resourceDefault;
         } else if (buildContext instanceof QuarkusKogitoBuildContext) {
             return resourceCdi;

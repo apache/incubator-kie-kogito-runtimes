@@ -47,7 +47,7 @@ public class ApplicationGeneratorTest {
 
     private static final String PACKAGE_NAME = "org.drools.test";
     private static final String EXPECTED_APPLICATION_NAME = PACKAGE_NAME + ".Application";
-    private static final GeneratorContext context = GeneratorContext.ofResourcePath();
+    private static final GeneratorContext context = GeneratorContext.emptyContext();
 
     @Test
     public void targetCanonicalName() {

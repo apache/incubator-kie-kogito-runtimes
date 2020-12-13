@@ -31,16 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PredictionConfigGeneratorTest {
 
     private final static String PACKAGE_NAME = "PACKAGENAME";
-    private static PredictionConfigGenerator predictionConfigGenerator;
-
-    @BeforeAll
-    public static void setup() {
-        assertNotNull(predictionConfigGenerator);
-    }
 
     @Test
     void compilationUnitWithCDI() {
-        predictionConfigGenerator = new PredictionConfigGenerator(new QuarkusKogitoBuildContext(s -> false), PACKAGE_NAME);
+        PredictionConfigGenerator predictionConfigGenerator = new PredictionConfigGenerator(new QuarkusKogitoBuildContext(s -> false), PACKAGE_NAME);
         Optional<GeneratedFile> retrievedOpt = predictionConfigGenerator.generate();
         assertNotNull(retrievedOpt);
         assertTrue(retrievedOpt.isPresent());
@@ -57,7 +51,7 @@ class PredictionConfigGeneratorTest {
 
     @Test
     void compilationUnitWithSpring() {
-        predictionConfigGenerator = new PredictionConfigGenerator(new SpringBootKogitoBuildContext(s -> false), PACKAGE_NAME);
+        PredictionConfigGenerator predictionConfigGenerator = new PredictionConfigGenerator(new SpringBootKogitoBuildContext(s -> false), PACKAGE_NAME);
         Optional<GeneratedFile> retrievedOpt = predictionConfigGenerator.generate();
         assertNotNull(retrievedOpt);
         assertTrue(retrievedOpt.isPresent());
@@ -74,6 +68,7 @@ class PredictionConfigGeneratorTest {
 
     @Test
     void members() {
+        PredictionConfigGenerator predictionConfigGenerator = new PredictionConfigGenerator(new QuarkusKogitoBuildContext(s -> false), PACKAGE_NAME);
         List<BodyDeclaration<?>> retrieved = predictionConfigGenerator.members();
         assertNotNull(retrieved);
         assertTrue(retrieved.isEmpty());

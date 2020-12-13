@@ -38,7 +38,6 @@ import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.Generator;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 
 public abstract class KogitoCompilationProvider extends JavaCompilationProvider {
 
@@ -66,8 +65,7 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
             generationContext
                     .withBuildContext(new QuarkusKogitoBuildContext(className -> hasClassOnClasspath(cl, className)));
 
-            ApplicationGenerator appGen = new ApplicationGenerator(generationContext, appPackageName, outputDirectory)
-                    .withDependencyInjection(new CDIDependencyInjectionAnnotator());
+            ApplicationGenerator appGen = new ApplicationGenerator(generationContext, appPackageName, outputDirectory);
 
             addGenerator(appGen, filesToCompile, context, cl);
 

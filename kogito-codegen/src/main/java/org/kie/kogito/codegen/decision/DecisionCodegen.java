@@ -145,7 +145,6 @@ public class DecisionCodegen extends AbstractGenerator {
                 generateStronglyTypedInput(model);
             }
             DecisionRestResourceGenerator resourceGenerator = new DecisionRestResourceGenerator(context.getBuildContext(), model, applicationCanonicalName())
-                    .withDependencyInjection(annotator)
                     .withAddons(addonsConfig)
                     .withStronglyTyped(stronglyTypedEnabled)
                     .withOASResult(oasResult, isMPAnnotationsPresent(), isIOSwaggerOASv3AnnotationsPresent());
@@ -179,10 +178,10 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private void generateAndStoreDecisionModelResourcesProvider() {
-        final DecisionModelResourcesProviderGenerator generator = new DecisionModelResourcesProviderGenerator(packageName,
+        final DecisionModelResourcesProviderGenerator generator = new DecisionModelResourcesProviderGenerator(context.getBuildContext(),
+                                                                                                              packageName,
                                                                                                               applicationCanonicalName(),
                                                                                                               resources)
-                .withDependencyInjection(annotator)
                 .withAddons(addonsConfig);
         storeFile(GeneratedFile.Type.CLASS, generator.generatedFilePath(), generator.generate());
     }

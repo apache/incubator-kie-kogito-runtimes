@@ -30,7 +30,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.drools.core.util.StringUtils;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.metadata.Labeler;
 import org.kie.kogito.codegen.metadata.MetaDataWriter;
 import org.kie.kogito.codegen.metadata.PrometheusLabeler;
@@ -47,8 +46,6 @@ public class ApplicationGenerator {
 
     private final String packageName;
     private final File targetDirectory;
-
-    private DependencyInjectionAnnotator annotator;
 
     private final ApplicationContainerGenerator applicationMainGenerator;
     private ApplicationConfigGenerator configGenerator;
@@ -76,11 +73,6 @@ public class ApplicationGenerator {
 
     private String getFilePath(String className) {
         return (this.packageName + "." + className).replace('.', '/') + ".java";
-    }
-
-    public ApplicationGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        return this;
     }
 
     public ApplicationGenerator withAddons(AddonsConfig addonsConfig) {
@@ -150,7 +142,6 @@ public class ApplicationGenerator {
     public <G extends Generator> G setupGenerator(G generator) {
         this.generators.add(generator);
         generator.setPackageName(packageName);
-        generator.setDependencyInjection(annotator);
         generator.setProjectDirectory(targetDirectory.getParentFile().toPath());
         generator.setContext(context);
         generator.setAddonsConfig(addonsConfig);

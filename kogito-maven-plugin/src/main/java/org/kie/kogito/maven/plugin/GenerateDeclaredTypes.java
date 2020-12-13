@@ -156,7 +156,6 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
 
         ApplicationGenerator appGen =
                 new ApplicationGenerator(context, appPackageName, targetDirectory)
-                        .withDependencyInjection(discoverDependencyInjectionAnnotator(project))
                         .withClassLoader(projectClassLoader);
 
         if (generateRuleUnits) {

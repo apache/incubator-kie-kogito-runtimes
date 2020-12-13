@@ -21,6 +21,7 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
+import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class ApplicationContainerGenerator {
                         "Compilation unit doesn't contain a class or interface declaration!"));
 
         // ApplicationTemplate (no CDI/Spring) has placeholders to replace
-        if (buildContext == null) {
+        if (buildContext == null || buildContext instanceof JavaKogitoBuildContext) {
             replacePlaceholder(getLoadEnginesMethod(cls), sections);
         }
 

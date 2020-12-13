@@ -52,7 +52,6 @@ import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.CodegenUtils;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 
@@ -60,6 +59,7 @@ public class DecisionRestResourceGenerator {
 
     public static final String CDI_TEMPLATE = "/class-templates/DecisionRestResourceTemplate.java";
     public static final String SPRING_TEMPLATE = "/class-templates/spring/SpringDecisionRestResourceTemplate.java";
+    private final KogitoBuildContext buildContext;
     private final DMNModel dmnModel;
     private final String decisionName;
     private final String nameURL;
@@ -68,7 +68,6 @@ public class DecisionRestResourceGenerator {
     private final String relativePath;
     private final String resourceClazzName;
     private final String appCanonicalName;
-    private DependencyInjectionAnnotator annotator;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     private boolean isStronglyTyped = false;
     private DMNOASResult withOASResult;
@@ -79,6 +78,7 @@ public class DecisionRestResourceGenerator {
     private static final Supplier<RuntimeException> TEMPLATE_WAS_MODIFIED = () -> new RuntimeException("Template was modified!");
 
     public DecisionRestResourceGenerator(KogitoBuildContext buildContext, DMNModel model, String appCanonicalName) {
+        this.buildContext = buildContext;
         this.dmnModel = model;
         this.packageName = CodegenStringUtil.escapeIdentifier(model.getNamespace());
         this.decisionId = model.getDefinitions().getId();
@@ -109,9 +109,9 @@ public class DecisionRestResourceGenerator {
         modifyDmnMethodForStronglyTyped(template);
         chooseMethodForStronglyTyped(template);
 
-        if (useInjection()) {
+        if (buildContext.hasDI()) {
             template.findAll(FieldDeclaration.class,
-                             CodegenUtils::isApplicationField).forEach(fd -> annotator.withInjection(fd));
+                             CodegenUtils::isApplicationField).forEach(fd -> buildContext.getDependencyInjectionAnnotator().withInjection(fd));
         } else {
             template.findAll(FieldDeclaration.class,
                              CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
@@ -335,11 +335,6 @@ public class DecisionRestResourceGenerator {
         return this.dmnModel;
     }
 
-    public DecisionRestResourceGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        return this;
-    }
-
     public DecisionRestResourceGenerator withAddons(AddonsConfig addonsConfig) {
         this.addonsConfig = addonsConfig;
         return this;
@@ -400,10 +395,6 @@ public class DecisionRestResourceGenerator {
 
     public String generatedFilePath() {
         return relativePath;
-    }
-
-    protected boolean useInjection() {
-        return this.annotator != null;
     }
 
     public DecisionRestResourceGenerator withStronglyTyped(boolean stronglyTyped) {

@@ -50,7 +50,6 @@ import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
@@ -242,7 +241,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
         boolean useTracing = hasClassOnClasspath(project, "org.kie.kogito.tracing.decision.DecisionTracingListener");
         boolean useKnativeEventing = hasClassOnClasspath(project, "org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension");
         boolean useCloudEvents = hasClassOnClasspath(project, "org.kie.kogito.addon.cloudevents.AbstractTopicDiscovery");
-        DependencyInjectionAnnotator dependencyInjectionAnnotator = discoverDependencyInjectionAnnotator(project);
 
         AddonsConfig addonsConfig = new AddonsConfig()
                 .withPersistence(usePersistence)
@@ -262,7 +260,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
         ApplicationGenerator appGen =
                 new ApplicationGenerator(context, appPackageName, targetDirectory)
-                        .withDependencyInjection(dependencyInjectionAnnotator)
                         .withAddons(addonsConfig)
                         .withClassLoader(projectClassLoader);
 

@@ -72,22 +72,22 @@ public class CloudEventsMessageProducerGenerator extends MessageProducerGenerato
             md.findAll(ClassOrInterfaceType.class).forEach(t -> t.setName(t.getNameAsString().replace("$DataEventType$", messageDataEventClassName)));
         });
 
-        if (useInjection()) {
-            annotator.withApplicationComponent(template);
+        if (buildContext.hasDI()) {
+            buildContext.getDependencyInjectionAnnotator().withApplicationComponent(template);
 
             FieldDeclaration emitterField = template.findFirst(FieldDeclaration.class)
                     .filter(fd -> fd.getVariables().stream().anyMatch(v -> v.getNameAsString().equals("emitter")))
                     .orElseThrow(() -> new IllegalStateException("Cannot find emitter field in MessageProducerTemplate"));
-            annotator.withInjection(emitterField);
-            annotator.withOutgoingMessage(emitterField, trigger.getName());
-            emitterField.getVariable(0).setType(annotator.emitterType("String"));
+            buildContext.getDependencyInjectionAnnotator().withInjection(emitterField);
+            buildContext.getDependencyInjectionAnnotator().withOutgoingMessage(emitterField, trigger.getName());
+            emitterField.getVariable(0).setType(buildContext.getDependencyInjectionAnnotator().emitterType("String"));
 
             MethodDeclaration produceMethod = template.findAll(MethodDeclaration.class).stream()
                     .filter(md -> md.getNameAsString().equals("produce"))
                     .findFirst().orElseThrow(() -> new IllegalStateException("Cannot find produce methods in MessageProducerTemplate"));
 
             MethodCallExpr sendMethodCall = new MethodCallExpr(new NameExpr("emitter"), "send");
-            annotator.withMessageProducer(
+            buildContext.getDependencyInjectionAnnotator().withMessageProducer(
                     sendMethodCall,
                     trigger.getName(),
                     new MethodCallExpr(new ThisExpr(), "marshall")
@@ -97,7 +97,8 @@ public class CloudEventsMessageProducerGenerator extends MessageProducerGenerato
             this.generateProduceMethodBody(produceMethod, sendMethodCall);
 
             template.findAll(FieldDeclaration.class,
-                             fd -> fd.getVariable(0).getNameAsString().equals("useCloudEvents")).forEach(fd -> annotator.withConfigInjection(fd, "kogito.messaging.as-cloudevents"));
+                             fd -> fd.getVariable(0).getNameAsString().equals("useCloudEvents"))
+                    .forEach(fd -> buildContext.getDependencyInjectionAnnotator().withConfigInjection(fd, "kogito.messaging.as-cloudevents"));
         }
 
         template.getMembers().sort(new BodyDeclarationComparator());

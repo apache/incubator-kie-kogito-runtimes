@@ -28,9 +28,9 @@ import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
+import org.kie.kogito.codegen.CodegenUtils;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
 import static org.kie.kogito.codegen.CodegenUtils.isApplicationField;
@@ -46,6 +46,7 @@ public class MessageConsumerGenerator {
     private static final String OBJECT_MAPPER_CANONICAL_NAME = ObjectMapper.class.getCanonicalName();
     private final TemplatedGenerator generator;
 
+    private KogitoBuildContext buildContext;
     private WorkflowProcess process;
     private final String packageName;
     private final String resourceClazzName;
@@ -55,7 +56,6 @@ public class MessageConsumerGenerator {
     private final String processName;
     private final String appCanonicalName;
     private final String messageDataEventClassName;
-    private DependencyInjectionAnnotator annotator;
 
     private TriggerMetaData trigger;
 
@@ -67,6 +67,7 @@ public class MessageConsumerGenerator {
             String appCanonicalName,
             String messageDataEventClassName,
             TriggerMetaData trigger) {
+        this.buildContext = buildContext;
         this.process = process;
         this.trigger = trigger;
         this.packageName = process.getPackageName();
@@ -88,21 +89,12 @@ public class MessageConsumerGenerator {
                 RESOURCE);
     }
 
-    public MessageConsumerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        return this;
-    }
-
     public String className() {
         return resourceClazzName;
     }
 
     public String generatedFilePath() {
         return generator.generatedFilePath();
-    }
-
-    protected boolean useInjection() {
-        return this.annotator != null;
     }
 
     public String generate() {
@@ -121,7 +113,7 @@ public class MessageConsumerGenerator {
         template.findAll(MethodCallExpr.class).forEach(this::interpolateStrings);
 
         // legacy: force initialize fields
-        if (!useInjection()) {
+        if (!buildContext.hasDI()) {
             template.findAll(FieldDeclaration.class,
                              fd -> isProcessField(fd)).forEach(fd -> initializeProcessField(fd));
             template.findAll(FieldDeclaration.class,

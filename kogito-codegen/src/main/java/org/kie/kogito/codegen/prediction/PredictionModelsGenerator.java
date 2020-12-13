@@ -40,7 +40,7 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
     protected final TemplatedGenerator templatedGenerator;
 
     public PredictionModelsGenerator(KogitoBuildContext buildContext, String packageName, String applicationCanonicalName, List<PMMLResource> resources) {
-        super(SECTION_CLASS_NAME);
+        super(buildContext, SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = resources;
 

@@ -40,7 +40,6 @@ import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
 
@@ -55,14 +54,12 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
     private final List<ProcessGenerator> processes;
     private final List<BodyDeclaration<?>> factoryMethods;
 
-    private DependencyInjectionAnnotator annotator;
-
     private BlockStmt byProcessIdBody = new BlockStmt();
     private BlockStmt processesBody = new BlockStmt();
     private final TemplatedGenerator templatedGenerator;
 
     public ProcessContainerGenerator(KogitoBuildContext buildContext, String packageName) {
-        super(SECTION_CLASS_NAME);
+        super(buildContext, SECTION_CLASS_NAME);
         this.packageName = packageName;
         this.processes = new ArrayList<>();
         this.factoryMethods = new ArrayList<>();
@@ -96,11 +93,6 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
         byProcessIdBody.addStatement(byProcessId);
     }
 
-    public ProcessContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        return this;
-    }
-
     @Override
     public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
@@ -111,7 +103,7 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
 
     private void registerProcessesExplicitly(CompilationUnit compilationUnit) {
         // only for non-DI cases
-        if (annotator == null) {
+        if (!buildContext.hasDI()) {
             setupProcessById(compilationUnit);
             setupProcessIds(compilationUnit);
         }

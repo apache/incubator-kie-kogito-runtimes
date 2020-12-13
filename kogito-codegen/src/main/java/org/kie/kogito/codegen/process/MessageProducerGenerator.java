@@ -26,7 +26,6 @@ import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
 
@@ -43,9 +42,9 @@ public class MessageProducerGenerator {
     protected final String resourceClazzName;
     private final String processName;
     protected final String messageDataEventClassName;
+    protected final KogitoBuildContext buildContext;
     protected WorkflowProcess process;
     private String processId;
-    protected DependencyInjectionAnnotator annotator;
 
     protected TriggerMetaData trigger;
 
@@ -56,6 +55,7 @@ public class MessageProducerGenerator {
             String processfqcn,
             String messageDataEventClassName,
             TriggerMetaData trigger) {
+        this.buildContext = buildContext;
         this.process = process;
         this.trigger = trigger;
         this.packageName = process.getPackageName();
@@ -72,11 +72,6 @@ public class MessageProducerGenerator {
                 RESOURCE_CDI,
                 RESOURCE_SPRING,
                 RESOURCE);
-    }
-
-    public MessageProducerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        return this;
     }
 
     public String generate() {
@@ -103,9 +98,5 @@ public class MessageProducerGenerator {
 
     public String generatedFilePath() {
         return generator.generatedFilePath();
-    }
-
-    protected boolean useInjection() {
-        return this.annotator != null;
     }
 }
