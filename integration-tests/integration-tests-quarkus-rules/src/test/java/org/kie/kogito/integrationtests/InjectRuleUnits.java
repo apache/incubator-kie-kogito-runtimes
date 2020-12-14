@@ -16,15 +16,19 @@
 
 package org.kie.kogito.integrationtests;
 
-public class SpringInjectProcesses {
+import io.quarkus.runtime.Startup;
+import org.kie.kogito.Application;
+import org.kie.kogito.rules.RuleUnits;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public SpringInjectProcesses(org.kie.kogito.process.Processes processes, org.kie.kogito.Application application) {
-        if(processes != application.get(org.kie.kogito.process.Processes.class)) {
-            throw new IllegalStateException("Processes should be injectable and same as instance application.get(Processes.class)");
-        }
-        if(application.config().get(org.kie.kogito.process.ProcessConfig.class) == null) {
-            throw new IllegalStateException("ProcessConfig not available");
+import javax.inject.Inject;
+
+@Startup
+public class InjectRuleUnits {
+
+    @Inject
+    public InjectRuleUnits(RuleUnits ruleUnits, Application application) {
+        if (ruleUnits != application.ruleUnits()) {
+            throw new IllegalStateException("RuleUnits should be injectable and same instance as application.ruleUnits()");
         }
     }
 }

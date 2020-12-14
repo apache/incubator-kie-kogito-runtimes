@@ -36,6 +36,10 @@ public class StaticApplication implements Application {
             KogitoEngine ... engines) {
         this.config = config;
         loadEngines(engines);
+
+        if (config() != null && config().process() != null) {
+            unitOfWorkManager().eventManager().setAddons(config().addons());
+        }
     }
 
     public Config config() {
