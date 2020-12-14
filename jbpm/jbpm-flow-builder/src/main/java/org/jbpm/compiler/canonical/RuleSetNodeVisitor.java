@@ -38,6 +38,7 @@ import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.decision.DecisionModels;
+import org.kie.kogito.rules.RuleConfig;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.SingletonStore;
 import org.kie.kogito.rules.units.AssignableChecker;
@@ -177,10 +178,16 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
         BlockStmt actionBody = new BlockStmt();
         LambdaExpr lambda = new LambdaExpr(new Parameter(new UnknownType(), "()"), actionBody);
 
+
+        // app.config().get(org.kie.kogito.rules.RuleConfig.class)
+        MethodCallExpr ruleConfig = new MethodCallExpr(
+                new MethodCallExpr(new NameExpr("app"), "config"), "get")
+                        .addArgument(new ClassExpr().setType(RuleConfig.class.getCanonicalName()));
+
         MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(
                 new NameExpr("org.drools.project.model.ProjectRuntime.INSTANCE"), "newKieSession",
                 NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"),
-                        new NameExpr("app.config().get(org.kie.kogito.rules.RuleConfig.class)")));
+                        ruleConfig));
         actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
 
         return new MethodCallExpr("ruleFlowGroup")
