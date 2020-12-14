@@ -37,8 +37,9 @@ public class ApplicationConfigGeneratorTest {
     public void withProcessConfigNull() {
         final ApplicationConfigGenerator generator = new ApplicationConfigGenerator(null, "org.kie.kogito.test");
         final ApplicationConfigGenerator returnedConfigGenerator = generator.withProcessConfig(null);
-        assertThat(returnedConfigGenerator).isNotNull();
-        assertThat(returnedConfigGenerator).isSameAs(generator);
+        assertThat(returnedConfigGenerator)
+                .isNotNull()
+                .isSameAs(generator);
     }
 
 }
