@@ -24,6 +24,10 @@ import java.util.function.Function;
 
 public abstract class AbstractPredictionModels implements PredictionModels {
 
+    // This AtomicReference is needed to have a deterministic/stable value for kieRuntimeFactoryFunction.
+    // DecisionModels statically refers kieRuntimeFactoryFunction but it can be loaded before PredictionModels (it depends
+    // on dependency injection container initialisation) so it is not possible to make an assumption on the order.
+    // It can be probably removed (and make kieRuntimeFactoryFunction private) after resolving https://issues.redhat.com/browse/DROOLS-5724
     private static final AtomicReference<Function<String, KieRuntimeFactory>> functionReference = new AtomicReference<>();
     public static final Function<String, KieRuntimeFactory> kieRuntimeFactoryFunction = s -> functionReference.get().apply(s);
 
