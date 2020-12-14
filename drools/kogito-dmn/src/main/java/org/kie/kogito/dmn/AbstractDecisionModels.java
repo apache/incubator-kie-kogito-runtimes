@@ -24,7 +24,7 @@ import java.util.function.Function;
 
 public abstract class AbstractDecisionModels implements DecisionModels {
 
-    private final static boolean IS_NATIVE_IMAGE = org.kie.dmn.feel.util.ClassLoaderUtil.CAN_PLATFORM_CLASSLOAD;
+    private static final boolean CAN_PLATFORM_CLASSLOAD = org.kie.dmn.feel.util.ClassLoaderUtil.CAN_PLATFORM_CLASSLOAD;
     private static DMNRuntime dmnRuntime = null;
     private static ExecutionIdSupplier execIdSupplier = null;
 
@@ -52,7 +52,7 @@ public abstract class AbstractDecisionModels implements DecisionModels {
     }
 
     protected static java.io.InputStreamReader readResource(java.io.InputStream stream) {
-        if (!IS_NATIVE_IMAGE) {
+        if (CAN_PLATFORM_CLASSLOAD) {
             return new java.io.InputStreamReader(stream);
         }
 
