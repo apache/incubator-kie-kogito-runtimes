@@ -20,8 +20,6 @@ import java.util.Optional;
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 
-import io.quarkus.arc.config.ConfigProperties;
-import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.monitoring.elastic.common.ElasticConfigFactory;
@@ -29,7 +27,6 @@ import org.kie.kogito.monitoring.elastic.common.ElasticRegistry;
 import org.kie.kogito.monitoring.elastic.common.KogitoElasticConfig;
 
 @Singleton
-@Startup
 public class QuarkusElasticRegistryProvider extends ElasticRegistry {
 
     @ConfigProperty(name = "kogito.addon.monitoring.elastic.host")
@@ -57,17 +54,17 @@ public class QuarkusElasticRegistryProvider extends ElasticRegistry {
 
     public void config(@Observes StartupEvent event) {
         ElasticConfigFactory elasticConfigFactory = new ElasticConfigFactory();
-        elasticHost.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.HOST_KEY, x));
-        index.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.INDEX_KEY, x));
-        step.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.STEP_KEY, x));
-        indexDateFormat.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.INDEX_DATE_FORMAT_KEY, x));
-        timestampFieldName.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.TIMESTAMP_FIELD_NAME_KEY, x));
-        autoCreateIndex.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.AUTO_CREATE_INDEX_KEY, x));
-        userName.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.USERNAME_KEY, x));
-        password.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.PASSWORD_KEY, x));
-        pipeline.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.PIPELINE_KEY, x));
-        indexDateSeparator.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.INDEX_DATE_SEPARATOR_KEY, x));
-        documentType.ifPresent(x -> elasticConfigFactory.setProperty(KogitoElasticConfig.DOCUMENT_TYPE_KEY, x));
+        elasticHost.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.HOST_KEY, x));
+        index.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.INDEX_KEY, x));
+        step.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.STEP_KEY, x));
+        indexDateFormat.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.INDEX_DATE_FORMAT_KEY, x));
+        timestampFieldName.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.TIMESTAMP_FIELD_NAME_KEY, x));
+        autoCreateIndex.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.AUTO_CREATE_INDEX_KEY, x));
+        userName.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.USERNAME_KEY, x));
+        password.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.PASSWORD_KEY, x));
+        pipeline.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.PIPELINE_KEY, x));
+        indexDateSeparator.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.INDEX_DATE_SEPARATOR_KEY, x));
+        documentType.ifPresent(x -> elasticConfigFactory.withProperty(KogitoElasticConfig.DOCUMENT_TYPE_KEY, x));
         super.start(elasticConfigFactory.getElasticConfig());
     }
 }

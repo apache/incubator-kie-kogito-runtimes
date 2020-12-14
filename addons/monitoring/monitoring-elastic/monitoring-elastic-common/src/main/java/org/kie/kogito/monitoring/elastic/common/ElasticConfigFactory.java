@@ -27,13 +27,13 @@ public class ElasticConfigFactory {
         this.kogitoElasticConfig = new KogitoElasticConfig();
     }
 
-    public ElasticConfigFactory setProperty(String key, String value) {
-        this.kogitoElasticConfig.setProperty(key, value);
+    public ElasticConfigFactory withProperty(String key, String value) {
+        this.kogitoElasticConfig.withProperty(key, value);
         return this;
     }
 
     public ElasticConfig getElasticConfig() {
         Map<String, String> configMap = kogitoElasticConfig.getConfigMap();
-        return s -> configMap.getOrDefault(s, null);
+        return configMap::get;
     }
 }

@@ -16,6 +16,7 @@
 package org.kie.kogito.monitoring.elastic.common;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import io.micrometer.elastic.ElasticConfig;
 import io.micrometer.elastic.ElasticMeterRegistry;
@@ -32,9 +33,13 @@ public class ElasticRegistry {
     }
 
     protected void start(ElasticConfig elasticConfig) {
+        start(elasticConfig, Executors.defaultThreadFactory());
+    }
+
+    protected void start(ElasticConfig elasticConfig, ThreadFactory threadFactory) {
         registry = ElasticMeterRegistry.builder(elasticConfig).build();
         MonitoringRegistry.addRegistry(registry);
-        registry.start(Executors.defaultThreadFactory());
+        registry.start(threadFactory);
         logger.debug("Micrometer Elastic publisher started.");
     }
 } 

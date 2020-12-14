@@ -26,10 +26,10 @@ public class ElasticConfigFactoryTest {
     @Test
     public void testGeneratedElasticConfig() {
         ElasticConfigFactory elasticConfigFactory = new ElasticConfigFactory();
-        elasticConfigFactory.setProperty(KogitoElasticConfig.HOST_KEY, "http://mylocalhost");
-        elasticConfigFactory.setProperty(KogitoElasticConfig.USERNAME_KEY, "pippo");
-        elasticConfigFactory.setProperty(KogitoElasticConfig.PASSWORD_KEY, "pluto");
-        elasticConfigFactory.setProperty(KogitoElasticConfig.STEP_KEY, "1s");
+        elasticConfigFactory.withProperty(KogitoElasticConfig.HOST_KEY, "http://mylocalhost");
+        elasticConfigFactory.withProperty(KogitoElasticConfig.USERNAME_KEY, "pippo");
+        elasticConfigFactory.withProperty(KogitoElasticConfig.PASSWORD_KEY, "pluto");
+        elasticConfigFactory.withProperty(KogitoElasticConfig.STEP_KEY, "1s");
 
         ElasticConfig elasticConfig = elasticConfigFactory.getElasticConfig();
 

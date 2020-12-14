@@ -23,7 +23,7 @@ public class KogitoElasticConfigTest {
     @Test
     public void testConfigMapPrefix() {
         KogitoElasticConfig kogitoElasticConfig = new KogitoElasticConfig();
-        kogitoElasticConfig.setProperty("key", "value");
+        kogitoElasticConfig.withProperty("key", "value");
         Assertions.assertEquals("value", kogitoElasticConfig.getConfigMap().get("elastic.key"));
     }
 }

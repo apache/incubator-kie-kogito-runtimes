@@ -31,15 +31,15 @@ public class ElasticRegistryTest {
         ElasticRegistry elasticRegistry = new ElasticRegistry();
 
         KogitoElasticConfig kogitoElasticConfig = new KogitoElasticConfig();
-        kogitoElasticConfig.setProperty(KogitoElasticConfig.HOST_KEY, "http://mylocalhost:8080");
-        kogitoElasticConfig.setProperty(KogitoElasticConfig.INDEX_KEY, "myIndex");
-        kogitoElasticConfig.setProperty(KogitoElasticConfig.STEP_KEY, "1s");
-        kogitoElasticConfig.setProperty(KogitoElasticConfig.TIMESTAMP_FIELD_NAME_KEY, "myTimestampName");
-        kogitoElasticConfig.setProperty(KogitoElasticConfig.USERNAME_KEY, "pippo");
-        kogitoElasticConfig.setProperty(KogitoElasticConfig.PASSWORD_KEY, "pluto");
-        kogitoElasticConfig.setProperty(KogitoElasticConfig.PIPELINE_KEY, "mypipe");
-        kogitoElasticConfig.setProperty(KogitoElasticConfig.INDEX_DATE_SEPARATOR_KEY, "/");
-        kogitoElasticConfig.setProperty(KogitoElasticConfig.DOCUMENT_TYPE_KEY, "doc");
+        kogitoElasticConfig.withProperty(KogitoElasticConfig.HOST_KEY, "http://mylocalhost:8080");
+        kogitoElasticConfig.withProperty(KogitoElasticConfig.INDEX_KEY, "myIndex");
+        kogitoElasticConfig.withProperty(KogitoElasticConfig.STEP_KEY, "1s");
+        kogitoElasticConfig.withProperty(KogitoElasticConfig.TIMESTAMP_FIELD_NAME_KEY, "myTimestampName");
+        kogitoElasticConfig.withProperty(KogitoElasticConfig.USERNAME_KEY, "pippo");
+        kogitoElasticConfig.withProperty(KogitoElasticConfig.PASSWORD_KEY, "pluto");
+        kogitoElasticConfig.withProperty(KogitoElasticConfig.PIPELINE_KEY, "mypipe");
+        kogitoElasticConfig.withProperty(KogitoElasticConfig.INDEX_DATE_SEPARATOR_KEY, "/");
+        kogitoElasticConfig.withProperty(KogitoElasticConfig.DOCUMENT_TYPE_KEY, "doc");
 
         Map<String, String> configMap = kogitoElasticConfig.getConfigMap();
         Map<String, CountDownLatch> countDownLatchMap = new HashMap<>();
