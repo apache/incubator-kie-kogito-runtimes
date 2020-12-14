@@ -21,7 +21,7 @@ import io.micrometer.elastic.ElasticConfig;
 
 public class ElasticConfigFactory {
 
-    private KogitoElasticConfig kogitoElasticConfig;
+    private final KogitoElasticConfig kogitoElasticConfig;
 
     public ElasticConfigFactory() {
         this.kogitoElasticConfig = new KogitoElasticConfig();
