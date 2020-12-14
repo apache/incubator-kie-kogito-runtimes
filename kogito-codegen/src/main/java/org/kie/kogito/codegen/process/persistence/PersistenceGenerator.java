@@ -143,6 +143,7 @@ public class PersistenceGenerator extends AbstractGenerator {
 
     @Override
     public void updateConfig(ApplicationConfigGenerator cfg) {
+        // Persistence has no custom/additional config
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

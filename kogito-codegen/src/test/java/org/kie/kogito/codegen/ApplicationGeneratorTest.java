@@ -58,13 +58,15 @@ public class ApplicationGeneratorTest {
 
     @Test
     public void packageNameNull() {
-        assertThatThrownBy(() -> new ApplicationGenerator(context, null, new File("")))
+        final File testFile = new File("");
+        assertThatThrownBy(() -> new ApplicationGenerator(context, null, testFile))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void packageNameInvalid() {
-        assertThatThrownBy(() -> new ApplicationGenerator(context, "i.am.an-invalid.package-name.sorry", new File("")))
+        final File testFile = new File("");
+        assertThatThrownBy(() -> new ApplicationGenerator(context, "i.am.an-invalid.package-name.sorry", testFile))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

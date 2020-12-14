@@ -28,8 +28,9 @@ public class ApplicationConfigGeneratorTest {
         final ApplicationConfigGenerator generator = new ApplicationConfigGenerator(null, "org.kie.kogito.test");
         final ProcessConfigGenerator processConfigGenerator = Mockito.mock(ProcessConfigGenerator.class);
         final ApplicationConfigGenerator returnedConfigGenerator = generator.withProcessConfig(processConfigGenerator);
-        assertThat(returnedConfigGenerator).isNotNull();
-        assertThat(returnedConfigGenerator).isSameAs(generator);
+        assertThat(returnedConfigGenerator)
+                .isNotNull()
+                .isSameAs(generator);
     }
 
     @Test
