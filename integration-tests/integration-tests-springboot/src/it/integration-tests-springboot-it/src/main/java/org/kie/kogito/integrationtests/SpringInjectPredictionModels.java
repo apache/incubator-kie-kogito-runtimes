@@ -24,7 +24,7 @@ public class SpringInjectPredictionModels {
     @org.springframework.beans.factory.annotation.Autowired
     public SpringInjectPredictionModels(PredictionModels predictionModels, Application application) {
         if(predictionModels != application.predictionModels()) {
-            throw new IllegalStateException("PredictionModels should be injectable and same instance application.predictionModels()");
+            throw new IllegalStateException("PredictionModels should be injectable and same as instance application.predictionModels()");
         }
     }
 }

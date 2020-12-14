@@ -24,7 +24,7 @@ public class SpringInjectDecisionModels {
     @org.springframework.beans.factory.annotation.Autowired
     public SpringInjectDecisionModels(DecisionModels decisionModels, Application application) {
         if(decisionModels != application.decisionModels()) {
-            throw new IllegalStateException("DecisionModels should be injectable and same instance application.decisionModels()");
+            throw new IllegalStateException("DecisionModels should be injectable and same as instance application.decisionModels()");
         }
     }
 }

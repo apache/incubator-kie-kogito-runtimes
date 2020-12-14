@@ -28,7 +28,7 @@ public class InjectDecisionModels {
     @Inject
     public InjectDecisionModels(DecisionModels decisionModels, Application application) {
         if(decisionModels != application.decisionModels()) {
-            throw new IllegalStateException("DecisionModels should be injectable and same instance application.decisionModels()");
+            throw new IllegalStateException("DecisionModels should be injectable and same as instance application.decisionModels()");
         }
     }
 }

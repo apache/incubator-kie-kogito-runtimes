@@ -24,7 +24,7 @@ public class SpringInjectProcesses {
     @org.springframework.beans.factory.annotation.Autowired
     public SpringInjectProcesses(Processes processes, Application application) {
         if(processes != application.processes()) {
-            throw new IllegalStateException("Processes should be injectable and same instance application.processes()");
+            throw new IllegalStateException("Processes should be injectable and same as instance application.processes()");
         }
     }
 }

@@ -28,7 +28,7 @@ public class InjectProcesses {
     @Inject
     public InjectProcesses(Processes processes, Application application) {
         if(processes != application.processes()) {
-            throw new IllegalStateException("Processes should be injectable and same instance application.processes()");
+            throw new IllegalStateException("Processes should be injectable and same instance as application.processes()");
         }
     }
 }

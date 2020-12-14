@@ -24,7 +24,7 @@ public class SpringInjectRuleUnits {
     @org.springframework.beans.factory.annotation.Autowired
     public SpringInjectRuleUnits(RuleUnits ruleUnits, Application application) {
         if (ruleUnits != application.ruleUnits()) {
-            throw new IllegalStateException("RuleUnits should be injectable and same instance application.ruleUnits()");
+            throw new IllegalStateException("RuleUnits should be injectable and same as instance application.ruleUnits()");
         }
     }
 }
