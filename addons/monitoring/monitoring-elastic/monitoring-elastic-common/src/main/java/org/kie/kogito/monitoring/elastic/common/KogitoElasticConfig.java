@@ -34,8 +34,8 @@ public class KogitoElasticConfig {
     public static final String INDEX_DATE_SEPARATOR_KEY = "indexDateSeparator";
     public static final String DOCUMENT_TYPE_KEY = "documentType";
 
-    private String prefix = ElasticConfig.DEFAULT.prefix();
-    private Map<String, String> configMap;
+    private final String prefix = ElasticConfig.DEFAULT.prefix();
+    private final Map<String, String> configMap;
 
     public KogitoElasticConfig() {
         this.configMap = new HashMap<>();
