@@ -20,7 +20,9 @@ import javax.annotation.PostConstruct;
 import org.kie.kogito.monitoring.elastic.common.ElasticConfigFactory;
 import org.kie.kogito.monitoring.elastic.common.ElasticRegistry;
 import org.kie.kogito.monitoring.elastic.common.KogitoElasticConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -49,6 +51,9 @@ public class SpringbootElasticRegistryProvider extends ElasticRegistry {
     @Value(value = "${kogito.addon.monitoring.elastic.documentType:#{null}}")
     public String documentType;
 
+    @Autowired
+    ThreadPoolTaskExecutor executor;
+
     @PostConstruct
     protected void onStart() {
         ElasticConfigFactory elasticConfigFactory = new ElasticConfigFactory();
@@ -63,6 +68,6 @@ public class SpringbootElasticRegistryProvider extends ElasticRegistry {
         elasticConfigFactory.withProperty(KogitoElasticConfig.PIPELINE_KEY, pipeline);
         elasticConfigFactory.withProperty(KogitoElasticConfig.INDEX_DATE_SEPARATOR_KEY, indexDateSeparator);
         elasticConfigFactory.withProperty(KogitoElasticConfig.DOCUMENT_TYPE_KEY, documentType);
-        super.start(elasticConfigFactory.getElasticConfig());
+        super.start(elasticConfigFactory.getElasticConfig(), executor);
     }
 }
