@@ -41,7 +41,7 @@ public class KogitoElasticConfig {
         this.configMap = new HashMap<>();
     }
 
-    public KogitoElasticConfig setProperty(String key, String value) {
+    public KogitoElasticConfig withProperty(String key, String value) {
         configMap.put(String.join(".", prefix, key), value);
         return this;
     }
