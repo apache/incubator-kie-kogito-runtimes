@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.monitoring.elastic.common;
 
+import java.time.Duration;
+
 import io.micrometer.elastic.ElasticConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,16 +26,16 @@ public class ElasticConfigFactoryTest {
     @Test
     public void testGeneratedElasticConfig() {
         ElasticConfigFactory elasticConfigFactory = new ElasticConfigFactory();
-        elasticConfigFactory.setProperty(KogitoElasticConfig.HOST_KEY, "mylocalhost");
+        elasticConfigFactory.setProperty(KogitoElasticConfig.HOST_KEY, "http://mylocalhost");
         elasticConfigFactory.setProperty(KogitoElasticConfig.USERNAME_KEY, "pippo");
         elasticConfigFactory.setProperty(KogitoElasticConfig.PASSWORD_KEY, "pluto");
         elasticConfigFactory.setProperty(KogitoElasticConfig.STEP_KEY, "1s");
 
         ElasticConfig elasticConfig = elasticConfigFactory.getElasticConfig();
 
-        Assertions.assertEquals("mylocalhost", elasticConfig.host());
+        Assertions.assertEquals("http://mylocalhost", elasticConfig.host());
         Assertions.assertEquals("pippo", elasticConfig.userName());
         Assertions.assertEquals("pluto", elasticConfig.password());
-        Assertions.assertEquals("1s", elasticConfig.step());
+        Assertions.assertEquals(Duration.ofSeconds(1), elasticConfig.step());
     }
 }
