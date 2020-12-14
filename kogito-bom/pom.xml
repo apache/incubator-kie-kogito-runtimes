@@ -669,6 +669,24 @@
         <classifier>javadoc</classifier>
       </dependency>
 
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>persistence-commons-redis</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>persistence-commons-redis</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>persistence-commons-redis</artifactId>
+        <version>${project.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+
       <!-- Trusty Services -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -742,6 +760,23 @@
         <classifier>javadoc</classifier>
       </dependency>
 
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>trusty-storage-redis</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>trusty-storage-redis</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>trusty-storage-redis</artifactId>
+        <version>${project.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
       <!-- Security -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
