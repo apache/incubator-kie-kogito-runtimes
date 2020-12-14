@@ -21,7 +21,7 @@ public class SpringInjectRuleUnits {
     @org.springframework.beans.factory.annotation.Autowired
     public SpringInjectRuleUnits(org.kie.kogito.rules.RuleUnits ruleUnits, org.kie.kogito.Application application) {
         if (ruleUnits != application.get(org.kie.kogito.rules.RuleUnits.class)) {
-            throw new IllegalStateException("RuleUnits should be injectable and same instance application.get(RuleUnits.class)");
+            throw new IllegalStateException("RuleUnits should be injectable and same as instance application.get(RuleUnits.class)");
         }
         if(application.config().get(org.kie.kogito.rules.RuleConfig.class) == null) {
             throw new IllegalStateException("RuleConfig not available");
