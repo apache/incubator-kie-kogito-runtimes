@@ -1106,12 +1106,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>jbpm-serialization-protobuf</artifactId>
+        <artifactId>process-serialization-protobuf</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>jbpm-serialization-protobuf</artifactId>
+        <artifactId>process-serialization-protobuf</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>

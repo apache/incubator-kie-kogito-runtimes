@@ -63,7 +63,7 @@
     <!--  test -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>jbpm-serialization-protobuf</artifactId>
+      <artifactId>process-serialization-protobuf</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
