@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,7 @@ public class RestWorkItemHandler implements WorkItemHandler {
     public static final String PASSWORD = "password";
     public static final String HOST = "host";
     public static final String PORT = "port";
+    public static final String SYNC = "forceSync";
 
     private static final Logger logger = LoggerFactory.getLogger(RestWorkItemHandler.class);
 
@@ -74,8 +76,9 @@ public class RestWorkItemHandler implements WorkItemHandler {
         this.client = client;
     }
 
+    
     @Override
-    public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
+    public void executeWorkItem(WorkItem workItem, WorkItemManager manager)  {
         // retrieving parameters
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
         String endPoint = getParam(parameters, ENDPOINT, String.class);
@@ -85,6 +88,7 @@ public class RestWorkItemHandler implements WorkItemHandler {
         String password = (String) parameters.remove(PASSWORD);
         String hostProp = (String) parameters.remove(HOST);
         String portProp = (String) parameters.remove(PORT);
+        boolean forceSync = readSyncProperty(parameters.remove(SYNC));
         RestWorkItemHandlerResult resultHandler = getParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class);
         // create request
         UnaryOperator<Object> resolver = new RestUnaryOperator(inputModel);
@@ -96,6 +100,7 @@ public class RestWorkItemHandler implements WorkItemHandler {
         if (user != null && !user.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
             request.basicAuthentication(user, password);
         }
+        CountDownLatch latch = forceSync ? new CountDownLatch(1) : null;
         // execute request
         Handler<AsyncResult<HttpResponse<Buffer>>> handler = event -> {
             if (event.failed()) {
@@ -108,6 +113,9 @@ public class RestWorkItemHandler implements WorkItemHandler {
                 manager.completeWorkItem(workItem.getId(), Collections.singletonMap(RESULT, resultHandler.apply(
                         inputModel, event.result().bodyAsJsonObject())));
             }
+            if (latch != null) {
+                latch.countDown();
+            }
         };
         if (method == HttpMethod.POST || method == HttpMethod.PUT) {
             // if parameters is empty at this stage, assume post content is the whole input model
@@ -117,6 +125,14 @@ public class RestWorkItemHandler implements WorkItemHandler {
             request.sendJson(body, handler);
         } else {
             request.send(handler);
+        }
+        if (latch != null) {
+            try {
+                latch.await();
+            }
+            catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -162,5 +178,22 @@ public class RestWorkItemHandler implements WorkItemHandler {
         }
         return type.cast(value);
     }
+    
+    private static boolean readSyncProperty(Object syncProp) {
+        boolean result = false;
+        if (syncProp != null) {
+            if (syncProp instanceof Boolean) {
+                result = (Boolean) syncProp;
+            } else {
+                try {
+                    result = Boolean.parseBoolean(syncProp.toString());
+                } catch (Exception ex) {
+                    // nothing to do 
+                }
+            }
+        }
+        return result;
+    }
+
 
 }
