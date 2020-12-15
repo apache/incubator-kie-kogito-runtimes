@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -80,6 +82,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     protected Supplier<WorkflowProcessInstance> reloadSupplier;
 
     protected CompletionEventListener completionEventListener;
+    protected CountDownLatch endLatch = new CountDownLatch(1);
 
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt) {
         this(process, variables, null, rt);
@@ -568,11 +571,22 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         };
     }
 
+    @Override
+    public boolean waitForEnd (long timeout, TimeUnit unit) {
+        try {
+            return endLatch.await(timeout, unit);
+        }
+        catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
 
     private class CompletionEventListener implements EventListener {
 
         @Override
         public void signalEvent(String type, Object event) {
+            endLatch.countDown();
             removeOnFinish();
         }
 

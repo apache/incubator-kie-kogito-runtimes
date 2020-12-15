@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.kie.api.runtime.process.WorkItemNotFoundException;
 import org.kie.kogito.process.flexible.AdHocFragment;
@@ -211,4 +212,6 @@ public interface ProcessInstance<T> {
      * @return All the {@link AdHocFragment} in the process
      */
     Collection<AdHocFragment> adHocFragments();
+    
+    boolean waitForEnd (long time, TimeUnit unit);
 }

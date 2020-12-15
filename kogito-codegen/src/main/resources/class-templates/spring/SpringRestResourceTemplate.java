@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.List;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
@@ -65,6 +66,8 @@ public class $Type$Resource {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<$Type$Output> createResource_$name$(@RequestHeader HttpHeaders httpHeaders,
                                                               @RequestParam(value = "businessKey", required = false) String businessKey,
+                                                              @RequestParam(value = "forceSync", required = false, defaultValue ="false") boolean forceSync,
+                                                              @RequestParam(value = "forceTimeout", required = false, defaultValue ="2000") long timeout,
                                                               @RequestBody(required = false) $Type$Input resource,
                                                               UriComponentsBuilder uriComponentsBuilder) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
@@ -76,6 +79,9 @@ public class $Type$Resource {
                 pi.startFrom(startFromNode.get(0));
             } else {
                 pi.start();
+            }
+            if (forceSync) {
+                pi.waitForEnd(timeout,TimeUnit.MILLISECONDS);
             }
             UriComponents uriComponents = uriComponentsBuilder.path("/$name$/{id}").buildAndExpand(pi.id());
             URI location = uriComponents.toUri();

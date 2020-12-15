@@ -2,6 +2,7 @@ package com.myspace.demo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -51,16 +52,20 @@ public class $Type$Resource {
     public Response createResource_$name$(@Context HttpHeaders httpHeaders,
                                               @Context UriInfo uriInfo,
                                               @QueryParam("businessKey") String businessKey,
+                                              @QueryParam("forceSync") @DefaultValue("false") boolean forceSync,
+                                              @QueryParam("forceTimeout") @DefaultValue("2000") long timeout,
                                               $Type$Input resource) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
             $Type$Input inputModel = resource != null ? resource : new $Type$Input();
             ProcessInstance<$Type$> pi = process.createInstance(businessKey, inputModel.toModel());
             String startFromNode = httpHeaders.getHeaderString("X-KOGITO-StartFromNode");
-
             if (startFromNode != null) {
                 pi.startFrom(startFromNode);
             } else {
                 pi.start();
+            }
+            if (forceSync) {
+                pi.waitForEnd(timeout,TimeUnit.MILLISECONDS);
             }
             UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder().path(pi.id());
             return Response.created(uriBuilder.build())
