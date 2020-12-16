@@ -16,15 +16,22 @@
 
 package org.kie.kogito.integrationtests;
 
-@io.quarkus.runtime.Startup
+import io.quarkus.runtime.Startup;
+import org.kie.kogito.Application;
+import org.kie.kogito.process.ProcessConfig;
+import org.kie.kogito.process.Processes;
+
+import javax.inject.Inject;
+
+@Startup
 public class InjectProcesses {
 
-    @javax.inject.Inject
-    public InjectProcesses(org.kie.kogito.process.Processes processes, org.kie.kogito.Application application) {
-        if(processes != application.get(org.kie.kogito.process.Processes.class)) {
+    @Inject
+    public InjectProcesses(Processes processes, Application application) {
+        if(processes != application.get(Processes.class)) {
             throw new IllegalStateException("Processes should be injectable and same as instance application.get(Processes.class)");
         }
-        if(application.config().get(org.kie.kogito.process.ProcessConfig.class) == null) {
+        if(application.config().get(ProcessConfig.class) == null) {
             throw new IllegalStateException("ProcessConfig not available");
         }
     }

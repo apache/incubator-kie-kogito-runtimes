@@ -55,7 +55,7 @@ public class StaticApplication implements Application {
     protected void loadEngines(KogitoEngine ... engines) {
         Arrays.stream(engines).forEach(this::loadEngine);
 
-        if (config() != null && config().get(org.kie.kogito.process.ProcessConfig.class) != null) {
+        if (config() != null && config().get(ProcessConfig.class) != null) {
             unitOfWorkManager().eventManager().setAddons(config().addons());
         }
     }
