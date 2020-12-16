@@ -22,8 +22,7 @@ public interface Config {
 
     /**
      * Provides instance of requested KogitoConfig or null if not available
-     * @param clazz
-     * @param <T>
+     * @param clazz clazz of the desired KogitoConfig
      * @return
      */
     <T extends KogitoConfig> T get(Class<T> clazz);

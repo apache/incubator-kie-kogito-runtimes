@@ -16,15 +16,21 @@
 
 package org.kie.kogito.integrationtests;
 
-@io.quarkus.runtime.Startup
+import com.google.inject.Inject;
+import io.quarkus.runtime.Startup;
+import org.kie.kogito.Application;
+import org.kie.kogito.rules.RuleConfig;
+import org.kie.kogito.rules.RuleUnits;
+
+@Startup
 public class InjectRuleUnits {
 
-    @javax.inject.Inject
-    public InjectRuleUnits(org.kie.kogito.rules.RuleUnits ruleUnits, org.kie.kogito.Application application) {
-        if (ruleUnits != application.get(org.kie.kogito.rules.RuleUnits.class)) {
-            throw new IllegalStateException("RuleUnits should be injectable and same instance application.get(RuleUnits.class)");
+    @Inject(optional = true)
+    public InjectRuleUnits(RuleUnits ruleUnits, Application application) {
+        if (ruleUnits != application.get(RuleUnits.class)) {
+            throw new IllegalStateException("RuleUnits should be injectable and same as instance application.get(RuleUnits.class)");
         }
-        if(application.config().get(org.kie.kogito.rules.RuleConfig.class) == null) {
+        if(application.config().get(RuleConfig.class) == null) {
             throw new IllegalStateException("RuleConfig not available");
         }
     }
