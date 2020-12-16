@@ -34,8 +34,7 @@ public interface Application {
 
     /**
      * Returns the desired KogitoEngine impl or null if not found
-     * @param clazz
-     * @param <T>
+     * @param clazz of the desired KogitoEngine
      * @return
      */
 
