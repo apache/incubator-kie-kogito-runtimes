@@ -10,6 +10,6 @@
   </parent>
 
   <artifactId>event-driven-decisions-api</artifactId>
-  <name>Kogito :: Add-Ons :: Events :: Event-driven Decisions :: API</name>
+  <name>Kogito :: Add-Ons :: Events :: Event-Driven Decisions :: API</name>
 
 </project>

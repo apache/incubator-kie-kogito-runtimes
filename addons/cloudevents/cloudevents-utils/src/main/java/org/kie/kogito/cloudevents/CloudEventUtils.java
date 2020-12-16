@@ -16,6 +16,7 @@
 
 package org.kie.kogito.cloudevents;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -66,6 +67,19 @@ public class CloudEventUtils {
             return Optional.of(Mapper.mapper().readValue(json, CloudEvent.class));
         } catch (JsonProcessingException e) {
             LOG.error("Unable to decode CloudEvent", e);
+            return Optional.empty();
+        }
+    }
+
+    public static <T> Optional<T> decodeData(CloudEvent event, Class<T> dataClass) {
+        return decodeData(event, dataClass, Mapper.mapper());
+    }
+
+    public static <T> Optional<T> decodeData(CloudEvent event, Class<T> dataClass, ObjectMapper mapper) {
+        try {
+            return Optional.ofNullable(mapper.readValue(event.getData(), dataClass));
+        } catch (IOException e) {
+            LOG.error("Unable to decode CloudEvent data to " + dataClass.getName(), e);
             return Optional.empty();
         }
     }
