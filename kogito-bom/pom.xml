@@ -84,6 +84,11 @@
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>cloudevents-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-cloudevents-common-addon</artifactId>
         <version>${project.version}</version>
       </dependency>

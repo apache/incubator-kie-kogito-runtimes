@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.event;
+package org.kie.kogito.cloudevents;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -26,12 +26,12 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class CloudEventUtilsTest {
@@ -103,7 +103,7 @@ class CloudEventUtilsTest {
 
     @Test
     void testUrlEncodedStringFromFailure() throws Exception {
-        try (MockedStatic<URLEncoder> mockedStaticURLEncoder = Mockito.mockStatic(URLEncoder.class)) {
+        try (MockedStatic<URLEncoder> mockedStaticURLEncoder = mockStatic(URLEncoder.class)) {
             mockedStaticURLEncoder.when(() -> URLEncoder.encode(any(String.class), any(String.class))).thenThrow(new UnsupportedEncodingException());
             assertFalse(CloudEventUtils.urlEncodedStringFrom(TEST_URI_STRING).isPresent());
         }
@@ -116,7 +116,7 @@ class CloudEventUtilsTest {
 
     @Test
     void testUrlEncodedURIFromFailure() {
-        try (MockedStatic<URI> mockedStaticURLEncoder = Mockito.mockStatic(URI.class)) {
+        try (MockedStatic<URI> mockedStaticURLEncoder = mockStatic(URI.class)) {
             mockedStaticURLEncoder.when(() -> URI.create(any(String.class))).thenThrow(new IllegalArgumentException());
             assertFalse(CloudEventUtils.urlEncodedURIFrom(TEST_URI_STRING).isPresent());
         }
@@ -124,13 +124,15 @@ class CloudEventUtilsTest {
 
     private static ObjectMapper getFailingMockedObjectMapper() throws Exception {
         ObjectMapper mockedMapper = mock(ObjectMapper.class);
-        when(mockedMapper.writeValueAsBytes(any())).thenThrow(new JsonProcessingException(TEST_EXCEPTION_MESSAGE){});
-        when(mockedMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException(TEST_EXCEPTION_MESSAGE){});
+        when(mockedMapper.writeValueAsBytes(any())).thenThrow(new JsonProcessingException(TEST_EXCEPTION_MESSAGE) {
+        });
+        when(mockedMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException(TEST_EXCEPTION_MESSAGE) {
+        });
         return mockedMapper;
     }
 
     private static void runWithMockedCloudEventUtilsMapper(Runnable runnable) throws Exception {
-        try (MockedStatic<CloudEventUtils.Mapper> mockedStaticMapper = Mockito.mockStatic(CloudEventUtils.Mapper.class)) {
+        try (MockedStatic<CloudEventUtils.Mapper> mockedStaticMapper = mockStatic(CloudEventUtils.Mapper.class)) {
             ObjectMapper mockedMapper = getFailingMockedObjectMapper();
             mockedStaticMapper.when(CloudEventUtils.Mapper::mapper).thenReturn(mockedMapper);
             runnable.run();

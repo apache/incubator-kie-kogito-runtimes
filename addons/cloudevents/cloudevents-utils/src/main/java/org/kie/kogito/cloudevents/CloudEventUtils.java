@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision.event;
+package org.kie.kogito.cloudevents;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
