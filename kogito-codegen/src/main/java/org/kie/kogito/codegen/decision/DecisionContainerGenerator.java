@@ -44,25 +44,18 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
 
     private String applicationCanonicalName;
     private final List<CollectedResource> resources;
-    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     private final TemplatedGenerator templatedGenerator;
 
-    public DecisionContainerGenerator(KogitoBuildContext buildContext, String packageName, String applicationCanonicalName, List<CollectedResource> cResources) {
-        super(buildContext, SECTION_CLASS_NAME);
+    public DecisionContainerGenerator(KogitoBuildContext context, String applicationCanonicalName, List<CollectedResource> cResources) {
+        super(context, SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = cResources;
         this.templatedGenerator = new TemplatedGenerator(
-                buildContext,
-                packageName,
+                context,
                 SECTION_CLASS_NAME,
                 RESOURCE_CDI,
                 RESOURCE_SPRING,
                 RESOURCE);
-    }
-
-    public DecisionContainerGenerator withAddons(AddonsConfig addonsConfig) {
-        this.addonsConfig = addonsConfig;
-        return this;
     }
 
     @Override
@@ -97,7 +90,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     }
 
     private void setupExecIdSupplierVariable(MethodCallExpr initMethod) {
-        Expression execIdSupplier = addonsConfig.useTracing() ?
+        Expression execIdSupplier = context.getAddonsConfig().useTracing() ?
                 newObject(DmnExecutionIdSupplier.class):
                 new NullLiteralExpr();
         initMethod.addArgument(execIdSupplier);

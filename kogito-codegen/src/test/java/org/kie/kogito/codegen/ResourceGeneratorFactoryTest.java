@@ -18,11 +18,13 @@ package org.kie.kogito.codegen;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.process.AbstractResourceGenerator;
@@ -35,7 +37,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ResourceGeneratorFactoryTest {
@@ -57,9 +58,9 @@ class ResourceGeneratorFactoryTest {
     }
 
     @Test
-    void testCreateQuarkus(@Mock GeneratorContext generatorContext) {
-        when(generatorContext.getBuildContext()).thenReturn(new QuarkusKogitoBuildContext(p -> true));
-        Optional<AbstractResourceGenerator> context = tested.create(generatorContext,
+    void testCreateQuarkus() {
+        KogitoBuildContext buildContext = QuarkusKogitoBuildContext.builder().build();
+        Optional<AbstractResourceGenerator> context = tested.create(buildContext,
                                                                     process,
                                                                     MODEL_FQCN,
                                                                     PROCESS_FQCN,
@@ -69,11 +70,15 @@ class ResourceGeneratorFactoryTest {
     }
 
     @Test
-    void testCreateQuarkusReactive(@Mock GeneratorContext generatorContext) {
-        when(generatorContext.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)).thenReturn(Optional.of("reactive"));
-        when(generatorContext.getBuildContext()).thenReturn(new QuarkusKogitoBuildContext(p -> true));
+    void testCreateQuarkusReactive() {
+        Properties properties = new Properties();
+        properties.put(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP, "reactive");
 
-        Optional<AbstractResourceGenerator> context = tested.create(generatorContext,
+        KogitoBuildContext buildContext = QuarkusKogitoBuildContext.builder()
+                .withApplicationProperties(properties)
+                .build();
+
+        Optional<AbstractResourceGenerator> context = tested.create(buildContext,
                                                                     process,
                                                                     MODEL_FQCN,
                                                                     PROCESS_FQCN,
@@ -83,9 +88,9 @@ class ResourceGeneratorFactoryTest {
     }
 
     @Test
-    void testCreateSpring(@Mock GeneratorContext generatorContext) {
-        when(generatorContext.getBuildContext()).thenReturn(new SpringBootKogitoBuildContext(p -> true));
-        Optional<AbstractResourceGenerator> context = tested.create(generatorContext,
+    void testCreateSpring() {
+        KogitoBuildContext buildContext = SpringBootKogitoBuildContext.builder().build();
+        Optional<AbstractResourceGenerator> context = tested.create(buildContext,
                                                                     process,
                                                                     MODEL_FQCN,
                                                                     PROCESS_FQCN,
@@ -95,11 +100,15 @@ class ResourceGeneratorFactoryTest {
     }
 
     @Test
-    void testCreateSpringReactive(@Mock GeneratorContext generatorContext) {
-        when(generatorContext.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)).thenReturn(Optional.of("reactive"));
-        when(generatorContext.getBuildContext()).thenReturn(new SpringBootKogitoBuildContext(p -> true));
+    void testCreateSpringReactive() {
+        Properties properties = new Properties();
+        properties.put(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP, "reactive");
 
-        assertThrows(NoSuchElementException.class, () -> tested.create(generatorContext,
+        KogitoBuildContext buildContext = SpringBootKogitoBuildContext.builder()
+                .withApplicationProperties(properties)
+                .build();
+
+        assertThrows(NoSuchElementException.class, () -> tested.create(buildContext,
                                                                        process,
                                                                        MODEL_FQCN,
                                                                        PROCESS_FQCN,

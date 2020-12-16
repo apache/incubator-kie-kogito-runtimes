@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.Generator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.io.CollectedResource;
 
@@ -35,9 +36,10 @@ public class DMNCompilationProvider extends KogitoCompilationProvider {
     }
 
     @Override
-    protected Generator addGenerator(ApplicationGenerator appGen, Set<File> filesToCompile, Context context, ClassLoader cl) throws IOException {
+    protected Generator addGenerator(ApplicationGenerator appGen, KogitoBuildContext buildContext, Set<File> filesToCompile, Context context, ClassLoader cl) throws IOException {
         Path path = context.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
         return appGen.setupGenerator(DecisionCodegen.ofCollectedResources(
+                buildContext,
                 CollectedResource.fromDirectory(path)))
                 .withClassLoader(cl);
     }

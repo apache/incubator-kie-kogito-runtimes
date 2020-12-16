@@ -33,7 +33,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
@@ -47,7 +46,6 @@ import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
 import org.kie.dmn.model.api.DecisionService;
 import org.kie.dmn.openapi.model.DMNModelIOSets;
 import org.kie.dmn.openapi.model.DMNOASResult;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.CodegenUtils;
 import org.kie.kogito.codegen.TemplatedGenerator;
@@ -59,16 +57,15 @@ public class DecisionRestResourceGenerator {
 
     public static final String CDI_TEMPLATE = "/class-templates/DecisionRestResourceTemplate.java";
     public static final String SPRING_TEMPLATE = "/class-templates/spring/SpringDecisionRestResourceTemplate.java";
-    private final KogitoBuildContext buildContext;
+    private final KogitoBuildContext context;
     private final DMNModel dmnModel;
     private final String decisionName;
     private final String nameURL;
-    private final String packageName;
+    private final String restPackageName;
     private final String decisionId;
     private final String relativePath;
     private final String resourceClazzName;
     private final String appCanonicalName;
-    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     private boolean isStronglyTyped = false;
     private DMNOASResult withOASResult;
     private boolean mpAnnPresent;
@@ -77,18 +74,18 @@ public class DecisionRestResourceGenerator {
 
     private static final Supplier<RuntimeException> TEMPLATE_WAS_MODIFIED = () -> new RuntimeException("Template was modified!");
 
-    public DecisionRestResourceGenerator(KogitoBuildContext buildContext, DMNModel model, String appCanonicalName) {
-        this.buildContext = buildContext;
+    public DecisionRestResourceGenerator(KogitoBuildContext context, DMNModel model, String appCanonicalName) {
+        this.context = context;
         this.dmnModel = model;
-        this.packageName = CodegenStringUtil.escapeIdentifier(model.getNamespace());
+        this.restPackageName = CodegenStringUtil.escapeIdentifier(model.getNamespace());
         this.decisionId = model.getDefinitions().getId();
         this.decisionName = CodegenStringUtil.escapeIdentifier(model.getName());
         this.nameURL = URLEncoder.encode(model.getName()).replace("+", " ");
         this.appCanonicalName = appCanonicalName;
         String classPrefix = StringUtils.ucFirst(decisionName);
         this.resourceClazzName = classPrefix + "Resource";
-        this.relativePath = packageName.replace(".", "/") + "/" + resourceClazzName + ".java";
-        generator = new TemplatedGenerator(buildContext, packageName, "DecisionRestResource",CDI_TEMPLATE, SPRING_TEMPLATE, CDI_TEMPLATE);
+        this.relativePath = restPackageName.replace(".", "/") + "/" + resourceClazzName + ".java";
+        generator = new TemplatedGenerator(context, restPackageName, "DecisionRestResource",CDI_TEMPLATE, SPRING_TEMPLATE, CDI_TEMPLATE);
     }
 
     public String generate() {
@@ -109,9 +106,9 @@ public class DecisionRestResourceGenerator {
         modifyDmnMethodForStronglyTyped(template);
         chooseMethodForStronglyTyped(template);
 
-        if (buildContext.hasDI()) {
+        if (context.hasDI()) {
             template.findAll(FieldDeclaration.class,
-                             CodegenUtils::isApplicationField).forEach(fd -> buildContext.getDependencyInjectionAnnotator().withInjection(fd));
+                             CodegenUtils::isApplicationField).forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
         } else {
             template.findAll(FieldDeclaration.class,
                              CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
@@ -147,7 +144,7 @@ public class DecisionRestResourceGenerator {
                 rewrittenReturnExpr.setName("extractSingletonDSIfSucceded");
             }
 
-            if (addonsConfig.useMonitoring()) {
+            if (context.getAddonsConfig().useMonitoring()) {
                 addMonitoringToMethod(clonedMethod, ds.getName());
             }
 
@@ -160,7 +157,7 @@ public class DecisionRestResourceGenerator {
 
         interpolateOutputType(template);
 
-        if (addonsConfig.useMonitoring()) {
+        if (context.getAddonsConfig().useMonitoring()) {
             addMonitoringImports(clazz);
             ClassOrInterfaceDeclaration exceptionClazz = clazz.findFirst(ClassOrInterfaceDeclaration.class, x -> "DMNEvaluationErrorExceptionMapper".equals(x.getNameAsString()))
                     .orElseThrow(() -> new NoSuchElementException("Could not find DMNEvaluationErrorExceptionMapper, template has changed."));
@@ -333,11 +330,6 @@ public class DecisionRestResourceGenerator {
 
     public DMNModel getDmnModel() {
         return this.dmnModel;
-    }
-
-    public DecisionRestResourceGenerator withAddons(AddonsConfig addonsConfig) {
-        this.addonsConfig = addonsConfig;
-        return this;
     }
 
     public String className() {

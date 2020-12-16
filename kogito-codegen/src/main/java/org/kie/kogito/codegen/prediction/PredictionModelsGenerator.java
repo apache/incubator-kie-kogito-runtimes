@@ -36,26 +36,19 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
 
     protected final List<PMMLResource> resources;
     protected final String applicationCanonicalName;
-    protected AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     protected final TemplatedGenerator templatedGenerator;
 
-    public PredictionModelsGenerator(KogitoBuildContext buildContext, String packageName, String applicationCanonicalName, List<PMMLResource> resources) {
-        super(buildContext, SECTION_CLASS_NAME);
+    public PredictionModelsGenerator(KogitoBuildContext context, String applicationCanonicalName, List<PMMLResource> resources) {
+        super(context, SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = resources;
 
         this.templatedGenerator = new TemplatedGenerator(
-                buildContext,
-                packageName,
+                context,
                 SECTION_CLASS_NAME,
                 RESOURCE_CDI,
                 RESOURCE_SPRING,
                 RESOURCE);
-    }
-
-    public PredictionModelsGenerator withAddons(AddonsConfig addonsConfig) {
-        this.addonsConfig = addonsConfig;
-        return this;
     }
 
     @Override

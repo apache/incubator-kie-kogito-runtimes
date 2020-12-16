@@ -36,12 +36,12 @@ import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.Generator;
-import org.kie.kogito.codegen.GeneratorContext;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 
 public abstract class KogitoCompilationProvider extends JavaCompilationProvider {
 
-    protected static Map<Path, Path> classToSource = new HashMap<>();    
+    protected static Map<Path, Path> classToSource = new HashMap<>();
 
     private String appPackageName = System.getProperty("kogito.codegen.packageName", "org.kie.kogito.app");
 
@@ -60,14 +60,17 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
 
         File outputDirectory = context.getOutputDirectory();
         try {
-            GeneratorContext generationContext = GeneratorContext
-                    .ofResourcePath(context.getProjectDirectory().toPath().resolve("src/main/resources").toFile());
-            generationContext
-                    .withBuildContext(new QuarkusKogitoBuildContext(className -> hasClassOnClasspath(cl, className)));
+            KogitoBuildContext buildContext = QuarkusKogitoBuildContext.builder()
+                    .withApplicationProperties(context.getProjectDirectory().toPath().resolve("src/main/resources").toFile())
+                    .withPackageName(appPackageName)
+                    .withClassAvailabilityResolver(className -> hasClassOnClasspath(cl, className))
+                    .withTargetDirectory(outputDirectory)
+                    .build();
 
-            ApplicationGenerator appGen = new ApplicationGenerator(generationContext, appPackageName, outputDirectory);
 
-            addGenerator(appGen, filesToCompile, context, cl);
+            ApplicationGenerator appGen = new ApplicationGenerator(buildContext);
+
+            addGenerator(appGen, buildContext, filesToCompile, context, cl);
 
             Collection<GeneratedFile> generatedFiles = appGen.generate();
 
@@ -102,7 +105,11 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         return null;
     }
 
-    protected abstract Generator addGenerator(ApplicationGenerator appGen, Set<File> filesToCompile, Context context, ClassLoader cl)
+    protected abstract Generator addGenerator(ApplicationGenerator appGen,
+                                              KogitoBuildContext buildContext,
+                                              Set<File> filesToCompile,
+                                              Context context,
+                                              ClassLoader cl)
             throws IOException;
 
     static Path pathOf(String path, String relativePath) {
