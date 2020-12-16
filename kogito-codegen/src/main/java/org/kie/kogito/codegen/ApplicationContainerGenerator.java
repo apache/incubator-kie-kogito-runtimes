@@ -31,10 +31,6 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 public class ApplicationContainerGenerator extends TemplatedGenerator {
 
     public static final String APPLICATION_CLASS_NAME = "Application";
