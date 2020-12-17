@@ -15,7 +15,10 @@
 
 package org.kie.kogito.codegen.decision;
 
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
@@ -33,7 +36,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
@@ -52,13 +54,18 @@ import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.CodegenUtils;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class DecisionRestResourceGenerator {
 
-    public static final String CDI_TEMPLATE = "/class-templates/DecisionRestResourceTemplate.java";
-    public static final String SPRING_TEMPLATE = "/class-templates/spring/SpringDecisionRestResourceTemplate.java";
+    private static final Logger LOGGER = LoggerFactory.getLogger(DecisionRestResourceGenerator.class);
+
+    private static final String CDI_TEMPLATE = "/class-templates/DecisionRestResourceTemplate.java";
+    private static final String SPRING_TEMPLATE = "/class-templates/spring/SpringDecisionRestResourceTemplate.java";
+
     private final KogitoBuildContext buildContext;
     private final DMNModel dmnModel;
     private final String decisionName;
@@ -83,12 +90,22 @@ public class DecisionRestResourceGenerator {
         this.packageName = CodegenStringUtil.escapeIdentifier(model.getNamespace());
         this.decisionId = model.getDefinitions().getId();
         this.decisionName = CodegenStringUtil.escapeIdentifier(model.getName());
-        this.nameURL = URLEncoder.encode(model.getName()).replace("+", " ");
+        this.nameURL = encodeNameUrl(model.getName());
         this.appCanonicalName = appCanonicalName;
         String classPrefix = StringUtils.ucFirst(decisionName);
         this.resourceClazzName = classPrefix + "Resource";
         this.relativePath = packageName.replace(".", "/") + "/" + resourceClazzName + ".java";
         generator = new TemplatedGenerator(buildContext, packageName, "DecisionRestResource",CDI_TEMPLATE, SPRING_TEMPLATE, CDI_TEMPLATE);
+    }
+
+    private String encodeNameUrl(String name) {
+        try {
+            return URLEncoder.encode(name, StandardCharsets.UTF_8.name())
+                    .replace("+", " ");
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.warn("Error while encoding name URL " + e.toString(), e);
+            throw new UncheckedIOException(e);
+        }
     }
 
     public String generate() {
@@ -119,7 +136,10 @@ public class DecisionRestResourceGenerator {
 
         MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
         processOASAnn(dmnMethod, null);
-        template.addMember(cloneForDMNResult(dmnMethod, "dmn_dmnresult", "dmnresult", "$dmnMethodUrl$"));
+
+        final String dmnMethodUrlPlaceholder = "$dmnMethodUrl$";
+
+        template.addMember(cloneForDMNResult(dmnMethod, "dmn_dmnresult", "dmnresult", dmnMethodUrlPlaceholder));
         for (DecisionService ds : dmnModel.getDefinitions().getDecisionService()) {
             if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
                 continue;
@@ -137,7 +157,7 @@ public class DecisionRestResourceGenerator {
 
             //insert request path
             final String path = ds.getName();
-            interpolateRequestPath(path, "$dmnMethodUrl$", clonedMethod);
+            interpolateRequestPath(path, dmnMethodUrlPlaceholder, clonedMethod);
 
             ReturnStmt returnStmt = clonedMethod.findFirst(ReturnStmt.class).orElseThrow(TEMPLATE_WAS_MODIFIED);
             if (ds.getOutputDecision().size() == 1) {
@@ -156,7 +176,7 @@ public class DecisionRestResourceGenerator {
         }
 
         //set the root path for the dmnMethod itself
-        interpolateRequestPath("", "$dmnMethodUrl$", dmnMethod);
+        interpolateRequestPath("", dmnMethodUrlPlaceholder, dmnMethod);
 
         interpolateOutputType(template);
 

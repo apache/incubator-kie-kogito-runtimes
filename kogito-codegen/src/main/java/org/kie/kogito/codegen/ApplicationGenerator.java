@@ -172,12 +172,13 @@ public class ApplicationGenerator {
 
     private void logGeneratedFiles(Collection<GeneratedFile> files) {
         if (LOGGER.isDebugEnabled()) {
+            String separator = "=====";
             for (GeneratedFile file : files) {
-                LOGGER.debug("=====");
-                LOGGER.debug(file.getType() + ": " + file.relativePath());
-                LOGGER.debug("=====");
+                LOGGER.debug(separator);
+                LOGGER.debug("{}: {}", file.getType(), file.relativePath());
+                LOGGER.debug(separator);
                 LOGGER.debug(new String(file.contents()));
-                LOGGER.debug("=====");
+                LOGGER.debug(separator);
             }
         }
     }
