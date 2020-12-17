@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import io.quarkus.runtime.Startup;
 import org.kie.kogito.Application;
+import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
 import org.slf4j.Logger;
@@ -35,6 +36,9 @@ public class QuarkusEventDrivenDecisionController extends EventDrivenDecisionCon
     Application application;
 
     @Inject
+    ConfigBean config;
+
+    @Inject
     CloudEventEmitter eventEmitter;
 
     @Inject
@@ -43,7 +47,7 @@ public class QuarkusEventDrivenDecisionController extends EventDrivenDecisionCon
     @PostConstruct
     private void onPostConstruct() {
         LOG.info("QuarkusEventDrivenDecisionController pre setup");
-        setup(application, eventEmitter, eventReceiver);
+        setup(application, config, eventEmitter, eventReceiver);
         LOG.info("QuarkusEventDrivenDecisionController post setup");
     }
 }

@@ -22,6 +22,8 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,19 +36,28 @@ import org.slf4j.LoggerFactory;
 public class CloudEventUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloudEventUtils.class);
+    private static final String UNKNOWN_SOURCE_URI_STRING = urlEncodedStringFrom("__UNKNOWN_SOURCE__")
+            .orElseThrow(IllegalStateException::new);
 
-    public static <E> Optional<CloudEvent> build(String id,
-                                                 URI source,
-                                                 E data,
-                                                 Class<E> dataType) {
+    public static <E> Optional<CloudEvent> build(String id, URI source, E data, Class<E> dataType) {
+        return build(id, source, null, data, dataType);
+    }
+
+    public static <E> Optional<CloudEvent> build(String id, URI source, String subject, E data, Class<E> dataType) {
         try {
             byte[] bytes = Mapper.mapper().writeValueAsBytes(data);
-            return Optional.of(CloudEventBuilder.v1()
+
+            CloudEventBuilder builder = CloudEventBuilder.v1()
                     .withType(dataType.getName())
                     .withId(id)
                     .withSource(source)
-                    .withData(bytes)
-                    .build());
+                    .withData(bytes);
+
+            if (subject != null) {
+                builder.withSubject(subject);
+            }
+
+            return Optional.of(builder.build());
         } catch (JsonProcessingException e) {
             LOG.error("Unable to serialize CloudEvent data", e);
             return Optional.empty();
@@ -106,6 +117,35 @@ public class CloudEventUtils {
                         return null;
                     }
                 });
+    }
+
+    public static URI buildDecisionSource(String serviceUrl) {
+        return buildDecisionSource(serviceUrl, null, null);
+    }
+
+    public static URI buildDecisionSource(String serviceUrl, String decisionModelName) {
+        return buildDecisionSource(serviceUrl, decisionModelName, null);
+    }
+
+    public static URI buildDecisionSource(String serviceUrl, String decisionModelName, String decisionServiceName) {
+        String modelChunk = Optional.ofNullable(decisionModelName)
+                .filter(s -> !s.isEmpty())
+                .flatMap(CloudEventUtils::urlEncodedStringFrom)
+                .orElse(null);
+
+        String decisionChunk = Optional.ofNullable(decisionServiceName)
+                .filter(s -> !s.isEmpty())
+                .flatMap(CloudEventUtils::urlEncodedStringFrom)
+                .orElse(null);
+
+        String fullUrl = Stream.of(serviceUrl, modelChunk, decisionChunk)
+                .filter(s -> s != null && !s.isEmpty())
+                .collect(Collectors.joining("/"));
+
+        return URI.create(Optional.of(fullUrl)
+                .filter(s -> !s.isEmpty())
+                .orElse(UNKNOWN_SOURCE_URI_STRING)
+        );
     }
 
     // This trick allows to inject a mocked ObjectMapper in the unit tests via Mockito#mockStatic

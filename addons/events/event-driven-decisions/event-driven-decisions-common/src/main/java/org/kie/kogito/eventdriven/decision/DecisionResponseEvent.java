@@ -16,19 +16,31 @@
 
 package org.kie.kogito.eventdriven.decision;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.kie.kogito.dmn.rest.DMNResult;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 public class DecisionResponseEvent {
 
     private DecisionResponseStatus status;
-    private DMNResult result;
+
+    @JsonInclude(NON_EMPTY)
     private String errorMessage;
+
+    @JsonInclude(NON_EMPTY)
+    private String executionId;
+
+    @JsonInclude(NON_NULL)
+    private DMNResult result;
 
     private DecisionResponseEvent() {
     }
 
-    public DecisionResponseEvent(DMNResult result) {
+    public DecisionResponseEvent(String executionId, DMNResult result) {
         this.status = DecisionResponseStatus.OK;
+        this.executionId = executionId;
         this.result = result;
     }
 
@@ -41,11 +53,15 @@ public class DecisionResponseEvent {
         return status;
     }
 
-    public DMNResult getResult() {
-        return result;
-    }
-
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public String getExecutionId() {
+        return executionId;
+    }
+
+    public DMNResult getResult() {
+        return result;
     }
 }
