@@ -117,6 +117,7 @@ public class KogitoAssetsProcessor {
     private static final DotName dmnJpmmlClass = DotName.createSimple( "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
     private static final DotName quarkusCloudEvents = DotName.createSimple("org.kie.kogito.addon.cloudevents.quarkus.QuarkusCloudEventEmitter");
     private static final DotName quarkusSVGService = DotName.createSimple("org.kie.kogito.svg.service.QuarkusProcessSvgService");
+    private static final DotName awsRequestHandler = DotName.createSimple("com.amazonaws.services.lambda.runtime.RequestHandler");
 
     private static final PathMatcher svgFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.svg");
 
@@ -167,6 +168,9 @@ public class KogitoAssetsProcessor {
         boolean isJPMMLAvailable = combinedIndexBuildItem.getIndex().getClassByName(dmnJpmmlClass) != null;
         boolean useCloudEvents = combinedIndexBuildItem.getIndex().getClassByName(quarkusCloudEvents) != null;
         boolean useProcessSVG = combinedIndexBuildItem.getIndex().getClassByName(quarkusSVGService) != null;
+        boolean useRequestHandlers = combinedIndexBuildItem.getIndex().getAllKnownImplementors(awsRequestHandler) != null;
+        DotName requestHandler = DotName.createSimple("com.amazonaws.services.lambda.runtime.RequestHandler");
+        Collection<ClassInfo> allKnownImplementors = combinedIndexBuildItem.getIndex().getAllKnownImplementors(requestHandler);
 
         AddonsConfig addonsConfig = new AddonsConfig()
                 .withPersistence(usePersistence)
@@ -175,6 +179,8 @@ public class KogitoAssetsProcessor {
                 .withTracing(useTracing)
                 .withKnativeEventing(useKnativeEventing)
                 .withCloudEvents(useCloudEvents);
+                .withCloudEvents(useCloudEvents)
+                .withRequestHandlers(useRequestHandlers);
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         GeneratorContext context = buildContext(appPaths, combinedIndexBuildItem.getIndex());

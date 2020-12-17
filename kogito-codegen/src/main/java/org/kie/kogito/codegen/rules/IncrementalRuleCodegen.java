@@ -323,6 +323,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             List<String> queryClasses = useRestServices ? generateQueriesEndpoint(errors, generatedFiles, ruleUnitHelper, ruleUnit) : Collections.emptyList();
 
             List<String> handlerClasses = useRequestHandlers ? generateHandlers(errors, generatedFiles, ruleUnitHelper, ruleUnit) : Collections.emptyList();
+            List<String> handlerClasses = addonsConfig.useRequestHandlers() ? generateHandlers(errors, generatedFiles, ruleUnitHelper, ruleUnit) : Collections.emptyList();
 
             List<String> allClasses = new ArrayList<>(queryClasses);
 
