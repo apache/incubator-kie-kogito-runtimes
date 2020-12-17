@@ -27,7 +27,10 @@ import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 
-public class TemplatedGenerator {
+/**
+ * Utility class to handle multi platform template generation
+ */
+public final class TemplatedGenerator {
 
     private final String packageName;
     private final String sourceFilePath;
