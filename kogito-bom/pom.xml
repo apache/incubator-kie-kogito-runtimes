@@ -1281,6 +1281,41 @@
         <classifier>javadoc</classifier>
       </dependency>
 
+      <!-- event-driven decisions -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>event-driven-decisions-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>event-driven-decisions-common</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>event-driven-decisions-quarkus-addon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>event-driven-decisions-quarkus-addon</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>event-driven-decisions-springboot-addon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>event-driven-decisions-springboot-addon</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
     </dependencies>
 
   </dependencyManagement>

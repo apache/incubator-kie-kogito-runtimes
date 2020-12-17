@@ -28,12 +28,10 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>event-driven-decisions-common</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

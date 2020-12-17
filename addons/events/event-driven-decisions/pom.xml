@@ -15,7 +15,6 @@
   <description>Trigger evaluation of decision models via events</description>
 
   <modules>
-    <!--    <module>event-driven-decisions-api</module>-->
     <module>event-driven-decisions-common</module>
     <module>event-driven-decisions-quarkus-addon</module>
     <module>event-driven-decisions-springboot-addon</module>
