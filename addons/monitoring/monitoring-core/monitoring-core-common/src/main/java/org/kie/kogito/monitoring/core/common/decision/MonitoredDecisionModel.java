@@ -25,10 +25,6 @@ import org.kie.dmn.api.core.FEELPropertyAccessible;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.monitoring.core.common.system.metrics.DMNResultMetricsBuilder;
 
-/**
- * This class must always have exact FQCN as <code>org.kie.kogito.monitoring.decision.MonitoredDecisionModel</code>
- * for code generation plugins to inject this class.
- */
 public class MonitoredDecisionModel implements DecisionModel {
 
     private final DecisionModel originalModel;
