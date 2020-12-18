@@ -81,22 +81,6 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
                         "Invalid Template: No CompilationUnit"));
         ClassOrInterfaceType applicationClass = StaticJavaParser.parseClassOrInterfaceType(applicationCanonicalName);
 
-//        if (addonsConfig.useMonitoring()) {
-//            Optional<ReturnStmt> optReturnStmt = typeDeclaration.getMethodsByName("getDecisionModel").stream().findFirst()
-//                    .flatMap(md -> md.findFirst(ReturnStmt.class));
-//
-//            if (optReturnStmt.isPresent()) {
-//                ReturnStmt returnStmt = optReturnStmt.get();
-//                Optional<Expression> optReturnExpr = returnStmt.getExpression();
-//                if (optReturnExpr.isPresent()) {
-//                    returnStmt.setExpression(newObject("org.kie.kogito.monitoring.decision.MonitoredDecisionModel", optReturnExpr.get()));
-//                } else {
-//                    throw MODIFIED_TEMPLATE_EXCEPTION;
-//                }
-//            } else {
-//                throw MODIFIED_TEMPLATE_EXCEPTION;
-//            }
-
         final InitializerDeclaration staticDeclaration = compilationUnit
                 .findFirst(InitializerDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(
@@ -117,10 +101,6 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
             MethodCallExpr getResAsStream = getReadResourceMethod(applicationClass, resource);
             MethodCallExpr isr = new MethodCallExpr("readResource").addArgument(getResAsStream);
             initMethod.addArgument(isr);
-        }
-
-        if (addonsConfig.useMonitoring()) {
-
         }
 
         return compilationUnit;
