@@ -30,6 +30,7 @@ import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.decision.DecisionExecutionIdUtils;
 import org.kie.kogito.decision.DecisionModel;
+import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
@@ -42,7 +43,7 @@ public abstract class EventDrivenDecisionController {
     private static final String VALID_REQUEST_EVENT_TYPE = DecisionRequestEvent.class.getName();
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private Application application;
+    private DecisionModels decisionModels;
     private ConfigBean config;
     private CloudEventEmitter eventEmitter;
     private CloudEventReceiver eventReceiver;
@@ -51,14 +52,14 @@ public abstract class EventDrivenDecisionController {
     }
 
     protected EventDrivenDecisionController(Application application, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
-        this.application = application;
+        this.decisionModels = application.get(DecisionModels.class);
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
     }
 
     protected void setup(Application application, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
-        this.application = application;
+        this.decisionModels = application.get(DecisionModels.class);
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
@@ -112,7 +113,7 @@ public abstract class EventDrivenDecisionController {
 
     private Optional<DecisionModel> getDecisionModel(DecisionRequestEvent event) {
         try {
-            return Optional.ofNullable(application.decisionModels().getDecisionModel(event.getModelNamespace(), event.getModelName()));
+            return Optional.ofNullable(decisionModels.getDecisionModel(event.getModelNamespace(), event.getModelName()));
         } catch (IllegalStateException e) {
             return Optional.empty();
         }
