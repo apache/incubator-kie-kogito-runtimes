@@ -18,7 +18,6 @@ package org.kie.kogito.codegen.process;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,15 +46,11 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.ConfigGenerator;
-import org.kie.kogito.codegen.DefaultResourceGeneratorFactory;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.ResourceGeneratorFactory;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsMessageProducerGenerator;
@@ -68,7 +63,6 @@ import org.xml.sax.SAXException;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.ApplicationGenerator.log;
 
 /**
  * Entry point to process code generation
@@ -97,7 +91,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private ClassLoader contextClassLoader;
     private ResourceGeneratorFactory resourceGeneratorFactory;
-    private String packageName;
+    private List<ProcessGenerator> processGenerators = new ArrayList<>();
 
     public static ProcessCodegen ofCollectedResources(Collection<CollectedResource> resources) {
         List<Process> processes = resources.stream()
@@ -168,15 +162,8 @@ public class ProcessCodegen extends AbstractGenerator {
         }
     }
 
-    private String applicationCanonicalName;
-    private DependencyInjectionAnnotator annotator;
-
-    private ProcessContainerGenerator moduleGenerator;
-
     private final Map<String, WorkflowProcess> processes;
-    private final List<GeneratedFile> generatedFiles = new ArrayList<>();
-
-    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
+    private final Set<GeneratedFile> generatedFiles = new HashSet<>();
 
     public ProcessCodegen(Collection<? extends Process> processes) {
         this.processes = new HashMap<>();
@@ -187,13 +174,9 @@ public class ProcessCodegen extends AbstractGenerator {
             this.processes.put(process.getId(), (WorkflowProcess) process);
         }
 
-        // set default package name
-        setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
         contextClassLoader = Thread.currentThread().getContextClassLoader();
 
-        //FIXME: once all endpoint generators are implemented it should be changed to ResourceGeneratorFactory, to
-        // consider Spring generators.
-        resourceGeneratorFactory = new DefaultResourceGeneratorFactory();
+        resourceGeneratorFactory = new ResourceGeneratorFactory();
     }
 
     public static String defaultWorkItemHandlerConfigClass(String packageName) {
@@ -204,34 +187,14 @@ public class ProcessCodegen extends AbstractGenerator {
         return packageName + ".ProcessEventListenerConfig";
     }
 
-    public void setPackageName(String packageName) {
-        this.moduleGenerator = new ProcessContainerGenerator(packageName);
-        this.applicationCanonicalName = packageName + ".Application";
-        this.packageName = packageName;
-    }
-
-    public void setDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        this.moduleGenerator.withDependencyInjection(annotator);
-    }
-
-    public ProcessContainerGenerator moduleGenerator() {
-        return moduleGenerator;
-    }
-
-    public ProcessCodegen withAddons(AddonsConfig addonsConfig) {
-        this.addonsConfig = addonsConfig;
-        return this;
-    }
-
     public ProcessCodegen withClassLoader(ClassLoader projectClassLoader) {
         this.contextClassLoader = projectClassLoader;
         return this;
     }
 
-    public List<GeneratedFile> generate() {
+    public Set<GeneratedFile> generate() {
         if (processes.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
         List<ProcessGenerator> ps = new ArrayList<>();
@@ -308,7 +271,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     execModelGen,
                     classPrefix,
                     modelClassGenerator.className(),
-                    applicationCanonicalName
+                    applicationCanonicalName()
             )
                     .withDependencyInjection(annotator)
                     .withAddons(addonsConfig);
@@ -325,7 +288,7 @@ public class ProcessCodegen extends AbstractGenerator {
                                             workFlowProcess,
                                             modelClassGenerator.className(),
                                             execModelGen.className(),
-                                            applicationCanonicalName)
+                                            applicationCanonicalName())
                     .map(r -> r
                             .withDependencyInjection(annotator)
                             .withUserTasks(processIdToUserTaskModel.get(workFlowProcess.getId()))
@@ -349,7 +312,7 @@ public class ProcessCodegen extends AbstractGenerator {
                                 workFlowProcess,
                                 modelClassGenerator.className(),
                                 execModelGen.className(),
-                                applicationCanonicalName,
+                                applicationCanonicalName(),
                                 msgDataEventGenerator.className(),
                                 trigger)
                                          .withDependencyInjection(annotator));
@@ -384,7 +347,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 }
             }
 
-            moduleGenerator.addProcess(p);
+            processGenerators.add(p);
 
             ps.add(p);
             pis.add(pi);
@@ -451,13 +414,14 @@ public class ProcessCodegen extends AbstractGenerator {
         if (this.addonsConfig.useKnativeEventing()) {
             LOGGER.info("Knative Eventing addon enabled, generating CloudEvent HTTP listener");
             final CloudEventsResourceGenerator ceGenerator =
-                    new CloudEventsResourceGenerator(processExecutableModelGenerators, annotator);
+                    new CloudEventsResourceGenerator(packageName, processExecutableModelGenerators, annotator);
             storeFile(Type.REST, ceGenerator.generatedFilePath(), ceGenerator.generate());
         }
 
         final TopicsInformationResourceGenerator topicsGenerator =
-                new TopicsInformationResourceGenerator(processExecutableModelGenerators, annotator, addonsConfig);
+                new TopicsInformationResourceGenerator(packageName, processExecutableModelGenerators, annotator, addonsConfig);
         storeFile(Type.REST, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
+
 
         for (ProcessInstanceGenerator pi : pis) {
             storeFile(Type.PROCESS_INSTANCE, pi.generatedFilePath(), pi.generate());
@@ -481,15 +445,22 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     private void storeFile(Type type, String path, String source) {
-        generatedFiles.add(new GeneratedFile(type, path, log(source).getBytes(StandardCharsets.UTF_8)));
+        if (generatedFiles.stream().anyMatch(f -> path.equals(f.relativePath()))) {
+            LOGGER.warn("There's already a generated file named {} to be compiled. Ignoring.", path);
+        } else {
+            generatedFiles.add(new GeneratedFile(type, path, source));
+        }
     }
 
-    public List<GeneratedFile> getGeneratedFiles() {
+    public Set<GeneratedFile> getGeneratedFiles() {
         return generatedFiles;
     }
 
     @Override
     public ApplicationSection section() {
+        ProcessContainerGenerator moduleGenerator = new ProcessContainerGenerator(packageName);
+        moduleGenerator.withDependencyInjection(annotator);
+        processGenerators.forEach(moduleGenerator::addProcess);
         return moduleGenerator;
     }
 }

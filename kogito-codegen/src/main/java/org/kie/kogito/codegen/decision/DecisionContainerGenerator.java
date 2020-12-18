@@ -16,21 +16,20 @@
 package org.kie.kogito.codegen.decision;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.AbstractApplicationSection;
 import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.InvalidTemplateException;
+import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
-import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DmnExecutionIdSupplier;
 
 import static org.kie.kogito.codegen.CodegenUtils.newObject;
@@ -38,19 +37,29 @@ import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMe
 
 public class DecisionContainerGenerator extends AbstractApplicationSection {
 
-    private static final String TEMPLATE_JAVA = "/class-templates/DecisionContainerTemplate.java";
+    private static final String RESOURCE = "/class-templates/DecisionContainerTemplate.java";
+    private static final String RESOURCE_CDI = "/class-templates/CdiDecisionContainerTemplate.java";
+    private static final String RESOURCE_SPRING = "/class-templates/spring/SpringDecisionContainerTemplate.java";
+    private static final String SECTION_CLASS_NAME = "DecisionModels";
 
-    private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION =
-            new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
+//    private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION =
+//            new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
 
     private String applicationCanonicalName;
     private final List<CollectedResource> resources;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
+    private final TemplatedGenerator templatedGenerator;
 
-    public DecisionContainerGenerator(String applicationCanonicalName, List<CollectedResource> cResources) {
-        super("DecisionModels", "decisionModels", DecisionModels.class);
+    public DecisionContainerGenerator(String packageName, String applicationCanonicalName, List<CollectedResource> cResources) {
+        super(SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = cResources;
+        this.templatedGenerator = new TemplatedGenerator(
+                packageName,
+                SECTION_CLASS_NAME,
+                RESOURCE_CDI,
+                RESOURCE_SPRING,
+                RESOURCE);
     }
 
     public DecisionContainerGenerator withAddons(AddonsConfig addonsConfig) {
@@ -58,51 +67,76 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         return this;
     }
 
+    public DecisionContainerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
+        this.templatedGenerator.withDependencyInjection(annotator);
+        return this;
+    }
+
     @Override
-    public ClassOrInterfaceDeclaration classDeclaration() {
-        CompilationUnit clazz = StaticJavaParser.parse(this.getClass().getResourceAsStream(TEMPLATE_JAVA));
-        ClassOrInterfaceDeclaration typeDeclaration = (ClassOrInterfaceDeclaration) clazz.getTypes().get(0);
+    public CompilationUnit compilationUnit() {
+        CompilationUnit compilationUnit = templatedGenerator.compilationUnit()
+                .orElseThrow(() -> new InvalidTemplateException(
+                        SECTION_CLASS_NAME,
+                        templatedGenerator.templatePath(),
+                        "Invalid Template: No CompilationUnit"));
         ClassOrInterfaceType applicationClass = StaticJavaParser.parseClassOrInterfaceType(applicationCanonicalName);
+
+//        if (addonsConfig.useMonitoring()) {
+//            Optional<ReturnStmt> optReturnStmt = typeDeclaration.getMethodsByName("getDecisionModel").stream().findFirst()
+//                    .flatMap(md -> md.findFirst(ReturnStmt.class));
+//
+//            if (optReturnStmt.isPresent()) {
+//                ReturnStmt returnStmt = optReturnStmt.get();
+//                Optional<Expression> optReturnExpr = returnStmt.getExpression();
+//                if (optReturnExpr.isPresent()) {
+//                    returnStmt.setExpression(newObject("org.kie.kogito.monitoring.decision.MonitoredDecisionModel", optReturnExpr.get()));
+//                } else {
+//                    throw MODIFIED_TEMPLATE_EXCEPTION;
+//                }
+//            } else {
+//                throw MODIFIED_TEMPLATE_EXCEPTION;
+//            }
+
+        final InitializerDeclaration staticDeclaration = compilationUnit
+                .findFirst(InitializerDeclaration.class)
+                .orElseThrow(() -> new InvalidTemplateException(
+                        SECTION_CLASS_NAME,
+                        templatedGenerator.templatePath(),
+                        "Missing static block"));
+        final MethodCallExpr initMethod = staticDeclaration
+                .findFirst(MethodCallExpr.class, mtd -> "init".equals(mtd.getNameAsString()))
+                .orElseThrow(() -> new InvalidTemplateException(
+                        SECTION_CLASS_NAME,
+                        templatedGenerator.templatePath(),
+                        "Missing init() method"));
+
+        setupExecIdSupplierVariable(initMethod);
+        setupDecisionModelTransformerVariable(initMethod);
 
         for (CollectedResource resource : resources) {
             MethodCallExpr getResAsStream = getReadResourceMethod(applicationClass, resource);
             MethodCallExpr isr = new MethodCallExpr("readResource").addArgument(getResAsStream);
-            Optional<FieldDeclaration> dmnRuntimeField = typeDeclaration.getFieldByName("dmnRuntime");
-            Optional<Expression> initalizer = dmnRuntimeField.flatMap(x -> x.getVariable(0).getInitializer());
-            if (initalizer.isPresent()) {
-                initalizer.get().asMethodCallExpr().addArgument(isr);
-            } else {
-                throw MODIFIED_TEMPLATE_EXCEPTION;
-            }
+            initMethod.addArgument(isr);
         }
 
         if (addonsConfig.useMonitoring()) {
-            Optional<ReturnStmt> optReturnStmt = typeDeclaration.getMethodsByName("getDecisionModel").stream().findFirst()
-                    .flatMap(md -> md.findFirst(ReturnStmt.class));
 
-            if (optReturnStmt.isPresent()) {
-                ReturnStmt returnStmt = optReturnStmt.get();
-                Optional<Expression> optReturnExpr = returnStmt.getExpression();
-                if (optReturnExpr.isPresent()) {
-                    returnStmt.setExpression(newObject("org.kie.kogito.monitoring.decision.MonitoredDecisionModel", optReturnExpr.get()));
-                } else {
-                    throw MODIFIED_TEMPLATE_EXCEPTION;
-                }
-            } else {
-                throw MODIFIED_TEMPLATE_EXCEPTION;
-            }
         }
 
-        if (addonsConfig.useTracing()) {
-            setupExecIdSupplierVariable(typeDeclaration);
-        }
-        return typeDeclaration;
+        return compilationUnit;
     }
 
-    private void setupExecIdSupplierVariable(ClassOrInterfaceDeclaration typeDeclaration) {
-        VariableDeclarator execIdSupplierVariable = typeDeclaration.getFieldByName("execIdSupplier")
-                .map(x -> x.getVariable(0))
-                .orElseThrow(() -> new RuntimeException("Can't find \"execIdSupplier\" field in " + TEMPLATE_JAVA));
-        execIdSupplierVariable.setInitializer(newObject(DmnExecutionIdSupplier.class));
+    private void setupExecIdSupplierVariable(MethodCallExpr initMethod) {
+        Expression execIdSupplier = addonsConfig.useTracing() ?
+                newObject(DmnExecutionIdSupplier.class) :
+                new NullLiteralExpr();
+        initMethod.addArgument(execIdSupplier);
+    }
+
+    private void setupDecisionModelTransformerVariable(MethodCallExpr initMethod) {
+        Expression decisionModelTransformerExpr = addonsConfig.useMonitoring() ?
+                newObject("org.kie.kogito.monitoring.core.common.decision.MonitoredDecisionModelTransformer") :
+                new NullLiteralExpr();
+        initMethod.addArgument(decisionModelTransformerExpr);
     }
 }

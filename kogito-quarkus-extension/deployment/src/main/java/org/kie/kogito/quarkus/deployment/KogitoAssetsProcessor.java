@@ -37,8 +37,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import javax.inject.Inject;
-
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -79,6 +77,7 @@ import org.kie.kogito.codegen.JsonSchemaGenerator;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
+import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
@@ -112,8 +111,8 @@ public class KogitoAssetsProcessor {
 
     private static final String appPackageName = "org.kie.kogito.app";
     private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
-    private static final DotName prometheusClass = DotName.createSimple("org.kie.kogito.monitoring.prometheus.rest.MetricsResource");
-    private static final DotName monitoringCoreClass = DotName.createSimple("org.kie.kogito.monitoring.core.MonitoringRegistry");
+    private static final DotName prometheusClass = DotName.createSimple("org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource");
+    private static final DotName monitoringCoreClass = DotName.createSimple("org.kie.kogito.monitoring.core.common.MonitoringRegistry");
     private static final DotName tracingClass = DotName.createSimple("org.kie.kogito.tracing.decision.DecisionTracingListener");
     private static final DotName knativeEventingClass = DotName.createSimple("org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension");
     private static final DotName dmnJpmmlClass = DotName.createSimple( "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
@@ -130,14 +129,6 @@ public class KogitoAssetsProcessor {
     CurateOutcomeBuildItem curateOutcomeBuildItem;
     @Inject
     CombinedIndexBuildItem combinedIndexBuildItem;
-    @Inject
-    BuildProducer<GeneratedBeanBuildItem> generatedBeans;
-    @Inject
-    BuildProducer<NativeImageResourceBuildItem> resource;
-    @Inject
-    BuildProducer<ReflectiveClassBuildItem> reflectiveClass;
-    @Inject
-    BuildProducer<GeneratedResourceBuildItem> genResBI;
 
     @BuildStep
     CapabilityBuildItem capability() {
@@ -153,7 +144,12 @@ public class KogitoAssetsProcessor {
      * Main entry point of the Quarkus extension
      */
     @BuildStep
-    public void generateModel() throws IOException {
+    public void generateModel(
+            BuildProducer<GeneratedBeanBuildItem> generatedBeans,
+            BuildProducer<NativeImageResourceBuildItem> resource,
+            BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+            BuildProducer<GeneratedResourceBuildItem> genResBI
+    ) throws IOException {
 
         if (liveReload.isLiveReload()) {
             return;
@@ -173,6 +169,8 @@ public class KogitoAssetsProcessor {
         boolean useCloudEvents = combinedIndexBuildItem.getIndex().getClassByName(quarkusCloudEvents) != null;
         boolean useProcessSVG = combinedIndexBuildItem.getIndex().getClassByName(quarkusSVGService) != null;
 
+        DependencyInjectionAnnotator dependencyInjectionAnnotator = new CDIDependencyInjectionAnnotator();
+
         AddonsConfig addonsConfig = new AddonsConfig()
                 .withPersistence(usePersistence)
                 .withMonitoring(useMonitoring)
@@ -182,7 +180,7 @@ public class KogitoAssetsProcessor {
                 .withCloudEvents(useCloudEvents);
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        GeneratorContext context = buildContext(appPaths, combinedIndexBuildItem.getIndex());
+        GeneratorContext context = generatorContext(appPaths, combinedIndexBuildItem.getIndex());
 
         Path[] paths = appPaths.getPath();
 
@@ -192,27 +190,23 @@ public class KogitoAssetsProcessor {
                 new ApplicationGenerator(
                         appPackageName,
                         new File(appPaths.getFirstProjectPath().toFile(), "target"))
-                        .withDependencyInjection(new CDIDependencyInjectionAnnotator())
+                        .withDependencyInjection(dependencyInjectionAnnotator)
                         .withAddons(addonsConfig)
                         .withGeneratorContext(context);
 
         // configure each individual generator. Ordering is relevant.
 
-        appGen.withGenerator(ProcessCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
-                .withAddons(addonsConfig)
+        appGen.setupGenerator(ProcessCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
                 .withClassLoader(classLoader);
 
-        appGen.withGenerator(IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
+        appGen.setupGenerator(IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
                 .withKModule(findKieModuleModel(appPaths))
-                .withAddons(addonsConfig)
                 .withClassLoader(classLoader);
 
-        appGen.withGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromPaths(paths)))
-                .withAddons(addonsConfig);
+        appGen.setupGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromPaths(paths)));
 
-        appGen.withGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
-              .withAddons(addonsConfig)
-              .withClassLoader(classLoader);
+        appGen.setupGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
+                .withClassLoader(classLoader);
 
         // real work occurs here: invoke the code-generation procedure
         Collection<GeneratedFile> generatedFiles = appGen.generate();
@@ -228,12 +222,13 @@ public class KogitoAssetsProcessor {
         }
 
         // register resources to the Quarkus environment
-        registerResources(generatedFiles);
+        registerResources(generatedFiles, resource, genResBI);
 
         // build Java source code and register the generated beans
         Index index = processGeneratedJavaSourceCode(
                 appPaths,
-                generatedFiles);
+                generatedFiles,
+                generatedBeans);
 
         // no java source code has been generated. Stop.
         if (index == null) {
@@ -241,21 +236,26 @@ public class KogitoAssetsProcessor {
         }
 
         // further processing
-        Collection<GeneratedFile> persistenceGeneratedFiles = generatePersistenceInfo(appPaths, index);
+        Collection<GeneratedFile> persistenceGeneratedFiles = generatePersistenceInfo(
+                appPaths,
+                index,
+                generatedBeans,
+                resource,
+                reflectiveClass);
         generatedFiles.addAll(persistenceGeneratedFiles);
 
         // Write files to disk
         dumpFilesToDisk(appPaths, generatedFiles);
 
         // register resources to the Quarkus environment
-        registerResources(generatedFiles);
+        registerResources(generatedFiles, resource, genResBI);
 
-        registerDataEventsForReflection(index, addonsConfig);
+        registerDataEventsForReflection(index, addonsConfig, reflectiveClass);
 
-        writeJsonSchema(appPaths, index);
+        writeJsonSchema(appPaths, index, resource);
 
         if (useProcessSVG) {
-            registerProcessSVG(appPaths);
+            registerProcessSVG(appPaths, resource);
         }
     }
 
@@ -267,7 +267,9 @@ public class KogitoAssetsProcessor {
         }
     }
 
-    private void registerResources(Collection<GeneratedFile> generatedFiles) {
+    private void registerResources(Collection<GeneratedFile> generatedFiles,
+                                   BuildProducer<NativeImageResourceBuildItem> resource,
+                                   BuildProducer<GeneratedResourceBuildItem> genResBI) {
         for (GeneratedFile f : generatedFiles) {
             if (f.getType() == GeneratedFile.Type.GENERATED_CP_RESOURCE) {
                 genResBI.produce(new GeneratedResourceBuildItem(f.relativePath(), f.contents()));
@@ -278,7 +280,8 @@ public class KogitoAssetsProcessor {
 
     private Index processGeneratedJavaSourceCode(
             AppPaths appPaths,
-            Collection<GeneratedFile> generatedFiles) throws IOException {
+            Collection<GeneratedFile> generatedFiles,
+            BuildProducer<GeneratedBeanBuildItem> generatedBeans) throws IOException {
 
         // we are currently filtering on file extension,
         // but we should tag GeneratedFile properly
@@ -302,7 +305,12 @@ public class KogitoAssetsProcessor {
         return indexBuildItems(generatedBeanBuildItems);
     }
 
-    private Collection<GeneratedFile> generatePersistenceInfo(AppPaths appPaths, IndexView inputIndex) throws IOException {
+    private Collection<GeneratedFile> generatePersistenceInfo(
+            AppPaths appPaths,
+            IndexView inputIndex,
+            BuildProducer<GeneratedBeanBuildItem> generatedBeans,
+            BuildProducer<NativeImageResourceBuildItem> resource,
+            BuildProducer<ReflectiveClassBuildItem> reflectiveClass) throws IOException {
 
         CompositeIndex index = CompositeIndex.create(combinedIndexBuildItem.getIndex(), inputIndex);
 
@@ -319,7 +327,7 @@ public class KogitoAssetsProcessor {
                 }
             }
         }
-        GeneratorContext context = buildContext(appPaths, index);
+        GeneratorContext context = generatorContext(appPaths, index);
         String persistenceType = context.getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
         Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(appPaths, index, usePersistence, parameters, context, persistenceType);
 
@@ -473,7 +481,7 @@ public class KogitoAssetsProcessor {
         return new ReflectiveClassBuildItem(true, true, "org.kie.kogito.jobs.api.Job");
     }
 
-    private void registerProcessSVG(AppPaths appPaths) throws IOException {
+    private void registerProcessSVG(AppPaths appPaths, BuildProducer<NativeImageResourceBuildItem> resource) throws IOException {
         Path relativePath = Paths.get("META-INF", "processSVG");
         Path targetClasses = appPaths.getFirstProjectPath().resolve(targetClassesDir);
 
@@ -487,7 +495,7 @@ public class KogitoAssetsProcessor {
         }
     }
 
-    private void writeJsonSchema(AppPaths appPaths, Index index) throws IOException {
+    private void writeJsonSchema(AppPaths appPaths, Index index, BuildProducer<NativeImageResourceBuildItem> resource) throws IOException {
         Path relativePath = JsonSchemaUtil.getJsonDir();
         Path targetClasses = appPaths.getFirstProjectPath().resolve(targetClassesDir);
         Collection<GeneratedFile> jsonFiles = getJsonSchemaFiles(targetClasses, index);
@@ -500,7 +508,7 @@ public class KogitoAssetsProcessor {
         }
     }
 
-    private void registerDataEventsForReflection(Index index, AddonsConfig addonsConfig) {
+    private void registerDataEventsForReflection(Index index, AddonsConfig addonsConfig, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.event.AbstractDataEvent"));
         reflectiveClass.produce(
@@ -612,7 +620,7 @@ public class KogitoAssetsProcessor {
         return path;
     }
 
-    private GeneratorContext buildContext(AppPaths appPaths, IndexView index) {
+    private GeneratorContext generatorContext(AppPaths appPaths, IndexView index) {
         GeneratorContext context = GeneratorContext.ofResourcePath(appPaths.getResourceFiles());
         context.withBuildContext(new QuarkusKogitoBuildContext(className -> {
             DotName classDotName = DotName.createSimple(className);

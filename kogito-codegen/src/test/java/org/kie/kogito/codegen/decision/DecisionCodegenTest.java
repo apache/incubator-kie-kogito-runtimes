@@ -22,10 +22,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratorContext;
 import org.kie.kogito.codegen.io.CollectedResource;
@@ -39,11 +40,7 @@ public class DecisionCodegenTest {
 
     @Test
     public void generateAllFiles() throws Exception {
-
-        GeneratorContext context = stronglyTypedContext();
-
-        DecisionCodegen codeGenerator = DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath()));
-        codeGenerator.setContext(context);
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays");
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(6);
@@ -55,8 +52,16 @@ public class DecisionCodegenTest {
                                                                         "decision/VacationsResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
-        assertNotNull(classDeclaration);
+        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        assertNotNull(compilationUnit );
+    }
+
+    public DecisionCodegen getDecisionCodegen(String s) {
+        GeneratorContext context = stronglyTypedContext();
+        DecisionCodegen codeGenerator = DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get(s).toAbsolutePath()));
+        codeGenerator.setContext(context);
+        codeGenerator.setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
+        return codeGenerator;
     }
 
     private GeneratorContext stronglyTypedContext() {
@@ -71,10 +76,7 @@ public class DecisionCodegenTest {
 
     @Test
     public void doNotGenerateTypesafeInfo() throws Exception {
-        GeneratorContext context = stronglyTypedContext();
-
-        DecisionCodegen codeGenerator = DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get("src/test/resources/decision/alltypes/").toAbsolutePath()));
-        codeGenerator.setContext(context);
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/alltypes/");
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(3);
@@ -83,8 +85,8 @@ public class DecisionCodegenTest {
                                                                         "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
-        assertNotNull(classDeclaration);
+        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        assertNotNull(compilationUnit );
     }
 
     @Test
@@ -117,27 +119,25 @@ public class DecisionCodegenTest {
 
     @Test
     public void resilientToDuplicateDMNIDs() throws Exception {
-        DecisionCodegen codeGenerator = DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get("src/test/resources/decision-test20200507").toAbsolutePath()));
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-test20200507");
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(3);
 
-        ClassOrInterfaceDeclaration classDeclaration = codeGenerator.section().classDeclaration();
-        assertNotNull(classDeclaration);
+        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        assertNotNull(compilationUnit );
     }
 
     @Test
     public void emptyName() throws Exception {
-        DecisionCodegen codeGenerator = DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get("src/test/resources/decision-empty-name").toAbsolutePath()));
-        RuntimeException re = Assertions.assertThrows(RuntimeException.class, () -> {
-            codeGenerator.generate();
-        });
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-empty-name");
+        RuntimeException re = Assertions.assertThrows(RuntimeException.class, codeGenerator::generate);
         assertEquals("Model name should not be empty", re.getMessage());
     }
 
     private List<GeneratedFile> generateTestDashboards(AddonsConfig addonsConfig) throws IOException {
-        DecisionCodegen codeGenerator = DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath()))
-                .withAddons(addonsConfig);
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays");
+        codeGenerator.setAddonsConfig(addonsConfig);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
 
@@ -155,9 +155,7 @@ public class DecisionCodegenTest {
     @Test
     public void testNSEW_positive() throws Exception {
         // This test is meant to check that IFF Eclipse MP OpenAPI annotations are available on Build/CP of Kogito application, annotation is used with codegen
-        DecisionCodegen codeGenerator = DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get("src/test/resources/decision-NSEW").toAbsolutePath()));
-        GeneratorContext context = stronglyTypedContext();
-        codeGenerator.setContext(context);
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW");
         codeGenerator.withClassLoader(new ClassLoader() {
             public Class<?> loadClass(String name) throws ClassNotFoundException {
                 return Object.class;
@@ -172,9 +170,7 @@ public class DecisionCodegenTest {
 
     @Test
     public void testNSEW_negative() throws Exception {
-        DecisionCodegen codeGenerator = DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(Paths.get("src/test/resources/decision-NSEW").toAbsolutePath()));
-        GeneratorContext context = stronglyTypedContext();
-        codeGenerator.setContext(context);
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW");
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles).anyMatch(x -> x.relativePath().endsWith("InputSet.java"));

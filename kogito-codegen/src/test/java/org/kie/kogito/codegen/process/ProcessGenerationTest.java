@@ -66,6 +66,7 @@ import org.kie.api.definition.process.Node;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
+import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcess;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,6 +80,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+
 
 /**
  * ProcessGenerationTest iterates over all the process files in the project except the
@@ -128,8 +131,8 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         RuleFlowProcess expected = (RuleFlowProcess) processes.get(0);
 
         Application app = generateCodeProcessesOnly(processFile);
-        AbstractProcess<? extends Model> process = (AbstractProcess<? extends Model>) app.processes().processById(expected.getId());
-        assertThat(process).isNotNull().isSameAs(app.processes().processById(expected.getId()));
+        AbstractProcess<? extends Model> process = (AbstractProcess<? extends Model>) app.get(Processes.class).processById(expected.getId());
+        assertThat(process).isNotNull().isSameAs(app.get(Processes.class).processById(expected.getId()));
         
         RuleFlowProcess current = (RuleFlowProcess) process.process();
 
@@ -163,7 +166,30 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             assertNotNull(e);
         }
     }
+    @Test
+    public void testDifferentLinkProcess() throws Exception {
+        Assertions.assertThatThrownBy(() -> testProcessGeneration("links/DifferentLinkProcess.bpmn2")).isInstanceOf(
+                ProcessCodegenException.class).hasMessageContaining("not connection");
+    }
 
+    @Test
+    public void testMultipleCatchLink() throws Exception {
+        Assertions.assertThatThrownBy(() -> testProcessGeneration("links/MultipleCatchLinkProcess.bpmn2")).isInstanceOf(
+                ProcessCodegenException.class).hasMessageContaining("multiple catch nodes");
+    }
+
+    @Test
+    public void testEmptyLinkProcess() throws Exception {
+        Assertions.assertThatThrownBy(() -> testProcessGeneration("links/EmptyLinkProcess.bpmn2")).isInstanceOf(
+                ProcessCodegenException.class).hasMessageContaining("nodes do not have a name");
+    }
+
+    @Test
+    public void testMissingLinkProcess() throws Exception {
+        Assertions.assertThatThrownBy(() -> testProcessGeneration("links/UnconnectedLinkProcess.bpmn2")).isInstanceOf(
+                ProcessCodegenException.class).hasMessageContaining("not connection");
+    }
+  
     private static void assertNodes(Node[] expected, Node[] current) {
         assertEquals(expected.length, current.length);
         Stream.of(expected).forEach(eNode -> {

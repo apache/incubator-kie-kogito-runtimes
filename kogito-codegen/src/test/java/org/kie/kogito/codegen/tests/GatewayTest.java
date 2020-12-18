@@ -28,6 +28,7 @@ import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.Sig;
 
 public class GatewayTest extends AbstractCodegenTest {
@@ -37,10 +38,10 @@ public class GatewayTest extends AbstractCodegenTest {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("gateway/EventBasedSplit.bpmn2"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/BusinessRuleTask.drl"));
-        Application app = generateCode(resourcesTypeMap, false);
+        Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("EventBasedSplit");
+        Process<? extends Model> p = app.get(Processes.class).processById("EventBasedSplit");
         
         Model m = p.createModel();
         
