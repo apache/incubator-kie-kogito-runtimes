@@ -42,9 +42,6 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     private static final String RESOURCE_SPRING = "/class-templates/spring/SpringDecisionContainerTemplate.java";
     private static final String SECTION_CLASS_NAME = "DecisionModels";
 
-//    private static final RuntimeException MODIFIED_TEMPLATE_EXCEPTION =
-//            new RuntimeException("The template " + TEMPLATE_JAVA + " has been modified.");
-
     private String applicationCanonicalName;
     private final List<CollectedResource> resources;
     private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
