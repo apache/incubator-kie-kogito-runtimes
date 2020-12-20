@@ -37,7 +37,7 @@ import org.kie.kogito.event.CloudEventReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class EventDrivenDecisionController {
+public class EventDrivenDecisionController {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventDrivenDecisionController.class);
     private static final String VALID_REQUEST_EVENT_TYPE = DecisionRequestEvent.class.getName();
@@ -70,8 +70,7 @@ public abstract class EventDrivenDecisionController {
         eventReceiver.subscribe(this::handleEvent);
     }
 
-    private void handleEvent(String event) {
-        LOG.info("Received event: " + event);
+    void handleEvent(String event) {
         CloudEventUtils.decode(event)
                 .filter(e -> VALID_REQUEST_EVENT_TYPE.equals(e.getType()))
                 .ifPresent(this::handleRequest);

@@ -14,19 +14,15 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito.tracing.decision;
+package org.kie.kogito.decision;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.dmn.DMNKogito;
-import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 
 public class DecisionTestUtils {
 
@@ -44,12 +40,7 @@ public class DecisionTestUtils {
     public static final String DECISION_SERVICE_DECISION_ID = "_4055D956-1C47-479C-B3F4-BAEB61F1C929";
 
     public static final String EVALUATE_ALL_EXECUTION_ID = "4ac4c69f-4925-4221-b67e-4b14ce47bef8";
-    public static final String EVALUATE_ALL_JSON_RESOURCE = "/Traffic Violation_EvaluateEvents_evaluateAll.json";
     public static final String EVALUATE_DECISION_SERVICE_EXECUTION_ID = "77408667-f218-40b0-a355-1bab047a3e9e";
-    public static final String EVALUATE_DECISION_SERVICE_JSON_RESOURCE = "/Traffic Violation_EvaluateEvents_evaluateDecisionService.json";
-
-    private static final TypeReference<List<EvaluateEvent>> EVALUATE_EVENT_LIST_TYPE = new TypeReference<List<EvaluateEvent>>() {
-    };
 
     public static DMNRuntime createDMNRuntime() {
         return DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
@@ -106,11 +97,5 @@ public class DecisionTestUtils {
             put("Actual Speed", actualSpeed);
             put("Speed Limit", speedLimit);
         }};
-    }
-
-    public static List<EvaluateEvent> readEvaluateEventsFromJsonResource(String resourceName) throws IOException {
-        return MAPPER.readValue(DecisionTestUtils.class.getResourceAsStream(resourceName),
-                EVALUATE_EVENT_LIST_TYPE
-        );
     }
 }
