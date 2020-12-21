@@ -31,7 +31,7 @@ public class AddonsConfigTest {
         assertThat(addonsConfig.usePersistence()).isFalse();
         assertThat(addonsConfig.useCloudEvents()).isFalse();
         assertThat(addonsConfig.usePersistence()).isFalse();
-        assertThat(addonsConfig.usePersistence()).isFalse();
+        assertThat(addonsConfig.useCloudEvents()).isFalse();
     }
 
     @Test
