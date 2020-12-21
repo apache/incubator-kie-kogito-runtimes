@@ -31,6 +31,11 @@ public class RedisQuarkusTestResource extends ConditionalQuarkusTestResource {
         return KOGITO_REDIS_URL;
     }
 
+    @Override
+    protected String getKogitoPropertyValue(){
+        return "http://localhost:" + getTestResource().getMappedPort();
+    }
+
     public static class Conditional extends RedisQuarkusTestResource {
 
         public Conditional() {
