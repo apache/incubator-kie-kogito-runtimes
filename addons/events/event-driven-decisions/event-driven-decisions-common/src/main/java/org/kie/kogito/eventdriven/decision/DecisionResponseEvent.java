@@ -17,10 +17,12 @@
 package org.kie.kogito.eventdriven.decision;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kie.kogito.dmn.rest.DMNResult;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
 public class DecisionResponseEvent {
 
@@ -32,6 +34,7 @@ public class DecisionResponseEvent {
     @JsonInclude(NON_EMPTY)
     private String executionId;
 
+    @JsonProperty(access = READ_ONLY) // temporary fix of deserialization issues in tests
     @JsonInclude(NON_NULL)
     private DMNResult result;
 
