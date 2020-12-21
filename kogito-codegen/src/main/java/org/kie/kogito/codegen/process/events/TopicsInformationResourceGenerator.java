@@ -29,7 +29,6 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;

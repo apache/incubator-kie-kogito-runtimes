@@ -15,7 +15,6 @@
 
 package org.kie.kogito.codegen.decision;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,7 +73,7 @@ public class DecisionCodegen extends AbstractGenerator {
         return new DecisionCodegen(context, dmnResources);
     }
 
-    public static DecisionCodegen ofPath(KogitoBuildContext context, Path... paths) throws IOException {
+    public static DecisionCodegen ofPath(KogitoBuildContext context, Path... paths) {
         return ofCollectedResources(context, CollectedResource.fromPaths(paths));
     }
 

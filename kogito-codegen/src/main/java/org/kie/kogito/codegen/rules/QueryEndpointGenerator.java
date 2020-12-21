@@ -45,7 +45,6 @@ import com.github.javaparser.ast.type.Type;
 import org.drools.compiler.compiler.DroolsError;
 import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.TemplatedGenerator;

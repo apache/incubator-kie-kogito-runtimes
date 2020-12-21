@@ -244,12 +244,15 @@ public class KogitoAssetsProcessor {
     private File getOrCreateTargetDirectory(Path firstProjectPath) {
         Path targetDirectory = firstProjectPath.resolve("target");
         if(!targetDirectory.toFile().exists()) {
-            logger.debug("Creating target directory " + targetDirectory.toString());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Creating target directory {}", targetDirectory.toString());
+            }
             try {
                 Files.createDirectories(targetDirectory);
             } catch (IOException e) {
-                logger.error("Error during creation of target directory " + targetDirectory.toString(), e);
-                throw new UncheckedIOException(e);
+                String message = "Error during creation of target directory " + targetDirectory.toString();
+                logger.error(message, e);
+                throw new UncheckedIOException(message, e);
             }
         }
         return targetDirectory.toFile();

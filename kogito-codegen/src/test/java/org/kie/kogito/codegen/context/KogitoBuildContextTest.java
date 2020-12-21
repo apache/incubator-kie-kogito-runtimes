@@ -66,12 +66,13 @@ class KogitoBuildContextTest {
 
     @Test
     public void withTargetDirectory() {
+        File testFile = new File("");
         assertThat(builder.build().getTargetDirectory())
                 .isNotNull()
                 .isDirectory();
         assertThatThrownBy(() -> builder.withTargetDirectory(null))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> builder.withTargetDirectory(new File("")))
+        assertThatThrownBy(() -> builder.withTargetDirectory(testFile))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

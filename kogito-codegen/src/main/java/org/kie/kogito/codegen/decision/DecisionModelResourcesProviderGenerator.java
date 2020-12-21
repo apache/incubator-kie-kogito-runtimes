@@ -31,7 +31,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.api.management.GAV;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.decision.DecisionModelType;
 import org.kie.kogito.dmn.DefaultDecisionModelResource;

@@ -20,7 +20,6 @@ import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import org.kie.kogito.codegen.AbstractApplicationSection;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;

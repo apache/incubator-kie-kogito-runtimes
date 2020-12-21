@@ -101,8 +101,9 @@ public class DecisionRestResourceGenerator {
             return URLEncoder.encode(name, StandardCharsets.UTF_8.name())
                     .replace("+", " ");
         } catch (UnsupportedEncodingException e) {
-            LOGGER.warn("Error while encoding name URL " + e.toString(), e);
-            throw new UncheckedIOException(e);
+            String message = "Error while encoding name URL " + name + " " + e.getMessage();
+            LOGGER.warn(message, e);
+            throw new UncheckedIOException(message, e);
         }
     }
 
