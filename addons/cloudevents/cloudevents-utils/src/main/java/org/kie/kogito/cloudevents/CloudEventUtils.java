@@ -156,8 +156,13 @@ public class CloudEventUtils {
         public static ObjectMapper mapper() {
             return OBJECT_MAPPER;
         }
+
+        private Mapper() {
+            throw new IllegalStateException("Utility class");
+        }
     }
 
     private CloudEventUtils() {
+        throw new IllegalStateException("Utility class");
     }
 }

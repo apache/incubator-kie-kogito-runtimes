@@ -53,49 +53,53 @@ public class DecisionTestUtils {
     }
 
     public static Map<String, Object> getEvaluateAllContext() {
-        return new HashMap<String, Object>() {{
-            put("Driver", getDriver(25, 10));
-            put("Violation", getViolation("speed", 115, 100));
-        }};
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("Driver", getDriver(25, 10));
+        map.put("Violation", getViolation("speed", 115, 100));
+        return map;
     }
 
     public static Map<String, Object> getEvaluateAllContextForWarning() {
-        return new HashMap<String, Object>() {{
-            put("Driver", getDriver(25, 10));
-            put("Violation", getViolation("speed", 95, 100));
-        }};
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("Driver", getDriver(25, 10));
+        map.put("Violation", getViolation("speed", 95, 100));
+        return map;
     }
 
     public static Map<String, Object> getEvaluateAllContextForError() {
-        return new HashMap<String, Object>() {{
-            put("Violation", getViolation("speed", 115, 100));
-        }};
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("Violation", getViolation("speed", 115, 100));
+        return map;
     }
 
     public static Map<String, Object> getEvaluateDecisionServiceContext() {
-        return new HashMap<String, Object>() {{
-            put("Violation", getViolation("speed", 115, 100));
-        }};
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("Violation", getViolation("speed", 115, 100));
+        return map;
     }
 
     public static Map<String, Object> getEvaluateDecisionServiceContextForWarning() {
-        return new HashMap<String, Object>() {{
-            put("Violation", getViolation("speed", 95, 100));
-        }};
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("Violation", getViolation("speed", 95, 100));
+        return map;
     }
 
     public static Map<String, Object> getDriver(int age, int points) {
-        return new HashMap<String, Object>() {{
-            put("Age", age);
-            put("Points", points);
-        }};
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("Age", age);
+        map.put("Points", points);
+        return map;
     }
 
     public static Map<String, Object> getViolation(String type, int actualSpeed, int speedLimit) {
-        return new HashMap<String, Object>() {{
-            put("Type", type);
-            put("Actual Speed", actualSpeed);
-            put("Speed Limit", speedLimit);
-        }};
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("Type", type);
+        map.put("Actual Speed", actualSpeed);
+        map.put("Speed Limit", speedLimit);
+        return map;
+    }
+
+    private DecisionTestUtils() {
+        throw new IllegalStateException("Utility class");
     }
 }

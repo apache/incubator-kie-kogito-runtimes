@@ -34,12 +34,12 @@ import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.kie.kogito.eventdriven.decision.DecisionRequestType.EVALUATE_ALL;
+import static org.kie.kogito.eventdriven.decision.DecisionRequestType.EVALUATE_DECISION_SERVICE;
 
 public class EventDrivenDecisionController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventDrivenDecisionController.class);
     private static final String VALID_REQUEST_EVENT_TYPE = DecisionRequestEvent.class.getName();
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -104,8 +104,8 @@ public class EventDrivenDecisionController {
     private DecisionRequestType getRequestType(DecisionRequestEvent event) {
         if (event != null && event.getModelName() != null && event.getModelNamespace() != null && event.getInputContext() != null) {
             return event.getDecisionServiceName() == null
-                    ? DecisionRequestType.EVALUATE_ALL
-                    : DecisionRequestType.EVALUATE_DECISION_SERVICE;
+                    ? EVALUATE_ALL
+                    : EVALUATE_DECISION_SERVICE;
         }
         return DecisionRequestType.INVALID;
     }
@@ -120,7 +120,7 @@ public class EventDrivenDecisionController {
 
     private DMNResult evaluateRequest(DecisionRequestEvent event, DecisionRequestType type, DecisionModel model) {
         DMNContext context = DMNJSONUtils.ctx(model, event.getInputContext());
-        return type == DecisionRequestType.EVALUATE_DECISION_SERVICE
+        return type == EVALUATE_DECISION_SERVICE
                 ? model.evaluateDecisionService(context, event.getDecisionServiceName())
                 : model.evaluateAll(context);
     }
@@ -140,11 +140,11 @@ public class EventDrivenDecisionController {
     }
 
     private URI buildResponseCloudEventSource(EvaluationContext ctx) {
-        switch (ctx.requestType) {
-            case EVALUATE_ALL:
-                return CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.request.getModelName());
-            case EVALUATE_DECISION_SERVICE:
-                return CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.request.getModelName(), ctx.request.getDecisionServiceName());
+        if (ctx.requestType == EVALUATE_ALL) {
+            return CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.request.getModelName());
+        }
+        if (ctx.requestType == EVALUATE_DECISION_SERVICE) {
+            return CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.request.getModelName(), ctx.request.getDecisionServiceName());
         }
         return CloudEventUtils.buildDecisionSource(config.getServiceUrl());
     }
