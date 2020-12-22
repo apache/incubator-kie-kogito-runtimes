@@ -59,14 +59,15 @@ class ResourceGeneratorFactoryTest {
 
     @Test
     void testCreateQuarkus() {
-        KogitoBuildContext buildContext = QuarkusKogitoBuildContext.builder().build();
-        Optional<AbstractResourceGenerator> context = tested.create(buildContext,
-                                                                    process,
-                                                                    MODEL_FQCN,
-                                                                    PROCESS_FQCN,
-                                                                    APP_CANONICAL_NAME);
-        assertThat(context.isPresent()).isTrue();
-        assertThat(context.get()).isExactlyInstanceOf(ResourceGenerator.class);
+        KogitoBuildContext context = QuarkusKogitoBuildContext.builder().build();
+        Optional<AbstractResourceGenerator> optionalAbstractResourceGenerator =
+                tested.create(context,
+                        process,
+                        MODEL_FQCN,
+                        PROCESS_FQCN,
+                        APP_CANONICAL_NAME);
+        assertThat(optionalAbstractResourceGenerator.isPresent()).isTrue();
+        assertThat(optionalAbstractResourceGenerator.get()).isExactlyInstanceOf(ResourceGenerator.class);
     }
 
     @Test
@@ -74,29 +75,31 @@ class ResourceGeneratorFactoryTest {
         Properties properties = new Properties();
         properties.put(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP, "reactive");
 
-        KogitoBuildContext buildContext = QuarkusKogitoBuildContext.builder()
+        KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
                 .withApplicationProperties(properties)
                 .build();
 
-        Optional<AbstractResourceGenerator> context = tested.create(buildContext,
-                                                                    process,
-                                                                    MODEL_FQCN,
-                                                                    PROCESS_FQCN,
-                                                                    APP_CANONICAL_NAME);
-        assertThat(context.isPresent()).isTrue();
-        assertThat(context.get()).isExactlyInstanceOf(ReactiveResourceGenerator.class);
+        Optional<AbstractResourceGenerator> optionalAbstractResourceGenerator =
+                tested.create(context,
+                        process,
+                        MODEL_FQCN,
+                        PROCESS_FQCN,
+                        APP_CANONICAL_NAME);
+        assertThat(optionalAbstractResourceGenerator.isPresent()).isTrue();
+        assertThat(optionalAbstractResourceGenerator.get()).isExactlyInstanceOf(ReactiveResourceGenerator.class);
     }
 
     @Test
     void testCreateSpring() {
-        KogitoBuildContext buildContext = SpringBootKogitoBuildContext.builder().build();
-        Optional<AbstractResourceGenerator> context = tested.create(buildContext,
-                                                                    process,
-                                                                    MODEL_FQCN,
-                                                                    PROCESS_FQCN,
-                                                                    APP_CANONICAL_NAME);
-        assertThat(context.isPresent()).isTrue();
-        assertThat(context.get()).isExactlyInstanceOf(SpringResourceGenerator.class);
+        KogitoBuildContext context = SpringBootKogitoBuildContext.builder().build();
+        Optional<AbstractResourceGenerator> optionalAbstractResourceGenerator =
+                tested.create(context,
+                        process,
+                        MODEL_FQCN,
+                        PROCESS_FQCN,
+                        APP_CANONICAL_NAME);
+        assertThat(optionalAbstractResourceGenerator.isPresent()).isTrue();
+        assertThat(optionalAbstractResourceGenerator.get()).isExactlyInstanceOf(SpringResourceGenerator.class);
     }
 
     @Test
@@ -104,11 +107,11 @@ class ResourceGeneratorFactoryTest {
         Properties properties = new Properties();
         properties.put(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP, "reactive");
 
-        KogitoBuildContext buildContext = SpringBootKogitoBuildContext.builder()
+        KogitoBuildContext context = SpringBootKogitoBuildContext.builder()
                 .withApplicationProperties(properties)
                 .build();
 
-        assertThrows(NoSuchElementException.class, () -> tested.create(buildContext,
+        assertThrows(NoSuchElementException.class, () -> tested.create(context,
                                                                        process,
                                                                        MODEL_FQCN,
                                                                        PROCESS_FQCN,
