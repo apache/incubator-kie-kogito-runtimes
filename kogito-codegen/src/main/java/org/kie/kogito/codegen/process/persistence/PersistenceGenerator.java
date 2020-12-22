@@ -69,8 +69,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     
     private static final String TEMPLATE_NAME = "templateName";
     private static final String PATH_NAME = "path";
-    
-//    private static final String KOGITO_APPLICATION_PROTO = "kogito-application.proto";
+
     private static final String KOGITO_PERSISTENCE_FS_PATH_PROP = "kogito.persistence.filesystem.path";
     
     private static final String KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE= "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
@@ -137,16 +136,9 @@ public class PersistenceGenerator extends AbstractGenerator {
         ProtoDataClassesResult protoDataClassesResult = protoGenerator.extractDataClasses((Collection) modelClasses);
         Collection<GeneratedFile> generatedFiles = new ArrayList<>(protoDataClassesResult.getGeneratedFiles());
 
-        // generate proto file based on known data model
         Proto proto = protoGenerator.generate(context().getPackageName(), protoDataClassesResult.getDataModelClasses(), "import \"kogito-types.proto\";");
-//        Path protoFilePath = Paths.get("persistence", KOGITO_APPLICATION_PROTO);
 
-//        GeneratedFile kogitoApplicationProto = new GeneratedFile(GeneratedFile.Type.GENERATED_CP_RESOURCE, protoFilePath.toString(), proto.toString());
-
-//        generatedFiles.add(kogitoApplicationProto);
-
-        ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration()
-                .setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
+        ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration().setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
 
