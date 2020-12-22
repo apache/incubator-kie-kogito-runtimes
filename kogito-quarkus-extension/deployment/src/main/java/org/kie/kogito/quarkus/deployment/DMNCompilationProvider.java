@@ -36,10 +36,10 @@ public class DMNCompilationProvider extends KogitoCompilationProvider {
     }
 
     @Override
-    protected Generator addGenerator(ApplicationGenerator appGen, KogitoBuildContext buildContext, Set<File> filesToCompile, Context context, ClassLoader cl) throws IOException {
-        Path path = context.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
+    protected Generator addGenerator(ApplicationGenerator appGen, KogitoBuildContext context, Set<File> filesToCompile, Context quarkusContext, ClassLoader cl) throws IOException {
+        Path path = quarkusContext.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
         return appGen.setupGenerator(DecisionCodegen.ofCollectedResources(
-                buildContext,
+                context,
                 CollectedResource.fromDirectory(path)))
                 .withClassLoader(cl);
     }

@@ -36,12 +36,12 @@ public class RulesCompilationProvider extends KogitoCompilationProvider {
     }
 
     @Override
-    protected Generator addGenerator(ApplicationGenerator appGen, KogitoBuildContext buildContext, Set<File> filesToCompile, Context context, ClassLoader cl) {
-        Path resources = context.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
+    protected Generator addGenerator(ApplicationGenerator appGen, KogitoBuildContext context, Set<File> filesToCompile, Context quarkusContext, ClassLoader cl) {
+        Path resources = quarkusContext.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
         Collection<File> files = PackageWalker.getAllSiblings(filesToCompile);
         return appGen.setupGenerator(
                 IncrementalRuleCodegen.ofCollectedResources(
-                        buildContext,
+                        context,
                         CollectedResource.fromFiles(resources, files.toArray(new File[0]))))
                 .withClassLoader(cl)
                 .withHotReloadMode();
