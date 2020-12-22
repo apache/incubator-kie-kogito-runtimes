@@ -88,8 +88,10 @@ import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.kie.kogito.codegen.context.KogitoBuildContext.Builder.merge;
+import static org.kie.kogito.codegen.utils.GeneratedFileUtils.validateGeneratedFileTypes;
 
 /**
  * Main class of the Kogito extension
@@ -216,15 +218,17 @@ public class KogitoAssetsProcessor {
             return;
         }
 
-        // further processing
-        Collection<GeneratedFile> persistenceGeneratedFiles = generatePersistenceInfo(
+        // Persistence files
+        generatedFiles.addAll(generatePersistenceInfo(
                 context,
                 appPaths,
                 index,
                 generatedBeans,
                 resource,
-                reflectiveClass);
-        generatedFiles.addAll(persistenceGeneratedFiles);
+                reflectiveClass));
+
+        // Json schema files
+        generatedFiles.addAll(generateJsonSchema(appPaths, index, resource));
 
         // Write files to disk
         dumpFilesToDisk(appPaths, generatedFiles);
@@ -233,8 +237,6 @@ public class KogitoAssetsProcessor {
         registerResources(generatedFiles, resource, genResBI);
 
         registerDataEventsForReflection(index, addonsConfig, reflectiveClass);
-
-        writeJsonSchema(appPaths, index, resource);
 
         if (useProcessSVG) {
             registerProcessSVG(appPaths, resource);
@@ -351,10 +353,9 @@ public class KogitoAssetsProcessor {
 
         ClassInfo persistenceClass = index
                 .getClassByName(persistenceFactoryClass);
-        boolean usePersistence = persistenceClass != null;
 
         List<String> parameters = new ArrayList<>();
-        if (usePersistence) {
+        if (context.getAddonsConfig().usePersistence()) {
             for (MethodInfo mi : persistenceClass.methods()) {
                 if (mi.name().equals("<init>") && !mi.parameters().isEmpty()) {
                     parameters = mi.parameters().stream().map(p -> p.name().toString()).collect(toList());
@@ -364,11 +365,9 @@ public class KogitoAssetsProcessor {
         }
 
         String persistenceType = context.getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
-        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(appPaths, index, usePersistence, parameters, context, persistenceType);
+        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(appPaths, index, parameters, context, persistenceType);
 
-        if(persistenceGeneratedFiles.stream().anyMatch(x -> !GeneratedFile.Type.CLASS.equals(x.getType()) && !GeneratedFile.Type.GENERATED_CP_RESOURCE.equals(x.getType()))) {
-            throw new IllegalStateException("Only type CLASS and GENERATED_CP_RESOURCE expected here");
-        }
+        validateGeneratedFileTypes(persistenceGeneratedFiles, asList(GeneratedFile.Type.CLASS, GeneratedFile.Type.GENERATED_CP_RESOURCE));
 
         Collection<GeneratedFile> persistenceClasses = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.CLASS)).collect(toList());
         Collection<GeneratedFile> persistenceProtoFiles = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.GENERATED_CP_RESOURCE)).collect(toList());
@@ -381,7 +380,7 @@ public class KogitoAssetsProcessor {
             generatedBeanBuildItems.forEach(generatedBeans::produce);
         }
 
-        if (usePersistence) {
+        if (context.getAddonsConfig().usePersistence()) {
             resource.produce(new NativeImageResourceBuildItem("kogito-types.proto"));
         }
 
@@ -394,7 +393,7 @@ public class KogitoAssetsProcessor {
     }
 
     private void addInnerClasses(Class<?> superClass, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
-        Arrays.asList(superClass.getDeclaredClasses()).forEach(c -> {
+        asList(superClass.getDeclaredClasses()).forEach(c -> {
             reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, c.getName()));
             addInnerClasses(c, reflectiveClass);
         });
@@ -402,7 +401,6 @@ public class KogitoAssetsProcessor {
 
     private Collection<GeneratedFile> getGeneratedPersistenceFiles(AppPaths appPaths,
                                                                    IndexView index,
-                                                                   boolean usePersistence,
                                                                    List<String> parameters,
                                                                    KogitoBuildContext context,
                                                                    String persistenceType) {
@@ -419,7 +417,6 @@ public class KogitoAssetsProcessor {
         for (Path projectPath : appPaths.projectPaths) {
             PersistenceGenerator persistenceGenerator =
                     makePersistenceGenerator(
-                            usePersistence,
                             parameters,
                             context,
                             modelClasses,
@@ -433,7 +430,6 @@ public class KogitoAssetsProcessor {
     }
 
     private PersistenceGenerator makePersistenceGenerator(
-            boolean usePersistence,
             List<String> parameters,
             KogitoBuildContext context,
             Collection<ClassInfo> modelClasses,
@@ -447,7 +443,6 @@ public class KogitoAssetsProcessor {
         return new PersistenceGenerator(
                 localContext.build(),
                 modelClasses,
-                usePersistence,
                 jandexProtoGenerator,
                 parameters,
                 persistenceType);
@@ -490,6 +485,7 @@ public class KogitoAssetsProcessor {
         return result;
     }
 
+    @SuppressWarnings("rawtypes")
     @BuildStep
     public List<ReflectiveClassBuildItem> reflectivePredictions() {
         logger.debug("reflectivePredictions()");
@@ -529,17 +525,9 @@ public class KogitoAssetsProcessor {
         }
     }
 
-    private void writeJsonSchema(AppPaths appPaths, Index index, BuildProducer<NativeImageResourceBuildItem> resource) throws IOException {
-        Path relativePath = JsonSchemaUtil.getJsonDir();
+    private Collection<GeneratedFile> generateJsonSchema(AppPaths appPaths, Index index, BuildProducer<NativeImageResourceBuildItem> resource) throws IOException {
         Path targetClasses = appPaths.getFirstProjectPath().resolve(targetClassesDir);
-        Collection<GeneratedFile> jsonFiles = getJsonSchemaFiles(targetClasses, index);
-        Path jsonSchemaPath = targetClasses.resolve(relativePath);
-        Files.createDirectories(jsonSchemaPath);
-
-        for (GeneratedFile jsonFile : jsonFiles) {
-            Files.write(jsonSchemaPath.resolve(jsonFile.relativePath()), jsonFile.contents());
-            resource.produce(new NativeImageResourceBuildItem(relativePath.resolve(jsonFile.relativePath()).toString()));
-        }
+        return getJsonSchemaFiles(targetClasses, index);
     }
 
     private void registerDataEventsForReflection(Index index, AddonsConfig addonsConfig, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {

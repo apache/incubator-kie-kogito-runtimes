@@ -52,27 +52,6 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
 
     public static final PathMatcher drlFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.drl");
 
-    @Parameter(required = true, defaultValue = "${project.build.directory}")
-    private File targetDirectory;
-
-    @Parameter(required = true, defaultValue = "${project.basedir}")
-    private File projectDir;
-
-    @Parameter(required = true, defaultValue = "${project.build.testSourceDirectory}")
-    private File testDir;
-
-    @Parameter
-    private Map<String, String> properties;
-
-    @Parameter(required = true, defaultValue = "${project}")
-    private MavenProject project;
-
-    @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
-    private File outputDirectory;
-
-    @Parameter(defaultValue = "${project.build.directory}/generated-sources/kogito")
-    private File generatedSources;
-
     // due to a limitation of the injector, the following 2 params have to be Strings
     // otherwise we cannot get the default value to null
     // when the value is null, the semantics is to enable the corresponding
@@ -173,17 +152,4 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
         
         return appGen;
     }
-
-    private void writeGeneratedFile(GeneratedFile f) throws IOException {
-        Files.write(
-                pathOf(f.relativePath()),
-                f.contents());
-    }
-
-    private Path pathOf(String end) {
-        Path path = Paths.get(generatedSources.getPath(), end);
-        path.getParent().toFile().mkdirs();
-        return path;
-    }
-    
 }

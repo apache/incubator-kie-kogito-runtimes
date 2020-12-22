@@ -164,7 +164,7 @@ public class JsonSchemaGenerator {
             }
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 writer.writeValue(outputStream, merged);
-                files.add(new GeneratedFile(Type.JSON_SCHEMA, JsonSchemaUtil.getFileName(entry.getKey()), outputStream.toByteArray()));
+                files.add(new GeneratedFile(Type.JSON_SCHEMA, pathFor(entry.getKey()), outputStream.toByteArray()));
             }
         }
         return files;
@@ -190,5 +190,9 @@ public class JsonSchemaGenerator {
 
     private static boolean isNotUserTaskParam(FieldScope fieldScope) {
         return fieldScope.getDeclaringType().getErasedType().isAnnotationPresent(UserTask.class) && fieldScope.getAnnotation(UserTaskParam.class) == null;
+    }
+
+    private String pathFor(String name) {
+        return JsonSchemaUtil.getJsonDir().resolve(JsonSchemaUtil.getFileName(name)).toString();
     }
 }
