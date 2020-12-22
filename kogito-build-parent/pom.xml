@@ -109,6 +109,7 @@
     <version.io.cloudevents>2.0.0-milestone3</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>4.12.0</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.5.5</version.io.micrometer>
+    <version.io.jredisearch>2.0.0</version.io.jredisearch>
     <version.io.restassured>4.3.0</version.io.restassured>
     <version.io.restassured.springboot>3.3.0</version.io.restassured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
     <version.io.smallrye.reactive>2.5.0</version.io.smallrye.reactive>
@@ -669,6 +670,13 @@
         <groupId>org.infinispan.protostream</groupId>
         <artifactId>protostream</artifactId>
         <version>${version.org.infinispan.protostream}</version>
+      </dependency>
+
+      <!-- Redis -->
+      <dependency>
+        <groupId>com.redislabs</groupId>
+        <artifactId>jredisearch</artifactId>
+        <version>${version.io.jredisearch}</version>
       </dependency>
 
       <!-- spring related -->
