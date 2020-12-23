@@ -17,9 +17,6 @@ package org.kie.kogito.codegen.process.persistence;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -192,7 +189,7 @@ public class PersistenceGenerator extends AbstractGenerator {
 
                 generatedFiles.add(new GeneratedFile(GeneratedFile.Type.CLASS,
                         clazzName.replace('.', '/') + ".java",
-                        marshallerClazz.toString().getBytes(StandardCharsets.UTF_8)));
+                        marshallerClazz.toString()));
             }
         }
 

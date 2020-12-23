@@ -16,6 +16,7 @@ package org.kie.kogito.codegen;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -192,7 +193,7 @@ public class JsonSchemaGenerator {
         return fieldScope.getDeclaringType().getErasedType().isAnnotationPresent(UserTask.class) && fieldScope.getAnnotation(UserTaskParam.class) == null;
     }
 
-    private String pathFor(String name) {
-        return JsonSchemaUtil.getJsonDir().resolve(JsonSchemaUtil.getFileName(name)).toString();
+    private Path pathFor(String name) {
+        return JsonSchemaUtil.getJsonDir().resolve(JsonSchemaUtil.getFileName(name));
     }
 }
