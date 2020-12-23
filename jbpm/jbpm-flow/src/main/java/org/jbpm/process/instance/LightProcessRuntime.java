@@ -72,7 +72,6 @@ public class LightProcessRuntime implements InternalProcessRuntime {
     private ProcessInstanceManager processInstanceManager;
     private SignalManager signalManager;
     private JobsService jobService;
-    private ProcessEventSupport processEventSupport;
     private final WorkItemManager workItemManager;
     private UnitOfWorkManager unitOfWorkManager;
 
@@ -93,7 +92,6 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         this.processInstanceManager = services.getProcessInstanceManager();
         this.signalManager = services.getSignalManager();
         this.jobService = services.getJobsService() == null ? new InMemoryJobService(this, this.unitOfWorkManager) : services.getJobsService();
-        this.processEventSupport = services.getEventSupport();
         this.workItemManager = services.getWorkItemManager();
         
         if (isActive()) {
@@ -153,10 +151,12 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         return null;
     }
 
+    @Override
     public ProcessInstance createProcessInstance(String processId, Map<String, Object> parameters) {
         return createProcessInstance(processId, null, parameters);
     }
 
+    @Override
     public ProcessInstance startProcessInstance(String processInstanceId, String trigger) {
         return startProcessInstance( processInstanceId, trigger, null );
     }
@@ -179,6 +179,7 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         }
     }
 
+    @Override
     public ProcessInstance startProcessInstance(String processInstanceId) {
         return startProcessInstance(processInstanceId, null);
     }
@@ -216,26 +217,32 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         return pi;
     }
 
+    @Override
     public ProcessInstanceManager getProcessInstanceManager() {
         return processInstanceManager;
     }
 
+    @Override
     public JobsService getJobsService() {
         return jobService;
     }
 
+    @Override
     public SignalManager getSignalManager() {
         return signalManager;
     }
 
+    @Override
     public Collection<ProcessInstance> getProcessInstances() {
         return processInstanceManager.getProcessInstances();
     }
 
+    @Override
     public ProcessInstance getProcessInstance(String id) {
         return getProcessInstance(id, false);
     }
 
+    @Override
     public ProcessInstance getProcessInstance(String id, boolean readOnly) {
         return processInstanceManager.getProcessInstance(id, readOnly);
     }
@@ -300,18 +307,22 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         }
     }
 
+    @Override
     public ProcessEventSupport getProcessEventSupport() {
         return processEventSupport;
     }
 
+    @Override
     public void addEventListener(final ProcessEventListener listener) {
         this.processEventSupport.addEventListener(listener);
     }
 
+    @Override
     public void removeEventListener(final ProcessEventListener listener) {
         this.processEventSupport.removeEventListener(listener);
     }
 
+    @Override
     public List<ProcessEventListener> getProcessEventListeners() {
         return processEventSupport.getEventListeners();
     }
@@ -333,10 +344,12 @@ public class LightProcessRuntime implements InternalProcessRuntime {
             this.eventTransformer = eventTransformer;
         }
 
+        @Override
         public String[] getEventTypes() {
             return null;
         }
 
+        @Override
         public void signalEvent(final String type,
                                 Object event) {
             for (EventFilter filter : eventFilters) {
@@ -372,6 +385,7 @@ public class LightProcessRuntime implements InternalProcessRuntime {
 
     private void initProcessActivationListener() {
         runtimeContext.addEventListener(new DefaultAgendaEventListener() {
+            @Override
             public void matchCreated(MatchCreatedEvent event) {
                 String ruleFlowGroup = ((RuleImpl) event.getMatch().getRule()).getRuleFlowGroup();
                 if ("DROOLS_SYSTEM".equals(ruleFlowGroup)) {
@@ -406,6 +420,7 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         });
 
         runtimeContext.addEventListener(new DefaultAgendaEventListener() {
+            @Override
             public void afterRuleFlowGroupDeactivated(final RuleFlowGroupDeactivatedEvent event) {
                 if (runtimeContext instanceof StatefulKnowledgeSession) {
                     signalManager.signalEvent("RuleFlowGroup_" + event.getRuleFlowGroup().getName() + "_" + ((StatefulKnowledgeSession) runtimeContext).getIdentifier(),
@@ -424,6 +439,7 @@ public class LightProcessRuntime implements InternalProcessRuntime {
     }
 
 
+    @Override
     public void abortProcessInstance(String processInstanceId) {
         ProcessInstance processInstance = getProcessInstance(processInstanceId);
         if (processInstance == null) {
@@ -432,6 +448,7 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         ((org.jbpm.process.instance.ProcessInstance) processInstance).setState(ProcessInstance.STATE_ABORTED);
     }
 
+    @Override
     public WorkItemManager getWorkItemManager() {
         return workItemManager;
     }
@@ -441,27 +458,33 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         return this.unitOfWorkManager;
     }
 
+    @Override
     public void signalEvent(String type, Object event) {
         signalManager.signalEvent(type, event);
     }
 
+    @Override
     public void signalEvent(String type, Object event, String processInstanceId) {
         signalManager.signalEvent(processInstanceId, type, event);
     }
 
+    @Override
     public void setProcessEventSupport(ProcessEventSupport processEventSupport) {
         this.processEventSupport = processEventSupport;
     }
 
+    @Override
     public void dispose() {
         this.processEventSupport.reset();
         runtimeContext = null;
     }
 
+    @Override
     public void clearProcessInstances() {
         this.processInstanceManager.clearProcessInstances();
     }
 
+    @Override
     public void clearProcessInstancesState() {
         this.processInstanceManager.clearProcessInstancesState();
     }
@@ -547,11 +570,13 @@ public class LightProcessRuntime implements InternalProcessRuntime {
             }
         }
 
+        @Override
         public void execute(InternalWorkingMemory workingMemory) {
 
             signalEvent(type, event);
         }
 
+        @Override
         public void execute(InternalKnowledgeRuntime kruntime) {
             signalEvent(type, event);
         }

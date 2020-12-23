@@ -3,6 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -13,47 +14,41 @@
  * limitations under the License.
  */
 
-package org.drools.core.event;
+package org.kie.kogito.process.event;
 
-import org.kie.api.event.process.ProcessWorkItemTransitionEvent;
-import org.kie.api.runtime.KieRuntime;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.workitem.Transition;
 
-public class KogitoProcessWorkItemTransitionEventImpl extends ProcessEvent implements ProcessWorkItemTransitionEvent {
-
-    private static final long serialVersionUID = 510l;
-
+/**
+ * An event when a work item has transition between life cycle phases
+ */
+public class KogitoWorkItemTransitionEvent extends KogitoProcessEvent {
     private WorkItem workItem;
     private Transition<?> transition;
+    
 
-    private boolean transitioned;
-
-    public KogitoProcessWorkItemTransitionEventImpl( final ProcessInstance instance, WorkItem workItem, Transition<?> transition, KieRuntime kruntime, boolean transitioned) {
-        super( instance, kruntime );
+    public KogitoWorkItemTransitionEvent(ProcessInstance<?> processInstance, WorkItem workItem, Transition<?> transition) {
+        super(processInstance);
         this.workItem = workItem;
         this.transition = transition;
-        this.transitioned = transitioned;
     }
 
-    public String toString() {
-        return "==>[WorkItemTransition(id=" + getWorkItem().getId() + " phase=" + getTransition().phase() + ")]";
-    }
-
-    @Override
+    
+    /**
+     * Returns work item being transitioned
+     * @return work item
+     */
     public WorkItem getWorkItem() {
         return workItem;
     }
-
-    @Override
+    
+    /**
+     * Returns transition that is applied to the work item
+     * @return transition 
+     */
     public Transition<?> getTransition() {
         return transition;
-    }
-
-    @Override
-    public boolean isTransitioned() {
-        return transitioned;
     }
 
 }

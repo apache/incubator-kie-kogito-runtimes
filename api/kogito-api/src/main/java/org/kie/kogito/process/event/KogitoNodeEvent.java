@@ -3,6 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -12,30 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.kie.kogito.process.event;
 
-package org.drools.core.event;
-
-import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.process.ProcessInstance;
 
-public class KogitoProcessNodeLeftEventImpl extends ProcessEvent implements ProcessNodeLeftEvent {
-
-    private static final long serialVersionUID = 510l;
-
+/**
+ * An event related to the execution of a node instance within a process instance.
+ */
+public class KogitoNodeEvent extends KogitoProcessEvent {
+    
+    /** TODO v7 dependency */
     private NodeInstance nodeInstance;
 
-    public KogitoProcessNodeLeftEventImpl( final NodeInstance nodeInstance, KieRuntime kruntime ) {
-        super( nodeInstance.getProcessInstance(), kruntime );
+    public KogitoNodeEvent(ProcessInstance<?> processInstance, NodeInstance nodeInstance) {
+        super(processInstance);
         this.nodeInstance = nodeInstance;
     }
-    
+
+    /**
+     * The node instance this event is related to.
+     *
+     * @return the node instance
+     */
     public NodeInstance getNodeInstance() {
         return nodeInstance;
-    }
-
-    public String toString() {
-        return "==>[ProcessNodeLeft(nodeId=" + nodeInstance.getNodeId() + "; id=" + nodeInstance.getId() 
-            + "; nodeName=" + getNodeInstance().getNodeName() + "; processName=" + getProcessInstance().getProcessName() + "; processId=" + getProcessInstance().getProcessId() + ")]";
     }
 }

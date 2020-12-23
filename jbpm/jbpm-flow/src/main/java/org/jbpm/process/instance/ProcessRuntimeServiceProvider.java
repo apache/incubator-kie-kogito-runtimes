@@ -16,7 +16,7 @@
 
 package org.jbpm.process.instance;
 
-import org.drools.core.event.ProcessEventSupport;
+import org.drools.core.event.KogitoProcessEventSupport;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.signal.SignalManager;
@@ -32,7 +32,7 @@ public interface ProcessRuntimeServiceProvider {
 
     WorkItemManager getWorkItemManager();
     
-    ProcessEventSupport getEventSupport();
+    KogitoProcessEventSupport getEventSupport();
     
     UnitOfWorkManager getUnitOfWorkManager();
 }
