@@ -41,5 +41,10 @@ public class QuarkusKogitoBuildContext extends AbstractKogitoBuildContext {
         public QuarkusKogitoBuildContext build() {
             return new QuarkusKogitoBuildContext(packageName, classAvailabilityResolver, targetDirectory, addonsConfig, applicationProperties);
         }
+
+        @Override
+        public String toString() {
+            return "Quarkus";
+        }
     }
 }

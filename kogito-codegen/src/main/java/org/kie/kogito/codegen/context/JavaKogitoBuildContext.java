@@ -40,5 +40,10 @@ public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
         public JavaKogitoBuildContext build() {
             return new JavaKogitoBuildContext(packageName, classAvailabilityResolver, targetDirectory, addonsConfig, applicationProperties);
         }
+
+        @Override
+        public String toString() {
+            return "Java";
+        }
     }
 }
