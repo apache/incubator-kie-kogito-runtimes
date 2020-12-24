@@ -135,7 +135,12 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 compileAndWriteClasses(generatedClasses, cl, settings);
 
                 // Json schema generation
-                Collection<GeneratedFile> jsonSchemaFiles = generateJsonSchema(reflections);
+                Collection<GeneratedFile> jsonSchemaFiles = generateJsonSchema(reflections)
+                        // FIXME workaround until KOGITO-2901 is solved: all resource that needs to be added to be
+                        //  available at runtime has to be GENERATED_CP_RESOURCE (so that are saved in the proper folder)
+                        .stream()
+                        .map(gf -> new GeneratedFile(GENERATED_CP_RESOURCE, gf.relativePath(), gf.contents()))
+                        .collect(Collectors.toList());
 
                 // Dump resources
                 generatedResources.forEach(this::writeGeneratedFile);
