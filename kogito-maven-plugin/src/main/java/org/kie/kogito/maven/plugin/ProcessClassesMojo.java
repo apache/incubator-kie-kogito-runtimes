@@ -54,7 +54,7 @@ import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
 import static java.util.Arrays.asList;
-import static org.kie.kogito.codegen.utils.GeneratedFileUtils.validateGeneratedFileTypes;
+import static org.kie.kogito.codegen.utils.GeneratedFileValidation.validateGeneratedFileTypes;
 
 @Mojo(name = "process-model-classes",
       requiresDependencyResolution = ResolutionScope.RUNTIME,
@@ -130,12 +130,11 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 // Compile and write persistence files
                 compileAndWriteClasses(generatedClasses, cl, settings);
 
-                // Json schema generation
-                Collection<GeneratedFile> jsonSchemaFiles = generateJsonSchema(reflections);
-
                 // Dump resources
-                writeGeneratedFiles(generatedResources);
-                writeGeneratedFiles(jsonSchemaFiles);
+                generatedResources.forEach(this::writeGeneratedFile);
+
+                // Json schema generation
+                generateJsonSchema(reflections).forEach(this::writeGeneratedFile);
 
             }
         } catch (Exception e) {

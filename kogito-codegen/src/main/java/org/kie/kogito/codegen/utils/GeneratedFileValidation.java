@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class GeneratedFileUtils {
+public class GeneratedFileValidation {
 
-    private GeneratedFileUtils() {
+    private GeneratedFileValidation() {
         // utility class
     }
 

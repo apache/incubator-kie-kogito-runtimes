@@ -29,7 +29,6 @@ import org.kie.kogito.codegen.GeneratedFileType;
 public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
 
     private static final String GENERATED_PROTO_RES_PATH = "META-INF/resources/persistence/protobuf/";
-    private static final String GENERATED_PROTO_PERSISTENCE_PATH = "persistence/";
     private static final String LISTING_FILE = "list.json";
 
     protected ObjectMapper mapper;

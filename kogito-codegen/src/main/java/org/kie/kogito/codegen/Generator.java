@@ -48,9 +48,4 @@ public interface Generator {
     void updateConfig(ApplicationConfigGenerator cfg);
 
     KogitoBuildContext context();
-
-    // FIXME to fix in previous PR
-    default Map<String, String> getLabels() {
-        return Collections.emptyMap();
-    }
 }
