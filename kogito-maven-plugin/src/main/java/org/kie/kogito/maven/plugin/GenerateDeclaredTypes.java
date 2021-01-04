@@ -14,17 +14,14 @@
  */
 package org.kie.kogito.maven.plugin;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -32,7 +29,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProject;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
@@ -46,7 +42,6 @@ import org.kie.kogito.maven.plugin.util.MojoUtil;
       defaultPhase = LifecyclePhase.GENERATE_SOURCES,
       threadSafe = true)
 public class GenerateDeclaredTypes extends AbstractKieMojo {
-
 
     public static final List<String> DROOLS_EXTENSIONS = Arrays.asList(".drl", ".xls", ".xlsx", ".csv");
 
@@ -74,9 +69,6 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
 
     @Parameter(property = "kogito.persistence.enabled", defaultValue = "false")
     private boolean persistence;
-
-    @Parameter(required = true, defaultValue = "${project.basedir}/src/main/resources")
-    private File kieSourcesDirectory;
 
     @Override
     public void execute() throws MojoExecutionException {

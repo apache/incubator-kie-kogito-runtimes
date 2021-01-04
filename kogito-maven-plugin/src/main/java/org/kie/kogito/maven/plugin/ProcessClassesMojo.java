@@ -58,7 +58,7 @@ import org.reflections.util.ConfigurationBuilder;
 import static java.util.Arrays.asList;
 import static org.kie.kogito.codegen.GeneratedFile.Type.CLASS;
 import static org.kie.kogito.codegen.GeneratedFile.Type.GENERATED_CP_RESOURCE;
-import static org.kie.kogito.codegen.utils.GeneratedFileUtils.validateGeneratedFileTypes;
+import static org.kie.kogito.codegen.utils.GeneratedFileValidation.validateGeneratedFileTypes;
 
 @Mojo(name = "process-model-classes",
       requiresDependencyResolution = ResolutionScope.RUNTIME,
@@ -136,8 +136,8 @@ public class ProcessClassesMojo extends AbstractKieMojo {
 
                 // Json schema generation
                 Collection<GeneratedFile> jsonSchemaFiles = generateJsonSchema(reflections)
-                        // FIXME workaround until KOGITO-2901 is solved: all resource that needs to be added to be
-                        //  available at runtime has to be GENERATED_CP_RESOURCE (so that are saved in the proper folder)
+                        // FIXME workaround until KOGITO-2901 is solved: all generated resource that needs to be available
+                        //  at runtime has to be GENERATED_CP_RESOURCE (so that are saved in the proper folder)
                         .stream()
                         .map(gf -> new GeneratedFile(GENERATED_CP_RESOURCE, gf.relativePath(), gf.contents()))
                         .collect(Collectors.toList());

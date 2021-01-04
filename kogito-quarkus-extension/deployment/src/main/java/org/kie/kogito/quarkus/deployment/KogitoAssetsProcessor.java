@@ -28,12 +28,12 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -62,7 +62,6 @@ import org.jboss.jandex.Index;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
 import org.jboss.jandex.MethodInfo;
-import org.jbpm.util.JsonSchemaUtil;
 import org.kie.api.builder.model.KieModuleModel;
 import org.kie.api.pmml.PMML4Result;
 import org.kie.internal.kogito.codegen.Generated;
@@ -90,8 +89,9 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static org.kie.kogito.codegen.GeneratedFile.Type.GENERATED_CP_RESOURCE;
 import static org.kie.kogito.codegen.context.KogitoBuildContext.Builder.merge;
-import static org.kie.kogito.codegen.utils.GeneratedFileUtils.validateGeneratedFileTypes;
+import static org.kie.kogito.codegen.utils.GeneratedFileValidation.validateGeneratedFileTypes;
 
 /**
  * Main class of the Kogito extension
@@ -228,7 +228,13 @@ public class KogitoAssetsProcessor {
                 reflectiveClass));
 
         // Json schema files
-        generatedFiles.addAll(generateJsonSchema(appPaths, index, resource));
+        Collection<GeneratedFile> jsonSchemaFiles = generateJsonSchema(appPaths, index)
+                // FIXME workaround until KOGITO-2901 is solved: all generated resource that needs to be available
+                //  at runtime has to be GENERATED_CP_RESOURCE (so that are saved in the proper folder)
+                .stream()
+                .map(gf -> new GeneratedFile(GENERATED_CP_RESOURCE, gf.relativePath(), gf.contents()))
+                .collect(Collectors.toList());
+        generatedFiles.addAll(jsonSchemaFiles);
 
         // Write files to disk
         dumpFilesToDisk(appPaths, generatedFiles);
@@ -247,7 +253,7 @@ public class KogitoAssetsProcessor {
         Path targetDirectory = firstProjectPath.resolve("target");
         if(!targetDirectory.toFile().exists()) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Creating target directory {}", targetDirectory.toString());
+                logger.debug("Creating target directory {}", targetDirectory);
             }
             try {
                 Files.createDirectories(targetDirectory);
@@ -525,7 +531,7 @@ public class KogitoAssetsProcessor {
         }
     }
 
-    private Collection<GeneratedFile> generateJsonSchema(AppPaths appPaths, Index index, BuildProducer<NativeImageResourceBuildItem> resource) throws IOException {
+    private Collection<GeneratedFile> generateJsonSchema(AppPaths appPaths, Index index) throws IOException {
         Path targetClasses = appPaths.getFirstProjectPath().resolve(targetClassesDir);
         return getJsonSchemaFiles(targetClasses, index);
     }
