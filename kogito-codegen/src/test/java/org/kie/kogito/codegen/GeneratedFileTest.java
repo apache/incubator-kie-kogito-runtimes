@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GeneratedFileTest {
 
-    private static final GeneratedFile.Type TEST_TYPE = GeneratedFile.Type.RULE;
+    private static final GeneratedFileType TEST_TYPE = GeneratedFileType.SOURCE;
     private static final String TEST_RELATIVE_PATH = "relativePath";
     private static final byte[] TEST_CONTENTS = "testContents".getBytes(StandardCharsets.UTF_8);
 
@@ -46,7 +46,12 @@ public class GeneratedFileTest {
     }
 
     @Test
-    public void getType() {
-        assertThat(testFile.getType()).isEqualTo(TEST_TYPE);
+    public void type() {
+        assertThat(testFile.type()).isEqualTo(TEST_TYPE);
+    }
+
+    @Test
+    public void category() {
+        assertThat(testFile.category()).isEqualTo(TEST_TYPE.category());
     }
 }

@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +36,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.JsonSchemaGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.memorycompiler.CompilationResult;
@@ -56,8 +54,6 @@ import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
 import static java.util.Arrays.asList;
-import static org.kie.kogito.codegen.GeneratedFile.Type.CLASS;
-import static org.kie.kogito.codegen.GeneratedFile.Type.GENERATED_CP_RESOURCE;
 import static org.kie.kogito.codegen.utils.GeneratedFileUtils.validateGeneratedFileTypes;
 
 @Mojo(name = "process-model-classes",
@@ -126,25 +122,20 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 PersistenceGenerator persistenceGenerator = new PersistenceGenerator(context, modelClasses, new ReflectionProtoGenerator(), cl, parameters, persistenceType);
                 Collection<GeneratedFile> persistenceFiles = persistenceGenerator.generate();
 
-                validateGeneratedFileTypes(persistenceFiles, asList(CLASS, GENERATED_CP_RESOURCE));
+                validateGeneratedFileTypes(persistenceFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.RESOURCE));
 
-                Collection<GeneratedFile> generatedClasses = persistenceFiles.stream().filter(x -> x.getType().equals(CLASS)).collect(Collectors.toList());
-                Collection<GeneratedFile> generatedResources = persistenceFiles.stream().filter(x -> x.getType().equals(GENERATED_CP_RESOURCE)).collect(Collectors.toList());
+                Collection<GeneratedFile> generatedClasses = persistenceFiles.stream().filter(x -> x.category().equals(GeneratedFileType.Category.SOURCE)).collect(Collectors.toList());
+                Collection<GeneratedFile> generatedResources = persistenceFiles.stream().filter(x -> x.category().equals(GeneratedFileType.Category.RESOURCE)).collect(Collectors.toList());
 
                 // Compile and write persistence files
                 compileAndWriteClasses(generatedClasses, cl, settings);
 
                 // Json schema generation
-                Collection<GeneratedFile> jsonSchemaFiles = generateJsonSchema(reflections)
-                        // FIXME workaround until KOGITO-2901 is solved: all resource that needs to be added to be
-                        //  available at runtime has to be GENERATED_CP_RESOURCE (so that are saved in the proper folder)
-                        .stream()
-                        .map(gf -> new GeneratedFile(GENERATED_CP_RESOURCE, gf.relativePath(), gf.contents()))
-                        .collect(Collectors.toList());
+                Collection<GeneratedFile> jsonSchemaFiles = generateJsonSchema(reflections);
 
                 // Dump resources
-                generatedResources.forEach(this::writeGeneratedFile);
-                jsonSchemaFiles.forEach(this::writeGeneratedFile);
+                writeGeneratedFiles(generatedResources);
+                writeGeneratedFiles(jsonSchemaFiles);
 
             }
         } catch (Exception e) {
@@ -164,8 +155,6 @@ public class ProcessClassesMojo extends AbstractKieMojo {
             srcMfs.write(fileName, entry.contents());
         }
 
-        Path path = Paths.get(project.getBuild().getOutputDirectory());
-
         if (sources.length > 0) {
 
             CompilationResult result = JAVA_COMPILER.compile(sources, srcMfs, trgMfs, cl, settings);
@@ -175,7 +164,7 @@ public class ProcessClassesMojo extends AbstractKieMojo {
 
             for (String fileName : trgMfs.getFileNames()) {
                 byte[] data = trgMfs.getBytes(fileName);
-                writeCompiledFile(path, fileName, data);
+                writeGeneratedFile(new GeneratedFile(GeneratedFileType.COMPILED_CLASS, fileName, data));
             }
         }
     }
@@ -186,14 +175,4 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 .withSchemaVersion(schemaVersion).build()
                 .generate();
     }
-
-    private Path writeCompiledFile(Path parentPath, String fileName, byte[] data) throws IOException {
-        Path path = parentPath.resolve(fileName);
-        if (!path.getParent().toFile().exists()) {
-            Files.createDirectories(path.getParent());
-        }
-        Files.write(path, data);
-        return path;
-    }
-
 }

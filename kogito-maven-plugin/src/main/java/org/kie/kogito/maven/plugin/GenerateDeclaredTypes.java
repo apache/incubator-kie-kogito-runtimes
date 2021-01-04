@@ -100,10 +100,7 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
 
         Collection<GeneratedFile> generatedFiles = appGen.generateComponents();
 
-        for (GeneratedFile generatedFile : generatedFiles) {
-            writeGeneratedFile(generatedFile);
-        }
-
+        writeGeneratedFiles(generatedFiles);
     }
 
     private boolean rulesExist() throws IOException {
