@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -91,7 +90,6 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.GeneratedFile.Type.GENERATED_CP_RESOURCE;
 import static org.kie.kogito.codegen.context.KogitoBuildContext.Builder.merge;
 import static org.kie.kogito.codegen.utils.GeneratedFileValidation.validateGeneratedFileTypes;
 
@@ -230,13 +228,7 @@ public class KogitoAssetsProcessor {
                 reflectiveClass));
 
         // Json schema files
-        Collection<GeneratedFile> jsonSchemaFiles = generateJsonSchema(appPaths, index)
-                // FIXME workaround until KOGITO-2901 is solved: all generated resource that needs to be available
-                //  at runtime has to be GENERATED_CP_RESOURCE (so that are saved in the proper folder)
-                .stream()
-                .map(gf -> new GeneratedFile(GENERATED_CP_RESOURCE, gf.relativePath(), gf.contents()))
-                .collect(Collectors.toList());
-        generatedFiles.addAll(jsonSchemaFiles);
+        generatedFiles.addAll(generateJsonSchema(appPaths, index));
 
         // Write files to disk
         dumpFilesToDisk(appPaths, generatedFiles);
