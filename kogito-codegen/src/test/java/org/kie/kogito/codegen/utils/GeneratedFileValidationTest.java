@@ -23,6 +23,7 @@ import org.kie.kogito.codegen.GeneratedFileType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 class GeneratedFileValidationTest {
 
@@ -38,8 +39,8 @@ class GeneratedFileValidationTest {
                 GeneratedFileType.Category.SOURCE,
                 GeneratedFileType.Category.RESOURCE,
                 GeneratedFileType.Category.COMPILED_CLASS));
-        Assertions.assertThatThrownBy(() -> GeneratedFileValidation.validateGeneratedFileTypes(generatedFiles,
-                Collections.singleton(GeneratedFileType.Category.SOURCE)))
+        Set<GeneratedFileType.Category> categories = Collections.singleton(GeneratedFileType.Category.SOURCE);
+        Assertions.assertThatThrownBy(() -> GeneratedFileValidation.validateGeneratedFileTypes(generatedFiles, categories))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("myPath2")
                 .hasMessageContaining("myPath3");

@@ -42,7 +42,8 @@ class GeneratedFileTypeTest {
     public void ofNameCategory() {
         assertThatThrownBy(() -> GeneratedFileType.of(null, Category.SOURCE))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> GeneratedFileType.of(Category.SOURCE.name(), null))
+        String sourceName = Category.SOURCE.name();
+        assertThatThrownBy(() -> GeneratedFileType.of(sourceName, null))
                 .isInstanceOf(NullPointerException.class);
 
         GeneratedFileType sourceGeneratedType = GeneratedFileType.of("name", Category.SOURCE);
@@ -58,7 +59,8 @@ class GeneratedFileTypeTest {
     public void ofNameCategoryCanHotReload() {
         assertThatThrownBy(() -> GeneratedFileType.of(null, Category.SOURCE, true))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> GeneratedFileType.of(Category.SOURCE.name(), null, true))
+        String sourceName = Category.SOURCE.name();
+        assertThatThrownBy(() -> GeneratedFileType.of(sourceName, null, true))
                 .isInstanceOf(NullPointerException.class);
 
         GeneratedFileType sourceGeneratedType = GeneratedFileType.of("name", Category.SOURCE, false);
@@ -74,7 +76,8 @@ class GeneratedFileTypeTest {
     public void ofNameCategoryCanHotReloadCustomizable() {
         assertThatThrownBy(() -> GeneratedFileType.of(null, Category.SOURCE, true, true))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> GeneratedFileType.of(Category.SOURCE.name(), null, true, true))
+        String sourceName = Category.SOURCE.name();
+        assertThatThrownBy(() -> GeneratedFileType.of(sourceName, null, true, true))
                 .isInstanceOf(NullPointerException.class);
 
         GeneratedFileType sourceGeneratedType = GeneratedFileType.of("name", Category.SOURCE, false, true);
@@ -93,8 +96,8 @@ class GeneratedFileTypeTest {
         GeneratedFileType differentType = GeneratedFileType.of(mock.name(), mock.category(), mock.canHotReload(), !mock.isCustomizable());
 
         // GeneratedFileType equals should only consider values and not actual class
-        assertThat(sameType.equals(mock)).isTrue();
-        assertThat(differentType.equals(mock)).isFalse();
+        assertThat(sameType).isEqualTo(mock);
+        assertThat(differentType).isNotEqualTo(mock);
     }
 
     private static class MockGenericFileType implements GeneratedFileType {

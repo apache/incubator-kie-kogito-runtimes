@@ -142,7 +142,7 @@ public class ProcessClassesMojo extends AbstractKieMojo {
         }
     }
 
-    private void compileAndWriteClasses(Collection<GeneratedFile> generatedClasses, ClassLoader cl, JavaCompilerSettings settings) throws MojoFailureException, IOException {
+    private void compileAndWriteClasses(Collection<GeneratedFile> generatedClasses, ClassLoader cl, JavaCompilerSettings settings) throws MojoFailureException {
         MemoryFileSystem srcMfs = new MemoryFileSystem();
         MemoryFileSystem trgMfs = new MemoryFileSystem();
 
