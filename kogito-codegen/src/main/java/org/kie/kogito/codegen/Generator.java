@@ -15,12 +15,11 @@
 
 package org.kie.kogito.codegen;
 
-import java.nio.file.Path;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 /**
  * A code generator for a part of the platform, e.g. rules, processes, etc.
@@ -41,24 +40,14 @@ public interface Generator {
     Collection<GeneratedFile> generate();
 
     /**
-     * Consumes the given ConfigGenerator so that it can enrich it with
+     * Consumes the given ApplicationConfigGenerator so that it can enrich it with
      * further, Generator-specific details.
      *
      * This is automatically called by the ApplicationGenerator.
      */
-    void updateConfig(ConfigGenerator cfg);
+    void updateConfig(ApplicationConfigGenerator cfg);
 
-    void setPackageName(String packageName);
-
-    void setDependencyInjection(DependencyInjectionAnnotator annotator);
-    
-    void setProjectDirectory(Path projectDirectory);
-    
-    void setContext(GeneratorContext context);
-
-    void setAddonsConfig(AddonsConfig addonsConfig);
-    
-    GeneratorContext context();
+    KogitoBuildContext context();
     
     default Map<String, String> getLabels() {
         return Collections.emptyMap();

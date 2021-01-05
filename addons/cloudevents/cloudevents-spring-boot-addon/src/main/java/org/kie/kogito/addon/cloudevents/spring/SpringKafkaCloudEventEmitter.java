@@ -19,8 +19,8 @@ package org.kie.kogito.addon.cloudevents.spring;
 
 import java.util.concurrent.CompletionStage;
 
+import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.KogitoEventStreams;
-import org.kie.kogito.services.event.CloudEventEmitter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

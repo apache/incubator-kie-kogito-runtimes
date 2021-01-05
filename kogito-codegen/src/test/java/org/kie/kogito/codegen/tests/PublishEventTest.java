@@ -34,6 +34,7 @@ import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.services.event.ProcessInstanceDataEvent;
 import org.kie.kogito.services.event.UserTaskInstanceDataEvent;
@@ -64,7 +65,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
         uow.start();
 
-        Process<? extends Model> p = app.processes().processById("TestCase.SimpleMilestone");
+        Process<? extends Model> p = app.get(Processes.class).processById("TestCase.SimpleMilestone");
 
         ProcessInstance<?> processInstance = p.createInstance(p.createModel());
         processInstance.start();
@@ -108,7 +109,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
         
-        Process<? extends Model> p = app.processes().processById("BusinessRuleTask");
+        Process<? extends Model> p = app.get(Processes.class).processById("BusinessRuleTask");
         
         Model m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
@@ -145,14 +146,62 @@ public class PublishEventTest extends AbstractCodegenTest {
         assertThat(body.getVariables()).hasSize(1).containsKey("person");
         assertThat(body.getVariables().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true); 
     }
-    
+
+    @Test
+    public void testCompensationProcess() throws Exception {
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("compensation/compensateAll.bpmn2"));
+        Application app = generateCode(resourcesTypeMap);
+        assertThat(app).isNotNull();
+        TestEventPublisher publisher = new TestEventPublisher();
+        app.unitOfWorkManager().eventManager().setService("http://myhost");
+        app.unitOfWorkManager().eventManager().addPublisher(publisher);
+
+        UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
+        uow.start();
+
+        Process<? extends Model> p = app.get(Processes.class).processById("compensateAll");
+
+        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+        processInstance.start();
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Model result = (Model)processInstance.variables();
+        assertThat(result.toMap()).hasSize(2).containsKeys("counter", "counter2");
+        uow.end();
+
+        List<DataEvent<?>> events = publisher.extract();
+        assertThat(events).isNotNull().hasSize(1);
+
+        DataEvent<?> event = events.get(0);
+        assertThat(event).isInstanceOf(ProcessInstanceDataEvent.class);
+        ProcessInstanceDataEvent processDataEvent = (ProcessInstanceDataEvent) event;
+        assertThat(processDataEvent.getKogitoProcessinstanceId()).isNotNull();
+        assertThat(processDataEvent.getKogitoParentProcessinstanceId()).isNull();
+        assertThat(processDataEvent.getKogitoRootProcessinstanceId()).isNull();
+        assertThat(processDataEvent.getKogitoProcessId()).isEqualTo("compensateAll");
+        assertThat(processDataEvent.getKogitoProcessinstanceState()).isEqualTo("2");
+        assertThat(processDataEvent.getSource()).isEqualTo("http://myhost/compensateAll");
+
+        ProcessInstanceEventBody body = assertProcessInstanceEvent(events.get(0), "compensateAll", "Compensate All", 2);
+
+        assertThat(body.getNodeInstances()).hasSize(9).extractingResultOf("getNodeType").contains("StartNode", "ActionNode", "BoundaryEventNode", "EndNode");
+
+        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
+        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").allMatch(v -> v != null);
+
+        assertThat(body.getVariables())
+                .hasSize(2)
+                .containsEntry("counter", 2)
+                .containsEntry("counter2", 2);
+    }
     
     @Test
     public void testBasicUserTaskProcess() throws Exception {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.get(Processes.class).processById("UserTasksProcess");
         
         Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
@@ -223,7 +272,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcessWithSecurityRoles.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("UserTasksProcess");
+        Process<? extends Model> p = app.get(Processes.class).processById("UserTasksProcess");
         
         Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
@@ -257,7 +306,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("subprocess/CallActivity.bpmn2", "subprocess/CallActivitySubProcess.bpmn2");        
         assertThat(app).isNotNull();
                 
-        Process<? extends Model> p = app.processes().processById("ParentProcess");
+        Process<? extends Model> p = app.get(Processes.class).processById("ParentProcess");
         
         Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
@@ -334,7 +383,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
         
-        Process<? extends Model> p = app.processes().processById("BusinessRuleTask");
+        Process<? extends Model> p = app.get(Processes.class).processById("BusinessRuleTask");
         
         Model m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));
@@ -364,7 +413,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
         
-        Process<? extends Model> p = app.processes().processById("ExclusiveSplit");
+        Process<? extends Model> p = app.get(Processes.class).processById("ExclusiveSplit");
         
         Map<String, Object> params = new HashMap<>();
         params.put("x", "First");
@@ -413,7 +462,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
                 
-        Process<? extends Model> p = app.processes().processById("ServiceProcessDifferentOperations");
+        Process<? extends Model> p = app.get(Processes.class).processById("ServiceProcessDifferentOperations");
         
         Model m = p.createModel();
         Map<String, Object> parameters = new HashMap<>();
@@ -484,7 +533,7 @@ public class PublishEventTest extends AbstractCodegenTest {
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();                        
         uow.start();
         
-        Process<? extends Model> p = app.processes().processById("BusinessRuleTask");
+        Process<? extends Model> p = app.get(Processes.class).processById("BusinessRuleTask");
         
         Model m = p.createModel();
         m.fromMap(Collections.singletonMap("person", new Person("john", 25)));

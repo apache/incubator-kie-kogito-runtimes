@@ -75,8 +75,8 @@
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <version.versions.plugin>2.1</version.versions.plugin>
     <version.jayway.jsonpath>2.4.0</version.jayway.jsonpath>
-    <version.vertx.web.client>3.9.4</version.vertx.web.client>
-
+    <version.io.smallrye.reactive.mutiny-vertx-web-client>1.2.1</version.io.smallrye.reactive.mutiny-vertx-web-client>
+    
     <!-- this version property is used in plugins but also in dependencies too -->
     <version.io.quarkus>1.10.3.Final</version.io.quarkus>
     <quarkus.logging.manager>org.jboss.logmanager.LogManager</quarkus.logging.manager>
@@ -136,10 +136,11 @@
     <version.org.mockito>3.6.0</version.org.mockito>
     <version.org.mvel>2.4.10.Final</version.org.mvel>
     <version.org.kie7>7.47.0.Final</version.org.kie7>
+    <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
     <version.wiremock>2.27.2</version.wiremock>
-    <version.testcontainers>1.15.0</version.testcontainers>
+    <version.testcontainers>1.15.1</version.testcontainers>
     <version.resteasy.springboot>4.6.0.Final</version.resteasy.springboot>
     <version.springboot>2.3.1.RELEASE</version.springboot>
     <version.spring.kafka>2.5.2.RELEASE</version.spring.kafka>
@@ -387,13 +388,11 @@
         <artifactId>json-path-assert</artifactId>
         <version>${version.jayway.jsonpath}</version>
       </dependency>
-
       <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-web-client</artifactId>
-        <version>${version.vertx.web.client}</version>
+        <groupId>io.smallrye.reactive</groupId>
+        <artifactId>smallrye-mutiny-vertx-web-client</artifactId>
+        <version>${version.io.smallrye.reactive.mutiny-vertx-web-client}</version>
       </dependency>
-
       <!-- http communication -->
       <dependency>
         <groupId>com.squareup.okhttp3</groupId>
@@ -420,6 +419,11 @@
       <dependency>
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-registry-prometheus</artifactId>
+        <version>${version.io.micrometer}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-elastic</artifactId>
         <version>${version.io.micrometer}</version>
       </dependency>
 
@@ -488,6 +492,13 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
+        <version>${version.org.mockito}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-inline</artifactId>
         <version>${version.org.mockito}</version>
         <scope>test</scope>
       </dependency>
@@ -619,6 +630,12 @@
         <groupId>org.graalvm.nativeimage</groupId>
         <artifactId>svm</artifactId>
         <version>${version.org.graalvm.nativeimage}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.reactivestreams</groupId>
+        <artifactId>reactive-streams</artifactId>
+        <version>${version.org.reactivestreams}</version>
       </dependency>
 
       <dependency>

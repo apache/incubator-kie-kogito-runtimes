@@ -16,32 +16,42 @@
 package org.kie.kogito.codegen;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
+import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-public class ApplicationContainerGenerator extends TemplatedGenerator {
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
+public class ApplicationContainerGenerator {
 
     public static final String APPLICATION_CLASS_NAME = "Application";
     private static final String RESOURCE_CDI = "/class-templates/CdiApplicationTemplate.java";
     private static final String RESOURCE_SPRING = "/class-templates/SpringApplicationTemplate.java";
     private static final String RESOURCE_DEFAULT = "/class-templates/ApplicationTemplate.java";
+    private final TemplatedGenerator templatedGenerator;
 
     private List<String> sections = new ArrayList<>();
+    private KogitoBuildContext context;
 
-    public ApplicationContainerGenerator(String packageName) {
-        super(packageName,
-              APPLICATION_CLASS_NAME,
-              RESOURCE_CDI,
-              RESOURCE_SPRING,
-              RESOURCE_DEFAULT);
+    public ApplicationContainerGenerator(KogitoBuildContext context) {
+        this.templatedGenerator = new TemplatedGenerator(
+                context,
+                APPLICATION_CLASS_NAME,
+                RESOURCE_CDI,
+                RESOURCE_SPRING,
+                RESOURCE_DEFAULT);
+
+        this.context = context;
     }
 
     public ApplicationContainerGenerator withSections(List<String> sections) {
@@ -49,59 +59,71 @@ public class ApplicationContainerGenerator extends TemplatedGenerator {
         return this;
     }
 
-    public CompilationUnit getCompilationUnitOrThrow() {
-        return compilationUnit()
-                .orElseThrow(() -> new InvalidTemplateException(
-                        APPLICATION_CLASS_NAME,
-                        templatePath(),
-                        "Cannot find template for " + super.typeName()));
-    }
-
-    @Override
-    public Optional<CompilationUnit> compilationUnit() {
-        Optional<CompilationUnit> optionalCompilationUnit = super.compilationUnit();
-        CompilationUnit compilationUnit =
-                optionalCompilationUnit
-                        .orElseThrow(() -> new InvalidTemplateException(
-                                APPLICATION_CLASS_NAME,
-                                templatePath(),
-                                "Cannot find template for " + super.typeName()));
+    protected CompilationUnit getCompilationUnitOrThrow() {
+        CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Cannot find template for " + templatedGenerator.typeName());
 
         ClassOrInterfaceDeclaration cls = compilationUnit
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(
                         APPLICATION_CLASS_NAME,
-                        templatePath(),
+                        templatedGenerator.templatePath(),
                         "Compilation unit doesn't contain a class or interface declaration!"));
 
         // ApplicationTemplate (no CDI/Spring) has placeholders to replace
-        if (annotator == null) {
-            for (String section : sections) {
-                replaceSectionPlaceHolder(cls, section);
-            }
+        if (context instanceof JavaKogitoBuildContext) {
+            replacePlaceholder(getLoadEnginesMethod(cls), sections);
         }
 
         cls.getMembers().sort(new BodyDeclarationComparator());
-        return optionalCompilationUnit;
+
+        return compilationUnit;
     }
 
-    private void replaceSectionPlaceHolder(ClassOrInterfaceDeclaration cls, String sectionClassName) {
-        // look for an expression of the form: foo = ... /* $SectionName$ */ ;
-        //      e.g.: this.processes = null /* $Processes$ */;
-        // and replaces the entire expression with an initializer; e.g.:
-        //      e.g.: this.processes = new Processes(this);
+    public GeneratedFile generate() {
+        return new GeneratedFile(GeneratedFile.Type.APPLICATION,
+                templatedGenerator.generatedFilePath(),
+                getCompilationUnitOrThrow().toString());
+    }
 
-        // new $SectionName$(this)
-        ObjectCreationExpr sectionCreationExpr = new ObjectCreationExpr()
-                .setType(sectionClassName)
-                .addArgument(new ThisExpr());
+    private MethodCallExpr getLoadEnginesMethod(ClassOrInterfaceDeclaration cls) {
+        return cls.findFirst(MethodCallExpr.class, mtd -> "loadEngines".equals(mtd.getNameAsString()))
+                    .orElseThrow(() -> new InvalidTemplateException(
+                            APPLICATION_CLASS_NAME,
+                            templatedGenerator.templatePath(),
+                            "Impossible to find loadEngines invocation"));
+    }
 
-        cls.findFirst(
-                BlockComment.class, c -> c.getContent().trim().equals('$' + sectionClassName + '$'))
-                .flatMap(Node::getParentNode)
-                .map(ExpressionStmt.class::cast)
-                .map(e -> e.getExpression().asAssignExpr())
-                .ifPresent(assignExpr -> assignExpr.setValue(sectionCreationExpr));
-        // else ignore: there is no such templated argument
+    private void replacePlaceholder(MethodCallExpr methodCallExpr, List<String> sections) {
+        // look for expressions that contain $ and replace them with an initializer
+        //      e.g.: $Processes$
+        // is replaced with:
+        //      e.g.: new Processes(this)
+        // or remove the parameter if section is not available
+
+        Map<String, Expression> replacementMap = sections.stream()
+                .collect(toMap(
+                        identity(),
+                        sectionClassName -> new ObjectCreationExpr()
+                                .setType(sectionClassName)
+                                .addArgument(new ThisExpr())
+                ));
+
+        List<Expression> toBeRemoved = methodCallExpr.getArguments().stream()
+                .filter(exp -> exp.toString().contains("$"))
+                .filter(argument -> !replace(argument, replacementMap))
+                .collect(toList());
+
+        // remove using parentNode.remove(node) instead of node.remove() to prevent ConcurrentModificationException
+        toBeRemoved.forEach(methodCallExpr::remove);
+    }
+
+    private boolean replace(Expression originalExpression, Map<String, Expression> expressionMap) {
+        for (Map.Entry<String, Expression> entry : expressionMap.entrySet()) {
+            if (originalExpression.toString().contains("$" + entry.getKey() + "$")) {
+                originalExpression.replace(entry.getValue());
+                return true;
+            }
+        }
+        return false;
     }
 }
