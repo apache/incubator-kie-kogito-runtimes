@@ -17,6 +17,7 @@
 package org.kie.kogito.maven.plugin;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.FileSystems;
@@ -62,6 +63,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
     public static final List<String> DROOLS_EXTENSIONS = Arrays.asList(".drl", ".xls", ".xlsx", ".csv");
 
     public static final PathMatcher drlFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.drl");
+
+    @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build.directory}/generated-sources/kogito")
+    private File customizableSourcesPath;
 
     // due to a limitation of the injector, the following 2 params have to be Strings
     // otherwise we cannot get the default value to null
@@ -114,6 +118,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     protected boolean isOnDemand() {
         return onDemand;
+    }
+
+    @Override
+    protected File getSourcesPath() {
+        return customizableSourcesPath;
     }
 
     protected void addCompileSourceRoots() {
