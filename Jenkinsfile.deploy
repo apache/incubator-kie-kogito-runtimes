@@ -34,6 +34,7 @@ pipeline {
 
         // Deploy information
         string(name: 'MAVEN_DEPLOY_REPOSITORY', defaultValue: '', description: 'Specify a Maven repository to deploy the artifacts.')
+        string(name: 'MAVEN_DEPLOY_CREDS_ID', defaultValue: '', description: 'Credentials for Maven repository to deploy the artifacts.')
 
         // Release information
         booleanParam(name: 'RELEASE', defaultValue: false, description: 'Is this build for a release?')
@@ -51,6 +52,8 @@ pipeline {
     }
 
     environment {
+        REPO_NAME = 'kogito-runtimes'
+
         MAVEN_OPTS = '-Xms1024m -Xmx4g'
 
         BOT_BRANCH_HASH = "${util.generateHash(10)}"
@@ -73,7 +76,7 @@ pipeline {
                         assert getProjectVersion() != ''
                     }
 
-                    checkoutRepo('kogito-runtimes')
+                    checkoutRepo(getRepoName())
                 }
             }
             post {
@@ -92,7 +95,7 @@ pipeline {
                 expression { return isRelease() }
             }
             steps {
-                prepareForPR('kogito-runtimes')
+                prepareForPR(getRepoName())
             }
         }
         stage('Update project version'){
@@ -122,12 +125,17 @@ pipeline {
             steps {
                 script {
                     // Usually `params.MAVEN_DEPLOY_REPOSITORY` is used for testing purpose
-                    if(!isRelease() || params.MAVEN_DEPLOY_REPOSITORY) {
+                    if (params.MAVEN_DEPLOY_REPOSITORY && params.MAVEN_DEPLOY_CREDS_ID) {
+                        // Deploy to specific repository with credentials
+                        runMavenDeployLocally(getMavenCommand())
+                        pushLocalArtifacts()
+                    } else if(!isRelease() || params.MAVEN_DEPLOY_REPOSITORY){
+                        // Normal deploy
                         runMavenDeploy(getMavenCommand())
                     } else {
                          // Deploy locally and then to staging
-                        runMavenDeployLocally(getMavenCommand(), 'runtimes')
-                        runMavenStage(getMavenCommand(), 'runtimes')
+                        runMavenDeployLocally(getMavenCommand())
+                        runMavenStage(getMavenCommand())
                     }
                 }
             }
@@ -137,16 +145,15 @@ pipeline {
                 expression { return isRelease() }
             }
             steps {
-                commitAndCreatePR('kogito-runtimes')
+                commitAndCreatePR(getRepoName())
             }
             post {
                 success {
                     script {
-                        // Runtimes
-                        setDeployPropertyIfNeeded('kogito-runtimes.pr.source.uri', "https://github.com/${getBotAuthor()}/kogito-runtimes")
-                        setDeployPropertyIfNeeded('kogito-runtimes.pr.source.ref', getBotBranch())
-                        setDeployPropertyIfNeeded('kogito-runtimes.pr.target.uri', "https://github.com/${getGitAuthor()}/kogito-runtimes")
-                        setDeployPropertyIfNeeded('kogito-runtimes.pr.target.ref', getBuildBranch())
+                        setDeployPropertyIfNeeded("${getRepoName()}.pr.source.uri", "https://github.com/${getBotAuthor()}/${getRepoName()}")
+                        setDeployPropertyIfNeeded("${getRepoName()}.pr.source.ref", getBotBranch())
+                        setDeployPropertyIfNeeded("${getRepoName()}.pr.target.uri", "https://github.com/${getGitAuthor()}/${getRepoName()}")
+                        setDeployPropertyIfNeeded("${getRepoName()}.pr.target.ref", getBuildBranch())
                     }
                 }
             }
@@ -197,6 +204,10 @@ boolean isRelease() {
     return params.RELEASE
 }
 
+String getRepoName(){
+    return env.REPO_NAME
+}
+
 String getGitAuthor(){
     return params.GIT_AUTHOR
 }
@@ -227,10 +238,13 @@ void setDeployPropertyIfNeeded(String key, def value){
     }
 }
 
-MavenCommand getMavenCommand(){
+MavenCommand getMavenCommand(String directory = ''){
+    if(!directory) {
+        directory = getRepoName()
+    }
     return new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId(params.MAVEN_SETTINGS_CONFIG_FILE_ID)
-                .inDirectory('kogito-runtimes')
+                .inDirectory(directory)
                 .withProperty('full')
 }
 
@@ -244,16 +258,32 @@ void runMavenDeploy(MavenCommand mvnCmd){
     mvnCmd.skipTests(true).run('clean deploy')
 }
 
-void runMavenDeployLocally(MavenCommand mvnCmd, String localDeployId) {
+String getMavenRepoZipUrl() {
+     return "${params.MAVEN_DEPLOY_REPOSITORY.replaceAll('/content/', '/service/local/').replaceFirst('/*$', '')}/content-compressed"
+}
+
+void runMavenDeployLocally(MavenCommand mvnCmd) {
     mvnCmd.clone()
         .skipTests(true)
-        .withLocalDeployFolder(getLocalDeploymentFolder(localDeployId))
+        .withLocalDeployFolder(getLocalDeploymentFolder())
         .run('clean deploy')
 }
 
-void runMavenStage(MavenCommand mvnCmd, String localDeployId) {
+void pushLocalArtifacts() {
+    withCredentials([usernameColonPassword(credentialsId: params.MAVEN_DEPLOY_CREDS_ID, variable: 'kieUnpack')]) {
+        dir(getLocalDeploymentFolder()) {
+            // unpack zip to QA Nexus
+            sh """
+            zip -r ${getRepoName()} .
+            curl --silent --upload-file ${getRepoName()}.zip -u ${kieUnpack} -v ${getMavenRepoZipUrl()}
+            """
+        }
+    }
+}
+
+void runMavenStage(MavenCommand mvnCmd) {
     MavenStagingHelper stagingHelper = getStagingHelper(mvnCmd)
-    deployProperties.putAll(stagingHelper.stageLocalArtifacts(params.NEXUS_STAGING_PROFILE_ID, getLocalDeploymentFolder(localDeployId)))
+    deployProperties.putAll(stagingHelper.stageLocalArtifacts(params.NEXUS_STAGING_PROFILE_ID, getLocalDeploymentFolder()))
     stagingHelper.promoteStagingRepository(params.NEXUS_BUILD_PROMOTION_PROFILE_ID)
 }
 
@@ -263,6 +293,6 @@ MavenStagingHelper getStagingHelper(MavenCommand mvnCmd) {
         .withNexusReleaseRepositoryId(params.NEXUS_RELEASE_REPOSITORY_ID)
 }
 
-String getLocalDeploymentFolder(String localDeployId){
-    return "${env.MAVEN_DEPLOY_LOCAL_DIR}/${localDeployId}"
+String getLocalDeploymentFolder(){
+    return "${env.MAVEN_DEPLOY_LOCAL_DIR}/${getRepoName()}"
 }
