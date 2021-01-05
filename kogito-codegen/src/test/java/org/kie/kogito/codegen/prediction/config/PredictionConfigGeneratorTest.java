@@ -17,15 +17,13 @@ package org.kie.kogito.codegen.prediction.config;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
-import org.kie.kogito.codegen.di.SpringDependencyInjectionAnnotator;
+import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,20 +31,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PredictionConfigGeneratorTest {
 
     private final static String PACKAGE_NAME = "PACKAGENAME";
-    private static PredictionConfigGenerator predictionConfigGenerator;
-
-    @BeforeAll
-    public static void setup() {
-        predictionConfigGenerator = new PredictionConfigGenerator(PACKAGE_NAME);
-        assertNotNull(predictionConfigGenerator);
-    }
 
     @Test
     void compilationUnitWithCDI() {
-        predictionConfigGenerator.withDependencyInjection(new CDIDependencyInjectionAnnotator());
-        final Optional<CompilationUnit> retrievedOpt = predictionConfigGenerator.compilationUnit();
+        KogitoBuildContext context = QuarkusKogitoBuildContext.builder().withPackageName(PACKAGE_NAME).build();
+        PredictionConfigGenerator predictionConfigGenerator = new PredictionConfigGenerator(context);
+        Optional<GeneratedFile> retrievedOpt = predictionConfigGenerator.generate();
+        assertNotNull(retrievedOpt);
         assertTrue(retrievedOpt.isPresent());
-        String retrieved = retrievedOpt.get().toString();
+        String retrieved = new String(retrievedOpt.get().contents());
         String expected = "@javax.inject.Singleton";
         assertTrue(retrieved.contains(expected));
         expected = "@javax.inject.Inject";
@@ -59,10 +52,12 @@ class PredictionConfigGeneratorTest {
 
     @Test
     void compilationUnitWithSpring() {
-        predictionConfigGenerator.withDependencyInjection(new SpringDependencyInjectionAnnotator());
-        final Optional<CompilationUnit> retrievedOpt = predictionConfigGenerator.compilationUnit();
+        KogitoBuildContext context = SpringBootKogitoBuildContext.builder().withPackageName(PACKAGE_NAME).build();
+        PredictionConfigGenerator predictionConfigGenerator = new PredictionConfigGenerator(context);
+        Optional<GeneratedFile> retrievedOpt = predictionConfigGenerator.generate();
+        assertNotNull(retrievedOpt);
         assertTrue(retrievedOpt.isPresent());
-        String retrieved = retrievedOpt.get().toString();
+        String retrieved = new String(retrievedOpt.get().contents());
         String expected = "@org.springframework.stereotype.Component";
         assertTrue(retrieved.contains(expected));
         expected = "@org.springframework.beans.factory.annotation.Autowired";
@@ -74,14 +69,9 @@ class PredictionConfigGeneratorTest {
     }
 
     @Test
-    void newInstance() {
-        ObjectCreationExpr retrieved = predictionConfigGenerator.newInstance();
-        String expected = "new org.kie.kogito.pmml.config.StaticPredictionConfig()";
-        assertEquals(expected, retrieved.toString());
-    }
-
-    @Test
     void members() {
+        KogitoBuildContext context = QuarkusKogitoBuildContext.builder().withPackageName(PACKAGE_NAME).build();
+        PredictionConfigGenerator predictionConfigGenerator = new PredictionConfigGenerator(context);
         List<BodyDeclaration<?>> retrieved = predictionConfigGenerator.members();
         assertNotNull(retrieved);
         assertTrue(retrieved.isEmpty());

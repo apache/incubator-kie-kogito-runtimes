@@ -20,10 +20,9 @@ import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import org.kie.kogito.codegen.AbstractApplicationSection;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 import java.util.List;
 
@@ -36,39 +35,24 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
 
     protected final List<PMMLResource> resources;
     protected final String applicationCanonicalName;
-    protected AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     protected final TemplatedGenerator templatedGenerator;
 
-    public PredictionModelsGenerator(String packageName, String applicationCanonicalName, List<PMMLResource> resources) {
-        super(SECTION_CLASS_NAME);
+    public PredictionModelsGenerator(KogitoBuildContext context, String applicationCanonicalName, List<PMMLResource> resources) {
+        super(context, SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = resources;
 
         this.templatedGenerator = new TemplatedGenerator(
-                packageName,
+                context,
                 SECTION_CLASS_NAME,
                 RESOURCE_CDI,
                 RESOURCE_SPRING,
                 RESOURCE);
     }
 
-    public PredictionModelsGenerator withAddons(AddonsConfig addonsConfig) {
-        this.addonsConfig = addonsConfig;
-        return this;
-    }
-
-    public PredictionModelsGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.templatedGenerator.withDependencyInjection(annotator);
-        return this;
-    }
-
     @Override
     public CompilationUnit compilationUnit() {
-        CompilationUnit compilationUnit = templatedGenerator.compilationUnit()
-                .orElseThrow(() -> new InvalidTemplateException(
-                        SECTION_CLASS_NAME,
-                        templatedGenerator.templatePath(),
-                        "Invalid Template: No CompilationUnit"));
+        CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
         populateStaticKieRuntimeFactoryFunctionInit(compilationUnit);
         return compilationUnit;
     }

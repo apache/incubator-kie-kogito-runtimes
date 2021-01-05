@@ -28,9 +28,8 @@ import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
 import static org.kie.kogito.codegen.CodegenUtils.isApplicationField;
@@ -46,8 +45,9 @@ public class MessageConsumerGenerator {
     private static final String OBJECT_MAPPER_CANONICAL_NAME = ObjectMapper.class.getCanonicalName();
     private final TemplatedGenerator generator;
 
+    private KogitoBuildContext context;
     private WorkflowProcess process;
-    private final String packageName;
+    private final String processPackageName;
     private final String resourceClazzName;
     private final String processClazzName;
     private String processId;
@@ -55,20 +55,21 @@ public class MessageConsumerGenerator {
     private final String processName;
     private final String appCanonicalName;
     private final String messageDataEventClassName;
-    private DependencyInjectionAnnotator annotator;
 
     private TriggerMetaData trigger;
 
     public MessageConsumerGenerator(
+            KogitoBuildContext context,
             WorkflowProcess process,
             String modelfqcn,
             String processfqcn,
             String appCanonicalName,
             String messageDataEventClassName,
             TriggerMetaData trigger) {
+        this.context = context;
         this.process = process;
         this.trigger = trigger;
-        this.packageName = process.getPackageName();
+        this.processPackageName = process.getPackageName();
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
         String capitalizedProcessName = StringUtils.ucFirst(processName);
@@ -79,17 +80,12 @@ public class MessageConsumerGenerator {
         this.messageDataEventClassName = messageDataEventClassName;
 
         this.generator = new TemplatedGenerator(
-                packageName,
+                context,
+                processPackageName,
                 resourceClazzName,
                 RESOURCE_CDI,
                 RESOURCE_SPRING,
                 RESOURCE);
-    }
-
-    public MessageConsumerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        this.generator.withDependencyInjection(annotator);
-        return this;
     }
 
     public String className() {
@@ -100,13 +96,8 @@ public class MessageConsumerGenerator {
         return generator.generatedFilePath();
     }
 
-    protected boolean useInjection() {
-        return this.annotator != null;
-    }
-
     public String generate() {
-        CompilationUnit clazz = generator.compilationUnit()
-                .orElseThrow(() -> new InvalidTemplateException(resourceClazzName, generator.templatePath(), "Cannot generate message consumer"));
+        CompilationUnit clazz = generator.compilationUnitOrThrow("Cannot generate message consumer");
         clazz.setPackageDeclaration(process.getPackageName());
 
         ClassOrInterfaceDeclaration template = clazz.findFirst(ClassOrInterfaceDeclaration.class).get();
@@ -121,7 +112,7 @@ public class MessageConsumerGenerator {
         template.findAll(MethodCallExpr.class).forEach(this::interpolateStrings);
 
         // legacy: force initialize fields
-        if (!useInjection()) {
+        if (!context.hasDI()) {
             template.findAll(FieldDeclaration.class,
                              fd -> isProcessField(fd)).forEach(fd -> initializeProcessField(fd));
             template.findAll(FieldDeclaration.class,

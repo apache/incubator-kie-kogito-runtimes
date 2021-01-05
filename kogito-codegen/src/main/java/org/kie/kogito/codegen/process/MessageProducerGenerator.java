@@ -24,9 +24,8 @@ import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
-import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
 
@@ -39,25 +38,27 @@ public class MessageProducerGenerator {
 
     private final TemplatedGenerator generator;
 
-    private final String packageName;
+    private final String processPackageName;
     protected final String resourceClazzName;
     private final String processName;
     protected final String messageDataEventClassName;
+    protected final KogitoBuildContext context;
     protected WorkflowProcess process;
     private String processId;
-    protected DependencyInjectionAnnotator annotator;
 
     protected TriggerMetaData trigger;
 
     public MessageProducerGenerator(
+            KogitoBuildContext context,
             WorkflowProcess process,
             String modelfqcn,
             String processfqcn,
             String messageDataEventClassName,
             TriggerMetaData trigger) {
+        this.context = context;
         this.process = process;
         this.trigger = trigger;
-        this.packageName = process.getPackageName();
+        this.processPackageName = process.getPackageName();
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
         String classPrefix = StringUtils.ucFirst(processName);
@@ -65,22 +66,16 @@ public class MessageProducerGenerator {
         this.messageDataEventClassName = messageDataEventClassName;
 
         this.generator = new TemplatedGenerator(
-                packageName,
+                context,
+                processPackageName,
                 resourceClazzName,
                 RESOURCE_CDI,
                 RESOURCE_SPRING,
                 RESOURCE);
     }
 
-    public MessageProducerGenerator withDependencyInjection(DependencyInjectionAnnotator annotator) {
-        this.annotator = annotator;
-        generator.withDependencyInjection(annotator);
-        return this;
-    }
-
     public String generate() {
-        CompilationUnit clazz = generator.compilationUnit()
-                .orElseThrow(() -> new InvalidTemplateException(resourceClazzName, generator.templatePath(), "Cannot generate message producer"));
+        CompilationUnit clazz = generator.compilationUnitOrThrow("Cannot generate message producer");
         clazz.setPackageDeclaration(process.getPackageName());
 
         ClassOrInterfaceDeclaration template = clazz.findFirst(ClassOrInterfaceDeclaration.class).get();
@@ -103,9 +98,5 @@ public class MessageProducerGenerator {
 
     public String generatedFilePath() {
         return generator.generatedFilePath();
-    }
-
-    protected boolean useInjection() {
-        return this.annotator != null;
     }
 }
