@@ -6,6 +6,6 @@ public class Application extends StaticApplication {
 
     public Application() {
         super(new ApplicationConfig());
-        loadEngines(/* values provided by codegen */);
+        loadEngines(/* additional values provided during codegen */);
     }
 }
