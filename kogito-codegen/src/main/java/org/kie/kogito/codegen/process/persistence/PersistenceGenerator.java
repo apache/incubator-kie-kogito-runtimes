@@ -50,7 +50,6 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
@@ -63,7 +62,7 @@ import org.kie.kogito.codegen.process.persistence.proto.ProtoDataClassesResult;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
 
 
-public class PersistenceGenerator extends AbstractGenerator {
+public class PersistenceGenerator extends AbstractGenerator<Object> {
 
     public static final String FILESYSTEM_PERSISTENCE_TYPE = "filesystem";
     public static final String INFINISPAN_PERSISTENCE_TYPE = "infinispan";
@@ -100,8 +99,9 @@ public class PersistenceGenerator extends AbstractGenerator {
         this(context, modelClasses, persistence, protoGenerator, Thread.currentThread().getContextClassLoader(), parameters, persistenceType);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public PersistenceGenerator(KogitoBuildContext context, Collection<?> modelClasses, boolean persistence, ProtoGenerator<?> protoGenerator, ClassLoader classLoader, List<String> parameters, String persistenceType) {
-        super(context);
+        super(context, (Collection) modelClasses);
         this.modelClasses = modelClasses;
         this.persistence = persistence;
         this.protoGenerator = protoGenerator;
@@ -115,10 +115,9 @@ public class PersistenceGenerator extends AbstractGenerator {
     }
 
     @Override
-    public ApplicationSection section() {
-        return null;
+    public Optional<ApplicationSection> section() {
+        return Optional.empty();
     }
-
 
     @Override
     public Collection<GeneratedFile> generate() {
@@ -136,11 +135,6 @@ public class PersistenceGenerator extends AbstractGenerator {
 
         MetaDataWriter.writeLabelsImageMetadata(context().getTargetDirectory(), getLabels());
         return generatedFiles;
-    }
-
-    @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        // Persistence has no custom/additional config
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

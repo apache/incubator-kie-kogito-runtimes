@@ -46,7 +46,6 @@ import org.kie.dmn.typesafe.DMNTypeSafePackageName;
 import org.kie.dmn.typesafe.DMNTypeSafeTypeGenerator;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
@@ -58,7 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 
-public class DecisionCodegen extends AbstractGenerator {
+public class DecisionCodegen extends AbstractGenerator<CollectedResource> {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(DecisionCodegen.class);
 
@@ -80,19 +79,17 @@ public class DecisionCodegen extends AbstractGenerator {
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
 
-    private final List<CollectedResource> cResources;
-    private final List<DMNResource> resources = new ArrayList<>();
+    private final List<DMNResource> dmnResources = new ArrayList<>();
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
     private ClassLoader notPCLClassloader; // Kogito CodeGen design as of 2020-10-09
     private PCLResolverFn pclResolverFn = this::trueIFFClassIsPresent;
 
     public DecisionCodegen(KogitoBuildContext context, List<CollectedResource> cResources) {
-        super(context);
-        this.cResources = cResources;
+        super(context, cResources, new DecisionConfigGenerator(context));
     }
 
     private void loadModelsAndValidate() {
-        Map<Resource, CollectedResource> r2cr = cResources.stream().collect(Collectors.toMap(CollectedResource::resource, Function.identity()));
+        Map<Resource, CollectedResource> r2cr = resources().stream().collect(Collectors.toMap(CollectedResource::resource, Function.identity()));
         // First, we perform static validation on directly the XML
         DecisionValidation.dmnValidateResources(context(), r2cr.keySet());
         // DMN model processing; any semantic error during compilation will also be thrown accordingly
@@ -102,13 +99,13 @@ public class DecisionCodegen extends AbstractGenerator {
                                                  .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
         // Any post-compilation of the DMN model validations: DT (static) analysis
         DecisionValidation.dmnValidateDecisionTablesInModels(context(), dmnRuntime.getModels());
-        List<DMNResource> dmnResources = dmnRuntime.getModels().stream().map(model -> new DMNResource(model, r2cr.get(model.getResource()))).collect(toList());
-        resources.addAll(dmnResources);
+        List<DMNResource> dmnRs = dmnRuntime.getModels().stream().map(model -> new DMNResource(model, r2cr.get(model.getResource()))).collect(toList());
+        dmnResources.addAll(dmnRs);
     }
 
     @Override
     public List<GeneratedFile> generate() {
-        if (cResources.isEmpty()) {
+        if (resources().isEmpty()) {
             return Collections.emptyList();
         }
         loadModelsAndValidate();
@@ -123,7 +120,7 @@ public class DecisionCodegen extends AbstractGenerator {
         
         DMNOASResult oasResult = null;
         try {
-            List<DMNModel> models = resources.stream().map(DMNResource::getDmnModel).collect(Collectors.toList());
+            List<DMNModel> models = dmnResources.stream().map(DMNResource::getDmnModel).collect(Collectors.toList());
             oasResult = DMNOASGeneratorFactory.generator(models).build();
             String jsonContent = new ObjectMapper().writeValueAsString(oasResult.getJsonSchemaNode());
             storeFile(GeneratedFile.Type.GENERATED_CP_RESOURCE, "META-INF/resources/dmnDefinitions.json", jsonContent);
@@ -131,7 +128,7 @@ public class DecisionCodegen extends AbstractGenerator {
             LOGGER.error("Error while trying to generate OpenAPI specification for the DMN models", e);
         }
 
-        for (DMNResource resource : resources) {
+        for (DMNResource resource : dmnResources) {
             DMNModel model = resource.getDmnModel();
             if (model.getName() == null || model.getName().isEmpty()) {
                 throw new RuntimeException("Model name should not be empty");
@@ -160,7 +157,7 @@ public class DecisionCodegen extends AbstractGenerator {
         }
 
         DMNMarshaller marshaller = DMNMarshallerFactory.newDefaultMarshaller();
-        for (DMNResource resource : resources) {
+        for (DMNResource resource : dmnResources) {
             DMNModel model = resource.getDmnModel();
             Definitions definitions = model.getDefinitions();
             for (DRGElement drg : definitions.getDrgElement()) {
@@ -180,7 +177,7 @@ public class DecisionCodegen extends AbstractGenerator {
     private void generateAndStoreDecisionModelResourcesProvider() {
         final DecisionModelResourcesProviderGenerator generator = new DecisionModelResourcesProviderGenerator(context(),
                                                                                                               applicationCanonicalName(),
-                                                                                                              resources);
+                                                                                                              dmnResources);
         storeFile(GeneratedFile.Type.CLASS, generator.generatedFilePath(), generator.generate());
     }
 
@@ -254,13 +251,6 @@ public class DecisionCodegen extends AbstractGenerator {
         generatedFiles.addAll(DashboardGeneratedFileUtils.domain(domainDashboard, resourceGenerator.getNameURL() + ".json"));
     }
 
-    @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        if (!cResources.isEmpty()) {
-            cfg.withDecisionConfig(new DecisionConfigGenerator(context()));
-        }
-    }
-
     private void storeFile(GeneratedFile.Type type, String path, String source) {
         generatedFiles.add(new GeneratedFile(type, path, source));
     }
@@ -270,11 +260,11 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public ApplicationSection section() {
-        return new DecisionContainerGenerator(
+    public Optional<ApplicationSection> section() {
+        return Optional.of(new DecisionContainerGenerator(
                 context(),
                 applicationCanonicalName(),
-                this.cResources);
+                resources()));
     }
 
     public DecisionCodegen withClassLoader(ClassLoader classLoader) {

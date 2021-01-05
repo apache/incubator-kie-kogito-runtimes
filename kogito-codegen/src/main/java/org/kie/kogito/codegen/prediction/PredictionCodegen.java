@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
@@ -38,7 +39,6 @@ import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
@@ -56,15 +56,13 @@ import org.slf4j.LoggerFactory;
 import static java.util.stream.Collectors.toList;
 import static org.kie.pmml.evaluator.assembler.service.PMMLCompilerService.getKiePMMLModelsFromResourceWithSources;
 
-public class PredictionCodegen extends AbstractGenerator {
+public class PredictionCodegen extends AbstractGenerator<PMMLResource> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PredictionCodegen.class);
-    private final List<PMMLResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
 
     public PredictionCodegen(KogitoBuildContext context, List<PMMLResource> resources) {
-        super(context);
-        this.resources = resources;
+        super(context, resources, new PredictionConfigGenerator(context));
     }
 
     public static PredictionCodegen ofCollectedResources(KogitoBuildContext context,
@@ -99,15 +97,8 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        if (!resources.isEmpty()) {
-            cfg.withPredictionConfig(new PredictionConfigGenerator(context()));
-        }
-    }
-
-    @Override
-    public ApplicationSection section() {
-        return new PredictionModelsGenerator(context(), applicationCanonicalName(), resources);
+    public Optional<ApplicationSection> section() {
+        return Optional.of(new PredictionModelsGenerator(context(), applicationCanonicalName(), resources()));
     }
 
     public List<GeneratedFile> getGeneratedFiles() {
@@ -116,10 +107,10 @@ public class PredictionCodegen extends AbstractGenerator {
 
     @Override
     public List<GeneratedFile> generate() {
-        if (resources.isEmpty()) {
+        if (resources().isEmpty()) {
             return Collections.emptyList();
         }
-        for (PMMLResource resource : resources) {
+        for (PMMLResource resource : resources()) {
             ModelBuilderImpl<KogitoPackageSources> modelBuilder =
                     new ModelBuilderImpl<>(KogitoPackageSources::dumpSources,
                                            new KnowledgeBuilderConfigurationImpl(getClass().getClassLoader()),

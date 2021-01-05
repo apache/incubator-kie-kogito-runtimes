@@ -55,7 +55,6 @@ import org.kie.internal.builder.DecisionTableConfiguration;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
@@ -78,7 +77,7 @@ import static org.drools.compiler.kie.builder.impl.AbstractKieModule.addDTableTo
 import static org.drools.compiler.kie.builder.impl.AbstractKieModule.loadResourceConfiguration;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 
-public class IncrementalRuleCodegen extends AbstractGenerator {
+public class IncrementalRuleCodegen extends AbstractGenerator<Resource> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IncrementalRuleCodegen.class);
 
@@ -105,7 +104,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     }
 
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
-    private final Collection<Resource> resources;
     private final List<RuleUnitGenerator> ruleUnitGenerators = new ArrayList<>();
 
     /**
@@ -121,8 +119,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
 
     private IncrementalRuleCodegen(KogitoBuildContext context, Collection<Resource> resources) {
-        super(context);
-        this.resources = resources;
+        super(context, resources, new RuleConfigGenerator(context));
         this.kieModuleModel = new KieModuleModelImpl();
         setDefaultsforEmptyKieModule(kieModuleModel);
         this.contextClassLoader = getClass().getClassLoader();
@@ -134,17 +131,17 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     }
 
     @Override
-    public ApplicationSection section() {
+    public Optional<ApplicationSection> section() {
         RuleUnitContainerGenerator moduleGenerator = new RuleUnitContainerGenerator(context());
         ruleUnitGenerators.forEach(moduleGenerator::addRuleUnit);
-        return moduleGenerator;
+        return Optional.of(moduleGenerator);
     }
 
     @Override
     public List<org.kie.kogito.codegen.GeneratedFile> generate() {
         ReleaseIdImpl dummyReleaseId = new ReleaseIdImpl("dummy:dummy:0.0.0");
         if (!decisionTableSupported &&
-                resources.stream().anyMatch(r -> r.getResourceType() == ResourceType.DTABLE)) {
+                resources().stream().anyMatch(r -> r.getResourceType() == ResourceType.DTABLE)) {
             throw new MissingDecisionTableDependencyError();
         }
 
@@ -154,7 +151,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<>( KogitoPackageSources::dumpSources, configuration, dummyReleaseId, true, hotReloadMode );
 
         CompositeKnowledgeBuilder batch = modelBuilder.batch();
-        resources.forEach(f -> addResource( batch, f ) );
+        resources().forEach(f -> addResource( batch, f ) );
 
         try {
             batch.build();
@@ -226,7 +223,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     }
 
     private Resource findPropertiesResource(Resource resource) {
-        return resources.stream().filter( r -> r.getSourcePath().equals( resource.getSourcePath() + ".properties" ) ).findFirst().orElse( null );
+        return resources().stream().filter( r -> r.getSourcePath().equals( resource.getSourcePath() + ".properties" ) ).findFirst().orElse( null );
     }
 
     private boolean generateModels( ModelBuilderImpl<KogitoPackageSources> modelBuilder, Map<String, String> unitsMap, List<GeneratedFile> modelFiles, Map<String, String> modelsByUnit ) {
@@ -409,11 +406,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     private String ruleUnit2KieSessionName(String ruleUnit) {
         return ruleUnit.replace( '.', '$' )  + "KieSession";
-    }
-
-    @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        cfg.withRuleConfig(new RuleConfigGenerator(context()));
     }
 
     public IncrementalRuleCodegen withKModule(KieModuleModel model) {

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,7 +43,6 @@ import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 
-public class DeclaredTypeCodegen extends AbstractGenerator {
+public class DeclaredTypeCodegen extends AbstractGenerator<Resource> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeclaredTypeCodegen.class);
 
@@ -89,7 +89,6 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
     private static final ResourceType[] resourceTypes = {
             ResourceType.DRL
     };
-    private final Collection<Resource> resources;
 
     /**
      * used for type-resolving during codegen/type-checking
@@ -97,16 +96,16 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
     private ClassLoader contextClassLoader;
 
     private DeclaredTypeCodegen(KogitoBuildContext context, Collection<Resource> resources) {
-        super(context);
-        this.resources = resources;
+        super(context, resources, new RuleConfigGenerator(context));
         this.contextClassLoader = getClass().getClassLoader();
     }
 
     @Override
-    public ApplicationSection section() {
-        return null;
+    public Optional<ApplicationSection> section() {
+        return Optional.empty();
     }
 
+    @Override
     public List<org.kie.kogito.codegen.GeneratedFile> generate() {
         ReleaseIdImpl dummyReleaseId = new ReleaseIdImpl("dummy:dummy:0.0.0");
 
@@ -128,7 +127,7 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
         };
 
         CompositeKnowledgeBuilder batch = modelBuilder.batch();
-        resources.forEach(f -> batch.add(f, f.getResourceType()));
+        resources().forEach(f -> batch.add(f, f.getResourceType()));
 
         try {
             batch.build();
@@ -158,11 +157,6 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
                 .map(f -> new org.kie.kogito.codegen.GeneratedFile(
                         org.kie.kogito.codegen.GeneratedFile.Type.DECLARED_TYPE,
                         f.getPath(), f.getData())).collect(toList());
-    }
-
-    @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        cfg.withRuleConfig(new RuleConfigGenerator(context()));
     }
 
     public DeclaredTypeCodegen withClassLoader(ClassLoader projectClassLoader) {
