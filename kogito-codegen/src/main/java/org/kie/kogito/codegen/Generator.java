@@ -18,8 +18,6 @@ package org.kie.kogito.codegen;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -51,8 +49,4 @@ public interface Generator {
     void updateConfig(ApplicationConfigGenerator cfg);
 
     KogitoBuildContext context();
-    
-    default Map<String, String> getLabels() {
-        return Collections.emptyMap();
-    }
 }

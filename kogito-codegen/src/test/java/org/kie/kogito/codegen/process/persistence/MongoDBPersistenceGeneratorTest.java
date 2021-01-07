@@ -29,6 +29,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
@@ -46,6 +47,7 @@ class MongoDBPersistenceGeneratorTest {
     KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
             .withApplicationProperties(new File(TEST_RESOURCES))
             .withPackageName(this.getClass().getPackage().getName())
+            .withAddonsConfig(AddonsConfig.builder().withPersistence(true).build())
             .build();
 
     @Test
@@ -53,7 +55,6 @@ class MongoDBPersistenceGeneratorTest {
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
                 context,
                 Collections.singleton(Person.class),
-                true,
                 null,
                 null,
                 Arrays.asList("com.mongodb.client.MongoClient"),

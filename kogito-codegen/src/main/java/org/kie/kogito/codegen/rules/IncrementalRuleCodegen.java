@@ -293,9 +293,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator<Resource> {
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
             initRuleUnitHelper( ruleUnitHelper, ruleUnit.getRuleUnitDescription() );
 
-            // add the label id of the rule unit with value set to `rules` as resource type
-            this.addLabel(ruleUnit.label(), "rules");
-
             List<String> queryClasses = useRestServices ? generateQueriesEndpoint( errors, generatedFiles, ruleUnitHelper, ruleUnit ) : Collections.emptyList();
 
             generatedFiles.add( ruleUnit.generateFile( org.kie.kogito.codegen.GeneratedFile.Type.RULE) );
