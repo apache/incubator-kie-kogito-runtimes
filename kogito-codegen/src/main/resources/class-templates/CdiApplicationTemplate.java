@@ -7,6 +7,6 @@ public class Application extends org.kie.kogito.StaticApplication {
     public Application(
             org.kie.kogito.Config config,
             javax.enterprise.inject.Instance<org.kie.kogito.KogitoEngine> engines) {
-        super(config, engines.stream().toArray(org.kie.kogito.KogitoEngine[]::new));
+        super(config, engines);
     }
 }

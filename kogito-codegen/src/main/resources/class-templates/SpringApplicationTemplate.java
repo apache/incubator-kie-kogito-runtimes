@@ -8,6 +8,6 @@ public class Application extends org.kie.kogito.StaticApplication {
     public Application(
             org.kie.kogito.Config config,
             java.util.Collection<org.kie.kogito.KogitoEngine> engines) {
-        super(config, engines.toArray(org.kie.kogito.KogitoEngine[]::new));
+        super(config, engines);
     }
 }

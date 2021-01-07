@@ -6,6 +6,6 @@ public class ApplicationConfig extends org.kie.kogito.StaticConfig {
     @javax.inject.Inject
     public ApplicationConfig(
             Instance<org.kie.kogito.KogitoConfig> configs) {
-        super($Addons$, configs.stream().toArray(org.kie.kogito.KogitoConfig[]::new));
+        super($Addons$, configs);
     }
 }
