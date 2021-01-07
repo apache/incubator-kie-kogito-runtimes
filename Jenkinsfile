@@ -114,7 +114,7 @@ void checkoutOptaplannerRepo() {
         && versionSplit[0].isNumber()
         && versionSplit[1].isNumber()
        && versionSplit[2] == 'x') {
-        targetBranch = "${versionSplit[0]}.${versionSplit[1]}.x"
+        targetBranch = "${Integer.parseInt(versionSplit[0]) + 7}.${versionSplit[1]}.x"
     } else {
         echo "Cannot parse changeTarget as release branch so going further with current value: ${changeTarget}"
     }
