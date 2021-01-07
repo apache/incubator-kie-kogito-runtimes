@@ -15,26 +15,22 @@
 
 package org.kie.kogito.codegen;
 
-import java.util.Collection;
 import java.util.Objects;
 
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 
-public abstract class AbstractGenerator<R> implements Generator {
+public abstract class AbstractGenerator implements Generator {
 
-    private final Collection<R> resources;
     private final ConfigGenerator configGenerator;
     private final KogitoBuildContext context;
 
-    protected AbstractGenerator(KogitoBuildContext context, Collection<R> resources) {
-        this(context, resources, null);
+    protected AbstractGenerator(KogitoBuildContext context) {
+        this(context, null);
     }
 
-    protected AbstractGenerator(KogitoBuildContext context, Collection<R> resources, ConfigGenerator configGenerator) {
+    protected AbstractGenerator(KogitoBuildContext context, ConfigGenerator configGenerator) {
         Objects.requireNonNull(context, "context cannot be null");
-        Objects.requireNonNull(resources, "resources cannot be null");
         this.context = context;
-        this.resources = resources;
         this.configGenerator = configGenerator;
     }
 
@@ -48,13 +44,8 @@ public abstract class AbstractGenerator<R> implements Generator {
     }
 
     @Override
-    public Collection<R> resources() {
-        return resources;
-    }
-
-    @Override
     public void updateConfig(ApplicationConfigGenerator cfg) {
-        if (!resources.isEmpty() && configGenerator != null) {
+        if (configGenerator != null) {
             cfg.withConfigGenerator(configGenerator);
         }
     }

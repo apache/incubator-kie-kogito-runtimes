@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 
-public class DecisionCodegen extends AbstractGenerator<CollectedResource> {
+public class DecisionCodegen extends AbstractGenerator {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(DecisionCodegen.class);
 
@@ -79,17 +79,19 @@ public class DecisionCodegen extends AbstractGenerator<CollectedResource> {
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
 
-    private final List<DMNResource> dmnResources = new ArrayList<>();
+    private final List<CollectedResource> cResources;
+    private final List<DMNResource> resources = new ArrayList<>();
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
     private ClassLoader notPCLClassloader; // Kogito CodeGen design as of 2020-10-09
     private PCLResolverFn pclResolverFn = this::trueIFFClassIsPresent;
 
     public DecisionCodegen(KogitoBuildContext context, List<CollectedResource> cResources) {
-        super(context, cResources, new DecisionConfigGenerator(context));
+        super(context, new DecisionConfigGenerator(context));
+        this.cResources = cResources;
     }
 
     private void loadModelsAndValidate() {
-        Map<Resource, CollectedResource> r2cr = resources().stream().collect(Collectors.toMap(CollectedResource::resource, Function.identity()));
+        Map<Resource, CollectedResource> r2cr = cResources.stream().collect(Collectors.toMap(CollectedResource::resource, Function.identity()));
         // First, we perform static validation on directly the XML
         DecisionValidation.dmnValidateResources(context(), r2cr.keySet());
         // DMN model processing; any semantic error during compilation will also be thrown accordingly
@@ -99,13 +101,13 @@ public class DecisionCodegen extends AbstractGenerator<CollectedResource> {
                                                  .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
         // Any post-compilation of the DMN model validations: DT (static) analysis
         DecisionValidation.dmnValidateDecisionTablesInModels(context(), dmnRuntime.getModels());
-        List<DMNResource> dmnRs = dmnRuntime.getModels().stream().map(model -> new DMNResource(model, r2cr.get(model.getResource()))).collect(toList());
-        dmnResources.addAll(dmnRs);
+        List<DMNResource> dmnResources = dmnRuntime.getModels().stream().map(model -> new DMNResource(model, r2cr.get(model.getResource()))).collect(toList());
+        resources.addAll(dmnResources);
     }
 
     @Override
     public List<GeneratedFile> generate() {
-        if (resources().isEmpty()) {
+        if (cResources.isEmpty()) {
             return Collections.emptyList();
         }
         loadModelsAndValidate();
@@ -120,7 +122,7 @@ public class DecisionCodegen extends AbstractGenerator<CollectedResource> {
         
         DMNOASResult oasResult = null;
         try {
-            List<DMNModel> models = dmnResources.stream().map(DMNResource::getDmnModel).collect(Collectors.toList());
+            List<DMNModel> models = resources.stream().map(DMNResource::getDmnModel).collect(Collectors.toList());
             oasResult = DMNOASGeneratorFactory.generator(models).build();
             String jsonContent = new ObjectMapper().writeValueAsString(oasResult.getJsonSchemaNode());
             storeFile(GeneratedFile.Type.GENERATED_CP_RESOURCE, "META-INF/resources/dmnDefinitions.json", jsonContent);
@@ -128,7 +130,7 @@ public class DecisionCodegen extends AbstractGenerator<CollectedResource> {
             LOGGER.error("Error while trying to generate OpenAPI specification for the DMN models", e);
         }
 
-        for (DMNResource resource : dmnResources) {
+        for (DMNResource resource : resources) {
             DMNModel model = resource.getDmnModel();
             if (model.getName() == null || model.getName().isEmpty()) {
                 throw new RuntimeException("Model name should not be empty");
@@ -157,7 +159,7 @@ public class DecisionCodegen extends AbstractGenerator<CollectedResource> {
         }
 
         DMNMarshaller marshaller = DMNMarshallerFactory.newDefaultMarshaller();
-        for (DMNResource resource : dmnResources) {
+        for (DMNResource resource : resources) {
             DMNModel model = resource.getDmnModel();
             Definitions definitions = model.getDefinitions();
             for (DRGElement drg : definitions.getDrgElement()) {
@@ -177,7 +179,7 @@ public class DecisionCodegen extends AbstractGenerator<CollectedResource> {
     private void generateAndStoreDecisionModelResourcesProvider() {
         final DecisionModelResourcesProviderGenerator generator = new DecisionModelResourcesProviderGenerator(context(),
                                                                                                               applicationCanonicalName(),
-                                                                                                              dmnResources);
+                                                                                                              resources);
         storeFile(GeneratedFile.Type.CLASS, generator.generatedFilePath(), generator.generate());
     }
 
@@ -264,7 +266,7 @@ public class DecisionCodegen extends AbstractGenerator<CollectedResource> {
         return Optional.of(new DecisionContainerGenerator(
                 context(),
                 applicationCanonicalName(),
-                resources()));
+                this.cResources));
     }
 
     public DecisionCodegen withClassLoader(ClassLoader classLoader) {

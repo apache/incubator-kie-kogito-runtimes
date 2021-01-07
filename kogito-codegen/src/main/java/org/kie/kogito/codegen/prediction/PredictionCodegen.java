@@ -56,13 +56,15 @@ import org.slf4j.LoggerFactory;
 import static java.util.stream.Collectors.toList;
 import static org.kie.pmml.evaluator.assembler.service.PMMLCompilerService.getKiePMMLModelsFromResourceWithSources;
 
-public class PredictionCodegen extends AbstractGenerator<PMMLResource> {
+public class PredictionCodegen extends AbstractGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PredictionCodegen.class);
+    private final List<PMMLResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
 
     public PredictionCodegen(KogitoBuildContext context, List<PMMLResource> resources) {
-        super(context, resources, new PredictionConfigGenerator(context));
+        super(context, new PredictionConfigGenerator(context));
+        this.resources = resources;
     }
 
     public static PredictionCodegen ofCollectedResources(KogitoBuildContext context,
@@ -98,7 +100,7 @@ public class PredictionCodegen extends AbstractGenerator<PMMLResource> {
 
     @Override
     public Optional<ApplicationSection> section() {
-        return Optional.of(new PredictionModelsGenerator(context(), applicationCanonicalName(), resources()));
+        return Optional.of(new PredictionModelsGenerator(context(), applicationCanonicalName(), resources));
     }
 
     public List<GeneratedFile> getGeneratedFiles() {
@@ -107,10 +109,10 @@ public class PredictionCodegen extends AbstractGenerator<PMMLResource> {
 
     @Override
     public List<GeneratedFile> generate() {
-        if (resources().isEmpty()) {
+        if (resources.isEmpty()) {
             return Collections.emptyList();
         }
-        for (PMMLResource resource : resources()) {
+        for (PMMLResource resource : resources) {
             ModelBuilderImpl<KogitoPackageSources> modelBuilder =
                     new ModelBuilderImpl<>(KogitoPackageSources::dumpSources,
                                            new KnowledgeBuilderConfigurationImpl(getClass().getClassLoader()),

@@ -32,8 +32,6 @@ public interface Generator {
      */
     Optional<ApplicationSection> section();
 
-    Collection<?> resources();
-
     /**
      * Returns the collection of all the files that have been generated/compiled
      *

@@ -56,7 +56,7 @@ import org.kie.kogito.codegen.process.persistence.proto.ProtoDataClassesResult;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
 
 
-public class PersistenceGenerator extends AbstractGenerator<Object> {
+public class PersistenceGenerator extends AbstractGenerator {
 
     public static final String FILESYSTEM_PERSISTENCE_TYPE = "filesystem";
     public static final String INFINISPAN_PERSISTENCE_TYPE = "infinispan";
@@ -90,7 +90,7 @@ public class PersistenceGenerator extends AbstractGenerator<Object> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public PersistenceGenerator(KogitoBuildContext context, Collection<?> modelClasses, ProtoGenerator<?> protoGenerator, ClassLoader classLoader, List<String> parameters, String persistenceType) {
-        super(context, (Collection) modelClasses);
+        super(context);
         this.modelClasses = modelClasses;
         this.protoGenerator = protoGenerator;
         this.classLoader = classLoader;

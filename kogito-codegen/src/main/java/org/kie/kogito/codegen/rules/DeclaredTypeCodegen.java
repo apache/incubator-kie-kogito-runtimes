@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 
-public class DeclaredTypeCodegen extends AbstractGenerator<Resource> {
+public class DeclaredTypeCodegen extends AbstractGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeclaredTypeCodegen.class);
 
@@ -89,6 +89,7 @@ public class DeclaredTypeCodegen extends AbstractGenerator<Resource> {
     private static final ResourceType[] resourceTypes = {
             ResourceType.DRL
     };
+    private final Collection<Resource> resources;
 
     /**
      * used for type-resolving during codegen/type-checking
@@ -96,7 +97,8 @@ public class DeclaredTypeCodegen extends AbstractGenerator<Resource> {
     private ClassLoader contextClassLoader;
 
     private DeclaredTypeCodegen(KogitoBuildContext context, Collection<Resource> resources) {
-        super(context, resources, new RuleConfigGenerator(context));
+        super(context, new RuleConfigGenerator(context));
+        this.resources = resources;
         this.contextClassLoader = getClass().getClassLoader();
     }
 
@@ -127,7 +129,7 @@ public class DeclaredTypeCodegen extends AbstractGenerator<Resource> {
         };
 
         CompositeKnowledgeBuilder batch = modelBuilder.batch();
-        resources().forEach(f -> batch.add(f, f.getResourceType()));
+        resources.forEach(f -> batch.add(f, f.getResourceType()));
 
         try {
             batch.build();

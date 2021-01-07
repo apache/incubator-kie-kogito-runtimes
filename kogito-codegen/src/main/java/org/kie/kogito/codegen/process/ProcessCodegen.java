@@ -68,7 +68,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Entry point to process code generation
  */
-public class ProcessCodegen extends AbstractGenerator<Process> {
+public class ProcessCodegen extends AbstractGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCodegen.class);
 
@@ -167,7 +167,7 @@ public class ProcessCodegen extends AbstractGenerator<Process> {
     private final Set<GeneratedFile> generatedFiles = new HashSet<>();
 
     public ProcessCodegen(KogitoBuildContext context, Collection<Process> processes) {
-        super(context, processes, new ProcessConfigGenerator(context));
+        super(context, new ProcessConfigGenerator(context));
         this.processes = new HashMap<>();
         for (Process process : processes) {
             if (this.processes.containsKey(process.getId())) {
