@@ -118,8 +118,8 @@ void checkoutOptaplannerRepo() {
     } else {
         echo "Cannot parse changeTarget as release branch so going further with current value: ${changeTarget}"
     }
-    dir(dirName) {
-        githubscm.checkoutIfExists("optaplanner", changeAuthor, changeBranch, 'kiegroup', targetBranch, true)
+    dir('optaplanner') {
+        githubscm.checkoutIfExists('optaplanner', changeAuthor, changeBranch, 'kiegroup', targetBranch, true)
     }
 }
 
