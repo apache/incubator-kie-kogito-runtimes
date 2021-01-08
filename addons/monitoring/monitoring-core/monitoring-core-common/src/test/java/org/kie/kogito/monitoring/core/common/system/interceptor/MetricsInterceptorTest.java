@@ -36,12 +36,12 @@ class MetricsInterceptorTest {
     }
 
     private void commonMetricInterceptorFilter(String endpoint, int statusCode, String expectedEndpoint) {
-        try (MockedStatic<SystemMetricsCollector> mockedStaticURLEncoder = Mockito.mockStatic(SystemMetricsCollector.class)) {
+        try (MockedStatic<SystemMetricsCollector> systemMetricsCollector = Mockito.mockStatic(SystemMetricsCollector.class)) {
             MetricsInterceptor.filter(endpoint, statusCode);
 
             final ArgumentCaptor<String> endpointCaptor = ArgumentCaptor.forClass(String.class);
             final ArgumentCaptor<String> statusCodeCaptor = ArgumentCaptor.forClass(String.class);
-            mockedStaticURLEncoder.verify(times(1), () -> SystemMetricsCollector.registerStatusCodeRequest(endpointCaptor.capture(), statusCodeCaptor.capture()));
+            systemMetricsCollector.verify(times(1), () -> SystemMetricsCollector.registerStatusCodeRequest(endpointCaptor.capture(), statusCodeCaptor.capture()));
 
             List<String> endpoints = endpointCaptor.getAllValues();
             assertThat(endpoints.isEmpty()).isFalse();

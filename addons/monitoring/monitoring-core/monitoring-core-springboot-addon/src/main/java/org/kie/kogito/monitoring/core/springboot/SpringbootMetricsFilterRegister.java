@@ -33,4 +33,9 @@ public class SpringbootMetricsFilterRegister implements WebMvcConfigurer {
             registry.addInterceptor(new SpringbootMetricsInterceptor());
         }
     }
+
+    // for testing purpose
+    void setHttpInterceptorUseDefault(boolean httpInterceptorUseDefault) {
+        this.httpInterceptorUseDefault = httpInterceptorUseDefault;
+    }
 }

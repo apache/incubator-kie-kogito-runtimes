@@ -35,4 +35,9 @@ public class QuarkusMetricsFilterRegister implements DynamicFeature {
             context.register(new QuarkusMetricsInterceptor());
         }
     }
+
+    // for testing purpose
+    void setHttpInterceptorUseDefault(boolean httpInterceptorUseDefault) {
+        this.httpInterceptorUseDefault = httpInterceptorUseDefault;
+    }
 }
