@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.data.Answer;
-import org.kie.kogito.codegen.data.AnswerWitAnnotations;
+import org.kie.kogito.codegen.data.AnswerWithAnnotations;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.data.PersonVarInfo;
 import org.kie.kogito.codegen.data.PersonWithAddress;
@@ -375,7 +375,7 @@ class ReflectionProtoGeneratorTest {
     @Test
     void testAnswerWithAnnotationsProtoFile() {
 
-        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(AnswerWitAnnotations.class));
+        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(AnswerWithAnnotations.class));
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");
@@ -384,7 +384,7 @@ class ReflectionProtoGeneratorTest {
 
         ProtoEnum answer = proto.getEnums().get(0);
         assertThat(answer).isNotNull();
-        assertThat(answer.getName()).isEqualTo("AnswerWitAnnotations");
+        assertThat(answer.getName()).isEqualTo("AnswerWithAnnotations");
         assertThat(answer.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
         assertThat(answer.getFields()).hasSize(3);
 
@@ -467,7 +467,7 @@ class ReflectionProtoGeneratorTest {
         ProtoField field = question.getFields().get(0);
         assertThat(field).isNotNull();
         assertThat(field.getName()).isEqualTo("answer");
-        assertThat(field.getType()).isEqualTo("AnswerWitAnnotations");
+        assertThat(field.getType()).isEqualTo("AnswerWithAnnotations");
         assertThat(field.getApplicability()).isEqualTo("optional");
 
         field = question.getFields().get(1);

@@ -12,16 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.codegen.data;
 
-import org.infinispan.protostream.annotations.ProtoEnumValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.kie.internal.kogito.codegen.Generated;
+import org.kie.internal.kogito.codegen.VariableInfo;
 
-public enum AnswerWitAnnotations {
-    @ProtoEnumValue(number = 1)
-    YES,
-    @ProtoEnumValue(number = 2)
-    MAYBE,
-    @ProtoEnumValue(number = 3)
-    NO
+@Generated(value = {"kogito-codegen"}, reference = "generatedPerson", name = "GeneratedPerson")
+public class GeneratedPOJO {
+    @VariableInfo(tags = "test")
+    @JsonProperty("generatedProperty")
+    private String generatedProperty;
 }

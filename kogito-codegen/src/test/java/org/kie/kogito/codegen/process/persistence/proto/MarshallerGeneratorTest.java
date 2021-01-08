@@ -16,7 +16,6 @@
 package org.kie.kogito.codegen.process.persistence.proto;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +23,9 @@ import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import org.infinispan.protostream.EnumMarshaller;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.data.Answer;
-import org.kie.kogito.codegen.data.AnswerWitAnnotations;
+import org.kie.kogito.codegen.data.AnswerWithAnnotations;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.data.PersonWithAddress;
 import org.kie.kogito.codegen.data.PersonWithAddresses;
@@ -153,7 +151,7 @@ class MarshallerGeneratorTest {
 
     @Test
     void testEnumMarshallers() {
-        Stream.of(Answer.class, AnswerWitAnnotations.class).forEach(e -> {
+        Stream.of(Answer.class, AnswerWithAnnotations.class).forEach(e -> {
             Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(e));
             assertThat(proto).isNotNull();
             assertThat(proto.getEnums()).hasSize(1);
