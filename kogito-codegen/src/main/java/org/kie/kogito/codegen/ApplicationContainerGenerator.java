@@ -38,7 +38,7 @@ public class ApplicationContainerGenerator {
     private static final String RESOURCE_CDI = "/class-templates/CdiApplicationTemplate.java";
     private static final String RESOURCE_SPRING = "/class-templates/SpringApplicationTemplate.java";
     private static final String RESOURCE_DEFAULT = "/class-templates/ApplicationTemplate.java";
-    private static final GeneratedFileType APPLICATION_TYPE = GeneratedFileType.of("APPLICATION", GeneratedFileType.Category.SOURCE, false);
+    private static final GeneratedFileType APPLICATION_TYPE = GeneratedFileType.of("APPLICATION", GeneratedFileType.Category.SOURCE);
 
     private final TemplatedGenerator templatedGenerator;
 

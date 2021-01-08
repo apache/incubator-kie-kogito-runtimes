@@ -38,7 +38,7 @@ import static org.kie.kogito.codegen.CodegenUtils.newObject;
 
 public class ApplicationConfigGenerator {
 
-    public static final GeneratedFileType APPLICATION_CONFIG_TYPE = GeneratedFileType.of("APPLICATION_CONFIG", GeneratedFileType.Category.SOURCE, false);
+    public static final GeneratedFileType APPLICATION_CONFIG_TYPE = GeneratedFileType.of("APPLICATION_CONFIG", GeneratedFileType.Category.SOURCE);
     private static final String CLASS_NAME = "ApplicationConfig";
     private static final String RESOURCE_DEFAULT = "/class-templates/config/ApplicationConfigTemplate.java";
     private static final String RESOURCE_CDI = "/class-templates/config/CdiApplicationConfigTemplate.java";
