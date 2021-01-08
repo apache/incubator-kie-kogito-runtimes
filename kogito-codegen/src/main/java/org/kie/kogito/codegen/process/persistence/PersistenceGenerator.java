@@ -45,9 +45,9 @@ import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.AbstractGenerator;
+import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
@@ -55,7 +55,6 @@ import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoDataClassesResult;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
-
 
 public class PersistenceGenerator extends AbstractGenerator {
 
@@ -272,8 +271,12 @@ public class PersistenceGenerator extends AbstractGenerator {
         return generatedFiles;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private Collection<GeneratedFile> mongodbBasedPersistence() {
-        Collection<GeneratedFile> generatedFiles = new ArrayList<>();
+
+        ProtoDataClassesResult protoDataClassesResult = protoGenerator.extractDataClasses((Collection) modelClasses);
+        Collection<GeneratedFile> generatedFiles = new ArrayList<>(protoDataClassesResult.getGeneratedFiles());
+
         ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration()
                                                                                                 .setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL).setModifiers(Modifier.Keyword.PUBLIC)
                                                                                                 .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);

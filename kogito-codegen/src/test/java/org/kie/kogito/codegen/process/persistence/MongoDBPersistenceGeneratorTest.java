@@ -17,13 +17,13 @@ package org.kie.kogito.codegen.process.persistence;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -62,6 +62,9 @@ class MongoDBPersistenceGeneratorTest {
                 Arrays.asList("com.mongodb.client.MongoClient"),
                 "mongodb");
         Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
+
+        List<GeneratedFile> protoFiles = generatedFiles.stream().filter(gf -> gf.relativePath().contains(".proto")).collect(Collectors.toList());
+        assertEquals(1, protoFiles.size());
 
         Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.getType() == GeneratedFile.Type.CLASS).findFirst();
         assertTrue(generatedCLASSFile.isPresent());
