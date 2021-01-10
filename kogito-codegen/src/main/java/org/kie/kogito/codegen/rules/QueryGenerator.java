@@ -39,28 +39,34 @@ import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
+import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 
-import static com.github.javaparser.StaticJavaParser.parse;
 import static org.drools.core.util.StringUtils.ucFirst;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
 import static org.kie.kogito.codegen.rules.QueryEndpointGenerator.setGeneric;
 
 public class QueryGenerator implements FileGenerator {
 
+    private final TemplatedGenerator generator;
     private final RuleUnitDescription ruleUnit;
     private final QueryModel query;
 
-    private final String name;
     private final String targetCanonicalName;
-    private final String generatedFilePath;
 
-    public QueryGenerator( RuleUnitDescription ruleUnit, QueryModel query, String name ) {
+    public QueryGenerator(KogitoBuildContext context, RuleUnitDescription ruleUnit, QueryModel query, String name ) {
         this.ruleUnit = ruleUnit;
         this.query = query;
-        this.name = name;
 
         this.targetCanonicalName = ruleUnit.getSimpleName() + "Query" + name;
-        this.generatedFilePath = (query.getNamespace() + "." + targetCanonicalName).replace('.', '/') + ".java";
+        this.generator = TemplatedGenerator.builder()
+                .withPackageName(query.getNamespace())
+                .withFallbackContext(JavaKogitoBuildContext.NAME)
+                .withTemplateBasePath("/class-templates/rules/")
+                .withTargetTypeName(targetCanonicalName)
+                .build(context, "RuleUnitQuery");
+
     }
 
     public String getQueryClassName() {
@@ -69,14 +75,12 @@ public class QueryGenerator implements FileGenerator {
 
     @Override
     public String generatedFilePath() {
-        return generatedFilePath;
+        return generator.generatedFilePath();
     }
 
     @Override
     public String generate() {
-        CompilationUnit cu = parse(
-                this.getClass().getResourceAsStream("/class-templates/rules/RuleUnitQueryTemplate.java"));
-        cu.setPackageDeclaration(query.getNamespace());
+        CompilationUnit cu = generator.compilationUnitOrThrow();
 
         ClassOrInterfaceDeclaration clazz = cu
                 .findFirst(ClassOrInterfaceDeclaration.class)

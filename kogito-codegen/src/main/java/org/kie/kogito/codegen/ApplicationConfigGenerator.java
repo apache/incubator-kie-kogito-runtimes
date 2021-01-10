@@ -35,9 +35,6 @@ import static org.kie.kogito.codegen.CodegenUtils.newObject;
 public class ApplicationConfigGenerator {
 
     private static final String CLASS_NAME = "ApplicationConfig";
-    private static final String RESOURCE_DEFAULT = "/class-templates/config/ApplicationConfigTemplate.java";
-    private static final String RESOURCE_CDI = "/class-templates/config/CdiApplicationConfigTemplate.java";
-    private static final String RESOURCE_SPRING = "/class-templates/config/SpringApplicationConfigTemplate.java";
 
     private final TemplatedGenerator templatedGenerator;
     private KogitoBuildContext context;
@@ -47,12 +44,9 @@ public class ApplicationConfigGenerator {
     private final Collection<ConfigGenerator> configGenerators = new ArrayList<>();
 
     public ApplicationConfigGenerator(KogitoBuildContext context) {
-        this.templatedGenerator = new TemplatedGenerator(
-                context,
-                CLASS_NAME,
-                RESOURCE_CDI,
-                RESOURCE_SPRING,
-                RESOURCE_DEFAULT);
+        this.templatedGenerator = TemplatedGenerator.builder()
+                .withTemplateBasePath("/class-templates/config/")
+                .build(context, CLASS_NAME);
         this.context = context;
 
         this.configGenerators.add(new ConfigBeanGenerator(context));
@@ -89,8 +83,7 @@ public class ApplicationConfigGenerator {
             ClassOrInterfaceDeclaration cls = compilationUnit
                     .findFirst(ClassOrInterfaceDeclaration.class)
                     .orElseThrow(() -> new InvalidTemplateException(
-                            CLASS_NAME,
-                            templatedGenerator.templatePath(),
+                            templatedGenerator,
                             "Compilation unit doesn't contain a class or interface declaration!"));
 
             initConfigs(getSuperStatement(cls), configClassNames);
@@ -106,15 +99,13 @@ public class ApplicationConfigGenerator {
         NameExpr addonsPlaceHolder =
                 cls.findFirst(NameExpr.class, e -> e.getNameAsString().equals("$Addons$")).
                         orElseThrow(() -> new InvalidTemplateException(
-                                templatedGenerator.typeName(),
-                                templatedGenerator.templatePath(),
+                                templatedGenerator,
                                 "Missing $Addons$ placeholder"));
 
         ObjectCreationExpr addonsList = generateAddonsList();
         addonsPlaceHolder.getParentNode()
                 .orElseThrow(() -> new InvalidTemplateException(
-                        templatedGenerator.typeName(),
-                        templatedGenerator.templatePath(),
+                        templatedGenerator,
                         "Cannot replace $Addons$ placeholder"))
                 .replace(addonsPlaceHolder, addonsList);
     }
@@ -135,8 +126,7 @@ public class ApplicationConfigGenerator {
     private ExplicitConstructorInvocationStmt getSuperStatement(ClassOrInterfaceDeclaration cls) {
         return cls.findFirst(ExplicitConstructorInvocationStmt.class)
                 .orElseThrow(() -> new InvalidTemplateException(
-                        CLASS_NAME,
-                        templatedGenerator.templatePath(),
+                        templatedGenerator,
                         "Impossible to find super invocation"));
     }
 

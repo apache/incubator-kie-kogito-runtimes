@@ -57,8 +57,10 @@ import org.infinispan.protostream.descriptors.FileDescriptor;
 import org.infinispan.protostream.descriptors.Option;
 import org.infinispan.protostream.impl.SerializationContextImpl;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
+import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 
-import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.ast.Modifier.Keyword.PUBLIC;
 import static com.github.javaparser.ast.expr.BinaryExpr.Operator.EQUALS;
 
@@ -66,9 +68,11 @@ public class MarshallerGenerator {
 
     private static final String JAVA_PACKAGE_OPTION = "java_package";
     private static final String STATE_PARAM = "state";
-    private ClassLoader classLoader;
+    private final KogitoBuildContext context;
+    private final ClassLoader classLoader;
 
-    public MarshallerGenerator(ClassLoader classLoader) {
+    public MarshallerGenerator(KogitoBuildContext context, ClassLoader classLoader) {
+        this.context = context;
         this.classLoader = classLoader;
     }
 
@@ -85,7 +89,11 @@ public class MarshallerGenerator {
 
     public List<CompilationUnit> generate(FileDescriptorSource proto) throws IOException {
         List<CompilationUnit> units = new ArrayList<>();
-        CompilationUnit parsedClazzFile = parse(this.getClass().getResourceAsStream("/class-templates/persistence/MessageMarshallerTemplate.java"));
+        TemplatedGenerator generator = TemplatedGenerator.builder()
+                .withFallbackContext(JavaKogitoBuildContext.NAME)
+                .withTemplateBasePath("/class-templates/persistence/")
+                .build(context, "MessageMarshaller");
+        CompilationUnit parsedClazzFile = generator.compilationUnitOrThrow();
 
         SerializationContext serializationContext = new SerializationContextImpl(Configuration.builder().build());
         serializationContext.registerProtoFiles(FileDescriptorSource.fromResources(classLoader, "kogito-types.proto"));

@@ -48,6 +48,7 @@ import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.FileGenerator;
 import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
@@ -55,10 +56,6 @@ import static com.github.javaparser.StaticJavaParser.parseStatement;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classNameToReferenceType;
 
 public class QueryEndpointGenerator implements FileGenerator {
-
-    public static final String RESOURCE_CDI = "/class-templates/rules/CdiRestQueryTemplate.java";
-    public static final String RESOURCE_SPRING = "/class-templates/rules/SpringRestQueryTemplate.java";
-    public static final String RESOURCE_DEFAULT = "/class-templates/rules/RestQueryTemplate.java";
 
     private final RuleUnitDescription ruleUnit;
     private final QueryModel query;
@@ -83,18 +80,16 @@ public class QueryEndpointGenerator implements FileGenerator {
         this.queryClassName = ruleUnit.getSimpleName() + "Query" + name;
         this.targetCanonicalName = queryClassName + "Endpoint";
         this.generatedFilePath = (query.getNamespace() + "." + targetCanonicalName).replace('.', '/') + ".java";
-        this.generator =
-                new TemplatedGenerator(
-                        context,
-                        query.getNamespace(),
-                        targetCanonicalName,
-                        RESOURCE_CDI,
-                        RESOURCE_SPRING,
-                        RESOURCE_DEFAULT);
+        this.generator = TemplatedGenerator.builder()
+                .withPackageName(query.getNamespace())
+                .withTemplateBasePath("/class-templates/rules/")
+                .withTargetTypeName(targetCanonicalName)
+                .withFallbackContext(JavaKogitoBuildContext.NAME)
+                .build(context, "RestQuery");
     }
 
     public QueryGenerator getQueryGenerator() {
-        return new QueryGenerator(ruleUnit, query, name);
+        return new QueryGenerator(context, ruleUnit, query, name);
     }
 
     @Override

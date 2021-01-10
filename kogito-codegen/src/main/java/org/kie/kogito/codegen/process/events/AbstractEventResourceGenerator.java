@@ -31,12 +31,8 @@ abstract class AbstractEventResourceGenerator {
         this.generator = generator;
     }
 
-    protected final String getResourceTemplate(){
-        return generator.templatePath();
-    }
-
     protected final String getClassName(){
-        return generator.typeName();
+        return generator.targetTypeName();
     }
 
     public final String generatedFilePath() {

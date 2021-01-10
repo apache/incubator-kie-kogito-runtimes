@@ -23,14 +23,11 @@ public abstract class AbstractConfigGenerator implements ConfigGenerator {
     private final TemplatedGenerator templatedGenerator;
     private final String configClassName;
 
-    public AbstractConfigGenerator(KogitoBuildContext context, String targetTypeName, String resourceCdi, String resourceSpring, String resourceDefault) {
+    public AbstractConfigGenerator(KogitoBuildContext context, String targetTypeName) {
         configClassName = targetTypeName;
-        this.templatedGenerator = new TemplatedGenerator(
-                context,
-                targetTypeName,
-                resourceCdi,
-                resourceSpring,
-                resourceDefault);
+        this.templatedGenerator = TemplatedGenerator.builder()
+                .withTemplateBasePath("/class-templates/config/")
+                .build(context, targetTypeName);
     }
 
     @Override

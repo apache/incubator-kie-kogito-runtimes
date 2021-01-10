@@ -36,9 +36,6 @@ import com.github.javaparser.ast.stmt.ThrowStmt;
 
 public class RuleUnitContainerGenerator extends AbstractApplicationSection {
 
-    private static final String RESOURCE = "/class-templates/rules/RuleUnitContainerTemplate.java";
-    private static final String RESOURCE_CDI = "/class-templates/rules/CdiRuleUnitContainerTemplate.java";
-    private static final String RESOURCE_SPRING = "/class-templates/rules/SpringRuleUnitContainerTemplate.java";
     public static final String SECTION_CLASS_NAME = "RuleUnits";
 
     private final List<RuleUnitGenerator> ruleUnits;
@@ -48,12 +45,10 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
     public RuleUnitContainerGenerator(KogitoBuildContext context) {
         super(context, SECTION_CLASS_NAME);
         this.ruleUnits = new ArrayList<>();
-        this.templatedGenerator = new TemplatedGenerator(
-                context,
-                SECTION_CLASS_NAME,
-                RESOURCE_CDI,
-                RESOURCE_SPRING,
-                RESOURCE);
+        this.templatedGenerator = TemplatedGenerator.builder()
+                .withTemplateBasePath("/class-templates/rules/")
+                .withTargetTypeName(SECTION_CLASS_NAME)
+                .build(context, "RuleUnitContainer");
     }
 
     void addRuleUnit(RuleUnitGenerator rusc) {

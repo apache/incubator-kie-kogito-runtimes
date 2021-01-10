@@ -24,8 +24,10 @@ import java.util.function.Predicate;
 
 public class QuarkusKogitoBuildContext extends AbstractKogitoBuildContext {
 
+    public static final String NAME = "Quarkus";
+
     protected QuarkusKogitoBuildContext(String packageName, Predicate<String> classAvailabilityResolver, File targetDirectory, AddonsConfig addonsConfig, Properties applicationProperties) {
-        super(packageName, classAvailabilityResolver, new CDIDependencyInjectionAnnotator(), targetDirectory, addonsConfig, applicationProperties);
+        super(packageName, classAvailabilityResolver, new CDIDependencyInjectionAnnotator(), targetDirectory, addonsConfig, applicationProperties, NAME);
     }
 
     public static Builder builder() {
