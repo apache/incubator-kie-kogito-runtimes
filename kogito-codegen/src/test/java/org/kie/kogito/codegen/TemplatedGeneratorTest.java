@@ -33,7 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.kie.kogito.codegen.ApplicationGenerator.APPLICATION_CLASS_NAME;
-import static org.kie.kogito.codegen.TemplatedGenerator.*;
+import static org.kie.kogito.codegen.TemplatedGenerator.Builder;
+import static org.kie.kogito.codegen.TemplatedGenerator.TEMPLATE_SUFFIX;
+import static org.kie.kogito.codegen.TemplatedGenerator.builder;
+import static org.kie.kogito.codegen.TemplatedGenerator.createTemplatePath;
 
 class TemplatedGeneratorTest {
 
@@ -46,20 +49,21 @@ class TemplatedGeneratorTest {
 
     @Test
     public void baseCheck() {
-        assertThatThrownBy(() -> TemplatedGenerator.builder().build(null, templateName))
+        Builder templateBuilder = builder();
+        assertThatThrownBy(() -> templateBuilder.build(null, templateName))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("context");
-        assertThatThrownBy(() -> TemplatedGenerator.builder().build(context, null))
+        assertThatThrownBy(() -> templateBuilder.build(context, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("templateName");
 
-        TemplatedGenerator generator = TemplatedGenerator.builder()
+        TemplatedGenerator generator = templateBuilder
                 .build(context, templateName);
 
         assertThat(generator).isNotNull();
         assertThat(generator.packageName).isEqualTo(context.getPackageName());
 
-        assertThat(generator.templateBasePath).isEqualTo(TemplatedGenerator.builder().templateBasePath);
+        assertThat(generator.templateBasePath).isEqualTo(templateBuilder.templateBasePath);
 
         assertThat(generator.fallbackContext).isNull();
         assertThat(generator.templateName()).isEqualTo(templateName);
@@ -80,9 +84,10 @@ class TemplatedGeneratorTest {
 
         assertThat(generator).isNotNull();
 
-        assertThat(generator.templateBasePath).contains(templateBasePath);
-        assertThat(generator.templateBasePath).startsWith("/");
-        assertThat(generator.templateBasePath).endsWith("/");
+        assertThat(generator.templateBasePath)
+                .contains(templateBasePath)
+                .startsWith("/")
+                .endsWith("/");
     }
 
     @Test
@@ -137,11 +142,12 @@ class TemplatedGeneratorTest {
 
         String selectResource = generator.templatePath();
 
-        assertThat(selectResource).isNotNull();
-        assertThat(selectResource).endsWith(TEMPLATE_SUFFIX);
-        assertThat(selectResource).contains(context.name());
-        assertThat(selectResource).contains(existingTemplate);
-        assertThat(selectResource).startsWith(TemplatedGenerator.builder().templateBasePath);
+        assertThat(selectResource)
+                .isNotNull()
+                .endsWith(TEMPLATE_SUFFIX)
+                .contains(context.name())
+                .contains(existingTemplate)
+                .startsWith(TemplatedGenerator.builder().templateBasePath);
 
         // with fallback
         String fallbackContext = SpringBootKogitoBuildContext.NAME;
@@ -154,12 +160,13 @@ class TemplatedGeneratorTest {
 
         String selectResourceWithFallback = generatorWithFallback.templatePath();
 
-        assertThat(selectResourceWithFallback).isNotNull();
-        assertThat(selectResourceWithFallback).endsWith(TEMPLATE_SUFFIX);
-        assertThat(selectResourceWithFallback).doesNotContain(context.name());
-        assertThat(selectResourceWithFallback).contains(fallbackContext);
-        assertThat(selectResourceWithFallback).contains(templateName);
-        assertThat(selectResourceWithFallback).startsWith(TemplatedGenerator.builder().templateBasePath);
+        assertThat(selectResourceWithFallback)
+                .isNotNull()
+                .endsWith(TEMPLATE_SUFFIX)
+                .doesNotContain(context.name())
+                .contains(fallbackContext)
+                .contains(templateName)
+                .startsWith(TemplatedGenerator.builder().templateBasePath);
 
         // no fallback no resource
         TemplatedGenerator generatorNotExist = TemplatedGenerator.builder()
