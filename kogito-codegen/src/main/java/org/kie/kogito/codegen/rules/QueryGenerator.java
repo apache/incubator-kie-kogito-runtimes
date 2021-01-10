@@ -53,24 +53,24 @@ public class QueryGenerator implements FileGenerator {
     private final RuleUnitDescription ruleUnit;
     private final QueryModel query;
 
-    private final String targetCanonicalName;
+    private final String targetClassName;
 
     public QueryGenerator(KogitoBuildContext context, RuleUnitDescription ruleUnit, QueryModel query, String name ) {
         this.ruleUnit = ruleUnit;
         this.query = query;
 
-        this.targetCanonicalName = ruleUnit.getSimpleName() + "Query" + name;
+        this.targetClassName = ruleUnit.getSimpleName() + "Query" + name;
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(query.getNamespace())
                 .withFallbackContext(JavaKogitoBuildContext.NAME)
                 .withTemplateBasePath("/class-templates/rules/")
-                .withTargetTypeName(targetCanonicalName)
+                .withTargetTypeName(targetClassName)
                 .build(context, "RuleUnitQuery");
 
     }
 
     public String getQueryClassName() {
-        return targetCanonicalName;
+        return generator.targetTypeName();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class QueryGenerator implements FileGenerator {
         ClassOrInterfaceDeclaration clazz = cu
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
-        clazz.setName(targetCanonicalName);
+        clazz.setName(targetClassName);
 
         cu.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
 
@@ -104,7 +104,7 @@ public class QueryGenerator implements FileGenerator {
 
     private void generateConstructors(ClassOrInterfaceDeclaration clazz) {
         for (ConstructorDeclaration c : clazz.getConstructors()) {
-            c.setName(targetCanonicalName);
+            c.setName(targetClassName);
             if (!c.getParameters().isEmpty()) {
                 setGeneric(c.getParameter(0).getType(), ruleUnit);
             }
@@ -132,7 +132,7 @@ public class QueryGenerator implements FileGenerator {
             statement.findFirst(CastExpr.class).orElseThrow(() -> new NoSuchElementException("CastExpr not found in template.")).setType(returnType);
             statement.findFirst(StringLiteralExpr.class).orElseThrow(() -> new NoSuchElementException("StringLiteralExpr not found in template.")).setString(name);
         } else {
-            returnType = targetCanonicalName + ".Result";
+            returnType = targetClassName + ".Result";
             generateResultClass(clazz, toResultMethod);
         }
 

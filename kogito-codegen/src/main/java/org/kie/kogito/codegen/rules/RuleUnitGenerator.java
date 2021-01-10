@@ -77,7 +77,7 @@ public class RuleUnitGenerator implements FileGenerator {
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(ruleUnitPackageName)
                 .withTemplateBasePath("/class-templates/rules/")
-                .withTargetTypeName(targetCanonicalName)
+                .withTargetTypeName(targetTypeName)
                 .withFallbackContext(JavaKogitoBuildContext.NAME)
                 .build(context, "RuleUnit");
     }

@@ -112,8 +112,12 @@ public final class TemplatedGenerator {
         return compilationUnitOrThrow("Missing template");
     }
 
+    /**
+     * Returns the valid template path if exists or null
+     * @return
+     */
     public String templatePath() {
-        String resourcePath = createTemplatePath(templateBasePath, templateName, context.name());
+        String resourcePath = uncheckedTemplatePath();
         String fallbackPath = createTemplatePath(templateBasePath, templateName, fallbackContext);
 
         if(getResource(resourcePath) != null) {
@@ -125,6 +129,14 @@ public final class TemplatedGenerator {
         }
 
         return null;
+    }
+
+    /**
+     * Returns template path applying naming convention without verifying if exist
+     * @return
+     */
+    public String uncheckedTemplatePath() {
+        return createTemplatePath(templateBasePath, templateName, context.name());
     }
 
     private InputStream getResource(String path) {

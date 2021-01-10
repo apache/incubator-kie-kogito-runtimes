@@ -133,7 +133,8 @@ public class ProcessResourceGenerator {
     }
 
     public String generate() {
-        TemplatedGenerator.Builder templateBuilder = TemplatedGenerator.builder();
+        TemplatedGenerator.Builder templateBuilder = TemplatedGenerator.builder()
+                .withFallbackContext(QuarkusKogitoBuildContext.NAME);
         CompilationUnit clazz = templateBuilder.build(context, getRestTemplateName())
                 .compilationUnitOrThrow();
         clazz.setPackageDeclaration(process.getPackageName());

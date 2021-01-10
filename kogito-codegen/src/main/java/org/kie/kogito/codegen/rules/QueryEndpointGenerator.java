@@ -64,8 +64,7 @@ public class QueryEndpointGenerator implements FileGenerator {
     private final KogitoBuildContext context;
     private final String endpointName;
     private final String queryClassName;
-    private final String targetCanonicalName;
-    private final String generatedFilePath;
+    private final String targetClassName;
     private final TemplatedGenerator generator;
 
     public QueryEndpointGenerator(RuleUnitDescription ruleUnit,
@@ -78,12 +77,11 @@ public class QueryEndpointGenerator implements FileGenerator {
         this.endpointName = toKebabCase(name);
 
         this.queryClassName = ruleUnit.getSimpleName() + "Query" + name;
-        this.targetCanonicalName = queryClassName + "Endpoint";
-        this.generatedFilePath = (query.getNamespace() + "." + targetCanonicalName).replace('.', '/') + ".java";
+        this.targetClassName = queryClassName + "Endpoint";
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(query.getNamespace())
                 .withTemplateBasePath("/class-templates/rules/")
-                .withTargetTypeName(targetCanonicalName)
+                .withTargetTypeName(targetClassName)
                 .withFallbackContext(JavaKogitoBuildContext.NAME)
                 .build(context, "RestQuery");
     }
@@ -94,7 +92,7 @@ public class QueryEndpointGenerator implements FileGenerator {
 
     @Override
     public String generatedFilePath() {
-        return generatedFilePath;
+        return generator.generatedFilePath();
     }
 
     @Override
@@ -138,7 +136,7 @@ public class QueryEndpointGenerator implements FileGenerator {
         ClassOrInterfaceDeclaration clazz = cu
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
-        clazz.setName(targetCanonicalName);
+        clazz.setName(targetClassName);
 
         cu.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
 
@@ -160,7 +158,7 @@ public class QueryEndpointGenerator implements FileGenerator {
 
     private void generateConstructors(ClassOrInterfaceDeclaration clazz) {
         for (ConstructorDeclaration c : clazz.getConstructors()) {
-            c.setName(targetCanonicalName);
+            c.setName(targetClassName);
             if (!c.getParameters().isEmpty()) {
                 setUnitGeneric(c.getParameter(0).getType());
             }
