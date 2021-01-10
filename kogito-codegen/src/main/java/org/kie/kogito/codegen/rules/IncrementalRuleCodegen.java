@@ -358,7 +358,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     private void generateSessionUnits( List<org.kie.kogito.codegen.GeneratedFile> generatedFiles ) {
         TemplatedGenerator generator = TemplatedGenerator.builder()
-                .withFallbackContext(JavaKogitoBuildContext.NAME)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .withPackageName("org.drools.project.model")
                 .build(context(), "SessionRuleUnit");
         for (KieBaseModel kBaseModel : kieModuleModel.getKieBaseModels().values()) {

@@ -55,7 +55,7 @@ public class DecisionModelResourcesProviderGenerator {
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = resources;
         this.generator = TemplatedGenerator.builder()
-                .withFallbackContext(JavaKogitoBuildContext.NAME)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .build(context, "DecisionModelResourcesProvider");
     }
 

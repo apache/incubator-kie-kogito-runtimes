@@ -55,7 +55,7 @@ public class MessageDataEventGenerator {
         this.resourceClazzName = classPrefix + "MessageDataEvent_" + trigger.getOwnerId();
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(messageDataPackageName)
-                .withFallbackContext(JavaKogitoBuildContext.NAME)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .withTargetTypeName(resourceClazzName)
                 .build(context, "MessageDataEvent");
     }

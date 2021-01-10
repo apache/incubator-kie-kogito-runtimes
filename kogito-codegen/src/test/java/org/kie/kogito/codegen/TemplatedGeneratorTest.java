@@ -41,9 +41,9 @@ import static org.kie.kogito.codegen.TemplatedGenerator.createTemplatePath;
 class TemplatedGeneratorTest {
 
     static final List<String> validTemplateNames = Arrays.asList(
-            createTemplatePath("", "", JavaKogitoBuildContext.NAME),
-            createTemplatePath("", "", QuarkusKogitoBuildContext.NAME),
-            createTemplatePath("", "", SpringBootKogitoBuildContext.NAME));
+            createTemplatePath("", "", JavaKogitoBuildContext.CONTEXT_NAME),
+            createTemplatePath("", "", QuarkusKogitoBuildContext.CONTEXT_NAME),
+            createTemplatePath("", "", SpringBootKogitoBuildContext.CONTEXT_NAME));
     static final KogitoBuildContext context = JavaKogitoBuildContext.builder().build();
     static final String templateName = "TestResource";
 
@@ -120,7 +120,7 @@ class TemplatedGeneratorTest {
 
     @Test
     public void fallbackContext() {
-        String fallbackContext = SpringBootKogitoBuildContext.NAME;
+        String fallbackContext = SpringBootKogitoBuildContext.CONTEXT_NAME;
         TemplatedGenerator generator = TemplatedGenerator.builder()
                 .withFallbackContext(fallbackContext)
                 .build(context, templateName);
@@ -150,7 +150,7 @@ class TemplatedGeneratorTest {
                 .startsWith(TemplatedGenerator.builder().templateBasePath);
 
         // with fallback
-        String fallbackContext = SpringBootKogitoBuildContext.NAME;
+        String fallbackContext = SpringBootKogitoBuildContext.CONTEXT_NAME;
         TemplatedGenerator generatorWithFallback = TemplatedGenerator.builder()
                 .withFallbackContext(fallbackContext)
                 .build(context, templateName);
@@ -194,10 +194,10 @@ class TemplatedGeneratorTest {
 
         // template valid
         TemplatedGenerator generatorTemplateValid = TemplatedGenerator.builder()
-                .withFallbackContext(SpringBootKogitoBuildContext.NAME)
+                .withFallbackContext(SpringBootKogitoBuildContext.CONTEXT_NAME)
                 .build(context, templateName);
 
-        assertThat(context.name()).isNotEqualTo(SpringBootKogitoBuildContext.NAME);
+        assertThat(context.name()).isNotEqualTo(SpringBootKogitoBuildContext.CONTEXT_NAME);
 
         assertThat(generatorTemplateValid.compilationUnit()).isNotEmpty();
         assertThat(generatorTemplateValid.compilationUnitOrThrow()).isNotNull();
@@ -205,10 +205,10 @@ class TemplatedGeneratorTest {
 
         // template not valid
         TemplatedGenerator generatorTemplateNotValid = TemplatedGenerator.builder()
-                .withFallbackContext(QuarkusKogitoBuildContext.NAME)
+                .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME)
                 .build(context, templateName);
 
-        assertThat(context.name()).isNotEqualTo(QuarkusKogitoBuildContext.NAME);
+        assertThat(context.name()).isNotEqualTo(QuarkusKogitoBuildContext.CONTEXT_NAME);
 
         assertThatThrownBy(generatorTemplateNotValid::compilationUnit)
                 .isInstanceOf(TemplateInstantiationException.class)

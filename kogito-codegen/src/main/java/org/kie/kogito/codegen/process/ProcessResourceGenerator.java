@@ -121,20 +121,20 @@ public class ProcessResourceGenerator {
     protected String getRestTemplateName() {
         boolean isReactiveGenerator = "reactive".equals(context.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)
                 .orElse(""));
-        boolean isQuarkus = context.name().equals(QuarkusKogitoBuildContext.NAME);
+        boolean isQuarkus = context.name().equals(QuarkusKogitoBuildContext.CONTEXT_NAME);
 
         return isQuarkus && isReactiveGenerator ? REACTIVE_REST_TEMPLATE_NAME : REST_TEMPLATE_NAME;
     }
 
     protected String getSignalResponseType(String outputType) {
-        boolean isSpring = context.name().equals(SpringBootKogitoBuildContext.NAME);
+        boolean isSpring = context.name().equals(SpringBootKogitoBuildContext.CONTEXT_NAME);
 
         return isSpring ? "ResponseEntity<" + outputType + ">" : outputType;
     }
 
     public String generate() {
         TemplatedGenerator.Builder templateBuilder = TemplatedGenerator.builder()
-                .withFallbackContext(QuarkusKogitoBuildContext.NAME);
+                .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME);
         CompilationUnit clazz = templateBuilder.build(context, getRestTemplateName())
                 .compilationUnitOrThrow();
         clazz.setPackageDeclaration(process.getPackageName());

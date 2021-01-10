@@ -23,10 +23,10 @@ import java.util.function.Predicate;
 
 public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
 
-    public static final String NAME = "Java";
+    public static final String CONTEXT_NAME = "Java";
 
     protected JavaKogitoBuildContext(String packageName, Predicate<String> classAvailabilityResolver, File targetDirectory, AddonsConfig addonsConfig, Properties applicationProperties) {
-        super(packageName, classAvailabilityResolver, null, targetDirectory, addonsConfig, applicationProperties, NAME);
+        super(packageName, classAvailabilityResolver, null, targetDirectory, addonsConfig, applicationProperties, CONTEXT_NAME);
     }
 
     public static Builder builder() {

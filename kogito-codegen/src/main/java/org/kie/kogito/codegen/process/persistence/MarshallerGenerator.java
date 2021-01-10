@@ -90,7 +90,7 @@ public class MarshallerGenerator {
     public List<CompilationUnit> generate(FileDescriptorSource proto) throws IOException {
         List<CompilationUnit> units = new ArrayList<>();
         TemplatedGenerator generator = TemplatedGenerator.builder()
-                .withFallbackContext(JavaKogitoBuildContext.NAME)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .withTemplateBasePath("/class-templates/persistence/")
                 .build(context, "MessageMarshaller");
         CompilationUnit parsedClazzFile = generator.compilationUnitOrThrow();

@@ -82,7 +82,7 @@ public class QueryEndpointGenerator implements FileGenerator {
                 .withPackageName(query.getNamespace())
                 .withTemplateBasePath("/class-templates/rules/")
                 .withTargetTypeName(targetClassName)
-                .withFallbackContext(JavaKogitoBuildContext.NAME)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .build(context, "RestQuery");
     }
 

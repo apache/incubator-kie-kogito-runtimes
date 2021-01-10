@@ -62,7 +62,7 @@ public class QueryGenerator implements FileGenerator {
         this.targetClassName = ruleUnit.getSimpleName() + "Query" + name;
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(query.getNamespace())
-                .withFallbackContext(JavaKogitoBuildContext.NAME)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .withTemplateBasePath("/class-templates/rules/")
                 .withTargetTypeName(targetClassName)
                 .build(context, "RuleUnitQuery");

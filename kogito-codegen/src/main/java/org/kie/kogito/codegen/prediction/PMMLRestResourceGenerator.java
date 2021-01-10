@@ -56,7 +56,7 @@ public class PMMLRestResourceGenerator {
         this.relativePath = restPackageName.replace(".", "/") + "/" + resourceClazzName + ".java";
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(restPackageName)
-                .withFallbackContext(QuarkusKogitoBuildContext.NAME)
+                .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME)
                 .build(context, "PMMLRestResource");
     }
 
