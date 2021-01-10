@@ -23,7 +23,7 @@ public class InvalidTemplateException extends RuntimeException {
     }
 
     public InvalidTemplateException(TemplatedGenerator generator, String errorMessage) {
-        this(generator.targetTypeName(), generator.templatePath(), errorMessage);
+        this(generator.targetTypeName(), generator.uncheckedTemplatePath(), errorMessage);
     }
 
     public InvalidTemplateException(String classType, String templateName, String errorMessage) {
