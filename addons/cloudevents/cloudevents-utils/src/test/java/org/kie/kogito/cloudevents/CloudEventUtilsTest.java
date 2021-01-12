@@ -19,6 +19,7 @@ package org.kie.kogito.cloudevents;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +28,7 @@ import io.cloudevents.core.builder.CloudEventBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,8 +41,16 @@ class CloudEventUtilsTest {
     private static final String TEST_DATA = "this-is-some-test-data";
     private static final Class<String> TEST_DATA_CLASS = String.class;
     private static final String TEST_ID = "acacfa12-5520-419a-91c4-05a57676dd8b";
-    private static final String TEST_URI_STRING = "http://test-host/test-endpoint";
+    private static final String TEST_SERVICE_URL = "http://test-host";
+    private static final String TEST_URI_STRING = TEST_SERVICE_URL + "/test-endpoint";
     private static final URI TEST_URI = URI.create(TEST_URI_STRING);
+
+    private static final String TEST_DECISION_MODEL_NAME = "testDecisionModel";
+    private static final String TEST_DECISION_SERVICE_NAME = "testDecisionService";
+    private static final URI TEST_DECISION_URI_UNKNOWN = URI.create(CloudEventUtils.UNKNOWN_SOURCE_URI_STRING);
+    private static final URI TEST_DECISION_URI_ONLY_SERVICE = URI.create(TEST_SERVICE_URL);
+    private static final URI TEST_DECISION_URI_SERVICE_AND_MODEL = URI.create(TEST_SERVICE_URL + "/" + TEST_DECISION_MODEL_NAME);
+    private static final URI TEST_DECISION_URI_FULL = URI.create(TEST_SERVICE_URL + "/" + TEST_DECISION_MODEL_NAME + "/" + TEST_DECISION_SERVICE_NAME);
 
     private static final CloudEvent TEST_CLOUDEVENT = CloudEventBuilder.v1()
             .withType(TEST_DATA_CLASS.getName())
@@ -62,6 +72,28 @@ class CloudEventUtilsTest {
     private static final String TEST_EXCEPTION_MESSAGE = "Mocked parse error";
 
     @Test
+    void testBuildDecisionSource() {
+        assertEquals(TEST_DECISION_URI_UNKNOWN, CloudEventUtils.buildDecisionSource(null));
+        assertEquals(TEST_DECISION_URI_UNKNOWN, CloudEventUtils.buildDecisionSource(""));
+        assertEquals(TEST_DECISION_URI_UNKNOWN, CloudEventUtils.buildDecisionSource(null, null));
+        assertEquals(TEST_DECISION_URI_UNKNOWN, CloudEventUtils.buildDecisionSource("", ""));
+        assertEquals(TEST_DECISION_URI_UNKNOWN, CloudEventUtils.buildDecisionSource(null, null, null));
+        assertEquals(TEST_DECISION_URI_UNKNOWN, CloudEventUtils.buildDecisionSource("", "", ""));
+
+        assertEquals(TEST_DECISION_URI_ONLY_SERVICE, CloudEventUtils.buildDecisionSource(TEST_SERVICE_URL));
+        assertEquals(TEST_DECISION_URI_ONLY_SERVICE, CloudEventUtils.buildDecisionSource(TEST_SERVICE_URL, null));
+        assertEquals(TEST_DECISION_URI_ONLY_SERVICE, CloudEventUtils.buildDecisionSource(TEST_SERVICE_URL, ""));
+        assertEquals(TEST_DECISION_URI_ONLY_SERVICE, CloudEventUtils.buildDecisionSource(TEST_SERVICE_URL, null, null));
+        assertEquals(TEST_DECISION_URI_ONLY_SERVICE, CloudEventUtils.buildDecisionSource(TEST_SERVICE_URL, "", ""));
+
+        assertEquals(TEST_DECISION_URI_SERVICE_AND_MODEL, CloudEventUtils.buildDecisionSource(TEST_SERVICE_URL, TEST_DECISION_MODEL_NAME));
+        assertEquals(TEST_DECISION_URI_SERVICE_AND_MODEL, CloudEventUtils.buildDecisionSource(TEST_SERVICE_URL, TEST_DECISION_MODEL_NAME, null));
+        assertEquals(TEST_DECISION_URI_SERVICE_AND_MODEL, CloudEventUtils.buildDecisionSource(TEST_SERVICE_URL, TEST_DECISION_MODEL_NAME, ""));
+
+        assertEquals(TEST_DECISION_URI_FULL, CloudEventUtils.buildDecisionSource(TEST_SERVICE_URL, TEST_DECISION_MODEL_NAME, TEST_DECISION_SERVICE_NAME));
+    }
+
+    @Test
     void testBuildSuccess() {
         assertTrue(CloudEventUtils.build(TEST_ID, TEST_URI, TEST_DATA, TEST_DATA_CLASS).isPresent());
     }
@@ -71,6 +103,19 @@ class CloudEventUtilsTest {
         runWithMockedCloudEventUtilsMapper(() ->
                 assertFalse(CloudEventUtils.build(TEST_ID, TEST_URI, TEST_DATA, TEST_DATA_CLASS).isPresent())
         );
+    }
+
+    @Test
+    void testDecodeDataSuccess() {
+        Optional<String> optData = CloudEventUtils.decodeData(TEST_CLOUDEVENT, String.class);
+        assertTrue(optData.isPresent());
+        assertEquals(TEST_DATA, optData.get());
+    }
+
+    @Test
+    void testDecodeDataFailure() {
+        Optional<Integer> optData = CloudEventUtils.decodeData(TEST_CLOUDEVENT, Integer.class);
+        assertFalse(optData.isPresent());
     }
 
     @Test

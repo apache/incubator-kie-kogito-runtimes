@@ -36,7 +36,8 @@ import org.slf4j.LoggerFactory;
 public class CloudEventUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloudEventUtils.class);
-    private static final String UNKNOWN_SOURCE_URI_STRING = urlEncodedStringFrom("__UNKNOWN_SOURCE__")
+
+    public static final String UNKNOWN_SOURCE_URI_STRING = urlEncodedStringFrom("__UNKNOWN_SOURCE__")
             .orElseThrow(IllegalStateException::new);
 
     public static <E> Optional<CloudEvent> build(String id, URI source, E data, Class<E> dataType) {
@@ -83,12 +84,8 @@ public class CloudEventUtils {
     }
 
     public static <T> Optional<T> decodeData(CloudEvent event, Class<T> dataClass) {
-        return decodeData(event, dataClass, Mapper.mapper());
-    }
-
-    public static <T> Optional<T> decodeData(CloudEvent event, Class<T> dataClass, ObjectMapper mapper) {
         try {
-            return Optional.ofNullable(mapper.readValue(event.getData(), dataClass));
+            return Optional.ofNullable(Mapper.mapper().readValue(event.getData(), dataClass));
         } catch (IOException e) {
             LOG.error("Unable to decode CloudEvent data to " + dataClass.getName(), e);
             return Optional.empty();
