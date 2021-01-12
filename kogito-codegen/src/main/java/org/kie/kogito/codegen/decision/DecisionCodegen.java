@@ -48,6 +48,7 @@ import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
 import org.kie.kogito.codegen.io.CollectedResource;
@@ -125,7 +126,7 @@ public class DecisionCodegen extends AbstractGenerator {
             List<DMNModel> models = resources.stream().map(DMNResource::getDmnModel).collect(Collectors.toList());
             oasResult = DMNOASGeneratorFactory.generator(models).build();
             String jsonContent = new ObjectMapper().writeValueAsString(oasResult.getJsonSchemaNode());
-            storeFile(GeneratedFile.Type.GENERATED_CP_RESOURCE, "META-INF/resources/dmnDefinitions.json", jsonContent);
+            storeFile(GeneratedFileType.RESOURCE, "META-INF/resources/dmnDefinitions.json", jsonContent);
         } catch (Exception e) {
             LOGGER.error("Error while trying to generate OpenAPI specification for the DMN models", e);
         }
@@ -155,7 +156,7 @@ public class DecisionCodegen extends AbstractGenerator {
                 generateAndStoreGrafanaDashboards(resourceGenerator);
             }
 
-            storeFile(GeneratedFile.Type.REST, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
+            storeFile(REST_TYPE, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
         }
 
         DMNMarshaller marshaller = DMNMarshallerFactory.newDefaultMarshaller();
@@ -172,7 +173,7 @@ public class DecisionCodegen extends AbstractGenerator {
                 }
             }
             String relativePath = CodegenStringUtil.escapeIdentifier(model.getNamespace()).replace(".", "/") + "/" + CodegenStringUtil.escapeIdentifier(model.getName()) + ".dmn_nologic";
-            storeFile(GeneratedFile.Type.GENERATED_CP_RESOURCE, relativePath, marshaller.marshal(definitions));
+            storeFile(GeneratedFileType.RESOURCE, relativePath, marshaller.marshal(definitions));
         }
     }
 
@@ -180,7 +181,7 @@ public class DecisionCodegen extends AbstractGenerator {
         final DecisionModelResourcesProviderGenerator generator = new DecisionModelResourcesProviderGenerator(context(),
                                                                                                               applicationCanonicalName(),
                                                                                                               resources);
-        storeFile(GeneratedFile.Type.CLASS, generator.generatedFilePath(), generator.generate());
+        storeFile(GeneratedFileType.SOURCE, generator.generatedFilePath(), generator.generate());
     }
 
     private void generateStronglyTypedInput(DMNModel model) {
@@ -207,7 +208,7 @@ public class DecisionCodegen extends AbstractGenerator {
                     .processTypes()
                     .generateSourceCodeOfAllTypes();
 
-            allTypesSourceCode.forEach((k, v) -> storeFile(GeneratedFile.Type.CLASS, k.replace(".", "/") + ".java", v));
+            allTypesSourceCode.forEach((k, v) -> storeFile(GeneratedFileType.SOURCE, k.replace(".", "/") + ".java", v));
         } catch (Exception e) {
             LOGGER.error("Unable to generate Strongly Typed Input for: {} {}", model.getNamespace(), model.getName());
             throw e;
@@ -253,12 +254,8 @@ public class DecisionCodegen extends AbstractGenerator {
         generatedFiles.addAll(DashboardGeneratedFileUtils.domain(domainDashboard, resourceGenerator.getNameURL() + ".json"));
     }
 
-    private void storeFile(GeneratedFile.Type type, String path, String source) {
+    private void storeFile(GeneratedFileType type, String path, String source) {
         generatedFiles.add(new GeneratedFile(type, path, source));
-    }
-
-    public List<GeneratedFile> getGeneratedFiles() {
-        return generatedFiles;
     }
 
     @Override

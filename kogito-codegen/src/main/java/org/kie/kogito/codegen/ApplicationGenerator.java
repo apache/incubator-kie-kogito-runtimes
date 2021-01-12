@@ -37,6 +37,7 @@ public class ApplicationGenerator {
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
     public static final String APPLICATION_CLASS_NAME = "Application";
+    private static final GeneratedFileType APPLICATION_SECTION_TYPE = GeneratedFileType.of("APPLICATION_SECTION", GeneratedFileType.Category.SOURCE);
 
     private final ApplicationContainerGenerator applicationMainGenerator;
     private ApplicationConfigGenerator applicationConfigGenerator;
@@ -99,7 +100,7 @@ public class ApplicationGenerator {
                 .map(Generator::section)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(section -> new GeneratedFile(GeneratedFile.Type.APPLICATION_SECTION,
+                .map(section -> new GeneratedFile(APPLICATION_SECTION_TYPE,
                         getFilePath(section.sectionClassName()),
                         section.compilationUnit().toString()))
                 .collect(Collectors.toList());
@@ -143,7 +144,7 @@ public class ApplicationGenerator {
             String separator = "=====";
             for (GeneratedFile file : files) {
                 LOGGER.debug(separator);
-                LOGGER.debug("{}: {}", file.getType(), file.relativePath());
+                LOGGER.debug("{} {}: {}", file.category().name(), file.type().name(), file.relativePath());
                 LOGGER.debug(separator);
                 LOGGER.debug(new String(file.contents()));
                 LOGGER.debug(separator);

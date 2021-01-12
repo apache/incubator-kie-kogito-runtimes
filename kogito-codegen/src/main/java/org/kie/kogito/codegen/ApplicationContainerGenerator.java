@@ -29,6 +29,8 @@ import static org.kie.kogito.codegen.ApplicationGenerator.APPLICATION_CLASS_NAME
 
 public class ApplicationContainerGenerator {
 
+    private static final GeneratedFileType APPLICATION_TYPE = GeneratedFileType.of("APPLICATION", GeneratedFileType.Category.SOURCE);
+
     private final TemplatedGenerator templatedGenerator;
     private final KogitoBuildContext context;
 
@@ -66,7 +68,7 @@ public class ApplicationContainerGenerator {
     }
 
     public GeneratedFile generate() {
-        return new GeneratedFile(GeneratedFile.Type.APPLICATION,
+        return new GeneratedFile(APPLICATION_TYPE,
                 templatedGenerator.generatedFilePath(),
                 getCompilationUnitOrThrow().toString());
     }

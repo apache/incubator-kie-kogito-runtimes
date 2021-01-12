@@ -38,7 +38,7 @@ public abstract class AbstractConfigGenerator implements ConfigGenerator {
     @Override
     public GeneratedFile generate() {
         CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow();
-        return new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
+        return new GeneratedFile(ApplicationConfigGenerator.APPLICATION_CONFIG_TYPE,
                         templatedGenerator.generatedFilePath(),
                         compilationUnit.toString());
     }

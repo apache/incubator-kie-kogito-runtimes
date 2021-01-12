@@ -34,6 +34,7 @@ import static org.kie.kogito.codegen.CodegenUtils.newObject;
 
 public class ApplicationConfigGenerator {
 
+    public static final GeneratedFileType APPLICATION_CONFIG_TYPE = GeneratedFileType.of("APPLICATION_CONFIG", GeneratedFileType.Category.SOURCE);
     private static final String CLASS_NAME = "ApplicationConfig";
 
     private final TemplatedGenerator templatedGenerator;
@@ -89,7 +90,7 @@ public class ApplicationConfigGenerator {
             initConfigs(getSuperStatement(cls), configClassNames);
         }
 
-        return new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
+        return new GeneratedFile(APPLICATION_CONFIG_TYPE,
                                  templatedGenerator.generatedFilePath(),
                                  compilationUnit.toString());
     }
