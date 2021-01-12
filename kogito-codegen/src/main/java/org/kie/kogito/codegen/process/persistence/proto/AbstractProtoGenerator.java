@@ -28,6 +28,7 @@ import org.kie.kogito.codegen.GeneratedFileType;
 
 public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
 
+    public static final GeneratedFileType PROTO_TYPE = GeneratedFileType.of("PROTO", GeneratedFileType.Category.RESOURCE);
     private static final String GENERATED_PROTO_RES_PATH = "META-INF/resources/persistence/protobuf/";
     private static final String LISTING_FILE = "list.json";
 
@@ -42,7 +43,7 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
      */
     public final GeneratedFile generateProtoFiles(final String processId, final Proto modelProto) {
         String protoFileName = processId + ".proto";
-        return new GeneratedFile(GeneratedFileType.RESOURCE,
+        return new GeneratedFile(PROTO_TYPE,
                                  GENERATED_PROTO_RES_PATH + protoFileName,
                                  modelProto.toString());
     }

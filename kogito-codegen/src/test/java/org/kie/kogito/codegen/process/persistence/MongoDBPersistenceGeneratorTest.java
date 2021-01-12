@@ -37,6 +37,7 @@ import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.data.GeneratedPOJO;
+import org.kie.kogito.codegen.process.persistence.proto.AbstractProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
 
 import static com.github.javaparser.StaticJavaParser.parse;
@@ -65,7 +66,7 @@ class MongoDBPersistenceGeneratorTest {
                 "mongodb");
         Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
 
-        List<GeneratedFile> protoFiles = generatedFiles.stream().filter(gf -> gf.relativePath().contains(".proto")).collect(Collectors.toList());
+        List<GeneratedFile> protoFiles = generatedFiles.stream().filter(gf -> gf.type().equals(AbstractProtoGenerator.PROTO_TYPE)).collect(Collectors.toList());
         assertEquals(1, protoFiles.size());
 
         Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.category() == GeneratedFileType.SOURCE.category()).findFirst();
