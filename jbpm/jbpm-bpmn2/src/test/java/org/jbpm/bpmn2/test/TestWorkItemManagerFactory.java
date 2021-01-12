@@ -13,11 +13,17 @@
  * limitations under the License.
  */
 
-package org.drools.core;
+package org.jbpm.bpmn2.test;
 
-public class KogitoWorkItemHandlerNotFoundException extends WorkItemHandlerNotFoundException {
+import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.core.process.instance.WorkItemManagerFactory;
+import org.kie.kogito.process.workitems.KogitoWorkItemManager;
+import org.kie.kogito.process.workitems.impl.KogitoDefaultWorkItemManager;
 
-    public KogitoWorkItemHandlerNotFoundException(String workItemName) {
-        super("Could not find work item handler for " + workItemName, workItemName);
+public class TestWorkItemManagerFactory implements WorkItemManagerFactory {
+
+    public KogitoWorkItemManager createWorkItemManager(InternalKnowledgeRuntime kruntime) {
+        return new KogitoDefaultWorkItemManager(kruntime);
     }
+
 }
