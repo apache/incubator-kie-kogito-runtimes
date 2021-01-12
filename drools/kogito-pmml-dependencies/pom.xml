@@ -22,8 +22,6 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-pmml-dependencies</artifactId>
-        <type>pom</type>
-        <scope>import</scope>
         <version>${version.org.kie7}</version>
       </dependency>
     </dependencies>
@@ -34,11 +32,14 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-pmml-dependencies</artifactId>
-      <type>pom</type>
       <exclusions>
         <exclusion>
           <groupId>org.kie</groupId>
           <artifactId>kie-internal</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-mvel</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.drools</groupId>
