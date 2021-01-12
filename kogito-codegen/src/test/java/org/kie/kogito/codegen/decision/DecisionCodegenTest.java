@@ -15,7 +15,6 @@
 
 package org.kie.kogito.codegen.decision;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -190,18 +189,16 @@ public class DecisionCodegenTest {
         return generatedFiles.stream().map(GeneratedFile::relativePath).collect(Collectors.toList());
     }
 
-    private List<GeneratedFile> generateTestDashboards(AddonsConfig addonsConfig, KogitoBuildContext.Builder contextBuilder) throws IOException {
+    private List<GeneratedFile> generateTestDashboards(AddonsConfig addonsConfig, KogitoBuildContext.Builder contextBuilder) {
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays", addonsConfig, contextBuilder);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
 
-        List<GeneratedFile> dashboards = generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.RESOURCE).collect(Collectors.toList());
+        List<GeneratedFile> dashboards = generatedFiles.stream()
+                .filter(x -> x.type().equals(DashboardGeneratedFileUtils.DASHBOARD_TYPE))
+                .collect(Collectors.toList());
 
         assertEquals(2, dashboards.size());
-
-        List<GeneratedFile> staticDashboards = generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.GENERATED_CP_RESOURCE && x.relativePath().contains("dashboard")).collect(Collectors.toList());
-
-        assertEquals(2, staticDashboards.size());
 
         return dashboards;
     }
