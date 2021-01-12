@@ -24,9 +24,11 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFileType;
 
 public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
 
+    public static final GeneratedFileType PROTO_TYPE = GeneratedFileType.of("PROTO", GeneratedFileType.Category.RESOURCE);
     private static final String GENERATED_PROTO_RES_PATH = "META-INF/resources/persistence/protobuf/";
     private static final String LISTING_FILE = "list.json";
 
@@ -41,9 +43,9 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
      */
     public final GeneratedFile generateProtoFiles(final String processId, final Proto modelProto) {
         String protoFileName = processId + ".proto";
-        return new GeneratedFile(GeneratedFile.Type.GENERATED_CP_RESOURCE,
-                                         GENERATED_PROTO_RES_PATH + protoFileName,
-                                         modelProto.toString());
+        return new GeneratedFile(PROTO_TYPE,
+                                 GENERATED_PROTO_RES_PATH + protoFileName,
+                                 modelProto.toString());
     }
 
     /**
@@ -60,7 +62,7 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
                 .collect(Collectors.toList());
 
         if (!fileNames.isEmpty()) {
-            return Optional.of(new GeneratedFile(GeneratedFile.Type.GENERATED_CP_RESOURCE,
+            return Optional.of(new GeneratedFile(GeneratedFileType.RESOURCE,
                                                  GENERATED_PROTO_RES_PATH + LISTING_FILE,
                                                  mapper.writeValueAsString(fileNames)));
         }

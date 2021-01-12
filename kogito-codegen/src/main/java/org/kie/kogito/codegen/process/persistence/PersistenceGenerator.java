@@ -49,6 +49,7 @@ import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
@@ -186,7 +187,7 @@ public class PersistenceGenerator extends AbstractGenerator {
 
                 variableMarshallers.add(clazzName);
 
-                generatedFiles.add(new GeneratedFile(GeneratedFile.Type.CLASS,
+                generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE,
                         clazzName.replace('.', '/') + ".java",
                         marshallerClazz.toString()));
             }
@@ -345,7 +346,7 @@ public class PersistenceGenerator extends AbstractGenerator {
         persistenceProviderClazz.getMembers().sort(new BodyDeclarationComparator());
         if (firstClazzName.isPresent()) {
             String clazzName = pkgName + "." + firstClazzName.get();
-            return Optional.of(new GeneratedFile(GeneratedFile.Type.CLASS, clazzName.replace('.', '/') + ".java", compilationUnit.toString()));
+            return Optional.of(new GeneratedFile(GeneratedFileType.SOURCE, clazzName.replace('.', '/') + ".java", compilationUnit.toString()));
         }
         return Optional.empty();
     }
