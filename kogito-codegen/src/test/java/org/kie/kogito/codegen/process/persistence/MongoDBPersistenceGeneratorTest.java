@@ -33,6 +33,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.data.GeneratedPOJO;
@@ -67,7 +68,7 @@ class MongoDBPersistenceGeneratorTest {
         List<GeneratedFile> protoFiles = generatedFiles.stream().filter(gf -> gf.relativePath().contains(".proto")).collect(Collectors.toList());
         assertEquals(1, protoFiles.size());
 
-        Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.getType() == GeneratedFile.Type.CLASS).findFirst();
+        Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.category() == GeneratedFileType.SOURCE.category()).findFirst();
         assertTrue(generatedCLASSFile.isPresent());
         GeneratedFile classFile = generatedCLASSFile.get();
         assertEquals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java", classFile.relativePath());
