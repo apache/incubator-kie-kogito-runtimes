@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.serialization.protobuf;
+package org.jbpm.marshalling.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,6 +45,7 @@ import org.drools.core.spi.Tuple;
 import org.drools.core.util.Drools;
 import org.drools.core.util.KeyStoreHelper;
 import org.drools.reflective.classloader.ProjectClassLoader;
+import org.drools.serialization.protobuf.ProtobufMessages;
 import org.drools.serialization.protobuf.ProtobufMessages.Header;
 import org.drools.serialization.protobuf.ProtobufMessages.Header.StrategyIndex.Builder;
 import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
@@ -55,7 +56,7 @@ public class PersisterHelper extends MarshallingHelper {
 
     public static void writeToStreamWithHeader( MarshallerWriteContext context,
                                                 Message payload ) throws IOException {
-        ProtobufMessages.Header.Builder _header = ProtobufMessages.Header.newBuilder();
+        Header.Builder _header = ProtobufMessages.Header.newBuilder();
         _header.setVersion( ProtobufMessages.Version.newBuilder()
                                             .setVersionMajor( Drools.getMajorVersion() )
                                             .setVersionMinor( Drools.getMinorVersion() )

@@ -23,7 +23,7 @@ import org.drools.core.impl.EnvironmentImpl;
 import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.SerializablePlaceholderResolverStrategy;
-import org.drools.serialization.protobuf.PersisterHelper;
+import org.jbpm.marshalling.impl.PersisterHelper;
 import org.jbpm.marshalling.impl.JBPMMessages;
 import org.jbpm.marshalling.impl.KogitoMarshallerReaderContext;
 import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
