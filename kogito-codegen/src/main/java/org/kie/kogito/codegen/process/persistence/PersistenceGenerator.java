@@ -89,8 +89,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     public PersistenceGenerator(KogitoBuildContext context, Collection<?> modelClasses, ProtoGenerator<?> protoGenerator, List<String> parameters, String persistenceType) {
         this(context, modelClasses, protoGenerator, Thread.currentThread().getContextClassLoader(), parameters, persistenceType);
     }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    
     public PersistenceGenerator(KogitoBuildContext context, Collection<?> modelClasses, ProtoGenerator<?> protoGenerator, ClassLoader classLoader, List<String> parameters, String persistenceType) {
         super(context);
         this.modelClasses = modelClasses;
