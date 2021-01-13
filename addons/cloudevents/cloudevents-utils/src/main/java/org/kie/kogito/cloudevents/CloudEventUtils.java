@@ -155,11 +155,11 @@ public class CloudEventUtils {
         }
 
         private Mapper() {
-            throw new IllegalStateException("Utility class");
+            throw new IllegalStateException("Instantiation of utility class CloudEventUtils.Mapper is forbidden");
         }
     }
 
     private CloudEventUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new IllegalStateException("Instantiation of utility class CloudEventUtils is forbidden");
     }
 }
