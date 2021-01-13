@@ -17,8 +17,6 @@ package org.kie.kogito.codegen.process.persistence;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,11 +29,12 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.GeneratorContext;
+import org.kie.kogito.codegen.GeneratedFileType;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.data.Person;
-import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,20 +45,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MongoDBPersistenceGeneratorTest {
 
     private static final String TEST_RESOURCES = "src/test/resources";
-    GeneratorContext context = GeneratorContext.ofResourcePath(new File(TEST_RESOURCES));
-    final Path targetDirectory = Paths.get("target");
+    KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
+            .withApplicationProperties(new File(TEST_RESOURCES))
+            .withPackageName(this.getClass().getPackage().getName())
+            .withAddonsConfig(AddonsConfig.builder().withPersistence(true).build())
+            .build();
 
     @Test
     void test() {
-        context.withBuildContext(new QuarkusKogitoBuildContext((className -> true)));
-        PersistenceGenerator persistenceGenerator = new PersistenceGenerator(targetDirectory.toFile(), Collections.singleton(Person.class), true, null, null, Arrays.asList("com.mongodb.client.MongoClient"), "mongodb");
-        persistenceGenerator.setPackageName(this.getClass().getPackage().getName());
-        persistenceGenerator.setDependencyInjection(null);
-        persistenceGenerator.setContext(context);
-        persistenceGenerator.setDependencyInjection(new CDIDependencyInjectionAnnotator());
+        PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
+                context,
+                Collections.singleton(Person.class),
+                null,
+                null,
+                Arrays.asList("com.mongodb.client.MongoClient"),
+                "mongodb");
         Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
 
-        Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.getType() == GeneratedFile.Type.CLASS).findFirst();
+        Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.category() == GeneratedFileType.SOURCE.category()).findFirst();
         assertTrue(generatedCLASSFile.isPresent());
         GeneratedFile classFile = generatedCLASSFile.get();
         assertEquals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java", classFile.relativePath());

@@ -25,7 +25,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.api.internal.utils.ServiceRegistry;
 import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.io.CollectedResource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,6 +36,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IncrementalRuleCodegenTest {
+
+    private static final KogitoBuildContext ACME_CONTEXT = JavaKogitoBuildContext.builder()
+            .withPackageName("com.acme")
+            .build();
 
     @BeforeEach
     public void setup() {
@@ -43,9 +50,9 @@ public class IncrementalRuleCodegenTest {
     public void generateSingleFile() {
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
+                        ACME_CONTEXT,
                         CollectedResource.fromFiles(Paths.get("src/test/resources"),
                                                     new File("src/test/resources/org/kie/kogito/codegen/rules/pkg1/file1.drl")));
-        incrementalRuleCodegen.setPackageName("com.acme");
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         assertRules(3, 1, generatedFiles.size());
@@ -55,10 +62,10 @@ public class IncrementalRuleCodegenTest {
     public void generateSinglePackage() {
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
+                        ACME_CONTEXT,
                         CollectedResource.fromFiles(
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/kie/kogito/codegen/rules/pkg1").listFiles()));
-        incrementalRuleCodegen.setPackageName("com.acme");
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         assertRules(5, 1, generatedFiles.size());
@@ -66,12 +73,16 @@ public class IncrementalRuleCodegenTest {
 
     @Test
     public void generateSinglePackageSingleUnit() {
+        KogitoBuildContext context = JavaKogitoBuildContext.builder()
+                .withPackageName("org.kie.kogito.codegen.rules.multiunit")
+                .build();
+
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
+                        context,
                         CollectedResource.fromFiles(
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/kie/kogito/codegen/rules/multiunit").listFiles()));
-        incrementalRuleCodegen.setPackageName("org.kie.kogito.codegen.rules.multiunit");
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         assertTrue( generatedFiles.stream().anyMatch( f -> f.relativePath().equals( "org/kie/kogito/codegen/rules/multiunit/MultiUnitRuleUnit.java" ) ) );
@@ -81,9 +92,9 @@ public class IncrementalRuleCodegenTest {
     @Test
     public void generateDirectoryRecursively() {
         IncrementalRuleCodegen incrementalRuleCodegen =
-                IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromPaths(
-                        Paths.get("src/test/resources/org/kie/kogito/codegen/rules")));
-        incrementalRuleCodegen.setPackageName("com.acme");
+                IncrementalRuleCodegen.ofCollectedResources(
+                        ACME_CONTEXT,
+                        CollectedResource.fromPaths(Paths.get("src/test/resources/org/kie/kogito/codegen/rules")));
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         assertTrue( generatedFiles.stream().anyMatch( f -> f.relativePath().equals( "org/kie/kogito/codegen/rules/multiunit/MultiUnitRuleUnit.java" ) ) );
@@ -98,10 +109,10 @@ public class IncrementalRuleCodegenTest {
     public void generateSingleDtable() {
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
+                        ACME_CONTEXT,
                         CollectedResource.fromFiles(
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/drools/simple/candrink/CanDrink.xls")));
-        incrementalRuleCodegen.setPackageName("com.acme");
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         int externalizedLambda = 5;
@@ -111,9 +122,9 @@ public class IncrementalRuleCodegenTest {
     @Test
     public void generateSingleUnit() {
         IncrementalRuleCodegen incrementalRuleCodegen =
-                IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromPaths(
-                        Paths.get("src/test/resources/org/kie/kogito/codegen/rules/myunit")));
-        incrementalRuleCodegen.setPackageName("com.acme");
+                IncrementalRuleCodegen.ofCollectedResources(
+                        ACME_CONTEXT,
+                        CollectedResource.fromPaths(Paths.get("src/test/resources/org/kie/kogito/codegen/rules/myunit")));
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         assertTrue( generatedFiles.stream().anyMatch( f -> f.relativePath().equals( "org/kie/kogito/codegen/rules/myunit/MyUnitRuleUnit.java" ) ) );
@@ -124,10 +135,10 @@ public class IncrementalRuleCodegenTest {
     public void generateCepRule() {
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
+                        ACME_CONTEXT,
                         CollectedResource.fromFiles(
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/drools/simple/cep/cep.drl")));
-        incrementalRuleCodegen.setPackageName("com.acme");
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         int externalizedLambda = 2;
@@ -138,10 +149,10 @@ public class IncrementalRuleCodegenTest {
     public void raiseErrorOnSyntaxError() {
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
+                        ACME_CONTEXT,
                         CollectedResource.fromFiles(
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/drools/simple/broken.drl")));
-        incrementalRuleCodegen.setPackageName("com.acme");
         assertThrows(RuleCodegenError.class, incrementalRuleCodegen.withHotReloadMode()::generate);
     }
 
@@ -149,10 +160,10 @@ public class IncrementalRuleCodegenTest {
     public void raiseErrorOnBadOOPath() {
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
+                        ACME_CONTEXT,
                         CollectedResource.fromFiles(
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/kie/kogito/codegen/brokenrules/brokenunit/ABrokenUnit.drl")));
-        incrementalRuleCodegen.setPackageName("com.acme");
         assertThrows(RuleCodegenError.class, incrementalRuleCodegen.withHotReloadMode()::generate);
     }
 
@@ -161,26 +172,29 @@ public class IncrementalRuleCodegenTest {
         DecisionTableFactory.setDecisionTableProvider(null);
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
+                        ACME_CONTEXT,
                         CollectedResource.fromFiles(
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/drools/simple/candrink/CanDrink.xls")));
-        incrementalRuleCodegen.setPackageName("com.acme");
         assertThrows(MissingDecisionTableDependencyError.class, incrementalRuleCodegen.withHotReloadMode()::generate);
     }
 
     @Test
     public void generateGrafanaDashboards() {
+        KogitoBuildContext context = JavaKogitoBuildContext.builder()
+                .withPackageName("com.acme")
+                .withAddonsConfig(AddonsConfig.builder().withPrometheusMonitoring(true).build())
+                .build();
+
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
+                        context,
                         CollectedResource.fromFiles(
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/kie/kogito/codegen/unit/RuleUnitQuery.drl")));
-        incrementalRuleCodegen.setPackageName("com.acme");
-        incrementalRuleCodegen.setAddonsConfig(new AddonsConfig().withPrometheusMonitoring(true));
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
 
-        assertEquals(2, generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.RESOURCE).count());
-        assertEquals(2, generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.GENERATED_CP_RESOURCE && x.relativePath().contains("dashboard")).count());
+        assertEquals(2, generatedFiles.stream().filter(x -> x.type().equals(DashboardGeneratedFileUtils.DASHBOARD_TYPE)).count());
     }
 
     private static void assertRules(int expectedRules, int expectedPackages, int expectedUnits, int actualGeneratedFiles) {
