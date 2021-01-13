@@ -33,12 +33,12 @@ import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
-
-import static org.kie.kogito.eventdriven.decision.DecisionRequestType.EVALUATE_ALL;
-import static org.kie.kogito.eventdriven.decision.DecisionRequestType.EVALUATE_DECISION_SERVICE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EventDrivenDecisionController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(EventDrivenDecisionController.class);
     private static final String VALID_REQUEST_EVENT_TYPE = DecisionRequestEvent.class.getName();
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -87,39 +87,36 @@ public class EventDrivenDecisionController {
     private EvaluationContext processRequest(EvaluationContext ctx) {
         DecisionRequestEvent request = ctx.request;
 
-        DecisionRequestType type = getRequestType(request);
-        ctx.requestType = type;
+        boolean requestIsValid = false;
+        if (request != null && request.isValid()) {
+            requestIsValid = true;
+            ctx.requestType = request.getDecisionServiceName() == null
+                    ? RequestType.EVALUATE_ALL
+                    : RequestType.EVALUATE_DECISION_SERVICE;
+        }
 
-        ctx.response = type == DecisionRequestType.INVALID
+        ctx.response = !requestIsValid
                 ? new DecisionResponseEvent(DecisionResponseStatus.BAD_REQUEST, "Malformed request event")
                 : getDecisionModel(request)
-                        .map(model -> evaluateRequest(request, type, model))
+                        .map(model -> evaluateRequest(request, ctx.requestType, model))
                         .map(result -> buildDecisionResponseEventFromResult(request, result))
                         .orElseGet(() -> new DecisionResponseEvent(DecisionResponseStatus.NOT_FOUND, "Model not found"));
 
         return ctx;
     }
 
-    private DecisionRequestType getRequestType(DecisionRequestEvent event) {
-        if (event != null && event.isValid()) {
-            return event.getDecisionServiceName() == null
-                    ? EVALUATE_ALL
-                    : EVALUATE_DECISION_SERVICE;
-        }
-        return DecisionRequestType.INVALID;
-    }
-
     private Optional<DecisionModel> getDecisionModel(DecisionRequestEvent event) {
         try {
             return Optional.ofNullable(decisionModels.getDecisionModel(event.getModelNamespace(), event.getModelName()));
         } catch (IllegalStateException e) {
+            LOG.warn("Model not found with name=\"{}\" namespace=\"{}\"", event.getModelName(), event.getModelNamespace());
             return Optional.empty();
         }
     }
 
-    private DMNResult evaluateRequest(DecisionRequestEvent event, DecisionRequestType type, DecisionModel model) {
+    private DMNResult evaluateRequest(DecisionRequestEvent event, RequestType type, DecisionModel model) {
         DMNContext context = DMNJSONUtils.ctx(model, event.getInputContext());
-        return type == EVALUATE_DECISION_SERVICE
+        return type == RequestType.EVALUATE_DECISION_SERVICE
                 ? model.evaluateDecisionService(context, event.getDecisionServiceName())
                 : model.evaluateAll(context);
     }
@@ -139,10 +136,10 @@ public class EventDrivenDecisionController {
     }
 
     private URI buildResponseCloudEventSource(EvaluationContext ctx) {
-        if (ctx.requestType == EVALUATE_ALL) {
+        if (ctx.requestType == RequestType.EVALUATE_ALL) {
             return CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.request.getModelName());
         }
-        if (ctx.requestType == EVALUATE_DECISION_SERVICE) {
+        if (ctx.requestType == RequestType.EVALUATE_DECISION_SERVICE) {
             return CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.request.getModelName(), ctx.request.getDecisionServiceName());
         }
         return CloudEventUtils.buildDecisionSource(config.getServiceUrl());
@@ -157,15 +154,21 @@ public class EventDrivenDecisionController {
                     )
             );
         } catch (JsonProcessingException e) {
+            LOG.error("Exception when building CloudEvent subject", e);
             return null;
         }
+    }
+
+    private enum RequestType {
+        EVALUATE_ALL,
+        EVALUATE_DECISION_SERVICE
     }
 
     private static class EvaluationContext {
 
         final CloudEvent requestCloudEvent;
         final DecisionRequestEvent request;
-        DecisionRequestType requestType;
+        RequestType requestType;
         DecisionResponseEvent response;
 
         public EvaluationContext(CloudEvent requestCloudEvent, DecisionRequestEvent request) {
