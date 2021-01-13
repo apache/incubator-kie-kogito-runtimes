@@ -50,4 +50,8 @@ public class DecisionRequestEvent {
     public Map<String, Object> getInputContext() {
         return inputContext;
     }
+
+    public boolean isValid() {
+        return getModelName() != null && getModelNamespace() != null && getInputContext() != null;
+    }
 }

@@ -102,7 +102,7 @@ public class EventDrivenDecisionController {
     }
 
     private DecisionRequestType getRequestType(DecisionRequestEvent event) {
-        if (event != null && event.getModelName() != null && event.getModelNamespace() != null && event.getInputContext() != null) {
+        if (event != null && event.isValid()) {
             return event.getDecisionServiceName() == null
                     ? EVALUATE_ALL
                     : EVALUATE_DECISION_SERVICE;
