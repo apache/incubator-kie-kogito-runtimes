@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNRuntime;
-import org.kie.kogito.Application;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.decision.DecisionModel;
@@ -146,24 +145,21 @@ class EventDrivenDecisionControllerTest {
         decisionModelsMock = mock(DecisionModels.class);
         eventEmitterMock = mock(CloudEventEmitter.class);
 
-        Application applicationMock = mock(Application.class);
-        when(applicationMock.get(eq(DecisionModels.class))).thenReturn(decisionModelsMock);
-
         // by default there's no execution id supplier, if needed it will be overridden in the specific test
         mockDecisionModel();
 
-        controller = new EventDrivenDecisionController(applicationMock, mock(ConfigBean.class), eventEmitterMock, mock(CloudEventReceiver.class));
+        controller = new EventDrivenDecisionController(decisionModelsMock, mock(ConfigBean.class), eventEmitterMock, mock(CloudEventReceiver.class));
     }
 
     @Test
     void testSubscribe() {
-        Application applicationMock = mock(Application.class);
+        DecisionModels decisionModelsMock = mock(DecisionModels.class);
         ConfigBean configMock = mock(ConfigBean.class);
         CloudEventEmitter eventEmitterMock = mock(CloudEventEmitter.class);
         CloudEventReceiver eventReceiverMock = mock(CloudEventReceiver.class);
 
         // option #1: parameters via constructor + parameterless setup
-        EventDrivenDecisionController controller1 = new EventDrivenDecisionController(applicationMock, configMock, eventEmitterMock, eventReceiverMock);
+        EventDrivenDecisionController controller1 = new EventDrivenDecisionController(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock);
         controller1.setup();
         verify(eventReceiverMock).subscribe(any());
 
@@ -171,7 +167,7 @@ class EventDrivenDecisionControllerTest {
 
         // option #2: parameterless via constructor + parameters via setup (introduced for Quarkus CDI)
         EventDrivenDecisionController controller2 = new EventDrivenDecisionController();
-        controller2.setup(applicationMock, configMock, eventEmitterMock, eventReceiverMock);
+        controller2.setup(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock);
         verify(eventReceiverMock).subscribe(any());
     }
 

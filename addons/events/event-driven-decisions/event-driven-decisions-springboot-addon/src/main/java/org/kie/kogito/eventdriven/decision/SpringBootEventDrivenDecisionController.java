@@ -18,8 +18,8 @@ package org.kie.kogito.eventdriven.decision;
 
 import javax.annotation.PostConstruct;
 
-import org.kie.kogito.Application;
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,8 @@ import org.springframework.stereotype.Component;
 public class SpringBootEventDrivenDecisionController extends EventDrivenDecisionController {
 
     @Autowired
-    public SpringBootEventDrivenDecisionController(Application application, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
-        super(application, config, eventEmitter, eventReceiver);
+    public SpringBootEventDrivenDecisionController(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
+        super(decisionModels, config, eventEmitter, eventReceiver);
     }
 
     @PostConstruct

@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNResult;
-import org.kie.kogito.Application;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.decision.DecisionExecutionIdUtils;
@@ -51,15 +50,15 @@ public class EventDrivenDecisionController {
     protected EventDrivenDecisionController() {
     }
 
-    protected EventDrivenDecisionController(Application application, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
-        this.decisionModels = application.get(DecisionModels.class);
+    protected EventDrivenDecisionController(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
+        this.decisionModels = decisionModels;
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
     }
 
-    protected void setup(Application application, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
-        this.decisionModels = application.get(DecisionModels.class);
+    protected void setup(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
+        this.decisionModels = decisionModels;
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
