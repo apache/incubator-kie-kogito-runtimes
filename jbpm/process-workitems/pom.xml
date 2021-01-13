@@ -14,7 +14,7 @@
   <packaging>jar</packaging>
 
   <name>Kogito :: Process :: WorkItems</name>
-  <description>jBPM WorkItems</description>
+  <description>Kogito WorkItems</description>
 
   <properties>
     <java.module.name>org.kie.kogito.process.workitems</java.module.name>
