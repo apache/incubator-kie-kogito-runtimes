@@ -46,11 +46,12 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.AbstractGenerator;
+import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.ConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.GeneratedFile.Type;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.ResourceGeneratorFactory;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsMessageProducerGenerator;
@@ -71,6 +72,10 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCodegen.class);
 
+    private static final GeneratedFileType PROCESS_TYPE = GeneratedFileType.of("PROCESS", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType PROCESS_INSTANCE_TYPE = GeneratedFileType.of("PROCESS_INSTANCE", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType MESSAGE_PRODUCER_TYPE = GeneratedFileType.of("MESSAGE_PRODUCER", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType MESSAGE_CONSUMER_TYPE = GeneratedFileType.of("MESSAGE_CONSUMER", GeneratedFileType.Category.SOURCE);
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
     public static final Set<String> SUPPORTED_BPMN_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bpmn", ".bpmn2")));
     private static final String YAML_PARSER = "yml";
@@ -93,7 +98,7 @@ public class ProcessCodegen extends AbstractGenerator {
     private ResourceGeneratorFactory resourceGeneratorFactory;
     private List<ProcessGenerator> processGenerators = new ArrayList<>();
 
-    public static ProcessCodegen ofCollectedResources(Collection<CollectedResource> resources) {
+    public static ProcessCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         List<Process> processes = resources.stream()
                 .map(CollectedResource::resource)
                 .flatMap(resource -> {
@@ -108,11 +113,11 @@ public class ProcessCodegen extends AbstractGenerator {
                 })
                 .collect(toList());
 
-        return ofProcesses(processes);
+        return ofProcesses(context, processes);
     }
 
-    private static ProcessCodegen ofProcesses(List<Process> processes) {
-        return new ProcessCodegen(processes);
+    private static ProcessCodegen ofProcesses(KogitoBuildContext context, List<Process> processes) {
+        return new ProcessCodegen(context, processes);
     }
 
     static List<Process> parseProcesses(Collection<File> processFiles) {
@@ -165,7 +170,8 @@ public class ProcessCodegen extends AbstractGenerator {
     private final Map<String, WorkflowProcess> processes;
     private final Set<GeneratedFile> generatedFiles = new HashSet<>();
 
-    public ProcessCodegen(Collection<? extends Process> processes) {
+    public ProcessCodegen(KogitoBuildContext context, Collection<? extends Process> processes) {
+        super(context);
         this.processes = new HashMap<>();
         for (Process process : processes) {
             if (this.processes.containsKey(process.getId())) {
@@ -192,7 +198,8 @@ public class ProcessCodegen extends AbstractGenerator {
         return this;
     }
 
-    public Set<GeneratedFile> generate() {
+    @Override
+    public Collection<GeneratedFile> generate() {
         if (processes.isEmpty()) {
             return Collections.emptySet();
         }
@@ -267,14 +274,13 @@ public class ProcessCodegen extends AbstractGenerator {
                     processIdToModelGenerator.get(execModelGen.getProcessId());
 
             ProcessGenerator p = new ProcessGenerator(
+                    context(),
                     workFlowProcess,
                     execModelGen,
                     classPrefix,
                     modelClassGenerator.className(),
                     applicationCanonicalName()
-            )
-                    .withDependencyInjection(annotator)
-                    .withAddons(addonsConfig);
+            );
 
             ProcessInstanceGenerator pi = new ProcessInstanceGenerator(
                     workFlowProcess.getPackageName(),
@@ -290,7 +296,6 @@ public class ProcessCodegen extends AbstractGenerator {
                                             execModelGen.className(),
                                             applicationCanonicalName())
                     .map(r -> r
-                            .withDependencyInjection(annotator)
                             .withUserTasks(processIdToUserTaskModel.get(workFlowProcess.getId()))
                             .withSignals(metaData.getSignals())
                             .withTriggers(metaData.isStartable(), metaData.isDynamic()))
@@ -304,44 +309,42 @@ public class ProcessCodegen extends AbstractGenerator {
                     if (trigger.getType().equals(TriggerMetaData.TriggerType.ConsumeMessage)) {
 
                         MessageDataEventGenerator msgDataEventGenerator = new MessageDataEventGenerator(workFlowProcess,
-                                                                                                        trigger)
-                                .withDependencyInjection(annotator);
+                                                                                                        trigger);
                         mdegs.add(msgDataEventGenerator);
 
                         megs.add(new MessageConsumerGenerator(
+                                context(),
                                 workFlowProcess,
                                 modelClassGenerator.className(),
                                 execModelGen.className(),
                                 applicationCanonicalName(),
                                 msgDataEventGenerator.className(),
-                                trigger)
-                                         .withDependencyInjection(annotator));
+                                trigger));
                     } else if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
 
                         MessageDataEventGenerator msgDataEventGenerator = new MessageDataEventGenerator(workFlowProcess,
-                                                                                                        trigger)
-                                .withDependencyInjection(annotator);
+                                                                                                        trigger);
                         mdegs.add(msgDataEventGenerator);
 
                         // this is not cool, we should have a way to process addons
                         // generators without adding conditions to the main generators
                         // see: https://issues.redhat.com/browse/KOGITO-1767
-                        if (addonsConfig.useKnativeEventing()) {
+                        if (context().getAddonsConfig().useKnativeEventing()) {
                             mpgs.add(new CloudEventsMessageProducerGenerator(
+                                    context(),
                                     workFlowProcess,
                                     modelClassGenerator.className(),
                                     execModelGen.className(),
                                     msgDataEventGenerator.className(),
-                                    trigger)
-                                             .withDependencyInjection(annotator));
+                                    trigger));
                         } else {
                             mpgs.add(new MessageProducerGenerator(
+                                    context(),
                                     workFlowProcess,
                                     modelClassGenerator.className(),
                                     execModelGen.className(),
                                     msgDataEventGenerator.className(),
-                                    trigger)
-                                             .withDependencyInjection(annotator));
+                                    trigger));
                         }
                     }
                 }
@@ -355,82 +358,81 @@ public class ProcessCodegen extends AbstractGenerator {
 
         for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
-            storeFile(Type.MODEL, modelClassGenerator.generatedFilePath(),
+            storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
                       mmd.generate());
         }
 
         for (InputModelClassGenerator modelClassGenerator : processIdToInputModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
-            storeFile(Type.MODEL, modelClassGenerator.generatedFilePath(),
+            storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
                       mmd.generate());
         }
 
         for (OutputModelClassGenerator modelClassGenerator : processIdToOutputModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
-            storeFile(Type.MODEL, modelClassGenerator.generatedFilePath(),
+            storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
                       mmd.generate());
         }
 
         for (List<UserTaskModelMetaData> utmd : processIdToUserTaskModel.values()) {
 
             for (UserTaskModelMetaData ut : utmd) {
-                storeFile(Type.MODEL, UserTasksModelClassGenerator.generatedFilePath(ut.getInputModelClassName()), ut.generateInput());
+                storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(ut.getInputModelClassName()), ut.generateInput());
 
-                storeFile(Type.MODEL, UserTasksModelClassGenerator.generatedFilePath(ut.getOutputModelClassName()), ut.generateOutput());
+                storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(ut.getOutputModelClassName()), ut.generateOutput());
             }
         }
 
         for (AbstractResourceGenerator resourceGenerator : rgs) {
-            storeFile(Type.REST, resourceGenerator.generatedFilePath(),
+            storeFile(REST_TYPE, resourceGenerator.generatedFilePath(),
                       resourceGenerator.generate());
         }
 
         for (MessageDataEventGenerator messageDataEventGenerator : mdegs) {
-            storeFile(Type.CLASS, messageDataEventGenerator.generatedFilePath(),
+            storeFile(GeneratedFileType.SOURCE, messageDataEventGenerator.generatedFilePath(),
                       messageDataEventGenerator.generate());
         }
 
         for (MessageConsumerGenerator messageConsumerGenerator : megs) {
-            storeFile(Type.MESSAGE_CONSUMER, messageConsumerGenerator.generatedFilePath(),
+            storeFile(MESSAGE_CONSUMER_TYPE, messageConsumerGenerator.generatedFilePath(),
                       messageConsumerGenerator.generate());
         }
 
         for (MessageProducerGenerator messageProducerGenerator : mpgs) {
-            storeFile(Type.MESSAGE_PRODUCER, messageProducerGenerator.generatedFilePath(),
+            storeFile(MESSAGE_PRODUCER_TYPE, messageProducerGenerator.generatedFilePath(),
                       messageProducerGenerator.generate());
         }
 
         for (ProcessGenerator p : ps) {
-            storeFile(Type.PROCESS, p.generatedFilePath(), p.generate());
+            storeFile(PROCESS_TYPE, p.generatedFilePath(), p.generate());
 
             p.getAdditionalClasses().forEach(cp -> {
                 String packageName = cp.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
                 String clazzName = cp.findFirst(ClassOrInterfaceDeclaration.class).map(cls -> cls.getName().toString()).get();
                 String path = (packageName + "." + clazzName).replace('.', '/') + ".java";
-                storeFile(Type.CLASS, path, cp.toString());
+                storeFile(GeneratedFileType.SOURCE, path, cp.toString());
             });
         }
 
-        if (this.addonsConfig.useKnativeEventing()) {
+        if (context().getAddonsConfig().useKnativeEventing()) {
             LOGGER.info("Knative Eventing addon enabled, generating CloudEvent HTTP listener");
             final CloudEventsResourceGenerator ceGenerator =
-                    new CloudEventsResourceGenerator(packageName, processExecutableModelGenerators, annotator);
-            storeFile(Type.REST, ceGenerator.generatedFilePath(), ceGenerator.generate());
+                    new CloudEventsResourceGenerator(context(), processExecutableModelGenerators);
+            storeFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate());
         }
 
         final TopicsInformationResourceGenerator topicsGenerator =
-                new TopicsInformationResourceGenerator(packageName, processExecutableModelGenerators, annotator, addonsConfig);
-        storeFile(Type.REST, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
+                new TopicsInformationResourceGenerator(context(), processExecutableModelGenerators);
+        storeFile(REST_TYPE, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
 
 
         for (ProcessInstanceGenerator pi : pis) {
-            storeFile(Type.PROCESS_INSTANCE, pi.generatedFilePath(), pi.generate());
+            storeFile(PROCESS_INSTANCE_TYPE, pi.generatedFilePath(), pi.generate());
         }
 
         for (ProcessExecutableModelGenerator processGenerator : processExecutableModelGenerators) {
             if (processGenerator.isPublic()) {
                 publicProcesses.add(processGenerator.extractedProcessId());
-                this.addLabel(processGenerator.label(), "process"); // add the label id of the process with value set to process as resource type
             }
         }
 
@@ -438,13 +440,13 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void updateConfig(ConfigGenerator cfg) {
+    public void updateConfig(ApplicationConfigGenerator cfg) {
         if (!processes.isEmpty()) {
-            cfg.withProcessConfig(new ProcessConfigGenerator(packageName));
+            cfg.withProcessConfig(new ProcessConfigGenerator(context()));
         }
     }
 
-    private void storeFile(Type type, String path, String source) {
+    private void storeFile(GeneratedFileType type, String path, String source) {
         if (generatedFiles.stream().anyMatch(f -> path.equals(f.relativePath()))) {
             LOGGER.warn("There's already a generated file named {} to be compiled. Ignoring.", path);
         } else {
@@ -452,14 +454,9 @@ public class ProcessCodegen extends AbstractGenerator {
         }
     }
 
-    public Set<GeneratedFile> getGeneratedFiles() {
-        return generatedFiles;
-    }
-
     @Override
     public ApplicationSection section() {
-        ProcessContainerGenerator moduleGenerator = new ProcessContainerGenerator(packageName);
-        moduleGenerator.withDependencyInjection(annotator);
+        ProcessContainerGenerator moduleGenerator = new ProcessContainerGenerator(context());
         processGenerators.forEach(moduleGenerator::addProcess);
         return moduleGenerator;
     }

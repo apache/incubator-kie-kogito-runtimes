@@ -16,6 +16,7 @@ package org.kie.kogito.codegen;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,7 +41,6 @@ import com.github.victools.jsonschema.generator.SchemaVersion;
 import org.jbpm.util.JsonSchemaUtil;
 import org.kie.kogito.UserTask;
 import org.kie.kogito.UserTaskParam;
-import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.json.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +49,7 @@ public class JsonSchemaGenerator {
 
     public static final Logger logger = LoggerFactory.getLogger(JsonSchemaGenerator.class);
     public static final SchemaVersion DEFAULT_SCHEMA_VERSION = SchemaVersion.DRAFT_7;
+    private static final GeneratedFileType JSON_SCHEMA_TYPE = GeneratedFileType.of("JSON_SCHEMA", GeneratedFileType.Category.RESOURCE, true, true);
 
     private final Map<String, List<Class<?>>> map;
     private final SchemaVersion schemaVersion;
@@ -164,7 +165,7 @@ public class JsonSchemaGenerator {
             }
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 writer.writeValue(outputStream, merged);
-                files.add(new GeneratedFile(Type.JSON_SCHEMA, JsonSchemaUtil.getFileName(entry.getKey()), outputStream.toByteArray()));
+                files.add(new GeneratedFile(JSON_SCHEMA_TYPE, pathFor(entry.getKey()), outputStream.toByteArray()));
             }
         }
         return files;
@@ -190,5 +191,9 @@ public class JsonSchemaGenerator {
 
     private static boolean isNotUserTaskParam(FieldScope fieldScope) {
         return fieldScope.getDeclaringType().getErasedType().isAnnotationPresent(UserTask.class) && fieldScope.getAnnotation(UserTaskParam.class) == null;
+    }
+
+    private Path pathFor(String name) {
+        return JsonSchemaUtil.getJsonDir().resolve(JsonSchemaUtil.getFileName(name));
     }
 }
