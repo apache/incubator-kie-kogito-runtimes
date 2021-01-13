@@ -5,10 +5,10 @@
   "functions": [
     {
       "name": "helloWorld",
-      "type": "service",
       "metadata": {
         "interface": "org.something.other.TestService",
-        "operation": "get"
+        "operation": "get",
+        "type": "service"
       }
     }
   ],

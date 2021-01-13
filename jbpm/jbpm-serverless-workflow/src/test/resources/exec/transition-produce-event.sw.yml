@@ -7,9 +7,11 @@ events:
     type: kafka
 functions:
   - name: helloOne
-    type: script
+    metadata:
+      type: script
   - name: helloTwo
-    type: script
+    metadata:
+      type: script
 states:
   - name: HelloWorld
     type: operation

@@ -22,17 +22,18 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.serverlessworkflow.api.Workflow;
+import io.serverlessworkflow.api.branches.Branch;
+import io.serverlessworkflow.api.events.EventDefinition;
+import io.serverlessworkflow.api.functions.FunctionDefinition;
+import io.serverlessworkflow.api.interfaces.State;
+import io.serverlessworkflow.api.mapper.BaseObjectMapper;
+import io.serverlessworkflow.api.mapper.JsonObjectMapper;
+import io.serverlessworkflow.api.mapper.YamlObjectMapper;
+import io.serverlessworkflow.api.states.DefaultState;
+import io.serverlessworkflow.api.states.ParallelState;
 import org.drools.core.util.StringUtils;
-import org.jbpm.serverless.workflow.api.Workflow;
-import org.jbpm.serverless.workflow.api.branches.Branch;
-import org.jbpm.serverless.workflow.api.events.EventDefinition;
-import org.jbpm.serverless.workflow.api.functions.FunctionDefinition;
-import org.jbpm.serverless.workflow.api.interfaces.State;
-import org.jbpm.serverless.workflow.api.mapper.BaseObjectMapper;
-import org.jbpm.serverless.workflow.api.mapper.JsonObjectMapper;
-import org.jbpm.serverless.workflow.api.mapper.YamlObjectMapper;
-import org.jbpm.serverless.workflow.api.states.DefaultState;
-import org.jbpm.serverless.workflow.api.states.ParallelState;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,7 +130,7 @@ public class ServerlessWorkflowUtils {
     }
 
     public static EventDefinition getWorkflowEventFor(Workflow workflow, String eventName) {
-        return workflow.getEvents().stream()
+        return workflow.getEvents().getEventDefs().stream()
                 .filter(wt -> wt.getName().equals(eventName))
                 .findFirst().get();
     }

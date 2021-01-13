@@ -5,7 +5,9 @@
   "functions": [
     {
       "name": "helloWorld",
-      "type": "script"
+      "metadata": {
+        "type": "script"
+      }
     }
   ],
   "states":[

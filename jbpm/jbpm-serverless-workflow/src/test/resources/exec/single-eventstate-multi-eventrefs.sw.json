@@ -17,7 +17,9 @@
   "functions": [
     {
       "name": "greetFunction",
-      "type": "script"
+      "metadata": {
+        "type": "script"
+      }
     }
   ],
   "states": [

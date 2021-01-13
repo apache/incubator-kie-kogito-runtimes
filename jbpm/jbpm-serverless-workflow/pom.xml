@@ -80,6 +80,30 @@
       <artifactId>json</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>io.serverlessworkflow</groupId>
+      <artifactId>serverlessworkflow-api</artifactId>
+      <version>${version.io.serverlessworkflow}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.serverlessworkflow</groupId>
+      <artifactId>serverlessworkflow-spi</artifactId>
+      <version>${version.io.serverlessworkflow}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.serverlessworkflow</groupId>
+      <artifactId>serverlessworkflow-validation</artifactId>
+      <version>${version.io.serverlessworkflow}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.serverlessworkflow</groupId>
+      <artifactId>serverlessworkflow-diagram</artifactId>
+      <version>${version.io.serverlessworkflow}</version>
+    </dependency>
+
     <!-- test -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -128,36 +152,4 @@
     </dependency>
   </dependencies>
 
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.jsonschema2pojo</groupId>
-        <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-        <configuration>
-          <sourceDirectory>${basedir}/src/main/resources/schema</sourceDirectory>
-          <targetPackage>org.jbpm.serverless.workflow.types</targetPackage>
-          <outputDirectory>${project.build.directory}/generated-sources/src/main/java</outputDirectory>
-          <includeJsr303Annotations>true</includeJsr303Annotations>
-          <generateBuilders>true</generateBuilders>
-          <includeAdditionalProperties>false</includeAdditionalProperties>
-          <includeToString>false</includeToString>
-          <includeHashcodeAndEquals>false</includeHashcodeAndEquals>
-          <includeConstructors>true</includeConstructors>
-          <constructorsRequiredPropertiesOnly>true</constructorsRequiredPropertiesOnly>
-          <serializable>true</serializable>
-          <targetVersion>1.8</targetVersion>
-          <usePrimitives>true</usePrimitives>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <phase>generate-sources</phase>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
