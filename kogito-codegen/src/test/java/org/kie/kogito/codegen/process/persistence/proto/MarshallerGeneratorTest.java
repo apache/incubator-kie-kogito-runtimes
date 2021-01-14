@@ -16,7 +16,6 @@
 package org.kie.kogito.codegen.process.persistence.proto;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,6 @@ import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import org.infinispan.protostream.EnumMarshaller;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.data.Answer;
 import org.kie.kogito.codegen.data.AnswerWitAnnotations;
@@ -38,16 +36,14 @@ import org.kie.kogito.codegen.process.persistence.MarshallerGenerator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MarshallerGeneratorTest {
 
-    private ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator();
-    
     @Test
     void testPersonMarshallers() throws Exception {
-        
-        Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(Person.class));
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(Person.class));
+
+        Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();        
         assertThat(proto.getMessages()).hasSize(1);
         
@@ -63,8 +59,9 @@ class MarshallerGeneratorTest {
 
     @Test
     void testPersonWithListMarshallers() throws Exception {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(PersonWithList.class));
 
-        Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(PersonWithList.class));
+        Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();
         assertThat(proto.getMessages()).hasSize(1);
 
@@ -82,8 +79,9 @@ class MarshallerGeneratorTest {
 
     @Test
     void testPersonWithAddressMarshallers() throws Exception {
-        
-        Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(PersonWithAddress.class));
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(PersonWithAddress.class));
+
+        Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();        
         assertThat(proto.getMessages()).hasSize(2);
         
@@ -101,8 +99,9 @@ class MarshallerGeneratorTest {
     
     @Test
     void testPersonWithAddressesMarshallers() throws Exception {
-        
-        Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(PersonWithAddresses.class));
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(PersonWithAddresses.class));
+
+        Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();        
         assertThat(proto.getMessages()).hasSize(2);
 
@@ -123,7 +122,9 @@ class MarshallerGeneratorTest {
     @Test
     void testEnumInPojosMarshallers() throws Exception {
         Stream.of(Question.class, QuestionWithAnnotatedEnum.class).forEach(c -> {
-            Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(c));
+            ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(c));
+
+            Proto proto = generator.generate("org.kie.kogito.test");
             assertThat(proto).isNotNull();
             assertThat(proto.getMessages()).hasSize(1);
 
@@ -154,7 +155,9 @@ class MarshallerGeneratorTest {
     @Test
     void testEnumMarshallers() {
         Stream.of(Answer.class, AnswerWitAnnotations.class).forEach(e -> {
-            Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(e));
+            ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(e));
+
+            Proto proto = generator.generate("org.kie.kogito.test");
             assertThat(proto).isNotNull();
             assertThat(proto.getEnums()).hasSize(1);
 

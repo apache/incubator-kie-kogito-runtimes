@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import io.quarkus.deployment.dev.JavaCompilationProvider;
@@ -45,8 +46,6 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoCompilationProvider.class);
     protected static Map<Path, Path> classToSource = new HashMap<>();
-
-    private String appPackageName = System.getProperty("kogito.codegen.packageName", "org.kie.kogito.app");
 
     @Override
     public Set<String> handledSourcePaths() {
@@ -65,9 +64,7 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         try {
             KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
                     .withApplicationProperties(quarkusContext.getProjectDirectory().toPath().resolve("src/main/resources").toFile())
-                    .withPackageName(appPackageName)
                     .withClassAvailabilityResolver(className -> hasClassOnClasspath(cl, className))
-                    .withTargetDirectory(outputDirectory)
                     .build();
 
 
@@ -113,11 +110,11 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         return null;
     }
 
-    protected abstract Generator addGenerator(ApplicationGenerator appGen,
-                                              KogitoBuildContext context,
-                                              Set<File> filesToCompile,
-                                              Context quarkusContext,
-                                              ClassLoader cl)
+    protected abstract Optional<Generator> addGenerator(ApplicationGenerator appGen,
+                                                       KogitoBuildContext context,
+                                                       Set<File> filesToCompile,
+                                                       Context quarkusContext,
+                                                       ClassLoader cl)
             throws IOException;
 
     static Path pathOf(String path, String relativePath) {

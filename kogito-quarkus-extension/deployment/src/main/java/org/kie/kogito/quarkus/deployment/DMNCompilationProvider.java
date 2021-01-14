@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 import org.kie.kogito.codegen.ApplicationGenerator;
@@ -36,11 +37,10 @@ public class DMNCompilationProvider extends KogitoCompilationProvider {
     }
 
     @Override
-    protected Generator addGenerator(ApplicationGenerator appGen, KogitoBuildContext context, Set<File> filesToCompile, Context quarkusContext, ClassLoader cl) throws IOException {
+    protected Optional<Generator> addGenerator(ApplicationGenerator appGen, KogitoBuildContext context, Set<File> filesToCompile, Context quarkusContext, ClassLoader cl) throws IOException {
         Path path = quarkusContext.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
-        return appGen.setupGenerator(DecisionCodegen.ofCollectedResources(
+        return appGen.registerGeneratorIfEnabled(DecisionCodegen.ofCollectedResources(
                 context,
-                CollectedResource.fromDirectory(path)))
-                .withClassLoader(cl);
+                CollectedResource.fromDirectory(path)));
     }
 }

@@ -17,9 +17,7 @@ package org.kie.kogito.codegen.process.persistence;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -34,7 +32,6 @@ import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.data.Person;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,13 +50,11 @@ class MongoDBPersistenceGeneratorTest {
 
     @Test
     void test() {
+        context.setApplicationProperty("kogito.persistence.type", "mongodb");
+
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
                 context,
-                Collections.singleton(Person.class),
-                null,
-                null,
-                Arrays.asList("com.mongodb.client.MongoClient"),
-                "mongodb");
+                null);
         Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
 
         Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.category() == GeneratedFileType.SOURCE.category()).findFirst();

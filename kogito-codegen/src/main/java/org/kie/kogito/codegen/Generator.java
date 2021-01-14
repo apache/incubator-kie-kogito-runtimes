@@ -24,6 +24,8 @@ import java.util.Collection;
  */
 public interface Generator {
 
+    String CONFIG_PREFIX = "kogito.codegen.";
+
     /**
      * Returns the "section" of the Application class corresponding to rules.
      * e.g the processes() method with processes().createMyProcess() etc.
@@ -46,4 +48,12 @@ public interface Generator {
     void updateConfig(ApplicationConfigGenerator cfg);
 
     KogitoBuildContext context();
+
+    String name();
+
+    default boolean isEnabled() {
+        return context().getApplicationProperty(CONFIG_PREFIX + name())
+                .map("false"::equalsIgnoreCase)
+                .orElse(true);
+    }
 }

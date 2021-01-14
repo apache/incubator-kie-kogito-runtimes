@@ -46,6 +46,7 @@ import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.KogitoPackageSources;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,8 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
         return new DeclaredTypeCodegen(context, toResources(files.stream()));
     }
 
-    public static DeclaredTypeCodegen ofResources(KogitoBuildContext context, Collection<Resource> resources) {
+    public static DeclaredTypeCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> collectedResources) {
+        Collection<Resource> resources = collectedResources.stream().map(CollectedResource::resource).collect(toList());
         return new DeclaredTypeCodegen(context, resources);
     }
 
@@ -93,15 +95,9 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
     };
     private final Collection<Resource> resources;
 
-    /**
-     * used for type-resolving during codegen/type-checking
-     */
-    private ClassLoader contextClassLoader;
-
     private DeclaredTypeCodegen(KogitoBuildContext context, Collection<Resource> resources) {
-        super(context);
+        super(context, "rules");
         this.resources = resources;
-        this.contextClassLoader = getClass().getClassLoader();
     }
 
     @Override
@@ -114,7 +110,7 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
         ReleaseIdImpl dummyReleaseId = new ReleaseIdImpl("dummy:dummy:0.0.0");
 
         KnowledgeBuilderConfigurationImpl configuration =
-                new KnowledgeBuilderConfigurationImpl(contextClassLoader);
+                new KnowledgeBuilderConfigurationImpl(context().getClassLoader());
 
         ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<KogitoPackageSources>(
                 KogitoPackageSources::dumpPojos, configuration, dummyReleaseId, true, true) {
@@ -166,10 +162,5 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
     @Override
     public void updateConfig(ApplicationConfigGenerator cfg) {
         cfg.withRuleConfig(new RuleConfigGenerator(context()));
-    }
-
-    public DeclaredTypeCodegen withClassLoader(ClassLoader projectClassLoader) {
-        this.contextClassLoader = projectClassLoader;
-        return this;
     }
 }

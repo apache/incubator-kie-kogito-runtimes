@@ -32,8 +32,12 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
     private static final String LISTING_FILE = "list.json";
 
     protected ObjectMapper mapper;
+    protected Collection<T> inputs;
+    protected T persistenceClass;
 
-    public AbstractProtoGenerator() {
+    public AbstractProtoGenerator(T persistenceClass, Collection<T> inputs) {
+        this.inputs = inputs;
+        this.persistenceClass = persistenceClass;
         mapper = new ObjectMapper();
     }
 

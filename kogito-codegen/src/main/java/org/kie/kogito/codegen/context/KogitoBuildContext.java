@@ -20,7 +20,6 @@ import org.kie.kogito.codegen.KogitoCodeGenConstants;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
@@ -62,15 +61,13 @@ public interface KogitoBuildContext {
 
     Collection<String> getApplicationProperties();
 
-    default Path getProjectDirectory() {
-        return getTargetDirectory().getParentFile().toPath();
-    }
-
-    File getTargetDirectory();
+    void setApplicationProperty(String key, Object value);
 
     String getPackageName();
 
     AddonsConfig getAddonsConfig();
+
+    ClassLoader getClassLoader();
 
     interface Builder {
         Builder withPackageName(String packageName);
@@ -83,22 +80,8 @@ public interface KogitoBuildContext {
 
         Builder withClassAvailabilityResolver(Predicate<String> classAvailabilityResolver);
 
-        Builder withTargetDirectory(File targetDirectory);
+        Builder withClassLoader(ClassLoader classLoader);
 
         KogitoBuildContext build();
-
-        @SuppressWarnings("unchecked")
-        static <T extends Builder> T merge(KogitoBuildContext original, T target) {
-            Properties newProperties = new Properties();
-            original.getApplicationProperties().forEach(prop -> newProperties.put(prop, original.getApplicationProperty(prop)));
-
-            return (T) target.withPackageName(original.getPackageName())
-                    .withApplicationProperties(newProperties)
-                    .withAddonsConfig(original.getAddonsConfig())
-                    .withTargetDirectory(original.getTargetDirectory())
-                    .withClassAvailabilityResolver(original::hasClassAvailable);
-        }
-
-
     }
 }

@@ -39,7 +39,6 @@ public class PredictionCodegenTest extends AbstractCodegenTest {
     public void generateAllFiles() {
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 KogitoBuildContext.EMPTY_CONTEXT,
-                false,
                 CollectedResource.fromFiles(BASE_PATH, FULL_SOURCE.toFile()));
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();

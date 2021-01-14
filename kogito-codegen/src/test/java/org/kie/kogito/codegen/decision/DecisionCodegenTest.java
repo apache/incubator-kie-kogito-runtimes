@@ -69,6 +69,10 @@ public class DecisionCodegenTest {
                 .withAddonsConfig(addonsConfig)
                 .build();
 
+        return getDecisionCodegen(s, context);
+    }
+
+    public DecisionCodegen getDecisionCodegen(String s, KogitoBuildContext context) {
         return DecisionCodegen.ofCollectedResources(context, CollectedResource.fromPaths(Paths.get(s).toAbsolutePath()));
     }
 
@@ -161,11 +165,6 @@ public class DecisionCodegenTest {
     public void testNSEW_positive() throws Exception {
         // This test is meant to check that IFF Eclipse MP OpenAPI annotations are available on Build/CP of Kogito application, annotation is used with codegen
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW");
-        codeGenerator.withClassLoader(new ClassLoader() {
-            public Class<?> loadClass(String name) throws ClassNotFoundException {
-                return Object.class;
-            }
-        });
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles).anyMatch(x -> x.relativePath().endsWith("InputSet.java"));
@@ -175,6 +174,9 @@ public class DecisionCodegenTest {
 
     @Test
     public void testNSEW_negative() throws Exception {
+        KogitoBuildContext context = JavaKogitoBuildContext.builder()
+                .withClassLoader()
+                // FIXME to test broken
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW");
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();

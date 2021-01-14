@@ -14,41 +14,32 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.quarkus.deployment;
+package org.kie.kogito.codegen.utils;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
-import io.quarkus.bootstrap.model.PathsCollection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class AppPaths {
 
-class AppPaths {
+    private final Set<Path> projectPaths = new LinkedHashSet<>();
+    private final Collection<Path> classesPaths = new ArrayList<>();
 
-    private static final Logger logger = LoggerFactory.getLogger(AppPaths.class);
+    private final boolean isJar;
 
-    final Set<Path> projectPaths = new LinkedHashSet<>();
-    final List<Path> classesPaths = new ArrayList<>();
+    public static AppPaths fromProjectDir(Path projectDir) {
+        return new AppPaths(Collections.singleton(projectDir), Collections.emptyList(), false);
+    }
 
-    boolean isJar = false;
-
-    AppPaths(PathsCollection paths) {
+    public static AppPaths fromQuarkus(Iterable<Path> paths) {
+        Set<Path> projectPaths = new LinkedHashSet<>();
+        Collection<Path> classesPaths = new ArrayList<>();
+        boolean isJar = false;
         for (Path path : paths) {
             PathType pathType = getPathType(path);
             switch (pathType) {
@@ -74,53 +65,10 @@ class AppPaths {
                 }
             }
         }
-
+        return new AppPaths(projectPaths, classesPaths, isJar);
     }
 
-    public Path[] getPath() {
-        if (isJar) {
-            return getJarPath();
-        } else {
-            return getResourcePaths();
-        }
-    }
-
-    public Path getFirstProjectPath() {
-        return projectPaths.iterator().next();
-    }
-
-    public Path getFirstClassesPath() {
-        return classesPaths.get(0);
-    }
-
-    public Path[] getJarPath() {
-        if (!isJar) {
-            throw new IllegalStateException("Not a jar");
-        }
-        return classesPaths.toArray(new Path[classesPaths.size()]);
-    }
-
-    public File[] getResourceFiles() {
-        return projectPaths.stream().map(p -> p.resolve("src/main/resources").toFile()).toArray(File[]::new);
-    }
-
-    public Path[] getResourcePaths() {
-        return transformPaths(projectPaths, p -> p.resolve("src/main/resources"));
-    }
-
-    public Path[] getSourcePaths() {
-        return transformPaths(projectPaths, p -> p.resolve("src"));
-    }
-
-    public Path[] getProjectPaths() {
-        return transformPaths(projectPaths, Function.identity());
-    }
-
-    private Path[] transformPaths(Collection<Path> paths, Function<Path, Path> f) {
-        return paths.stream().map(f).toArray(Path[]::new);
-    }
-
-    private PathType getPathType(Path archiveLocation) {
+    private static PathType getPathType(Path archiveLocation) {
         String path = archiveLocation.toString();
         if (path.endsWith("target" + File.separator + "classes")) {
             return PathType.CLASSES;
@@ -141,5 +89,58 @@ class AppPaths {
         TEST_CLASSES,
         JAR,
         UNKNOWN
+    }
+
+    private AppPaths(Set<Path> projectPaths, Collection<Path> classesPaths, boolean isJar) {
+        this.isJar = isJar;
+        this.projectPaths.addAll(projectPaths);
+        this.classesPaths.addAll(classesPaths);
+    }
+
+    public Path[] getPath() {
+        if (isJar) {
+            return getJarPath();
+        } else {
+            return getResourcePaths();
+        }
+    }
+
+    public Path getFirstProjectPath() {
+        return projectPaths.iterator().next();
+    }
+
+    public Path getFirstClassesPath() {
+        return classesPaths.iterator().next();
+    }
+
+    private Path[] getJarPath() {
+        if (!isJar) {
+            throw new IllegalStateException("Not a jar");
+        }
+        return classesPaths.toArray(new Path[classesPaths.size()]);
+    }
+
+    public File[] getResourceFiles() {
+        return projectPaths.stream().map(p -> p.resolve("src/main/resources").toFile()).toArray(File[]::new);
+    }
+
+    public Path[] getResourcePaths() {
+        return transformPaths(projectPaths, p -> p.resolve("src/main/resources"));
+    }
+
+    public Path[] getSourcePaths() {
+        return transformPaths(projectPaths, p -> p.resolve("src"));
+    }
+
+    public Collection<Path> getProjectPaths() {
+        return Collections.unmodifiableCollection(projectPaths);
+    }
+
+    public Collection<Path> getClassesPaths() {
+        return Collections.unmodifiableCollection(classesPaths);
+    }
+
+    private Path[] transformPaths(Collection<Path> paths, Function<Path, Path> f) {
+        return paths.stream().map(f).toArray(Path[]::new);
     }
 }

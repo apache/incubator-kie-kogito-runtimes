@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.drools.core.util.StringUtils;
@@ -44,11 +45,9 @@ public class ApplicationGenerator {
     private List<Generator> generators = new ArrayList<>();
 
     private KogitoBuildContext context;
-    private ClassLoader classLoader;
 
     public ApplicationGenerator(KogitoBuildContext context) {
         this.context = context;
-        this.classLoader = Thread.currentThread().getContextClassLoader();
         this.applicationMainGenerator = new ApplicationContainerGenerator(context);
 
         this.configGenerator = new ApplicationConfigGenerator(context);
@@ -71,6 +70,8 @@ public class ApplicationGenerator {
         generatedFiles.addAll(generateApplicationSections());
 
         generatedFiles.addAll(configGenerator.generate());
+
+        DashboardGeneratedFileUtils.list(generatedFiles).ifPresent(generatedFiles::add);
 
         logGeneratedFiles(generatedFiles);
 
@@ -111,25 +112,24 @@ public class ApplicationGenerator {
     }
 
     /**
-     * Method to wire Generator with ApplicationGenerator and initialize it with common parameters
+     * Method to wire Generator with ApplicationGenerator if enabled
      * @param generator
      * @param <G>
      * @return
      */
-    public <G extends Generator> G setupGenerator(G generator) {
-        this.generators.add(generator);
-        return generator;
-    }
-
-    public ApplicationGenerator withClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
-        return this;
+    public <G extends Generator> Optional<G> registerGeneratorIfEnabled(G generator) {
+        if(generator.isEnabled()) {
+            this.generators.add(generator);
+            return Optional.of(generator);
+        }
+        LOGGER.debug("Skipping {}", generator.name());
+        return Optional.empty();
     }
 
     private Collection<String> loadAddonList() {
         ArrayList<String> addons = new ArrayList<>();
         try {
-            Enumeration<URL> urls = classLoader.getResources("META-INF/kogito.addon");
+            Enumeration<URL> urls = context.getClassLoader().getResources("META-INF/kogito.addon");
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 try (InputStream urlStream = url.openStream(); InputStreamReader isr = new InputStreamReader(urlStream)) {

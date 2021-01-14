@@ -38,13 +38,9 @@ public class ScaffoldMojo extends GenerateModelMojo {
     private File customizableSources;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            addCompileSourceRoots();
-            generateModel();
-        } catch (IOException e) {
-            throw new MojoExecutionException("An I/O error occurred", e);
-        }
+    public void execute() throws MojoExecutionException {
+        addCompileSourceRoots();
+        generateModel();
     }
 
     @Override

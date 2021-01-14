@@ -34,6 +34,7 @@ import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.FieldInfo;
 import org.jboss.jandex.IndexView;
+import org.jboss.jandex.MethodInfo;
 import org.jboss.jandex.Type;
 import org.jboss.jandex.Type.Kind;
 import org.kie.kogito.codegen.GeneratedFile;
@@ -43,6 +44,8 @@ import org.kie.kogito.codegen.process.persistence.proto.ProtoDataClassesResult;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoEnum;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoMessage;
 
+import static java.util.stream.Collectors.toList;
+
 public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
     private static final DotName ENUM_VALUE_ANNOTATION = DotName.createSimple(ProtoEnumValue.class.getName());
@@ -50,17 +53,19 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     private final DotName generatedAnnotation;
     private final DotName variableInfoAnnotation;
 
-    public JandexProtoGenerator(IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
+    public JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> inputs, IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
+        super(persistenceClass, inputs);
         this.index = index;
         this.generatedAnnotation = generatedAnnotation;
         this.variableInfoAnnotation = variableInfoAnnotation;
     }
 
-    public Proto generate(String packageName, Collection<ClassInfo> dataModel, String... headers) {
+    @Override
+    public Proto generate(String packageName, String... headers) {
         try {
             Proto proto = new Proto(packageName, headers);
 
-            for (ClassInfo clazz : dataModel) {
+            for (ClassInfo clazz : inputs) {
                 if (clazz.superName() != null && Enum.class.getName().equals(clazz.superName().toString())) {
                     enumFromClass(proto, clazz, null);
                 } else {
@@ -87,6 +92,20 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         } catch (Exception e) {
             throw new RuntimeException("Error while generating proto for data model", e);
         }
+    }
+
+    @Override
+    public Collection<String> getPersistenceClassParams() {
+        List<String> parameters = new ArrayList<>();
+        if(persistenceClass != null) {
+            for (MethodInfo mi : persistenceClass.methods()) {
+                if (mi.name().equals("<init>") && !mi.parameters().isEmpty()) {
+                    parameters = mi.parameters().stream().map(p -> p.name().toString()).collect(toList());
+                    break;
+                }
+            }
+        }
+        return parameters;
     }
 
     protected ProtoMessage messageFromClass(Proto proto, ClassInfo clazz, IndexView index, String packageName,
@@ -196,11 +215,11 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     }
 
     @Override
-    public ProtoDataClassesResult<ClassInfo> extractDataClasses(Collection<ClassInfo> input) {
+    public ProtoDataClassesResult<ClassInfo> getDataClasses() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         Set<ClassInfo> dataModelClasses = new HashSet<>();
 
-        for (ClassInfo modelClazz : input) {
+        for (ClassInfo modelClazz : inputs) {
 
             for (FieldInfo pd : modelClazz.fields()) {
 

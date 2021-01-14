@@ -25,8 +25,10 @@ public abstract class AbstractGenerator implements Generator {
     public static final GeneratedFileType MODEL_TYPE = GeneratedFileType.of("MODEL", GeneratedFileType.Category.SOURCE, true, true);
 
     private final KogitoBuildContext context;
+    private final String name;
 
-    protected AbstractGenerator(KogitoBuildContext context) {
+    protected AbstractGenerator(KogitoBuildContext context, String name) {
+        this.name = name;
         Objects.requireNonNull(context, "context cannot be null");
         this.context = context;
     }
@@ -34,6 +36,11 @@ public abstract class AbstractGenerator implements Generator {
     @Override
     public KogitoBuildContext context() {
         return this.context;
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     protected String applicationCanonicalName() {

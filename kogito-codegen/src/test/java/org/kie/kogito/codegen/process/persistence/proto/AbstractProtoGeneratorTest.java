@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AbstractProtoGeneratorTest {
     @Test
     void checkGeneratedProtoBufAndListing() throws IOException {
-        final ReflectionProtoGenerator generator = new ReflectionProtoGenerator();
+        final ReflectionProtoGenerator generator = new ReflectionProtoGenerator(null, null);
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             final Proto proto = new Proto("org.acme.test");

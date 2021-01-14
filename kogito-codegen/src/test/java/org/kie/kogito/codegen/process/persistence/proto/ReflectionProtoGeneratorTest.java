@@ -33,12 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ReflectionProtoGeneratorTest {
 
-    private ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator();
 
     @Test
     void testPersonProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(Person.class));
 
-        Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(Person.class));
+        Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test");
@@ -72,8 +72,9 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testPersonWithAddressProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(PersonWithAddress.class));
 
-        Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(PersonWithAddress.class));
+        Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test");
@@ -143,8 +144,9 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testPersonWithListProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(PersonWithList.class));
 
-        Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(PersonWithList.class));
+        Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test");
@@ -202,8 +204,9 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testPersonWithAddressesProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(PersonWithAddresses.class));
 
-        Proto proto = generator.generate("org.kie.kogito.test", Collections.singleton(PersonWithAddresses.class));
+        Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test");
@@ -273,6 +276,7 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testPersonAsModelProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.emptyList());
 
         Proto proto = generator.generate("@Indexed", ProtoGenerator.INDEX_COMMENT, "org.kie.kogito.test.persons", Person.class);
         assertThat(proto).isNotNull();
@@ -312,6 +316,7 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testPersonWithVariableInfoAsModelProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.emptyList());
 
         Proto proto = generator.generate("@Indexed", ProtoGenerator.INDEX_COMMENT, "org.kie.kogito.test.persons", PersonVarInfo.class);
         assertThat(proto).isNotNull();
@@ -351,8 +356,9 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testAnswerProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(Answer.class));
 
-        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(Answer.class));
+        Proto proto = generator.generate("org.kie.kogito.test.persons");
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");
@@ -374,8 +380,9 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testAnswerWithAnnotationsProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(AnswerWitAnnotations.class));
 
-        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(AnswerWitAnnotations.class));
+        Proto proto = generator.generate("org.kie.kogito.test.persons");
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");
@@ -397,6 +404,7 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testAnswerWithVariableInfoProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.emptyList());
 
         Proto proto = generator.generate("@Indexed", ProtoGenerator.INDEX_COMMENT, "org.kie.kogito.test.persons", Answer.class);
         assertThat(proto).isNotNull();
@@ -421,8 +429,9 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testQuestionWithEnumProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(Question.class));
 
-        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(Question.class));
+        Proto proto = generator.generate("org.kie.kogito.test.persons");
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");
@@ -450,8 +459,9 @@ class ReflectionProtoGeneratorTest {
 
     @Test
     void testQuestionWithAnnotatedEnumProtoFile() {
+        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(QuestionWithAnnotatedEnum.class));
 
-        Proto proto = generator.generate("org.kie.kogito.test.persons", Collections.singleton(QuestionWithAnnotatedEnum.class));
+        Proto proto = generator.generate("org.kie.kogito.test.persons");
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");

@@ -22,11 +22,13 @@ public interface ProtoGenerator<T> {
 
     String INDEX_COMMENT = "@Field(store = Store.YES) @SortableField";
 
-    Proto generate(String packageName, Collection<T> dataModel, String... headers);
+    Proto generate(String packageName, String... headers);
 
     Proto generate(String messageComment, String fieldComment, String packageName, T dataModel, String... headers);
 
-    ProtoDataClassesResult<T> extractDataClasses(Collection<T> input);
+    ProtoDataClassesResult<T> getDataClasses();
+
+    Collection<String> getPersistenceClassParams();
 
     default String applicabilityByType(String type) {
         if (type.equals("Collection")) {

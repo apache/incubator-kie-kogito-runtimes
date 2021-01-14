@@ -19,6 +19,7 @@ package org.kie.kogito.quarkus.deployment;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.kie.kogito.codegen.ApplicationGenerator;
@@ -37,12 +38,11 @@ public class ProcessCompilationProvider extends KogitoCompilationProvider {
     }
 
     @Override
-    protected Generator addGenerator(ApplicationGenerator appGen, KogitoBuildContext context, Set<File> filesToCompile, Context quarkusContext, ClassLoader cl) {
+    protected Optional<Generator> addGenerator(ApplicationGenerator appGen, KogitoBuildContext context, Set<File> filesToCompile, Context quarkusContext, ClassLoader cl) {
         Path resources = quarkusContext.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
-        return appGen.setupGenerator(
+        return appGen.registerGeneratorIfEnabled(
                 ProcessCodegen.ofCollectedResources(
                         context,
-                        CollectedResource.fromFiles(resources, filesToCompile.toArray(new File[0]))))
-                .withClassLoader(cl);
+                        CollectedResource.fromFiles(resources, filesToCompile.toArray(new File[0]))));
     }
 }

@@ -39,10 +39,14 @@ import org.kie.kogito.codegen.GeneratedFile;
 
 public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
-    public Proto generate(String packageName, Collection<Class<?>> dataModel, String... headers) {
+    public ReflectionProtoGenerator(Class<?> persistenceClass, Collection<Class<?>> inputs) {
+        super(persistenceClass, inputs);
+    }
+
+    public Proto generate(String packageName, String... headers) {
         try {
             Proto proto = new Proto(packageName, headers);
-            for (Class<?> clazz : dataModel) {
+            for (Class<?> clazz : inputs) {
                 if (clazz.isEnum()) {
                     enumFromClass(proto, clazz, null);
                 } else {
@@ -71,11 +75,11 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
     }
 
     @Override
-    public ProtoDataClassesResult<Class<?>> extractDataClasses(Collection<Class<?>> input) {
+    public ProtoDataClassesResult<Class<?>> getDataClasses() {
         Set<Class<?>> dataModelClasses = new HashSet<>();
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         try {
-            for (Class<?> modelClazz : input) {
+            for (Class<?> modelClazz : inputs) {
 
                 BeanInfo beanInfo = Introspector.getBeanInfo(modelClazz);
                 for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
@@ -97,6 +101,17 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
         }
 
         return new ProtoDataClassesResult<>(dataModelClasses, generatedFiles);
+    }
+
+    @Override
+    public Collection<String> getPersistenceClassParams() {
+        Collection<String> parameters = new ArrayList<>();
+        if (persistenceClass != null) {
+            for (Type t : persistenceClass.getConstructors()[0].getGenericParameterTypes()) {
+                parameters.add(t.getTypeName());
+            }
+        }
+        return parameters;
     }
 
     protected ProtoMessage messageFromClass(Proto proto, Class<?> clazz, String packageName, String messageComment, String fieldComment) throws Exception {

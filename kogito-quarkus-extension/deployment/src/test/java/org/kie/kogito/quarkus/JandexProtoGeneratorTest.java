@@ -31,7 +31,6 @@ class JandexProtoGeneratorTest {
 
     @Test
     void testGenerate() {
-        JandexProtoGenerator generator = new JandexProtoGenerator(null, null, null);
         List<ClassInfo> dataModel = new ArrayList<>();
 
         DotName enumName = DotName.createComponentized(DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleEnum");
@@ -42,7 +41,8 @@ class JandexProtoGeneratorTest {
         ClassInfo objectClassName = ClassInfo.create(objectName, DotName.createSimple(Object.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
         dataModel.add(objectClassName);
 
-        Proto proto = generator.generate("com.acme", dataModel);
+        JandexProtoGenerator generator = new JandexProtoGenerator(null, dataModel, null, null, null);
+        Proto proto = generator.generate("com.acme");
         assertEquals(1, proto.getEnums().size());
         assertEquals(enumName.local(), proto.getEnums().get(0).getName());
         assertEquals(1, proto.getMessages().size());
@@ -51,7 +51,6 @@ class JandexProtoGeneratorTest {
 
     @Test
     void testGenerateComments() {
-        JandexProtoGenerator generator = new JandexProtoGenerator(null, null, null);
         List<ClassInfo> dataModel = new ArrayList<>();
 
         DotName enumName = DotName.createComponentized(DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleEnum");
@@ -62,6 +61,7 @@ class JandexProtoGeneratorTest {
         ClassInfo objectClassName = ClassInfo.create(objectName, DotName.createSimple(Object.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
         dataModel.add(objectClassName);
 
+        JandexProtoGenerator generator = new JandexProtoGenerator(null, dataModel, null, null, null);
         Proto enumProto = generator.generate("message comment", "field comment", "com.acme", enumClassInfo);
         assertEquals(1, enumProto.getEnums().size());
         assertEquals(enumName.local(), enumProto.getEnums().get(0).getName());

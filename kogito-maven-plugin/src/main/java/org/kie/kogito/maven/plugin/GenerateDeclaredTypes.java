@@ -15,26 +15,19 @@
 package org.kie.kogito.maven.plugin;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.rules.DeclaredTypeCodegen;
-import org.kie.kogito.maven.plugin.util.MojoUtil;
+import org.kie.kogito.codegen.utils.AppPaths;
 
 @Mojo(name = "generateDeclaredTypes",
       requiresDependencyResolution = ResolutionScope.NONE,
@@ -43,32 +36,8 @@ import org.kie.kogito.maven.plugin.util.MojoUtil;
       threadSafe = true)
 public class GenerateDeclaredTypes extends AbstractKieMojo {
 
-    public static final List<String> DROOLS_EXTENSIONS = Arrays.asList(".drl", ".xls", ".xlsx", ".csv");
-
-    public static final PathMatcher drlFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.drl");
-
-    // due to a limitation of the injector, the following 2 params have to be Strings
-    // otherwise we cannot get the default value to null
-    // when the value is null, the semantics is to enable the corresponding
-    // codegen backend only if at least one file of the given type exist
-
-    @Parameter(property = "kogito.codegen.rules", defaultValue = "")
-    private String generateRules; // defaults to true iff there exist DRL files
-
-    @Parameter(property = "kogito.codegen.processes", defaultValue = "")
-    private String generateProcesses; // defaults to true iff there exist BPMN files
-
-    @Parameter(property = "kogito.codegen.decisions", defaultValue = "")
-    private String generateDecisions; // defaults to true iff there exist DMN files
-
-    @Parameter(property = "kogito.codegen.predictions", defaultValue = "")
-    private String generatePredictions; // defaults to true iff there exist PMML files
-
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
-
-    @Parameter(property = "kogito.persistence.enabled", defaultValue = "false")
-    private boolean persistence;
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -80,64 +49,25 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
     }
 
     private void generateModel() throws MojoExecutionException, IOException {
-        // if unspecified, then default to checking for file type existence
-        // if not null, the property has been overridden, and we should use the specified value
-        boolean genRules = generateRules == null ? rulesExist() : Boolean.parseBoolean(generateRules);
-
         project.addCompileSourceRoot(generatedSources.getPath());
 
         setSystemProperties(properties);
 
-        ApplicationGenerator appGen = createApplicationGenerator(genRules);
+        ApplicationGenerator appGen = createApplicationGenerator();
 
         Collection<GeneratedFile> generatedFiles = appGen.generateComponents();
 
         writeGeneratedFiles(generatedFiles);
     }
 
-    private boolean rulesExist() throws IOException {
-        try (final Stream<Path> paths = Files.walk(projectDir.toPath())) {
-            return paths.map(p -> p.toString().toLowerCase())
-                    .map(p -> {
-                        int dot = p.lastIndexOf( '.' );
-                        return dot > 0 ? p.substring( dot ) : "";
-                    })
-                    .anyMatch( DROOLS_EXTENSIONS::contains );
-        }
-    }
+    private ApplicationGenerator createApplicationGenerator() throws MojoExecutionException {
+        AppPaths appPaths = appPaths();
 
-    private ApplicationGenerator createApplicationGenerator(
-            boolean generateRuleUnits) throws MojoExecutionException {
-        String appPackageName = project.getGroupId();
-        
-        // safe guard to not generate application classes that would clash with interfaces
-        if (appPackageName.equals(ApplicationGenerator.DEFAULT_GROUP_ID)) {
-            appPackageName = KogitoBuildContext.DEFAULT_PACKAGE_NAME;
-        }
+        KogitoBuildContext context = discoverKogitoRuntimeContext();
 
-        ClassLoader projectClassLoader = MojoUtil.createProjectClassLoader(this.getClass().getClassLoader(),
-                                                                           project,
-                                                                           outputDirectory,
-                                                                           null);
+        ApplicationGenerator appGen = new ApplicationGenerator(context);
 
-
-        AddonsConfig addonsConfig = loadAddonsConfig(persistence, project);
-
-        KogitoBuildContext context = discoverKogitoRuntimeContext(project)
-                .withApplicationProperties(kieSourcesDirectory)
-                .withPackageName(appPackageName)
-                .withTargetDirectory(targetDirectory)
-                .withAddonsConfig(addonsConfig)
-                .build();
-
-        ApplicationGenerator appGen =
-                new ApplicationGenerator(context)
-                        .withClassLoader(projectClassLoader);
-
-        if (generateRuleUnits) {
-            appGen.setupGenerator(DeclaredTypeCodegen.ofPath(context, kieSourcesDirectory.toPath()))
-                    .withClassLoader(projectClassLoader);
-        }
+        appGen.registerGeneratorIfEnabled(DeclaredTypeCodegen.ofCollectedResources(context, CollectedResource.fromPaths(appPaths.getPath())));
         
         return appGen;
     }
