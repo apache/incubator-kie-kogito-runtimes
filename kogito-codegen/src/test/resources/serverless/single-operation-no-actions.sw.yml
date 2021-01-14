@@ -1,0 +1,10 @@
+id: noactions
+name: test-wf
+version: '1.0'
+states:
+  - name: HelloWorld
+    type: operation
+    start:
+      kind: default
+    end:
+      kind: terminate

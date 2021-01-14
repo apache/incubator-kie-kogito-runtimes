@@ -606,6 +606,12 @@ public class ServerlessWorkflowParser {
             } catch (NullPointerException e) {
                 LOGGER.warn("unable to connect current node to embedded end node");
             }
+        } else {
+            // no actions: start->end
+            StartNode embeddedStartNode =
+                    factory.startNode(idCounter.getAndIncrement(), "EmbeddedStart", embeddedSubProcess);
+            EndNode embeddedEndNode = factory.endNode(idCounter.getAndIncrement(), "EmbeddedEnd", true, embeddedSubProcess);
+            factory.connect(embeddedStartNode.getId(), embeddedEndNode.getId(), embeddedStartNode.getId() + "_" + embeddedEndNode.getId(), embeddedSubProcess);
         }
     }
 
