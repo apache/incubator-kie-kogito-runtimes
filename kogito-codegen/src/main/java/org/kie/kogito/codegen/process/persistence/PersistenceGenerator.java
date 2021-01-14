@@ -93,10 +93,9 @@ public class PersistenceGenerator extends AbstractGenerator {
     }
 
     @Override
-    public ApplicationSection section() {
-        return null;
+    public Optional<ApplicationSection> section() {
+        return Optional.empty();
     }
-
 
     @Override
     public Collection<GeneratedFile> generate() {
@@ -118,11 +117,6 @@ public class PersistenceGenerator extends AbstractGenerator {
 
     public String persistenceType() {
         return context().getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
-    }
-
-    @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        // Persistence has no custom/additional config
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

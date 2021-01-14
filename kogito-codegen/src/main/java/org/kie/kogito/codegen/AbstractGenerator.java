@@ -24,13 +24,19 @@ public abstract class AbstractGenerator implements Generator {
     public static final GeneratedFileType REST_TYPE = GeneratedFileType.of("REST", GeneratedFileType.Category.SOURCE, true, true);
     public static final GeneratedFileType MODEL_TYPE = GeneratedFileType.of("MODEL", GeneratedFileType.Category.SOURCE, true, true);
 
+    private final ConfigGenerator configGenerator;
     private final KogitoBuildContext context;
     private final String name;
 
     protected AbstractGenerator(KogitoBuildContext context, String name) {
-        this.name = name;
+        this(context, name, null);
+    }
+
+    protected AbstractGenerator(KogitoBuildContext context, String name, ConfigGenerator configGenerator) {
         Objects.requireNonNull(context, "context cannot be null");
+        this.name = name;
         this.context = context;
+        this.configGenerator = configGenerator;
     }
 
     @Override
@@ -45,5 +51,12 @@ public abstract class AbstractGenerator implements Generator {
 
     protected String applicationCanonicalName() {
         return context.getPackageName() + ".Application";
+    }
+
+    @Override
+    public void updateConfig(ApplicationConfigGenerator cfg) {
+        if (configGenerator != null) {
+            cfg.withConfigGenerator(configGenerator);
+        }
     }
 }
