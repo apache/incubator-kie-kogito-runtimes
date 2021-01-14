@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.bpmn2.test;
+package org.jbpm.test;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.process.instance.WorkItemManagerFactory;
