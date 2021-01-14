@@ -33,9 +33,6 @@ public abstract class AbstractConfigGenerator implements ConfigGenerator {
     @Override
     public String configClassName() {
         return configClassName;
-    @Override
-    public String configClassName() {
-        return configClassName;
     }
 
     @Override
