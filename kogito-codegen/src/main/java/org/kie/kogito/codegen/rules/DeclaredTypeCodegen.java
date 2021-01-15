@@ -72,6 +72,10 @@ public class DeclaredTypeCodegen extends AbstractGenerator {
         return new DeclaredTypeCodegen(context, toResources(files.stream()));
     }
 
+    public static DeclaredTypeCodegen fromContext(KogitoBuildContext context) {
+        return ofCollectedResources(context, CollectedResource.fromPaths(context.getAppPaths().getPaths()));
+    }
+
     public static DeclaredTypeCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> collectedResources) {
         Collection<Resource> resources = collectedResources.stream().map(CollectedResource::resource).collect(toList());
         return new DeclaredTypeCodegen(context, resources);

@@ -18,7 +18,6 @@ package org.kie.kogito.codegen.utils;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
-import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
@@ -32,22 +31,21 @@ public class ApplicationGeneratorDiscovery {
         // utility class
     }
 
-    public static ApplicationGenerator discover(KogitoBuildContext context, AppPaths appPaths) {
+    public static ApplicationGenerator discover(KogitoBuildContext context) {
         ApplicationGenerator appGen = new ApplicationGenerator(context);
 
         // configure each individual generator. Ordering is relevant.
 
-        appGen.registerGeneratorIfEnabled(ProcessCodegen.ofCollectedResources(context, CollectedResource.fromPaths(appPaths.getPath())));
+        appGen.registerGeneratorIfEnabled(ProcessCodegen.fromContext(context));
 
         boolean useRestServices = context.hasClassAvailable("javax.ws.rs.Path")
                 || context.hasClassAvailable("org.springframework.web.bind.annotation.RestController");
-        appGen.registerGeneratorIfEnabled(IncrementalRuleCodegen.ofCollectedResources(context, CollectedResource.fromPaths(appPaths.getPath())))
-                .map(gen -> gen.withResourcePaths(appPaths.getResourcePaths())
-                        .withRestServices(useRestServices));
+        appGen.registerGeneratorIfEnabled(IncrementalRuleCodegen.fromContext(context))
+                .map(gen -> gen.withRestServices(useRestServices));
 
-        appGen.registerGeneratorIfEnabled(PredictionCodegen.ofCollectedResources(context, CollectedResource.fromPaths(appPaths.getPath())));
+        appGen.registerGeneratorIfEnabled(PredictionCodegen.fromContext(context));
 
-        appGen.registerGeneratorIfEnabled(DecisionCodegen.ofCollectedResources(context, CollectedResource.fromPaths(appPaths.getPath())));
+        appGen.registerGeneratorIfEnabled(DecisionCodegen.fromContext(context));
 
         return appGen;
 

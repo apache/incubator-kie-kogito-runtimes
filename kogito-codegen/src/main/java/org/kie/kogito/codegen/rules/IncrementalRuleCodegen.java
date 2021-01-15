@@ -41,7 +41,6 @@ import org.drools.compiler.builder.impl.KogitoKnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.compiler.DecisionTableFactory;
 import org.drools.compiler.compiler.DroolsError;
 import org.drools.compiler.kproject.ReleaseIdImpl;
-import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.drools.modelcompiler.builder.ModelSourceClass;
 import org.kie.api.builder.model.KieBaseModel;
@@ -90,6 +89,10 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private static final GeneratedFileType QUERY_TYPE = GeneratedFileType.of("QUERY", GeneratedFileType.Category.SOURCE, true, true);
     private static final GeneratedFileType DTO_TYPE = GeneratedFileType.of("QUERY", GeneratedFileType.Category.SOURCE, true, true);
 
+    public static IncrementalRuleCodegen fromContext(KogitoBuildContext context) {
+        return ofCollectedResources(context, CollectedResource.fromPaths(context.getAppPaths().getPaths()));
+    }
+
     public static IncrementalRuleCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         List<Resource> generatedRules = resources.stream()
                 .map(CollectedResource::resource)
@@ -126,7 +129,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private IncrementalRuleCodegen(KogitoBuildContext context, Collection<Resource> resources) {
         super(context, "rules", new RuleConfigGenerator(context));
         this.resources = resources;
-        this.kieModuleModel = new KieModuleModelImpl();
+        this.kieModuleModel = findKieModuleModel(context.getAppPaths().getResourcePaths());
         setDefaultsforEmptyKieModule(kieModuleModel);
         this.decisionTableSupported = DecisionTableFactory.getDecisionTableProvider() != null;
         this.configs = new HashMap<>();
@@ -412,12 +415,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     private String ruleUnit2KieSessionName(String ruleUnit) {
         return ruleUnit.replace( '.', '$' )  + "KieSession";
-    }
-
-    public IncrementalRuleCodegen withResourcePaths(Path ... resourcePaths) {
-        kieModuleModel = findKieModuleModel(resourcePaths);
-        setDefaultsforEmptyKieModule(kieModuleModel);
-        return this;
     }
 
     public IncrementalRuleCodegen withHotReloadMode() {

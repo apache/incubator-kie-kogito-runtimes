@@ -97,9 +97,9 @@ public class AppPaths {
         this.classesPaths.addAll(classesPaths);
     }
 
-    public Path[] getPath() {
+    public Path[] getPaths() {
         if (isJar) {
-            return getJarPath();
+            return getJarPaths();
         } else {
             return getResourcePaths();
         }
@@ -113,7 +113,7 @@ public class AppPaths {
         return classesPaths.iterator().next();
     }
 
-    private Path[] getJarPath() {
+    private Path[] getJarPaths() {
         if (!isJar) {
             throw new IllegalStateException("Not a jar");
         }

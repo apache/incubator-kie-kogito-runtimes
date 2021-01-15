@@ -19,6 +19,7 @@ import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.utils.AddonsConfigDiscovery;
+import org.kie.kogito.codegen.utils.AppPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     protected final String packageName;
     protected final AddonsConfig addonsConfig;
     protected final ClassLoader classLoader;
+    protected final AppPaths appPaths;
 
     protected DependencyInjectionAnnotator dependencyInjectionAnnotator;
 
@@ -52,6 +54,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         this.applicationProperties = builder.applicationProperties;
         this.addonsConfig = builder.addonsConfig != null ? builder.addonsConfig : AddonsConfigDiscovery.discover(this);
         this.classLoader = builder.classLoader;
+        this.appPaths = builder.appPaths;
     }
 
     @Override
@@ -99,6 +102,11 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         return classLoader;
     }
 
+    @Override
+    public AppPaths getAppPaths() {
+        return appPaths;
+    }
+
     protected static Properties load(File... resourcePaths) {
         Properties applicationProperties = new Properties();
 
@@ -120,6 +128,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         protected AddonsConfig addonsConfig;
         protected Predicate<String> classAvailabilityResolver = this::hasClass;
         protected ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        protected AppPaths appPaths = AppPaths.fromProjectDir(new File(".").toPath());
 
         protected AbstractBuilder() {
         }
@@ -173,6 +182,13 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         public Builder withClassLoader(ClassLoader classLoader) {
             Objects.requireNonNull(classLoader, "classLoader cannot be null");
             this.classLoader = classLoader;
+            return this;
+        }
+
+        @Override
+        public Builder withAppPaths(AppPaths appPaths) {
+            Objects.requireNonNull(appPaths, "appPaths cannot be null");
+            this.appPaths = appPaths;
             return this;
         }
 

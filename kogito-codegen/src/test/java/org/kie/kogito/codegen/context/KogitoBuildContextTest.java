@@ -78,6 +78,14 @@ class KogitoBuildContextTest {
                 .hasMessageContaining("classLoader");
     }
 
+    @Test
+    public void withAppPaths() {
+        assertThat(builder.build().getAppPaths()).isNotNull();
+        assertThatThrownBy(() -> builder.withAppPaths(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("appPaths");
+    }
+
     static class MockKogitoBuildContext extends AbstractKogitoBuildContext {
 
         public static Builder builder() {

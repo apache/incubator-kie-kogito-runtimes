@@ -25,9 +25,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.rules.DeclaredTypeCodegen;
-import org.kie.kogito.codegen.utils.AppPaths;
 
 @Mojo(name = "generateDeclaredTypes",
       requiresDependencyResolution = ResolutionScope.NONE,
@@ -61,13 +59,11 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
     }
 
     private ApplicationGenerator createApplicationGenerator() throws MojoExecutionException {
-        AppPaths appPaths = appPaths();
-
         KogitoBuildContext context = discoverKogitoRuntimeContext();
 
         ApplicationGenerator appGen = new ApplicationGenerator(context);
 
-        appGen.registerGeneratorIfEnabled(DeclaredTypeCodegen.ofCollectedResources(context, CollectedResource.fromPaths(appPaths.getPath())));
+        appGen.registerGeneratorIfEnabled(DeclaredTypeCodegen.fromContext(context));
         
         return appGen;
     }

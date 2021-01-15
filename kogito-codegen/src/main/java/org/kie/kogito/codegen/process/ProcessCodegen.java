@@ -97,6 +97,10 @@ public class ProcessCodegen extends AbstractGenerator {
     private final ResourceGeneratorFactory resourceGeneratorFactory;
     private final List<ProcessGenerator> processGenerators = new ArrayList<>();
 
+    public static ProcessCodegen fromContext(KogitoBuildContext context) {
+        return ofCollectedResources(context, CollectedResource.fromPaths(context.getAppPaths().getPaths()));
+    }
+
     public static ProcessCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         List<Process> processes = resources.stream()
                 .map(CollectedResource::resource)

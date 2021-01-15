@@ -91,7 +91,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
         setSystemProperties(properties);
 
         ApplicationGenerator appGen = ApplicationGeneratorDiscovery
-                .discover(discoverKogitoRuntimeContext(), appPaths());
+                .discover(discoverKogitoRuntimeContext());
 
         Collection<GeneratedFile> generatedFiles;
         if (generatePartial) {

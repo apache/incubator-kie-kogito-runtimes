@@ -18,6 +18,7 @@ package org.kie.kogito.codegen.context;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.KogitoCodeGenConstants;
 import org.kie.kogito.codegen.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.utils.AppPaths;
 
 import java.io.File;
 import java.util.Collection;
@@ -69,6 +70,8 @@ public interface KogitoBuildContext {
 
     ClassLoader getClassLoader();
 
+    AppPaths getAppPaths();
+
     interface Builder {
         Builder withPackageName(String packageName);
 
@@ -81,6 +84,8 @@ public interface KogitoBuildContext {
         Builder withClassAvailabilityResolver(Predicate<String> classAvailabilityResolver);
 
         Builder withClassLoader(ClassLoader classLoader);
+
+        Builder withAppPaths(AppPaths appPaths);
 
         KogitoBuildContext build();
     }
