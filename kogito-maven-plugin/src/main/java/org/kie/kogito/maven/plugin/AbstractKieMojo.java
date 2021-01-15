@@ -34,6 +34,7 @@ import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
+import org.kie.kogito.codegen.utils.AddonsConfigDiscovery;
 import org.kie.kogito.codegen.utils.AppPaths;
 import org.kie.kogito.codegen.utils.GeneratedFileWriter;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
@@ -93,6 +94,7 @@ public abstract class AbstractKieMojo extends AbstractMojo {
                 .withClassAvailabilityResolver(this::hasClassOnClasspath)
                 .withApplicationProperties(appPaths().getResourceFiles())
                 .withPackageName(appPackageName())
+                .withAddonsConfig(AddonsConfigDiscovery.discover(this::hasClassOnClasspath))
                 .withClassLoader(projectClassLoader())
                 .build();
 

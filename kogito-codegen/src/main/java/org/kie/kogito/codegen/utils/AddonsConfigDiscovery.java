@@ -35,6 +35,7 @@ public class AddonsConfigDiscovery {
     public static final String tracingClass = "org.kie.kogito.tracing.decision.DecisionTracingListener";
     public static final String knativeEventingClass = "org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension";
     public static final String quarkusCloudEvents = "org.kie.kogito.addon.cloudevents.quarkus.QuarkusCloudEventEmitter";
+    public static final String springCloudEvents = "org.kie.kogito.addon.cloudevents.spring.SpringKafkaCloudEventEmitter";
 
     private AddonsConfigDiscovery() {
         // utility class
@@ -50,7 +51,7 @@ public class AddonsConfigDiscovery {
         boolean useMonitoring = usePrometheusMonitoring || classAvailabilityResolver.test(monitoringCoreClass);
         boolean useTracing = classAvailabilityResolver.test(tracingClass);
         boolean useKnativeEventing = classAvailabilityResolver.test(knativeEventingClass);
-        boolean useCloudEvents = classAvailabilityResolver.test(quarkusCloudEvents);
+        boolean useCloudEvents = classAvailabilityResolver.test(quarkusCloudEvents) || classAvailabilityResolver.test(springCloudEvents);
 
         AddonsConfig addonsConfig = AddonsConfig.builder()
                 .withPersistence(usePersistence)

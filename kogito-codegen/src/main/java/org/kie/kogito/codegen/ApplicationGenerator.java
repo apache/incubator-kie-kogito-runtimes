@@ -114,12 +114,12 @@ public class ApplicationGenerator {
      * @return
      */
     public <G extends Generator> Optional<G> registerGeneratorIfEnabled(G generator) {
-        if(generator.isEnabled()) {
-            this.generators.add(generator);
-            return Optional.of(generator);
+        if (!generator.isEnabled()) {
+            LOGGER.debug("Skipping {}", generator.name());
+            return Optional.empty();
         }
-        LOGGER.debug("Skipping {}", generator.name());
-        return Optional.empty();
+        this.generators.add(generator);
+        return Optional.of(generator);
     }
 
     private Collection<String> loadAddonList() {
