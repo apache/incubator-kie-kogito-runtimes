@@ -80,16 +80,9 @@ public class PersistenceGenerator extends AbstractGenerator {
 
     private final ProtoGenerator<?> protoGenerator;
 
-    private ClassLoader classLoader;
-
     public PersistenceGenerator(KogitoBuildContext context, ProtoGenerator<?> protoGenerator) {
-        this(context, protoGenerator, Thread.currentThread().getContextClassLoader());
-    }
-
-    public PersistenceGenerator(KogitoBuildContext context, ProtoGenerator<?> protoGenerator, ClassLoader classLoader) {
         super(context, "persistence");
         this.protoGenerator = protoGenerator;
-        this.classLoader = classLoader;
     }
 
     @Override
@@ -161,7 +154,7 @@ public class PersistenceGenerator extends AbstractGenerator {
         }
         List<String> variableMarshallers = new ArrayList<>();
 
-        MarshallerGenerator marshallerGenerator = new MarshallerGenerator(this.classLoader);
+        MarshallerGenerator marshallerGenerator = new MarshallerGenerator(context().getClassLoader());
 
         String protoContent = proto.toString();
 

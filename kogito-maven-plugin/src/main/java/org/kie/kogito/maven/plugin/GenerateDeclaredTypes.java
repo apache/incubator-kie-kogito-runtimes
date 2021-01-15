@@ -59,7 +59,7 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
     }
 
     private ApplicationGenerator createApplicationGenerator() throws MojoExecutionException {
-        KogitoBuildContext context = discoverKogitoRuntimeContext();
+        KogitoBuildContext context = discoverKogitoRuntimeContext(projectClassLoader());
 
         ApplicationGenerator appGen = new ApplicationGenerator(context);
 

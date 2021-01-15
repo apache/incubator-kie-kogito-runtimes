@@ -94,10 +94,10 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 ReflectionProtoGenerator protoGenerator = new ReflectionProtoGenerator(persistenceClass, modelClasses);
 
 
-                KogitoBuildContext context = discoverKogitoRuntimeContext();
+                KogitoBuildContext context = discoverKogitoRuntimeContext(cl);
 
                 // Generate persistence files
-                PersistenceGenerator persistenceGenerator = new PersistenceGenerator(context, protoGenerator, cl);
+                PersistenceGenerator persistenceGenerator = new PersistenceGenerator(context, protoGenerator);
                 Collection<GeneratedFile> persistenceFiles = persistenceGenerator.generate();
 
                 validateGeneratedFileTypes(persistenceFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.RESOURCE));
