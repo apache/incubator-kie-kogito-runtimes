@@ -14,6 +14,13 @@
  */
 package org.jbpm.serverless.workflow.parser;
 
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.serverlessworkflow.api.Workflow;
@@ -56,10 +63,6 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Reader;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class ServerlessWorkflowParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowParser.class);
@@ -523,7 +526,6 @@ public class ServerlessWorkflowParser {
                     .orElseThrow(
                                  () -> new IllegalArgumentException(
                                      "cannot find function " + action.getFunctionRef().getRefName()));
-                // TODO: open JIRA to follow this up
                 if (actionFunction.getMetadata().get("type") != null) {
                     switch (actionFunction.getMetadata().get("type").toLowerCase()) {
                         case SCRIPT_TYPE:
@@ -583,6 +585,12 @@ public class ServerlessWorkflowParser {
             } catch (NullPointerException e) {
                 LOGGER.warn("unable to connect current node to embedded end node");
             }
+        } else {
+            // no actions: start->end
+            StartNode embeddedStartNode =
+                    factory.startNode(idCounter.getAndIncrement(), "EmbeddedStart", embeddedSubProcess);
+            EndNode embeddedEndNode = factory.endNode(idCounter.getAndIncrement(), "EmbeddedEnd", true, embeddedSubProcess);
+            factory.connect(embeddedStartNode.getId(), embeddedEndNode.getId(), embeddedStartNode.getId() + "_" + embeddedEndNode.getId(), embeddedSubProcess);
         }
     }
 

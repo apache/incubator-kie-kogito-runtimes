@@ -4,11 +4,15 @@
   "functions": [
     {
       "name": "helloWorld",
-      "type": "script"
+      "metadata": {
+        "type": "script"
+      }
     },
     {
       "name": "goodbyeWorld",
-      "type": "script"
+      "metadata": {
+        "type": "script"
+      }
     }
   ],
   "states":[

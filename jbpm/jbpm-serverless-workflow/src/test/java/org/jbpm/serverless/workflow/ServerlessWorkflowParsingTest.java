@@ -15,7 +15,10 @@
 
 package org.jbpm.serverless.workflow;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.serverlessworkflow.api.Workflow;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.serverless.workflow.utils.WorkflowTestUtils;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.CompositeContextNode;
@@ -34,6 +37,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
@@ -649,5 +653,21 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
         }
 
         assertTrue(haveDefaultConstraint);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/examples/applicantworkflow.sw.json"})
+    public void testSpecExamplesParsing(String workflowLocation) throws JsonProcessingException {
+        Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
+
+        assertNotNull(workflow);
+        assertNotNull(workflow.getId());
+        assertNotNull(workflow.getName());
+        assertNotNull(workflow.getStates());
+        assertTrue(workflow.getStates().size() > 0);
+
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
+        assertNotNull(process);
+        assertNotNull(process.getId());
     }
 }

@@ -4,7 +4,8 @@ name: test-wf
 version: '1.0'
 functions:
   - name: helloWorld
-    type: script
+    metadata:
+      type: script
 states:
   - name: HelloWorld
     type: operation

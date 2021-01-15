@@ -5,10 +5,10 @@
   "functions": [
     {
       "name": "helloWorld",
-      "type": "service",
       "metadata": {
         "interface": "org.kie.kogito.codegen.data.HelloService",
-        "operation": "jsonHello"
+        "operation": "jsonHello",
+        "type": "service"
       }
     }
   ],
