@@ -178,7 +178,6 @@ public class AbstractCodegenTest {
         KogitoBuildContext context = JavaKogitoBuildContext.builder()
                 .withApplicationProperties(new File(TEST_RESOURCES))
                 .withPackageName(packageName)
-                .withClassAvailabilityResolver(className -> true)
                 .withAddonsConfig(addonsConfig)
                 .build();
 

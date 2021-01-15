@@ -54,7 +54,7 @@ public interface Generator {
 
     default boolean isEnabled() {
         return context().getApplicationProperty(CONFIG_PREFIX + name())
-                .map("false"::equalsIgnoreCase)
+                .map("true"::equalsIgnoreCase)
                 .orElse(true);
     }
 }

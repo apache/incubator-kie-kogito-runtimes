@@ -18,9 +18,12 @@ package org.kie.kogito.codegen.decision;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -66,24 +69,22 @@ public class DecisionCodegenTest {
     }
 
     public DecisionCodegen getDecisionCodegen(String s, AddonsConfig addonsConfig) {
-        Properties applicationProperties = stronglyTypedContext();
+        KogitoBuildContext.Builder contextBuilder = JavaKogitoBuildContext.builder()
+                .withAddonsConfig(addonsConfig);
 
-        KogitoBuildContext context = JavaKogitoBuildContext.builder()
-                .withApplicationProperties(applicationProperties)
-                .withAddonsConfig(addonsConfig)
-                .build();
-
-        return getDecisionCodegen(s, context);
+        return getDecisionCodegen(s, contextBuilder);
     }
 
-    public DecisionCodegen getDecisionCodegen(String s, KogitoBuildContext context) {
+    public DecisionCodegen getDecisionCodegen(String s, KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext context = stronglyTypedContext(contextBuilder).build();
         return DecisionCodegen.ofCollectedResources(context, CollectedResource.fromPaths(Paths.get(s).toAbsolutePath()));
     }
 
-    private Properties stronglyTypedContext() {
+    private KogitoBuildContext.Builder stronglyTypedContext(KogitoBuildContext.Builder builder) {
         Properties properties = new Properties();
         properties.put(DecisionCodegen.STRONGLY_TYPED_CONFIGURATION_KEY, Boolean.TRUE.toString());
-        return properties;
+        builder.withApplicationProperties(properties);
+        return builder;
     }
 
     private List<String> fileNames(List<GeneratedFile> generatedFiles) {
@@ -171,8 +172,10 @@ public class DecisionCodegenTest {
 
     @Test
     public void testNSEW_positive() throws Exception {
+        KogitoBuildContext.Builder contextBuilder = JavaKogitoBuildContext.builder()
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI"), Collections.emptyList()));
         // This test is meant to check that IFF Eclipse MP OpenAPI annotations are available on Build/CP of Kogito application, annotation is used with codegen
-        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW");
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW", contextBuilder);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles).anyMatch(x -> x.relativePath().endsWith("InputSet.java"));
@@ -182,14 +185,30 @@ public class DecisionCodegenTest {
 
     @Test
     public void testNSEW_negative() throws Exception {
-        KogitoBuildContext context = JavaKogitoBuildContext.builder()
-                .withClassLoader()
-                // FIXME to test broken
-        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW");
+        KogitoBuildContext.Builder contextBuilder = JavaKogitoBuildContext.builder()
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(Collections.emptyList(), Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI")));
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW", contextBuilder);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles).anyMatch(x -> x.relativePath().endsWith("InputSet.java"));
         GeneratedFile inputSetFile = generatedFiles.stream().filter(x -> x.relativePath().endsWith("InputSet.java")).findFirst().get();
         assertThat(new String(inputSetFile.contents())).doesNotContain("@org.eclipse.microprofile.openapi.annotations.media.Schema");
+    }
+
+    private Predicate<String> mockClassAvailabilityResolver(Collection<String> includedClasses, Collection<String> excludedClasses) {
+        return className -> {
+            if(includedClasses.contains(className)) {
+                return true;
+            }
+            else if(excludedClasses.contains(className)) {
+                return false;
+            }
+            try {
+                this.getClass().getClassLoader().loadClass(className);
+                return true;
+            } catch (ClassNotFoundException ex) {
+                return false;
+            }
+        };
     }
 }
