@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.drools.core.util.StringUtils;
