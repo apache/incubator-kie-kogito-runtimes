@@ -45,10 +45,11 @@ import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.AbstractGenerator;
+import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
@@ -88,7 +89,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     public PersistenceGenerator(KogitoBuildContext context, Collection<?> modelClasses, ProtoGenerator<?> protoGenerator, List<String> parameters, String persistenceType) {
         this(context, modelClasses, protoGenerator, Thread.currentThread().getContextClassLoader(), parameters, persistenceType);
     }
-
+    
     public PersistenceGenerator(KogitoBuildContext context, Collection<?> modelClasses, ProtoGenerator<?> protoGenerator, ClassLoader classLoader, List<String> parameters, String persistenceType) {
         super(context);
         this.modelClasses = modelClasses;
@@ -99,10 +100,9 @@ public class PersistenceGenerator extends AbstractGenerator {
     }
 
     @Override
-    public ApplicationSection section() {
-        return null;
+    public Optional<ApplicationSection> section() {
+        return Optional.empty();
     }
-
 
     @Override
     public Collection<GeneratedFile> generate() {
@@ -120,11 +120,6 @@ public class PersistenceGenerator extends AbstractGenerator {
             default:
                 throw new IllegalArgumentException("Unknown persistenceType " + persistenceType);
         }
-    }
-
-    @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        // Persistence has no custom/additional config
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -187,7 +182,7 @@ public class PersistenceGenerator extends AbstractGenerator {
 
                 variableMarshallers.add(clazzName);
 
-                generatedFiles.add(new GeneratedFile(GeneratedFile.Type.CLASS,
+                generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE,
                         clazzName.replace('.', '/') + ".java",
                         marshallerClazz.toString()));
             }
@@ -342,7 +337,7 @@ public class PersistenceGenerator extends AbstractGenerator {
         persistenceProviderClazz.getMembers().sort(new BodyDeclarationComparator());
         if (firstClazzName.isPresent()) {
             String clazzName = pkgName + "." + firstClazzName.get();
-            return Optional.of(new GeneratedFile(GeneratedFile.Type.CLASS, clazzName.replace('.', '/') + ".java", compilationUnit.toString()));
+            return Optional.of(new GeneratedFile(GeneratedFileType.SOURCE, clazzName.replace('.', '/') + ".java", compilationUnit.toString()));
         }
         return Optional.empty();
     }
