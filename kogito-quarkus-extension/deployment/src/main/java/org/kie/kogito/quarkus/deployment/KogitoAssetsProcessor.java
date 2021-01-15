@@ -189,12 +189,7 @@ public class KogitoAssetsProcessor {
         // scan and parse paths
         AppPaths appPaths = AppPaths.fromQuarkus(root.getPaths());
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        return QuarkusKogitoBuildContext.builder()
-                .withApplicationProperties(appPaths.getResourceFiles())
-                .withClassLoader(classLoader)
-                .withClassAvailabilityResolver(cl -> classAvailabilityResolver(classLoader, cl))
-                .withAppPaths(appPaths)
-                .build();
+        return KogitoQuarkusContextProvider.context(appPaths, classLoader, className -> classAvailabilityResolver(classLoader, className));
     }
 
     /**

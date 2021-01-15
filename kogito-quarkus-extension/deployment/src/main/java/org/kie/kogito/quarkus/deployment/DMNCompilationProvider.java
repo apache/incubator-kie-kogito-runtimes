@@ -17,13 +17,10 @@
 package org.kie.kogito.quarkus.deployment;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.Generator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
@@ -37,10 +34,10 @@ public class DMNCompilationProvider extends KogitoCompilationProvider {
     }
 
     @Override
-    protected Optional<Generator> addGenerator(ApplicationGenerator appGen, KogitoBuildContext context, Set<File> filesToCompile, Context quarkusContext, ClassLoader cl) throws IOException {
+    protected Generator getGenerator(KogitoBuildContext context, Set<File> filesToCompile, Context quarkusContext) {
         Path path = quarkusContext.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
-        return appGen.registerGeneratorIfEnabled(DecisionCodegen.ofCollectedResources(
+        return DecisionCodegen.ofCollectedResources(
                 context,
-                CollectedResource.fromDirectory(path)));
+                CollectedResource.fromDirectory(path));
     }
 }

@@ -30,8 +30,6 @@ public interface KogitoBuildContext {
 
     String APPLICATION_PROPERTIES_FILE_NAME = "application.properties";
     String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
-    KogitoBuildContext EMPTY_CONTEXT = JavaKogitoBuildContext.builder()
-            .build();
 
     boolean hasClassAvailable(String fqcn);
 
