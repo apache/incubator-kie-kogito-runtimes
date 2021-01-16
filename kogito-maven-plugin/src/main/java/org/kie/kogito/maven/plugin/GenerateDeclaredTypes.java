@@ -14,7 +14,6 @@
  */
 package org.kie.kogito.maven.plugin;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -39,14 +38,10 @@ public class GenerateDeclaredTypes extends AbstractKieMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        try {
-            generateModel();
-        } catch (IOException e) {
-            throw new MojoExecutionException("An I/O error occurred", e);
-        }
+        generateModel();
     }
 
-    private void generateModel() throws MojoExecutionException, IOException {
+    private void generateModel() throws MojoExecutionException {
         project.addCompileSourceRoot(generatedSources.getPath());
 
         setSystemProperties(properties);

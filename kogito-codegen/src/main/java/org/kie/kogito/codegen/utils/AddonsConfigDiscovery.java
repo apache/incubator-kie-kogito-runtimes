@@ -29,13 +29,13 @@ public class AddonsConfigDiscovery {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AddonsConfigDiscovery.class);
 
-    public static final String persistenceFactoryClass = "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
-    public static final String prometheusClass = "org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource";
-    public static final String monitoringCoreClass = "org.kie.kogito.monitoring.core.common.MonitoringRegistry";
-    public static final String tracingClass = "org.kie.kogito.tracing.decision.DecisionTracingListener";
-    public static final String knativeEventingClass = "org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension";
-    public static final String quarkusCloudEvents = "org.kie.kogito.addon.cloudevents.quarkus.QuarkusCloudEventEmitter";
-    public static final String springCloudEvents = "org.kie.kogito.addon.cloudevents.spring.SpringKafkaCloudEventEmitter";
+    public static final String PERSISTENCE_FACTORY_CLASS = "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
+    public static final String PROMETHEUS_CLASS = "org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource";
+    public static final String MONITORING_CORE_CLASS = "org.kie.kogito.monitoring.core.common.MonitoringRegistry";
+    public static final String TRACING_CLASS = "org.kie.kogito.tracing.decision.DecisionTracingListener";
+    public static final String KNATIVE_EVENTING_CLASS = "org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension";
+    public static final String QUARKUS_CLOUD_EVENTS = "org.kie.kogito.addon.cloudevents.quarkus.QuarkusCloudEventEmitter";
+    public static final String SPRING_CLOUD_EVENTS = "org.kie.kogito.addon.cloudevents.spring.SpringKafkaCloudEventEmitter";
 
     private AddonsConfigDiscovery() {
         // utility class
@@ -46,12 +46,12 @@ public class AddonsConfigDiscovery {
     }
 
     public static AddonsConfig discover(Predicate<String> classAvailabilityResolver) {
-        boolean usePersistence = classAvailabilityResolver.test(persistenceFactoryClass);
-        boolean usePrometheusMonitoring = classAvailabilityResolver.test(prometheusClass);
-        boolean useMonitoring = usePrometheusMonitoring || classAvailabilityResolver.test(monitoringCoreClass);
-        boolean useTracing = classAvailabilityResolver.test(tracingClass);
-        boolean useKnativeEventing = classAvailabilityResolver.test(knativeEventingClass);
-        boolean useCloudEvents = classAvailabilityResolver.test(quarkusCloudEvents) || classAvailabilityResolver.test(springCloudEvents);
+        boolean usePersistence = classAvailabilityResolver.test(PERSISTENCE_FACTORY_CLASS);
+        boolean usePrometheusMonitoring = classAvailabilityResolver.test(PROMETHEUS_CLASS);
+        boolean useMonitoring = usePrometheusMonitoring || classAvailabilityResolver.test(MONITORING_CORE_CLASS);
+        boolean useTracing = classAvailabilityResolver.test(TRACING_CLASS);
+        boolean useKnativeEventing = classAvailabilityResolver.test(KNATIVE_EVENTING_CLASS);
+        boolean useCloudEvents = classAvailabilityResolver.test(QUARKUS_CLOUD_EVENTS) || classAvailabilityResolver.test(SPRING_CLOUD_EVENTS);
 
         AddonsConfig addonsConfig = AddonsConfig.builder()
                 .withPersistence(usePersistence)

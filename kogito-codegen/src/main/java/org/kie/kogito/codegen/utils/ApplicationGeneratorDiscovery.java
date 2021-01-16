@@ -41,7 +41,7 @@ public class ApplicationGeneratorDiscovery {
         boolean useRestServices = context.hasClassAvailable("javax.ws.rs.Path")
                 || context.hasClassAvailable("org.springframework.web.bind.annotation.RestController");
         appGen.registerGeneratorIfEnabled(IncrementalRuleCodegen.fromContext(context))
-                .map(gen -> gen.withRestServices(useRestServices));
+                .ifPresent(gen -> gen.withRestServices(useRestServices));
 
         appGen.registerGeneratorIfEnabled(PredictionCodegen.fromContext(context));
 

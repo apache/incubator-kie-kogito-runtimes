@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public class AppPaths {
 
@@ -43,26 +43,22 @@ public class AppPaths {
         for (Path path : paths) {
             PathType pathType = getPathType(path);
             switch (pathType) {
-                case CLASSES: {
+                case CLASSES:
                     classesPaths.add(path);
                     projectPaths.add(path.getParent().getParent());
                     break;
-                }
-                case TEST_CLASSES: {
+                case TEST_CLASSES:
                     projectPaths.add(path.getParent().getParent());
                     break;
-                }
-                case JAR: {
+                case JAR:
                     isJar = true;
                     classesPaths.add(path);
                     projectPaths.add(path.getParent().getParent());
                     break;
-                }
-                case UNKNOWN: {
+                case UNKNOWN:
                     classesPaths.add(path);
                     projectPaths.add(path);
                     break;
-                }
             }
         }
         return new AppPaths(projectPaths, classesPaths, isJar);
@@ -140,7 +136,7 @@ public class AppPaths {
         return Collections.unmodifiableCollection(classesPaths);
     }
 
-    private Path[] transformPaths(Collection<Path> paths, Function<Path, Path> f) {
+    private Path[] transformPaths(Collection<Path> paths, UnaryOperator<Path> f) {
         return paths.stream().map(f).toArray(Path[]::new);
     }
 }

@@ -65,7 +65,6 @@ import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.JsonSchemaGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.codegen.utils.AppPaths;
 import org.kie.kogito.codegen.utils.ApplicationGeneratorDiscovery;
@@ -381,22 +380,23 @@ public class KogitoAssetsProcessor {
     private Collection<GeneratedFile> generateJsonSchema(KogitoBuildContext context, Index index) throws IOException {
         Path targetClasses = context.getAppPaths().getFirstProjectPath().resolve(targetClassesDir);
         URL[] urls = {targetClasses.toUri().toURL()};
-        URLClassLoader cl = new URLClassLoader(
-                urls,
-                context.getClassLoader());
-        List<AnnotationInstance> annotations =
-                index.getAnnotations(DotName.createSimple(UserTask.class.getCanonicalName()));
 
-        Stream<Class<?>> stream = annotations.stream()
-                .map(ann -> loadClassFromAnnotation(ann, cl))
-                .filter(Optional::isPresent)
-                .map(Optional::get);
+        try (URLClassLoader cl = new URLClassLoader(urls, context.getClassLoader())) {
 
-        JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator.ClassBuilder(stream)
-                .withGenSchemaPredicate(x -> true)
-                .withSchemaVersion(System.getProperty("kogito.jsonSchema.version")).build();
+            List<AnnotationInstance> annotations =
+                    index.getAnnotations(DotName.createSimple(UserTask.class.getCanonicalName()));
 
-        return jsonSchemaGenerator.generate();
+            Stream<Class<?>> stream = annotations.stream()
+                    .map(ann -> loadClassFromAnnotation(ann, cl))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get);
+
+            JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator.ClassBuilder(stream)
+                    .withGenSchemaPredicate(x -> true)
+                    .withSchemaVersion(System.getProperty("kogito.jsonSchema.version")).build();
+
+            return jsonSchemaGenerator.generate();
+        }
     }
 
     private Optional<Class<?>> loadClassFromAnnotation(AnnotationInstance annotationInstance, ClassLoader classLoader) {
