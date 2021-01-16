@@ -39,7 +39,7 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
     protected T persistenceClass;
 
     public AbstractProtoGenerator(T persistenceClass, Collection<T> rawInputs, UnaryOperator<Collection<T>> inputsFilterFunction) {
-        this.inputs = inputsFilterFunction.apply(rawInputs);
+        this.inputs = rawInputs != null ? inputsFilterFunction.apply(rawInputs) : null;
         this.persistenceClass = persistenceClass;
         mapper = new ObjectMapper();
     }

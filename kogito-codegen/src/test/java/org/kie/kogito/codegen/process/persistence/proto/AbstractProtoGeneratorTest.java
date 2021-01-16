@@ -26,6 +26,7 @@ import org.kie.kogito.codegen.GeneratedFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AbstractProtoGeneratorTest {
+
     @Test
     void checkGeneratedProtoBufAndListing() throws IOException {
         final ReflectionProtoGenerator generator = new ReflectionProtoGenerator(null, null);
