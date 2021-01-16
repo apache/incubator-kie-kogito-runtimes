@@ -154,7 +154,7 @@ public class PersistenceGenerator extends AbstractGenerator {
         }
         List<String> variableMarshallers = new ArrayList<>();
 
-        MarshallerGenerator marshallerGenerator = new MarshallerGenerator(context().getClassLoader());
+        MarshallerGenerator marshallerGenerator = new MarshallerGenerator(context());
 
         String protoContent = proto.toString();
 

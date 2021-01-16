@@ -57,6 +57,7 @@ import org.infinispan.protostream.descriptors.FileDescriptor;
 import org.infinispan.protostream.descriptors.Option;
 import org.infinispan.protostream.impl.SerializationContextImpl;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.ast.Modifier.Keyword.PUBLIC;
@@ -66,10 +67,11 @@ public class MarshallerGenerator {
 
     private static final String JAVA_PACKAGE_OPTION = "java_package";
     private static final String STATE_PARAM = "state";
-    private ClassLoader classLoader;
 
-    public MarshallerGenerator(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+    private final KogitoBuildContext context;
+
+    public MarshallerGenerator(KogitoBuildContext context) {
+        this.context = context;
     }
 
     public List<CompilationUnit> generateFromClasspath(String protoFile) throws IOException {
@@ -88,7 +90,7 @@ public class MarshallerGenerator {
         CompilationUnit parsedClazzFile = parse(this.getClass().getResourceAsStream("/class-templates/persistence/MessageMarshallerTemplate.java"));
 
         SerializationContext serializationContext = new SerializationContextImpl(Configuration.builder().build());
-        serializationContext.registerProtoFiles(FileDescriptorSource.fromResources(classLoader, "kogito-types.proto"));
+        serializationContext.registerProtoFiles(FileDescriptorSource.fromResources(context.getClassLoader(), "kogito-types.proto"));
         serializationContext.registerProtoFiles(proto);
 
         Map<String, FileDescriptor> descriptors = serializationContext.getFileDescriptors();
