@@ -16,16 +16,9 @@
 
 package org.kie.kogito.quarkus.deployment;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.UnaryOperator;
 
 import org.infinispan.protostream.annotations.ProtoEnumValue;
 import org.jboss.jandex.AnnotationInstance;
@@ -40,7 +33,6 @@ import org.jboss.jandex.Type.Kind;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.process.persistence.proto.AbstractProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
-import org.kie.kogito.codegen.process.persistence.proto.ProtoDataClassesResult;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoEnum;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoMessage;
 
@@ -53,8 +45,8 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     private final DotName generatedAnnotation;
     private final DotName variableInfoAnnotation;
 
-    public JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> inputs, IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
-        super(persistenceClass, inputs);
+    public JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> rawInputs, IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
+        super(persistenceClass, rawInputs, filterInputsFunction(index));
         this.index = index;
         this.generatedAnnotation = generatedAnnotation;
         this.variableInfoAnnotation = variableInfoAnnotation;
@@ -215,35 +207,6 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     }
 
     @Override
-    public ProtoDataClassesResult<ClassInfo> getDataClasses() {
-        List<GeneratedFile> generatedFiles = new ArrayList<>();
-        Set<ClassInfo> dataModelClasses = new HashSet<>();
-
-        for (ClassInfo modelClazz : inputs) {
-
-            for (FieldInfo pd : modelClazz.fields()) {
-
-                if (pd.type().name().toString().startsWith("java.lang")
-                        || pd.type().name().toString().equals(Date.class.getCanonicalName())) {
-                    continue;
-                }
-
-                dataModelClasses.add(index.getClassByName(pd.type().name()));
-            }
-
-            generateModelClassProto(modelClazz)
-                    .ifPresent(generatedFiles::add);
-        }
-
-        try {
-            this.generateProtoListingFile(generatedFiles).ifPresent(generatedFiles::add);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Error during proto listing file creation", e);
-        }
-
-        return new ProtoDataClassesResult<>(dataModelClasses, generatedFiles);
-    }
-
     protected Optional<GeneratedFile> generateModelClassProto(ClassInfo modelClazz) {
 
         String processId = getReferenceOfModel(modelClazz, "reference");
@@ -295,5 +258,24 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         }
 
         return false;
+    }
+
+    protected static UnaryOperator<Collection<ClassInfo>> filterInputsFunction(IndexView index) {
+        return rawInputs -> {
+            Set<ClassInfo> dataModelClasses = new HashSet<>();
+            for (ClassInfo modelClazz : rawInputs) {
+
+                for (FieldInfo pd : modelClazz.fields()) {
+
+                    if (pd.type().name().toString().startsWith("java.lang")
+                            || pd.type().name().toString().equals(Date.class.getCanonicalName())) {
+                        continue;
+                    }
+
+                    dataModelClasses.add(index.getClassByName(pd.type().name()));
+                }
+            }
+            return dataModelClasses;
+        };
     }
 }

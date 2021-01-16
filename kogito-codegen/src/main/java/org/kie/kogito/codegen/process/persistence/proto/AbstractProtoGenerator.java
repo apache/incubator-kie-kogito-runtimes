@@ -17,9 +17,12 @@
 package org.kie.kogito.codegen.process.persistence.proto;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,10 +38,29 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
     protected Collection<T> inputs;
     protected T persistenceClass;
 
-    public AbstractProtoGenerator(T persistenceClass, Collection<T> inputs) {
-        this.inputs = inputs;
+    public AbstractProtoGenerator(T persistenceClass, Collection<T> rawInputs, UnaryOperator<Collection<T>> inputsFilterFunction) {
+        this.inputs = inputsFilterFunction.apply(rawInputs);
         this.persistenceClass = persistenceClass;
         mapper = new ObjectMapper();
+    }
+
+    @Override
+    public Collection<GeneratedFile> getDataClasses() {
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
+
+        inputs.stream()
+                .map(this::generateModelClassProto)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(generatedFiles::add);
+
+        try {
+            this.generateProtoListingFile(generatedFiles).ifPresent(generatedFiles::add);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Error during proto listing file creation", e);
+        }
+
+        return generatedFiles;
     }
 
     /**
@@ -71,4 +93,6 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
         }
         return Optional.empty();
     }
+
+    protected abstract Optional<GeneratedFile> generateModelClassProto(T modelClazz);
 }

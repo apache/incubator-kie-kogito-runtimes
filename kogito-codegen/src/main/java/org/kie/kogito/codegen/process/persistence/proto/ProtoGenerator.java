@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.process.persistence.proto;
 
+import org.kie.kogito.codegen.GeneratedFile;
+
 import java.util.Collection;
 import java.util.Date;
 
@@ -26,7 +28,7 @@ public interface ProtoGenerator<T> {
 
     Proto generate(String messageComment, String fieldComment, String packageName, T dataModel, String... headers);
 
-    ProtoDataClassesResult<T> getDataClasses();
+    Collection<GeneratedFile> getDataClasses();
 
     Collection<String> getPersistenceClassParams();
 
