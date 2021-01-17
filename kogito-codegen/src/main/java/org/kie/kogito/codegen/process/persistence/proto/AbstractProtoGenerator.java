@@ -113,6 +113,9 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
         @Override
         public T buildWithModelClasses(Collection<E> modelClasses) {
+            if (modelClasses == null) {
+                return buildWithDataClasses(null);
+            }
             Collection<String> invalidClasses = modelClasses.stream()
                     .filter(mc -> !isValidModelClass(mc))
                     .map(Objects::toString)

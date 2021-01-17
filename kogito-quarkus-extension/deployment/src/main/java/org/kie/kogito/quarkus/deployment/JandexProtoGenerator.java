@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -286,9 +287,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
         @Override
         protected Collection<ClassInfo> extractDataClasses(Collection<ClassInfo> modelClasses) {
-            if (modelClasses == null) {
-                return null;
-            }
+            Objects.requireNonNull(modelClasses, "modelClasses cannot be null");
             Set<ClassInfo> dataModelClasses = new HashSet<>();
             for (ClassInfo modelClazz : modelClasses) {
 

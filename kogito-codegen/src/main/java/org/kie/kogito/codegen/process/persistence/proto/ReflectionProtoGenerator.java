@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -223,9 +224,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
         @Override
         protected Collection<Class<?>> extractDataClasses(Collection<Class<?>> modelClasses) {
-            if(modelClasses == null ) {
-                return null;
-            }
+            Objects.requireNonNull(modelClasses, "modelClasses cannot be null");
             Set<Class<?>> dataModelClasses = new HashSet<>();
             try {
                 for (Class<?> modelClazz : modelClasses) {
