@@ -242,7 +242,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
                 }
                 return dataModelClasses;
             } catch (IntrospectionException e) {
-                throw new RuntimeException("Error during bean introspection", e);
+                throw new IllegalStateException("Error during bean introspection", e);
             }
         }
 

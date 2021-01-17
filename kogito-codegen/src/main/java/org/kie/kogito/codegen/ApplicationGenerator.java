@@ -115,7 +115,9 @@ public class ApplicationGenerator {
      */
     public <G extends Generator> Optional<G> registerGeneratorIfEnabled(G generator) {
         if (!generator.isEnabled()) {
-            LOGGER.info("Skipping {} because disabled", generator.name());
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Skipping generator '{}' because disabled", generator.name());
+            }
             return Optional.empty();
         }
         this.generators.add(generator);

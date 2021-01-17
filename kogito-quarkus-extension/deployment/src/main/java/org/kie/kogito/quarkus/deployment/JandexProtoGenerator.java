@@ -33,7 +33,6 @@ import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.FieldInfo;
 import org.jboss.jandex.IndexView;
-import org.jboss.jandex.MethodInfo;
 import org.jboss.jandex.Type;
 import org.jboss.jandex.Type.Kind;
 import org.kie.kogito.Model;
@@ -42,8 +41,6 @@ import org.kie.kogito.codegen.process.persistence.proto.AbstractProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoEnum;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoMessage;
-
-import static java.util.stream.Collectors.toList;
 
 public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
@@ -96,14 +93,12 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     @Override
     public Collection<String> getPersistenceClassParams() {
         List<String> parameters = new ArrayList<>();
-        if(persistenceClass != null) {
-            for (MethodInfo mi : persistenceClass.methods()) {
-                if (mi.name().equals("<init>") && !mi.parameters().isEmpty()) {
-                    parameters = mi.parameters().stream().map(p -> p.name().toString()).collect(toList());
-                    break;
-                }
-            }
-        }
+        Optional.ofNullable(persistenceClass)
+                .map(ClassInfo::constructors)
+                .flatMap(values -> values.isEmpty() ? Optional.empty() : Optional.of(values.get(0)))
+                .ifPresent(mi -> mi.parameters().stream()
+                    .map(p -> p.name().toString())
+                    .forEach(parameters::add));
         return parameters;
     }
 
@@ -273,7 +268,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
     private static class JandexProtoGeneratorBuilder extends AbstractProtoGeneratorBuilder<ClassInfo, JandexProtoGenerator> {
 
-        private final static DotName MODEL = DotName.createSimple(Model.class.getCanonicalName());
+        private static final DotName MODEL = DotName.createSimple(Model.class.getCanonicalName());
 
         private final IndexView index;
         private final DotName generatedAnnotation;

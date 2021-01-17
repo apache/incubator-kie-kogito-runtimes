@@ -15,17 +15,23 @@
 
 package org.kie.kogito.quarkus;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
+import org.jboss.jandex.Indexer;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
 import org.kie.kogito.quarkus.deployment.JandexProtoGenerator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JandexProtoGeneratorTest {
 
@@ -73,4 +79,35 @@ class JandexProtoGeneratorTest {
         assertEquals(objectName.local(), objectProto.getMessages().get(0).getName());
     }
 
+    @Test
+    void persistenceClassParams() throws IOException {
+        Indexer indexer = new Indexer();
+        JandexProtoGenerator noPersistenceClassGenerator = JandexProtoGenerator.builder(null, null, null)
+                .withPersistenceClass(null)
+                .buildWithDataClasses(null);
+        assertTrue(noPersistenceClassGenerator.getPersistenceClassParams().isEmpty());
+
+        ClassInfo emptyConstructor = indexer.index(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(EmptyConstructor.class)));
+        JandexProtoGenerator emptyGenerator = JandexProtoGenerator.builder(null, null, null)
+                .withPersistenceClass(emptyConstructor)
+                .buildWithDataClasses(null);
+
+        assertTrue(emptyGenerator.getPersistenceClassParams().isEmpty());
+
+        ClassInfo notEmptyConstructor = indexer.index(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(NotEmptyConstructor.class)));
+        JandexProtoGenerator notEmptyGenerator = JandexProtoGenerator.builder(null, null, null)
+                .withPersistenceClass(notEmptyConstructor)
+                .buildWithDataClasses(null);
+
+        Collection<String> notEmptyClassParams = notEmptyGenerator.getPersistenceClassParams();
+        assertFalse(notEmptyClassParams.isEmpty());
+        assertEquals(2, notEmptyClassParams.size());
+        assertEquals(Arrays.asList(String.class.getCanonicalName(), int.class.getCanonicalName()), notEmptyClassParams);
+    }
+
+    private static String toPath(Class<?> clazz) {
+        return clazz.getCanonicalName().replace('.', '/') + ".class";
+    }
 }

@@ -98,7 +98,7 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
     protected abstract Optional<GeneratedFile> generateModelClassProto(T modelClazz);
 
-    protected static abstract class AbstractProtoGeneratorBuilder<E, T extends ProtoGenerator> implements Builder<E, T> {
+    protected abstract static class AbstractProtoGeneratorBuilder<E, T extends ProtoGenerator> implements Builder<E, T> {
         protected E persistenceClass;
 
         protected abstract Collection<E> extractDataClasses(Collection<E> modelClasses);

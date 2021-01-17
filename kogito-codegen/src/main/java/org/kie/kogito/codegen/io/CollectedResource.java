@@ -46,7 +46,7 @@ import static org.kie.api.io.ResourceType.determineResourceType;
  */
 public class CollectedResource {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(CollectedResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CollectedResource.class);
 
     /**
      * Returns a collection of CollectedResource from the given paths.

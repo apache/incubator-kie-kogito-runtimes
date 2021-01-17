@@ -15,6 +15,7 @@
 
 package org.kie.kogito.codegen.process.persistence.proto;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -495,5 +496,36 @@ class ReflectionProtoGeneratorTest {
         assertThat(field.getName()).isEqualTo("question");
         assertThat(field.getType()).isEqualTo("string");
         assertThat(field.getApplicability()).isEqualTo("optional");
+    }
+
+    @Test
+    void persistenceClassParams() {
+        ReflectionProtoGenerator noPersistenceClassGenerator = ReflectionProtoGenerator.builder()
+                .withPersistenceClass(null)
+                .buildWithDataClasses(null);
+        assertThat(noPersistenceClassGenerator.getPersistenceClassParams()).isEmpty();
+
+        ReflectionProtoGenerator emptyGenerator = ReflectionProtoGenerator.builder()
+                .withPersistenceClass(EmptyConstructor.class)
+                .buildWithDataClasses(null);
+        assertThat(emptyGenerator.getPersistenceClassParams()).isEmpty();
+
+        ReflectionProtoGenerator notEmptyGenerator = ReflectionProtoGenerator.builder()
+                .withPersistenceClass(NotEmptyConstructor.class)
+                .buildWithDataClasses(null);
+        assertThat(notEmptyGenerator.getPersistenceClassParams())
+                .isNotEmpty()
+                .hasSize(2)
+                .isEqualTo(Arrays.asList(String.class.getCanonicalName(), int.class.getCanonicalName()));
+    }
+
+    private static class EmptyConstructor {
+        public EmptyConstructor() {
+        }
+    }
+
+    private static class NotEmptyConstructor {
+        public NotEmptyConstructor(String param1, int param2) {
+        }
     }
 }

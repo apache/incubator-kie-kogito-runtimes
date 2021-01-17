@@ -28,6 +28,10 @@ public interface ProtoGenerator {
 
     Collection<GeneratedFile> generateDataClasses();
 
+    /**
+     * Returns params of first constructor of persistence class
+     * @return
+     */
     Collection<String> getPersistenceClassParams();
 
     default String applicabilityByType(String type) {
