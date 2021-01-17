@@ -20,15 +20,13 @@ import org.kie.kogito.codegen.GeneratedFile;
 import java.util.Collection;
 import java.util.Date;
 
-public interface ProtoGenerator<T> {
+public interface ProtoGenerator {
 
     String INDEX_COMMENT = "@Field(store = Store.YES) @SortableField";
 
     Proto generate(String packageName, String... headers);
 
-    Proto generate(String messageComment, String fieldComment, String packageName, T dataModel, String... headers);
-
-    Collection<GeneratedFile> getDataClasses();
+    Collection<GeneratedFile> generateDataClasses();
 
     Collection<String> getPersistenceClassParams();
 
@@ -59,5 +57,25 @@ public interface ProtoGenerator<T> {
         }
 
         return null;
+    }
+
+    interface Builder<E, T extends ProtoGenerator> {
+
+        Builder<E, T> withPersistenceClass(E persistenceClass);
+
+        /**
+         * Build a ProtoGenerator instance with Model classes. A model class is a class that implements
+         * {@link org.kie.kogito.Model} and represents the data model of a process
+         * @param modelClasses
+         * @return
+         */
+        T buildWithModelClasses(Collection<E> modelClasses);
+
+        /**
+         * Build a ProtoGenerator instance with user data classes. They are the actual user domain classes (e.g. Person, Account, etc)
+         * @param dataClasses
+         * @return
+         */
+        T buildWithDataClasses(Collection<E> dataClasses);
     }
 }

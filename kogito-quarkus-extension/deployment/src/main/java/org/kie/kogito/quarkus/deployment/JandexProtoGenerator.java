@@ -17,8 +17,13 @@
 package org.kie.kogito.quarkus.deployment;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.function.UnaryOperator;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.infinispan.protostream.annotations.ProtoEnumValue;
 import org.jboss.jandex.AnnotationInstance;
@@ -45,8 +50,8 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     private final DotName generatedAnnotation;
     private final DotName variableInfoAnnotation;
 
-    public JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> rawInputs, IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
-        super(persistenceClass, rawInputs, filterInputsFunction(index));
+    private JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> dataClasses, IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
+        super(persistenceClass, dataClasses);
         this.index = index;
         this.generatedAnnotation = generatedAnnotation;
         this.variableInfoAnnotation = variableInfoAnnotation;
@@ -57,7 +62,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         try {
             Proto proto = new Proto(packageName, headers);
 
-            for (ClassInfo clazz : inputs) {
+            for (ClassInfo clazz : dataClasses) {
                 if (clazz.superName() != null && Enum.class.getName().equals(clazz.superName().toString())) {
                     enumFromClass(proto, clazz, null);
                 } else {
@@ -260,10 +265,29 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         return false;
     }
 
-    protected static UnaryOperator<Collection<ClassInfo>> filterInputsFunction(IndexView index) {
-        return rawInputs -> {
+    public static Builder<ClassInfo, JandexProtoGenerator> builder(IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
+        return new JandexProtoGeneratorBuilder(index, generatedAnnotation, variableInfoAnnotation);
+    }
+
+    private static class JandexProtoGeneratorBuilder extends AbstractProtoGeneratorBuilder<ClassInfo, JandexProtoGenerator> {
+
+        private final IndexView index;
+        private final DotName generatedAnnotation;
+        private final DotName variableInfoAnnotation;
+
+        private JandexProtoGeneratorBuilder(IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
+            this.index = index;
+            this.generatedAnnotation = generatedAnnotation;
+            this.variableInfoAnnotation = variableInfoAnnotation;
+        }
+
+        @Override
+        protected Collection<ClassInfo> extractDataClasses(Collection<ClassInfo> modelClasses) {
+            if (modelClasses == null) {
+                return null;
+            }
             Set<ClassInfo> dataModelClasses = new HashSet<>();
-            for (ClassInfo modelClazz : rawInputs) {
+            for (ClassInfo modelClazz : modelClasses) {
 
                 for (FieldInfo pd : modelClazz.fields()) {
 
@@ -276,6 +300,11 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                 }
             }
             return dataModelClasses;
-        };
+        }
+
+        @Override
+        public JandexProtoGenerator buildWithDataClasses(Collection<ClassInfo> dataClasses) {
+            return new JandexProtoGenerator(persistenceClass, dataClasses, index, generatedAnnotation, variableInfoAnnotation);
+        }
     }
 }

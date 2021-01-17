@@ -76,9 +76,9 @@ public class PersistenceGenerator extends AbstractGenerator {
     private static final String SPRINGBOOT_PERSISTENCE_MONGODB_NAME_PROP = "spring.data.mongodb.database";
     private static final String OR_ELSE = "orElse";
 
-    private final ProtoGenerator<?> protoGenerator;
+    private final ProtoGenerator protoGenerator;
 
-    public PersistenceGenerator(KogitoBuildContext context, ProtoGenerator<?> protoGenerator) {
+    public PersistenceGenerator(KogitoBuildContext context, ProtoGenerator protoGenerator) {
         super(context, "persistence");
         this.protoGenerator = protoGenerator;
     }
@@ -112,7 +112,7 @@ public class PersistenceGenerator extends AbstractGenerator {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected Collection<GeneratedFile> infinispanBasedPersistence() {
-        Collection<GeneratedFile> generatedFiles = new ArrayList<>(protoGenerator.getDataClasses());
+        Collection<GeneratedFile> generatedFiles = new ArrayList<>(protoGenerator.generateDataClasses());
 
         Proto proto = protoGenerator.generate(context().getPackageName(), "import \"kogito-types.proto\";");
 

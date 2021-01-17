@@ -22,33 +22,32 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFileType;
 
-public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
+public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
     private static final String GENERATED_PROTO_RES_PATH = "META-INF/resources/persistence/protobuf/";
     private static final String LISTING_FILE = "list.json";
 
     protected ObjectMapper mapper;
-    protected Collection<T> inputs;
+    protected Collection<T> dataClasses;
     protected T persistenceClass;
 
-    public AbstractProtoGenerator(T persistenceClass, Collection<T> rawInputs, UnaryOperator<Collection<T>> inputsFilterFunction) {
-        this.inputs = rawInputs != null ? inputsFilterFunction.apply(rawInputs) : null;
+    protected AbstractProtoGenerator(T persistenceClass, Collection<T> dataClasses) {
+        this.dataClasses = dataClasses;
         this.persistenceClass = persistenceClass;
         mapper = new ObjectMapper();
     }
 
     @Override
-    public Collection<GeneratedFile> getDataClasses() {
+    public Collection<GeneratedFile> generateDataClasses() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
 
-        inputs.stream()
+        dataClasses.stream()
                 .map(this::generateModelClassProto)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -94,5 +93,24 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator<T> {
         return Optional.empty();
     }
 
+    protected abstract Proto generate(String messageComment, String fieldComment, String packageName, T dataModel, String... headers);
+
     protected abstract Optional<GeneratedFile> generateModelClassProto(T modelClazz);
+
+    protected static abstract class AbstractProtoGeneratorBuilder<E, T extends ProtoGenerator> implements Builder<E, T> {
+        protected E persistenceClass;
+
+        protected abstract Collection<E> extractDataClasses(Collection<E> modelClasses);
+
+        @Override
+        public Builder<E, T> withPersistenceClass(E persistenceClass) {
+            this.persistenceClass = persistenceClass;
+            return this;
+        }
+
+        @Override
+        public T buildWithModelClasses(Collection<E> modelClasses) {
+            return buildWithDataClasses(extractDataClasses(modelClasses));
+        }
+    }
 }

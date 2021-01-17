@@ -91,7 +91,9 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 // collect constructor parameters so the generated class can create constructor with injection
                 Set<Class<? extends ProcessInstancesFactory>> classes = reflections.getSubTypesOf(ProcessInstancesFactory.class);
                 Class<?> persistenceClass = classes.isEmpty() ? null : classes.iterator().next();
-                ReflectionProtoGenerator protoGenerator = new ReflectionProtoGenerator(persistenceClass, modelClasses);
+                ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder()
+                        .withPersistenceClass(persistenceClass)
+                        .buildWithModelClasses(modelClasses);
 
 
                 KogitoBuildContext context = discoverKogitoRuntimeContext(cl);

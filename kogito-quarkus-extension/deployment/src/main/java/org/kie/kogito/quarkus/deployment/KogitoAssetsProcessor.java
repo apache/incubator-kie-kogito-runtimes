@@ -294,17 +294,16 @@ public class KogitoAssetsProcessor {
 
         Collection<ClassInfo> modelClasses = index
                 .getAllKnownImplementors(DotName.createSimple(Model.class.getCanonicalName()));
-        JandexProtoGenerator jandexProtoGenerator =
-                new JandexProtoGenerator(
-                        persistenceClass,
-                        modelClasses,
-                        index,
-                        DotName.createSimple(Generated.class.getCanonicalName()),
-                        DotName.createSimple(VariableInfo.class.getCanonicalName()));
+        JandexProtoGenerator protoGenerator = JandexProtoGenerator.builder(
+                    index,
+                    DotName.createSimple(Generated.class.getCanonicalName()),
+                    DotName.createSimple(VariableInfo.class.getCanonicalName()))
+                .withPersistenceClass(persistenceClass)
+                .buildWithModelClasses(modelClasses);
 
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
                 context,
-                jandexProtoGenerator);
+                protoGenerator);
 
         if(persistenceGenerator.persistenceType().equals(PersistenceGenerator.MONGODB_PERSISTENCE_TYPE)) {
             addInnerClasses(org.jbpm.marshalling.impl.JBPMMessages.class, reflectiveClass);

@@ -41,7 +41,8 @@ class JandexProtoGeneratorTest {
         ClassInfo objectClassName = ClassInfo.create(objectName, DotName.createSimple(Object.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
         dataModel.add(objectClassName);
 
-        JandexProtoGenerator generator = new JandexProtoGenerator(null, dataModel, null, null, null);
+        JandexProtoGenerator generator = JandexProtoGenerator.builder(null, null, null)
+                .buildWithModelClasses(dataModel);
         Proto proto = generator.generate("com.acme");
         assertEquals(1, proto.getEnums().size());
         assertEquals(enumName.local(), proto.getEnums().get(0).getName());
@@ -61,7 +62,8 @@ class JandexProtoGeneratorTest {
         ClassInfo objectClassName = ClassInfo.create(objectName, DotName.createSimple(Object.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
         dataModel.add(objectClassName);
 
-        JandexProtoGenerator generator = new JandexProtoGenerator(null, dataModel, null, null, null);
+        JandexProtoGenerator generator = JandexProtoGenerator.builder(null, null, null)
+                .buildWithModelClasses(dataModel);
         Proto enumProto = generator.generate("message comment", "field comment", "com.acme", enumClassInfo);
         assertEquals(1, enumProto.getEnums().size());
         assertEquals(enumName.local(), enumProto.getEnums().get(0).getName());

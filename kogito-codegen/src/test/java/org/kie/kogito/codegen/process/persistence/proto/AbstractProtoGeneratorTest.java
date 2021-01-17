@@ -29,7 +29,7 @@ class AbstractProtoGeneratorTest {
 
     @Test
     void checkGeneratedProtoBufAndListing() throws IOException {
-        final ReflectionProtoGenerator generator = new ReflectionProtoGenerator(null, null);
+        final ReflectionProtoGenerator generator = ReflectionProtoGenerator.builder().buildWithModelClasses(null);
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             final Proto proto = new Proto("org.acme.test");

@@ -45,7 +45,8 @@ class MarshallerGeneratorTest {
 
     @Test
     void testPersonMarshallers() throws Exception {
-        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(Person.class));
+        ProtoGenerator generator = ReflectionProtoGenerator.builder()
+                .buildWithDataClasses(Collections.singleton(Person.class));
 
         Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();        
@@ -63,7 +64,8 @@ class MarshallerGeneratorTest {
 
     @Test
     void testPersonWithListMarshallers() throws Exception {
-        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(PersonWithList.class));
+        ProtoGenerator generator = ReflectionProtoGenerator.builder()
+                .buildWithDataClasses(Collections.singleton(PersonWithList.class));
 
         Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();
@@ -83,7 +85,8 @@ class MarshallerGeneratorTest {
 
     @Test
     void testPersonWithAddressMarshallers() throws Exception {
-        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(PersonWithAddress.class));
+        ProtoGenerator generator = ReflectionProtoGenerator.builder()
+                .buildWithDataClasses(Collections.singleton(PersonWithAddress.class));
 
         Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();        
@@ -103,7 +106,8 @@ class MarshallerGeneratorTest {
     
     @Test
     void testPersonWithAddressesMarshallers() throws Exception {
-        ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(PersonWithAddresses.class));
+        ProtoGenerator generator = ReflectionProtoGenerator.builder()
+                .buildWithDataClasses(Collections.singleton(PersonWithAddresses.class));
 
         Proto proto = generator.generate("org.kie.kogito.test");
         assertThat(proto).isNotNull();        
@@ -124,9 +128,10 @@ class MarshallerGeneratorTest {
     }
 
     @Test
-    void testEnumInPojosMarshallers() throws Exception {
+    void testEnumInPojosMarshallers() {
         Stream.of(Question.class, QuestionWithAnnotatedEnum.class).forEach(c -> {
-            ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(c));
+            ProtoGenerator generator = ReflectionProtoGenerator.builder()
+                    .buildWithDataClasses(Collections.singleton(c));
 
             Proto proto = generator.generate("org.kie.kogito.test");
             assertThat(proto).isNotNull();
@@ -159,7 +164,8 @@ class MarshallerGeneratorTest {
     @Test
     void testEnumMarshallers() {
         Stream.of(Answer.class, AnswerWitAnnotations.class).forEach(e -> {
-            ProtoGenerator<Class<?>> generator = new ReflectionProtoGenerator(null, Collections.singleton(e));
+            ProtoGenerator generator = ReflectionProtoGenerator.builder()
+                    .buildWithDataClasses(Collections.singleton(e));
 
             Proto proto = generator.generate("org.kie.kogito.test");
             assertThat(proto).isNotNull();

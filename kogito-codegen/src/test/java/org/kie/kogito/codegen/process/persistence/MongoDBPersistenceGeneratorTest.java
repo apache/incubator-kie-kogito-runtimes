@@ -34,7 +34,6 @@ import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.data.Person;
-import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
 
 import static com.github.javaparser.StaticJavaParser.parse;
@@ -56,7 +55,7 @@ class MongoDBPersistenceGeneratorTest {
     void test() {
         context.setApplicationProperty("kogito.persistence.type", "mongodb");
 
-        ProtoGenerator<?> protoGenerator = new ReflectionProtoGenerator(null, Collections.singleton(Person.class));
+        ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().buildWithDataClasses(Collections.singleton(Person.class));
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
                 context,
                 protoGenerator);

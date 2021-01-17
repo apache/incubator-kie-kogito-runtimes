@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import org.infinispan.protostream.annotations.ProtoEnumValue;
@@ -39,14 +38,14 @@ import org.kie.kogito.codegen.GeneratedFile;
 
 public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
-    public ReflectionProtoGenerator(Class<?> persistenceClass, Collection<Class<?>> rawInputs) {
-        super(persistenceClass, rawInputs, filterInputFunction());
+    private ReflectionProtoGenerator(Class<?> persistenceClass, Collection<Class<?>> dataClasses) {
+        super(persistenceClass, dataClasses);
     }
 
     public Proto generate(String packageName, String... headers) {
         try {
             Proto proto = new Proto(packageName, headers);
-            for (Class<?> clazz : inputs) {
+            for (Class<?> clazz : dataClasses) {
                 if (clazz.isEnum()) {
                     enumFromClass(proto, clazz, null);
                 } else {
@@ -212,11 +211,23 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
         return Optional.empty();
     }
 
-    private static UnaryOperator<Collection<Class<?>>> filterInputFunction() {
-        return rawInputs -> {
+    public static Builder<Class<?>, ReflectionProtoGenerator> builder() {
+        return new ReflectionProtoGeneratorBuilder();
+    }
+
+    private static class ReflectionProtoGeneratorBuilder extends AbstractProtoGeneratorBuilder<Class<?>, ReflectionProtoGenerator> {
+
+        private ReflectionProtoGeneratorBuilder() {
+        }
+
+        @Override
+        protected Collection<Class<?>> extractDataClasses(Collection<Class<?>> modelClasses) {
+            if(modelClasses == null ) {
+                return null;
+            }
             Set<Class<?>> dataModelClasses = new HashSet<>();
             try {
-                for (Class<?> modelClazz : rawInputs) {
+                for (Class<?> modelClazz : modelClasses) {
 
                     BeanInfo beanInfo = Introspector.getBeanInfo(modelClazz);
                     for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
@@ -233,6 +244,11 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
             } catch (IntrospectionException e) {
                 throw new RuntimeException("Error during bean introspection", e);
             }
-        };
+        }
+
+        @Override
+        public ReflectionProtoGenerator buildWithDataClasses(Collection<Class<?>> dataClasses) {
+            return new ReflectionProtoGenerator(persistenceClass, dataClasses);
+        }
     }
 }
