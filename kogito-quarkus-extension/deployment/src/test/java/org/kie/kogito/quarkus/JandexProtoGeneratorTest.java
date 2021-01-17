@@ -63,7 +63,7 @@ class JandexProtoGeneratorTest {
         dataModel.add(objectClassName);
 
         JandexProtoGenerator generator = JandexProtoGenerator.builder(null, null, null)
-                .buildWithModelClasses(dataModel);
+                .buildWithDataClasses(dataModel);
         Proto enumProto = generator.generate("message comment", "field comment", "com.acme", enumClassInfo);
         assertEquals(1, enumProto.getEnums().size());
         assertEquals(enumName.local(), enumProto.getEnums().get(0).getName());
