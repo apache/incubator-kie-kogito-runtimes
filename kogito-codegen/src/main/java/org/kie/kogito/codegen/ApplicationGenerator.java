@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
@@ -114,14 +115,18 @@ public class ApplicationGenerator {
      */
     public <G extends Generator> Optional<G> registerGeneratorIfEnabled(G generator) {
         if (!generator.isEnabled()) {
-            LOGGER.debug("Skipping {}", generator.name());
+            LOGGER.info("Skipping {} because disabled", generator.name());
             return Optional.empty();
         }
         this.generators.add(generator);
         return Optional.of(generator);
     }
 
-    private Collection<String> loadAddonList() {
+    protected Collection<Generator> getGenerators() {
+        return Collections.unmodifiableCollection(generators);
+    }
+
+    protected Collection<String> loadAddonList() {
         ArrayList<String> addons = new ArrayList<>();
         try {
             Enumeration<URL> urls = context.getClassLoader().getResources("META-INF/kogito.addon");

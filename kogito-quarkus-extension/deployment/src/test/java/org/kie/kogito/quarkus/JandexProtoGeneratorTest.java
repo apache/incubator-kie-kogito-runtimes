@@ -31,18 +31,18 @@ class JandexProtoGeneratorTest {
 
     @Test
     void testGenerate() {
-        List<ClassInfo> dataModel = new ArrayList<>();
+        List<ClassInfo> dataClasses = new ArrayList<>();
 
         DotName enumName = DotName.createComponentized(DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleEnum");
         ClassInfo enumClassInfo = ClassInfo.create(enumName, DotName.createSimple(Enum.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
-        dataModel.add(enumClassInfo);
+        dataClasses.add(enumClassInfo);
 
         DotName objectName = DotName.createComponentized(DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleObject");
         ClassInfo objectClassName = ClassInfo.create(objectName, DotName.createSimple(Object.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
-        dataModel.add(objectClassName);
+        dataClasses.add(objectClassName);
 
         JandexProtoGenerator generator = JandexProtoGenerator.builder(null, null, null)
-                .buildWithModelClasses(dataModel);
+                .buildWithDataClasses(dataClasses);
         Proto proto = generator.generate("com.acme");
         assertEquals(1, proto.getEnums().size());
         assertEquals(enumName.local(), proto.getEnums().get(0).getName());

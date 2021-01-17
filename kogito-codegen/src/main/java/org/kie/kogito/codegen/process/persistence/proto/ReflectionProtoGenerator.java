@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import org.infinispan.protostream.annotations.ProtoEnumValue;
 import org.kie.internal.kogito.codegen.Generated;
 import org.kie.internal.kogito.codegen.VariableInfo;
+import org.kie.kogito.Model;
 import org.kie.kogito.codegen.GeneratedFile;
 
 public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
@@ -244,6 +245,11 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
             } catch (IntrospectionException e) {
                 throw new RuntimeException("Error during bean introspection", e);
             }
+        }
+
+        @Override
+        protected boolean isValidModelClass(Class<?> modelClass) {
+            return Model.class.isAssignableFrom(modelClass);
         }
 
         @Override

@@ -21,6 +21,7 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -102,6 +103,8 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
         protected abstract Collection<E> extractDataClasses(Collection<E> modelClasses);
 
+        protected abstract boolean isValidModelClass(E modelClass);
+
         @Override
         public Builder<E, T> withPersistenceClass(E persistenceClass) {
             this.persistenceClass = persistenceClass;
@@ -110,6 +113,13 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
         @Override
         public T buildWithModelClasses(Collection<E> modelClasses) {
+            Collection<String> invalidClasses = modelClasses.stream()
+                    .filter(mc -> !isValidModelClass(mc))
+                    .map(Objects::toString)
+                    .collect(Collectors.toList());
+            if(!invalidClasses.isEmpty()) {
+                throw new IllegalArgumentException("Found classes that are not models: " + String.join(",", invalidClasses));
+            }
             return buildWithDataClasses(extractDataClasses(modelClasses));
         }
     }

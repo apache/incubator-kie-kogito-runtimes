@@ -41,6 +41,7 @@ import org.kie.kogito.grafana.JGrafana;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.kie.kogito.codegen.KogitoBuildContextTestUtils.mockClassAvailabilityResolver;
 
 public class DecisionCodegenTest {
 
@@ -193,22 +194,5 @@ public class DecisionCodegenTest {
         assertThat(generatedFiles).anyMatch(x -> x.relativePath().endsWith("InputSet.java"));
         GeneratedFile inputSetFile = generatedFiles.stream().filter(x -> x.relativePath().endsWith("InputSet.java")).findFirst().get();
         assertThat(new String(inputSetFile.contents())).doesNotContain("@org.eclipse.microprofile.openapi.annotations.media.Schema");
-    }
-
-    private Predicate<String> mockClassAvailabilityResolver(Collection<String> includedClasses, Collection<String> excludedClasses) {
-        return className -> {
-            if(includedClasses.contains(className)) {
-                return true;
-            }
-            else if(excludedClasses.contains(className)) {
-                return false;
-            }
-            try {
-                this.getClass().getClassLoader().loadClass(className);
-                return true;
-            } catch (ClassNotFoundException ex) {
-                return false;
-            }
-        };
     }
 }
