@@ -44,10 +44,13 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     protected final AddonsConfig addonsConfig;
     protected final ClassLoader classLoader;
     protected final AppPaths appPaths;
+    protected final String contextName;
 
     protected DependencyInjectionAnnotator dependencyInjectionAnnotator;
 
-    protected AbstractKogitoBuildContext(AbstractBuilder builder, DependencyInjectionAnnotator dependencyInjectionAnnotator) {
+    protected AbstractKogitoBuildContext(AbstractBuilder builder,
+                                         DependencyInjectionAnnotator dependencyInjectionAnnotator,
+                                         String contextName) {
         this.packageName = builder.packageName;
         this.classAvailabilityResolver = builder.classAvailabilityResolver;
         this.dependencyInjectionAnnotator = dependencyInjectionAnnotator;
@@ -55,6 +58,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         this.addonsConfig = builder.addonsConfig != null ? builder.addonsConfig : AddonsConfigDiscovery.discover(this);
         this.classLoader = builder.classLoader;
         this.appPaths = builder.appPaths;
+        this.contextName = contextName;
     }
 
     @Override
@@ -95,6 +99,11 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     @Override
     public AddonsConfig getAddonsConfig() {
         return addonsConfig;
+    }
+
+    @Override
+    public String name() {
+        return contextName;
     }
 
     @Override

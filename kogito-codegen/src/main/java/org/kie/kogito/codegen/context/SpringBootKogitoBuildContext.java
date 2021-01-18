@@ -19,8 +19,10 @@ import org.kie.kogito.codegen.di.SpringDependencyInjectionAnnotator;
 
 public class SpringBootKogitoBuildContext extends AbstractKogitoBuildContext {
 
+    public static final String CONTEXT_NAME = "Spring";
+
     protected SpringBootKogitoBuildContext(SpringBootKogitoBuildContextBuilder builder) {
-        super(builder, new SpringDependencyInjectionAnnotator());
+        super(builder, new SpringDependencyInjectionAnnotator(), CONTEXT_NAME);
     }
 
     @Override

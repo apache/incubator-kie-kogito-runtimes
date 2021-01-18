@@ -93,7 +93,7 @@ class KogitoBuildContextTest {
         }
 
         protected MockKogitoBuildContext(MockKogiotBuildContextBuilder builder) {
-            super(builder, null);
+            super(builder, null, "Mock");
         }
 
         @Override

@@ -19,8 +19,10 @@ import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 
 public class QuarkusKogitoBuildContext extends AbstractKogitoBuildContext {
 
+    public static final String CONTEXT_NAME = "Quarkus";
+
     protected QuarkusKogitoBuildContext(QuarkusKogitoBuildContextBuilder builder) {
-        super(builder, new CDIDependencyInjectionAnnotator());
+        super(builder, new CDIDependencyInjectionAnnotator(), CONTEXT_NAME);
     }
 
     @Override

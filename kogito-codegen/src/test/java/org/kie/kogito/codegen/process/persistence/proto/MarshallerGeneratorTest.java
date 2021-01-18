@@ -40,9 +40,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 class MarshallerGeneratorTest {
-    
-    KogitoBuildContext context = JavaKogitoBuildContext.builder().build();
 
+    KogitoBuildContext context = JavaKogitoBuildContext.builder().build();
+    
     @Test
     void testPersonMarshallers() throws Exception {
         ProtoGenerator generator = ReflectionProtoGenerator.builder()

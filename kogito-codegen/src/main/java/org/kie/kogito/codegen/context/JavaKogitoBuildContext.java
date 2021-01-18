@@ -17,14 +17,15 @@ package org.kie.kogito.codegen.context;
 
 public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
 
+    public static final String CONTEXT_NAME = "Java";
+
     protected JavaKogitoBuildContext(JavaKogitoBuildContextBuilder builder) {
-        super(builder, null);
+        super(builder, null, CONTEXT_NAME);
     }
 
     @Override
     public boolean hasREST() {
         return false;
-    }
 
     public static Builder builder() {
         return new JavaKogitoBuildContextBuilder();
