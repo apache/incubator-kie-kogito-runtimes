@@ -70,10 +70,6 @@ public class PredictionCodegen extends AbstractGenerator {
         this.resources = resources;
     }
 
-    public static PredictionCodegen fromContext(KogitoBuildContext context) {
-        return ofCollectedResources(context, CollectedResource.fromPaths(context.getAppPaths().getPaths()));
-    }
-
     public static PredictionCodegen ofCollectedResources(KogitoBuildContext context,
                                                          Collection<CollectedResource> resources) {
         if (context.hasClassAvailable(DMN_JPMML_CLASS)) {

@@ -65,10 +65,6 @@ public class DecisionCodegen extends AbstractGenerator {
     public static String STRONGLY_TYPED_CONFIGURATION_KEY = "kogito.decisions.stronglytyped";
     public static String VALIDATION_CONFIGURATION_KEY = "kogito.decisions.validation";
 
-    public static DecisionCodegen fromContext(KogitoBuildContext context) {
-        return ofCollectedResources(context, CollectedResource.fromPaths(context.getAppPaths().getPaths()));
-    }
-
     public static DecisionCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         OASFactoryResolver.instance(); // manually invoke SPI, o/w Kogito CodeGen Kogito Quarkus extension failure at NewFileHotReloadTest due to java.util.ServiceConfigurationError: org.eclipse.microprofile.openapi.spi.OASFactoryResolver: io.smallrye.openapi.spi.OASFactoryResolverImpl not a subtype
         List<CollectedResource> dmnResources = resources.stream()

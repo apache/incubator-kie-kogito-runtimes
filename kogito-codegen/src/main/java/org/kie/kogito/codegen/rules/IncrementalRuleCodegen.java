@@ -89,10 +89,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private static final GeneratedFileType QUERY_TYPE = GeneratedFileType.of("QUERY", GeneratedFileType.Category.SOURCE, true, true);
     private static final GeneratedFileType DTO_TYPE = GeneratedFileType.of("QUERY", GeneratedFileType.Category.SOURCE, true, true);
 
-    public static IncrementalRuleCodegen fromContext(KogitoBuildContext context) {
-        return ofCollectedResources(context, CollectedResource.fromPaths(context.getAppPaths().getPaths()));
-    }
-
     public static IncrementalRuleCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         List<Resource> generatedRules = resources.stream()
                 .map(CollectedResource::resource)

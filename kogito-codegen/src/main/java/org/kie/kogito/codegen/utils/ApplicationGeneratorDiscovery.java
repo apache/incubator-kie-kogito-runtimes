@@ -18,9 +18,12 @@ package org.kie.kogito.codegen.utils;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
+import org.kie.kogito.codegen.io.CollectedResource;
 import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
+
+import java.util.Collection;
 
 /**
  * Utility class that performs automatic ApplicationGenerator discovery
@@ -34,18 +37,20 @@ public class ApplicationGeneratorDiscovery {
     public static ApplicationGenerator discover(KogitoBuildContext context) {
         ApplicationGenerator appGen = new ApplicationGenerator(context);
 
+        Collection<CollectedResource> collectedResources = CollectedResource.fromPaths(context.getAppPaths().getPaths());
+
         // configure each individual generator. Ordering is relevant.
 
-        appGen.registerGeneratorIfEnabled(ProcessCodegen.fromContext(context));
+        appGen.registerGeneratorIfEnabled(ProcessCodegen.ofCollectedResources(context, collectedResources));
 
         boolean useRestServices = context.hasClassAvailable("javax.ws.rs.Path")
                 || context.hasClassAvailable("org.springframework.web.bind.annotation.RestController");
-        appGen.registerGeneratorIfEnabled(IncrementalRuleCodegen.fromContext(context))
+        appGen.registerGeneratorIfEnabled(IncrementalRuleCodegen.ofCollectedResources(context, collectedResources))
                 .ifPresent(gen -> gen.withRestServices(useRestServices));
 
-        appGen.registerGeneratorIfEnabled(PredictionCodegen.fromContext(context));
+        appGen.registerGeneratorIfEnabled(PredictionCodegen.ofCollectedResources(context, collectedResources));
 
-        appGen.registerGeneratorIfEnabled(DecisionCodegen.fromContext(context));
+        appGen.registerGeneratorIfEnabled(DecisionCodegen.ofCollectedResources(context, collectedResources));
 
         return appGen;
 
