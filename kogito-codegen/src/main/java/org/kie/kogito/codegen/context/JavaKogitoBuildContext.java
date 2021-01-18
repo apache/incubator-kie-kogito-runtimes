@@ -25,7 +25,8 @@ public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
 
     @Override
     public boolean hasREST() {
-        return false;
+        return hasClassAvailable("javax.ws.rs.Path")
+                || hasClassAvailable("org.springframework.web.bind.annotation.RestController");
     }
 
     public static Builder builder() {

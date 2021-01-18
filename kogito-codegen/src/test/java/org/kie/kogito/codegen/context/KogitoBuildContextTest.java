@@ -98,7 +98,7 @@ class KogitoBuildContextTest {
 
         @Override
         public boolean hasREST() {
-            return false;
+            return true;
         }
 
         public static class MockKogiotBuildContextBuilder extends AbstractKogitoBuildContext.AbstractBuilder {
