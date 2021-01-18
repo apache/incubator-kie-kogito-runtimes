@@ -117,7 +117,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     private KieModuleModel kieModuleModel;
     private boolean hotReloadMode = false;
-    private boolean useRestServices = true;
     private final boolean decisionTableSupported;
     private final Map<String, RuleUnitConfig> configs;
 
@@ -301,7 +300,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
             initRuleUnitHelper( ruleUnitHelper, ruleUnit.getRuleUnitDescription() );
 
-            List<String> queryClasses = useRestServices ? generateQueriesEndpoint( errors, generatedFiles, ruleUnitHelper, ruleUnit ) : Collections.emptyList();
+            List<String> queryClasses = context().hasREST() ? generateQueriesEndpoint( errors, generatedFiles, ruleUnitHelper, ruleUnit ) : Collections.emptyList();
 
             generatedFiles.add( ruleUnit.generateFile( RULE_TYPE) );
 
@@ -415,11 +414,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     public IncrementalRuleCodegen withHotReloadMode() {
         this.hotReloadMode = true;
-        return this;
-    }
-
-    public IncrementalRuleCodegen withRestServices(boolean useRestServices) {
-        this.useRestServices = useRestServices;
         return this;
     }
 

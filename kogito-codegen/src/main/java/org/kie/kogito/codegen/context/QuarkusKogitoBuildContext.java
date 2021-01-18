@@ -23,6 +23,11 @@ public class QuarkusKogitoBuildContext extends AbstractKogitoBuildContext {
         super(builder, new CDIDependencyInjectionAnnotator());
     }
 
+    @Override
+    public boolean hasREST() {
+        return hasClassAvailable("javax.ws.rs.Path");
+    }
+
     public static Builder builder() {
         return new QuarkusKogitoBuildContextBuilder();
     }

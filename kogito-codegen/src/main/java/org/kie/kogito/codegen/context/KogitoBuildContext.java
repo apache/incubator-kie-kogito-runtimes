@@ -52,6 +52,8 @@ public interface KogitoBuildContext {
         return getDependencyInjectionAnnotator() != null;
     }
 
+    boolean hasREST();
+
     default boolean isValidationSupported() {
         return hasClassAvailable(KogitoCodeGenConstants.VALIDATION_CLASS);
     }

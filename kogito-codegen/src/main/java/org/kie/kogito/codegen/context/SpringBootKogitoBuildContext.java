@@ -23,6 +23,11 @@ public class SpringBootKogitoBuildContext extends AbstractKogitoBuildContext {
         super(builder, new SpringDependencyInjectionAnnotator());
     }
 
+    @Override
+    public boolean hasREST() {
+        return hasClassAvailable("org.springframework.web.bind.annotation.RestController");
+    }
+
     public static Builder builder() {
         return new SpringBootKogitoBuildContextBuilder();
     }
