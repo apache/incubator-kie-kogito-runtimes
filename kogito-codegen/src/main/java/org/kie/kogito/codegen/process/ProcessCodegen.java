@@ -93,7 +93,6 @@ public class ProcessCodegen extends AbstractGenerator {
         SUPPORTED_SW_EXTENSIONS = Collections.unmodifiableMap(extMap);
     }
 
-    private final ResourceGeneratorFactory resourceGeneratorFactory;
     private final List<ProcessGenerator> processGenerators = new ArrayList<>();
 
     public static ProcessCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
@@ -177,8 +176,6 @@ public class ProcessCodegen extends AbstractGenerator {
             }
             this.processes.put(process.getId(), (WorkflowProcess) process);
         }
-
-        resourceGeneratorFactory = new ResourceGeneratorFactory();
     }
 
     public static String defaultWorkItemHandlerConfigClass(String packageName) {
