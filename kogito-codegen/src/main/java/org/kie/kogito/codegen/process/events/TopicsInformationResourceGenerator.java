@@ -47,7 +47,7 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
     public TopicsInformationResourceGenerator(final KogitoBuildContext context,
                                               final List<ProcessExecutableModelGenerator> generators) {
         super(TemplatedGenerator.builder()
-                .withTemplateBasePath("/class-templates/events/")
+                .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
                 .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME)
                 .build(context, CLASS_NAME));
         this.context = context;

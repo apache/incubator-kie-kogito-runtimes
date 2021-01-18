@@ -34,6 +34,8 @@ import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
+
 public class RuleUnitContainerGenerator extends AbstractApplicationSection {
 
     public static final String SECTION_CLASS_NAME = "RuleUnits";
@@ -46,7 +48,7 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
         super(context, SECTION_CLASS_NAME);
         this.ruleUnits = new ArrayList<>();
         this.templatedGenerator = TemplatedGenerator.builder()
-                .withTemplateBasePath("/class-templates/rules/")
+                .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                 .withTargetTypeName(SECTION_CLASS_NAME)
                 .build(context, "RuleUnitContainer");
     }

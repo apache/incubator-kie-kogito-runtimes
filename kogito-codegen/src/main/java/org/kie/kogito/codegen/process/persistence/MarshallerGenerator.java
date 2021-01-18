@@ -66,6 +66,7 @@ import static com.github.javaparser.ast.expr.BinaryExpr.Operator.EQUALS;
 
 public class MarshallerGenerator {
 
+    public static final String TEMPLATE_PERSISTENCE_FOLDER = "/class-templates/persistence/";
     private static final String JAVA_PACKAGE_OPTION = "java_package";
     private static final String STATE_PARAM = "state";
     private final KogitoBuildContext context;
@@ -91,7 +92,7 @@ public class MarshallerGenerator {
         List<CompilationUnit> units = new ArrayList<>();
         TemplatedGenerator generator = TemplatedGenerator.builder()
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
-                .withTemplateBasePath("/class-templates/persistence/")
+                .withTemplateBasePath(TEMPLATE_PERSISTENCE_FOLDER)
                 .build(context, "MessageMarshaller");
         CompilationUnit parsedClazzFile = generator.compilationUnitOrThrow();
 

@@ -48,6 +48,7 @@ import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
 import static com.github.javaparser.StaticJavaParser.parseExpression;
 import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.toList;
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
 public class RuleUnitGenerator implements FileGenerator {
 
@@ -75,7 +76,7 @@ public class RuleUnitGenerator implements FileGenerator {
         this.config = ruleUnit.getConfig();
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(ruleUnitPackageName)
-                .withTemplateBasePath("/class-templates/rules/")
+                .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                 .withTargetTypeName(targetTypeName)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .build(context, "RuleUnit");

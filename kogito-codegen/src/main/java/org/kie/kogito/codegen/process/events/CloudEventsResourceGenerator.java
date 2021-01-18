@@ -41,7 +41,7 @@ public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator
     public CloudEventsResourceGenerator(final KogitoBuildContext context,
                                         final List<ProcessExecutableModelGenerator> generators) {
         super(TemplatedGenerator.builder()
-                .withTemplateBasePath("/class-templates/events/")
+                .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
                 .build(context, CLASS_NAME));
         this.context = context;
         this.triggers = this.filterTriggers(generators);

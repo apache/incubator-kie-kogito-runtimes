@@ -81,6 +81,7 @@ import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsfor
 public class IncrementalRuleCodegen extends AbstractGenerator {
 
     public static final GeneratedFileType RULE_TYPE = GeneratedFileType.of("RULE", GeneratedFileType.Category.SOURCE);
+    public static final String TEMPLATE_RULE_FOLDER = "/class-templates/rules/";
     private static final Logger LOGGER = LoggerFactory.getLogger(IncrementalRuleCodegen.class);
     private static final GeneratedFileType JSON_MAPPER_TYPE = GeneratedFileType.of("JSON_MAPPER", GeneratedFileType.Category.SOURCE);
     private static final GeneratedFileType QUERY_TYPE = GeneratedFileType.of("QUERY", GeneratedFileType.Category.SOURCE, true, true);
@@ -297,7 +298,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
         if (context().hasDI()) {
             TemplatedGenerator generator = TemplatedGenerator.builder()
-                    .withTemplateBasePath("/class-templates/rules/")
+                    .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                     .build(context(), "KogitoObjectMapper");
 
 

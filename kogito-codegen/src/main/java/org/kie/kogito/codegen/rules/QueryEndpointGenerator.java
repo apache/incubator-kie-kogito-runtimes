@@ -54,6 +54,7 @@ import org.kie.kogito.codegen.context.KogitoBuildContext;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classNameToReferenceType;
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
 public class QueryEndpointGenerator implements FileGenerator {
 
@@ -80,7 +81,7 @@ public class QueryEndpointGenerator implements FileGenerator {
         this.targetClassName = queryClassName + "Endpoint";
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(query.getNamespace())
-                .withTemplateBasePath("/class-templates/rules/")
+                .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                 .withTargetTypeName(targetClassName)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .build(context, "RestQuery");

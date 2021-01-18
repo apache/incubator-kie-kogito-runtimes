@@ -45,6 +45,7 @@ import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 import static org.drools.core.util.StringUtils.ucFirst;
 import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 import static org.kie.kogito.codegen.rules.QueryEndpointGenerator.setGeneric;
 
 public class QueryGenerator implements FileGenerator {
@@ -63,7 +64,7 @@ public class QueryGenerator implements FileGenerator {
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(query.getNamespace())
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
-                .withTemplateBasePath("/class-templates/rules/")
+                .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                 .withTargetTypeName(targetClassName)
                 .build(context, "RuleUnitQuery");
 

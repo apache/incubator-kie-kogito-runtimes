@@ -35,6 +35,7 @@ import static org.kie.kogito.codegen.CodegenUtils.newObject;
 public class ApplicationConfigGenerator {
 
     public static final GeneratedFileType APPLICATION_CONFIG_TYPE = GeneratedFileType.of("APPLICATION_CONFIG", GeneratedFileType.Category.SOURCE);
+    public static final String TEMPLATE_CONFIG_FOLDER = "/class-templates/config/";
     private static final String CLASS_NAME = "ApplicationConfig";
 
     private final TemplatedGenerator templatedGenerator;
@@ -46,7 +47,7 @@ public class ApplicationConfigGenerator {
 
     public ApplicationConfigGenerator(KogitoBuildContext context) {
         this.templatedGenerator = TemplatedGenerator.builder()
-                .withTemplateBasePath("/class-templates/config/")
+                .withTemplateBasePath(TEMPLATE_CONFIG_FOLDER)
                 .build(context, CLASS_NAME);
         this.context = context;
 
