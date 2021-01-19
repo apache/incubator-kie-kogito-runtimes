@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,7 +34,6 @@ import org.jboss.jandex.FieldInfo;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Type;
 import org.jboss.jandex.Type.Kind;
-import org.kie.kogito.Model;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.process.persistence.proto.AbstractProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
@@ -270,7 +268,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
     private static class JandexProtoGeneratorBuilder extends AbstractProtoGeneratorBuilder<ClassInfo, JandexProtoGenerator> {
 
-        private final static Logger LOGGER = LoggerFactory.getLogger(JandexProtoGeneratorBuilder.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(JandexProtoGeneratorBuilder.class);
         private final IndexView index;
         private final DotName generatedAnnotation;
         private final DotName variableInfoAnnotation;

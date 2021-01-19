@@ -33,16 +33,16 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
     private static final String GENERATED_PROTO_RES_PATH = "META-INF/resources/persistence/protobuf/";
     private static final String LISTING_FILE = "list.json";
 
-    protected ObjectMapper mapper;
-    protected Collection<T> modelClasses;
-    protected Collection<T> dataClasses;
-    protected T persistenceClass;
+    protected final ObjectMapper mapper;
+    protected final Collection<T> modelClasses;
+    protected final Collection<T> dataClasses;
+    protected final T persistenceClass;
 
     protected AbstractProtoGenerator(T persistenceClass, Collection<T> rawModelClasses, Collection<T> rawDataClasses) {
         this.modelClasses = rawModelClasses == null ? Collections.emptyList() : rawModelClasses;
         this.dataClasses = rawDataClasses == null ? Collections.emptyList() : rawDataClasses;
         this.persistenceClass = persistenceClass;
-        mapper = new ObjectMapper();
+        this.mapper = new ObjectMapper();
     }
 
     @Override
@@ -93,6 +93,18 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
                                                  mapper.writeValueAsString(fileNames)));
         }
         return Optional.empty();
+    }
+
+    public Collection<T> getModelClasses() {
+        return Collections.unmodifiableCollection(modelClasses);
+    }
+
+    public Collection<T> getDataClasses() {
+        return Collections.unmodifiableCollection(dataClasses);
+    }
+
+    public T getPersistenceClass() {
+        return persistenceClass;
     }
 
     protected abstract Proto generate(String messageComment, String fieldComment, String packageName, T dataModel, String... headers);

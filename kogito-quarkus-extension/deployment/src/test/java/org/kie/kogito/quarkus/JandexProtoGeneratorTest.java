@@ -19,11 +19,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
+import org.jboss.jandex.Index;
 import org.jboss.jandex.Indexer;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
@@ -31,6 +33,7 @@ import org.kie.kogito.quarkus.deployment.JandexProtoGenerator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JandexProtoGeneratorTest {
@@ -79,6 +82,57 @@ class JandexProtoGeneratorTest {
         Proto objectProto = generator.generate("message comment", "field comment", "com.acme", objectClassName);
         assertEquals(1, objectProto.getMessages().size());
         assertEquals(objectName.local(), objectProto.getMessages().get(0).getName());
+    }
+
+    @Test
+    void builderTest() throws IOException {
+        Indexer indexer = new Indexer();
+
+        ClassInfo generatedPojo = indexer.index(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(GeneratedPOJO.class)));
+        ClassInfo person = indexer.index(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(Person.class)));
+        ClassInfo address = indexer.index(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(Address.class)));
+        Index index = indexer.complete();
+
+        // empty
+        JandexProtoGenerator emptyGenerator = JandexProtoGenerator.builder(index, null, null)
+                .build(null);
+        assertNull(emptyGenerator.getPersistenceClass());
+        assertTrue(emptyGenerator.getDataClasses().isEmpty());
+        assertTrue(emptyGenerator.getModelClasses().isEmpty());
+
+        // persistence class
+        JandexProtoGenerator persistenceClassGenerator = JandexProtoGenerator.builder(index, null, null)
+                .withPersistenceClass(person)
+                .build(null);
+        assertEquals(person, persistenceClassGenerator.getPersistenceClass());
+        assertTrue(persistenceClassGenerator.getDataClasses().isEmpty());
+        assertTrue(persistenceClassGenerator.getModelClasses().isEmpty());
+
+        // explicit data class
+        JandexProtoGenerator dataClassGenerator = JandexProtoGenerator.builder(index, null, null)
+                .withDataClasses(Collections.singleton(person))
+                .build(null);
+        assertNull(dataClassGenerator.getPersistenceClass());
+        assertEquals(1, dataClassGenerator.getDataClasses().size());
+        assertTrue(dataClassGenerator.getModelClasses().isEmpty());
+
+        // retrieve data classes
+        JandexProtoGenerator modelClassGenerator = JandexProtoGenerator.builder(index, null, null)
+                .build(Collections.singleton(generatedPojo));
+        assertNull(modelClassGenerator.getPersistenceClass());
+        assertEquals(1, modelClassGenerator.getDataClasses().size());
+        assertEquals(1, modelClassGenerator.getModelClasses().size());
+
+        // explicit data classes win
+        JandexProtoGenerator dataClassAndModelClassGenerator = JandexProtoGenerator.builder(index, null, null)
+                .withDataClasses(Arrays.asList(person, address))
+                .build(Collections.singleton(generatedPojo));
+        assertNull(dataClassAndModelClassGenerator.getPersistenceClass());
+        assertEquals(2, dataClassAndModelClassGenerator.getDataClasses().size());
+        assertEquals(1, dataClassAndModelClassGenerator.getModelClasses().size());
     }
 
     @Test

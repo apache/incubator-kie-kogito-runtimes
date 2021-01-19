@@ -56,9 +56,7 @@ class InfinispanPersistenceGeneratorTest {
         assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE)).count()).isEqualTo(2);
         assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE) && gf.relativePath().endsWith(".json")).count()).isEqualTo(1);
 
-        Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.category() == GeneratedFileType.SOURCE.category()).findFirst();
-        assertTrue(generatedCLASSFile.isPresent());
-        GeneratedFile classFile = generatedCLASSFile.get();
-        assertEquals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java", classFile.relativePath());
+        assertThat(generatedFiles.stream().filter(gf -> gf.relativePath().endsWith("Marshaller.java")).count()).isEqualTo(1);
+        assertThat(generatedFiles.stream().filter(gf -> gf.relativePath().equals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java")).count()).isEqualTo(1);
     }
 }

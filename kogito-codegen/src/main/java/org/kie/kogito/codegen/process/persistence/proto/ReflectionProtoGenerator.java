@@ -220,7 +220,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
     private static class ReflectionProtoGeneratorBuilder extends AbstractProtoGeneratorBuilder<Class<?>, ReflectionProtoGenerator> {
 
-        private final static Logger LOGGER = LoggerFactory.getLogger(ReflectionProtoGeneratorBuilder.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionProtoGeneratorBuilder.class);
 
         private ReflectionProtoGeneratorBuilder() {
         }
@@ -254,7 +254,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
         @Override
         public ReflectionProtoGenerator build(Collection<Class<?>> modelClasses) {
-            return new ReflectionProtoGenerator(persistenceClass, modelClasses, extractDataClasses(dataClasses));
+            return new ReflectionProtoGenerator(persistenceClass, modelClasses, extractDataClasses(modelClasses));
         }
     }
 }

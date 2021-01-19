@@ -20,8 +20,10 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.data.Address;
 import org.kie.kogito.codegen.data.Answer;
 import org.kie.kogito.codegen.data.AnswerWitAnnotations;
+import org.kie.kogito.codegen.data.GeneratedPOJO;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.data.PersonVarInfo;
 import org.kie.kogito.codegen.data.PersonWithAddress;
@@ -505,6 +507,66 @@ class ReflectionProtoGeneratorTest {
         assertThat(field.getName()).isEqualTo("question");
         assertThat(field.getType()).isEqualTo("string");
         assertThat(field.getApplicability()).isEqualTo("optional");
+    }
+
+    @Test
+    void builderTest() {
+        // empty
+        ReflectionProtoGenerator emptyGenerator = ReflectionProtoGenerator.builder().build(null);
+        assertThat(emptyGenerator.getPersistenceClass()).isNull();
+        assertThat(emptyGenerator.getDataClasses())
+                .isNotNull()
+                .isEmpty();
+        assertThat(emptyGenerator.getModelClasses())
+                .isNotNull()
+                .isEmpty();
+
+        // persistence class
+        ReflectionProtoGenerator persistenceClassGenerator = ReflectionProtoGenerator.builder()
+                .withPersistenceClass(Person.class)
+                .build(null);
+        assertThat(persistenceClassGenerator.getPersistenceClass()).isEqualTo(Person.class);
+        assertThat(persistenceClassGenerator.getDataClasses())
+                .isNotNull()
+                .isEmpty();
+        assertThat(persistenceClassGenerator.getModelClasses())
+                .isNotNull()
+                .isEmpty();
+
+        // explicit data class
+        ReflectionProtoGenerator dataClassGenerator = ReflectionProtoGenerator.builder()
+                .withDataClasses(Collections.singleton(Person.class))
+                .build(null);
+        assertThat(dataClassGenerator.getPersistenceClass()).isNull();
+        assertThat(dataClassGenerator.getDataClasses())
+                .isNotNull()
+                .hasSize(1);
+        assertThat(dataClassGenerator.getModelClasses())
+                .isNotNull()
+                .isEmpty();
+
+        // retrieve data classes
+        ReflectionProtoGenerator modelClassGenerator = ReflectionProtoGenerator.builder()
+                .build(Collections.singleton(GeneratedPOJO.class));
+        assertThat(modelClassGenerator.getPersistenceClass()).isNull();
+        assertThat(modelClassGenerator.getDataClasses())
+                .isNotNull()
+                .hasSize(1);
+        assertThat(modelClassGenerator.getModelClasses())
+                .isNotNull()
+                .hasSize(1);
+
+        // explicit data classes win
+        ReflectionProtoGenerator dataClassAndModelClassGenerator = ReflectionProtoGenerator.builder()
+                .withDataClasses(Arrays.asList(Person.class, Address.class))
+                .build(Collections.singleton(GeneratedPOJO.class));
+        assertThat(dataClassAndModelClassGenerator.getPersistenceClass()).isNull();
+        assertThat(dataClassAndModelClassGenerator.getDataClasses())
+                .isNotNull()
+                .hasSize(2);
+        assertThat(dataClassAndModelClassGenerator.getModelClasses())
+                .isNotNull()
+                .hasSize(1);
     }
 
     @Test
