@@ -48,8 +48,9 @@ class JandexProtoGeneratorTest {
         dataClasses.add(objectClassName);
 
         JandexProtoGenerator generator = JandexProtoGenerator.builder(null, null, null)
-                .buildWithDataClasses(dataClasses);
-        Proto proto = generator.generate("com.acme");
+                .withDataClasses(dataClasses)
+                .build(null);
+        Proto proto = generator.protoOfDataClasses("com.acme");
         assertEquals(1, proto.getEnums().size());
         assertEquals(enumName.local(), proto.getEnums().get(0).getName());
         assertEquals(1, proto.getMessages().size());
@@ -69,7 +70,8 @@ class JandexProtoGeneratorTest {
         dataModel.add(objectClassName);
 
         JandexProtoGenerator generator = JandexProtoGenerator.builder(null, null, null)
-                .buildWithDataClasses(dataModel);
+                .withDataClasses(dataModel)
+                .build(null);
         Proto enumProto = generator.generate("message comment", "field comment", "com.acme", enumClassInfo);
         assertEquals(1, enumProto.getEnums().size());
         assertEquals(enumName.local(), enumProto.getEnums().get(0).getName());
@@ -84,14 +86,14 @@ class JandexProtoGeneratorTest {
         Indexer indexer = new Indexer();
         JandexProtoGenerator noPersistenceClassGenerator = JandexProtoGenerator.builder(null, null, null)
                 .withPersistenceClass(null)
-                .buildWithDataClasses(null);
+                .build(null);
         assertTrue(noPersistenceClassGenerator.getPersistenceClassParams().isEmpty());
 
         ClassInfo emptyConstructor = indexer.index(this.getClass().getClassLoader()
                 .getResourceAsStream(toPath(EmptyConstructor.class)));
         JandexProtoGenerator emptyGenerator = JandexProtoGenerator.builder(null, null, null)
                 .withPersistenceClass(emptyConstructor)
-                .buildWithDataClasses(null);
+                .build(null);
 
         assertTrue(emptyGenerator.getPersistenceClassParams().isEmpty());
 
@@ -99,7 +101,7 @@ class JandexProtoGeneratorTest {
                 .getResourceAsStream(toPath(NotEmptyConstructor.class)));
         JandexProtoGenerator notEmptyGenerator = JandexProtoGenerator.builder(null, null, null)
                 .withPersistenceClass(notEmptyConstructor)
-                .buildWithDataClasses(null);
+                .build(null);
 
         Collection<String> notEmptyClassParams = notEmptyGenerator.getPersistenceClassParams();
         assertFalse(notEmptyClassParams.isEmpty());

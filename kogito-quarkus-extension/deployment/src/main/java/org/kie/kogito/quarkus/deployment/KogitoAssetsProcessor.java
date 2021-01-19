@@ -299,7 +299,7 @@ public class KogitoAssetsProcessor {
                     DotName.createSimple(Generated.class.getCanonicalName()),
                     DotName.createSimple(VariableInfo.class.getCanonicalName()))
                 .withPersistenceClass(persistenceClass)
-                .buildWithModelClasses(modelClasses);
+                .build(modelClasses);
 
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
                 context,

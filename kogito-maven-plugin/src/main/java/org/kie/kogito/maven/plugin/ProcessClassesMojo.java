@@ -93,7 +93,7 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 Class<?> persistenceClass = classes.isEmpty() ? null : classes.iterator().next();
                 ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder()
                         .withPersistenceClass(persistenceClass)
-                        .buildWithModelClasses(modelClasses);
+                        .build(modelClasses);
 
 
                 KogitoBuildContext context = discoverKogitoRuntimeContext(cl);

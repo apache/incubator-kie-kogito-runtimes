@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -35,16 +34,18 @@ import java.util.stream.Stream;
 import org.infinispan.protostream.annotations.ProtoEnumValue;
 import org.kie.internal.kogito.codegen.Generated;
 import org.kie.internal.kogito.codegen.VariableInfo;
-import org.kie.kogito.Model;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
-    private ReflectionProtoGenerator(Class<?> persistenceClass, Collection<Class<?>> dataClasses) {
-        super(persistenceClass, dataClasses);
+    private ReflectionProtoGenerator(Class<?> persistenceClass, Collection<Class<?>> modelClasses, Collection<Class<?>> dataClasses) {
+        super(persistenceClass, modelClasses, dataClasses);
     }
 
-    public Proto generate(String packageName, String... headers) {
+    @Override
+    public Proto protoOfDataClasses(String packageName, String... headers) {
         try {
             Proto proto = new Proto(packageName, headers);
             for (Class<?> clazz : dataClasses) {
@@ -219,12 +220,17 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
     private static class ReflectionProtoGeneratorBuilder extends AbstractProtoGeneratorBuilder<Class<?>, ReflectionProtoGenerator> {
 
+        private final static Logger LOGGER = LoggerFactory.getLogger(ReflectionProtoGeneratorBuilder.class);
+
         private ReflectionProtoGeneratorBuilder() {
         }
 
         @Override
         protected Collection<Class<?>> extractDataClasses(Collection<Class<?>> modelClasses) {
-            Objects.requireNonNull(modelClasses, "modelClasses cannot be null");
+            if(dataClasses != null || modelClasses == null) {
+                LOGGER.info("Using provided dataClasses instead of extracting from modelClasses");
+                return dataClasses;
+            }
             Set<Class<?>> dataModelClasses = new HashSet<>();
             try {
                 for (Class<?> modelClazz : modelClasses) {
@@ -247,13 +253,8 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
         }
 
         @Override
-        protected boolean isValidModelClass(Class<?> modelClass) {
-            return Model.class.isAssignableFrom(modelClass);
-        }
-
-        @Override
-        public ReflectionProtoGenerator buildWithDataClasses(Collection<Class<?>> dataClasses) {
-            return new ReflectionProtoGenerator(persistenceClass, dataClasses);
+        public ReflectionProtoGenerator build(Collection<Class<?>> modelClasses) {
+            return new ReflectionProtoGenerator(persistenceClass, modelClasses, extractDataClasses(dataClasses));
         }
     }
 }

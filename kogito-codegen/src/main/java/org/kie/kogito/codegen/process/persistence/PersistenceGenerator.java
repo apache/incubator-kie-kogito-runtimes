@@ -110,11 +110,10 @@ public class PersistenceGenerator extends AbstractGenerator {
         return context().getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     protected Collection<GeneratedFile> infinispanBasedPersistence() {
-        Collection<GeneratedFile> generatedFiles = new ArrayList<>(protoGenerator.generateDataClasses());
+        Collection<GeneratedFile> generatedFiles = new ArrayList<>(protoGenerator.generateProtoFiles());
 
-        Proto proto = protoGenerator.generate(context().getPackageName(), "import \"kogito-types.proto\";");
+        Proto proto = protoGenerator.protoOfDataClasses(context().getPackageName(), "import \"kogito-types.proto\";");
 
         ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration().setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
                 .setModifiers(Modifier.Keyword.PUBLIC)

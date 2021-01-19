@@ -20,14 +20,13 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.GeneratedFileType;
 
 public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
@@ -35,20 +34,22 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
     private static final String LISTING_FILE = "list.json";
 
     protected ObjectMapper mapper;
+    protected Collection<T> modelClasses;
     protected Collection<T> dataClasses;
     protected T persistenceClass;
 
-    protected AbstractProtoGenerator(T persistenceClass, Collection<T> dataClasses) {
-        this.dataClasses = dataClasses;
+    protected AbstractProtoGenerator(T persistenceClass, Collection<T> rawModelClasses, Collection<T> rawDataClasses) {
+        this.modelClasses = rawModelClasses == null ? Collections.emptyList() : rawModelClasses;
+        this.dataClasses = rawDataClasses == null ? Collections.emptyList() : rawDataClasses;
         this.persistenceClass = persistenceClass;
         mapper = new ObjectMapper();
     }
 
     @Override
-    public Collection<GeneratedFile> generateDataClasses() {
+    public Collection<GeneratedFile> generateProtoFiles() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
 
-        dataClasses.stream()
+        modelClasses.stream()
                 .map(this::generateModelClassProto)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -66,9 +67,9 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
     /**
      * Generates the proto files from the given model.
      */
-    public final GeneratedFile generateProtoFiles(final String processId, final Proto modelProto) {
+    protected final GeneratedFile generateProtoFiles(final String processId, final Proto modelProto) {
         String protoFileName = processId + ".proto";
-        return new GeneratedFile(GeneratedFileType.RESOURCE,
+        return new GeneratedFile(PROTO_TYPE,
                                  GENERATED_PROTO_RES_PATH + protoFileName,
                                  modelProto.toString());
     }
@@ -80,14 +81,14 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
      * @param generatedFiles  The list of generated files.
      * @throws IOException if something wrong occurs during I/O
      */
-    public final Optional<GeneratedFile> generateProtoListingFile(Collection<GeneratedFile> generatedFiles) throws IOException {
+    protected final Optional<GeneratedFile> generateProtoListingFile(Collection<GeneratedFile> generatedFiles) throws IOException {
         List<String> fileNames = generatedFiles.stream()
                 .filter(x -> x.relativePath().contains(GENERATED_PROTO_RES_PATH))
                 .map(x -> x.relativePath().substring(x.relativePath().lastIndexOf("/") + 1))
                 .collect(Collectors.toList());
 
         if (!fileNames.isEmpty()) {
-            return Optional.of(new GeneratedFile(GeneratedFileType.RESOURCE,
+            return Optional.of(new GeneratedFile(PROTO_TYPE,
                                                  GENERATED_PROTO_RES_PATH + LISTING_FILE,
                                                  mapper.writeValueAsString(fileNames)));
         }
@@ -100,10 +101,9 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
     protected abstract static class AbstractProtoGeneratorBuilder<E, T extends ProtoGenerator> implements Builder<E, T> {
         protected E persistenceClass;
+        protected Collection<E> dataClasses;
 
         protected abstract Collection<E> extractDataClasses(Collection<E> modelClasses);
-
-        protected abstract boolean isValidModelClass(E modelClass);
 
         @Override
         public Builder<E, T> withPersistenceClass(E persistenceClass) {
@@ -112,18 +112,9 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
         }
 
         @Override
-        public T buildWithModelClasses(Collection<E> modelClasses) {
-            if (modelClasses == null) {
-                return buildWithDataClasses(null);
-            }
-            Collection<String> invalidClasses = modelClasses.stream()
-                    .filter(mc -> !isValidModelClass(mc))
-                    .map(Objects::toString)
-                    .collect(Collectors.toList());
-            if(!invalidClasses.isEmpty()) {
-                throw new IllegalArgumentException("Found classes that are not models: " + String.join(",", invalidClasses));
-            }
-            return buildWithDataClasses(extractDataClasses(modelClasses));
+        public Builder<E, T> withDataClasses(Collection<E> dataClasses) {
+            this.dataClasses = dataClasses;
+            return this;
         }
     }
 }

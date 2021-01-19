@@ -41,6 +41,8 @@ import org.kie.kogito.codegen.process.persistence.proto.AbstractProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoEnum;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
@@ -49,15 +51,15 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     private final DotName generatedAnnotation;
     private final DotName variableInfoAnnotation;
 
-    private JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> dataClasses, IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
-        super(persistenceClass, dataClasses);
+    private JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> modelClasses, Collection<ClassInfo> dataClasses, IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
+        super(persistenceClass, modelClasses, dataClasses);
         this.index = index;
         this.generatedAnnotation = generatedAnnotation;
         this.variableInfoAnnotation = variableInfoAnnotation;
     }
 
     @Override
-    public Proto generate(String packageName, String... headers) {
+    public Proto protoOfDataClasses(String packageName, String... headers) {
         try {
             Proto proto = new Proto(packageName, headers);
 
@@ -268,8 +270,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
     private static class JandexProtoGeneratorBuilder extends AbstractProtoGeneratorBuilder<ClassInfo, JandexProtoGenerator> {
 
-        private static final DotName MODEL = DotName.createSimple(Model.class.getCanonicalName());
-
+        private final static Logger LOGGER = LoggerFactory.getLogger(JandexProtoGeneratorBuilder.class);
         private final IndexView index;
         private final DotName generatedAnnotation;
         private final DotName variableInfoAnnotation;
@@ -282,7 +283,10 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
         @Override
         protected Collection<ClassInfo> extractDataClasses(Collection<ClassInfo> modelClasses) {
-            Objects.requireNonNull(modelClasses, "modelClasses cannot be null");
+            if (dataClasses != null || modelClasses == null) {
+                LOGGER.info("Using provided dataClasses instead of extracting from modelClasses");
+                return dataClasses;
+            }
             Set<ClassInfo> dataModelClasses = new HashSet<>();
             for (ClassInfo modelClazz : modelClasses) {
 
@@ -300,13 +304,8 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         }
 
         @Override
-        protected boolean isValidModelClass(ClassInfo modelClass) {
-            return modelClass.interfaceNames().contains(MODEL);
-        }
-
-        @Override
-        public JandexProtoGenerator buildWithDataClasses(Collection<ClassInfo> dataClasses) {
-            return new JandexProtoGenerator(persistenceClass, dataClasses, index, generatedAnnotation, variableInfoAnnotation);
+        public JandexProtoGenerator build(Collection<ClassInfo> modelClasses) {
+            return new JandexProtoGenerator(persistenceClass, modelClasses, extractDataClasses(modelClasses), index, generatedAnnotation, variableInfoAnnotation);
         }
     }
 }
