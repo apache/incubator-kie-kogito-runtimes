@@ -45,7 +45,7 @@ pipeline {
         stage('Build kogito-apps') {
             steps {
                 script {
-                    mavenCleanInstall("kogito-apps")
+                    mavenCleanInstallNative("kogito-apps")
                 }
             }
             post {
