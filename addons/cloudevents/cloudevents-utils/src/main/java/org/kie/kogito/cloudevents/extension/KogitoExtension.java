@@ -19,12 +19,15 @@ package org.kie.kogito.cloudevents.extension;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import io.cloudevents.CloudEventExtensions;
 import io.cloudevents.Extension;
 import io.cloudevents.core.extensions.impl.ExtensionUtils;
+import io.cloudevents.core.provider.ExtensionProvider;
 
 public class KogitoExtension implements Extension {
 
@@ -45,16 +48,25 @@ public class KogitoExtension implements Extension {
     private String dmnModelNamespace;
     private String dmnEvaluateDecision;
 
+    public static void register() {
+        ExtensionProvider.getInstance().registerExtension(KogitoExtension.class, KogitoExtension::new);
+    }
+
     @Override
     public void readFrom(CloudEventExtensions extensions) {
-        Optional.ofNullable(extensions.getExtension(KOGITO_EXECUTION_ID))
-                .map(Object::toString).ifPresent(this::setExecutionId);
-        Optional.ofNullable(extensions.getExtension(KOGITO_DMN_MODEL_NAME))
-                .map(Object::toString).ifPresent(this::setDmnModelName);
-        Optional.ofNullable(extensions.getExtension(KOGITO_DMN_MODEL_NAMESPACE))
-                .map(Object::toString).ifPresent(this::setDmnModelNamespace);
-        Optional.ofNullable(extensions.getExtension(KOGITO_DMN_EVALUATE_DECISION))
-                .map(Object::toString).ifPresent(this::setDmnEvaluateDecision);
+        readStringExtension(extensions, KOGITO_EXECUTION_ID, this::setExecutionId);
+        readStringExtension(extensions, KOGITO_DMN_MODEL_NAME, this::setDmnModelName);
+        readStringExtension(extensions, KOGITO_DMN_MODEL_NAMESPACE, this::setDmnModelNamespace);
+        readStringExtension(extensions, KOGITO_DMN_EVALUATE_DECISION, this::setDmnEvaluateDecision);
+    }
+
+    private static void readStringExtension(CloudEventExtensions extensions, String key, Consumer<String> consumer) {
+        Optional.ofNullable(extensions.getExtension(key))
+                // there seems to be a bug in the cloudevents sdk so that, when a extension attributes is null,
+                // it returns a "null" String instead of a real null object
+                .filter(obj -> !("null".equals(obj)))
+                .map(Object::toString)
+                .ifPresent(consumer);
     }
 
     @Override
@@ -107,5 +119,35 @@ public class KogitoExtension implements Extension {
 
     public void setDmnEvaluateDecision(String dmnEvaluateDecision) {
         this.dmnEvaluateDecision = dmnEvaluateDecision;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        KogitoExtension that = (KogitoExtension) o;
+        return Objects.equals(executionId, that.executionId) &&
+                Objects.equals(dmnModelName, that.dmnModelName) &&
+                Objects.equals(dmnModelNamespace, that.dmnModelNamespace) &&
+                Objects.equals(dmnEvaluateDecision, that.dmnEvaluateDecision);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(executionId, dmnModelName, dmnModelNamespace, dmnEvaluateDecision);
+    }
+
+    @Override
+    public String toString() {
+        return "KogitoExtension{" +
+                "executionId='" + executionId + '\'' +
+                ", dmnModelName='" + dmnModelName + '\'' +
+                ", dmnModelNamespace='" + dmnModelNamespace + '\'' +
+                ", dmnEvaluateDecision='" + dmnEvaluateDecision + '\'' +
+                '}';
     }
 }

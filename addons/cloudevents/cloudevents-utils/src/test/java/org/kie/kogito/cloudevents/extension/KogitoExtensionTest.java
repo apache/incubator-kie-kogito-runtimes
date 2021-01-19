@@ -23,6 +23,7 @@ import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.provider.ExtensionProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.cloudevents.CloudEventUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,7 +41,7 @@ public class KogitoExtensionTest {
 
     @BeforeAll
     static void registerExtension() {
-        ExtensionProvider.getInstance().registerExtension(KogitoExtension.class, KogitoExtension::new);
+        KogitoExtension.register();
     }
 
     @Test
@@ -81,8 +82,6 @@ public class KogitoExtensionTest {
                 .getInstance()
                 .parseExtension(KogitoExtension.class, event);
 
-        System.err.println(kogitoExtension);
-
         assertNotNull(kogitoExtension);
         assertEquals(TEST_EXECUTION_ID, kogitoExtension.getExecutionId());
         assertEquals(TEST_DMN_MODEL_NAME, kogitoExtension.getDmnModelName());
@@ -90,4 +89,35 @@ public class KogitoExtensionTest {
         assertEquals(TEST_DMN_EVALUATE_DECISION, kogitoExtension.getDmnEvaluateDecision());
     }
 
+    @Test
+    void writeAndParseExtensionWithEncoding() {
+        KogitoExtension inputKogitoExt = new KogitoExtension();
+        inputKogitoExt.setExecutionId(TEST_EXECUTION_ID);
+        inputKogitoExt.setDmnModelName(TEST_DMN_MODEL_NAME);
+        inputKogitoExt.setDmnModelNamespace(TEST_DMN_MODEL_NAMESPACE);
+        inputKogitoExt.setDmnEvaluateDecision(TEST_DMN_EVALUATE_DECISION);
+
+        CloudEvent inputEvent = CloudEventBuilder
+                .v1()
+                .withId(TEST_ID)
+                .withSource(URI.create(TEST_SOURCE))
+                .withType(TEST_TYPE)
+                .withExtension(inputKogitoExt)
+                .withData("\"TEST_DATA\"".getBytes())
+                .build();
+
+        String inputEventJson = CloudEventUtils.encode(inputEvent).orElseThrow(IllegalStateException::new);
+
+        CloudEvent outputEvent = CloudEventUtils.decode(inputEventJson).orElseThrow(IllegalStateException::new);
+
+        KogitoExtension outputKogitoExt = ExtensionProvider
+                .getInstance()
+                .parseExtension(KogitoExtension.class, outputEvent);
+
+        assertNotNull(outputKogitoExt);
+        assertEquals(TEST_EXECUTION_ID, outputKogitoExt.getExecutionId());
+        assertEquals(TEST_DMN_MODEL_NAME, outputKogitoExt.getDmnModelName());
+        assertEquals(TEST_DMN_MODEL_NAMESPACE, outputKogitoExt.getDmnModelNamespace());
+        assertEquals(TEST_DMN_EVALUATE_DECISION, outputKogitoExt.getDmnEvaluateDecision());
+    }
 }

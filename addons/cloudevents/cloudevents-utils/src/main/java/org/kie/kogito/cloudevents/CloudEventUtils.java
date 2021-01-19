@@ -21,13 +21,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
+import io.cloudevents.Extension;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.jackson.JsonFormat;
 import org.slf4j.Logger;
@@ -41,21 +45,27 @@ public class CloudEventUtils {
             .orElseThrow(IllegalStateException::new);
 
     public static <E> Optional<CloudEvent> build(String id, URI source, E data, Class<E> dataType) {
-        return build(id, source, null, data, dataType);
+        return build(id, source, dataType.getName(), null, data);
     }
 
-    public static <E> Optional<CloudEvent> build(String id, URI source, String subject, E data, Class<E> dataType) {
+    public static Optional<CloudEvent> build(String id, URI source, String type, String subject, Object data, Extension... extensions) {
         try {
             byte[] bytes = Mapper.mapper().writeValueAsBytes(data);
 
             CloudEventBuilder builder = CloudEventBuilder.v1()
-                    .withType(dataType.getName())
                     .withId(id)
                     .withSource(source)
+                    .withType(type)
                     .withData(bytes);
 
             if (subject != null) {
                 builder.withSubject(subject);
+            }
+
+            if (extensions != null) {
+                for (Extension extension : extensions) {
+                    builder.withExtension(extension);
+                }
             }
 
             return Optional.of(builder.build());
@@ -88,6 +98,16 @@ public class CloudEventUtils {
             return Optional.ofNullable(Mapper.mapper().readValue(event.getData(), dataClass));
         } catch (IOException e) {
             LOG.error("Unable to decode CloudEvent data to " + dataClass.getName(), e);
+            return Optional.empty();
+        }
+    }
+
+    public static <K, V> Optional<Map<K, V>> decodeMapData(CloudEvent event, Class<K> keyClass, Class<V> valueClass) {
+        try {
+            JavaType mapType = Mapper.mapper().getTypeFactory().constructMapType(HashMap.class, keyClass, valueClass);
+            return Optional.ofNullable(Mapper.mapper().readValue(event.getData(), mapType));
+        } catch (IOException e) {
+            LOG.error("Unable to decode CloudEvent data to Map<" + keyClass.getName() + "," + valueClass.getName() + ">", e);
             return Optional.empty();
         }
     }

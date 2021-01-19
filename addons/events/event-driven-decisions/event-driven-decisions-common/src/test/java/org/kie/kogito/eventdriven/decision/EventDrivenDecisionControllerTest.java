@@ -18,16 +18,18 @@ package org.kie.kogito.eventdriven.decision;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.cloudevents.CloudEvent;
+import io.cloudevents.core.provider.ExtensionProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.cloudevents.CloudEventUtils;
+import org.kie.kogito.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
@@ -41,11 +43,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
 import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAME;
 import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAMESPACE;
+import static org.kie.kogito.eventdriven.decision.EventDrivenDecisionController.REQUEST_EVENT_TYPE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -58,16 +60,25 @@ import static org.mockito.Mockito.when;
 
 class EventDrivenDecisionControllerTest {
 
-    private static final String CLOUDEVENT_OK_DATA_PLACEHOLDER = "%%DATA_EVENT%%";
-    private static final String CLOUDEVENT_OK_ID = "a89b61a2-5644-487a-8a86-144855c5dce8";
-    private static final String CLOUDEVENT_OK_SOURCE = "SomeEventSource";
-    private static final String CLOUDEVENT_OK_TEMPLATE = "" +
+    private static final String MODEL_NAME_PLACEHOLDER = "%%MODEL_NAME%%";
+    private static final String MODEL_NAMESPACE_PLACEHOLDER = "%%MODEL_NAMESPACE%%";
+    private static final String EVALUATE_DECISION_PLACEHOLDER = "%%EVALUATE_DECISION%%";
+    private static final String DATA_PLACEHOLDER = "%%DATA%%";
+
+    private static final String CLOUDEVENT_ID = "a89b61a2-5644-487a-8a86-144855c5dce8";
+    private static final String CLOUDEVENT_SOURCE = "SomeEventSource";
+    private static final String CLOUDEVENT_SUBJECT = "TheSubject";
+    private static final String CLOUDEVENT_TEMPLATE = "" +
             "{\n" +
             "    \"specversion\": \"1.0\",\n" +
-            "    \"id\": \"" + CLOUDEVENT_OK_ID + "\",\n" +
-            "    \"source\": \"" + CLOUDEVENT_OK_SOURCE + "\",\n" +
-            "    \"type\": \"org.kie.kogito.eventdriven.decision.DecisionRequestEvent\",\n" +
-            "    \"data\": " + CLOUDEVENT_OK_DATA_PLACEHOLDER + "\n" +
+            "    \"id\": \"" + CLOUDEVENT_ID + "\",\n" +
+            "    \"source\": \"" + CLOUDEVENT_SOURCE + "\",\n" +
+            "    \"type\": \"" + REQUEST_EVENT_TYPE + "\",\n" +
+            "    \"subject\": \"" + CLOUDEVENT_SUBJECT + "\",\n" +
+            "    \"" + KogitoExtension.KOGITO_DMN_MODEL_NAME + "\": " + MODEL_NAME_PLACEHOLDER + ",\n" +
+            "    \"" + KogitoExtension.KOGITO_DMN_MODEL_NAMESPACE + "\": " + MODEL_NAMESPACE_PLACEHOLDER + ",\n" +
+            "    \"" + KogitoExtension.KOGITO_DMN_EVALUATE_DECISION + "\": " + EVALUATE_DECISION_PLACEHOLDER + ",\n" +
+            "    \"data\": " + DATA_PLACEHOLDER + "\n" +
             "}";
 
     private static final String CLOUDEVENT_IGNORED = "" +
@@ -75,56 +86,47 @@ class EventDrivenDecisionControllerTest {
             "    \"specversion\": \"1.0\",\n" +
             "    \"id\": \"55c5dce8-5644-487a-8a86-1448a89b61a2\",\n" +
             "    \"source\": \"SomeOtherEventSource\",\n" +
-            "    \"type\": \"com.example.SomeCloudEvent\",\n" +
+            "    \"type\": \"SomeType\",\n" +
             "    \"data\": {}\n" +
             "}";
 
-    private static final List<String> DATA_EVENT_BAD_REQUEST = Stream.of(
-            "{}",
-            "{\"modelName\": \"aName\"}",
-            "{\"modelNamespace\": \"aNamespace\"}",
-            "{\"inputContext\": {}}",
-            "{\"modelName\": \"aName\",\"modelNamespace\": \"aNamespace\"}",
-            "{\"modelName\": \"aName\",\"inputContext\": {}}",
-            "{\"modelNamespace\": \"aNamespace\",\"inputContext\": {}}"
+    private static final List<RequestData> REQUEST_DATA_BAD_REQUEST = Stream.of(
+            new RequestData(null, null, null, null),
+            new RequestData("aName", null, null, null),
+            new RequestData(null, "aNamespace", null, null),
+            new RequestData(null, null, null, "{}"),
+            new RequestData("aName", "aNamespace", null, null),
+            new RequestData("aName", null, null, "{}"),
+            new RequestData(null, "aNamespace", null, "{}")
     ).collect(Collectors.toList());
 
-    private static final String DATA_EVENT_NOT_FOUND = "{\"modelName\": \"aName\",\"modelNamespace\": \"aNamespace\",\"inputContext\": {}}";
+    private static final RequestData REQUEST_DATA_MODEL_NOT_FOUND = new RequestData("aName", "aNamespace", null, "{}");
 
-    private static final String DATA_EVENT_OK_EVALUATE_ALL = "" +
-            "{\n" +
-            "    \"modelName\": \"Traffic Violation\",\n" +
-            "    \"modelNamespace\": \"https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF\",\n" +
-            "    \"inputContext\": {\n" +
-            "        \"Driver\": {\n" +
-            "            \"Age\": 25,\n" +
-            "            \"Points\": 13\n" +
-            "        },\n" +
-            "        \"Violation\": {\n" +
-            "            \"Type\": \"speed\",\n" +
-            "            \"Actual Speed\": 115,\n" +
-            "            \"Speed Limit\": 100\n" +
-            "        }\n" +
-            "    }\n" +
-            "}";
+    private static final RequestData REQUEST_DATA_NULL_CONTEXT = new RequestData(MODEL_NAME, MODEL_NAMESPACE, null, null);
 
-    private static final String DATA_EVENT_OK_EVALUATE_DECISION_SERVICE = "" +
+    private static final RequestData REQUEST_DATA_EVALUATE_ALL = new RequestData(MODEL_NAME, MODEL_NAMESPACE, null, "" +
             "{\n" +
-            "    \"modelName\": \"Traffic Violation\",\n" +
-            "    \"modelNamespace\": \"https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF\",\n" +
-            "    \"decisionServiceName\": \"" + DECISION_SERVICE_NODE_NAME + "\",\n" +
-            "    \"inputContext\": {\n" +
-            "        \"Driver\": {\n" +
-            "            \"Age\": 25,\n" +
-            "            \"Points\": 13\n" +
-            "        },\n" +
-            "        \"Violation\": {\n" +
-            "            \"Type\": \"speed\",\n" +
-            "            \"Actual Speed\": 115,\n" +
-            "            \"Speed Limit\": 100\n" +
-            "        }\n" +
+            "    \"Driver\": {\n" +
+            "        \"Age\": 25,\n" +
+            "        \"Points\": 13\n" +
+            "    },\n" +
+            "    \"Violation\": {\n" +
+            "        \"Type\": \"speed\",\n" +
+            "        \"Actual Speed\": 115,\n" +
+            "        \"Speed Limit\": 100\n" +
             "    }\n" +
-            "}";
+            "}"
+    );
+
+    private static final RequestData REQUEST_DATA_EVALUATE_DECISION_SERVICE = new RequestData(MODEL_NAME, MODEL_NAMESPACE, DECISION_SERVICE_NODE_NAME, "" +
+            "{\n" +
+            "    \"Violation\": {\n" +
+            "        \"Type\": \"speed\",\n" +
+            "        \"Actual Speed\": 115,\n" +
+            "        \"Speed Limit\": 100\n" +
+            "    }\n" +
+            "}"
+    );
 
     private static final String TEST_EXECUTION_ID = "11ecbb6f-fb25-4597-88c8-ac7976efe078";
 
@@ -137,6 +139,7 @@ class EventDrivenDecisionControllerTest {
 
     @BeforeAll
     static void beforeAll() {
+        ExtensionProvider.getInstance().registerExtension(KogitoExtension.class, KogitoExtension::new);
         runtime = DecisionTestUtils.createDMNRuntime();
     }
 
@@ -184,16 +187,14 @@ class EventDrivenDecisionControllerTest {
     }
 
     @Test
-    void testHandleEventWithValidCloudEventWithNullRequest() {
-        controller.handleEvent(cloudEventOkWith("null"));
-        verify(eventEmitterMock, never()).emit(any());
+    void testHandleEventWithValidCloudEventWithNullDataProducingBadRequest() {
+        testCloudEventEmittedWithError(REQUEST_DATA_NULL_CONTEXT, DecisionResponseError.BAD_REQUEST);
     }
 
     @Test
     void testHandleEventWithValidCloudEventProducingOkEvaluateAll() {
-        testCloudEventEmitted(DATA_EVENT_OK_EVALUATE_ALL, DecisionResponseStatus.OK, (cloudEvent, responseEvent) -> {
-            assertNull(responseEvent.getErrorMessage());
-            assertNull(responseEvent.getExecutionId());
+        testCloudEventEmittedOk(REQUEST_DATA_EVALUATE_ALL, (cloudEvent, kogitoExtension, responseEvent) -> {
+            assertNull(kogitoExtension.getExecutionId());
             verify(decisionModelSpy).evaluateAll(notNull());
             verify(decisionModelSpy, never()).evaluateDecisionService(any(), any());
         });
@@ -202,9 +203,8 @@ class EventDrivenDecisionControllerTest {
     @Test
     void testHandleEventWithValidCloudEventWithExecutionIdProducingOkEvaluateAll() {
         mockDecisionModelWithExecutionIdSupplier();
-        testCloudEventEmitted(DATA_EVENT_OK_EVALUATE_ALL, DecisionResponseStatus.OK, (cloudEvent, responseEvent) -> {
-            assertNull(responseEvent.getErrorMessage());
-            assertEquals(TEST_EXECUTION_ID, responseEvent.getExecutionId());
+        testCloudEventEmittedOk(REQUEST_DATA_EVALUATE_ALL, (cloudEvent, kogitoExtension, responseEvent) -> {
+            assertEquals(TEST_EXECUTION_ID, kogitoExtension.getExecutionId());
             verify(decisionModelSpy).evaluateAll(notNull());
             verify(decisionModelSpy, never()).evaluateDecisionService(any(), any());
         });
@@ -212,9 +212,8 @@ class EventDrivenDecisionControllerTest {
 
     @Test
     void testHandleEventWithValidCloudEventProducingOkEvaluateDecisionService() {
-        testCloudEventEmitted(DATA_EVENT_OK_EVALUATE_DECISION_SERVICE, DecisionResponseStatus.OK, (cloudEvent, responseEvent) -> {
-            assertNull(responseEvent.getErrorMessage());
-            assertNull(responseEvent.getExecutionId());
+        testCloudEventEmittedOk(REQUEST_DATA_EVALUATE_DECISION_SERVICE, (cloudEvent, kogitoExtension, responseEvent) -> {
+            assertNull(kogitoExtension.getExecutionId());
             verify(decisionModelSpy, never()).evaluateAll(any());
             verify(decisionModelSpy).evaluateDecisionService(notNull(), notNull());
         });
@@ -223,9 +222,8 @@ class EventDrivenDecisionControllerTest {
     @Test
     void testHandleEventWithValidCloudEventWithExecutionIdProducingOkEvaluateDecisionService() {
         mockDecisionModelWithExecutionIdSupplier();
-        testCloudEventEmitted(DATA_EVENT_OK_EVALUATE_DECISION_SERVICE, DecisionResponseStatus.OK, (cloudEvent, responseEvent) -> {
-            assertNull(responseEvent.getErrorMessage());
-            assertEquals(TEST_EXECUTION_ID, responseEvent.getExecutionId());
+        testCloudEventEmittedOk(REQUEST_DATA_EVALUATE_DECISION_SERVICE, (cloudEvent, kogitoExtension, responseEvent) -> {
+            assertEquals(TEST_EXECUTION_ID, kogitoExtension.getExecutionId());
             verify(decisionModelSpy, never()).evaluateAll(any());
             verify(decisionModelSpy).evaluateDecisionService(notNull(), notNull());
         });
@@ -233,58 +231,47 @@ class EventDrivenDecisionControllerTest {
 
     @Test
     void testHandleEventWithValidCloudEventProducingBadRequest() {
-        for (String badRequestData : DATA_EVENT_BAD_REQUEST) {
-            testCloudEventEmitted(badRequestData, DecisionResponseStatus.BAD_REQUEST, (cloudEvent, responseEvent) -> {
-                assertNotNull(responseEvent.getErrorMessage());
-                assertNull(responseEvent.getExecutionId());
-                verify(decisionModelSpy, never()).evaluateAll(any());
-                verify(decisionModelSpy, never()).evaluateDecisionService(any(), any());
-            });
+        for (RequestData badRequestData : REQUEST_DATA_BAD_REQUEST) {
+            testCloudEventEmittedWithError(badRequestData, DecisionResponseError.BAD_REQUEST);
         }
     }
 
     @Test
     void testHandleEventWithValidCloudEventWithExecutionIdProducingBadRequest() {
         mockDecisionModelWithExecutionIdSupplier();
-        for (String badRequestData : DATA_EVENT_BAD_REQUEST) {
-            testCloudEventEmitted(badRequestData, DecisionResponseStatus.BAD_REQUEST, (cloudEvent, responseEvent) -> {
-                assertNotNull(responseEvent.getErrorMessage());
-                assertNull(responseEvent.getExecutionId());
-                verify(decisionModelSpy, never()).evaluateAll(any());
-                verify(decisionModelSpy, never()).evaluateDecisionService(any(), any());
-            });
+        for (RequestData badRequestData : REQUEST_DATA_BAD_REQUEST) {
+            testCloudEventEmittedWithError(badRequestData, DecisionResponseError.BAD_REQUEST);
         }
     }
 
     @Test
     void testHandleEventWithValidCloudEventProducingNotFound() {
-        testCloudEventEmitted(DATA_EVENT_NOT_FOUND, DecisionResponseStatus.NOT_FOUND, (cloudEvent, responseEvent) -> {
-            assertNotNull(responseEvent.getErrorMessage());
-            assertNull(responseEvent.getExecutionId());
-            verify(decisionModelSpy, never()).evaluateAll(any());
-            verify(decisionModelSpy, never()).evaluateDecisionService(any(), any());
-        });
+        testCloudEventEmittedWithError(REQUEST_DATA_MODEL_NOT_FOUND, DecisionResponseError.MODEL_NOT_FOUND);
     }
 
     @Test
     void testHandleEventWithValidCloudEventWithExecutionIdProducingNotFound() {
         mockDecisionModelWithExecutionIdSupplier();
-        testCloudEventEmitted(DATA_EVENT_NOT_FOUND, DecisionResponseStatus.NOT_FOUND, (cloudEvent, responseEvent) -> {
-            assertNotNull(responseEvent.getErrorMessage());
-            assertNull(responseEvent.getExecutionId());
-            verify(decisionModelSpy, never()).evaluateAll(any());
-            verify(decisionModelSpy, never()).evaluateDecisionService(any(), any());
-        });
+        testCloudEventEmittedWithError(REQUEST_DATA_MODEL_NOT_FOUND, DecisionResponseError.MODEL_NOT_FOUND);
     }
 
     private void assertSubject(CloudEvent event) {
         assertNotNull(event.getSubject());
-        assertTrue(event.getSubject().contains("\"id\":\"" + CLOUDEVENT_OK_ID + "\""));
-        assertTrue(event.getSubject().contains("\"source\":\"" + CLOUDEVENT_OK_SOURCE + "\""));
+        assertEquals(CLOUDEVENT_SUBJECT, event.getSubject());
     }
 
-    private String cloudEventOkWith(String data) {
-        return CLOUDEVENT_OK_TEMPLATE.replace(CLOUDEVENT_OK_DATA_PLACEHOLDER, data);
+    private String cloudEventOkWith(RequestData requestData) {
+        return CLOUDEVENT_TEMPLATE
+                .replace(MODEL_NAME_PLACEHOLDER, format(requestData.getModelName()))
+                .replace(MODEL_NAMESPACE_PLACEHOLDER, format(requestData.getModelNamespace()))
+                .replace(EVALUATE_DECISION_PLACEHOLDER, format(requestData.getDecision()))
+                .replace(DATA_PLACEHOLDER, Optional.ofNullable(requestData.getData()).orElse("null"));
+    }
+
+    private String format(String input) {
+        return Optional.ofNullable(input)
+                .map(i -> "\"" + i + "\"")
+                .orElse("null");
     }
 
     private void mockDecisionModel() {
@@ -297,10 +284,10 @@ class EventDrivenDecisionControllerTest {
         when(decisionModelsMock.getDecisionModel(eq(MODEL_NAMESPACE), eq(DecisionTestUtils.MODEL_NAME))).thenReturn(decisionModelSpy);
     }
 
-    private void testCloudEventEmitted(String data, DecisionResponseStatus status, BiConsumer<CloudEvent, DecisionResponseEvent> callback) {
+    private <T> void testCloudEventEmitted(RequestData requestData, Class<T> responseDataClass, TriConsumer<CloudEvent, KogitoExtension, T> callback) {
         try {
             ArgumentCaptor<String> eventCaptor = ArgumentCaptor.forClass(String.class);
-            controller.handleEvent(cloudEventOkWith(data));
+            controller.handleEvent(cloudEventOkWith(requestData));
             verify(eventEmitterMock).emit(eventCaptor.capture());
 
             String emittedCloudEventJson = eventCaptor.getValue();
@@ -308,24 +295,82 @@ class EventDrivenDecisionControllerTest {
             Optional<CloudEvent> optEmittedCloudEvent = CloudEventUtils.decode(emittedCloudEventJson);
             if (optEmittedCloudEvent.isPresent()) {
                 CloudEvent emittedCloudEvent = optEmittedCloudEvent.get();
-                Optional<DecisionResponseEvent> optResponseEvent = CloudEventUtils.decodeData(emittedCloudEvent, DecisionResponseEvent.class);
-                if (optResponseEvent.isPresent()) {
-                    DecisionResponseEvent responseEvent = optResponseEvent.get();
 
-                    assertSame(status, responseEvent.getStatus());
-                    assertSubject(emittedCloudEvent);
+                KogitoExtension kogitoExtension = ExtensionProvider.getInstance()
+                        .parseExtension(KogitoExtension.class, emittedCloudEvent);
 
-                    if (callback != null) {
-                        callback.accept(emittedCloudEvent, responseEvent);
+                if (kogitoExtension != null) {
+                    assertEquals(requestData.getModelName(), kogitoExtension.getDmnModelName());
+                    assertEquals(requestData.getModelNamespace(), kogitoExtension.getDmnModelNamespace());
+                    assertEquals(requestData.getDecision(), kogitoExtension.getDmnEvaluateDecision());
+
+                    Optional<T> optResponseEvent = CloudEventUtils.decodeData(emittedCloudEvent, responseDataClass);
+                    if (optResponseEvent.isPresent()) {
+                        assertSubject(emittedCloudEvent);
+                        if (callback != null) {
+                            callback.accept(emittedCloudEvent, kogitoExtension, optResponseEvent.get());
+                        }
+                    } else {
+                        fail("Can't decode emitted CloudEvent data of: " + emittedCloudEventJson);
                     }
                 } else {
-                    fail("Can't decode emitted CloudEvent data of: " + emittedCloudEventJson);
+                    fail("No Kogito extension in emitted CloudEvent: " + emittedCloudEventJson);
                 }
             } else {
                 fail("Can't decode emitted CloudEvent");
             }
         } finally {
             reset(eventEmitterMock);
+        }
+    }
+
+    private void testCloudEventEmittedOk(RequestData requestData, TriConsumer<CloudEvent, KogitoExtension, JsonNode> callback) {
+        testCloudEventEmitted(requestData, JsonNode.class, callback);
+    }
+
+    private void testCloudEventEmittedWithError(RequestData requestData, DecisionResponseError expectedError) {
+        testCloudEventEmitted(requestData, DecisionResponseError.class, (cloudEvent, kogitoExtension, data) -> {
+            assertSame(expectedError, data);
+            assertNull(kogitoExtension.getExecutionId());
+            verify(decisionModelSpy, never()).evaluateAll(any());
+            verify(decisionModelSpy, never()).evaluateDecisionService(any(), any());
+        });
+    }
+
+    @FunctionalInterface
+    private interface TriConsumer<T, U, V> {
+
+        void accept(T t, U u, V v);
+    }
+
+    private static class RequestData {
+
+        private final String modelName;
+        private final String modelNamespace;
+        private final String decision;
+        private final String data;
+
+        public RequestData(String modelName, String modelNamespace, String decision, String data) {
+            this.modelName = modelName;
+            this.modelNamespace = modelNamespace;
+            this.decision = decision;
+            this.data = data;
+        }
+
+        public String getModelName() {
+            return modelName;
+        }
+
+        public String getModelNamespace() {
+            return modelNamespace;
+        }
+
+        public String getDecision() {
+            return decision;
+        }
+
+        public String getData() {
+            return data;
         }
     }
 }

@@ -16,8 +16,7 @@
 
 package org.kie.kogito.eventdriven.decision;
 
-public enum DecisionResponseStatus {
-    OK,
+public enum DecisionResponseError {
     BAD_REQUEST,
-    NOT_FOUND
+    MODEL_NOT_FOUND
 }
