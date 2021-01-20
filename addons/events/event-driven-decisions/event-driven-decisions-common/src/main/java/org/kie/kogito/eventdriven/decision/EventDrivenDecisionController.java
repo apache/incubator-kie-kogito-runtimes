@@ -159,7 +159,7 @@ public class EventDrivenDecisionController {
         }
 
         kogitoExtension.setExecutionId(ctx.getExecutionId());
-        return CloudEventUtils.build(id, source, RESPONSE_EVENT_TYPE, subject, ctx.getResponseDmnResult(), kogitoExtension);
+        return CloudEventUtils.build(id, source, RESPONSE_EVENT_TYPE, subject, ctx.getResponseDmnResult().getDmnContext(), kogitoExtension);
     }
 
     private URI buildResponseCloudEventSource(EvaluationContext ctx) {
