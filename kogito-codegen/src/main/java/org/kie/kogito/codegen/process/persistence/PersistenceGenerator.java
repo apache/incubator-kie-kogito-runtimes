@@ -62,9 +62,9 @@ public class PersistenceGenerator extends AbstractGenerator {
     public static final String INFINISPAN_PERSISTENCE_TYPE = "infinispan";
     public static final String DEFAULT_PERSISTENCE_TYPE = INFINISPAN_PERSISTENCE_TYPE;
     public static final String MONGODB_PERSISTENCE_TYPE = "mongodb";
-    
-    private static final String TEMPLATE_NAME = "templateName";
-    private static final String PATH_NAME = "path";
+
+    protected static final String TEMPLATE_NAME = "templateName";
+    protected static final String PATH_NAME = "path";
 
     private static final String KOGITO_PERSISTENCE_FS_PATH_PROP = "kogito.persistence.filesystem.path";
     
