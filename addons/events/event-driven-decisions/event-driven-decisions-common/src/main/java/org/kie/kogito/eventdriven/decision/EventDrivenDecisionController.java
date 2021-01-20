@@ -17,6 +17,7 @@
 package org.kie.kogito.eventdriven.decision;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,6 +25,7 @@ import java.util.UUID;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
 import org.kie.dmn.api.core.DMNContext;
+import org.kie.dmn.api.core.DMNResult;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.conf.ConfigBean;
@@ -31,7 +33,6 @@ import org.kie.kogito.decision.DecisionExecutionIdUtils;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
-import org.kie.kogito.dmn.rest.DMNResult;
 import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class EventDrivenDecisionController {
 
     public static final String REQUEST_EVENT_TYPE = "DecisionRequest";
     public static final String RESPONSE_EVENT_TYPE = "DecisionResponse";
+    public static final String RESPONSE_FULL_EVENT_TYPE = "DecisionResponseFull";
     public static final String RESPONSE_ERROR_EVENT_TYPE = "DecisionResponseError";
 
     private static final Logger LOG = LoggerFactory.getLogger(EventDrivenDecisionController.class);
@@ -112,7 +114,7 @@ public class EventDrivenDecisionController {
             return ctx;
         }
 
-        Optional<DecisionModel> optDecisionModel = getDecisionModel(ctx.getModelNamespace(), ctx.getModelName());
+        Optional<DecisionModel> optDecisionModel = getDecisionModel(ctx.getRequestModelNamespace(), ctx.getRequestModelName());
         if (!optDecisionModel.isPresent()) {
             ctx.setResponseError(DecisionResponseError.MODEL_NOT_FOUND);
             return ctx;
@@ -121,16 +123,11 @@ public class EventDrivenDecisionController {
         DecisionModel model = optDecisionModel.get();
         DMNContext context = DMNJSONUtils.ctx(model, ctx.getRequestData());
 
-        org.kie.dmn.api.core.DMNResult apiResult = ctx.isEvaluateDecisionServiceRequest()
-                ? model.evaluateDecisionService(context, ctx.getDecisionServiceToBeEvaluated())
+        DMNResult apiResult = ctx.isEvaluateDecisionServiceRequest()
+                ? model.evaluateDecisionService(context, ctx.getRequestDecisionServiceToEvaluate())
                 : model.evaluateAll(context);
 
-        String executionId = DecisionExecutionIdUtils.get(apiResult.getContext());
-        ctx.setExecutionId(executionId);
-
-        DMNResult result = new DMNResult(ctx.getModelNamespace(), ctx.getModelName(), apiResult);
-        ctx.setResponseDmnResult(result);
-
+        ctx.setResponseDmnResult(apiResult);
         return ctx;
     }
 
@@ -149,23 +146,43 @@ public class EventDrivenDecisionController {
         String subject = ctx.getRequestCloudEvent().getSubject();
 
         KogitoExtension kogitoExtension = new KogitoExtension();
-        kogitoExtension.setDmnModelName(ctx.getModelName());
-        kogitoExtension.setDmnModelNamespace(ctx.getModelNamespace());
-        kogitoExtension.setDmnEvaluateDecision(ctx.getDecisionServiceToBeEvaluated());
+        kogitoExtension.setDmnModelName(ctx.getRequestModelName());
+        kogitoExtension.setDmnModelNamespace(ctx.getRequestModelNamespace());
+        kogitoExtension.setDmnEvaluateDecision(ctx.getRequestDecisionServiceToEvaluate());
 
         if (ctx.isResponseError()) {
             String data = Optional.ofNullable(ctx.getResponseError()).map(DecisionResponseError::name).orElse(null);
             return CloudEventUtils.build(id, source, RESPONSE_ERROR_EVENT_TYPE, subject, data, kogitoExtension);
         }
 
-        kogitoExtension.setExecutionId(ctx.getExecutionId());
-        return CloudEventUtils.build(id, source, RESPONSE_EVENT_TYPE, subject, ctx.getResponseDmnResult().getDmnContext(), kogitoExtension);
+        kogitoExtension.setExecutionId(DecisionExecutionIdUtils.get(ctx.getResponseDmnResult().getContext()));
+
+        org.kie.kogito.dmn.rest.DMNResult restResult = new org.kie.kogito.dmn.rest.DMNResult(ctx.getRequestModelNamespace(), ctx.getRequestModelName(), ctx.getResponseDmnResult());
+
+        if (ctx.isRequestFullResult()) {
+            if (ctx.isRequestFilteredContext()) {
+                restResult.setDmnContext(filterContext(restResult.getDmnContext(), ctx.requestData));
+            }
+            return CloudEventUtils.build(id, source, RESPONSE_FULL_EVENT_TYPE, subject, restResult, kogitoExtension);
+        }
+
+        Map<String, Object> data = ctx.isRequestFilteredContext()
+                ? filterContext(restResult.getDmnContext(), ctx.requestData)
+                : restResult.getDmnContext();
+
+        return CloudEventUtils.build(id, source, RESPONSE_EVENT_TYPE, subject, data, kogitoExtension);
+    }
+
+    private Map<String, Object> filterContext(Map<String, Object> values, Map<String, Object> inputs) {
+        return values.entrySet().stream()
+                .filter(entry -> !inputs.containsKey(entry.getKey()))
+                .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll);
     }
 
     private URI buildResponseCloudEventSource(EvaluationContext ctx) {
         return ctx.isEvaluateDecisionServiceRequest()
-                ? CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.getModelName(), ctx.getDecisionServiceToBeEvaluated())
-                : CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.getModelName());
+                ? CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.getRequestModelName(), ctx.getRequestDecisionServiceToEvaluate())
+                : CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.getRequestModelName());
     }
 
     private static class EvaluationContext {
@@ -173,39 +190,46 @@ public class EventDrivenDecisionController {
         private final CloudEvent requestCloudEvent;
         private final Map<String, Object> requestData;
 
-        private final String modelName;
-        private final String modelNamespace;
-        private final String decisionServiceToBeEvaluated;
+        private final String requestModelName;
+        private final String requestModelNamespace;
+        private final String requestDecisionServiceToEvaluate;
+        private final boolean requestFullResult;
+        private final boolean requestFilteredContext;
         private final boolean validRequest;
         private final boolean evaluateDecisionServiceRequest;
 
         private DecisionResponseError responseError;
         private DMNResult responseDmnResult;
-        private String executionId;
 
         public EvaluationContext(CloudEvent requestCloudEvent, KogitoExtension requestKogitoExtension, Map<String, Object> requestData) {
             this.requestCloudEvent = requestCloudEvent;
             this.requestData = requestData;
 
-            this.modelName = Optional.ofNullable(requestKogitoExtension)
+            this.requestModelName = Optional.ofNullable(requestKogitoExtension)
                     .map(KogitoExtension::getDmnModelName)
                     .orElse(null);
-            this.modelNamespace = Optional.ofNullable(requestKogitoExtension)
+            this.requestModelNamespace = Optional.ofNullable(requestKogitoExtension)
                     .map(KogitoExtension::getDmnModelNamespace)
                     .orElse(null);
-            this.decisionServiceToBeEvaluated = Optional.ofNullable(requestKogitoExtension)
+            this.requestDecisionServiceToEvaluate = Optional.ofNullable(requestKogitoExtension)
                     .map(KogitoExtension::getDmnEvaluateDecision)
                     .orElse(null);
+            this.requestFullResult = Optional.ofNullable(requestKogitoExtension)
+                    .map(KogitoExtension::isDmnFullResult)
+                    .orElse(false);
+            this.requestFilteredContext = Optional.ofNullable(requestKogitoExtension)
+                    .map(KogitoExtension::isDmnFilteredCtx)
+                    .orElse(false);
 
             this.validRequest = requestCloudEvent != null
                     && requestKogitoExtension != null
-                    && modelName != null && !modelName.isEmpty()
-                    && modelNamespace != null && !modelNamespace.isEmpty()
+                    && requestModelName != null && !requestModelName.isEmpty()
+                    && requestModelNamespace != null && !requestModelNamespace.isEmpty()
                     && requestData != null;
 
             this.evaluateDecisionServiceRequest = validRequest
-                    && decisionServiceToBeEvaluated != null
-                    && !decisionServiceToBeEvaluated.isEmpty();
+                    && requestDecisionServiceToEvaluate != null
+                    && !requestDecisionServiceToEvaluate.isEmpty();
         }
 
         public boolean isValidRequest() {
@@ -216,10 +240,6 @@ public class EventDrivenDecisionController {
             return evaluateDecisionServiceRequest;
         }
 
-        boolean isResponseError() {
-            return responseDmnResult == null;
-        }
-
         public CloudEvent getRequestCloudEvent() {
             return requestCloudEvent;
         }
@@ -228,16 +248,28 @@ public class EventDrivenDecisionController {
             return requestData;
         }
 
-        String getModelName() {
-            return modelName;
+        String getRequestModelName() {
+            return requestModelName;
         }
 
-        String getModelNamespace() {
-            return modelNamespace;
+        String getRequestModelNamespace() {
+            return requestModelNamespace;
         }
 
-        String getDecisionServiceToBeEvaluated() {
-            return decisionServiceToBeEvaluated;
+        String getRequestDecisionServiceToEvaluate() {
+            return requestDecisionServiceToEvaluate;
+        }
+
+        public boolean isRequestFullResult() {
+            return requestFullResult;
+        }
+
+        public boolean isRequestFilteredContext() {
+            return requestFilteredContext;
+        }
+
+        boolean isResponseError() {
+            return responseDmnResult == null;
         }
 
         public DecisionResponseError getResponseError() {
@@ -254,14 +286,6 @@ public class EventDrivenDecisionController {
 
         public void setResponseDmnResult(DMNResult responseDmnResult) {
             this.responseDmnResult = responseDmnResult;
-        }
-
-        public String getExecutionId() {
-            return executionId;
-        }
-
-        public void setExecutionId(String executionId) {
-            this.executionId = executionId;
         }
     }
 }
