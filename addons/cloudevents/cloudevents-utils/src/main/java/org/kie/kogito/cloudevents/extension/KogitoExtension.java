@@ -35,18 +35,24 @@ public class KogitoExtension implements Extension {
     public static final String KOGITO_DMN_MODEL_NAME = "kogitodmnmodelname";
     public static final String KOGITO_DMN_MODEL_NAMESPACE = "kogitodmnmodelnamespace";
     public static final String KOGITO_DMN_EVALUATE_DECISION = "kogitodmnevaldecision";
+    public static final String KOGITO_DMN_FULL_RESULT = "kogitodmnfullresult";
+    public static final String KOGITO_DMN_FILTERED_CTX = "kogitodmnfilteredctx";
 
     private static final Set<String> KEYS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             KOGITO_EXECUTION_ID,
             KOGITO_DMN_MODEL_NAME,
             KOGITO_DMN_MODEL_NAMESPACE,
-            KOGITO_DMN_EVALUATE_DECISION
+            KOGITO_DMN_EVALUATE_DECISION,
+            KOGITO_DMN_FULL_RESULT,
+            KOGITO_DMN_FILTERED_CTX
     )));
 
     private String executionId;
     private String dmnModelName;
     private String dmnModelNamespace;
     private String dmnEvaluateDecision;
+    private boolean dmnFullResult = false;
+    private boolean dmnFilteredCtx = false;
 
     public static void register() {
         ExtensionProvider.getInstance().registerExtension(KogitoExtension.class, KogitoExtension::new);
@@ -58,6 +64,8 @@ public class KogitoExtension implements Extension {
         readStringExtension(extensions, KOGITO_DMN_MODEL_NAME, this::setDmnModelName);
         readStringExtension(extensions, KOGITO_DMN_MODEL_NAMESPACE, this::setDmnModelNamespace);
         readStringExtension(extensions, KOGITO_DMN_EVALUATE_DECISION, this::setDmnEvaluateDecision);
+        readBooleanExtension(extensions, KOGITO_DMN_FULL_RESULT, this::setDmnFullResult);
+        readBooleanExtension(extensions, KOGITO_DMN_FILTERED_CTX, this::setDmnFilteredCtx);
     }
 
     private static void readStringExtension(CloudEventExtensions extensions, String key, Consumer<String> consumer) {
@@ -66,6 +74,13 @@ public class KogitoExtension implements Extension {
                 // it returns a "null" String instead of a real null object
                 .filter(obj -> !("null".equals(obj)))
                 .map(Object::toString)
+                .ifPresent(consumer);
+    }
+
+    private static void readBooleanExtension(CloudEventExtensions extensions, String key, Consumer<Boolean> consumer) {
+        Optional.ofNullable(extensions.getExtension(key))
+                .filter(Boolean.class::isInstance)
+                .map(Boolean.class::cast)
                 .ifPresent(consumer);
     }
 
@@ -80,6 +95,10 @@ public class KogitoExtension implements Extension {
                 return getDmnModelNamespace();
             case KOGITO_DMN_EVALUATE_DECISION:
                 return getDmnEvaluateDecision();
+            case KOGITO_DMN_FULL_RESULT:
+                return isDmnFullResult();
+            case KOGITO_DMN_FILTERED_CTX:
+                return isDmnFilteredCtx();
         }
         throw ExtensionUtils.generateInvalidKeyException(this.getClass().getSimpleName(), key);
     }
@@ -121,6 +140,22 @@ public class KogitoExtension implements Extension {
         this.dmnEvaluateDecision = dmnEvaluateDecision;
     }
 
+    public boolean isDmnFullResult() {
+        return dmnFullResult;
+    }
+
+    public void setDmnFullResult(boolean dmnFullResult) {
+        this.dmnFullResult = dmnFullResult;
+    }
+
+    public boolean isDmnFilteredCtx() {
+        return dmnFilteredCtx;
+    }
+
+    public void setDmnFilteredCtx(boolean dmnFilteredCtx) {
+        this.dmnFilteredCtx = dmnFilteredCtx;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -148,6 +183,8 @@ public class KogitoExtension implements Extension {
                 ", dmnModelName='" + dmnModelName + '\'' +
                 ", dmnModelNamespace='" + dmnModelNamespace + '\'' +
                 ", dmnEvaluateDecision='" + dmnEvaluateDecision + '\'' +
+                ", dmnFullResult=" + dmnFullResult +
+                ", dmnFilteredCtx=" + dmnFilteredCtx +
                 '}';
     }
 }
