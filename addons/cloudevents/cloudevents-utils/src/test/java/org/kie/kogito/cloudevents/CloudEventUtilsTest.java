@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.provider.ExtensionProvider;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.cloudevents.extension.KogitoExtension;
 import org.mockito.MockedStatic;
@@ -77,7 +78,9 @@ class CloudEventUtilsTest {
 
     private static final KogitoExtension TEST_EXTENSION = new KogitoExtension();
 
-    static {
+    @BeforeAll
+    static void setupExtension() {
+        KogitoExtension.register();
         TEST_EXTENSION.setDmnModelName(TEST_DECISION_MODEL_NAME);
         TEST_EXTENSION.setDmnModelNamespace(TEST_DECISION_MODEL_NAMESPACE);
         TEST_EXTENSION.setDmnEvaluateDecision(TEST_DECISION_SERVICE_NAME);
