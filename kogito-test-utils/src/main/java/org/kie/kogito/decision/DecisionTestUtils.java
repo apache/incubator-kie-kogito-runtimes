@@ -42,6 +42,19 @@ public class DecisionTestUtils {
     public static final String EVALUATE_ALL_EXECUTION_ID = "4ac4c69f-4925-4221-b67e-4b14ce47bef8";
     public static final String EVALUATE_DECISION_SERVICE_EXECUTION_ID = "77408667-f218-40b0-a355-1bab047a3e9e";
 
+    private static final String DRIVER_KEY = "Driver";
+    private static final String DRIVER_AGE_KEY = "Age";
+    private static final int DRIVER_AGE_VALUE_25 = 25;
+    private static final String DRIVER_POINTS_KEY = "Points";
+    private static final int DRIVER_POINTS_VALUE_10 = 10;
+
+    private static final String VIOLATION_KEY = "Violation";
+    private static final String VIOLATION_TYPE_KEY = "Type";
+    private static final String VIOLATION_TYPE_VALUE_SPEED = "speed";
+    private static final String VIOLATION_ACTUAL_SPEED_KEY = "Actual Speed";
+    private static final String VIOLATION_SPEED_LIMIT_KEY = "Speed Limit";
+    private static final int VIOLATION_SPEED_LIMIT_VALUE_100 = 100;
+
     public static DMNRuntime createDMNRuntime() {
         return DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
                 DecisionTestUtils.class.getResourceAsStream(MODEL_RESOURCE)
@@ -54,48 +67,48 @@ public class DecisionTestUtils {
 
     public static Map<String, Object> getEvaluateAllContext() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("Driver", getDriver(25, 10));
-        map.put("Violation", getViolation("speed", 115, 100));
+        map.put(DRIVER_KEY, getDriver(DRIVER_AGE_VALUE_25, DRIVER_POINTS_VALUE_10));
+        map.put(VIOLATION_KEY, getViolation(VIOLATION_TYPE_VALUE_SPEED, 115, VIOLATION_SPEED_LIMIT_VALUE_100));
         return map;
     }
 
     public static Map<String, Object> getEvaluateAllContextForWarning() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("Driver", getDriver(25, 10));
-        map.put("Violation", getViolation("speed", 95, 100));
+        map.put(DRIVER_KEY, getDriver(DRIVER_AGE_VALUE_25, DRIVER_POINTS_VALUE_10));
+        map.put(VIOLATION_KEY, getViolation(VIOLATION_TYPE_VALUE_SPEED, 95, VIOLATION_SPEED_LIMIT_VALUE_100));
         return map;
     }
 
     public static Map<String, Object> getEvaluateAllContextForError() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("Violation", getViolation("speed", 115, 100));
+        map.put(VIOLATION_KEY, getViolation(VIOLATION_TYPE_VALUE_SPEED, 115, VIOLATION_SPEED_LIMIT_VALUE_100));
         return map;
     }
 
     public static Map<String, Object> getEvaluateDecisionServiceContext() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("Violation", getViolation("speed", 115, 100));
+        map.put(VIOLATION_KEY, getViolation(VIOLATION_TYPE_VALUE_SPEED, 125, VIOLATION_SPEED_LIMIT_VALUE_100));
         return map;
     }
 
     public static Map<String, Object> getEvaluateDecisionServiceContextForWarning() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("Violation", getViolation("speed", 95, 100));
+        map.put(VIOLATION_KEY, getViolation(VIOLATION_TYPE_VALUE_SPEED, 95, VIOLATION_SPEED_LIMIT_VALUE_100));
         return map;
     }
 
     public static Map<String, Object> getDriver(int age, int points) {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("Age", age);
-        map.put("Points", points);
+        map.put(DRIVER_AGE_KEY, age);
+        map.put(DRIVER_POINTS_KEY, points);
         return map;
     }
 
     public static Map<String, Object> getViolation(String type, int actualSpeed, int speedLimit) {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("Type", type);
-        map.put("Actual Speed", actualSpeed);
-        map.put("Speed Limit", speedLimit);
+        map.put(VIOLATION_TYPE_KEY, type);
+        map.put(VIOLATION_ACTUAL_SPEED_KEY, actualSpeed);
+        map.put(VIOLATION_SPEED_LIMIT_KEY, speedLimit);
         return map;
     }
 

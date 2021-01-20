@@ -96,11 +96,11 @@ public class EventDrivenDecisionController {
         Map<String, Object> data = CloudEventUtils.decodeMapData(event, String.class, Object.class).orElse(null);
 
         if (kogitoExtension == null) {
-            LOG.warn("Received CloudEvent(id={} source={} type={}) with null Kogito extension", event.getId(), event.getSource().toString(), event.getType());
+            LOG.warn("Received CloudEvent(id={} source={} type={}) with null Kogito extension", event.getId(), event.getSource(), event.getType());
         }
 
         if (data == null) {
-            LOG.warn("Received CloudEvent(id={} source={} type={}) with null data", event.getId(), event.getSource().toString(), event.getType());
+            LOG.warn("Received CloudEvent(id={} source={} type={}) with null data", event.getId(), event.getSource(), event.getType());
         }
 
         return Optional.of(new EvaluationContext(event, kogitoExtension, data));
