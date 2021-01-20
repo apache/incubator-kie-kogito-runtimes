@@ -129,6 +129,7 @@
     <module>addons</module>
     <module>integration-tests</module>
     <module>kogito-workitems</module>
+    <module>kogito-codegen-modules</module>
   </modules>
 
 </project>

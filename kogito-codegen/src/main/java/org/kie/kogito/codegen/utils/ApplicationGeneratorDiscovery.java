@@ -15,14 +15,19 @@
 
 package org.kie.kogito.codegen.utils;
 
-import org.kie.kogito.codegen.ApplicationGenerator;
-import org.kie.kogito.codegen.Generator;
-import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.ApplicationGenerator;
+import org.kie.kogito.codegen.api.Generator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
-import org.kie.kogito.codegen.io.CollectedResource;
+import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
+import org.kie.kogito.codegen.decision.DecisionCodegenFactory;
 import org.kie.kogito.codegen.prediction.PredictionCodegen;
+import org.kie.kogito.codegen.prediction.PredictionCodegenFactory;
 import org.kie.kogito.codegen.process.ProcessCodegen;
+import org.kie.kogito.codegen.process.ProcessCodegenFactory;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
+import org.kie.kogito.codegen.rules.IncrementalRuleCodegenFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,14 +51,14 @@ public class ApplicationGeneratorDiscovery {
     }
 
     protected static Collection<Generator> loadGenerators(KogitoBuildContext context) {
-        Collection<CollectedResource> collectedResources = CollectedResource.fromPaths(context.getAppPaths().getPaths());
+        Collection<CollectedResource> collectedResources = CollectedResourceProducer.fromPaths(context.getAppPaths().getPaths());
 
         // ordering is relevant.
         return Arrays.asList(
-                ProcessCodegen.ofCollectedResources(context, collectedResources),
-                IncrementalRuleCodegen.ofCollectedResources(context, collectedResources),
-                PredictionCodegen.ofCollectedResources(context, collectedResources),
-                DecisionCodegen.ofCollectedResources(context, collectedResources)
+                new ProcessCodegenFactory().create(context, collectedResources),
+                new IncrementalRuleCodegenFactory().create(context, collectedResources),
+                new PredictionCodegenFactory().create(context, collectedResources),
+                new DecisionCodegenFactory().create(context, collectedResources)
         );
     }
 }

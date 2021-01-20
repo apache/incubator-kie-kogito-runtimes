@@ -41,6 +41,19 @@
   </dependencyManagement>
 
   <dependencies>
+<!--    FIXME to fix -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-codegen-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+      <!--    FIXME to fix -->
+  <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-codegen-core</artifactId>
+      <version>${project.version}</version>
+  </dependency>
+
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>jbpm-flow</artifactId>

@@ -18,24 +18,22 @@ package org.kie.kogito.codegen.decision;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
-import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.io.CollectedResource;
+import org.kie.kogito.codegen.api.AddonsConfig;
+import org.kie.kogito.codegen.api.ApplicationSection;
+import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.grafana.JGrafana;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,7 +76,7 @@ public class DecisionCodegenTest {
 
     public DecisionCodegen getDecisionCodegen(String s, KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = stronglyTypedContext(contextBuilder).build();
-        return DecisionCodegen.ofCollectedResources(context, CollectedResource.fromPaths(Paths.get(s).toAbsolutePath()));
+        return DecisionCodegen.ofCollectedResources(context, CollectedResourceProducer.fromPaths(Paths.get(s).toAbsolutePath()));
     }
 
     private KogitoBuildContext.Builder stronglyTypedContext(KogitoBuildContext.Builder builder) {

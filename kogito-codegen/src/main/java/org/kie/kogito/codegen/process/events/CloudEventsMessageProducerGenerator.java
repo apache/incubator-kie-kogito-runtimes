@@ -28,12 +28,12 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.InvalidTemplateException;
-import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.MessageProducerGenerator;
 
-import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
+import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 
 /**
  * @deprecated now all messages are cloud events https://issues.redhat.com/browse/KOGITO-3414
