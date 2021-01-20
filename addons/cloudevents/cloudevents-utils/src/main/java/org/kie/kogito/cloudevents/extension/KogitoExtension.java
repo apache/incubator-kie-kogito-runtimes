@@ -51,8 +51,8 @@ public class KogitoExtension implements Extension {
     private String dmnModelName;
     private String dmnModelNamespace;
     private String dmnEvaluateDecision;
-    private boolean dmnFullResult = false;
-    private boolean dmnFilteredCtx = false;
+    private Boolean dmnFullResult;
+    private Boolean dmnFilteredCtx;
 
     public static void register() {
         ExtensionProvider.getInstance().registerExtension(KogitoExtension.class, KogitoExtension::new);
@@ -140,19 +140,19 @@ public class KogitoExtension implements Extension {
         this.dmnEvaluateDecision = dmnEvaluateDecision;
     }
 
-    public boolean isDmnFullResult() {
+    public Boolean isDmnFullResult() {
         return dmnFullResult;
     }
 
-    public void setDmnFullResult(boolean dmnFullResult) {
+    public void setDmnFullResult(Boolean dmnFullResult) {
         this.dmnFullResult = dmnFullResult;
     }
 
-    public boolean isDmnFilteredCtx() {
+    public Boolean isDmnFilteredCtx() {
         return dmnFilteredCtx;
     }
 
-    public void setDmnFilteredCtx(boolean dmnFilteredCtx) {
+    public void setDmnFilteredCtx(Boolean dmnFilteredCtx) {
         this.dmnFilteredCtx = dmnFilteredCtx;
     }
 

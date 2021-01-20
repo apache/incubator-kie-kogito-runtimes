@@ -48,164 +48,149 @@ public class KogitoExtensionTest {
 
     @Test
     void writeExtension() {
-        assertWriteExtension(null, null, null, false, null, false);
-        assertWriteExtension(null, null, null, false, false, false);
-        assertWriteExtension(null, null, null, false, true, true);
-        assertWriteExtension(null, null, false, false, null, false);
-        assertWriteExtension(null, null, false, false, false, false);
-        assertWriteExtension(null, null, false, false, true, true);
-        assertWriteExtension(null, null, true, true, null, false);
-        assertWriteExtension(null, null, true, true, false, false);
-        assertWriteExtension(null, null, true, true, true, true);
+        assertWriteExtension(null, null, null, null);
+        assertWriteExtension(null, null, null, false);
+        assertWriteExtension(null, null, null, true);
+        assertWriteExtension(null, null, false, null);
+        assertWriteExtension(null, null, false, false);
+        assertWriteExtension(null, null, false, true);
+        assertWriteExtension(null, null, true, null);
+        assertWriteExtension(null, null, true, false);
+        assertWriteExtension(null, null, true, true);
 
-        assertWriteExtension(null, TEST_EXECUTION_ID, null, false, null, false);
-        assertWriteExtension(null, TEST_EXECUTION_ID, null, false, false, false);
-        assertWriteExtension(null, TEST_EXECUTION_ID, null, false, true, true);
-        assertWriteExtension(null, TEST_EXECUTION_ID, false, false, null, false);
-        assertWriteExtension(null, TEST_EXECUTION_ID, false, false, false, false);
-        assertWriteExtension(null, TEST_EXECUTION_ID, false, false, true, true);
-        assertWriteExtension(null, TEST_EXECUTION_ID, true, true, null, false);
-        assertWriteExtension(null, TEST_EXECUTION_ID, true, true, false, false);
-        assertWriteExtension(null, TEST_EXECUTION_ID, true, true, true, true);
+        assertWriteExtension(null, TEST_EXECUTION_ID, null, null);
+        assertWriteExtension(null, TEST_EXECUTION_ID, null, false);
+        assertWriteExtension(null, TEST_EXECUTION_ID, null, true);
+        assertWriteExtension(null, TEST_EXECUTION_ID, false, null);
+        assertWriteExtension(null, TEST_EXECUTION_ID, false, false);
+        assertWriteExtension(null, TEST_EXECUTION_ID, false, true);
+        assertWriteExtension(null, TEST_EXECUTION_ID, true, null);
+        assertWriteExtension(null, TEST_EXECUTION_ID, true, false);
+        assertWriteExtension(null, TEST_EXECUTION_ID, true, true);
 
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, null, false, null, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, null, false, false, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, null, false, true, true);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, false, false, null, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, false, false, false, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, false, false, true, true);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, true, true, null, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, true, true, false, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, true, true, true, true);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, null, null);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, null, false);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, null, true);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, false, null);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, false, false);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, false, true);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, true, null);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, true, false);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, null, true, true);
 
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false, null, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false, false, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false, true, true);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false, null, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false, false, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false, true, true);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true, null, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true, false, false);
-        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true, true, true);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, null);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, true);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, null);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, true);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, null);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, false);
+        assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true);
     }
 
-    private void assertWriteExtension(
-            String dmnEvaluateDecision,
-            String executionId,
-            Boolean inputDmnFullResult, Boolean outputDmnFullResult,
-            Boolean inputDmnFilteredCtx, Boolean outputDmnFilteredCtx
-    ) {
-        CloudEvent event = cloudEventFromExtensionObject(dmnEvaluateDecision, executionId, inputDmnFullResult, inputDmnFilteredCtx);
-        assertCloudEvent(event, dmnEvaluateDecision, executionId, outputDmnFullResult, outputDmnFilteredCtx);
+    private void assertWriteExtension(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
+        CloudEvent event = cloudEventFromExtensionObject(dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
+        assertCloudEvent(event, dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
     }
 
     @Test
     void parseExtension() {
-        assertParseExtension(null, null, null, false, null, false);
-        assertParseExtension(null, null, null, false, false, false);
-        assertParseExtension(null, null, null, false, true, true);
-        assertParseExtension(null, null, false, false, null, false);
-        assertParseExtension(null, null, false, false, false, false);
-        assertParseExtension(null, null, false, false, true, true);
-        assertParseExtension(null, null, true, true, null, false);
-        assertParseExtension(null, null, true, true, false, false);
-        assertParseExtension(null, null, true, true, true, true);
+        assertParseExtension(null, null, null, null);
+        assertParseExtension(null, null, null, false);
+        assertParseExtension(null, null, null, true);
+        assertParseExtension(null, null, false, null);
+        assertParseExtension(null, null, false, false);
+        assertParseExtension(null, null, false, true);
+        assertParseExtension(null, null, true, null);
+        assertParseExtension(null, null, true, false);
+        assertParseExtension(null, null, true, true);
 
-        assertParseExtension(null, TEST_EXECUTION_ID, null, false, null, false);
-        assertParseExtension(null, TEST_EXECUTION_ID, null, false, false, false);
-        assertParseExtension(null, TEST_EXECUTION_ID, null, false, true, true);
-        assertParseExtension(null, TEST_EXECUTION_ID, false, false, null, false);
-        assertParseExtension(null, TEST_EXECUTION_ID, false, false, false, false);
-        assertParseExtension(null, TEST_EXECUTION_ID, false, false, true, true);
-        assertParseExtension(null, TEST_EXECUTION_ID, true, true, null, false);
-        assertParseExtension(null, TEST_EXECUTION_ID, true, true, false, false);
-        assertParseExtension(null, TEST_EXECUTION_ID, true, true, true, true);
+        assertParseExtension(null, TEST_EXECUTION_ID, null, null);
+        assertParseExtension(null, TEST_EXECUTION_ID, null, false);
+        assertParseExtension(null, TEST_EXECUTION_ID, null, true);
+        assertParseExtension(null, TEST_EXECUTION_ID, false, null);
+        assertParseExtension(null, TEST_EXECUTION_ID, false, false);
+        assertParseExtension(null, TEST_EXECUTION_ID, false, true);
+        assertParseExtension(null, TEST_EXECUTION_ID, true, null);
+        assertParseExtension(null, TEST_EXECUTION_ID, true, false);
+        assertParseExtension(null, TEST_EXECUTION_ID, true, true);
 
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, null, false, null, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, null, false, false, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, null, false, true, true);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, false, false, null, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, false, false, false, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, false, false, true, true);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, true, true, null, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, true, true, false, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, true, true, true, true);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, null, null);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, null, false);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, null, true);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, false, null);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, false, false);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, false, true);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, true, null);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, true, false);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, null, true, true);
 
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false, null, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false, false, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false, true, true);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false, null, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false, false, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false, true, true);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true, null, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true, false, false);
-        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true, true, true);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, null);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, true);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, null);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, true);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, null);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, false);
+        assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true);
     }
 
-    private void assertParseExtension(
-            String dmnEvaluateDecision,
-            String executionId,
-            Boolean inputDmnFullResult, boolean outputDmnFullResult,
-            Boolean inputDmnFilteredCtx, boolean outputDmnFilteredCtx
-    ) {
-        KogitoExtension extension = extensionObjectFromCloudEvent(dmnEvaluateDecision, executionId, inputDmnFullResult, inputDmnFilteredCtx);
-        assertExtension(extension, dmnEvaluateDecision, executionId, outputDmnFullResult, outputDmnFilteredCtx);
+    private void assertParseExtension(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
+        KogitoExtension extension = extensionObjectFromCloudEvent(dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
+        assertExtension(extension, dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
     }
 
     @Test
     void writeAndParseExtensionWithEncoding() {
-        assertWriteAndParseExtensionWithEncoding(null, null, null, false, null, false);
-        assertWriteAndParseExtensionWithEncoding(null, null, null, false, false, false);
-        assertWriteAndParseExtensionWithEncoding(null, null, null, false, true, true);
-        assertWriteAndParseExtensionWithEncoding(null, null, false, false, null, false);
-        assertWriteAndParseExtensionWithEncoding(null, null, false, false, false, false);
-        assertWriteAndParseExtensionWithEncoding(null, null, false, false, true, true);
-        assertWriteAndParseExtensionWithEncoding(null, null, true, true, null, false);
-        assertWriteAndParseExtensionWithEncoding(null, null, true, true, false, false);
-        assertWriteAndParseExtensionWithEncoding(null, null, true, true, true, true);
+        assertWriteAndParseExtensionWithEncoding(null, null, null, null);
+        assertWriteAndParseExtensionWithEncoding(null, null, null, false);
+        assertWriteAndParseExtensionWithEncoding(null, null, null, true);
+        assertWriteAndParseExtensionWithEncoding(null, null, false, null);
+        assertWriteAndParseExtensionWithEncoding(null, null, false, false);
+        assertWriteAndParseExtensionWithEncoding(null, null, false, true);
+        assertWriteAndParseExtensionWithEncoding(null, null, true, null);
+        assertWriteAndParseExtensionWithEncoding(null, null, true, false);
+        assertWriteAndParseExtensionWithEncoding(null, null, true, true);
 
-        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, null, false, null, false);
-        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, null, false, false, false);
-        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, null, false, true, true);
-        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, false, false, null, false);
-        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, false, false, false, false);
-        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, false, false, true, true);
-        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, true, true, null, false);
-        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, true, true, false, false);
-        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, true, true, true, true);
+        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, null, null);
+        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, null, false);
+        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, null, true);
+        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, false, null);
+        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, false, false);
+        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, false, true);
+        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, true, null);
+        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, true, false);
+        assertWriteAndParseExtensionWithEncoding(null, TEST_EXECUTION_ID, true, true);
 
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, null, false, null, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, null, false, false, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, null, false, true, true);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, false, false, null, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, false, false, false, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, false, false, true, true);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, true, true, null, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, true, true, false, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, true, true, true, true);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, null, null);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, null, false);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, null, true);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, false, null);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, false, false);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, false, true);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, true, null);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, true, false);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, null, true, true);
 
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false, null, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false, false, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false, true, true);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false, null, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false, false, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false, true, true);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true, null, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true, false, false);
-        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true, true, true);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, null);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, false);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, null, true);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, null);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, false);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, false, true);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, null);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, false);
+        assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true);
     }
 
-    private void assertWriteAndParseExtensionWithEncoding(
-            String dmnEvaluateDecision,
-            String executionId,
-            Boolean inputDmnFullResult, boolean outputDmnFullResult,
-            Boolean inputDmnFilteredCtx, boolean outputDmnFilteredCtx
-    ) {
-        CloudEvent inputEvent = cloudEventFromExtensionObject(dmnEvaluateDecision, executionId, inputDmnFullResult, inputDmnFilteredCtx);
+    private void assertWriteAndParseExtensionWithEncoding(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
+        CloudEvent inputEvent = cloudEventFromExtensionObject(dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
         String inputEventJson = CloudEventUtils.encode(inputEvent).orElseThrow(IllegalStateException::new);
         CloudEvent outputEvent = CloudEventUtils.decode(inputEventJson).orElseThrow(IllegalStateException::new);
         KogitoExtension outputKogitoExt = ExtensionProvider.getInstance().parseExtension(KogitoExtension.class, outputEvent);
-        assertExtension(outputKogitoExt, dmnEvaluateDecision, executionId, outputDmnFullResult, outputDmnFilteredCtx);
+        assertExtension(outputKogitoExt, dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
     }
 
     private CloudEvent cloudEventFromExtensionObject(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
@@ -277,7 +262,7 @@ public class KogitoExtensionTest {
         return ExtensionProvider.getInstance().parseExtension(KogitoExtension.class, builder.build());
     }
 
-    private void assertExtension(KogitoExtension kogitoExtension, String dmnEvaluateDecision, String executionId, boolean dmnFullResult, boolean dmnFilteredCtx) {
+    private void assertExtension(KogitoExtension kogitoExtension, String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
         assertNotNull(kogitoExtension);
         assertEquals(TEST_DMN_MODEL_NAME, kogitoExtension.getDmnModelName());
         assertEquals(TEST_DMN_MODEL_NAMESPACE, kogitoExtension.getDmnModelNamespace());
