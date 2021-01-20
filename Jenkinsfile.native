@@ -42,7 +42,7 @@ pipeline {
         stage('Build optaplanner') {
             steps {
                 script {
-                    getMavenCommand('optaplanner')
+                    getNativeMavenCommand('optaplanner')
                         .run('clean install')
                 }
             }
