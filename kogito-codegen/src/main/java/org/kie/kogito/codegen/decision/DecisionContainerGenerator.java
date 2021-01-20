@@ -15,7 +15,7 @@
 
 package org.kie.kogito.codegen.decision;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -36,25 +36,19 @@ import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMe
 
 public class DecisionContainerGenerator extends AbstractApplicationSection {
 
-    private static final String RESOURCE = "/class-templates/DecisionContainerTemplate.java";
-    private static final String RESOURCE_CDI = "/class-templates/CdiDecisionContainerTemplate.java";
-    private static final String RESOURCE_SPRING = "/class-templates/spring/SpringDecisionContainerTemplate.java";
     private static final String SECTION_CLASS_NAME = "DecisionModels";
 
     private final String applicationCanonicalName;
-    private final List<CollectedResource> resources;
+    private final Collection<CollectedResource> resources;
     private final TemplatedGenerator templatedGenerator;
 
-    public DecisionContainerGenerator(KogitoBuildContext context, String applicationCanonicalName, List<CollectedResource> cResources) {
+    public DecisionContainerGenerator(KogitoBuildContext context, String applicationCanonicalName, Collection<CollectedResource> cResources) {
         super(context, SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = cResources;
-        this.templatedGenerator = new TemplatedGenerator(
-                context,
-                SECTION_CLASS_NAME,
-                RESOURCE_CDI,
-                RESOURCE_SPRING,
-                RESOURCE);
+        this.templatedGenerator = TemplatedGenerator.builder()
+                .withTargetTypeName(SECTION_CLASS_NAME)
+                .build(context, "DecisionContainer");
     }
 
     @Override
@@ -67,14 +61,12 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         final InitializerDeclaration staticDeclaration = compilationUnit
                 .findFirst(InitializerDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(
-                        SECTION_CLASS_NAME,
-                        templatedGenerator.templatePath(),
+                        templatedGenerator,
                         "Missing static block"));
         final MethodCallExpr initMethod = staticDeclaration
                 .findFirst(MethodCallExpr.class, mtd -> "init".equals(mtd.getNameAsString()))
                 .orElseThrow(() -> new InvalidTemplateException(
-                        SECTION_CLASS_NAME,
-                        templatedGenerator.templatePath(),
+                        templatedGenerator,
                         "Missing init() method"));
 
         setupExecIdSupplierVariable(initMethod);

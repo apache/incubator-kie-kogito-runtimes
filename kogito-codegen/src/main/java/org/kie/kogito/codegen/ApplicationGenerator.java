@@ -22,17 +22,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.drools.core.util.StringUtils;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.metadata.Labeler;
-import org.kie.kogito.codegen.metadata.MetaDataWriter;
-import org.kie.kogito.codegen.metadata.PrometheusLabeler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +37,11 @@ public class ApplicationGenerator {
 
     public static final String DEFAULT_GROUP_ID = "org.kie.kogito";
     public static final String APPLICATION_CLASS_NAME = "Application";
+    private static final GeneratedFileType APPLICATION_SECTION_TYPE = GeneratedFileType.of("APPLICATION_SECTION", GeneratedFileType.Category.SOURCE);
 
     private final ApplicationContainerGenerator applicationMainGenerator;
-    private ApplicationConfigGenerator configGenerator;
-    private List<Generator> generators = new ArrayList<>();
-    private Map<Class, Labeler> labelers = new HashMap<>();
+    private ApplicationConfigGenerator applicationConfigGenerator;
+    private Collection<Generator> generators = new ArrayList<>();
 
     private KogitoBuildContext context;
     private ClassLoader classLoader;
@@ -56,12 +51,8 @@ public class ApplicationGenerator {
         this.classLoader = Thread.currentThread().getContextClassLoader();
         this.applicationMainGenerator = new ApplicationContainerGenerator(context);
 
-        this.configGenerator = new ApplicationConfigGenerator(context);
-        this.configGenerator.withAddons(loadAddonList());
-
-        if (context.getAddonsConfig().usePrometheusMonitoring()) {
-            this.labelers.put(PrometheusLabeler.class, new PrometheusLabeler());
-        }
+        this.applicationConfigGenerator = new ApplicationConfigGenerator(context);
+        this.applicationConfigGenerator.withAddons(loadAddonList());
     }
 
     public String targetCanonicalName() {
@@ -74,15 +65,13 @@ public class ApplicationGenerator {
 
     public Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = generateComponents();
-        generators.forEach(gen -> gen.updateConfig(configGenerator));
-        generators.forEach(gen -> MetaDataWriter.writeLabelsImageMetadata(context.getTargetDirectory(), gen.getLabels()));
+        generators.forEach(gen -> gen.updateConfig(applicationConfigGenerator));
 
         generatedFiles.add(generateApplicationDescriptor());
         generatedFiles.addAll(generateApplicationSections());
 
-        generatedFiles.addAll(configGenerator.generate());
+        generatedFiles.addAll(applicationConfigGenerator.generate());
 
-        this.labelers.values().forEach(l -> MetaDataWriter.writeLabelsImageMetadata(context.getTargetDirectory(), l.generateLabels()));
         logGeneratedFiles(generatedFiles);
 
         return generatedFiles;
@@ -97,7 +86,8 @@ public class ApplicationGenerator {
     public GeneratedFile generateApplicationDescriptor() {
         List<String> sections = generators.stream()
                 .map(Generator::section)
-                .filter(Objects::nonNull)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(ApplicationSection::sectionClassName)
                 .collect(Collectors.toList());
 
@@ -105,20 +95,15 @@ public class ApplicationGenerator {
         return applicationMainGenerator.generate();
     }
 
-    private List<GeneratedFile> generateApplicationSections() {
-        ArrayList<GeneratedFile> generatedFiles = new ArrayList<>();
-
-        for (Generator generator : generators) {
-            ApplicationSection section = generator.section();
-            if (section == null) {
-                continue;
-            }
-            generatedFiles.add(
-                    new GeneratedFile(GeneratedFile.Type.APPLICATION_SECTION,
-                                      getFilePath(section.sectionClassName()),
-                                      section.compilationUnit().toString()));
-        }
-        return generatedFiles;
+    private Collection<GeneratedFile> generateApplicationSections() {
+        return generators.stream()
+                .map(Generator::section)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(section -> new GeneratedFile(APPLICATION_SECTION_TYPE,
+                        getFilePath(section.sectionClassName()),
+                        section.compilationUnit().toString()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -159,7 +144,7 @@ public class ApplicationGenerator {
             String separator = "=====";
             for (GeneratedFile file : files) {
                 LOGGER.debug(separator);
-                LOGGER.debug("{}: {}", file.getType(), file.relativePath());
+                LOGGER.debug("{} {}: {}", file.category().name(), file.type().name(), file.relativePath());
                 LOGGER.debug(separator);
                 LOGGER.debug(new String(file.contents()));
                 LOGGER.debug(separator);

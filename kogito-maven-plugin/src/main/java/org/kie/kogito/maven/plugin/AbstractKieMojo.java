@@ -15,23 +15,52 @@
 
 package org.kie.kogito.maven.plugin;
 
+import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
+import org.kie.kogito.codegen.utils.GeneratedFileWriter;
 
 public abstract class AbstractKieMojo extends AbstractMojo {
-    
+
+    @Parameter(required = true, defaultValue = "${project.build.directory}")
+    protected File targetDirectory;
+
+    @Parameter(required = true, defaultValue = "${project.basedir}")
+    protected File projectDir;
+
+    @Parameter
+    protected Map<String, String> properties;
+
+    @Parameter(required = true, defaultValue = "${project}")
+    protected MavenProject project;
+
+    @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
+    protected File outputDirectory;
+
+    @Parameter(defaultValue = "${project.build.directory}/generated-sources/kogito")
+    protected File generatedSources;
+
+    @Parameter(defaultValue = "${project.build.directory}/generated-resources/kogito")
+    protected File generatedResources;
+
+    @Parameter(required = true, defaultValue = "${project.basedir}/src/main/resources")
+    protected File kieSourcesDirectory;
+
     protected void setSystemProperties(Map<String, String> properties) {
 
         if (properties != null) {
@@ -114,5 +143,23 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    protected void writeGeneratedFiles(Collection<GeneratedFile> generatedFiles) {
+        generatedFiles.forEach(this::writeGeneratedFile);
+    }
+
+    protected void writeGeneratedFile(GeneratedFile generatedFile) {
+        GeneratedFileWriter writer = new GeneratedFileWriter(outputDirectory.toPath(),
+                generatedSources.toPath(),
+                generatedResources.toPath(),
+                getSourcesPath().toPath());
+
+        getLog().info("Generating: " + generatedFile.relativePath());
+        writer.write(generatedFile);
+    }
+
+    protected File getSourcesPath() {
+        return generatedSources;
     }
 }

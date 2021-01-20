@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,11 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.codegen.metadata;
+package org.kie.kogito.codegen;
 
-import org.junit.jupiter.api.Test;
+public interface ConfigGenerator {
 
-import java.util.Map;
+    String configClassName();
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class PersistenceLabelerTest {
-
-    @Test
-    void testGeneratedLabels() {
-        Map<String, String> labels = new PersistenceLabeler().generateLabels();
-        assertThat(labels).containsEntry(PersistenceLabeler.PERSISTENCE_LABEL_PREFIX, "true");
-    }
-
+    GeneratedFile generate();
 }

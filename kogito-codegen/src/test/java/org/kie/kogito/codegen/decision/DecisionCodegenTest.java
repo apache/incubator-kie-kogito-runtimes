@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.AddonsConfig;
+import org.kie.kogito.codegen.ApplicationSection;
+import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
@@ -52,7 +55,9 @@ public class DecisionCodegenTest {
                                                                         "decision/VacationsResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
+        assertThat(optionalApplicationSection).isNotEmpty();
+        CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
         assertNotNull(compilationUnit );
     }
 
@@ -92,7 +97,9 @@ public class DecisionCodegenTest {
                                                                         "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
+        assertThat(optionalApplicationSection).isNotEmpty();
+        CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
         assertNotNull(compilationUnit );
     }
 
@@ -131,7 +138,9 @@ public class DecisionCodegenTest {
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(3);
 
-        CompilationUnit compilationUnit = codeGenerator.section().compilationUnit();
+        Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
+        assertThat(optionalApplicationSection).isNotEmpty();
+        CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
         assertNotNull(compilationUnit );
     }
 
@@ -147,13 +156,11 @@ public class DecisionCodegenTest {
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
 
-        List<GeneratedFile> dashboards = generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.RESOURCE).collect(Collectors.toList());
+        List<GeneratedFile> dashboards = generatedFiles.stream()
+                .filter(x -> x.type().equals(DashboardGeneratedFileUtils.DASHBOARD_TYPE))
+                .collect(Collectors.toList());
 
         assertEquals(2, dashboards.size());
-
-        List<GeneratedFile> staticDashboards = generatedFiles.stream().filter(x -> x.getType() == GeneratedFile.Type.GENERATED_CP_RESOURCE && x.relativePath().contains("dashboard")).collect(Collectors.toList());
-
-        assertEquals(2, staticDashboards.size());
 
         return dashboards;
     }
