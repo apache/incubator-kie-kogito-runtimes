@@ -61,7 +61,7 @@ pipeline {
         stage('Build kogito-runtimes') {
             steps {
                 script {
-                    getMavenCommand('kogito-runtimes')
+                    getMavenCommandWithDroolsVersion('kogito-runtimes')
                         .run('clean install')
                 }
             }
@@ -69,7 +69,7 @@ pipeline {
         stage('Check Runtimes integration-tests with persistence') {
             steps {
                 script {
-                    getMavenCommand('integration-tests')
+                    getMavenCommandWithDroolsVersion('integration-tests')
                         .withProfiles(['persistence'])
                         .run('clean verify')
                 }
@@ -78,7 +78,7 @@ pipeline {
         stage('Build optaplanner') {
             steps {
                 script {
-                    getMavenCommand('optaplanner')
+                    getMavenCommandWithDroolsVersion('optaplanner')
                         .run('clean install')
                 }
             }
@@ -86,7 +86,7 @@ pipeline {
         stage('Build kogito-apps') {
             steps {
                 script {
-                    getMavenCommand('kogito-apps')
+                    getMavenCommandWithDroolsVersion('kogito-apps')
                         .run('clean install')
                 }
             }
@@ -94,7 +94,7 @@ pipeline {
         stage('Build kogito-examples') {
             steps {
                 script {
-                    getMavenCommand('kogito-examples')
+                    getMavenCommandWithDroolsVersion('kogito-examples')
                         .run('clean install')
                 }
             }
@@ -102,7 +102,7 @@ pipeline {
         stage('Build kogito-examples with persistence') {
             steps {
                 script {
-                    getMavenCommand('kogito-examples-persistence')
+                    getMavenCommandWithDroolsVersion('kogito-examples-persistence')
                         .withProfiles(['persistence'])
                         .run('clean verify')
                 }
@@ -111,7 +111,7 @@ pipeline {
         stage('Build kogito-examples with events') {
             steps {
                 script {
-                    getMavenCommand('kogito-examples-events')
+                    getMavenCommandWithDroolsVersion('kogito-examples-events')
                         .withProfiles(['events'])
                         .run('clean verify')
                 }
@@ -163,7 +163,7 @@ void checkoutOptaplannerRepo() {
     }
 }
 
-MavenCommand getMavenCommand(String directory){
+MavenCommand getMavenCommandWithDroolsVersion(String directory){
     return new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
                 .inDirectory(directory)
