@@ -15,17 +15,19 @@
 
 package org.kie.kogito.codegen.context;
 
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.di.SpringDependencyInjectionAnnotator;
-
-import java.io.File;
-import java.util.Properties;
-import java.util.function.Predicate;
 
 public class SpringBootKogitoBuildContext extends AbstractKogitoBuildContext {
 
-    protected SpringBootKogitoBuildContext(String packageName, Predicate<String> classAvailabilityResolver, File targetDirectory, AddonsConfig addonsConfig, Properties applicationProperties) {
-        super(packageName, classAvailabilityResolver, new SpringDependencyInjectionAnnotator(), targetDirectory, addonsConfig, applicationProperties);
+    public static final String CONTEXT_NAME = "Spring";
+
+    protected SpringBootKogitoBuildContext(SpringBootKogitoBuildContextBuilder builder) {
+        super(builder, new SpringDependencyInjectionAnnotator(), CONTEXT_NAME);
+    }
+
+    @Override
+    public boolean hasREST() {
+        return hasClassAvailable("org.springframework.web.bind.annotation.RestController");
     }
 
     public static Builder builder() {
@@ -39,7 +41,7 @@ public class SpringBootKogitoBuildContext extends AbstractKogitoBuildContext {
 
         @Override
         public SpringBootKogitoBuildContext build() {
-            return new SpringBootKogitoBuildContext(packageName, classAvailabilityResolver, targetDirectory, addonsConfig, applicationProperties);
+            return new SpringBootKogitoBuildContext(this);
         }
 
         @Override

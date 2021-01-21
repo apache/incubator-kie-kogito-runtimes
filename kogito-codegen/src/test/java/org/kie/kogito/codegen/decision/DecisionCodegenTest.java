@@ -17,9 +17,12 @@ package org.kie.kogito.codegen.decision;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +45,7 @@ import org.kie.kogito.grafana.JGrafana;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.kie.kogito.codegen.KogitoBuildContextTestUtils.mockClassAvailabilityResolver;
 
 public class DecisionCodegenTest {
 
@@ -139,13 +143,10 @@ public class DecisionCodegenTest {
     @ParameterizedTest
     @MethodSource("contextBuilders")
     public void testNSEW_positive(KogitoBuildContext.Builder contextBuilder) throws Exception {
+        contextBuilder
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI"), Collections.emptyList()));
         // This test is meant to check that IFF Eclipse MP OpenAPI annotations are available on Build/CP of Kogito application, annotation is used with codegen
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW", contextBuilder);
-        codeGenerator.withClassLoader(new ClassLoader() {
-            public Class<?> loadClass(String name) throws ClassNotFoundException {
-                return Object.class;
-            }
-        });
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles).anyMatch(x -> x.relativePath().endsWith("InputSet.java"));
@@ -156,6 +157,8 @@ public class DecisionCodegenTest {
     @ParameterizedTest
     @MethodSource("contextBuilders")
     public void testNSEW_negative(KogitoBuildContext.Builder contextBuilder) throws Exception {
+        contextBuilder
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(Collections.emptyList(), Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI")));
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW", contextBuilder);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
@@ -170,6 +173,30 @@ public class DecisionCodegenTest {
                 Arguments.of(QuarkusKogitoBuildContext.builder()),
                 Arguments.of(SpringBootKogitoBuildContext.builder())
         );
+    }
+
+
+    public DecisionCodegen getDecisionCodegen(String s) {
+        return getDecisionCodegen(s, AddonsConfig.DEFAULT);
+    }
+
+    public DecisionCodegen getDecisionCodegen(String s, AddonsConfig addonsConfig) {
+        KogitoBuildContext.Builder contextBuilder = JavaKogitoBuildContext.builder()
+                .withAddonsConfig(addonsConfig);
+
+        return getDecisionCodegen(s, contextBuilder);
+    }
+
+    public DecisionCodegen getDecisionCodegen(String s, KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext context = stronglyTypedContext(contextBuilder).build();
+        return DecisionCodegen.ofCollectedResources(context, CollectedResource.fromPaths(Paths.get(s).toAbsolutePath()));
+    }
+
+    private KogitoBuildContext.Builder stronglyTypedContext(KogitoBuildContext.Builder builder) {
+        Properties properties = new Properties();
+        properties.put(DecisionCodegen.STRONGLY_TYPED_CONFIGURATION_KEY, Boolean.TRUE.toString());
+        builder.withApplicationProperties(properties);
+        return builder;
     }
 
     protected DecisionCodegen getDecisionCodegen(String sourcePath, KogitoBuildContext.Builder contextBuilder) {
