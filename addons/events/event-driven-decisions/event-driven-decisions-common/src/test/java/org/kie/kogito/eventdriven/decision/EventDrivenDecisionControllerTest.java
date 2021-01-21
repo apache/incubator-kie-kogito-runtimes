@@ -304,39 +304,43 @@ class EventDrivenDecisionControllerTest {
         try {
             ArgumentCaptor<String> eventCaptor = ArgumentCaptor.forClass(String.class);
 
-            controller.handleEvent(cloudEventOkWith(requestData, fullResult, filteredCtx));
+            String inputEvent = cloudEventOkWith(requestData, fullResult, filteredCtx);
+            controller.handleEvent(inputEvent);
 
             verify(eventEmitterMock).emit(eventCaptor.capture());
             String emittedCloudEventJson = eventCaptor.getValue();
 
             Optional<CloudEvent> optEmittedCloudEvent = CloudEventUtils.decode(emittedCloudEventJson);
-            if (optEmittedCloudEvent.isPresent()) {
-                CloudEvent emittedCloudEvent = optEmittedCloudEvent.get();
 
-                assertEquals(expectedType, emittedCloudEvent.getType());
-
-                KogitoExtension kogitoExtension = ExtensionProvider.getInstance()
-                        .parseExtension(KogitoExtension.class, emittedCloudEvent);
-
-                if (kogitoExtension != null) {
-                    assertEquals(requestData.getModelName(), kogitoExtension.getDmnModelName());
-                    assertEquals(requestData.getModelNamespace(), kogitoExtension.getDmnModelNamespace());
-                    assertEquals(requestData.getDecision(), kogitoExtension.getDmnEvaluateDecision());
-
-                    Optional<T> optResponseEvent = CloudEventUtils.decodeData(emittedCloudEvent, responseDataClass);
-                    if (optResponseEvent.isPresent()) {
-                        assertSubject(emittedCloudEvent);
-                        if (callback != null) {
-                            callback.accept(emittedCloudEvent, kogitoExtension, optResponseEvent.get());
-                        }
-                    } else {
-                        fail("Can't decode emitted CloudEvent data of: " + emittedCloudEventJson);
-                    }
-                } else {
-                    fail("No Kogito extension in emitted CloudEvent: " + emittedCloudEventJson);
-                }
-            } else {
+            if (!optEmittedCloudEvent.isPresent()) {
                 fail("Can't decode emitted CloudEvent");
+            }
+
+            CloudEvent emittedCloudEvent = optEmittedCloudEvent.get();
+
+            assertEquals(expectedType, emittedCloudEvent.getType());
+
+            KogitoExtension kogitoExtension = ExtensionProvider.getInstance()
+                    .parseExtension(KogitoExtension.class, emittedCloudEvent);
+
+            if (kogitoExtension == null) {
+                fail("No Kogito extension in emitted CloudEvent: " + emittedCloudEventJson);
+            }
+
+            assertEquals(requestData.getModelName(), kogitoExtension.getDmnModelName());
+            assertEquals(requestData.getModelNamespace(), kogitoExtension.getDmnModelNamespace());
+            assertEquals(requestData.getDecision(), kogitoExtension.getDmnEvaluateDecision());
+
+            Optional<T> optResponseEvent = CloudEventUtils.decodeData(emittedCloudEvent, responseDataClass);
+
+            if (!optResponseEvent.isPresent()) {
+                fail("Can't decode emitted CloudEvent data of: " + emittedCloudEventJson);
+            }
+
+            assertSubject(emittedCloudEvent);
+
+            if (callback != null) {
+                callback.accept(emittedCloudEvent, kogitoExtension, optResponseEvent.get());
             }
         } finally {
             reset(eventEmitterMock);
