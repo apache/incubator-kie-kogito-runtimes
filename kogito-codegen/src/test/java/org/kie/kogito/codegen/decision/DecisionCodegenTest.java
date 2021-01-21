@@ -175,23 +175,6 @@ public class DecisionCodegenTest {
         );
     }
 
-
-    public DecisionCodegen getDecisionCodegen(String s) {
-        return getDecisionCodegen(s, AddonsConfig.DEFAULT);
-    }
-
-    public DecisionCodegen getDecisionCodegen(String s, AddonsConfig addonsConfig) {
-        KogitoBuildContext.Builder contextBuilder = JavaKogitoBuildContext.builder()
-                .withAddonsConfig(addonsConfig);
-
-        return getDecisionCodegen(s, contextBuilder);
-    }
-
-    public DecisionCodegen getDecisionCodegen(String s, KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = stronglyTypedContext(contextBuilder).build();
-        return DecisionCodegen.ofCollectedResources(context, CollectedResource.fromPaths(Paths.get(s).toAbsolutePath()));
-    }
-
     private KogitoBuildContext.Builder stronglyTypedContext(KogitoBuildContext.Builder builder) {
         Properties properties = new Properties();
         properties.put(DecisionCodegen.STRONGLY_TYPED_CONFIGURATION_KEY, Boolean.TRUE.toString());
@@ -204,20 +187,11 @@ public class DecisionCodegenTest {
     }
 
     protected DecisionCodegen getDecisionCodegen(String sourcePath, AddonsConfig addonsConfig, KogitoBuildContext.Builder contextBuilder) {
-        Properties applicationProperties = stronglyTypedContext();
-
-        KogitoBuildContext context = contextBuilder
-                .withApplicationProperties(applicationProperties)
+        KogitoBuildContext context = stronglyTypedContext(contextBuilder)
                 .withAddonsConfig(addonsConfig)
                 .build();
 
         return DecisionCodegen.ofCollectedResources(context, CollectedResource.fromPaths(Paths.get(sourcePath).toAbsolutePath()));
-    }
-
-    private Properties stronglyTypedContext() {
-        Properties properties = new Properties();
-        properties.put(DecisionCodegen.STRONGLY_TYPED_CONFIGURATION_KEY, Boolean.TRUE.toString());
-        return properties;
     }
 
     private List<String> fileNames(List<GeneratedFile> generatedFiles) {
