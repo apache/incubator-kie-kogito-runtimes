@@ -1,6 +1,15 @@
-import org.kie.kogito.KogitoConfig;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.inject.Inject;
 
-public class SampleConfig implements KogitoConfig {
+@Path("/hello")
+public class SampleResource {
 
+    @Inject
+    SampleEngine engine;
 
+    @GET
+    public String execute() {
+        return engine.execute();
+    }
 }
