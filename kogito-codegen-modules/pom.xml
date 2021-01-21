@@ -16,7 +16,6 @@
     <name>Kogito :: Codegen Modules</name>
 
     <modules>
-        <module>kogito-codegen-sample</module>
         <module>kogito-codegen-core</module>
         <module>kogito-codegen-api</module>
     </modules>
