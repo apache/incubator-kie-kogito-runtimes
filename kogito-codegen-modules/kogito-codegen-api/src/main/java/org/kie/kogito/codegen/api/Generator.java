@@ -46,6 +46,10 @@ public interface Generator {
 
     String name();
 
+    /**
+     * Override this method to specify an order of execution
+     * @return
+     */
     default int priority() {
         return Integer.MAX_VALUE;
     }
