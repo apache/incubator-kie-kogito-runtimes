@@ -13,29 +13,30 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.codegen.utils;
+package org.kie.kogito.codegen.core.utils;
 
+import org.kie.kogito.codegen.api.GeneratorFactory;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
-import org.kie.kogito.codegen.decision.DecisionCodegenFactory;
-import org.kie.kogito.codegen.prediction.PredictionCodegen;
-import org.kie.kogito.codegen.prediction.PredictionCodegenFactory;
-import org.kie.kogito.codegen.process.ProcessCodegen;
-import org.kie.kogito.codegen.process.ProcessCodegenFactory;
-import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
-import org.kie.kogito.codegen.rules.IncrementalRuleCodegenFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Utility class that performs automatic ApplicationGenerator discovery
  */
 public class ApplicationGeneratorDiscovery {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(ApplicationGeneratorDiscovery.class);
 
     private ApplicationGeneratorDiscovery() {
         // utility class
@@ -53,12 +54,15 @@ public class ApplicationGeneratorDiscovery {
     protected static Collection<Generator> loadGenerators(KogitoBuildContext context) {
         Collection<CollectedResource> collectedResources = CollectedResourceProducer.fromPaths(context.getAppPaths().getPaths());
 
-        // ordering is relevant.
-        return Arrays.asList(
-                new ProcessCodegenFactory().create(context, collectedResources),
-                new IncrementalRuleCodegenFactory().create(context, collectedResources),
-                new PredictionCodegenFactory().create(context, collectedResources),
-                new DecisionCodegenFactory().create(context, collectedResources)
-        );
+        ServiceLoader<GeneratorFactory> generatorFactories = ServiceLoader.load(GeneratorFactory.class);
+
+        List<Generator> generators = StreamSupport.stream(generatorFactories.spliterator(), false)
+                .map(gf -> gf.create(context, collectedResources))
+                .sorted(Comparator.comparingInt(Generator::priority))
+                .collect(Collectors.toList());
+
+        LOGGER.info("Generator discovery performed, found [{}]", generators.stream().map(Generator::name).collect(Collectors.joining(", ")));
+
+        return generators;
     }
 }

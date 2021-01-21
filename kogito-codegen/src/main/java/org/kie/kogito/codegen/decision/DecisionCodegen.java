@@ -250,4 +250,9 @@ public class DecisionCodegen extends AbstractGenerator {
                 applicationCanonicalName(),
                 this.cResources));
     }
+
+    @Override
+    public int priority() {
+        return 30;
+    }
 }

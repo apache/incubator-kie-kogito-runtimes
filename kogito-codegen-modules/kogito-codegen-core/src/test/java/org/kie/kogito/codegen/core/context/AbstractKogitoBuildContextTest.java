@@ -32,7 +32,8 @@ class AbstractKogitoBuildContextTest {
 
     @BeforeEach
     public void init() {
-        builder = MockKogitoBuildContext.builder();
+        builder = MockKogitoBuildContext.builder()
+            .withAddonsConfig(AddonsConfig.DEFAULT);
     }
 
     @Test
@@ -57,7 +58,9 @@ class AbstractKogitoBuildContextTest {
 
     @Test
     public void withAddonsConfig() {
-        assertThat(builder.build().getAddonsConfig())
+        assertThat(builder
+                .withAddonsConfig(null)
+                .build().getAddonsConfig())
                 .isNotNull()
                 .isNotEqualTo(AddonsConfig.DEFAULT);
         assertThat(builder

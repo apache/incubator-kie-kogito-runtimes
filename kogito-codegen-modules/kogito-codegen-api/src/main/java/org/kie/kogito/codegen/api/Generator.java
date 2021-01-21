@@ -46,6 +46,10 @@ public interface Generator {
 
     String name();
 
+    default int priority() {
+        return Integer.MAX_VALUE;
+    }
+
     default boolean isEnabled() {
         return context().getApplicationProperty(CONFIG_PREFIX + name())
                 .map("true"::equalsIgnoreCase)

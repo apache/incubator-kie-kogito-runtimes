@@ -19,7 +19,7 @@ package org.kie.kogito.codegen.core.io;
 import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.io.internal.InternalResource;
-import org.kie.api.io.ResourceType;
+import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,14 +81,9 @@ public class CollectedResourceProducer {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                ResourceType resourceType = determineResourceType(entry.getName());
-                if (resourceType != null) {
-                    InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
-                    resource.setResourceType(resourceType);
-                    resource.setSourcePath(entry.getName());
-                    CollectedResource collectedResource = new CollectedResource(jarPath, resource);
-                    resources.add(collectedResource);
-                }
+                InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
+                resource.setSourcePath(entry.getName());
+                resources.add(toCollectedResource(jarPath, entry.getName(), resource));
             }
             return resources;
         } catch (IOException e) {
@@ -104,9 +99,7 @@ public class CollectedResourceProducer {
         try (Stream<Path> paths = Files.walk(path)) {
             paths.filter(Files::isRegularFile)
                     .map(Path::toFile)
-                    .map(f -> new FileSystemResource(f)
-                            .setResourceType(determineResourceType(f.getName())))
-                    .map(f -> new CollectedResource(path, f))
+                    .map(f -> toCollectedResource(path, f))
                     .forEach(resources::add);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -121,11 +114,20 @@ public class CollectedResourceProducer {
         Collection<CollectedResource> resources = new ArrayList<>();
         try (Stream<File> paths = Arrays.stream(files)) {
             paths.filter(File::isFile)
-                    .map(f -> new FileSystemResource(f)
-                            .setResourceType(determineResourceType(f.getName())))
-                    .map(f -> new CollectedResource(basePath, f))
+                    .map(f -> toCollectedResource(basePath, f))
                     .forEach(resources::add);
         }
         return resources;
+    }
+
+    private static CollectedResource toCollectedResource(Path basePath, File file) {
+        Resource resource = new FileSystemResource(file);
+        return toCollectedResource(basePath, file.getName(), resource);
+    }
+
+    private static CollectedResource toCollectedResource(Path basePath, String resourceName, Resource resource) {
+        resource.setResourceType(determineResourceType(resourceName));
+        return new CollectedResource(basePath, resource);
+
     }
 }

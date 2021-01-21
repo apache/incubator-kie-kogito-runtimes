@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 
-// FIXME to fix this should become an additional generator?
 public class DashboardGeneratedFileUtils {
     public static final GeneratedFileType DASHBOARD_TYPE = GeneratedFileType.of("DASHBOARD", GeneratedFileType.Category.RESOURCE);
     private static final String STATIC_RESOURCE_PATH = "META-INF/resources/monitoring/dashboards/";
@@ -39,16 +38,16 @@ public class DashboardGeneratedFileUtils {
     public static List<GeneratedFile> operational(String operationalDashboard, String name){
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         generatedFiles.add(new GeneratedFile(DASHBOARD_TYPE,
-                                                                    STATIC_RESOURCE_PATH + OPERATIONAL_DASHBOARD_PREFIX + name,
-                                                                    operationalDashboard));
+                STATIC_RESOURCE_PATH + OPERATIONAL_DASHBOARD_PREFIX + name,
+                operationalDashboard));
         return generatedFiles;
     }
 
     public static List<GeneratedFile> domain(String domainDashboard, String name){
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         generatedFiles.add(new GeneratedFile(DASHBOARD_TYPE,
-                                                                    STATIC_RESOURCE_PATH + DOMAIN_DASHBOARD_PREFIX + name,
-                                                                    domainDashboard));
+                STATIC_RESOURCE_PATH + DOMAIN_DASHBOARD_PREFIX + name,
+                domainDashboard));
         return generatedFiles;
     }
 
@@ -61,8 +60,8 @@ public class DashboardGeneratedFileUtils {
         if (!fileNames.isEmpty()){
             try {
                 return Optional.of(new GeneratedFile(DASHBOARD_TYPE,
-                                                     STATIC_RESOURCE_PATH + LIST_FILENAME,
-                                                     MAPPER.writeValueAsString(fileNames)));
+                        STATIC_RESOURCE_PATH + LIST_FILENAME,
+                        MAPPER.writeValueAsString(fileNames)));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }

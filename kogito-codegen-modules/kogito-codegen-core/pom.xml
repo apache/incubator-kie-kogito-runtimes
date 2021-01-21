@@ -12,14 +12,12 @@
     <name>Kogito :: Codegen Core Library</name>
 
     <dependencies>
-<!--        FIXME to fix move to depMan -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-codegen-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
-<!--        FIXME to fix this is because of CollectedResourceProducer -->
+        <!-- required because of CollectedResourceProducer -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>drools-core</artifactId>

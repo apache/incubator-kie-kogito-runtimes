@@ -18,6 +18,7 @@ package org.kie.kogito.codegen.core;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.ConfigGenerator;
 import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -25,8 +26,9 @@ import org.mockito.Mockito;
 
 public class ApplicationConfigGeneratorTest {
 
-    KogitoBuildContext context = JavaKogitoBuildContext.builder()
+    private static final KogitoBuildContext context = JavaKogitoBuildContext.builder()
             .withPackageName("org.kie.kogito.test")
+            .withAddonsConfig(AddonsConfig.DEFAULT)
             .build();
 
     @Test

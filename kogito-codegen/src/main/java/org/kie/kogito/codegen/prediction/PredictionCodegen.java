@@ -205,4 +205,9 @@ public class PredictionCodegen extends AbstractGenerator {
     private void storeFile(GeneratedFileType type, String path, String source) {
         generatedFiles.add(new GeneratedFile(type, path, source));
     }
+
+    @Override
+    public int priority() {
+        return 40;
+    }
 }

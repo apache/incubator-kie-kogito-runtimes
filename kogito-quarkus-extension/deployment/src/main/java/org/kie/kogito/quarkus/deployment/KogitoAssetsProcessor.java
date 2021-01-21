@@ -67,7 +67,7 @@ import org.kie.kogito.codegen.JsonSchemaGenerator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.codegen.api.utils.AppPaths;
-import org.kie.kogito.codegen.utils.ApplicationGeneratorDiscovery;
+import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 import org.kie.kogito.codegen.core.utils.GeneratedFileWriter;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinder;

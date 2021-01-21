@@ -442,4 +442,9 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
         return new KogitoKieModuleModelImpl();
     }
+
+    @Override
+    public int priority() {
+        return 20;
+    }
 }

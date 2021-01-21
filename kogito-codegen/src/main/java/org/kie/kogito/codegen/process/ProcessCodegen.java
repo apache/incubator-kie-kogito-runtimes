@@ -433,4 +433,9 @@ public class ProcessCodegen extends AbstractGenerator {
         processGenerators.forEach(moduleGenerator::addProcess);
         return Optional.of(moduleGenerator);
     }
+
+    @Override
+    public int priority() {
+        return 10;
+    }
 }

@@ -15,37 +15,31 @@
 
 package org.kie.kogito.codegen.api.template;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.kie.kogito.codegen.api.template.TemplatedGenerator.Builder;
 import static org.kie.kogito.codegen.api.template.TemplatedGenerator.TEMPLATE_SUFFIX;
 import static org.kie.kogito.codegen.api.template.TemplatedGenerator.builder;
-import static org.kie.kogito.codegen.api.template.TemplatedGenerator.createTemplatePath;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class TemplatedGeneratorTest {
 
     static final String JAVA = "Java";
     static final String QUARKUS = "Quarkus";
     static final String SPRING = "Spring";
-    static final List<String> validTemplateNames = Arrays.asList(
-            createTemplatePath("", "", JAVA),
-            createTemplatePath("", "", QUARKUS),
-            createTemplatePath("", "", SPRING));
     static final KogitoBuildContext context = mock(KogitoBuildContext.class);
     static final String templateName = "TestResource";
+
+    @BeforeAll
+    public static void init() {
+        when(context.name()).thenReturn(JAVA);
+        when(context.getPackageName()).thenReturn(KogitoBuildContext.DEFAULT_PACKAGE_NAME);
+    }
 
     @Test
     public void baseCheck() {
@@ -134,8 +128,7 @@ class TemplatedGeneratorTest {
     @Test
     public void templatePath() {
         // no fallback but resource exist
-        // FIXME to fix provide valid template
-        String existingTemplate = "APPLICATION_CLASS_NAME";
+        String existingTemplate = "Test";
         TemplatedGenerator generator = TemplatedGenerator.builder()
                 .build(context, existingTemplate);
 
@@ -179,7 +172,7 @@ class TemplatedGeneratorTest {
 
         assertThat(selectResourceNotExist).isNull();
     }
-    
+
     @Test
     public void compilationUnit() {
         // template not found
@@ -220,25 +213,5 @@ class TemplatedGeneratorTest {
         assertThatThrownBy(() -> generatorTemplateNotValid.compilationUnitOrThrow(errorMessage))
                 .isInstanceOf(TemplateInstantiationException.class)
                 .hasMessageContaining(templateName);
-    }
-
-    // FIXME to fix move back to kogito-codegen
-    @Test
-    public void templateNameSanityCheck() throws IOException {
-        Path path = Paths.get("src/main/resources" + TemplatedGenerator.DEFAULT_TEMPLATE_BASE_PATH);
-        List<String> invalidTemplates = Files.walk(path)
-                .filter(Files::isRegularFile)
-                .filter(this::invalidTemplateName)
-                .map(Path::toString)
-                .collect(Collectors.toList());
-
-        if(!invalidTemplates.isEmpty()) {
-            fail("Found templates with invalid name:\n" + String.join("\n", invalidTemplates));
-        }
-    }
-
-    private boolean invalidTemplateName(Path path) {
-        return validTemplateNames.stream()
-                .noneMatch(templateSuffix -> path.toString().endsWith(templateSuffix));
     }
 }

@@ -25,13 +25,10 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.core.AbstractGenerator;
-import org.kie.kogito.codegen.core.ApplicationContainerGenerator;
-import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
@@ -42,14 +39,10 @@ public class ApplicationGeneratorTest {
 
     private static final String PACKAGE_NAME = "org.drools.test";
     private static final String EXPECTED_APPLICATION_NAME = PACKAGE_NAME + ".Application";
-    private KogitoBuildContext context;
-
-    @BeforeEach
-    public void init() {
-        context = JavaKogitoBuildContext.builder()
-                .withPackageName(PACKAGE_NAME)
-                .build();
-    }
+    private static final KogitoBuildContext context = JavaKogitoBuildContext.builder()
+            .withPackageName(PACKAGE_NAME)
+            .withAddonsConfig(AddonsConfig.DEFAULT)
+            .build();
 
     @Test
     public void targetCanonicalName() {
@@ -74,10 +67,11 @@ public class ApplicationGeneratorTest {
 
     @Test
     public void compilationUnitWithCDI() {
-        context = QuarkusKogitoBuildContext.builder()
+        KogitoBuildContext quarkusContext = QuarkusKogitoBuildContext.builder()
                 .withPackageName(PACKAGE_NAME)
+                .withAddonsConfig(AddonsConfig.DEFAULT)
                 .build();
-        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(context);
+        final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(quarkusContext);
         assertCompilationUnit(appGenerator.getCompilationUnitOrThrow(), true);
     }
 
@@ -113,7 +107,7 @@ public class ApplicationGeneratorTest {
         assertThat(compilationUnit.getTypes()).isNotNull();
         assertThat(compilationUnit.getTypes()).hasSize(1);
 
-        final TypeDeclaration mainAppClass = compilationUnit.getTypes().get(0);
+        final TypeDeclaration<?> mainAppClass = compilationUnit.getTypes().get(0);
         assertThat(mainAppClass).isNotNull();
         assertThat(mainAppClass.getName().toString()).isEqualTo("Application");
 
@@ -148,7 +142,7 @@ public class ApplicationGeneratorTest {
 
     static class MockGenerator extends AbstractGenerator {
 
-        private boolean enabled;
+        private final boolean enabled;
 
         protected MockGenerator(KogitoBuildContext context, boolean enabled) {
             super(context, "mockGenerator");

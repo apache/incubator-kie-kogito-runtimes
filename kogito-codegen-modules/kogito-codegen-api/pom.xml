@@ -21,7 +21,7 @@
             <artifactId>javaparser-core</artifactId>
         </dependency>
 
-<!--       FIXME to fix this is because of Resource in CollectedResource -->
+        <!-- required because of Resource in CollectedResource -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-api</artifactId>
