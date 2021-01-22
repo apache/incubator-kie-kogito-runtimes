@@ -138,6 +138,7 @@
     <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
+    <version.org.springdoc>1.5.2</version.org.springdoc>
     <version.wiremock>2.27.2</version.wiremock>
     <version.testcontainers>1.15.1</version.testcontainers>
     <version.resteasy.springboot>4.6.0.Final</version.resteasy.springboot>
@@ -261,6 +262,12 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-nop</artifactId>
         <version>${version.org.slf4j}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>${version.org.springdoc}</version>
       </dependency>
 
       <dependency>
