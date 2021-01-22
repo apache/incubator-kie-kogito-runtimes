@@ -43,6 +43,7 @@ import static org.kie.api.io.ResourceType.determineResourceType;
 public class CollectedResourceProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CollectedResourceProducer.class);
+    private static final Path CURRENT_PATH = new File(".").toPath().toAbsolutePath().getParent();
 
     private CollectedResourceProducer() {
         // utility class
@@ -76,6 +77,9 @@ public class CollectedResourceProducer {
      * Returns a collection of CollectedResource from the given jar file.
      */
     public static Collection<CollectedResource> fromJarFile(Path jarPath) {
+        if (!jarPath.toAbsolutePath().startsWith(CURRENT_PATH)) {
+            throw new IllegalArgumentException("Invalid path because outside the project " + jarPath.toString());
+        }
         Collection<CollectedResource> resources = new ArrayList<>();
         try (ZipFile zipFile = new ZipFile(jarPath.toFile())) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();

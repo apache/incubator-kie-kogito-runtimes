@@ -55,8 +55,9 @@ public class ApplicationGeneratorTest {
     public void generatedFilePath() {
         final ApplicationGenerator appGenerator = new ApplicationGenerator(context);
         String path = appGenerator.generateApplicationDescriptor().relativePath();
-        assertThat(path).isNotNull();
-        assertThat(path).isEqualTo(EXPECTED_APPLICATION_NAME.replace(".", "/") + ".java");
+        assertThat(path)
+                .isNotNull()
+                .isEqualTo(EXPECTED_APPLICATION_NAME.replace(".", "/") + ".java");
     }
 
     @Test
@@ -102,14 +103,14 @@ public class ApplicationGeneratorTest {
         assertThat(compilationUnit).isNotNull();
 
         assertThat(compilationUnit.getPackageDeclaration()).isPresent();
-        assertThat(compilationUnit.getPackageDeclaration().get().getName().toString()).isEqualTo(PACKAGE_NAME);
+        assertThat(compilationUnit.getPackageDeclaration().get().getName()).hasToString(PACKAGE_NAME);
 
         assertThat(compilationUnit.getTypes()).isNotNull();
         assertThat(compilationUnit.getTypes()).hasSize(1);
 
         final TypeDeclaration<?> mainAppClass = compilationUnit.getTypes().get(0);
         assertThat(mainAppClass).isNotNull();
-        assertThat(mainAppClass.getName().toString()).isEqualTo("Application");
+        assertThat(mainAppClass.getName()).hasToString("Application");
 
         if (checkCDI) {
             assertThat(mainAppClass.getAnnotations()).isNotEmpty();

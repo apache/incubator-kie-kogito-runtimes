@@ -35,6 +35,10 @@ public class DashboardGeneratedFileUtils {
     private static final String LIST_FILENAME = "list.json";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private DashboardGeneratedFileUtils() {
+        // utility class
+    }
+
     public static List<GeneratedFile> operational(String operationalDashboard, String name){
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         generatedFiles.add(new GeneratedFile(DASHBOARD_TYPE,
@@ -63,7 +67,7 @@ public class DashboardGeneratedFileUtils {
                         STATIC_RESOURCE_PATH + LIST_FILENAME,
                         MAPPER.writeValueAsString(fileNames)));
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException("Error during json serialization", e);
             }
         }
         return Optional.empty();

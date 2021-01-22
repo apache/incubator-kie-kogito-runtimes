@@ -32,6 +32,10 @@ import com.github.javaparser.ast.type.Type;
 
 public class CodegenUtils {
 
+    private CodegenUtils() {
+        // utility class
+    }
+
     public static ClassOrInterfaceType genericType(Class<?> outer, Class<?> inner) {
         return genericType(outer.getCanonicalName(), inner.getCanonicalName());
     }

@@ -15,7 +15,6 @@
 package org.kie.kogito.codegen.core;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.AbstractConfigGenerator;
 
 public class ConfigBeanGenerator extends AbstractConfigGenerator {
 

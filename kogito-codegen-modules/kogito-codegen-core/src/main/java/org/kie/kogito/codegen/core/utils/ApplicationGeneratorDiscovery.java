@@ -36,7 +36,7 @@ import java.util.stream.StreamSupport;
  */
 public class ApplicationGeneratorDiscovery {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ApplicationGeneratorDiscovery.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGeneratorDiscovery.class);
 
     private ApplicationGeneratorDiscovery() {
         // utility class
@@ -61,7 +61,10 @@ public class ApplicationGeneratorDiscovery {
                 .sorted(Comparator.comparingInt(Generator::priority))
                 .collect(Collectors.toList());
 
-        LOGGER.info("Generator discovery performed, found [{}]", generators.stream().map(Generator::name).collect(Collectors.joining(", ")));
+        if (LOGGER.isInfoEnabled()) {
+            String generatorMessages = generators.stream().map(Generator::name).collect(Collectors.joining(", "));
+            LOGGER.info("Generator discovery performed, found [{}]", generatorMessages);
+        }
 
         return generators;
     }

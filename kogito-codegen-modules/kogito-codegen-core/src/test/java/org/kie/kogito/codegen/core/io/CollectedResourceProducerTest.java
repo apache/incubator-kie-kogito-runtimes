@@ -15,7 +15,10 @@
 package org.kie.kogito.codegen.core.io;
 
 import java.io.File;
+import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.Resource;
@@ -23,6 +26,7 @@ import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CollectedResourceProducerTest {
 
@@ -36,5 +40,21 @@ class CollectedResourceProducerTest {
                         .map(File::new)
                         .filter(File::isDirectory)
                         .count()).isZero();
+    }
+
+    @Test
+    void invalidJarPath() {
+        Path invalidPath = Paths.get("/tmp/invalid.jar");
+        assertThatThrownBy(() -> CollectedResourceProducer.fromJarFile(invalidPath))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid path");
+
+        URL emptyJar = this.getClass().getClassLoader().getResource("empty.jar");
+        assertThat(emptyJar).isNotNull();
+        Path validPath = Paths.get(emptyJar.getPath());
+        Collection<CollectedResource> collectedResources = CollectedResourceProducer.fromJarFile(validPath);
+        assertThat(collectedResources)
+                .isNotNull()
+                .hasSize(1);
     }
 }
