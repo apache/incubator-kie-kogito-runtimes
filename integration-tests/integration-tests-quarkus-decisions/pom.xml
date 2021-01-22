@@ -81,6 +81,17 @@
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.swagger.parser.v3</groupId>
+      <artifactId>swagger-parser</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-annotations</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
     <dependency>
@@ -100,6 +111,7 @@
           <configuration>
             <noDeps>true</noDeps>
             <skip>${skipTests}</skip>
+            
           </configuration>
         </plugin>
       </plugins>

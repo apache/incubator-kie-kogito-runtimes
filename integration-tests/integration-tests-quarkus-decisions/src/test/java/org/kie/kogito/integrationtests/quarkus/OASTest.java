@@ -16,8 +16,14 @@
 
 package org.kie.kogito.integrationtests.quarkus;
 
+import java.net.URL;
+
+import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
+import io.swagger.v3.parser.OpenAPIV3Parser;
+import io.swagger.v3.parser.core.models.ParseOptions;
+import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.aMapWithSize;
@@ -30,6 +36,19 @@ class OASTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
+    @TestHTTPResource("/")
+    URL rootUrl;
+
+    @Test
+    public void testOASisValid() {
+        String url = rootUrl.toString() + "/q/openapi"; // default location since Quarkus v1.10
+        ParseOptions parseOptions = new ParseOptions();
+        parseOptions.setResolve(true);
+        SwaggerParseResult result = new OpenAPIV3Parser().readLocation(url, null, parseOptions);
+
+        //Assertions.assertThat(result.getMessages()).isEmpty();
+    }
+
     @Test
     public void testOASdmnDefinitions() {
         RestAssured.given()
@@ -38,4 +57,5 @@ class OASTest {
                    .statusCode(200)
                    .body("definitions", aMapWithSize(greaterThan(0)));
     }
+
 }
