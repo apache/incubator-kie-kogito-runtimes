@@ -45,7 +45,6 @@ import org.kie.dmn.typesafe.DMNAllTypesIndex;
 import org.kie.dmn.typesafe.DMNTypeSafePackageName;
 import org.kie.dmn.typesafe.DMNTypeSafeTypeGenerator;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
@@ -84,11 +83,9 @@ public class DecisionCodegen extends AbstractGenerator {
     private final List<CollectedResource> cResources;
     private final List<DMNResource> resources = new ArrayList<>();
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
-    private ClassLoader notPCLClassloader; // Kogito CodeGen design as of 2020-10-09
-    private PCLResolverFn pclResolverFn = this::trueIFFClassIsPresent;
 
     public DecisionCodegen(KogitoBuildContext context, List<CollectedResource> cResources) {
-        super(context);
+        super(context, "decisions", new DecisionConfigGenerator(context));
         this.cResources = cResources;
     }
 
@@ -217,25 +214,11 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     private boolean isMPAnnotationsPresent() {
-        return this.pclResolverFn.apply("org.eclipse.microprofile.openapi.models.OpenAPI");
+        return context().hasClassAvailable("org.eclipse.microprofile.openapi.models.OpenAPI");
     }
 
     private boolean isIOSwaggerOASv3AnnotationsPresent() {
-        return this.pclResolverFn.apply("io.swagger.v3.oas.annotations.media.Schema");
-    }
-
-    private boolean trueIFFClassIsPresent(String fqn) {
-        if (notPCLClassloader != null) {
-            try {
-                Class<?> c = notPCLClassloader.loadClass(fqn);
-                if (c != null) {
-                    return true;
-                }
-            } catch (Exception e) {
-                // do nothing.
-            }
-        }
-        return false;
+        return context().hasClassAvailable("io.swagger.v3.oas.annotations.media.Schema");
     }
 
     private void generateAndStoreGrafanaDashboards(DecisionRestResourceGenerator resourceGenerator) {
@@ -255,32 +238,15 @@ public class DecisionCodegen extends AbstractGenerator {
         generatedFiles.addAll(DashboardGeneratedFileUtils.domain(domainDashboard, resourceGenerator.getNameURL() + ".json"));
     }
 
-    @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        if (!cResources.isEmpty()) {
-            cfg.withDecisionConfig(new DecisionConfigGenerator(context()));
-        }
-    }
-
     private void storeFile(GeneratedFileType type, String path, String source) {
         generatedFiles.add(new GeneratedFile(type, path, source));
     }
 
     @Override
-    public ApplicationSection section() {
-        return new DecisionContainerGenerator(
+    public Optional<ApplicationSection> section() {
+        return Optional.of(new DecisionContainerGenerator(
                 context(),
                 applicationCanonicalName(),
-                this.cResources);
-    }
-
-    public DecisionCodegen withClassLoader(ClassLoader classLoader) {
-        this.notPCLClassloader = classLoader;
-        return this;
-    }
-
-    public DecisionCodegen withPCLResolverFn(PCLResolverFn fn) {
-        this.pclResolverFn = fn;
-        return this;
+                this.cResources));
     }
 }

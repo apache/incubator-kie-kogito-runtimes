@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
@@ -36,7 +37,6 @@ import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.GeneratedFileType;
@@ -61,18 +61,18 @@ public class PredictionCodegen extends AbstractGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PredictionCodegen.class);
     private static final GeneratedFileType PMML_TYPE = GeneratedFileType.of("PMML", GeneratedFileType.Category.SOURCE);
+    public static final String DMN_JPMML_CLASS =  "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator";
     private final List<PMMLResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
 
     public PredictionCodegen(KogitoBuildContext context, List<PMMLResource> resources) {
-        super(context);
+        super(context, "predictions", new PredictionConfigGenerator(context));
         this.resources = resources;
     }
 
     public static PredictionCodegen ofCollectedResources(KogitoBuildContext context,
-                                                         boolean isJPMMLAvailable,
                                                          Collection<CollectedResource> resources) {
-        if (isJPMMLAvailable) {
+        if (context.hasClassAvailable(DMN_JPMML_CLASS)) {
             LOGGER.info("jpmml libraries available on classpath, skipping kogito-pmml parsing and compilation");
             return ofPredictions(context, Collections.emptyList());
         }
@@ -101,15 +101,8 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        if (!resources.isEmpty()) {
-            cfg.withPredictionConfig(new PredictionConfigGenerator(context()));
-        }
-    }
-
-    @Override
-    public ApplicationSection section() {
-        return new PredictionModelsGenerator(context(), applicationCanonicalName(), resources);
+    public Optional<ApplicationSection> section() {
+        return Optional.of(new PredictionModelsGenerator(context(), applicationCanonicalName(), resources));
     }
 
     @Override

@@ -53,6 +53,7 @@ import org.kie.kogito.codegen.BodyDeclarationComparator;
 import org.kie.kogito.codegen.CodegenUtils;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +62,6 @@ import static com.github.javaparser.StaticJavaParser.parseStatement;
 public class DecisionRestResourceGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DecisionRestResourceGenerator.class);
-
-    private static final String CDI_TEMPLATE = "/class-templates/DecisionRestResourceTemplate.java";
-    private static final String SPRING_TEMPLATE = "/class-templates/spring/SpringDecisionRestResourceTemplate.java";
 
     private final KogitoBuildContext context;
     private final DMNModel dmnModel;
@@ -93,7 +91,10 @@ public class DecisionRestResourceGenerator {
         String classPrefix = StringUtils.ucFirst(decisionName);
         this.resourceClazzName = classPrefix + "Resource";
         this.relativePath = restPackageName.replace(".", "/") + "/" + resourceClazzName + ".java";
-        generator = new TemplatedGenerator(context, restPackageName, "DecisionRestResource",CDI_TEMPLATE, SPRING_TEMPLATE, CDI_TEMPLATE);
+        generator = TemplatedGenerator.builder()
+                .withPackageName(restPackageName)
+                .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME)
+                .build(context, "DecisionRestResource");
     }
 
     private String encodeNameUrl(String name) {
@@ -181,9 +182,7 @@ public class DecisionRestResourceGenerator {
 
         if (context.getAddonsConfig().useMonitoring()) {
             addMonitoringImports(clazz);
-            ClassOrInterfaceDeclaration exceptionClazz = clazz.findFirst(ClassOrInterfaceDeclaration.class, x -> "DMNEvaluationErrorExceptionMapper".equals(x.getNameAsString()))
-                    .orElseThrow(() -> new NoSuchElementException("Could not find DMNEvaluationErrorExceptionMapper, template has changed."));
-            addExceptionMetricsLogging(exceptionClazz, nameURL);
+            addExceptionMetricsLogging(clazz, nameURL);
             addMonitoringToMethod(dmnMethod, nameURL);
         }
 
@@ -358,8 +357,8 @@ public class DecisionRestResourceGenerator {
         return resourceClazzName;
     }
 
-    private void addExceptionMetricsLogging(ClassOrInterfaceDeclaration template, String nameURL) {
-        MethodDeclaration method = template.findFirst(MethodDeclaration.class, x -> "toResponse".equals(x.getNameAsString()))
+    private void addExceptionMetricsLogging(CompilationUnit clazz, String nameURL) {
+        MethodDeclaration method = clazz.findFirst(MethodDeclaration.class, x -> "toResponse".equals(x.getNameAsString()))
                 .orElseThrow(() -> new NoSuchElementException("Method toResponse not found, template has changed."));
 
         BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("This method should be invoked only with concrete classes and not with abstract methods or interfaces."));
