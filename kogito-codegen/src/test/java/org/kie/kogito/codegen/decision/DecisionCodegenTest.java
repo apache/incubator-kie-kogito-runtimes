@@ -37,6 +37,7 @@ import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.grafana.JGrafana;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -188,7 +189,7 @@ public class DecisionCodegenTest {
                 .withAddonsConfig(addonsConfig)
                 .build();
 
-        return DecisionCodegen.ofCollectedResources(context, CollectedResource.fromPaths(Paths.get(sourcePath).toAbsolutePath()));
+        return DecisionCodegen.ofCollectedResources(context, CollectedResourceProducer.fromPaths(Paths.get(sourcePath).toAbsolutePath()));
     }
 
     private List<String> fileNames(List<GeneratedFile> generatedFiles) {
