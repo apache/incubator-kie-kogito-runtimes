@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.kie.kogito.quarkus;
 
-package org.drools.core;
+class NotEmptyConstructor {
 
-public class KogitoWorkItemHandlerNotFoundException extends WorkItemHandlerNotFoundException {
+    public NotEmptyConstructor(String param1, int param2) {
 
-    public KogitoWorkItemHandlerNotFoundException(String workItemName) {
-        super("Could not find work item handler for " + workItemName, workItemName);
     }
 }
