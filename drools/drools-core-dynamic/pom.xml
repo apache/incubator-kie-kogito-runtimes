@@ -20,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-core-reflective</artifactId>
+      <artifactId>drools-core-dynamic</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.kie</groupId>
