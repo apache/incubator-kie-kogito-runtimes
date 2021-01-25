@@ -84,6 +84,11 @@
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>cloudevents-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-cloudevents-common-addon</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -718,7 +723,6 @@
         <artifactId>persistence-commons-redis</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>persistence-commons-redis</artifactId>
         <version>${project.version}</version>
@@ -729,6 +733,49 @@
         <artifactId>persistence-commons-redis</artifactId>
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
+      </dependency>
+
+      <!-- JIT Service -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jitexecutor-runner</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jitexecutor-runner</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jitexecutor-runner</artifactId>
+        <version>${project.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jitexecutor-dmn</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jitexecutor-dmn</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jitexecutor-dmn</artifactId>
+        <version>${project.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jitexecutor-dmn</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
 
       <!-- Trusty Services -->
@@ -1195,6 +1242,17 @@
       <!-- jbpm -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>process-workitems</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>process-workitems</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>jbpm-flow</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1396,6 +1454,41 @@
         <artifactId>explainability-quarkus-addon</artifactId>
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
+      </dependency>
+
+      <!-- event-driven decisions -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-event-driven-decisions-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-event-driven-decisions-common</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-event-driven-decisions-quarkus-addon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-event-driven-decisions-quarkus-addon</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-event-driven-decisions-springboot-addon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-event-driven-decisions-springboot-addon</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
       </dependency>
 
     </dependencies>

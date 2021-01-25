@@ -47,13 +47,12 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.ApplicationSection;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.ApplicationConfigGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
-import org.kie.kogito.codegen.process.persistence.proto.ProtoDataClassesResult;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
 
 
@@ -63,9 +62,9 @@ public class PersistenceGenerator extends AbstractGenerator {
     public static final String INFINISPAN_PERSISTENCE_TYPE = "infinispan";
     public static final String DEFAULT_PERSISTENCE_TYPE = INFINISPAN_PERSISTENCE_TYPE;
     public static final String MONGODB_PERSISTENCE_TYPE = "mongodb";
-    
-    private static final String TEMPLATE_NAME = "templateName";
-    private static final String PATH_NAME = "path";
+
+    protected static final String TEMPLATE_NAME = "templateName";
+    protected static final String PATH_NAME = "path";
 
     private static final String KOGITO_PERSISTENCE_FS_PATH_PROP = "kogito.persistence.filesystem.path";
     
@@ -77,32 +76,17 @@ public class PersistenceGenerator extends AbstractGenerator {
     private static final String SPRINGBOOT_PERSISTENCE_MONGODB_NAME_PROP = "spring.data.mongodb.database";
     private static final String OR_ELSE = "orElse";
 
-    private final Collection<?> modelClasses;
-    private final ProtoGenerator<?> protoGenerator;
+    private final ProtoGenerator protoGenerator;
 
-    private List<String> parameters;
-
-    private ClassLoader classLoader;
-    private String persistenceType;
-
-    public PersistenceGenerator(KogitoBuildContext context, Collection<?> modelClasses, ProtoGenerator<?> protoGenerator, List<String> parameters, String persistenceType) {
-        this(context, modelClasses, protoGenerator, Thread.currentThread().getContextClassLoader(), parameters, persistenceType);
-    }
-
-    public PersistenceGenerator(KogitoBuildContext context, Collection<?> modelClasses, ProtoGenerator<?> protoGenerator, ClassLoader classLoader, List<String> parameters, String persistenceType) {
-        super(context);
-        this.modelClasses = modelClasses;
+    public PersistenceGenerator(KogitoBuildContext context, ProtoGenerator protoGenerator) {
+        super(context, "persistence");
         this.protoGenerator = protoGenerator;
-        this.classLoader = classLoader;
-        this.parameters = parameters;
-        this.persistenceType = persistenceType;
     }
 
     @Override
-    public ApplicationSection section() {
-        return null;
+    public Optional<ApplicationSection> section() {
+        return Optional.empty();
     }
-
 
     @Override
     public Collection<GeneratedFile> generate() {
@@ -110,7 +94,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             return Collections.emptyList();
         }
 
-        switch (persistenceType) {
+        switch (persistenceType()) {
             case INFINISPAN_PERSISTENCE_TYPE:
                 return infinispanBasedPersistence();
             case FILESYSTEM_PERSISTENCE_TYPE:
@@ -118,22 +102,18 @@ public class PersistenceGenerator extends AbstractGenerator {
             case MONGODB_PERSISTENCE_TYPE:
                 return mongodbBasedPersistence();
             default:
-                throw new IllegalArgumentException("Unknown persistenceType " + persistenceType);
+                throw new IllegalArgumentException("Unknown persistenceType " + persistenceType());
         }
     }
 
-    @Override
-    public void updateConfig(ApplicationConfigGenerator cfg) {
-        // Persistence has no custom/additional config
+    public String persistenceType() {
+        return context().getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     protected Collection<GeneratedFile> infinispanBasedPersistence() {
+        Collection<GeneratedFile> generatedFiles = new ArrayList<>(protoGenerator.generateProtoFiles());
 
-        ProtoDataClassesResult protoDataClassesResult = protoGenerator.extractDataClasses((Collection) modelClasses);
-        Collection<GeneratedFile> generatedFiles = new ArrayList<>(protoDataClassesResult.getGeneratedFiles());
-
-        Proto proto = protoGenerator.generate(context().getPackageName(), protoDataClassesResult.getDataModelClasses(), "import \"kogito-types.proto\";");
+        Proto proto = protoGenerator.protoOfDataClasses(context().getPackageName(), "import \"kogito-types.proto\";");
 
         ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration().setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
                 .setModifiers(Modifier.Keyword.PUBLIC)
@@ -169,7 +149,7 @@ public class PersistenceGenerator extends AbstractGenerator {
         }
         List<String> variableMarshallers = new ArrayList<>();
 
-        MarshallerGenerator marshallerGenerator = new MarshallerGenerator(this.classLoader);
+        MarshallerGenerator marshallerGenerator = new MarshallerGenerator(context());
 
         String protoContent = proto.toString();
 
@@ -187,7 +167,7 @@ public class PersistenceGenerator extends AbstractGenerator {
 
                 variableMarshallers.add(clazzName);
 
-                generatedFiles.add(new GeneratedFile(GeneratedFile.Type.CLASS,
+                generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE,
                         clazzName.replace('.', '/') + ".java",
                         marshallerClazz.toString()));
             }
@@ -322,7 +302,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     private ConstructorDeclaration createConstructorForClazz(ClassOrInterfaceDeclaration persistenceProviderClazz) {
         ConstructorDeclaration constructor = persistenceProviderClazz.addConstructor(Keyword.PUBLIC);
         List<Expression> paramNames = new ArrayList<>();
-        for (String parameter : parameters) {
+        for (String parameter : protoGenerator.getPersistenceClassParams()) {
             String name = "param" + paramNames.size();
             constructor.addParameter(parameter, name);
             paramNames.add(new NameExpr(name));
@@ -342,7 +322,7 @@ public class PersistenceGenerator extends AbstractGenerator {
         persistenceProviderClazz.getMembers().sort(new BodyDeclarationComparator());
         if (firstClazzName.isPresent()) {
             String clazzName = pkgName + "." + firstClazzName.get();
-            return Optional.of(new GeneratedFile(GeneratedFile.Type.CLASS, clazzName.replace('.', '/') + ".java", compilationUnit.toString()));
+            return Optional.of(new GeneratedFile(GeneratedFileType.SOURCE, clazzName.replace('.', '/') + ".java", compilationUnit.toString()));
         }
         return Optional.empty();
     }

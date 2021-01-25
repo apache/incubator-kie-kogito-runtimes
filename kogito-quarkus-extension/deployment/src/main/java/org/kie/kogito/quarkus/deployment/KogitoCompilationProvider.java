@@ -34,16 +34,17 @@ import java.util.Set;
 import io.quarkus.deployment.dev.JavaCompilationProvider;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.GeneratedFile.Type;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.Generator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.utils.AppPaths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class KogitoCompilationProvider extends JavaCompilationProvider {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(KogitoCompilationProvider.class);
     protected static Map<Path, Path> classToSource = new HashMap<>();
-
-    private String appPackageName = System.getProperty("kogito.codegen.packageName", "org.kie.kogito.app");
 
     @Override
     public Set<String> handledSourcePaths() {
@@ -60,27 +61,27 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
 
         File outputDirectory = quarkusContext.getOutputDirectory();
         try {
-            KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
-                    .withApplicationProperties(quarkusContext.getProjectDirectory().toPath().resolve("src/main/resources").toFile())
-                    .withPackageName(appPackageName)
-                    .withClassAvailabilityResolver(className -> hasClassOnClasspath(cl, className))
-                    .withTargetDirectory(outputDirectory)
-                    .build();
-
+            AppPaths appPaths = AppPaths.fromProjectDir(quarkusContext.getProjectDirectory().toPath());
+            KogitoBuildContext context = KogitoQuarkusContextProvider.context(appPaths, cl);
 
             ApplicationGenerator appGen = new ApplicationGenerator(context);
 
-            addGenerator(appGen, context, filesToCompile, quarkusContext, cl);
+            appGen.registerGeneratorIfEnabled(getGenerator(context, filesToCompile, quarkusContext));
 
             Collection<GeneratedFile> generatedFiles = appGen.generate();
 
             Set<File> generatedSourceFiles = new HashSet<>();
             for (GeneratedFile file : generatedFiles) {
                 Path path = pathOf(outputDirectory.getPath(), file.relativePath());
-                if (file.getType() != GeneratedFile.Type.APPLICATION && file.getType() != GeneratedFile.Type.APPLICATION_CONFIG) {
+                if (file.type().canHotReload()) {
                     Files.write(path, file.contents());
-                    if (file.getType() != Type.RESOURCE && file.getType() != Type.GENERATED_CP_RESOURCE) {
+                    if (file.category().equals(GeneratedFileType.Category.SOURCE)) {
                         generatedSourceFiles.add(path.toFile());
+                    }
+                }
+                else {
+                    if(LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Skipping file because cannot hot reload: " + file);
                     }
                 }
             }
@@ -105,26 +106,14 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         return null;
     }
 
-    protected abstract Generator addGenerator(ApplicationGenerator appGen,
-                                              KogitoBuildContext context,
+    protected abstract Generator getGenerator(KogitoBuildContext context,
                                               Set<File> filesToCompile,
-                                              Context quarkusContext,
-                                              ClassLoader cl)
-            throws IOException;
+                                              Context quarkusContext);
 
     static Path pathOf(String path, String relativePath) {
         Path p = Paths.get(path, relativePath);
         p.getParent().toFile().mkdirs();
         return p;
-    }
-    
-    private boolean hasClassOnClasspath(ClassLoader cl, String className) {
-        try {
-            cl.loadClass(className);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     private URL[] getClasspathUrls( Context context ) {
