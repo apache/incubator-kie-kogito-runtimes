@@ -15,18 +15,18 @@
 
 package org.kie.kogito.codegen.context;
 
-import org.kie.kogito.codegen.AddonsConfig;
-
-import java.io.File;
-import java.util.Properties;
-import java.util.function.Predicate;
-
 public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
 
     public static final String CONTEXT_NAME = "Java";
 
-    protected JavaKogitoBuildContext(String packageName, Predicate<String> classAvailabilityResolver, File targetDirectory, AddonsConfig addonsConfig, Properties applicationProperties) {
-        super(packageName, classAvailabilityResolver, null, targetDirectory, addonsConfig, applicationProperties, CONTEXT_NAME);
+    protected JavaKogitoBuildContext(JavaKogitoBuildContextBuilder builder) {
+        super(builder, null, CONTEXT_NAME);
+    }
+
+    @Override
+    public boolean hasREST() {
+        return hasClassAvailable("javax.ws.rs.Path")
+                || hasClassAvailable("org.springframework.web.bind.annotation.RestController");
     }
 
     public static Builder builder() {
@@ -40,7 +40,12 @@ public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
 
         @Override
         public JavaKogitoBuildContext build() {
-            return new JavaKogitoBuildContext(packageName, classAvailabilityResolver, targetDirectory, addonsConfig, applicationProperties);
+            return new JavaKogitoBuildContext(this);
+        }
+
+        @Override
+        public String toString() {
+            return "Java";
         }
     }
 }
