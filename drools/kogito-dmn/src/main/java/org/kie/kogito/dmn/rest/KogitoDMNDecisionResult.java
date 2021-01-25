@@ -33,7 +33,7 @@ public class KogitoDMNDecisionResult implements Serializable,
 
     private Object result;
 
-    private List<DMNMessageSQ> messages = new ArrayList<>();
+    private List<KogitoDMNMessage> messages = new ArrayList<>();
 
     private DecisionEvaluationStatus status;
 
@@ -92,8 +92,9 @@ public class KogitoDMNDecisionResult implements Serializable,
     }
 
     public void setMessages(List<DMNMessage> messages) {
+        this.messages = new ArrayList<>();
         for (DMNMessage m : messages) {
-            this.messages.add(DMNMessageSQ.of(m));
+            this.messages.add(KogitoDMNMessage.of(m));
         }
     }
 

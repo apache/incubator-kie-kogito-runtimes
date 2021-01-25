@@ -42,7 +42,7 @@ public class KogitoDMNResult implements Serializable,
 
     private Map<String, Object> dmnContext = new HashMap<>();
 
-    private List<DMNMessageSQ> messages = new ArrayList<>();
+    private List<KogitoDMNMessage> messages = new ArrayList<>();
 
     private Map<String, KogitoDMNDecisionResult> decisionResults = new HashMap<>();
 
@@ -88,7 +88,7 @@ public class KogitoDMNResult implements Serializable,
     public void setMessages(List<DMNMessage> messages) {
         this.messages = new ArrayList<>();
         for (DMNMessage m : messages) {
-            this.messages.add(DMNMessageSQ.of(m));
+            this.messages.add(KogitoDMNMessage.of(m));
         }
     }
 
@@ -142,7 +142,7 @@ public class KogitoDMNResult implements Serializable,
 
     @Override
     public String toString() {
-        return new StringBuilder("DMNResultKS [")
+        return new StringBuilder("KogitoDMNResult [")
                 .append("namespace=").append(namespace)
                 .append(", modelName=").append(modelName)
                 .append(", dmnContext=").append(dmnContext)
