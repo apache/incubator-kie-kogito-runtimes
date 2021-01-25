@@ -18,26 +18,30 @@ package org.kie.kogito.codegen;
 import com.github.javaparser.ast.CompilationUnit;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 
-import java.util.Optional;
+import static org.kie.kogito.codegen.ApplicationConfigGenerator.TEMPLATE_CONFIG_FOLDER;
 
-public class AbstractConfigGenerator {
+public abstract class AbstractConfigGenerator implements ConfigGenerator {
 
     private final TemplatedGenerator templatedGenerator;
+    private final String configClassName;
 
-    public AbstractConfigGenerator(KogitoBuildContext buildContext, String packageName, String targetTypeName, String resourceCdi, String resourceSpring) {
-        this.templatedGenerator = new TemplatedGenerator(
-                buildContext,
-                packageName,
-                targetTypeName,
-                resourceCdi,
-                resourceSpring);
+    public AbstractConfigGenerator(KogitoBuildContext context, String targetTypeName) {
+        configClassName = targetTypeName;
+        this.templatedGenerator = TemplatedGenerator.builder()
+                .withTemplateBasePath(TEMPLATE_CONFIG_FOLDER)
+                .build(context, targetTypeName);
     }
 
-    public Optional<GeneratedFile> generate() {
-        Optional<CompilationUnit> compilationUnit = templatedGenerator.compilationUnit();
-        return compilationUnit.map(cu ->
-                new GeneratedFile(GeneratedFile.Type.APPLICATION_CONFIG,
+    @Override
+    public String configClassName() {
+        return configClassName;
+    }
+
+    @Override
+    public GeneratedFile generate() {
+        CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow();
+        return new GeneratedFile(ApplicationConfigGenerator.APPLICATION_CONFIG_TYPE,
                         templatedGenerator.generatedFilePath(),
-                        cu.toString()));
+                        compilationUnit.toString());
     }
 }

@@ -17,11 +17,36 @@ package org.kie.kogito.codegen.context;
 
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 
-import java.util.function.Predicate;
-
 public class QuarkusKogitoBuildContext extends AbstractKogitoBuildContext {
 
-    public QuarkusKogitoBuildContext(Predicate<String> classAvailabilityResolver) {
-        super(classAvailabilityResolver, new CDIDependencyInjectionAnnotator());
+    public static final String CONTEXT_NAME = "Quarkus";
+
+    protected QuarkusKogitoBuildContext(QuarkusKogitoBuildContextBuilder builder) {
+        super(builder, new CDIDependencyInjectionAnnotator(), CONTEXT_NAME);
+    }
+
+    @Override
+    public boolean hasREST() {
+        return hasClassAvailable("javax.ws.rs.Path");
+    }
+
+    public static Builder builder() {
+        return new QuarkusKogitoBuildContextBuilder();
+    }
+
+    protected static class QuarkusKogitoBuildContextBuilder extends AbstractBuilder {
+
+        protected QuarkusKogitoBuildContextBuilder() {
+        }
+
+        @Override
+        public QuarkusKogitoBuildContext build() {
+            return new QuarkusKogitoBuildContext(this);
+        }
+
+        @Override
+        public String toString() {
+            return "Quarkus";
+        }
     }
 }

@@ -16,8 +16,6 @@
 
 package org.kie.kogito.quarkus.deployment;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -51,7 +48,6 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyIgnoreWarningBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
-import org.drools.compiler.builder.impl.KogitoKieModuleModelImpl;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
@@ -60,34 +56,28 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.Index;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
-import org.jboss.jandex.MethodInfo;
-import org.jbpm.util.JsonSchemaUtil;
-import org.kie.api.builder.model.KieModuleModel;
 import org.kie.api.pmml.PMML4Result;
 import org.kie.internal.kogito.codegen.Generated;
 import org.kie.internal.kogito.codegen.VariableInfo;
 import org.kie.kogito.Model;
 import org.kie.kogito.UserTask;
-import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
-import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.GeneratorContext;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.JsonSchemaGenerator;
-import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.decision.DecisionCodegen;
-import org.kie.kogito.codegen.io.CollectedResource;
-import org.kie.kogito.codegen.prediction.PredictionCodegen;
-import org.kie.kogito.codegen.process.ProcessCodegen;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
-import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
+import org.kie.kogito.codegen.utils.AppPaths;
+import org.kie.kogito.codegen.utils.ApplicationGeneratorDiscovery;
+import org.kie.kogito.codegen.utils.GeneratedFileWriter;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinder;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static org.kie.kogito.codegen.utils.GeneratedFileValidation.validateGeneratedFileTypes;
 
 /**
  * Main class of the Kogito extension
@@ -107,14 +97,7 @@ public class KogitoAssetsProcessor {
                     System.getProperty("kogito.codegen.resources.directory", "target/generated-resources/kogito/"),
                     "target/generated-sources/kogito/");
 
-    private static final String appPackageName = "org.kie.kogito.app";
     private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
-    private static final DotName prometheusClass = DotName.createSimple("org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource");
-    private static final DotName monitoringCoreClass = DotName.createSimple("org.kie.kogito.monitoring.core.common.MonitoringRegistry");
-    private static final DotName tracingClass = DotName.createSimple("org.kie.kogito.tracing.decision.DecisionTracingListener");
-    private static final DotName knativeEventingClass = DotName.createSimple("org.kie.kogito.events.knative.ce.extensions.KogitoProcessExtension");
-    private static final DotName dmnJpmmlClass = DotName.createSimple( "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator");
-    private static final DotName quarkusCloudEvents = DotName.createSimple("org.kie.kogito.addon.cloudevents.quarkus.QuarkusCloudEventEmitter");
     private static final DotName quarkusSVGService = DotName.createSimple("org.kie.kogito.svg.service.QuarkusProcessSvgService");
 
     private static final PathMatcher svgFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.svg");
@@ -154,74 +137,21 @@ public class KogitoAssetsProcessor {
         }
 
 
-        // scan and parse paths
-        AppPaths appPaths = new AppPaths(root.getPaths());
-
-        // enable addons looking at available classes
-        boolean usePersistence = combinedIndexBuildItem.getIndex().getClassByName(persistenceFactoryClass) != null;
-        boolean usePrometheusMonitoring = combinedIndexBuildItem.getIndex().getClassByName(prometheusClass) != null;
-        boolean useMonitoring = usePrometheusMonitoring || combinedIndexBuildItem.getIndex().getClassByName(monitoringCoreClass) != null;
-        boolean useTracing = !combinedIndexBuildItem.getIndex().getAllKnownSubclasses(tracingClass).isEmpty();
-        boolean useKnativeEventing = combinedIndexBuildItem.getIndex().getClassByName(knativeEventingClass) != null;
-        boolean isJPMMLAvailable = combinedIndexBuildItem.getIndex().getClassByName(dmnJpmmlClass) != null;
-        boolean useCloudEvents = combinedIndexBuildItem.getIndex().getClassByName(quarkusCloudEvents) != null;
         boolean useProcessSVG = combinedIndexBuildItem.getIndex().getClassByName(quarkusSVGService) != null;
 
-        AddonsConfig addonsConfig = new AddonsConfig()
-                .withPersistence(usePersistence)
-                .withMonitoring(useMonitoring)
-                .withPrometheusMonitoring(usePrometheusMonitoring)
-                .withTracing(useTracing)
-                .withKnativeEventing(useKnativeEventing)
-                .withCloudEvents(useCloudEvents);
-
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        GeneratorContext context = generatorContext(appPaths, combinedIndexBuildItem.getIndex());
-
-        Path[] paths = appPaths.getPath();
-
         // configure the application generator
+        KogitoBuildContext context = kogitoBuildContext();
 
-        ApplicationGenerator appGen =
-                new ApplicationGenerator(
-                        context,
-                        appPackageName,
-                        new File(appPaths.getFirstProjectPath().toFile(), "target"))
-                        .withAddons(addonsConfig);
-
-        // configure each individual generator. Ordering is relevant.
-
-        appGen.setupGenerator(ProcessCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
-                .withClassLoader(classLoader);
-
-        appGen.setupGenerator(IncrementalRuleCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
-                .withKModule(findKieModuleModel(appPaths))
-                .withClassLoader(classLoader);
-
-        appGen.setupGenerator(PredictionCodegen.ofCollectedResources(isJPMMLAvailable, CollectedResource.fromPaths(paths)));
-
-        appGen.setupGenerator(DecisionCodegen.ofCollectedResources(CollectedResource.fromPaths(paths)))
-                .withClassLoader(classLoader);
-
-        // real work occurs here: invoke the code-generation procedure
-        Collection<GeneratedFile> generatedFiles = appGen.generate();
-
-        Optional<GeneratedFile> dashboardsListFile = DashboardGeneratedFileUtils.list(generatedFiles);
-        dashboardsListFile.ifPresent(generatedFiles::add);
+        Collection<GeneratedFile> generatedFiles = ApplicationGeneratorDiscovery
+                .discover(context)
+                .generate();
 
         // dump files to disk
-        for (Path projectPath : appPaths.projectPaths) {
-            generatedFileWriterBuilder
-                    .build(projectPath)
-                    .writeAll(generatedFiles);
-        }
-
-        // register resources to the Quarkus environment
-        registerResources(generatedFiles, resource, genResBI);
+        dumpFilesToDisk(context.getAppPaths(), generatedFiles);
 
         // build Java source code and register the generated beans
         Index index = processGeneratedJavaSourceCode(
-                appPaths,
+                context,
                 generatedFiles,
                 generatedBeans);
 
@@ -230,43 +160,70 @@ public class KogitoAssetsProcessor {
             return;
         }
 
-        // further processing
-        Collection<GeneratedFile> persistenceGeneratedFiles = generatePersistenceInfo(
-                appPaths,
+        // Persistence files
+        generatedFiles.addAll(generatePersistenceInfo(
+                context,
                 index,
                 generatedBeans,
                 resource,
-                reflectiveClass);
-        generatedFiles.addAll(persistenceGeneratedFiles);
+                reflectiveClass));
+
+        // Json schema files
+        generatedFiles.addAll(generateJsonSchema(context, index));
 
         // Write files to disk
-        dumpFilesToDisk(appPaths, generatedFiles);
+        dumpFilesToDisk(context.getAppPaths(), generatedFiles);
 
         // register resources to the Quarkus environment
         registerResources(generatedFiles, resource, genResBI);
 
-        registerDataEventsForReflection(index, addonsConfig, reflectiveClass);
-
-        writeJsonSchema(appPaths, index, resource);
+        registerDataEventsForReflection(index, context, reflectiveClass);
 
         if (useProcessSVG) {
-            registerProcessSVG(appPaths, resource);
+            registerProcessSVG(context.getAppPaths(), resource);
+        }
+    }
+
+    private KogitoBuildContext kogitoBuildContext() {
+        // scan and parse paths
+        AppPaths appPaths = AppPaths.fromQuarkus(root.getPaths());
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        return KogitoQuarkusContextProvider.context(appPaths, classLoader, className -> classAvailabilityResolver(classLoader, className));
+    }
+
+    /**
+     * Verify if a class is available. First uses jandex indexes, then fallback on classLoader
+     * @param classLoader
+     * @param className
+     * @return
+     */
+    private boolean classAvailabilityResolver(ClassLoader classLoader, String className) {
+        IndexView index = combinedIndexBuildItem.getIndex();
+        DotName classDotName = DotName.createSimple(className);
+        boolean classFound = !index.getAnnotations(classDotName).isEmpty() ||
+                index.getClassByName(classDotName) != null;
+        if (classFound) {
+            return true;
+        }
+        try {
+            classLoader.loadClass(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 
     private void dumpFilesToDisk(AppPaths appPaths, Collection<GeneratedFile> generatedFiles){
-        for (Path projectPath : appPaths.projectPaths) {
-            generatedFileWriterBuilder
-                    .build(projectPath)
-                    .writeAll(generatedFiles);
-        }
+        generatedFileWriterBuilder
+                .build(appPaths.getFirstProjectPath())
+                .writeAll(generatedFiles);
     }
 
     private void registerResources(Collection<GeneratedFile> generatedFiles,
                                    BuildProducer<NativeImageResourceBuildItem> resource,
                                    BuildProducer<GeneratedResourceBuildItem> genResBI) {
         for (GeneratedFile f : generatedFiles) {
-            if (f.getType() == GeneratedFile.Type.GENERATED_CP_RESOURCE) {
+            if (f.category() == GeneratedFileType.Category.RESOURCE) {
                 genResBI.produce(new GeneratedResourceBuildItem(f.relativePath(), f.contents()));
                 resource.produce(new NativeImageResourceBuildItem(f.relativePath()));
             }
@@ -274,15 +231,13 @@ public class KogitoAssetsProcessor {
     }
 
     private Index processGeneratedJavaSourceCode(
-            AppPaths appPaths,
+            KogitoBuildContext context,
             Collection<GeneratedFile> generatedFiles,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans) throws IOException {
 
-        // we are currently filtering on file extension,
-        // but we should tag GeneratedFile properly
         Collection<GeneratedFile> javaFiles =
                 generatedFiles.stream()
-                        .filter(f -> f.relativePath().endsWith(".java"))
+                        .filter(f -> f.category() == GeneratedFileType.Category.SOURCE)
                         .collect(toList());
 
         if (javaFiles.isEmpty()) {
@@ -290,18 +245,18 @@ public class KogitoAssetsProcessor {
         }
 
         InMemoryCompiler inMemoryCompiler = new InMemoryCompiler(
-                appPaths.classesPaths,
+                context.getAppPaths().getClassesPaths(),
                 curateOutcomeBuildItem.getEffectiveModel().getUserDependencies());
         inMemoryCompiler.compile(javaFiles);
 
         MemoryFileSystem trgMfs = inMemoryCompiler.getTargetFileSystem();
-        Collection<GeneratedBeanBuildItem> generatedBeanBuildItems = makeBuildItems(appPaths, trgMfs);
+        Collection<GeneratedBeanBuildItem> generatedBeanBuildItems = makeBuildItems(context.getAppPaths(), trgMfs);
         generatedBeanBuildItems.forEach(generatedBeans::produce);
-        return indexBuildItems(generatedBeanBuildItems);
+        return indexBuildItems(context, generatedBeanBuildItems);
     }
 
     private Collection<GeneratedFile> generatePersistenceInfo(
-            AppPaths appPaths,
+            KogitoBuildContext context,
             IndexView inputIndex,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
             BuildProducer<NativeImageResourceBuildItem> resource,
@@ -309,129 +264,60 @@ public class KogitoAssetsProcessor {
 
         CompositeIndex index = CompositeIndex.create(combinedIndexBuildItem.getIndex(), inputIndex);
 
-        ClassInfo persistenceClass = index
-                .getClassByName(persistenceFactoryClass);
-        boolean usePersistence = persistenceClass != null;
+        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(index, context, reflectiveClass);
 
-        List<String> parameters = new ArrayList<>();
-        if (usePersistence) {
-            for (MethodInfo mi : persistenceClass.methods()) {
-                if (mi.name().equals("<init>") && !mi.parameters().isEmpty()) {
-                    parameters = mi.parameters().stream().map(p -> p.name().toString()).collect(toList());
-                    break;
-                }
-            }
-        }
-        GeneratorContext context = generatorContext(appPaths, index);
-        String persistenceType = context.getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
-        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(appPaths, index, usePersistence, parameters, context, persistenceType);
+        validateGeneratedFileTypes(persistenceGeneratedFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.RESOURCE));
 
-        if(persistenceGeneratedFiles.stream().anyMatch(x -> !GeneratedFile.Type.CLASS.equals(x.getType()) && !GeneratedFile.Type.GENERATED_CP_RESOURCE.equals(x.getType()))) {
-            throw new IllegalStateException("Only type CLASS and GENERATED_CP_RESOURCE expected here");
-        }
-
-        Collection<GeneratedFile> persistenceClasses = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.CLASS)).collect(toList());
-        Collection<GeneratedFile> persistenceProtoFiles = persistenceGeneratedFiles.stream().filter(x -> x.getType().equals(GeneratedFile.Type.GENERATED_CP_RESOURCE)).collect(toList());
+        Collection<GeneratedFile> persistenceClasses = persistenceGeneratedFiles.stream().filter(x -> x.category().equals(GeneratedFileType.Category.SOURCE)).collect(toList());
+        Collection<GeneratedFile> persistenceProtoFiles = persistenceGeneratedFiles.stream().filter(x -> x.category().equals(GeneratedFileType.Category.RESOURCE)).collect(toList());
 
         if (!persistenceClasses.isEmpty()) {
-            InMemoryCompiler inMemoryCompiler = new InMemoryCompiler(appPaths.classesPaths,
+            InMemoryCompiler inMemoryCompiler = new InMemoryCompiler(context.getAppPaths().getClassesPaths(),
                                                                      curateOutcomeBuildItem.getEffectiveModel().getUserDependencies());
             inMemoryCompiler.compile(persistenceClasses);
-            Collection<GeneratedBeanBuildItem> generatedBeanBuildItems = makeBuildItems(appPaths, inMemoryCompiler.getTargetFileSystem());
+            Collection<GeneratedBeanBuildItem> generatedBeanBuildItems = makeBuildItems(context.getAppPaths(), inMemoryCompiler.getTargetFileSystem());
             generatedBeanBuildItems.forEach(generatedBeans::produce);
         }
 
-        if (usePersistence) {
+        if (context.getAddonsConfig().usePersistence()) {
             resource.produce(new NativeImageResourceBuildItem("kogito-types.proto"));
-        }
-
-        if(persistenceType.equals(PersistenceGenerator.MONGODB_PERSISTENCE_TYPE)) {
-            addInnerClasses(org.jbpm.marshalling.impl.JBPMMessages.class, reflectiveClass);
-            reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "java.lang.String"));
         }
 
         return persistenceProtoFiles;
     }
 
+    private Collection<GeneratedFile> getGeneratedPersistenceFiles(IndexView index,
+                                                                   KogitoBuildContext context,
+                                                                   BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+        ClassInfo persistenceClass = index
+                .getClassByName(persistenceFactoryClass);
+
+        Collection<ClassInfo> modelClasses = index
+                .getAllKnownImplementors(DotName.createSimple(Model.class.getCanonicalName()));
+        JandexProtoGenerator protoGenerator = JandexProtoGenerator.builder(
+                    index,
+                    DotName.createSimple(Generated.class.getCanonicalName()),
+                    DotName.createSimple(VariableInfo.class.getCanonicalName()))
+                .withPersistenceClass(persistenceClass)
+                .build(modelClasses);
+
+        PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
+                context,
+                protoGenerator);
+
+        if(persistenceGenerator.persistenceType().equals(PersistenceGenerator.MONGODB_PERSISTENCE_TYPE)) {
+            addInnerClasses(org.jbpm.marshalling.impl.JBPMMessages.class, reflectiveClass);
+            reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "java.lang.String"));
+        }
+
+        return persistenceGenerator.generate();
+    }
+
     private void addInnerClasses(Class<?> superClass, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
-        Arrays.asList(superClass.getDeclaredClasses()).forEach(c -> {
+        asList(superClass.getDeclaredClasses()).forEach(c -> {
             reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, c.getName()));
             addInnerClasses(c, reflectiveClass);
         });
-    }
-
-    private Collection<GeneratedFile> getGeneratedPersistenceFiles(AppPaths appPaths,
-                                                                   IndexView index,
-                                                                   boolean usePersistence,
-                                                                   List<String> parameters,
-                                                                   GeneratorContext context,
-                                                                   String persistenceType) {
-        JandexProtoGenerator jandexProtoGenerator =
-                new JandexProtoGenerator(
-                        index,
-                        DotName.createSimple(Generated.class.getCanonicalName()),
-                        DotName.createSimple(VariableInfo.class.getCanonicalName()));
-        Collection<ClassInfo> modelClasses = index
-                .getAllKnownImplementors(DotName.createSimple(Model.class.getCanonicalName()));
-
-        Collection<GeneratedFile> generatedFiles = new ArrayList<>();
-
-        for (Path projectPath : appPaths.projectPaths) {
-            PersistenceGenerator persistenceGenerator =
-                    makePersistenceGenerator(
-                            usePersistence,
-                            parameters,
-                            context,
-                            modelClasses,
-                            jandexProtoGenerator,
-                            projectPath,
-                            persistenceType);
-
-            generatedFiles.addAll(persistenceGenerator.generate());
-        }
-        return generatedFiles;
-    }
-
-    private PersistenceGenerator makePersistenceGenerator(
-            boolean usePersistence,
-            List<String> parameters,
-            GeneratorContext context,
-            Collection<ClassInfo> modelClasses,
-            JandexProtoGenerator jandexProtoGenerator,
-            Path projectPath,
-            String persistenceType) {
-        PersistenceGenerator persistenceGenerator =
-                new PersistenceGenerator(
-                        new File(projectPath.toFile(), "target"),
-                        modelClasses,
-                        usePersistence,
-                        jandexProtoGenerator,
-                        parameters,
-                        persistenceType);
-        persistenceGenerator.setPackageName(appPackageName);
-        persistenceGenerator.setContext(context);
-        return persistenceGenerator;
-    }
-
-    private Collection<GeneratedFile> getJsonSchemaFiles(Path path, Index index) throws IOException {
-        URL[] urls = {path.toUri().toURL()};
-        URLClassLoader cl = new URLClassLoader(
-                urls,
-                Thread.currentThread().getContextClassLoader());
-        List<AnnotationInstance> annotations =
-                index.getAnnotations(DotName.createSimple(UserTask.class.getCanonicalName()));
-
-        JsonSchemaGenerator.SimpleBuilder simpleBuilder =
-                new JsonSchemaGenerator.SimpleBuilder(cl)
-                        .withSchemaVersion(System.getProperty("kogito.jsonSchema.version"));
-
-        for (AnnotationInstance ann : annotations) {
-            String processName = ann.value("processName").asString();
-            String taskName = ann.value("taskName").asString();
-            simpleBuilder.addSchemaName(ann.target().asClass().name().toString(), processName, taskName);
-        }
-
-        return simpleBuilder.build().generate();
     }
 
     @BuildStep
@@ -450,6 +336,7 @@ public class KogitoAssetsProcessor {
         return result;
     }
 
+    @SuppressWarnings("rawtypes")
     @BuildStep
     public List<ReflectiveClassBuildItem> reflectivePredictions() {
         logger.debug("reflectivePredictions()");
@@ -489,20 +376,37 @@ public class KogitoAssetsProcessor {
         }
     }
 
-    private void writeJsonSchema(AppPaths appPaths, Index index, BuildProducer<NativeImageResourceBuildItem> resource) throws IOException {
-        Path relativePath = JsonSchemaUtil.getJsonDir();
-        Path targetClasses = appPaths.getFirstProjectPath().resolve(targetClassesDir);
-        Collection<GeneratedFile> jsonFiles = getJsonSchemaFiles(targetClasses, index);
-        Path jsonSchemaPath = targetClasses.resolve(relativePath);
-        Files.createDirectories(jsonSchemaPath);
+    private Collection<GeneratedFile> generateJsonSchema(KogitoBuildContext context, Index index) throws IOException {
+        Path targetClasses = context.getAppPaths().getFirstProjectPath().resolve(targetClassesDir);
+        URL[] urls = {targetClasses.toUri().toURL()};
 
-        for (GeneratedFile jsonFile : jsonFiles) {
-            Files.write(jsonSchemaPath.resolve(jsonFile.relativePath()), jsonFile.contents());
-            resource.produce(new NativeImageResourceBuildItem(relativePath.resolve(jsonFile.relativePath()).toString()));
+        try (URLClassLoader cl = new URLClassLoader(urls, context.getClassLoader())) {
+
+            List<AnnotationInstance> annotations =
+                    index.getAnnotations(DotName.createSimple(UserTask.class.getCanonicalName()));
+
+            Stream<Class<?>> stream = annotations.stream()
+                    .map(ann -> loadClassFromAnnotation(ann, cl))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get);
+
+            JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator.ClassBuilder(stream)
+                    .withGenSchemaPredicate(x -> true)
+                    .withSchemaVersion(System.getProperty("kogito.jsonSchema.version")).build();
+
+            return jsonSchemaGenerator.generate();
         }
     }
 
-    private void registerDataEventsForReflection(Index index, AddonsConfig addonsConfig, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+    private Optional<Class<?>> loadClassFromAnnotation(AnnotationInstance annotationInstance, ClassLoader classLoader) {
+        try {
+            return Optional.of(classLoader.loadClass(annotationInstance.target().asClass().name().toString()));
+        } catch (ClassNotFoundException e) {
+            return Optional.empty();
+        }
+    }
+
+    private void registerDataEventsForReflection(Index index, KogitoBuildContext context, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.event.AbstractDataEvent"));
         reflectiveClass.produce(
@@ -523,7 +427,7 @@ public class KogitoAssetsProcessor {
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.UserTaskInstanceDataEvent"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskInstanceEventBody"));
-        if (addonsConfig.useMonitoring()){
+        if (context.getAddonsConfig().useMonitoring()){
             reflectiveClass.produce(
                     new ReflectiveClassBuildItem(true, true, "org.HdrHistogram.Histogram"));
             reflectiveClass.produce(
@@ -543,7 +447,7 @@ public class KogitoAssetsProcessor {
                       new ReflectiveClassBuildItem(true, true, c.name().toString())));
     }
 
-    private Index indexBuildItems(Collection<GeneratedBeanBuildItem> buildItems) {
+    private Index indexBuildItems(KogitoBuildContext context, Collection<GeneratedBeanBuildItem> buildItems) {
         Indexer kogitoIndexer = new Indexer();
         Set<DotName> kogitoIndex = new HashSet<>();
 
@@ -553,7 +457,7 @@ public class KogitoAssetsProcessor {
                     kogitoIndexer,
                     combinedIndexBuildItem.getIndex(),
                     kogitoIndex,
-                    Thread.currentThread().getContextClassLoader(),
+                    context.getClassLoader(),
                     generatedBeanBuildItem.getData());
         }
 
@@ -582,20 +486,6 @@ public class KogitoAssetsProcessor {
         return buildItems;
     }
 
-    private KieModuleModel findKieModuleModel(AppPaths appPaths) throws IOException {
-        for (Path resourcePath : appPaths.getResourcePaths()) {
-            Path moduleXmlPath = resourcePath.resolve(KogitoKieModuleModelImpl.KMODULE_JAR_PATH);
-            if (Files.exists(moduleXmlPath)) {
-                try (ByteArrayInputStream bais = new ByteArrayInputStream(Files.readAllBytes(moduleXmlPath))) {
-                    return KogitoKieModuleModelImpl.fromXML(bais);
-                }
-            }
-        }
-
-        return KogitoKieModuleModelImpl.fromXML(
-                "<kmodule xmlns=\"http://www.drools.org/xsd/kmodule\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>");
-    }
-
     private String toClassName(String sourceName) {
         if (sourceName.startsWith("./")) {
             sourceName = sourceName.substring(2);
@@ -612,15 +502,5 @@ public class KogitoAssetsProcessor {
         Path path = Paths.get(location, end);
         path.getParent().toFile().mkdirs();
         return path;
-    }
-
-    private GeneratorContext generatorContext(AppPaths appPaths, IndexView index) {
-        GeneratorContext context = GeneratorContext.ofResourcePath(appPaths.getResourceFiles());
-        context.withBuildContext(new QuarkusKogitoBuildContext(className -> {
-            DotName classDotName = DotName.createSimple(className);
-            return !index.getAnnotations(classDotName).isEmpty() || index.getClassByName(classDotName) != null;
-        }));
-
-        return context;
     }
 }

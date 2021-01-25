@@ -20,11 +20,7 @@ import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 public class RuleConfigGenerator extends AbstractConfigGenerator {
 
-    public RuleConfigGenerator(KogitoBuildContext buildContext, String packageName) {
-        super(buildContext,
-                packageName,
-                "RuleConfig",
-                "/class-templates/config/CdiRuleConfigTemplate.java",
-                "/class-templates/config/SpringRuleConfigTemplate.java");
+    public RuleConfigGenerator(KogitoBuildContext context) {
+        super(context, "RuleConfig");
     }
 }

@@ -15,96 +15,85 @@
 
 package org.kie.kogito.codegen;
 
+import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.Objects;
 import java.util.Optional;
-
-import javax.lang.model.SourceVersion;
 
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
-import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 
 /**
- * Utility class to handle multi platform template generation
+ * Utility class to handle multi platform template generation.
+ * Template naming convention is the following:
+ *    templateName + context.name() + "Template.java"
+ *
+ * e.g.:
+ *    ApplicationConfigQuarkusTemplate.java
+ *    PredictionModelsSpringTemplate.java
+ *    ApplicationJavaTemplate.java
+ *
+ * By default targetTypeName value is ''templateName''
+ * By default templateBasePath value is ''/class-templates/''
+ * It is possible to specify a fallback context with fallbackContext
  */
 public final class TemplatedGenerator {
 
-    private final String packageName;
-    private final String sourceFilePath;
+    public static final String DEFAULT_TEMPLATE_BASE_PATH = "/class-templates/";
+    protected static final String TEMPLATE_FORMAT = "{0}{1}{2}{3}";
+    protected static final String TEMPLATE_SUFFIX = "Template.java";
 
-    private final String resourceCdi;
-    private final String resourceSpring;
-    private final String resourceDefault;
+    protected final String packageName;
+    protected final String sourceFilePath;
 
-    private final String targetTypeName;
-    private final KogitoBuildContext buildContext;
+    protected final String templateBasePath;
+    protected final String templateName;
 
-    public TemplatedGenerator(
-            KogitoBuildContext buildContext,
+    protected final String targetTypeName;
+    protected final String fallbackContext;
+    protected final KogitoBuildContext context;
+
+    private TemplatedGenerator(
+            KogitoBuildContext context,
             String packageName,
             String targetTypeName,
-            String resourceCdi,
-            String resourceSpring,
-            String resourceDefault) {
-        if (packageName == null) {
-            throw new IllegalArgumentException("Package name cannot be undefined (null), please specify a package name!");
-        }
-        if (!SourceVersion.isName(packageName)) {
-            throw new IllegalArgumentException(
-                    MessageFormat.format(
-                            "Package name \"{0}\" is not valid. It should be a valid Java package name.", packageName));
-        }
-
-        this.buildContext = buildContext;
+            String templateBasePath,
+            String templateName,
+            String fallbackContext) {
+        this.context = context;
         this.packageName = packageName;
         this.targetTypeName = targetTypeName;
+        this.fallbackContext = fallbackContext;
         String targetCanonicalName = this.packageName + "." + this.targetTypeName;
         this.sourceFilePath = targetCanonicalName.replace('.', '/') + ".java";
-        this.resourceCdi = resourceCdi;
-        this.resourceSpring = resourceSpring;
-        this.resourceDefault = resourceDefault;
-    }
-
-    public TemplatedGenerator(
-            KogitoBuildContext buildContext,
-            String packageName,
-            String targetTypeName,
-            String resourceCdi,
-            String resourceSpring) {
-        this(buildContext,
-             packageName,
-             targetTypeName,
-             resourceCdi,
-             resourceSpring,
-             null);
+        this.templateBasePath = templateBasePath;
+        this.templateName = templateName;
     }
 
     public String generatedFilePath() {
         return sourceFilePath;
     }
 
-    public String templatePath() {
-        return selectResource();
+    public String templateName() {
+        return templateName;
     }
 
-    public String typeName() {
+    public String targetTypeName() {
         return targetTypeName;
     }
 
     public Optional<CompilationUnit> compilationUnit() {
-        String selectedResource = selectResource();
+        String selectedResource = templatePath();
         if (selectedResource == null) {
             return Optional.empty();
         }
 
         try {
             CompilationUnit compilationUnit =
-                    parse(this.getClass().getResourceAsStream(selectedResource))
+                    parse(getResource(selectedResource))
                             .setPackageDeclaration(packageName);
 
             return Optional.of(compilationUnit);
@@ -115,8 +104,7 @@ public final class TemplatedGenerator {
 
     public CompilationUnit compilationUnitOrThrow(String errorMessage) {
         return compilationUnit().orElseThrow(() -> new InvalidTemplateException(
-                typeName(),
-                templatePath(),
+                this,
                 errorMessage));
     }
 
@@ -124,15 +112,80 @@ public final class TemplatedGenerator {
         return compilationUnitOrThrow("Missing template");
     }
 
-    private String selectResource() {
-        if (buildContext == null || buildContext instanceof JavaKogitoBuildContext) {
-            return resourceDefault;
-        } else if (buildContext instanceof QuarkusKogitoBuildContext) {
-            return resourceCdi;
-        } else if (buildContext instanceof SpringBootKogitoBuildContext) {
-            return resourceSpring;
-        } else {
-            throw new IllegalArgumentException("Unknown buildContext " + buildContext);
+    /**
+     * Returns the valid template path if exists or null
+     * @return
+     */
+    public String templatePath() {
+        String resourcePath = uncheckedTemplatePath();
+        String fallbackPath = createTemplatePath(templateBasePath, templateName, fallbackContext);
+
+        if(getResource(resourcePath) != null) {
+            return resourcePath;
+        }
+
+        if (fallbackContext != null && getResource(fallbackPath) != null) {
+            return fallbackPath;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns template path applying naming convention without verifying if exist
+     * @return
+     */
+    public String uncheckedTemplatePath() {
+        return createTemplatePath(templateBasePath, templateName, context.name());
+    }
+
+    private InputStream getResource(String path) {
+        return this.getClass().getResourceAsStream(path);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static String createTemplatePath(String basePath, String templateName, String context) {
+        return MessageFormat.format(TEMPLATE_FORMAT, basePath, templateName, context, TEMPLATE_SUFFIX);
+    }
+
+    public static class Builder {
+        protected String packageName;
+        protected String templateBasePath = DEFAULT_TEMPLATE_BASE_PATH;
+        protected String targetTypeName;
+        protected String fallbackContext;
+
+        public Builder withTemplateBasePath(String templateBasePath) {
+            Objects.requireNonNull(templateBasePath, "templateBasePath cannot be null");
+            String prefix = !templateBasePath.startsWith("/") ? "/" : "";
+            String postfix = !templateBasePath.endsWith("/") ? "/" : "";
+            this.templateBasePath =  prefix + templateBasePath + postfix;
+            return this;
+        }
+
+        public Builder withPackageName(String packageName) {
+            this.packageName = packageName;
+            return this;
+        }
+
+        public Builder withTargetTypeName(String targetTypeName) {
+            this.targetTypeName = targetTypeName;
+            return this;
+        }
+
+        public Builder withFallbackContext(String fallbackContext) {
+            this.fallbackContext = fallbackContext;
+            return this;
+        }
+
+        public TemplatedGenerator build(KogitoBuildContext context, String templateName) {
+            Objects.requireNonNull(context, "context cannot be null");
+            Objects.requireNonNull(templateName, "templateName cannot be null");
+            String aPackageName = packageName == null ? context.getPackageName() : packageName;
+            String aTargetTypeName = targetTypeName == null ? templateName : targetTypeName;
+            return new TemplatedGenerator(context, aPackageName, aTargetTypeName, templateBasePath, templateName, fallbackContext);
         }
     }
 }

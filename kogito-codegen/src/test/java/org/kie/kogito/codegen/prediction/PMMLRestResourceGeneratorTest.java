@@ -33,17 +33,16 @@ import org.drools.core.util.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
-import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.di.CDIDependencyInjectionAnnotator;
 import org.kie.pmml.commons.model.KiePMMLModel;
 
-import static com.github.javaparser.StaticJavaParser.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.kie.kogito.codegen.prediction.PMMLRestResourceGenerator.CDI_TEMPLATE;
 import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
 
 class PMMLRestResourceGeneratorTest {
@@ -51,13 +50,13 @@ class PMMLRestResourceGeneratorTest {
     private final static String APP_CANONICAL_NAME = "APP_CANONICAL_NAME";
     private final static KiePMMLModel KIE_PMML_MODEL = getKiePMMLModelInternal();
     private static PMMLRestResourceGenerator pmmlRestResourceGenerator;
-    private static ClassOrInterfaceDeclaration template = getClassOrInterfaceDeclaration();
-    private static KogitoBuildContext buildContext;
+    private static ClassOrInterfaceDeclaration template = getClassOrInterfaceDeclaration(QuarkusKogitoBuildContext.builder().build());
+    private static KogitoBuildContext context;
 
     @BeforeAll
     public static void setup() {
-        buildContext = new JavaKogitoBuildContext();
-        pmmlRestResourceGenerator = new PMMLRestResourceGenerator(buildContext, KIE_PMML_MODEL, APP_CANONICAL_NAME);
+        context = QuarkusKogitoBuildContext.builder().build();
+        pmmlRestResourceGenerator = new PMMLRestResourceGenerator(context, KIE_PMML_MODEL, APP_CANONICAL_NAME);
         assertNotNull(pmmlRestResourceGenerator);
     }
 
@@ -72,8 +71,11 @@ class PMMLRestResourceGeneratorTest {
         };
     }
 
-    private static ClassOrInterfaceDeclaration getClassOrInterfaceDeclaration() {
-        CompilationUnit clazz = parse(PMMLRestResourceGeneratorTest.class.getResourceAsStream(CDI_TEMPLATE));
+    private static ClassOrInterfaceDeclaration getClassOrInterfaceDeclaration(KogitoBuildContext context) {
+        CompilationUnit clazz = TemplatedGenerator.builder()
+                .build(context, "PMMLRestResource")
+                .compilationUnitOrThrow();
+
         clazz.setPackageDeclaration(CodegenStringUtil.escapeIdentifier("IDENTIFIER"));
         return clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
@@ -83,13 +85,13 @@ class PMMLRestResourceGeneratorTest {
 
     @Test
     void constructor() {
-        assertTrue(pmmlRestResourceGenerator.packageName.startsWith("org.kie.kogito"));
+        assertTrue(pmmlRestResourceGenerator.restPackageName.startsWith("org.kie.kogito"));
         assertEquals(APP_CANONICAL_NAME, pmmlRestResourceGenerator.appCanonicalName);
     }
 
     @Test
     void generateWithDependencyInjection() {
-        buildContext.setDependencyInjectionAnnotator(new CDIDependencyInjectionAnnotator());
+        context.setDependencyInjectionAnnotator(new CDIDependencyInjectionAnnotator());
         String retrieved = pmmlRestResourceGenerator.generate();
         commonEvaluateGenerate(retrieved);
         String expected = "Application application;";
@@ -98,7 +100,7 @@ class PMMLRestResourceGeneratorTest {
 
     @Test
     void generateWithoutDependencyInjection() {
-        buildContext.setDependencyInjectionAnnotator(null);
+        context.setDependencyInjectionAnnotator(null);
         String retrieved = pmmlRestResourceGenerator.generate();
         commonEvaluateGenerate(retrieved);
         String expected = String.format("Application application = new %s();", APP_CANONICAL_NAME);

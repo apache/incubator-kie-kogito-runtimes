@@ -20,11 +20,7 @@ import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 public class ProcessConfigGenerator extends AbstractConfigGenerator {
 
-    public ProcessConfigGenerator(KogitoBuildContext buildContext, String packageName) {
-        super(buildContext,
-                packageName,
-                "ProcessConfig",
-                "/class-templates/config/CdiProcessConfigTemplate.java",
-                "/class-templates/config/SpringProcessConfigTemplate.java");
+    public ProcessConfigGenerator(KogitoBuildContext context) {
+        super(context, "ProcessConfig");
     }
 }

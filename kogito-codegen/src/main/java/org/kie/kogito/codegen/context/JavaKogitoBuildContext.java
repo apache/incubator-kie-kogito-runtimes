@@ -15,26 +15,37 @@
 
 package org.kie.kogito.codegen.context;
 
-import java.util.function.Predicate;
-
 public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
 
-    public JavaKogitoBuildContext() {
-        this(Thread.currentThread().getContextClassLoader());
+    public static final String CONTEXT_NAME = "Java";
+
+    protected JavaKogitoBuildContext(JavaKogitoBuildContextBuilder builder) {
+        super(builder, null, CONTEXT_NAME);
     }
 
-    public JavaKogitoBuildContext(final ClassLoader classLoader) {
-        this(className -> {
-            try {
-                classLoader.loadClass(className);
-                return true;
-            } catch (ClassNotFoundException e) {
-                return false;
-            }
-        });
+    @Override
+    public boolean hasREST() {
+        return hasClassAvailable("javax.ws.rs.Path")
+                || hasClassAvailable("org.springframework.web.bind.annotation.RestController");
     }
 
-    public JavaKogitoBuildContext(Predicate<String> classAvailabilityResolver) {
-        super(classAvailabilityResolver, null);
+    public static Builder builder() {
+        return new JavaKogitoBuildContextBuilder();
+    }
+
+    protected static class JavaKogitoBuildContextBuilder extends AbstractBuilder {
+
+        protected JavaKogitoBuildContextBuilder() {
+        }
+
+        @Override
+        public JavaKogitoBuildContext build() {
+            return new JavaKogitoBuildContext(this);
+        }
+
+        @Override
+        public String toString() {
+            return "Java";
+        }
     }
 }

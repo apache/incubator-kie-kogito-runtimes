@@ -17,11 +17,36 @@ package org.kie.kogito.codegen.context;
 
 import org.kie.kogito.codegen.di.SpringDependencyInjectionAnnotator;
 
-import java.util.function.Predicate;
-
 public class SpringBootKogitoBuildContext extends AbstractKogitoBuildContext {
-    
-    public SpringBootKogitoBuildContext(Predicate<String> classAvailabilityResolver) {
-        super(classAvailabilityResolver, new SpringDependencyInjectionAnnotator());
+
+    public static final String CONTEXT_NAME = "Spring";
+
+    protected SpringBootKogitoBuildContext(SpringBootKogitoBuildContextBuilder builder) {
+        super(builder, new SpringDependencyInjectionAnnotator(), CONTEXT_NAME);
+    }
+
+    @Override
+    public boolean hasREST() {
+        return hasClassAvailable("org.springframework.web.bind.annotation.RestController");
+    }
+
+    public static Builder builder() {
+        return new SpringBootKogitoBuildContextBuilder();
+    }
+
+    protected static class SpringBootKogitoBuildContextBuilder extends AbstractBuilder {
+
+        protected SpringBootKogitoBuildContextBuilder() {
+        }
+
+        @Override
+        public SpringBootKogitoBuildContext build() {
+            return new SpringBootKogitoBuildContext(this);
+        }
+
+        @Override
+        public String toString() {
+            return "SpringBoot";
+        }
     }
 }

@@ -20,42 +20,26 @@ import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import org.kie.kogito.codegen.AbstractApplicationSection;
-import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.TemplatedGenerator;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 
-import java.util.List;
+import java.util.Collection;
 
 public class PredictionModelsGenerator extends AbstractApplicationSection {
 
-    private static final String RESOURCE = "/class-templates/PredictionModelsTemplate.java";
-    private static final String RESOURCE_CDI = "/class-templates/CdiPredictionModelsTemplate.java";
-    private static final String RESOURCE_SPRING = "/class-templates/spring/SpringPredictionModelsTemplate.java";
     private static final String SECTION_CLASS_NAME = "PredictionModels";
 
-    protected final List<PMMLResource> resources;
+    protected final Collection<PMMLResource> resources;
     protected final String applicationCanonicalName;
-    protected AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
     protected final TemplatedGenerator templatedGenerator;
 
-    public PredictionModelsGenerator(KogitoBuildContext buildContext, String packageName, String applicationCanonicalName, List<PMMLResource> resources) {
-        super(buildContext, SECTION_CLASS_NAME);
+    public PredictionModelsGenerator(KogitoBuildContext context, String applicationCanonicalName, Collection<PMMLResource> resources) {
+        super(context, SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = resources;
 
-        this.templatedGenerator = new TemplatedGenerator(
-                buildContext,
-                packageName,
-                SECTION_CLASS_NAME,
-                RESOURCE_CDI,
-                RESOURCE_SPRING,
-                RESOURCE);
-    }
-
-    public PredictionModelsGenerator withAddons(AddonsConfig addonsConfig) {
-        this.addonsConfig = addonsConfig;
-        return this;
+        this.templatedGenerator = TemplatedGenerator.builder().build(context, SECTION_CLASS_NAME);
     }
 
     @Override
@@ -69,14 +53,12 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
         final InitializerDeclaration staticDeclaration = compilationUnit
                 .findFirst(InitializerDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(
-                        SECTION_CLASS_NAME,
-                        templatedGenerator.templatePath(),
+                        templatedGenerator,
                         "Missing static block"));
         final MethodCallExpr initMethod = staticDeclaration
                 .findFirst(MethodCallExpr.class, mtd -> "init".equals(mtd.getNameAsString()))
                 .orElseThrow(() -> new InvalidTemplateException(
-                        SECTION_CLASS_NAME,
-                        templatedGenerator.templatePath(),
+                        templatedGenerator,
                         "Missing init() method"));
 
         for (PMMLResource resource : resources) {

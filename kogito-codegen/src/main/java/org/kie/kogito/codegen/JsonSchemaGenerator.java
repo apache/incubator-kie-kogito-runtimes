@@ -16,9 +16,9 @@ package org.kie.kogito.codegen;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -40,7 +40,6 @@ import com.github.victools.jsonschema.generator.SchemaVersion;
 import org.jbpm.util.JsonSchemaUtil;
 import org.kie.kogito.UserTask;
 import org.kie.kogito.UserTaskParam;
-import org.kie.kogito.codegen.GeneratedFile.Type;
 import org.kie.kogito.codegen.json.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,47 +48,10 @@ public class JsonSchemaGenerator {
 
     public static final Logger logger = LoggerFactory.getLogger(JsonSchemaGenerator.class);
     public static final SchemaVersion DEFAULT_SCHEMA_VERSION = SchemaVersion.DRAFT_7;
+    private static final GeneratedFileType JSON_SCHEMA_TYPE = GeneratedFileType.of("JSON_SCHEMA", GeneratedFileType.Category.RESOURCE, true, true);
 
     private final Map<String, List<Class<?>>> map;
     private final SchemaVersion schemaVersion;
-
-    public static class SimpleBuilder {
-
-        private final Map<String, List<Class<?>>> taskClassesById = new HashMap<>();
-        private ClassLoader loader ;
-        private SchemaVersion schemaVersion = SchemaVersion.DRAFT_7;
-
-        public SimpleBuilder(ClassLoader cl) {
-            this.loader = cl;
-        }
-
-        public SimpleBuilder() {
-            this(Thread.currentThread().getContextClassLoader());
-        }
-
-        public SimpleBuilder withSchemaVersion(String schemaVersion) {
-            this.schemaVersion = schemaVersion == null?
-                    DEFAULT_SCHEMA_VERSION :
-                    SchemaVersion.valueOf(schemaVersion.trim().toUpperCase());
-            return this;
-        }
-
-        public SimpleBuilder addSchemaName(String taskClass, String processId, String userTask) {
-            String jsonSchemaName = JsonSchemaUtil.getJsonSchemaName(processId, userTask);
-            try {
-                Class<?> cls = loader.loadClass(taskClass);
-                taskClassesById.computeIfAbsent(
-                        jsonSchemaName, e -> new ArrayList<>()).add(cls);
-            } catch (ClassNotFoundException e) {
-                throw new IllegalArgumentException(e);
-            }
-            return this;
-        }
-
-        public JsonSchemaGenerator build() {
-            return new JsonSchemaGenerator(taskClassesById, schemaVersion);
-        }
-    }
 
     public static class ClassBuilder {
 
@@ -164,7 +126,7 @@ public class JsonSchemaGenerator {
             }
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 writer.writeValue(outputStream, merged);
-                files.add(new GeneratedFile(Type.JSON_SCHEMA, JsonSchemaUtil.getFileName(entry.getKey()), outputStream.toByteArray()));
+                files.add(new GeneratedFile(JSON_SCHEMA_TYPE, pathFor(entry.getKey()), outputStream.toByteArray()));
             }
         }
         return files;
@@ -190,5 +152,9 @@ public class JsonSchemaGenerator {
 
     private static boolean isNotUserTaskParam(FieldScope fieldScope) {
         return fieldScope.getDeclaringType().getErasedType().isAnnotationPresent(UserTask.class) && fieldScope.getAnnotation(UserTaskParam.class) == null;
+    }
+
+    private Path pathFor(String name) {
+        return JsonSchemaUtil.getJsonDir().resolve(JsonSchemaUtil.getFileName(name));
     }
 }

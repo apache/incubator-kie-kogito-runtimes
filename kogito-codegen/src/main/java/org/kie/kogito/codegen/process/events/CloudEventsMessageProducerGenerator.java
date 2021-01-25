@@ -29,11 +29,10 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.TemplateInstantiationException;
+import org.kie.kogito.codegen.InvalidTemplateException;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.MessageProducerGenerator;
 
-import static com.github.javaparser.StaticJavaParser.parse;
 import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
 
 /**
@@ -42,24 +41,21 @@ import static org.kie.kogito.codegen.CodegenUtils.interpolateTypes;
 @Deprecated
 public class CloudEventsMessageProducerGenerator extends MessageProducerGenerator {
 
-    public CloudEventsMessageProducerGenerator(KogitoBuildContext buildContext,
+    public CloudEventsMessageProducerGenerator(KogitoBuildContext context,
                                                WorkflowProcess process,
                                                String modelfqcn,
                                                String processfqcn,
                                                String messageDataEventClassName,
                                                TriggerMetaData trigger) {
-        super(buildContext, process, modelfqcn, processfqcn, messageDataEventClassName, trigger);
+        super(context, process, modelfqcn, processfqcn, messageDataEventClassName, trigger, "CloudEventsMessageProducer");
     }
 
     public String generate() {
-        CompilationUnit clazz = parse(
-                this.getClass().getResourceAsStream("/class-templates/events/CloudEventsMessageProducerTemplate.java"));
-        clazz.setPackageDeclaration(process.getPackageName());
+        CompilationUnit clazz = generator.compilationUnitOrThrow();
 
         ClassOrInterfaceDeclaration template = clazz.findFirst(ClassOrInterfaceDeclaration.class).
-                orElseThrow(() -> new TemplateInstantiationException(
-                        "CloudEventMessageProducer",
-                        "CloudEventsMessageProducerTemplate.java",
+                orElseThrow(() -> new InvalidTemplateException(
+                        generator,
                         "No class declaration found in template"));
         template.setName(resourceClazzName);
 
@@ -72,22 +68,22 @@ public class CloudEventsMessageProducerGenerator extends MessageProducerGenerato
             md.findAll(ClassOrInterfaceType.class).forEach(t -> t.setName(t.getNameAsString().replace("$DataEventType$", messageDataEventClassName)));
         });
 
-        if (buildContext.hasDI()) {
-            buildContext.getDependencyInjectionAnnotator().withApplicationComponent(template);
+        if (context.hasDI()) {
+            context.getDependencyInjectionAnnotator().withApplicationComponent(template);
 
             FieldDeclaration emitterField = template.findFirst(FieldDeclaration.class)
                     .filter(fd -> fd.getVariables().stream().anyMatch(v -> v.getNameAsString().equals("emitter")))
                     .orElseThrow(() -> new IllegalStateException("Cannot find emitter field in MessageProducerTemplate"));
-            buildContext.getDependencyInjectionAnnotator().withInjection(emitterField);
-            buildContext.getDependencyInjectionAnnotator().withOutgoingMessage(emitterField, trigger.getName());
-            emitterField.getVariable(0).setType(buildContext.getDependencyInjectionAnnotator().emitterType("String"));
+            context.getDependencyInjectionAnnotator().withInjection(emitterField);
+            context.getDependencyInjectionAnnotator().withOutgoingMessage(emitterField, trigger.getName());
+            emitterField.getVariable(0).setType(context.getDependencyInjectionAnnotator().emitterType("String"));
 
             MethodDeclaration produceMethod = template.findAll(MethodDeclaration.class).stream()
                     .filter(md -> md.getNameAsString().equals("produce"))
                     .findFirst().orElseThrow(() -> new IllegalStateException("Cannot find produce methods in MessageProducerTemplate"));
 
             MethodCallExpr sendMethodCall = new MethodCallExpr(new NameExpr("emitter"), "send");
-            buildContext.getDependencyInjectionAnnotator().withMessageProducer(
+            context.getDependencyInjectionAnnotator().withMessageProducer(
                     sendMethodCall,
                     trigger.getName(),
                     new MethodCallExpr(new ThisExpr(), "marshall")
@@ -98,7 +94,7 @@ public class CloudEventsMessageProducerGenerator extends MessageProducerGenerato
 
             template.findAll(FieldDeclaration.class,
                              fd -> fd.getVariable(0).getNameAsString().equals("useCloudEvents"))
-                    .forEach(fd -> buildContext.getDependencyInjectionAnnotator().withConfigInjection(fd, "kogito.messaging.as-cloudevents"));
+                    .forEach(fd -> context.getDependencyInjectionAnnotator().withConfigInjection(fd, "kogito.messaging.as-cloudevents"));
         }
 
         template.getMembers().sort(new BodyDeclarationComparator());

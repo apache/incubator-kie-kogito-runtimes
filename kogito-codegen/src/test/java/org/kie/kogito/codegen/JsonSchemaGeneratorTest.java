@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.victools.jsonschema.generator.SchemaVersion;
+import org.jbpm.util.JsonSchemaUtil;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.UserTask;
 import org.kie.kogito.UserTaskParam;
@@ -109,33 +110,6 @@ public class JsonSchemaGeneratorTest {
     }
 
     @Test
-    public void testSimpleSchemaGenerator() throws IOException {
-        Collection<GeneratedFile> files =
-                new JsonSchemaGenerator.SimpleBuilder(Thread.currentThread().getContextClassLoader())
-                        .addSchemaName(PersonInputParams.class.getName(), "org.jbpm.test", "test")
-                        .addSchemaName(PersonOutputParams.class.getName(), "org.jbpm.test", "test")
-                        .build()
-                        .generate();
-
-        assertEquals(1, files.size());
-        GeneratedFile file = files.iterator().next();
-        assertEquals("org#jbpm#test_test.json", file.relativePath());
-        assertSchema(file, SchemaVersion.DRAFT_7);
-
-        Collection<GeneratedFile> filesFromClasses =
-                new JsonSchemaGenerator.ClassBuilder(
-                        Stream.of(PersonInputParams.class, PersonOutputParams.class, IgnoredClass.class))
-                        .build().generate();
-        assertEquals(1, filesFromClasses.size());
-        GeneratedFile fileFromClasses = filesFromClasses.iterator().next();
-
-        assertEquals(fileFromClasses.relativePath(), file.relativePath(),
-                     "must have the same path of a class-based generator");
-        assertArrayEquals(fileFromClasses.contents(), file.contents(),
-                     "must have the same contents of a class-based generator");
-    }
-
-    @Test
     public void testJsonSchemaGenerator() throws IOException {
         Collection<GeneratedFile> files =
                 new JsonSchemaGenerator.ClassBuilder(
@@ -143,8 +117,7 @@ public class JsonSchemaGeneratorTest {
                         .build().generate();
         assertEquals(1, files.size());
         GeneratedFile file = files.iterator().next();
-        assertEquals("org#jbpm#test_test.json", file.relativePath());
-        assertSchema(file, SchemaVersion.DRAFT_7);
+        assertSchema("org#jbpm#test_test.json", file, SchemaVersion.DRAFT_7);
     }
 
     @Test
@@ -167,8 +140,7 @@ public class JsonSchemaGeneratorTest {
                         .withSchemaVersion("DRAFT_2019_09").build().generate();
         assertEquals(1, files.size());
         GeneratedFile file = files.iterator().next();
-        assertEquals("org#jbpm#test_test.json", file.relativePath());
-        assertSchema(file, SchemaVersion.DRAFT_2019_09);
+        assertSchema("org#jbpm#test_test.json", file, SchemaVersion.DRAFT_2019_09);
     }
 
     @Test
@@ -176,8 +148,7 @@ public class JsonSchemaGeneratorTest {
         Collection<GeneratedFile> files = new JsonSchemaGenerator.ClassBuilder(Stream.of(PersonInputOutputParams.class)).build().generate();
         assertEquals(1, files.size());
         GeneratedFile file = files.iterator().next();
-        assertEquals("InputOutput_test.json", file.relativePath());
-        assertSchema(file, SchemaVersion.DRAFT_7);
+        assertSchema("InputOutput_test.json", file, SchemaVersion.DRAFT_7);
     }
     
     @Test
@@ -185,10 +156,17 @@ public class JsonSchemaGeneratorTest {
         Collection<GeneratedFile> files = new JsonSchemaGenerator.ClassBuilder(Stream.of(WhitespacesTask.class)).build().generate();
         assertEquals(1, files.size());
         GeneratedFile file = files.iterator().next();
-        assertEquals("InputOutput_name_with_spaces.json", file.relativePath());
+        assertEquals(JsonSchemaUtil.getJsonDir().resolve("InputOutput_name_with_spaces.json").toString(), file.relativePath());
     }
 
-    private void assertSchema(GeneratedFile file, SchemaVersion schemaVersion) throws IOException {
+    @Test
+    public void testNothingToDo() throws IOException {
+        Collection<GeneratedFile> files = new JsonSchemaGenerator.ClassBuilder(Stream.of(IgnoredClass.class)).build().generate();
+        assertTrue(files.isEmpty());
+    }
+
+    private void assertSchema(String fileName, GeneratedFile file, SchemaVersion schemaVersion) throws IOException {
+        assertEquals(JsonSchemaUtil.getJsonDir().resolve(fileName).toString(), file.relativePath());
         ObjectReader reader = new ObjectMapper().reader();
         JsonNode node = reader.readTree(file.contents());
         assertEquals(schemaVersion.getIdentifier(), node.get("$schema").asText());
@@ -211,11 +189,5 @@ public class JsonSchemaGeneratorTest {
         JsonNode dateNode = addressProperties.get("date");
         assertEquals("string", dateNode.get("type").asText());
         assertEquals("date-time", dateNode.get("format").asText());
-    }
-
-    @Test
-    public void testNothingToDo() throws IOException {
-        Collection<GeneratedFile> files = new JsonSchemaGenerator.ClassBuilder(Stream.of(IgnoredClass.class)).build().generate();
-        assertTrue(files.isEmpty());
     }
 }

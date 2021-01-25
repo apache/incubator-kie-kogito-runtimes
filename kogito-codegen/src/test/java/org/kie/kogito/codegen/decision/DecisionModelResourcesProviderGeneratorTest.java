@@ -19,8 +19,6 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -35,10 +33,12 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
+import org.kie.kogito.codegen.AbstractGenerator;
 import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.GeneratorContext;
+import org.kie.kogito.codegen.GeneratedFileType;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.io.CollectedResource;
 
 import static com.github.javaparser.StaticJavaParser.parse;
@@ -55,7 +55,9 @@ public class DecisionModelResourcesProviderGeneratorTest {
     @Test
     public void generateDecisionModelResourcesProvider() throws Exception {
 
-        final GeneratorContext context = GeneratorContext.ofProperties(new Properties());
+        final KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
+                .withAddonsConfig(AddonsConfig.builder().withTracing(true).build())
+                .build();
 
         final Collection<CollectedResource> collectedResources = CollectedResource.fromPaths(
                 Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath(),
@@ -64,26 +66,27 @@ public class DecisionModelResourcesProviderGeneratorTest {
 
         final long numberOfModels = collectedResources.stream()
                 .filter(r -> r.resource().getResourceType() == ResourceType.DMN)
-                .count();;
+                .count();
 
         final DecisionCodegen codeGenerator = DecisionCodegen
-                .ofCollectedResources(collectedResources);
-        codeGenerator.setContext(context);
-        codeGenerator.setAddonsConfig(new AddonsConfig().withTracing(true));
-        codeGenerator.setPackageName(ApplicationGenerator.DEFAULT_PACKAGE_NAME);
+                .ofCollectedResources(context, collectedResources);
 
         final List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(2); // the two resources below, see https://github.com/kiegroup/kogito-runtimes/commit/18ec525f530b1ff1bddcf18c0083f14f86aff171#diff-edd3a09d62dc627ee10fe37925944217R53
 
         // Align this FAI-215 test (#621) with unknown order of generated files (ie.: additional generated files might be present)
         //A Rest endpoint is always generated per model.
-        List<GeneratedFile> generatedRESTFiles = generatedFiles.stream().filter(gf -> gf.getType() == GeneratedFile.Type.REST).collect(toList());
+        List<GeneratedFile> generatedRESTFiles = generatedFiles.stream()
+                .filter(gf -> gf.type().equals(AbstractGenerator.REST_TYPE))
+                .collect(toList());
         assertFalse(generatedRESTFiles.isEmpty());
         assertEquals(numberOfModels, generatedRESTFiles.size());
 
-        Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.getType() == GeneratedFile.Type.CLASS).findFirst();
-        assertTrue(generatedCLASSFile.isPresent());
-        GeneratedFile classFile = generatedCLASSFile.get();
+        List<GeneratedFile> generatedCLASSFile = generatedFiles.stream()
+                .filter(gf -> gf.type().equals(GeneratedFileType.SOURCE))
+                .collect(toList());
+        assertEquals(1, generatedCLASSFile.size());
+        GeneratedFile classFile = generatedCLASSFile.get(0);
         assertEquals("org/kie/kogito/app/DecisionModelResourcesProvider.java", classFile.relativePath());
 
         final CompilationUnit compilationUnit = parse(new ByteArrayInputStream(classFile.contents()));

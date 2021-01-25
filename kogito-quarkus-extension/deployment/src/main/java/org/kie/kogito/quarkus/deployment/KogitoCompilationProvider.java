@@ -34,16 +34,17 @@ import java.util.Set;
 import io.quarkus.deployment.dev.JavaCompilationProvider;
 import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.GeneratedFile.Type;
+import org.kie.kogito.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.Generator;
-import org.kie.kogito.codegen.GeneratorContext;
-import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.utils.AppPaths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class KogitoCompilationProvider extends JavaCompilationProvider {
 
-    protected static Map<Path, Path> classToSource = new HashMap<>();    
-
-    private String appPackageName = System.getProperty("kogito.codegen.packageName", "org.kie.kogito.app");
+    private static final Logger LOGGER = LoggerFactory.getLogger(KogitoCompilationProvider.class);
+    protected static Map<Path, Path> classToSource = new HashMap<>();
 
     @Override
     public Set<String> handledSourcePaths() {
@@ -51,37 +52,40 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
     }
 
     @Override
-    public final void compile(Set<File> filesToCompile, Context context) {
+    public final void compile(Set<File> filesToCompile, Context quarkusContext) {
         // This classloader reads from the file system all the project dependencies, plus the quarkus output directory
         // containing all the latest class definitions of user's pojos, eventually recompiled also during the latest
         // hot reload round. It is also necessary to use a null as a parent classloader otherwise this classloader
         // could load the old definition of a class from the parent instead of getting the latest one from the output directory
-        final URLClassLoader cl = new URLClassLoader( getClasspathUrls( context ), null );
+        final URLClassLoader cl = new URLClassLoader( getClasspathUrls( quarkusContext ), null );
 
-        File outputDirectory = context.getOutputDirectory();
+        File outputDirectory = quarkusContext.getOutputDirectory();
         try {
-            GeneratorContext generationContext = GeneratorContext
-                    .ofResourcePath(context.getProjectDirectory().toPath().resolve("src/main/resources").toFile());
-            generationContext
-                    .withBuildContext(new QuarkusKogitoBuildContext(className -> hasClassOnClasspath(cl, className)));
+            AppPaths appPaths = AppPaths.fromProjectDir(quarkusContext.getProjectDirectory().toPath());
+            KogitoBuildContext context = KogitoQuarkusContextProvider.context(appPaths, cl);
 
-            ApplicationGenerator appGen = new ApplicationGenerator(generationContext, appPackageName, outputDirectory);
+            ApplicationGenerator appGen = new ApplicationGenerator(context);
 
-            addGenerator(appGen, filesToCompile, context, cl);
+            appGen.registerGeneratorIfEnabled(getGenerator(context, filesToCompile, quarkusContext));
 
             Collection<GeneratedFile> generatedFiles = appGen.generate();
 
             Set<File> generatedSourceFiles = new HashSet<>();
             for (GeneratedFile file : generatedFiles) {
                 Path path = pathOf(outputDirectory.getPath(), file.relativePath());
-                if (file.getType() != GeneratedFile.Type.APPLICATION && file.getType() != GeneratedFile.Type.APPLICATION_CONFIG) {
+                if (file.type().canHotReload()) {
                     Files.write(path, file.contents());
-                    if (file.getType() != Type.RESOURCE && file.getType() != Type.GENERATED_CP_RESOURCE) {
+                    if (file.category().equals(GeneratedFileType.Category.SOURCE)) {
                         generatedSourceFiles.add(path.toFile());
                     }
                 }
+                else {
+                    if(LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Skipping file because cannot hot reload: " + file);
+                    }
+                }
             }
-            super.compile(generatedSourceFiles, context);
+            super.compile(generatedSourceFiles, quarkusContext);
         } catch (Exception e) {
             throw new KogitoCompilerException(e);
         } finally {
@@ -102,22 +106,14 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         return null;
     }
 
-    protected abstract Generator addGenerator(ApplicationGenerator appGen, Set<File> filesToCompile, Context context, ClassLoader cl)
-            throws IOException;
+    protected abstract Generator getGenerator(KogitoBuildContext context,
+                                              Set<File> filesToCompile,
+                                              Context quarkusContext);
 
     static Path pathOf(String path, String relativePath) {
         Path p = Paths.get(path, relativePath);
         p.getParent().toFile().mkdirs();
         return p;
-    }
-    
-    private boolean hasClassOnClasspath(ClassLoader cl, String className) {
-        try {
-            cl.loadClass(className);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     private URL[] getClasspathUrls( Context context ) {

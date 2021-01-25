@@ -17,7 +17,6 @@ package org.kie.kogito.codegen.rules;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -34,9 +33,10 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.TypeParameter;
 import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.codegen.AddonsConfig;
-import org.kie.kogito.codegen.ApplicationGenerator;
 import org.kie.kogito.codegen.FileGenerator;
+import org.kie.kogito.codegen.InvalidTemplateException;
+import org.kie.kogito.codegen.TemplatedGenerator;
+import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
 import org.kie.kogito.conf.ClockType;
 import org.kie.kogito.conf.EventProcessingType;
@@ -45,42 +45,41 @@ import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
 
-import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseExpression;
 import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.metadata.ImageMetaData.LABEL_PREFIX;
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
 public class RuleUnitGenerator implements FileGenerator {
 
-    public static final String TEMPLATE = "/class-templates/rules/RuleUnitTemplate.java";
-
     private final RuleUnitDescription ruleUnit;
-    private final String packageName;
+    private final String ruleUnitPackageName;
     private final String typeName;
     private final String generatedSourceFile;
-    private KogitoBuildContext buildContext;
-    private final String generatedFilePath;
+    private final TemplatedGenerator generator;
+    private final KogitoBuildContext context;
     private final String targetCanonicalName;
+    private final String targetTypeName;
     private RuleUnitConfig config;
-    private String targetTypeName;
     private Collection<QueryModel> queries;
-    private String applicationPackageName;
-    private AddonsConfig addonsConfig = AddonsConfig.DEFAULT;
 
-    public RuleUnitGenerator(RuleUnitDescription ruleUnit, String generatedSourceFile, KogitoBuildContext buildContext) {
+    public RuleUnitGenerator(KogitoBuildContext context, RuleUnitDescription ruleUnit, String generatedSourceFile) {
         this.ruleUnit = ruleUnit;
-        this.packageName = ruleUnit.getPackageName();
+        this.ruleUnitPackageName = ruleUnit.getPackageName();
         this.typeName = ruleUnit.getSimpleName();
         this.generatedSourceFile = generatedSourceFile;
-        this.buildContext = buildContext;
+        this.context = context;
         this.targetTypeName = typeName + "RuleUnit";
-        this.targetCanonicalName = packageName + "." + targetTypeName;
-        this.generatedFilePath = targetCanonicalName.replace('.', '/') + ".java";
-        this.applicationPackageName = ApplicationGenerator.DEFAULT_PACKAGE_NAME;
+        this.targetCanonicalName = ruleUnitPackageName + "." + targetTypeName;
         // merge config from the descriptor with configs from application.conf
         // application.conf overrides any other config
         this.config = ruleUnit.getConfig();
+        this.generator = TemplatedGenerator.builder()
+                .withPackageName(ruleUnitPackageName)
+                .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
+                .withTargetTypeName(targetTypeName)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
+                .build(context, "RuleUnit");
     }
 
     // override config for this rule unit with the given values
@@ -96,29 +95,21 @@ public class RuleUnitGenerator implements FileGenerator {
     public List<QueryEndpointGenerator> queries() {
         return queries.stream()
                 .filter(query -> !query.hasParameters())
-                .map(query -> new QueryEndpointGenerator(ruleUnit, query, buildContext, addonsConfig))
+                .map(query -> new QueryEndpointGenerator(ruleUnit, query, context))
                 .collect(toList());
     }
 
     @Override
     public String generatedFilePath() {
-        return generatedFilePath;
+        return generator.generatedFilePath();
     }
 
     public String targetCanonicalName() {
         return targetCanonicalName;
     }
 
-    public String targetTypeName() {
-        return targetTypeName;
-    }
-
     public String typeName() {
         return typeName;
-    }
-
-    public String label() {
-        return LABEL_PREFIX + typeName();
     }
 
     @Override
@@ -135,12 +126,13 @@ public class RuleUnitGenerator implements FileGenerator {
     }
 
     public CompilationUnit compilationUnit() {
-        CompilationUnit compilationUnit = parse(getClass().getResourceAsStream(TEMPLATE));
-        compilationUnit.setPackageDeclaration(packageName);
+        CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
 
         classDeclaration(
                 compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
-                        .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!")));
+                        .orElseThrow(() -> new InvalidTemplateException(
+                                generator,
+                                "Compilation unit doesn't contain a class or interface declaration!")));
         return compilationUnit;
     }
 
@@ -159,20 +151,20 @@ public class RuleUnitGenerator implements FileGenerator {
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .getExtendedTypes().get(0).setTypeArguments(nodeList(new ClassOrInterfaceType(null, typeName)));
 
-        if (buildContext.hasDI()) {
-            buildContext.getDependencyInjectionAnnotator().withSingletonComponent(cls);
+        if (context.hasDI()) {
+            context.getDependencyInjectionAnnotator().withSingletonComponent(cls);
             cls.findFirst(ConstructorDeclaration.class, c -> !c.getParameters().isEmpty()) // non-empty constructor
-                    .ifPresent(buildContext.getDependencyInjectionAnnotator()::withInjection);
+                    .ifPresent(context.getDependencyInjectionAnnotator()::withInjection);
         }
 
-        String ruleUnitInstanceFQCN = RuleUnitInstanceGenerator.qualifiedName(packageName, typeName);
+        String ruleUnitInstanceFQCN = RuleUnitInstanceGenerator.qualifiedName(ruleUnitPackageName, typeName);
         cls.findAll(ConstructorDeclaration.class).forEach(this::setClassName);
         cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$InstanceName$"))
                 .forEach(o -> o.setType(ruleUnitInstanceFQCN));
         cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$Application$"))
-                .forEach(o -> o.setType(applicationPackageName + ".Application"));
+                .forEach(o -> o.setType(context.getPackageName() + ".Application"));
         cls.findAll(ObjectCreationExpr.class, o -> o.getType().getNameAsString().equals("$RuleModelName$"))
-                .forEach(o -> o.setType(packageName + "." + generatedSourceFile + "_" + typeName));
+                .forEach(o -> o.setType(ruleUnitPackageName + "." + generatedSourceFile + "_" + typeName));
         cls.findAll(MethodDeclaration.class, m -> m.getType().asString().equals("$InstanceName$"))
                 .stream()
                 .map(m -> m.setType(ruleUnitInstanceFQCN))
@@ -221,18 +213,7 @@ public class RuleUnitGenerator implements FileGenerator {
         return this;
     }
 
-    public RuleUnitGenerator withAddons(AddonsConfig addonsConfig) {
-        this.addonsConfig = addonsConfig;
-        return this;
-    }
-
     public RuleUnitDescription getRuleUnitDescription() {
         return ruleUnit;
-    }
-
-    public void setApplicationPackageName(String packageName) {
-        if (packageName != null) {
-            this.applicationPackageName = packageName;
-        }
     }
 }

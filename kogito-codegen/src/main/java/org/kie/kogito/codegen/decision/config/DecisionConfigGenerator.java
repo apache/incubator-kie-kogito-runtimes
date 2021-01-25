@@ -20,11 +20,7 @@ import org.kie.kogito.codegen.context.KogitoBuildContext;
 
 public class DecisionConfigGenerator extends AbstractConfigGenerator {
 
-    public DecisionConfigGenerator(KogitoBuildContext buildContext, String packageName) {
-        super(buildContext,
-                packageName,
-                "DecisionConfig",
-                "/class-templates/config/CdiDecisionConfigTemplate.java",
-                "/class-templates/config/SpringDecisionConfigTemplate.java");
+    public DecisionConfigGenerator(KogitoBuildContext context) {
+        super(context, "DecisionConfig");
     }
 }
