@@ -85,6 +85,11 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
     }
 
     @Override
+    public ProcessEventSupport getEventSupport() {
+        return eventSupport;
+    }
+
+    @Override
     public UnitOfWorkManager getUnitOfWorkManager() {
         return unitOfWorkManager;
     }
