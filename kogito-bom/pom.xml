@@ -723,6 +723,7 @@
         <artifactId>persistence-commons-redis</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>persistence-commons-redis</artifactId>
         <version>${project.version}</version>
