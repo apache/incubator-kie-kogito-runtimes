@@ -129,7 +129,10 @@ public class KogitoDMNResult implements Serializable,
 
     @Override
     public DMNDecisionResult getDecisionResultByName(String name) {
-        return decisionResults.values().stream().filter(dr -> dr.getDecisionName().equals(name)).findFirst().get();
+        return decisionResults.values().stream()
+                .filter(dr -> dr.getDecisionName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Unknown decision result name."));
     }
 
     @Override
