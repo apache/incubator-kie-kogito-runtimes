@@ -33,7 +33,8 @@ import org.kie.dmn.api.core.DMNMessage.Severity;
 import org.kie.dmn.core.internal.utils.MapBackedDMNContext;
 import org.kie.dmn.core.internal.utils.MarshallingStubUtils;
 
-public class KogitoDMNResult implements Serializable, org.kie.dmn.api.core.DMNResult {
+public class KogitoDMNResult implements Serializable,
+                                        org.kie.dmn.api.core.DMNResult {
 
     private String namespace;
 
@@ -43,7 +44,7 @@ public class KogitoDMNResult implements Serializable, org.kie.dmn.api.core.DMNRe
 
     private List<DMNMessageSQ> messages = new ArrayList<>();
 
-    private Map<String, DMNDecisionResultSQ> decisionResults = new HashMap<>();
+    private Map<String, KogitoDMNDecisionResult> decisionResults = new HashMap<>();
 
     public KogitoDMNResult() {
         // Intentionally blank.
@@ -85,14 +86,16 @@ public class KogitoDMNResult implements Serializable, org.kie.dmn.api.core.DMNRe
     }
 
     public void setMessages(List<DMNMessage> messages) {
+        this.messages = new ArrayList<>();
         for (DMNMessage m : messages) {
             this.messages.add(DMNMessageSQ.of(m));
         }
     }
 
     public void setDecisionResults(List<? extends DMNDecisionResult> decisionResults) {
+        this.decisionResults = new HashMap<>();
         for (DMNDecisionResult dr : decisionResults) {
-            this.decisionResults.put(dr.getDecisionId(), DMNDecisionResultSQ.of(dr));
+            this.decisionResults.put(dr.getDecisionId(), KogitoDMNDecisionResult.of(dr));
         }
     }
 
