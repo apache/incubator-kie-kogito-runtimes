@@ -64,9 +64,7 @@
     {
       "name": "HandleOpenPR",
       "type": "event",
-      "start": {
-        "kind": "default"
-      },
+      "start": true,
       "onEvents": [
         {
           "eventRefs": [
@@ -126,7 +124,6 @@
         {
           "condition": "{{ $.[?(@.file  == 'frontend')] }}",
           "end": {
-            "kind": "event",
             "produceEvents": [
               {
                 "eventRef": "FrontendNewChange"
@@ -140,7 +137,6 @@
         {
           "condition": "{{ $.[?(@.file  != 'frontend')] }}",
           "end": {
-            "kind": "event",
             "produceEvents": [
               {
                 "eventRef": "PRChecked"

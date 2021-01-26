@@ -11,11 +11,10 @@ functions:
 states:
   - name: HelloWorld
     type: operation
-    start:
-      kind: default
+    start: true
     actionMode: sequential
     actions:
       - functionRef:
           refName: helloWorld
     end:
-      kind: terminate
+      terminate: true

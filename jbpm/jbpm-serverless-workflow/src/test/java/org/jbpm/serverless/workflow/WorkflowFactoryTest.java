@@ -101,7 +101,7 @@ public class WorkflowFactoryTest extends BaseServerlessTest {
     public void testMessageEndNode() {
         TestNodeContainer nodeContainer = new TestNodeContainer();
 
-        End endDef = new End().withKind(End.Kind.EVENT).withProduceEvents(
+        End endDef = new End().withProduceEvents(
                 Arrays.asList(
                         new ProduceEvent().withEventRef("sampleEvent").withData("sampleData"))
         );

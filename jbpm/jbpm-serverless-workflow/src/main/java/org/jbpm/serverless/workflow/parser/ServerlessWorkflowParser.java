@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.branches.Branch;
-import io.serverlessworkflow.api.end.End;
 import io.serverlessworkflow.api.events.EventDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.interfaces.State;
@@ -73,9 +72,6 @@ public class ServerlessWorkflowParser {
     private static final String SYSOUT_TYPE = "sysout";
     private static final String SYSOUT_TYPE_PARAM = "message";
     private static final String SERVICE_TYPE = "service";
-    private static final String DECISION_TYPE = "decision";
-    private static final String INTEGRATION_TYPE = "integration";
-    private static final String RULE_TYPE = "rule";
     private static final String NODE_START_NAME = "Start";
     private static final String NODE_END_NAME = "End";
     private static final String NODETOID_START = "start";
@@ -129,10 +125,10 @@ public class ServerlessWorkflowParser {
         List<State> endStates = ServerlessWorkflowUtils.getWorkflowEndStates(workflow);
 
         for (State endState : endStates) {
-            if (endState.getEnd().getKind() == End.Kind.EVENT) {
-                workflowEndNodes.put(endState.getName(), factory.messageEndNode(idCounter.getAndIncrement(), NODE_END_NAME, workflow, endState.getEnd(), process));
-            } else {
+            if (endState.getEnd().getProduceEvents() == null || endState.getEnd().getProduceEvents().isEmpty()) {
                 workflowEndNodes.put(endState.getName(), factory.endNode(idCounter.getAndIncrement(), NODE_END_NAME, true, process));
+            } else {
+                workflowEndNodes.put(endState.getName(), factory.messageEndNode(idCounter.getAndIncrement(), NODE_END_NAME, workflow, endState.getEnd(), process));
             }
         }
 
@@ -416,12 +412,12 @@ public class ServerlessWorkflowParser {
             }
             // 2. if its an end
             if (switchState.getDefault() != null && switchState.getDefault().getEnd() != null) {
-                if (switchState.getDefault().getEnd().getKind() == End.Kind.EVENT) {
-                    EndNode defaultEndNode = factory.messageEndNode(idCounter.getAndIncrement(), NODE_END_NAME, workflow, switchState.getDefault().getEnd(), process);
+                if (switchState.getDefault().getEnd().getProduceEvents() == null || switchState.getDefault().getEnd().getProduceEvents().isEmpty()) {
+                    EndNode defaultEndNode = factory.endNode(idCounter.getAndIncrement(), NODE_END_NAME, true, process);
                     factory.connect(xorSplit.getId(), defaultEndNode.getId(), xorSplit.getId() + "_" + defaultEndNode.getId(), process);
                     xorSplit.getMetaData().put(XORSPLITDEFAULT, xorSplit.getId() + "_" + defaultEndNode.getId());
                 } else {
-                    EndNode defaultEndNode = factory.endNode(idCounter.getAndIncrement(), NODE_END_NAME, true, process);
+                    EndNode defaultEndNode = factory.messageEndNode(idCounter.getAndIncrement(), NODE_END_NAME, workflow, switchState.getDefault().getEnd(), process);
                     factory.connect(xorSplit.getId(), defaultEndNode.getId(), xorSplit.getId() + "_" + defaultEndNode.getId(), process);
                     xorSplit.getMetaData().put(XORSPLITDEFAULT, xorSplit.getId() + "_" + defaultEndNode.getId());
                 }
@@ -472,12 +468,12 @@ public class ServerlessWorkflowParser {
                             factory.connect(xorSplit.getId(), targetId, xorSplit.getId() + "_" + targetId, process);
                         }
                     } else if (condition.getEnd() != null) {
-                        if (condition.getEnd().getKind() == End.Kind.EVENT) {
-                            EndNode conditionEndNode = factory.messageEndNode(idCounter.getAndIncrement(), NODE_END_NAME, workflow, condition.getEnd(), process);
+                        if (condition.getEnd().getProduceEvents() == null || condition.getEnd().getProduceEvents().isEmpty()) {
+                            EndNode conditionEndNode = factory.endNode(idCounter.getAndIncrement(), NODE_END_NAME, true, process);
                             factory.connect(xorSplit.getId(), conditionEndNode.getId(), xorSplit.getId() + "_" + conditionEndNode.getId(), process);
                             targetId = conditionEndNode.getId();
                         } else {
-                            EndNode conditionEndNode = factory.endNode(idCounter.getAndIncrement(), NODE_END_NAME, true, process);
+                            EndNode conditionEndNode = factory.messageEndNode(idCounter.getAndIncrement(), NODE_END_NAME, workflow, condition.getEnd(), process);
                             factory.connect(xorSplit.getId(), conditionEndNode.getId(), xorSplit.getId() + "_" + conditionEndNode.getId(), process);
                             targetId = conditionEndNode.getId();
                         }

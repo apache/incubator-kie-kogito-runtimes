@@ -49,13 +49,9 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
         assertNotNull(objectMapper);
         assertThat(objectMapper).isInstanceOf(YamlObjectMapper.class);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            ServerlessWorkflowUtils.getObjectMapper("unsupported");
-        });
+        assertThrows(IllegalArgumentException.class, () -> ServerlessWorkflowUtils.getObjectMapper("unsupported"));
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            ServerlessWorkflowUtils.getObjectMapper(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> ServerlessWorkflowUtils.getObjectMapper(null));
     }
 
     @Test
@@ -143,9 +139,9 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     }
 
     @Test
-    public void testResolveFunctionMetadata() throws Exception {
+    public void testResolveFunctionMetadata() {
         FunctionDefinition function = new FunctionDefinition().withName("testfunction1").withMetadata(
-                new HashMap() {{
+                new HashMap<String, String>() {{
                     put("testprop1", "customtestprop1val");
                 }}
         );
@@ -162,9 +158,9 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     }
 
     @Test
-    public void testResolveEvenDefinitiontMetadata() throws Exception {
+    public void testResolveEvenDefinitiontMetadata() {
         EventDefinition eventDefinition = new EventDefinition().withName("testevent1").withMetadata(
-                new HashMap() {{
+                new HashMap<String, String>() {{
                     put("testprop1", "customtestprop1val");
                 }}
         );
@@ -181,9 +177,9 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     }
 
     @Test
-    public void testResolveStatetMetadata() throws Exception {
+    public void testResolveStatetMetadata() {
         DefaultState defaultState = new DefaultState().withName("teststate1").withMetadata(
-                new HashMap() {{
+                new HashMap<String, String>() {{
                     put("testprop1", "customtestprop1val");
                 }}
         );
@@ -200,9 +196,9 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     }
 
     @Test
-    public void testResolveWorkflowMetadata() throws Exception {
+    public void testResolveWorkflowMetadata() {
         Workflow workflow = new Workflow().withId("workflowid1").withMetadata(
-                new HashMap() {{
+                new HashMap<String, String>() {{
                     put("testprop1", "customtestprop1val");
                 }}
         );

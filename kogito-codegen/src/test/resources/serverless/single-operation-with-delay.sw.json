@@ -14,9 +14,7 @@
     {
       "name":"HelloWorld",
       "type":"operation",
-      "start": {
-        "kind": "default"
-      },
+      "start": true,
       "actionMode":"sequential",
       "actions":[
         {
@@ -37,7 +35,7 @@
       "type":"delay",
       "timeDelay": "PT1S",
       "end": {
-        "kind": "terminate"
+        "terminate": "true"
       }
     }
   ]

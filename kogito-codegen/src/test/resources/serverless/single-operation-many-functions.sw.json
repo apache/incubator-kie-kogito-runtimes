@@ -19,9 +19,7 @@
     {
       "name":"HelloWorld",
       "type":"operation",
-      "start": {
-        "kind": "default"
-      },
+      "start": true,
       "actionMode":"sequential",
       "actions":[
         {
@@ -42,7 +40,7 @@
         }
       ],
       "end": {
-        "kind": "terminate"
+        "terminate": "true"
       }
     }
   ]

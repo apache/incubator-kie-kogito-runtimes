@@ -4,7 +4,6 @@ version: '1.0'
 states:
   - name: HelloWorld
     type: operation
-    start:
-      kind: default
+    start: true
     end:
-      kind: terminate
+      terminate: true

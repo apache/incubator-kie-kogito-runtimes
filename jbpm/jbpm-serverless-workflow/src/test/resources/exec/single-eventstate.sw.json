@@ -16,9 +16,7 @@
   "states": [{
     "name": "WaitForGreeting",
     "type": "event",
-    "start": {
-      "kind": "default"
-    },
+    "start": true,
     "onEvents": [
       {
         "eventRefs": ["TestKafkaEvent"],
@@ -37,7 +35,7 @@
         ]
       }],
     "end": {
-      "kind": "terminate"
+      "terminate": "true"
     }
   }]
 }

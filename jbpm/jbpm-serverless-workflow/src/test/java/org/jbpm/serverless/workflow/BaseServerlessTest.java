@@ -36,13 +36,13 @@ import static java.util.Collections.singletonList;
 public abstract class BaseServerlessTest {
 
     protected static final Workflow singleInjectStateWorkflow = new Workflow().withStates(singletonList(
-            new InjectState().withName("relayState").withType(DefaultState.Type.INJECT).withStart(new Start().withKind(Start.Kind.DEFAULT))
-                    .withEnd(new End(End.Kind.DEFAULT))
+            new InjectState().withName("relayState").withType(DefaultState.Type.INJECT).withStart(new Start())
+                    .withEnd(new End())
     ));
     protected static final Workflow multiInjectStateWorkflow = new Workflow().withStates(asList(
-            new InjectState().withName("relayState").withType(DefaultState.Type.INJECT).withStart(new Start().withKind(Start.Kind.DEFAULT))
-                    .withEnd(new End(End.Kind.DEFAULT)),
-            new InjectState().withName("relayState2").withType(DefaultState.Type.INJECT).withEnd(new End(End.Kind.DEFAULT))
+            new InjectState().withName("relayState").withType(DefaultState.Type.INJECT).withStart(new Start())
+                    .withEnd(new End()),
+            new InjectState().withName("relayState2").withType(DefaultState.Type.INJECT).withEnd(new End())
     ));
     protected static final Workflow eventDefOnlyWorkflow = new Workflow().withEvents(
             new Events(singletonList(new EventDefinition().withName("sampleEvent").withSource("sampleSource").withType("sampleType")))

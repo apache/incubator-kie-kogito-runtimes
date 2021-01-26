@@ -6,11 +6,9 @@
     {
       "name":"HelloWorld",
       "type":"operation",
-      "start": {
-        "kind": "default"
-      },
+      "start": true,
       "end": {
-        "kind": "terminate"
+        "terminate": "true"
       }
     }
   ]

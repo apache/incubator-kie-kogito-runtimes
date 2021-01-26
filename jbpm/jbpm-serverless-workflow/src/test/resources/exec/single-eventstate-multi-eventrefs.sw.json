@@ -26,9 +26,7 @@
     {
       "name": "WaitForGreeting",
       "type": "event",
-      "start": {
-        "kind": "default"
-      },
+      "start": true,
       "onEvents": [
         {
           "eventRefs": [
@@ -50,7 +48,7 @@
         }
       ],
       "end": {
-        "kind": "terminate"
+        "terminate": "true"
       }
     }
   ]

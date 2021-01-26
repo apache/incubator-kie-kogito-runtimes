@@ -15,8 +15,7 @@ functions:
 states:
   - name: HelloWorld
     type: operation
-    start:
-      kind: default
+    start: true
     actionMode: sequential
     actions:
       - functionRef:
@@ -36,4 +35,4 @@ states:
           parameters:
             script: ''
     end:
-      kind: terminate
+      terminate: true
