@@ -86,7 +86,7 @@
       <artifactId>swagger-parser</artifactId>
       <scope>test</scope>
       <exclusions>
-        <exclusion>
+        <exclusion> <!-- Kogito-on-Quarkus uses Kogito-Codegen's CP instead of PCL, so we need to manually exclude. -->
           <groupId>io.swagger.core.v3</groupId>
           <artifactId>swagger-annotations</artifactId>
         </exclusion>
