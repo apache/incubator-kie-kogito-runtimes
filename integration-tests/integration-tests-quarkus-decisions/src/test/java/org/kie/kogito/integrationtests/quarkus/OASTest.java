@@ -69,5 +69,4 @@ class OASTest {
                    .statusCode(200)
                    .body("definitions", aMapWithSize(greaterThan(0)));
     }
-
 }
