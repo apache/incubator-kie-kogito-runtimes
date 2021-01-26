@@ -419,6 +419,4 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         System.clearProperty("jbpm.enable.multi.con");
     }
-
-
 }
