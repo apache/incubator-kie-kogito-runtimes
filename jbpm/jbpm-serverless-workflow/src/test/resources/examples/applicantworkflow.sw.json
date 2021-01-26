@@ -54,7 +54,6 @@
         "decision": "Approved"
       },
       "end": {
-        "kind": "event",
         "produceEvents": [
           {
             "eventRef": "ApplicantDecisionEvent"
