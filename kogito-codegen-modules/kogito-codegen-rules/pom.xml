@@ -20,6 +20,17 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-codegen-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-drools</artifactId>
+        </dependency>
+
+<!--    Required because of GrafanaConfigurationWriter    -->
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>grafana-api</artifactId>
+        </dependency>
+
 
         <!-- test -->
         <dependency>
@@ -40,6 +51,23 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>drools-decisiontables</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>drools-core-static</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
