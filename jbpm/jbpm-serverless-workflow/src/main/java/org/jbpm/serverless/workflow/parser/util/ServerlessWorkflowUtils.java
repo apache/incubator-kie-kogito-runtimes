@@ -16,6 +16,7 @@ package org.jbpm.serverless.workflow.parser.util;
 
 import java.io.Reader;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -76,7 +77,7 @@ public class ServerlessWorkflowUtils {
     public static State getWorkflowStartState(Workflow workflow) {
         return workflow.getStates().stream()
                 .filter(ws -> ws.getStart() != null)
-                .findFirst().get();
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Workflow does not have a Start state"));
     }
 
     public static List<State> getStatesByType(Workflow workflow, DefaultState.Type type) {
@@ -132,7 +133,7 @@ public class ServerlessWorkflowUtils {
     public static EventDefinition getWorkflowEventFor(Workflow workflow, String eventName) {
         return workflow.getEvents().getEventDefs().stream()
                 .filter(wt -> wt.getName().equals(eventName))
-                .findFirst().get();
+                .findFirst().orElseThrow(() -> new NoSuchElementException("No event for " + eventName));
     }
 
 
@@ -175,18 +176,14 @@ public class ServerlessWorkflowUtils {
     }
 
     public static String getJsonPathScript(String script) {
-
-        if (script.indexOf("$") >= 0) {
-
+        if (script.contains("$")) {
             String replacement = "jsonNode = com.jayway.jsonpath.JsonPath.using(jsonPathConfig)" +
                     ".parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\")))" +
                     ".read(\"@@.$1\", com.fasterxml.jackson.databind.JsonNode.class); toPrint+= jsonNode.isTextual() ? jsonNode.asText() : jsonNode;";
             script = script.replaceAll("\\$.([A-Za-z]+)", replacement);
             script = script.replaceAll("@@", Matcher.quoteReplacement("$"));
-            return script;
-        } else {
-            return script;
         }
+        return script;
     }
 
     public static String getInjectScript(JsonNode toInjectNode) {

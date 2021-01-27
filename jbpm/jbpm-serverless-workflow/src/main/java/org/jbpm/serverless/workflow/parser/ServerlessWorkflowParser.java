@@ -140,7 +140,7 @@ public class ServerlessWorkflowParser {
                 }
 
                 CompositeContextNode embeddedSubProcess = factory.subProcessNode(idCounter.getAndIncrement(), state.getName(), process);
-                handleActions(workflowFunctions, eventState.getOnEvents().get(0).getActions(), process, embeddedSubProcess);
+                handleActions(workflowFunctions, eventState.getOnEvents().get(0).getActions(), embeddedSubProcess);
 
                 List<String> onEventRefs = eventState.getOnEvents().get(0).getEventRefs();
                 if (onEventRefs.size() == 1) {
@@ -169,7 +169,7 @@ public class ServerlessWorkflowParser {
             if (state.getType().equals(DefaultState.Type.OPERATION)) {
                 OperationState operationState = (OperationState) state;
                 CompositeContextNode embeddedSubProcess = factory.subProcessNode(idCounter.getAndIncrement(), state.getName(), process);
-                handleActions(workflowFunctions, operationState.getActions(), process, embeddedSubProcess);
+                handleActions(workflowFunctions, operationState.getActions(), embeddedSubProcess);
 
                 if (state.getStart() != null) {
                     factory.connect(workflowStartNode.getId(), embeddedSubProcess.getId(), workflowStartNode.getId() + "_" + embeddedSubProcess.getId(), process);
@@ -506,7 +506,6 @@ public class ServerlessWorkflowParser {
 
     protected void handleActions(Functions workflowFunctions,
                                  List<Action> actions,
-                                 RuleFlowProcess process,
                                  CompositeContextNode embeddedSubProcess) {
         if (actions != null && !actions.isEmpty() && workflowFunctions != null) {
             StartNode embeddedStartNode =
