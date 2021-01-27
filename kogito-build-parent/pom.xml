@@ -72,7 +72,6 @@
     <version.source.plugin>3.0.1</version.source.plugin>
     <version.surefire.plugin>2.22.2</version.surefire.plugin> <!-- minimum required by JUnit 5 -->
     <version.surefire.report.plugin>2.6</version.surefire.report.plugin>
-    <version.swagger.plugin>2.1.0</version.swagger.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <version.versions.plugin>2.8.1</version.versions.plugin>
     <version.jayway.jsonpath>2.4.0</version.jayway.jsonpath>
