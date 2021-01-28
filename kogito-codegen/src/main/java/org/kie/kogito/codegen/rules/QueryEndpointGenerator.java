@@ -18,6 +18,7 @@ package org.kie.kogito.codegen.rules;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +31,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.Name;
@@ -104,17 +106,18 @@ public class QueryEndpointGenerator implements FileGenerator {
     @Override
     public DroolsError getError() {
         if (query.getBindings().isEmpty()) {
-            return new NoBindingQuery( query );
+            return new NoBindingQuery(query);
         }
         return null;
     }
 
     public static class NoBindingQuery extends DroolsError {
+
         private static final int[] ERROR_LINES = new int[0];
 
         private final QueryModel query;
 
-        public NoBindingQuery( QueryModel query ) {
+        public NoBindingQuery(QueryModel query) {
             this.query = query;
         }
 
@@ -177,13 +180,14 @@ public class QueryEndpointGenerator implements FileGenerator {
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
                 .getStatement(0);
         statement.findAll(VariableDeclarator.class).forEach(decl -> setUnitGeneric(decl.getType()));
-        statement.findAll( MethodCallExpr.class ).forEach( m -> m.addArgument( hasDI ? "unitDTO" : "unitDTO.get()" ) );
+        statement.findAll(MethodCallExpr.class).forEach(m -> m.addArgument(hasDI ? "unitDTO" : "unitDTO.get()"));
 
         Statement returnStatement = queryMethod
                 .getBody()
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
                 .getStatement(1);
-        returnStatement.findAll(ClassExpr.class).forEach( expr -> expr.setType( queryClassName ) );
+        returnStatement.findAll(VariableDeclarator.class).forEach(decl -> setGeneric(decl.getType(), returnType));
+        returnStatement.findAll(ClassExpr.class).forEach(expr -> expr.setType(queryClassName));
 
         MethodDeclaration queryMethodSingle = clazz.getMethodsByName("executeQueryFirst").get(0);
         queryMethodSingle.getParameter(0).setType(ruleUnit.getCanonicalName() + (hasDI ? "" : "DTO"));
@@ -215,7 +219,14 @@ public class QueryEndpointGenerator implements FileGenerator {
             ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a return statement!"));
             statements.addFirst(parseStatement("long startTime = System.nanoTime();"));
             statements.addBefore(parseStatement("long endTime = System.nanoTime();"), returnStmt);
-            statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt);
+
+            Optional<AnnotationExpr> pathAnnotation = md.getAnnotationByName("Path");
+            String endpoint = nameURL;
+            if (pathAnnotation.isPresent()) {
+                endpoint += pathAnnotation.get().asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
+            }
+
+            statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + endpoint + "\", endTime - startTime);"), returnStmt);
             md.setBody(wrapBodyAddingExceptionLogging(body, nameURL));
         }
     }
