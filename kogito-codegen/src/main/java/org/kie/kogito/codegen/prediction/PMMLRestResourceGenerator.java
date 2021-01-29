@@ -17,10 +17,17 @@ package org.kie.kogito.codegen.prediction;
 
 import java.net.URLEncoder;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.MemberValuePair;
+import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -35,6 +42,16 @@ import org.kie.pmml.commons.model.KiePMMLModel;
 import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
 
 public class PMMLRestResourceGenerator {
+
+    static final String QUARKUS_REQUEST_BODY = "org.eclipse.microprofile.openapi.annotations.parameters.RequestBody";
+    static final String QUARKUS_API_RESPONSE = "org.eclipse.microprofile.openapi.annotations.responses.APIResponse";
+    static final String QUARKUS_SCHEMA = "org.eclipse.microprofile.openapi.annotations.media.Schema";
+    static final String SPRING_REQUEST_BODY = "io.swagger.v3.oas.annotations.parameters.RequestBody";
+    static final String SPRING_API_RESPONSE = "io.swagger.v3.oas.annotations.responses.ApiResponse";
+    static final String SPRING_SCHEMA = "io.swagger.v3.oas.annotations.media.Schema";
+    static final String SCHEMA = "schema";
+    static final String CONTENT = "content";
+    static final String REF = "ref";
 
     private final String nameURL;
     final String restPackageName;
@@ -72,7 +89,7 @@ public class PMMLRestResourceGenerator {
 
         setPathValue(template);
         setPredictionModelName(template);
-
+        setOASAnnotations(template);
         if (context.hasDI()) {
             template.findAll(FieldDeclaration.class,
                              CodegenUtils::isApplicationField).forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
@@ -116,7 +133,80 @@ public class PMMLRestResourceGenerator {
                 .getArgument(0).asStringLiteralExpr().setString(kiePMMLModel.getName());
     }
 
-    private void initializeApplicationField(FieldDeclaration fd) {
+    void setOASAnnotations(ClassOrInterfaceDeclaration template) {
+        String jsonFile = String.format("%s.json", getSanitizedClassName(kiePMMLModel.getName()));
+        String inputRef = String.format("/%s#/definitions/InputSet", jsonFile);
+        String outputRef = String.format("/%s#/definitions/OutputSet", jsonFile);
+        NodeList<AnnotationExpr> annotations = template.getMethodsByName("pmml").get(0)
+                .getAnnotations();
+        switch(context.name()) {
+            case "Quarkus":
+                setQuarkusOASAnnotations(annotations, inputRef, outputRef);
+                break;
+            case "Spring":
+                setSpringOASAnnotations(annotations, inputRef, outputRef);
+                break;
+            default:
+                // noop
+        }
+    }
+
+    void setQuarkusOASAnnotations(NodeList<AnnotationExpr> annotations, String inputRef, String outputRef) {
+        Optional<MemberValuePair> ref = getRefMemberValuePair(annotations, QUARKUS_REQUEST_BODY, QUARKUS_SCHEMA);
+        ref.ifPresent(rf -> rf.setValue(new StringLiteralExpr(inputRef)));
+        ref = getRefMemberValuePair(annotations, QUARKUS_API_RESPONSE, QUARKUS_SCHEMA);
+        ref.ifPresent(rf -> rf.setValue(new StringLiteralExpr(outputRef)));
+    }
+
+    void setSpringOASAnnotations(NodeList<AnnotationExpr> annotations, String inputRef, String outputRef) {
+        Optional<MemberValuePair> ref = getRefMemberValuePair(annotations, SPRING_REQUEST_BODY, SPRING_SCHEMA);
+        ref.ifPresent(rf -> rf.setValue(new StringLiteralExpr(inputRef)));
+        ref = getRefMemberValuePair(annotations, SPRING_API_RESPONSE, SPRING_SCHEMA);
+        ref.ifPresent(rf -> rf.setValue(new StringLiteralExpr(outputRef)));
+    }
+
+    void initializeApplicationField(FieldDeclaration fd) {
         fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(appCanonicalName));
     }
+
+    Optional<MemberValuePair> getRefMemberValuePair(NodeList<AnnotationExpr> source, String annotationName, String schemaName) {
+        return getAnnotationExpr(source, annotationName)
+                .map(annExpr -> getMemberValuePairFromAnnotation(annExpr, CONTENT))
+                .filter(Optional::isPresent)
+                .map(content -> getMemberValuePairFromMemberValuePair(content.get(), SCHEMA))
+                .filter(Optional::isPresent)
+                .map(schema -> getNormalAnnotationExprFromMemberValuePair(schema.get(), schemaName))
+                .filter(Optional::isPresent).flatMap(schemaAnnotation -> getMemberValuePairFromAnnotation(schemaAnnotation.get(), REF));
+    }
+
+    Optional<NormalAnnotationExpr> getNormalAnnotationExprFromMemberValuePair(MemberValuePair source, String searched) {
+        return source.stream()
+                .filter(node -> node instanceof NormalAnnotationExpr &&
+                        searched.equals(((NormalAnnotationExpr)node).getName().asString()))
+                .map(node -> (NormalAnnotationExpr)node)
+                .findFirst();
+    }
+
+    Optional<MemberValuePair> getMemberValuePairFromMemberValuePair(MemberValuePair source, String searched) {
+        return source.stream()
+                .filter(node -> node instanceof MemberValuePair &&
+                        searched.equals(((MemberValuePair)node).getName().asString()))
+                .map(node -> (MemberValuePair)node)
+                .findFirst();
+    }
+
+    Optional<MemberValuePair> getMemberValuePairFromAnnotation(AnnotationExpr source, String searched) {
+        return source.getChildNodes().stream()
+                .filter(node -> node instanceof MemberValuePair &&
+                        searched.equals(((MemberValuePair)node).getName().asString()))
+                .map(node -> (MemberValuePair)node)
+                .findFirst();
+    }
+
+    Optional<AnnotationExpr> getAnnotationExpr(NodeList<AnnotationExpr> source, String searched) {
+        return source.stream()
+                .filter(annExpr -> searched.equals(annExpr.getNameAsString()))
+                .findFirst();
+    }
+
 }

@@ -19,6 +19,8 @@ public class PMMLRestResourceTemplate {
     Application application;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",schema = @io.swagger.v3.oas.annotations.media.Schema(ref = "/pmmlDefinitions.json#/definitions/InputSet")), description = "PMML input")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",schema = @io.swagger.v3.oas.annotations.media.Schema(ref = "/pmmlDefinitions.json#/definitions/OutputSet")), description = "PMML output")
     public Object pmml(@RequestBody(required = false) Map<String, Object> variables) {
         PredictionModel prediction = application.get(PredictionModels.class).getPredictionModel("$modelName$");
         return prediction.evaluateAll(prediction.newContext(variables));

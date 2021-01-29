@@ -45,7 +45,7 @@ public class PredictionCodegenTest extends AbstractCodegenTest {
                 CollectedResource.fromFiles(BASE_PATH, FULL_SOURCE.toFile()));
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(4, generatedFiles.size());
+        assertEquals(5, generatedFiles.size());
 
         Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
         assertTrue(optionalApplicationSection.isPresent());
