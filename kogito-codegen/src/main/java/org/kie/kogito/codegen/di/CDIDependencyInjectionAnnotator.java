@@ -16,7 +16,12 @@
 
 package org.kie.kogito.codegen.di;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -28,9 +33,6 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
-
-import java.util.Optional;
-import java.util.stream.Stream;
 
 public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnotator {
 
@@ -95,6 +97,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
         produceMethod.addArgument(event);
         return produceMethod;
     }
+
     @Override
     public String optionalInstanceInjectionType() {
         return "javax.enterprise.inject.Instance";
@@ -169,5 +172,11 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
         return Stream.of("POST", "GET", "PUT", "DELETE")
                 .map(node::getAnnotationByName)
                 .anyMatch(Optional::isPresent);
+    }
+
+    @Override
+    public Optional<String> getEndpointValue(MethodDeclaration md) {
+        Optional<AnnotationExpr> path = md.getAnnotationByName("Path");
+        return path.map(annotationExpr -> annotationExpr.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString());
     }
 }
