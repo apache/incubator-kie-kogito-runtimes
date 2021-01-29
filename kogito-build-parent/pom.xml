@@ -77,7 +77,7 @@
     <version.jayway.jsonpath>2.4.0</version.jayway.jsonpath>
 
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>1.11.0.Final</version.io.quarkus>
+    <version.io.quarkus>1.11.1.Final</version.io.quarkus>
     <quarkus.logging.manager>org.jboss.logmanager.LogManager</quarkus.logging.manager>
 
     <!-- dependencies versions -->
@@ -110,9 +110,11 @@
     <version.io.micrometer>1.6.1</version.io.micrometer>
     <version.io.restassured>4.3.0</version.io.restassured>
     <version.io.restassured.springboot>3.3.0</version.io.restassured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
+    <version.io.serverlessworkflow>1.0.3.Final</version.io.serverlessworkflow>
     <version.io.smallrye.reactive>2.6.1</version.io.smallrye.reactive>
     <version.io.smallrye.reactive.mutiny-vertx-web-client>1.3.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
     <version.io.swagger.core.v3>2.0.6</version.io.swagger.core.v3>
+    <version.io.swagger.parser.v3>2.0.24</version.io.swagger.parser.v3>
 
     <version.org.antlr>3.5.2</version.org.antlr>
     <version.org.antlr4>4.8</version.org.antlr4>
@@ -660,6 +662,11 @@
         <artifactId>swagger-annotations</artifactId>
         <version>${version.io.swagger.core.v3}</version>
       </dependency>
+      <dependency>
+        <groupId>io.swagger.parser.v3</groupId>
+        <artifactId>swagger-parser</artifactId>
+        <version>${version.io.swagger.parser.v3}</version>
+      </dependency>
 
       <dependency>
         <groupId>javax.inject</groupId>
@@ -823,6 +830,29 @@
         <artifactId>xercesImpl</artifactId>
         <version>${version.xerces}</version>
       </dependency>
+
+      <!-- Serverless Workflow -->
+      <dependency>
+        <groupId>io.serverlessworkflow</groupId>
+        <artifactId>serverlessworkflow-api</artifactId>
+        <version>${version.io.serverlessworkflow}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.serverlessworkflow</groupId>
+        <artifactId>serverlessworkflow-spi</artifactId>
+        <version>${version.io.serverlessworkflow}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.serverlessworkflow</groupId>
+        <artifactId>serverlessworkflow-validation</artifactId>
+        <version>${version.io.serverlessworkflow}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.serverlessworkflow</groupId>
+        <artifactId>serverlessworkflow-diagram</artifactId>
+        <version>${version.io.serverlessworkflow}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
