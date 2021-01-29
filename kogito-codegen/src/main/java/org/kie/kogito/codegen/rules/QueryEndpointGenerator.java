@@ -220,7 +220,7 @@ public class QueryEndpointGenerator implements FileGenerator {
             statements.addFirst(parseStatement("long startTime = System.nanoTime();"));
             statements.addBefore(parseStatement("long endTime = System.nanoTime();"), returnStmt);
             String endpoint = nameURL;
-            if (context.getDependencyInjectionAnnotator() != null){
+            if (context.hasDI()){
                 Optional<String> path = context.getDependencyInjectionAnnotator().getEndpointValue(md);
                 if (path.isPresent()){
                     endpoint += path.get();
