@@ -20,7 +20,7 @@ import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTransformer;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.EventNode;
 
@@ -34,7 +34,7 @@ public class EventNodeFactory extends ExtendedNodeFactory {
         super(nodeContainerFactory, nodeContainer, id);
     }
 
-    protected Node createNode() {
+    protected JbpmNode createNode() {
         return new EventNode();
     }
 

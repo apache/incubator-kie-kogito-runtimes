@@ -19,7 +19,7 @@ package org.jbpm.ruleflow.core.factory;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.impl.WorkImpl;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.HumanTaskNode;
 
@@ -38,7 +38,7 @@ public class HumanTaskNodeFactory extends WorkItemNodeFactory {
     }
 
     @Override
-    protected Node createNode() {
+    protected JbpmNode createNode() {
         return new HumanTaskNode();
     }
 

@@ -18,7 +18,7 @@ package org.jbpm.bpmn2.xml;
 
 import java.util.List;
 
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.ThrowLinkNode;
 import org.xml.sax.Attributes;
 
@@ -29,12 +29,12 @@ public class ThrowLinkNodeHandler extends AbstractNodeHandler {
 	}
 
 	@Override
-	protected Node createNode(Attributes attrs) {
+	protected JbpmNode createNode( Attributes attrs) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
 
 		ThrowLinkNode linkNode = (ThrowLinkNode) node;
 

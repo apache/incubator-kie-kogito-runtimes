@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.Join;
 import org.jbpm.workflow.core.node.Split;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
@@ -36,6 +37,7 @@ import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.NodeInstanceContainer;
+import org.kie.kogito.process.runtime.KogitoNodeInstance;
 
 /**
  * Runtime counterpart of a join node.
@@ -51,8 +53,8 @@ public class JoinInstance extends NodeInstanceImpl {
         return (Join) getNode();
     }
 
-    public void internalTrigger(final NodeInstance from, String type) {
-        if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
+    public void internalTrigger(final KogitoNodeInstance from, String type) {
+        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                 "An ActionNode only accepts default incoming connections!");
         }
@@ -203,7 +205,7 @@ public class JoinInstance extends NodeInstanceImpl {
     	    return false;
     	}
 
-        List<Connection> connections = currentNode.getOutgoingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+        List<Connection> connections = currentNode.getOutgoingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
         // special handling for XOR split as it usually is used for arbitrary loops
         if (currentNode instanceof Split && ((Split) currentNode).getType() == Split.TYPE_XOR) {
         	if (vistedNodes.contains(startAt.getId())) {
@@ -268,7 +270,7 @@ public class JoinInstance extends NodeInstanceImpl {
 
     public void triggerCompleted() {
         // join nodes are only removed from the container when they contain no more state
-        triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, triggers.isEmpty());
+        triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, triggers.isEmpty());
     }
     
     public Map<Long, Integer> getTriggers() {

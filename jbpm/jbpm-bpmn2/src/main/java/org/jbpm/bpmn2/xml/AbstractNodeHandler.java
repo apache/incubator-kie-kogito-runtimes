@@ -49,7 +49,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.core.datatype.impl.type.StringDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
@@ -105,7 +105,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         this.validPeers.add(null);
         this.validPeers.add(Lane.class);
         this.validPeers.add(Variable.class);
-        this.validPeers.add(Node.class);
+        this.validPeers.add( JbpmNode.class);
         this.validPeers.add(SequenceFlow.class);
         this.validPeers.add(Lane.class);
         this.validPeers.add(Association.class);
@@ -114,7 +114,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     public Object start(final String uri, final String localName, final Attributes attrs,
                         final ExtensibleXmlParser parser) throws SAXException {
         parser.startElementBuilder(localName, attrs);
-        final Node node = createNode(attrs);
+        final JbpmNode node = createNode(attrs);
         String id = attrs.getValue("id");
         node.setMetaData("UniqueId", id);
         final String name = attrs.getValue("name");
@@ -137,7 +137,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                         newId = n.getId();
                     }
                 }
-                ((org.jbpm.workflow.core.Node) node).setId(++newId);
+                (( JbpmNode ) node).setId(++newId);
             }
         } else {
             AtomicInteger idGen = (AtomicInteger) parser.getMetaData().get("idGen");
@@ -146,12 +146,12 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return node;
     }
 
-    protected abstract Node createNode(Attributes attrs);
+    protected abstract JbpmNode createNode( Attributes attrs);
 
     public Object end(final String uri, final String localName,
                       final ExtensibleXmlParser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
-        Node node = (Node) parser.getCurrent();
+        JbpmNode node = ( JbpmNode ) parser.getCurrent();
         handleNode(node, element, uri, localName, parser);
         NodeContainer nodeContainer = (NodeContainer) parser.getParent();
         nodeContainer.addNode(node);
@@ -159,8 +159,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return node;
     }
 
-    protected void handleNode(final Node node, final Element element, final String uri,
-                              final String localName, final ExtensibleXmlParser parser)
+    protected void handleNode( final JbpmNode node, final Element element, final String uri,
+                               final String localName, final ExtensibleXmlParser parser)
             throws SAXException {
         final String x = element.getAttribute("x");
         if (x != null && x.length() != 0) {
@@ -196,10 +196,10 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
     }
 
-    public abstract void writeNode(final Node node, final StringBuilder xmlDump,
-                                   final int metaDataType);
+    public abstract void writeNode( final JbpmNode node, final StringBuilder xmlDump,
+                                    final int metaDataType);
 
-    protected void writeNode(final String name, final Node node,
+    protected void writeNode(final String name, final JbpmNode node,
                              final StringBuilder xmlDump, int metaDataType) {
         xmlDump.append("    <" + name + " ");
         xmlDump.append("id=\"" + XmlBPMNProcessDumper.getUniqueNodeId(node) + "\" ");
@@ -280,15 +280,15 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return new DroolsConsequenceAction("mvel", "");
     }
 
-    protected void writeMetaData(final Node node, final StringBuilder xmlDump) {
+    protected void writeMetaData( final JbpmNode node, final StringBuilder xmlDump) {
         XmlBPMNProcessDumper.writeMetaData(getMetaData(node), xmlDump);
     }
 
-    protected Map<String, Object> getMetaData(Node node) {
+    protected Map<String, Object> getMetaData( JbpmNode node) {
         return XmlBPMNProcessDumper.getMetaData(node.getMetaData());
     }
 
-    protected void writeExtensionElements(Node node, final StringBuilder xmlDump) {
+    protected void writeExtensionElements( JbpmNode node, final StringBuilder xmlDump) {
         if (containsExtensionElements(node)) {
             xmlDump.append("      <extensionElements>" + EOL);
             if (node instanceof ExtendedNodeImpl) {
@@ -300,7 +300,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
     }
 
-    protected boolean containsExtensionElements(Node node) {
+    protected boolean containsExtensionElements( JbpmNode node) {
         if (!getMetaData(node).isEmpty()) {
             return true;
         }
@@ -514,10 +514,10 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return dataType;
     }
 
-    protected String getErrorIdForErrorCode(String errorCode, Node node) {
+    protected String getErrorIdForErrorCode(String errorCode, JbpmNode node) {
         org.kie.api.definition.process.NodeContainer parent = node.getParentContainer();
-        while (!(parent instanceof RuleFlowProcess) && parent instanceof Node) {
-            parent = ((Node) parent).getParentContainer();
+        while (!(parent instanceof RuleFlowProcess) && parent instanceof JbpmNode) {
+            parent = (( JbpmNode ) parent).getParentContainer();
         }
         if (!(parent instanceof RuleFlowProcess)) {
             throw new RuntimeException("This should never happen: !(parent instanceof RuleFlowProcess): parent is " + parent.getClass().getSimpleName());
@@ -539,8 +539,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return error.getId();
     }
 
-    protected void handleThrowCompensationEventNode(final Node node, final Element element,
-                                                    final String uri, final String localName, final ExtensibleXmlParser parser) {
+    protected void handleThrowCompensationEventNode( final JbpmNode node, final Element element,
+                                                     final String uri, final String localName, final ExtensibleXmlParser parser) {
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         assert node instanceof ActionNode || node instanceof EndNode
                 : "Node is neither an ActionNode nor an EndNode but a " + node.getClass().getSimpleName();

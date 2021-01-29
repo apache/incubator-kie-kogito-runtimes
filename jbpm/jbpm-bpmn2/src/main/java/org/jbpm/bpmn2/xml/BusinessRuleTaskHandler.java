@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import org.drools.compiler.compiler.xml.XmlDumper;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.process.core.impl.DataTransformerRegistry;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.Assignment;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.RuleSetNode;
@@ -46,7 +46,7 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
     private static final String DECISION_PROP = "decision";
 	private DataTransformerRegistry transformerRegistry = DataTransformerRegistry.get();
     
-    protected Node createNode(Attributes attrs) {
+    protected JbpmNode createNode( Attributes attrs) {
         return new RuleSetNode();
     }
     
@@ -55,8 +55,8 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
         return RuleSetNode.class;
     }
 
-    protected void handleNode(final Node node, final Element element, final String uri, 
-            final String localName, final ExtensibleXmlParser parser) throws SAXException {
+    protected void handleNode( final JbpmNode node, final Element element, final String uri,
+                               final String localName, final ExtensibleXmlParser parser) throws SAXException {
     	super.handleNode(node, element, uri, localName, parser);
         RuleSetNode ruleSetNode = (RuleSetNode) node;
 
@@ -96,7 +96,7 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
         handleScript(ruleSetNode, element, "onExit");
 	}
 
-	public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
 		RuleSetNode ruleSetNode = (RuleSetNode) node;
 		writeNode("businessRuleTask", ruleSetNode, xmlDump, metaDataType);
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();

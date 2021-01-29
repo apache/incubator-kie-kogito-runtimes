@@ -22,10 +22,10 @@ import java.util.List;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.process.runtime.KogitoNodeInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
-import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
+import static org.jbpm.workflow.core.JbpmNode.CONNECTION_DEFAULT_TYPE;
 import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
 import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
 
@@ -37,7 +37,7 @@ public abstract class ExtendedNodeInstanceImpl extends NodeInstanceImpl {
 		return (ExtendedNodeImpl) getNode();
 	}
 	
-	public void internalTrigger(NodeInstance from, String type) {
+	public void internalTrigger(KogitoNodeInstance from, String type) {
 	    triggerTime = new Date();
 		triggerEvent(EVENT_NODE_ENTER);
 	}

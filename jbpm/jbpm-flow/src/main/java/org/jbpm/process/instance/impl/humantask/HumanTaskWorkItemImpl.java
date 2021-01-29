@@ -19,9 +19,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.kie.api.runtime.process.HumanTaskWorkItem;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.process.workitem.HumanTaskWorkItem;
 import org.kie.kogito.process.workitem.NotAuthorizedException;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;

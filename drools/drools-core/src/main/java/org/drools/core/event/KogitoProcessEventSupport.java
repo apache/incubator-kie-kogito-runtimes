@@ -23,18 +23,20 @@ import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.api.event.process.ProcessWorkItemTransitionEvent;
 import org.kie.api.event.process.SLAViolatedEvent;
 import org.kie.api.event.process.SignalEvent;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.event.process.ProcessWorkItemTransitionEvent;
+import org.kie.kogito.process.event.KogitoProcessEventListener;
+import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.workitem.Transition;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.uow.WorkUnit;
 
-public class KogitoProcessEventSupport extends ProcessEventSupport {
+public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProcessEventListener> {
 
     private UnitOfWorkManager unitOfWorkManager;
 
@@ -128,10 +130,10 @@ public class KogitoProcessEventSupport extends ProcessEventSupport {
         }));
     }
 
-    public void fireBeforeVariableChanged(final String id, final String instanceId,
-                                          final Object oldValue, final Object newValue,
-                                          final List<String> tags,
-                                          final ProcessInstance processInstance, NodeInstance nodeInstance, KieRuntime kruntime) {
+    public void fireBeforeVariableChanged( final String id, final String instanceId,
+                                           final Object oldValue, final Object newValue,
+                                           final List<String> tags,
+                                           final ProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kruntime) {
         final ProcessVariableChangedEvent event = new KogitoProcessVariableChangedEventImpl(
                 id, instanceId, oldValue, newValue, tags, processInstance, nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -144,7 +146,7 @@ public class KogitoProcessEventSupport extends ProcessEventSupport {
     public void fireAfterVariableChanged(final String name, final String id,
                                          final Object oldValue, final Object newValue,
                                          final List<String> tags,
-                                         final ProcessInstance processInstance, NodeInstance nodeInstance, KieRuntime kruntime) {
+                                         final ProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kruntime) {
         final ProcessVariableChangedEvent event = new KogitoProcessVariableChangedEventImpl(
                 name, id, oldValue, newValue, tags, processInstance, nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -194,7 +196,7 @@ public class KogitoProcessEventSupport extends ProcessEventSupport {
         }));
     }
 
-    public void fireBeforeWorkItemTransition(final ProcessInstance instance, WorkItem workitem, Transition<?> transition, KieRuntime kruntime ) {
+    public void fireBeforeWorkItemTransition( final ProcessInstance instance, KogitoWorkItem workitem, Transition<?> transition, KieRuntime kruntime ) {
         final ProcessWorkItemTransitionEvent event = new KogitoProcessWorkItemTransitionEventImpl(instance, workitem, transition, kruntime, false);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
             if ( hasListeners() ) {
@@ -203,7 +205,7 @@ public class KogitoProcessEventSupport extends ProcessEventSupport {
         }));
     }
 
-    public void fireAfterWorkItemTransition(final ProcessInstance instance, WorkItem workitem, Transition<?> transition, KieRuntime kruntime) {
+    public void fireAfterWorkItemTransition(final ProcessInstance instance, KogitoWorkItem workitem, Transition<?> transition, KieRuntime kruntime) {
             final ProcessWorkItemTransitionEvent event = new KogitoProcessWorkItemTransitionEventImpl(instance, workitem, transition, kruntime, true);
             unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
                 if ( hasListeners() ) {

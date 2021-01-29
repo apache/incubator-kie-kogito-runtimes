@@ -98,7 +98,6 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
         return environment;
     }
 
-    @Override
     public JobsService getJobsService() {
         return null;
     }
@@ -239,16 +238,26 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
+    public ProcessInstance startProcessFromNodeIds( String s, Map<String, Object> map, String... strings ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.DummyKnowledgeRuntime.startProcessFromNodeIds -> TODO" );
+
+    }
+
+    @Override
     public ProcessInstance createProcessInstance(String processId, Map<String, Object> parameters) {
         return null;
     }
 
     @Override
+    public ProcessInstance startProcessInstance( long l ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.DummyKnowledgeRuntime.startProcessInstance -> TODO" );
+
+    }
+
     public ProcessInstance startProcessInstance(String processInstanceId) {
         return null;
     }
-    
-    @Override
+
     public ProcessInstance startProcessInstance(String processInstanceId, String trigger) {
         return null;
     }
@@ -259,6 +268,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
+    public void signalEvent( String s, Object o, long l ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.DummyKnowledgeRuntime.signalEvent -> TODO" );
+
+    }
+
     public void signalEvent(String type, Object event, String processInstanceId) {
 
     }
@@ -269,16 +283,31 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
+    public ProcessInstance getProcessInstance( long l ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.DummyKnowledgeRuntime.getProcessInstance -> TODO" );
+
+    }
+
+    @Override
+    public ProcessInstance getProcessInstance( long l, boolean b ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.DummyKnowledgeRuntime.getProcessInstance -> TODO" );
+
+    }
+
+    @Override
+    public void abortProcessInstance( long l ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.DummyKnowledgeRuntime.abortProcessInstance -> TODO" );
+
+    }
+
     public ProcessInstance getProcessInstance(String processInstanceId) {
         return null;
     }
 
-    @Override
     public ProcessInstance getProcessInstance(String processInstanceId, boolean readonly) {
         return null;
     }
 
-    @Override
     public void abortProcessInstance(String processInstanceId) {
 
     }

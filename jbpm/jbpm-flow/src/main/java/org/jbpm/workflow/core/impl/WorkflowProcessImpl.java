@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.util.PatternConstants;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
@@ -91,6 +92,11 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
         return nodeContainer.getNode(id);
     }
 
+    @Override
+    public Node getNodeByUniqueId( String s ) {
+        throw new UnsupportedOperationException();
+    }
+
     public Node internalGetNode(long id) {
     	try {
     		return getNode(id);
@@ -105,12 +111,12 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
 
     public void removeNode(final Node node) {
         nodeContainer.removeNode(node);
-        ((org.jbpm.workflow.core.Node) node).setParentContainer(null);
+        (( JbpmNode ) node).setParentContainer(null);
     }
 
     public void addNode(final Node node) {
         nodeContainer.addNode(node);
-        ((org.jbpm.workflow.core.Node) node).setParentContainer(this);
+        (( JbpmNode ) node).setParentContainer(this);
     }
 
     public boolean isAutoComplete() {

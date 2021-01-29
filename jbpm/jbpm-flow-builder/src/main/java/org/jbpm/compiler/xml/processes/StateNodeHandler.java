@@ -21,7 +21,7 @@ import java.util.Map;
 import org.drools.compiler.compiler.xml.XmlDumper;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.workflow.core.Constraint;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.node.StateNode;
 import org.w3c.dom.Element;
@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
 
 public class StateNodeHandler extends AbstractNodeHandler {
 
-    protected Node createNode() {
+    protected JbpmNode createNode() {
         return new StateNode();
     }
 
@@ -38,8 +38,8 @@ public class StateNodeHandler extends AbstractNodeHandler {
         return StateNode.class;
     }
 
-    public void handleNode(final Node node, final Element element, final String uri,
-            final String localName, final ExtensibleXmlParser parser)
+    public void handleNode( final JbpmNode node, final Element element, final String uri,
+                            final String localName, final ExtensibleXmlParser parser)
             throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         StateNode stateNode = (StateNode) node;
@@ -48,7 +48,7 @@ public class StateNodeHandler extends AbstractNodeHandler {
         }
     }
     
-    public void writeNode(Node node, StringBuilder xmlDump, boolean includeMeta) {
+    public void writeNode( JbpmNode node, StringBuilder xmlDump, boolean includeMeta) {
 		StateNode stateNode = (StateNode) node;
 		writeNode("state", stateNode, xmlDump, includeMeta);
         xmlDump.append(">\n");

@@ -25,6 +25,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.factory.ForEachNodeFactory;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.ForEachNode;
 import org.kie.api.definition.process.Node;
 
@@ -69,8 +70,8 @@ public class ForEachNodeVisitor extends AbstractCompositeNodeVisitor<ForEachNode
         }
         // visit nodes
         visitNodes(getNodeId(node), node.getNodes(), body, ((VariableScope) node.getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);
-        body.addStatement(getFactoryMethod(getNodeId(node), METHOD_LINK_INCOMING_CONNECTIONS, new LongLiteralExpr(node.getLinkedIncomingNode(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE).getNodeId())))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_LINK_OUTGOING_CONNECTIONS, new LongLiteralExpr(node.getLinkedOutgoingNode(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE).getNodeId())))
+        body.addStatement(getFactoryMethod(getNodeId(node), METHOD_LINK_INCOMING_CONNECTIONS, new LongLiteralExpr(node.getLinkedIncomingNode( JbpmNode.CONNECTION_DEFAULT_TYPE).getNodeId())))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_LINK_OUTGOING_CONNECTIONS, new LongLiteralExpr(node.getLinkedOutgoingNode( JbpmNode.CONNECTION_DEFAULT_TYPE).getNodeId())))
                 .addStatement(getDoneMethod(getNodeId(node)));
 
     }

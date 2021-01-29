@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jbpm.workflow.core.JbpmNode;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.Application;
@@ -61,7 +62,7 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             List<Map<String, Object>> list = nodes.stream().map(n -> {
                 Map<String, Object> data = new HashMap<>();
                 data.put("id", n.getId());
-                data.put("uniqueId", ((org.jbpm.workflow.core.Node) n).getUniqueId());
+                data.put("uniqueId", (( JbpmNode ) n).getUniqueId());
                 data.put("nodeDefinitionId", n.getMetaData().get(UNIQUE_ID));
                 data.put("type", n.getClass().getSimpleName());
                 data.put("name", n.getName());

@@ -19,13 +19,13 @@ package org.jbpm.bpmn2.xml;
 import java.util.Map;
 
 import org.drools.compiler.compiler.xml.XmlDumper;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.xml.sax.Attributes;
 
 public class WorkItemNodeHandler extends AbstractNodeHandler {
     
-    protected Node createNode(Attributes attrs) {
+    protected JbpmNode createNode( Attributes attrs) {
         throw new IllegalArgumentException("Reading in should be handled by specific handlers");
     }
     
@@ -34,7 +34,7 @@ public class WorkItemNodeHandler extends AbstractNodeHandler {
         return WorkItemNode.class;
     }
 
-	public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
 		WorkItemNode workItemNode = (WorkItemNode) node;
 		String type = workItemNode.getWork().getName();
 		if ("Manual Task".equals(type)) {

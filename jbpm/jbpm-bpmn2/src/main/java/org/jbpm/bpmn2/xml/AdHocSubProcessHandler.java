@@ -22,7 +22,7 @@ import java.util.List;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.bpmn2.core.SequenceFlow;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.DynamicNode;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -38,7 +38,7 @@ public class AdHocSubProcessHandler extends CompositeContextNodeHandler {
             "getActivityInstanceAttribute(\"numberOfActiveInstances\") == 0", AUTOCOMPLETE_COMPLETION_CONDITION);
 
     @Override
-    protected Node createNode(Attributes attrs) {
+    protected JbpmNode createNode( Attributes attrs) {
         DynamicNode result = new DynamicNode();
         VariableScope variableScope = new VariableScope();
         result.addContext(variableScope);
@@ -53,8 +53,8 @@ public class AdHocSubProcessHandler extends CompositeContextNodeHandler {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void handleNode(final Node node, final Element element, final String uri,
-                              final String localName, final ExtensibleXmlParser parser) throws SAXException {
+    protected void handleNode( final JbpmNode node, final Element element, final String uri,
+                               final String localName, final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         DynamicNode dynamicNode = (DynamicNode) node;
         String cancelRemainingInstances = element.getAttribute("cancelRemainingInstances");
@@ -86,7 +86,7 @@ public class AdHocSubProcessHandler extends CompositeContextNodeHandler {
     }
 
     @Override
-    public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
+    public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
         DynamicNode dynamicNode = (DynamicNode) node;
         writeNode("adHocSubProcess", dynamicNode, xmlDump, metaDataType);
         if (!dynamicNode.isCancelRemainingInstances()) {
@@ -95,7 +95,7 @@ public class AdHocSubProcessHandler extends CompositeContextNodeHandler {
         xmlDump.append(" ordering=\"Parallel\" >" + EOL);
         writeExtensionElements(dynamicNode, xmlDump);
         // nodes
-        List<Node> subNodes = getSubNodes(dynamicNode);
+        List<JbpmNode> subNodes = getSubNodes(dynamicNode);
         XmlBPMNProcessDumper.INSTANCE.visitNodes(subNodes, xmlDump, metaDataType);
 
         // connections

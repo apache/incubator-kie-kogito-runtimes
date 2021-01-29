@@ -59,6 +59,7 @@ import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.process.core.validation.ProcessValidator;
 import org.jbpm.process.core.validation.ProcessValidatorRegistry;
 import org.jbpm.workflow.core.Constraint;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.NodeImpl;
@@ -410,8 +411,8 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
                                    String constraint) {
         return
                 "rule \"RuleFlow-Split-" + process.getId() + "-" +
-                        ((org.jbpm.workflow.core.Node) connection.getFrom()).getUniqueId() + "-" +
-                        ((org.jbpm.workflow.core.Node) connection.getTo()).getUniqueId() + "-" +
+                        (( JbpmNode ) connection.getFrom()).getUniqueId() + "-" +
+                        (( JbpmNode ) connection.getTo()).getUniqueId() + "-" +
                         connection.getToType() + "\"  @Propagation(EAGER) \n" +
                         "      ruleflow-group \"DROOLS_SYSTEM\" \n" +
                         "    when \n" +

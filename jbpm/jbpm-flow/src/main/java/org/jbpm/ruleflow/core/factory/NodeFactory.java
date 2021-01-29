@@ -17,7 +17,7 @@
 package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 
 public abstract class NodeFactory {
@@ -26,7 +26,7 @@ public abstract class NodeFactory {
     public static final String METHOD_METADATA = "metaData";
     public static final String METHOD_DONE = "done";
 
-    private Node node;
+    private JbpmNode node;
     private NodeContainer nodeContainer;
     protected RuleFlowNodeContainerFactory nodeContainerFactory;
 
@@ -37,9 +37,9 @@ public abstract class NodeFactory {
         this.node.setId(id);
     }
 
-    protected abstract Node createNode();
+    protected abstract JbpmNode createNode();
 
-    protected Node getNode() {
+    protected JbpmNode getNode() {
         return node;
     }
 

@@ -27,6 +27,7 @@ import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.exception.CompensationScopeInstance;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
@@ -34,12 +35,12 @@ import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.node.CompositeNodeInstance;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
-import org.kie.api.runtime.process.EventListener;
+import org.kie.kogito.process.event.KogitoEventListener;
 
 import static org.jbpm.process.core.context.exception.CompensationScope.COMPENSATION_SCOPE;
 import static org.jbpm.process.core.context.exception.CompensationScope.IMPLICIT_COMPENSATION_PREFIX;
 
-class CompensationEventListener implements EventListener {
+class CompensationEventListener implements KogitoEventListener {
 
     private WorkflowProcessInstanceImpl instance;
     
@@ -152,10 +153,10 @@ class CompensationEventListener implements EventListener {
        Stack<NodeContainer> nestedNodes = new Stack<NodeContainer>();
        Stack<NodeInstance> generatedInstances = new Stack<NodeInstance>();
        
-       NodeContainer parentContainer = toCompensateNode.getParentContainer();
+       NodeContainer parentContainer = (( JbpmNode ) toCompensateNode).getParentContainer();
        while( !(parentContainer instanceof RuleFlowProcess) ) { 
            nestedNodes.add(parentContainer);
-           parentContainer = ((Node) parentContainer).getParentContainer();
+           parentContainer = ((JbpmNode) parentContainer).getParentContainer();
        }
        
        NodeInstanceContainer parentInstance;

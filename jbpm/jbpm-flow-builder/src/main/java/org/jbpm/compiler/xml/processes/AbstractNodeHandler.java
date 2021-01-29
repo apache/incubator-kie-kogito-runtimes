@@ -29,7 +29,7 @@ import org.drools.core.xml.ExtensibleXmlParser;
 import org.drools.core.xml.Handler;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
@@ -58,7 +58,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     protected void initValidPeers() {
         this.validPeers = new HashSet<Class<?>>();
         this.validPeers.add(null);
-        this.validPeers.add(Node.class);
+        this.validPeers.add( JbpmNode.class);
     }
 
     public Object start(final String uri, final String localName, final Attributes attrs,
@@ -68,7 +68,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
 
         NodeContainer nodeContainer = (NodeContainer) parser.getParent();
 
-        final Node node = createNode();
+        final JbpmNode node = createNode();
 
         final String id = attrs.getValue("id");
         node.setId(new Long(id));
@@ -81,18 +81,18 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return node;
     }
 
-    protected abstract Node createNode();
+    protected abstract JbpmNode createNode();
 
     public Object end(final String uri, final String localName,
                       final ExtensibleXmlParser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
-        Node node = (Node) parser.getCurrent();
+        JbpmNode node = ( JbpmNode ) parser.getCurrent();
         handleNode(node, element, uri, localName, parser);
         return node;
     }
     
-    protected void handleNode(final Node node, final Element element, final String uri, 
-            final String localName, final ExtensibleXmlParser parser) throws SAXException {
+    protected void handleNode( final JbpmNode node, final Element element, final String uri,
+                               final String localName, final ExtensibleXmlParser parser) throws SAXException {
         final String x = element.getAttribute("x");
         if (x != null && x.length() != 0) {
             try {
@@ -166,9 +166,9 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     	}
     }
     
-    public abstract void writeNode(final Node node, final StringBuilder xmlDump, final boolean includeMeta);
+    public abstract void writeNode( final JbpmNode node, final StringBuilder xmlDump, final boolean includeMeta);
     
-    protected void writeNode(final String name, final Node node, final StringBuilder xmlDump, final boolean includeMeta) {
+    protected void writeNode( final String name, final JbpmNode node, final StringBuilder xmlDump, final boolean includeMeta) {
     	xmlDump.append("    <" + name + " id=\"" + node.getId() + "\" "); 
         if (node.getName() != null) {
             xmlDump.append("name=\"" + XmlDumper.replaceIllegalChars(node.getName()) + "\" ");
@@ -197,7 +197,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
     }
     
-    protected boolean containsMetaData(final Node node) {
+    protected boolean containsMetaData(final JbpmNode node) {
         for (Map.Entry<String, Object> entry: ((NodeImpl) node).getMetaData().entrySet()) {
         	String name = entry.getKey();
         	if (!"x".equals(name)
@@ -213,7 +213,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return false;
     }
     
-    protected void writeMetaData(final Node node, final StringBuilder xmlDump) {
+    protected void writeMetaData( final JbpmNode node, final StringBuilder xmlDump) {
         for (Map.Entry<String, Object> entry: ((NodeImpl) node).getMetaData().entrySet()) {
         	String name = entry.getKey();
         	if (!"x".equals(name)

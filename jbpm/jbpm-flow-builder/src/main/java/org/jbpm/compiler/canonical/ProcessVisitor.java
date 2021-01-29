@@ -46,7 +46,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -73,6 +73,7 @@ import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
 
 import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
@@ -145,15 +146,15 @@ public class ProcessVisitor extends AbstractVisitor {
                 .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_PACKAGE_NAME, new StringLiteralExpr(process.getPackageName())))
                 .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_DYNAMIC, new BooleanLiteralExpr(metadata.isDynamic())))
                 .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VERSION, new StringLiteralExpr(getOrDefault(process.getVersion(), DEFAULT_VERSION))))
-                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VISIBILITY, new StringLiteralExpr(getOrDefault(process.getVisibility(), WorkflowProcess.PUBLIC_VISIBILITY))));
+                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VISIBILITY, new StringLiteralExpr(getOrDefault(((KogitoWorkflowProcess)process).getVisibility(), KogitoWorkflowProcess.PUBLIC_VISIBILITY))));
 
         visitCompensationScope(process, body);
         visitMetaData(process.getMetaData(), body, FACTORY_FIELD_NAME);
         visitHeader(process, body);
 
-        List<Node> processNodes = new ArrayList<>();
+        List<JbpmNode> processNodes = new ArrayList<>();
         for (org.kie.api.definition.process.Node procNode : process.getNodes()) {
-            processNodes.add((org.jbpm.workflow.core.Node) procNode);
+            processNodes.add(( JbpmNode ) procNode);
         }
         visitNodes(processNodes, body, variableScope, metadata);
         visitConnections(process.getNodes(), body);

@@ -19,19 +19,19 @@ package org.jbpm.compiler.xml.processes;
 import java.util.Map;
 
 import org.drools.core.xml.ExtensibleXmlParser;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 public class SubProcessNodeHandler extends AbstractNodeHandler {
 
-    protected Node createNode() {
+    protected JbpmNode createNode() {
         return new SubProcessNode();
     }
 
-    public void handleNode(final Node node, final Element element, final String uri,
-            final String localName, final ExtensibleXmlParser parser)
+    public void handleNode( final JbpmNode node, final Element element, final String uri,
+                            final String localName, final ExtensibleXmlParser parser)
             throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         SubProcessNode subProcessNode = (SubProcessNode) node;
@@ -53,7 +53,7 @@ public class SubProcessNodeHandler extends AbstractNodeHandler {
         return SubProcessNode.class;
     }
 
-	public void writeNode(Node node, StringBuilder xmlDump, boolean includeMeta) {
+	public void writeNode( JbpmNode node, StringBuilder xmlDump, boolean includeMeta) {
 		SubProcessNode subProcessNode = (SubProcessNode) node;
 		writeNode("subProcess", subProcessNode, xmlDump, includeMeta);
         String processId = subProcessNode.getProcessId();

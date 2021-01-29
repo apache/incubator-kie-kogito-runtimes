@@ -28,6 +28,7 @@ import org.jbpm.bpmn2.xml.di.BPMNEdgeHandler.ConnectionInfo;
 import org.jbpm.bpmn2.xml.di.BPMNShapeHandler.NodeInfo;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
@@ -98,10 +99,10 @@ public class BPMNPlaneHandler extends BaseAbstractHandler implements Handler {
         for (Node node: nodes) {
             String id = (String) node.getMetaData().get("UniqueId");
             if (nodeInfo.getNodeRef().equals(id)) {
-                ((org.jbpm.workflow.core.Node) node).setMetaData("x", nodeInfo.getX());
-                ((org.jbpm.workflow.core.Node) node).setMetaData("y", nodeInfo.getY());
-                ((org.jbpm.workflow.core.Node) node).setMetaData("width", nodeInfo.getWidth());
-                ((org.jbpm.workflow.core.Node) node).setMetaData("height", nodeInfo.getHeight());
+                (( JbpmNode ) node).setMetaData("x", nodeInfo.getX());
+                (( JbpmNode ) node).setMetaData("y", nodeInfo.getY());
+                (( JbpmNode ) node).setMetaData("width", nodeInfo.getWidth());
+                (( JbpmNode ) node).setMetaData("height", nodeInfo.getHeight());
                 return true;
             }
         	if (node instanceof NodeContainer) {
@@ -118,11 +119,11 @@ public class BPMNPlaneHandler extends BaseAbstractHandler implements Handler {
     	for (Node node: nodes) {
     		Integer x = (Integer) node.getMetaData().get("x");
     		if (x != null) {
-    			((org.jbpm.workflow.core.Node) node).setMetaData("x", x - xOffset);
+    			(( JbpmNode ) node).setMetaData("x", x - xOffset);
     		}
     		Integer y = (Integer) node.getMetaData().get("y");
     		if (y != null) {
-    			((org.jbpm.workflow.core.Node) node).setMetaData("y", y - yOffset);
+    			(( JbpmNode ) node).setMetaData("y", y - yOffset);
     		}
     		if (node instanceof NodeContainer) {
     			postProcessNodeOffset(((NodeContainer) node).getNodes(), xOffset + (x == null ? 0 : x), yOffset + (y == null ? 0 : y));

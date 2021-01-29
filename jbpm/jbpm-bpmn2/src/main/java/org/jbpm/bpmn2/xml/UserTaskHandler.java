@@ -24,7 +24,7 @@ import java.util.Map;
 import org.drools.compiler.compiler.xml.XmlDumper;
 import org.jbpm.process.core.Work;
 import org.drools.core.xml.ExtensibleXmlParser;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.HumanTaskNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.w3c.dom.Element;
@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 
 public class UserTaskHandler extends TaskHandler {
     
-    protected Node createNode(Attributes attrs) {
+    protected JbpmNode createNode( Attributes attrs) {
         return new HumanTaskNode();
     }
     
@@ -42,8 +42,8 @@ public class UserTaskHandler extends TaskHandler {
         return HumanTaskNode.class;
     }
 
-    protected void handleNode(final Node node, final Element element, final String uri, 
-            final String localName, final ExtensibleXmlParser parser) throws SAXException {
+    protected void handleNode( final JbpmNode node, final Element element, final String uri,
+                               final String localName, final ExtensibleXmlParser parser) throws SAXException {
     	super.handleNode(node, element, uri, localName, parser);
     	HumanTaskNode humanTaskNode = (HumanTaskNode) node;
         Work work = humanTaskNode.getWork();
@@ -87,7 +87,7 @@ public class UserTaskHandler extends TaskHandler {
 		return null;
     }
     
-	public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
 		HumanTaskNode humanTaskNode = (HumanTaskNode) node;
 		writeNode("userTask", humanTaskNode, xmlDump, metaDataType);
 		xmlDump.append(">" + EOL);

@@ -28,7 +28,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.test.Person;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.test.util.AbstractBaseTest;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.RuleSetNode;
@@ -39,6 +39,7 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.process.runtime.KogitoProcessInstance;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,7 +68,7 @@ public class RuleSetTest extends AbstractBaseTest {
         parameters.put("person", person);
         parameters.put("isAdult", false);
 
-        ProcessInstance pi = ksession.startProcess("org.drools.core.process.process", parameters);
+        KogitoProcessInstance pi = (KogitoProcessInstance) ksession.startProcess("org.drools.core.process.process", parameters);
         assertEquals(ProcessInstance.STATE_COMPLETED, pi.getState());
 
         boolean result = (boolean) pi.getVariables().get("isAdult");
@@ -132,8 +133,8 @@ public class RuleSetTest extends AbstractBaseTest {
         return process;
     }
 
-    private void connect(Node sourceNode, Node targetNode) {
-        new ConnectionImpl(sourceNode, Node.CONNECTION_DEFAULT_TYPE,
-                           targetNode, Node.CONNECTION_DEFAULT_TYPE);
+    private void connect( JbpmNode sourceNode, JbpmNode targetNode) {
+        new ConnectionImpl(sourceNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+                           targetNode, JbpmNode.CONNECTION_DEFAULT_TYPE);
     }
 }

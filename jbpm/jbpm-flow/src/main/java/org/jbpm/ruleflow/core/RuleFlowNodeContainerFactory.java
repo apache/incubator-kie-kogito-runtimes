@@ -37,6 +37,7 @@ import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
 import org.jbpm.ruleflow.core.factory.ThrowLinkNodeFactory;
 import org.jbpm.ruleflow.core.factory.TimerNodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.kie.api.definition.process.Node;
@@ -152,8 +153,8 @@ public abstract class RuleFlowNodeContainerFactory {
         Node from = nodeContainer.getNode(fromId);
         Node to = nodeContainer.getNode(toId);
         ConnectionImpl connection = new ConnectionImpl(
-                from, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE,
-                to, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                from, JbpmNode.CONNECTION_DEFAULT_TYPE,
+                to, JbpmNode.CONNECTION_DEFAULT_TYPE);
         connection.setMetaData(UNIQUE_ID, uniqueId);
         return this;
     }
@@ -162,8 +163,8 @@ public abstract class RuleFlowNodeContainerFactory {
         Node from = nodeContainer.getNode(fromId);
         Node to = nodeContainer.getNode(toId);
         ConnectionImpl connection = new ConnectionImpl(
-                from, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE,
-                to, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                from, JbpmNode.CONNECTION_DEFAULT_TYPE,
+                to, JbpmNode.CONNECTION_DEFAULT_TYPE);
         connection.setMetaData(ASSOCIATION, Boolean.TRUE);
         connection.setMetaData(UNIQUE_ID, uniqueId);
         connection.setMetaData(HIDDEN, Boolean.TRUE);

@@ -25,7 +25,7 @@ import org.jbpm.workflow.core.impl.ConstraintImpl;
 import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.StateNode;
 
-import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
+import static org.jbpm.workflow.core.JbpmNode.CONNECTION_DEFAULT_TYPE;
 
 /**
  *

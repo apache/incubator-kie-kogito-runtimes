@@ -26,6 +26,7 @@ import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.definitions.rule.impl.RuleImpl;
+import org.drools.core.event.KogitoProcessEventSupport;
 import org.drools.core.event.ProcessEventSupport;
 import org.drools.core.phreak.PropagationEntry;
 import org.drools.core.time.TimeUtils;
@@ -56,6 +57,10 @@ import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessJobDescription;
+import org.kie.kogito.process.event.KogitoProcessEventListener;
+import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.services.jobs.impl.InMemoryJobService;
@@ -68,9 +73,11 @@ public class LightProcessRuntime implements InternalProcessRuntime {
     private ProcessInstanceManager processInstanceManager;
     private SignalManager signalManager;
     private JobsService jobService;
-    private ProcessEventSupport processEventSupport;
-    private final WorkItemManager workItemManager;
+    private KogitoProcessEventSupport processEventSupport;
+    private final KogitoWorkItemManager workItemManager;
     private UnitOfWorkManager unitOfWorkManager;
+
+    private final KogitoProcessRuntimeImpl kogitoProcessRuntime = new KogitoProcessRuntimeImpl( this );
 
     public static LightProcessRuntime ofProcess(Process p) {
         LightProcessRuntimeServiceProvider services =
@@ -88,7 +95,7 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         this.runtimeContext = runtimeContext;
         this.processInstanceManager = services.getProcessInstanceManager();
         this.signalManager = services.getSignalManager();
-        this.jobService = services.getJobsService() == null ? new InMemoryJobService(this, this.unitOfWorkManager) : services.getJobsService();
+        this.jobService = services.getJobsService() == null ? new InMemoryJobService(kogitoProcessRuntime, this.unitOfWorkManager) : services.getJobsService();
         this.processEventSupport = services.getEventSupport();
         this.workItemManager = services.getWorkItemManager();
         
@@ -117,6 +124,11 @@ public class LightProcessRuntime implements InternalProcessRuntime {
     }
 
     @Override
+    public KogitoProcessRuntime getKogitoProcessRuntime() {
+        return kogitoProcessRuntime;
+    }
+
+    @Override
     public ProcessInstance startProcess(String processId) {
         return startProcess(processId, null, null, null);
     }
@@ -141,56 +153,30 @@ public class LightProcessRuntime implements InternalProcessRuntime {
     }
 
     private ProcessInstance startProcess(String processId, Map<String, Object> parameters, String trigger, AgendaFilter agendaFilter) {
-        ProcessInstance processInstance = createProcessInstance(processId, parameters);
+        KogitoProcessInstance processInstance = createProcessInstance(processId, parameters);
         if (processInstance != null) {
             processInstanceManager.addProcessInstance(processInstance);
-            return startProcessInstance(processInstance.getId(), trigger, agendaFilter);
+            return kogitoProcessRuntime.startProcessInstance(processInstance.getStringId(), trigger, agendaFilter);
         }
         return null;
     }
 
-    public ProcessInstance createProcessInstance(String processId, Map<String, Object> parameters) {
+    public KogitoProcessInstance createProcessInstance(String processId, Map<String, Object> parameters) {
         return createProcessInstance(processId, null, parameters);
     }
 
-    public ProcessInstance startProcessInstance(String processInstanceId, String trigger) {
-        return startProcessInstance( processInstanceId, trigger, null );
-    }
-
-    private ProcessInstance startProcessInstance(String processInstanceId, String trigger, AgendaFilter agendaFilter) {
-        try {
-            knowledgeRuntime.startOperation();
-
-            ProcessInstance processInstance = getProcessInstance(processInstanceId);
-            org.jbpm.process.instance.ProcessInstance jbpmProcessInstance = (org.jbpm.process.instance.ProcessInstance) processInstance;
-
-            jbpmProcessInstance.configureSLA();
-            getProcessEventSupport().fireBeforeProcessStarted(processInstance, knowledgeRuntime);
-            jbpmProcessInstance.setAgendaFilter( agendaFilter );
-            jbpmProcessInstance.start(trigger);
-            getProcessEventSupport().fireAfterProcessStarted(processInstance, knowledgeRuntime);
-            return processInstance;
-        } finally {
-            knowledgeRuntime.endOperation();
-        }
-    }
-
-    public ProcessInstance startProcessInstance(String processInstanceId) {
-        return startProcessInstance(processInstanceId, null);
-    }
-
     @Override
-    public ProcessInstance startProcess(String processId, CorrelationKey correlationKey, Map<String, Object> parameters) {
-        ProcessInstance processInstance = createProcessInstance(processId, correlationKey, parameters);
+    public KogitoProcessInstance startProcess(String processId, CorrelationKey correlationKey, Map<String, Object> parameters) {
+        KogitoProcessInstance processInstance = createProcessInstance(processId, correlationKey, parameters);
         if (processInstance != null) {
             processInstanceManager.addProcessInstance(processInstance);
-            return startProcessInstance(processInstance.getId());
+            return (KogitoProcessInstance) startProcessInstance(processInstance.getId());
         }
         return null;
     }
 
     @Override
-    public ProcessInstance createProcessInstance(String processId, CorrelationKey correlationKey, Map<String, Object> parameters) {
+    public KogitoProcessInstance createProcessInstance( String processId, CorrelationKey correlationKey, Map<String, Object> parameters) {
         try {
             runtimeContext.startOperation();
 
@@ -216,6 +202,7 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         return processInstanceManager;
     }
 
+    @Override
     public JobsService getJobsService() {
         return jobService;
     }
@@ -225,18 +212,24 @@ public class LightProcessRuntime implements InternalProcessRuntime {
     }
 
     public Collection<ProcessInstance> getProcessInstances() {
-        return processInstanceManager.getProcessInstances();
+        return (Collection<ProcessInstance>) (Object) processInstanceManager.getProcessInstances();
     }
 
-    public ProcessInstance getProcessInstance(String id) {
+    @Override
+    public void abortProcessInstance( long l ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.LightProcessRuntime.abortProcessInstance -> TODO" );
+
+    }
+
+    public KogitoProcessInstance getProcessInstance(String id) {
         return getProcessInstance(id, false);
     }
 
-    public ProcessInstance getProcessInstance(String id, boolean readOnly) {
-        return processInstanceManager.getProcessInstance(id, readOnly);
+    public KogitoProcessInstance getProcessInstance(String id, boolean readOnly) {
+        return (KogitoProcessInstance) processInstanceManager.getProcessInstance(id, readOnly);
     }
 
-    public void removeProcessInstance(ProcessInstance processInstance) {
+    public void removeProcessInstance(KogitoProcessInstance processInstance) {
         processInstanceManager.removeProcessInstance(processInstance);
     }
 
@@ -296,20 +289,20 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         }
     }
 
-    public ProcessEventSupport getProcessEventSupport() {
+    public KogitoProcessEventSupport getProcessEventSupport() {
         return processEventSupport;
     }
 
     public void addEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.addEventListener(listener);
+        this.processEventSupport.addEventListener(( KogitoProcessEventListener ) listener);
     }
 
     public void removeEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.removeEventListener(listener);
+        this.processEventSupport.removeEventListener(( KogitoProcessEventListener ) listener);
     }
 
     public List<ProcessEventListener> getProcessEventListeners() {
-        return processEventSupport.getEventListeners();
+        return (List<ProcessEventListener>) (Object) processEventSupport.getEventListeners();
     }
 
     private class StartProcessEventListener implements EventListener {
@@ -429,9 +422,13 @@ public class LightProcessRuntime implements InternalProcessRuntime {
     }
 
     public WorkItemManager getWorkItemManager() {
+        return getKogitoWorkItemManager();
+    }
+
+    public KogitoWorkItemManager getKogitoWorkItemManager() {
         return workItemManager;
     }
-    
+
     @Override
     public UnitOfWorkManager getUnitOfWorkManager() {
         return this.unitOfWorkManager;
@@ -446,7 +443,7 @@ public class LightProcessRuntime implements InternalProcessRuntime {
     }
 
     public void setProcessEventSupport(ProcessEventSupport processEventSupport) {
-        this.processEventSupport = processEventSupport;
+        throw new UnsupportedOperationException();
     }
 
     public void dispose() {
@@ -552,4 +549,38 @@ public class LightProcessRuntime implements InternalProcessRuntime {
         return this.knowledgeRuntime;
     }
 
+    @Override
+    public ProcessInstance startProcessFromNodeIds( String s, Map<String, Object> map, String... strings ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProcessInstance startProcessInstance( long l ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProcessInstance startProcessFromNodeIds( String s, CorrelationKey correlationKey, Map<String, Object> map, String... strings ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProcessInstance getProcessInstance( CorrelationKey correlationKey ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProcessInstance getProcessInstance( long l ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProcessInstance getProcessInstance( long l, boolean b ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void signalEvent( String s, Object o, long l ) {
+        throw new UnsupportedOperationException();
+    }
 }

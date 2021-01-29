@@ -21,7 +21,7 @@ import java.util.Map;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.bpmn2.core.Message;
 import org.jbpm.compiler.xml.ProcessBuildData;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -29,18 +29,18 @@ import org.xml.sax.SAXException;
 
 public class SendTaskHandler extends TaskHandler {
     
-    protected Node createNode(Attributes attrs) {
+    protected JbpmNode createNode( Attributes attrs) {
         return new WorkItemNode();
     }
     
     @SuppressWarnings("unchecked")
 	public Class generateNodeFor() {
-        return Node.class;
+        return JbpmNode.class;
     }
     
     @SuppressWarnings("unchecked")
-    protected void handleNode(final Node node, final Element element, final String uri, 
-            final String localName, final ExtensibleXmlParser parser) throws SAXException {
+    protected void handleNode( final JbpmNode node, final Element element, final String uri,
+                               final String localName, final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         WorkItemNode workItemNode = (WorkItemNode) node;
         String messageRef = element.getAttribute("messageRef");
@@ -60,7 +60,7 @@ public class SendTaskHandler extends TaskHandler {
         return "Send Task";
     }
     
-    public void writeNode(Node node, StringBuilder xmlDump, boolean includeMeta) {
+    public void writeNode( JbpmNode node, StringBuilder xmlDump, boolean includeMeta) {
         throw new IllegalArgumentException("Writing out should be handled by WorkItemNodeHandler");
     }
 }

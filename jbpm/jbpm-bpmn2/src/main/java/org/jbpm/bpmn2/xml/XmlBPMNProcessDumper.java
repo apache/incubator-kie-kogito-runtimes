@@ -49,6 +49,7 @@ import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.core.impl.XmlProcessDumper;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Constraint;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -69,6 +70,7 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.process.runtime.KogitoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,9 +206,9 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         xmlDump.append(">" + EOL + EOL);
         visitHeader(process, xmlDump, metaDataType);
         
-        List<org.jbpm.workflow.core.Node> processNodes = new ArrayList<org.jbpm.workflow.core.Node>();
+        List<JbpmNode> processNodes = new ArrayList<JbpmNode>();
         for( Node procNode : process.getNodes()) { 
-            processNodes.add((org.jbpm.workflow.core.Node) procNode);
+            processNodes.add(( JbpmNode ) procNode);
         }
         visitNodes(processNodes, xmlDump, metaDataType);
         visitConnections(process.getNodes(), xmlDump, metaDataType);
@@ -632,7 +634,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         }
     }
 
-    public void visitNodes(List<org.jbpm.workflow.core.Node> nodes, StringBuilder xmlDump, int metaDataType) {
+    public void visitNodes( List<JbpmNode> nodes, StringBuilder xmlDump, int metaDataType) {
     	xmlDump.append("    <!-- nodes -->" + EOL);
         for (Node node: nodes) {
             visitNode(node, xmlDump, metaDataType);
@@ -643,7 +645,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     private void visitNode(Node node, StringBuilder xmlDump, int metaDataType) {
      	Handler handler = semanticModule.getHandlerByClass(node.getClass());
         if (handler != null) {
-        	((AbstractNodeHandler) handler).writeNode((org.jbpm.workflow.core.Node) node, xmlDump, metaDataType);
+        	((AbstractNodeHandler) handler).writeNode(( JbpmNode ) node, xmlDump, metaDataType);
         } else {
         	throw new IllegalArgumentException(
                 "Unknown node type: " + node);
@@ -685,7 +687,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     		}
     		int parentOffsetX = 0;
     		int parentOffsetY = 0;
-    		NodeContainer nodeContainer = node.getParentContainer();
+    		NodeContainer nodeContainer = (( KogitoNode ) node).getParentContainer();
     		while (nodeContainer instanceof CompositeNode) {
     			CompositeNode parent = (CompositeNode) nodeContainer;
     			Integer parentX = (Integer) parent.getMetaData().get("x");
@@ -872,7 +874,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     		return result;
     	}
     	result = node.getId() + "";
-    	NodeContainer nodeContainer = node.getParentContainer();
+    	NodeContainer nodeContainer = (( KogitoNode ) node).getParentContainer();
     	while (nodeContainer instanceof CompositeNode) {
     		CompositeNode composite = (CompositeNode) nodeContainer;
     		result = composite.getId() + "-" + result;

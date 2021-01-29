@@ -41,6 +41,7 @@ import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
 import org.jbpm.workflow.core.DroolsAction;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.ConstraintImpl;
@@ -500,8 +501,8 @@ public class ServerlessWorkflowFactory {
         Node from = nodeContainer.getNode(fromId);
         Node to = nodeContainer.getNode(toId);
         ConnectionImpl connection = new ConnectionImpl(
-                from, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE,
-                to, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                from, JbpmNode.CONNECTION_DEFAULT_TYPE,
+                to, JbpmNode.CONNECTION_DEFAULT_TYPE);
         connection.setMetaData(UNIQUE_ID_PARAM, uniqueId);
     }
 

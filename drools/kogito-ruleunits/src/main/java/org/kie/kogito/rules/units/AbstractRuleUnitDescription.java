@@ -21,11 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.RuleUnitConfig;
 
-public abstract class AbstractRuleUnitDescription implements RuleUnitDescription {
+public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescription {
 
     private final Map<String, RuleUnitVariable> varDeclarations = new HashMap<>();
     private RuleUnitConfig config;
@@ -48,8 +47,8 @@ public abstract class AbstractRuleUnitDescription implements RuleUnitDescription
     }
 
     @Override
-    public RuleUnitVariable getVar(String name) {
-        RuleUnitVariable ruleUnitVariable = varDeclarations.get(name);
+    public KogitoRuleUnitVariable getVar( String name) {
+        KogitoRuleUnitVariable ruleUnitVariable = (KogitoRuleUnitVariable) varDeclarations.get(name);
         if (ruleUnitVariable == null) {
             throw new UndefinedRuleUnitVariable(name, this.getCanonicalName());
         }
@@ -80,7 +79,6 @@ public abstract class AbstractRuleUnitDescription implements RuleUnitDescription
         this.config = config;
     }
 
-    @Override
     public RuleUnitConfig getConfig() {
         return config;
     }

@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.jbpm.workflow.core.node.DynamicNode;
 import org.jbpm.workflow.core.node.EndNode;
@@ -42,7 +42,7 @@ public class RuleFlowProcessValidatorTest {
 
     private RuleFlowProcess process = mock(RuleFlowProcess.class);
 
-    private Node node = mock(Node.class);
+    private JbpmNode node = mock( JbpmNode.class);
 
     @BeforeEach
     public void setUp() {
@@ -184,15 +184,15 @@ public class RuleFlowProcessValidatorTest {
         process.addNode(compositeNode);
         new org.jbpm.workflow.core.impl.ConnectionImpl(
                 startNode,
-                Node.CONNECTION_DEFAULT_TYPE,
+                JbpmNode.CONNECTION_DEFAULT_TYPE,
                 compositeNode,
-                Node.CONNECTION_DEFAULT_TYPE
+                JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         new org.jbpm.workflow.core.impl.ConnectionImpl(
                 compositeNode,
-                Node.CONNECTION_DEFAULT_TYPE,
+                JbpmNode.CONNECTION_DEFAULT_TYPE,
                 endNode,
-                Node.CONNECTION_DEFAULT_TYPE
+                JbpmNode.CONNECTION_DEFAULT_TYPE
         );
 
         ProcessValidationError[] errors = validator.validateProcess(process);

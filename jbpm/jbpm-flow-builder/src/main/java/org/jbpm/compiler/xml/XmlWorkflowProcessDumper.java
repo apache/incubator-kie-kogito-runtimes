@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.compiler.compiler.xml.XmlDumper;
+import org.jbpm.workflow.core.JbpmNode;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -231,7 +232,7 @@ public class XmlWorkflowProcessDumper {
     public void visitNode(Node node, StringBuilder xmlDump, boolean includeMeta) {
      	Handler handler = semanticModule.getHandlerByClass(node.getClass());
         if (handler != null) {
-        	((AbstractNodeHandler) handler).writeNode((org.jbpm.workflow.core.Node) node, xmlDump, includeMeta);
+        	((AbstractNodeHandler) handler).writeNode(( JbpmNode ) node, xmlDump, includeMeta);
         } else {
         	throw new IllegalArgumentException(
                 "Unknown node type: " + node);

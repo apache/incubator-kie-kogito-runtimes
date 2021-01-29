@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jbpm.workflow.core.JbpmNode;
 import org.kie.api.definition.process.Node;
 import org.jbpm.workflow.core.Connection;
 
@@ -76,13 +77,13 @@ public class ConnectionImpl implements Connection, Serializable {
     }
     
     public void connect() {
-        ((org.jbpm.workflow.core.Node) this.from).addOutgoingConnection(fromType, this);
-        ((org.jbpm.workflow.core.Node) this.to).addIncomingConnection(toType, this);
+        (( JbpmNode ) this.from).addOutgoingConnection(fromType, this);
+        (( JbpmNode ) this.to).addIncomingConnection(toType, this);
     }
 
     public synchronized void terminate() {
-    	((org.jbpm.workflow.core.Node) this.from).removeOutgoingConnection(fromType, this);
-    	((org.jbpm.workflow.core.Node) this.to).removeIncomingConnection(toType, this);
+    	(( JbpmNode ) this.from).removeOutgoingConnection(fromType, this);
+    	(( JbpmNode ) this.to).removeIncomingConnection(toType, this);
         this.from = null;
         this.fromType = null;
         this.to = null;

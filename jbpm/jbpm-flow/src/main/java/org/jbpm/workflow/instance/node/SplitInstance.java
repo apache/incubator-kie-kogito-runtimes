@@ -26,19 +26,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
-import org.kie.api.runtime.process.NodeInstance;
 import org.jbpm.process.core.context.exclusive.ExclusiveGroup;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.exclusive.ExclusiveGroupInstance;
 import org.jbpm.process.instance.impl.ConstraintEvaluator;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.Split;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
+import org.kie.api.definition.process.Connection;
+import org.kie.api.definition.process.Node;
+import org.kie.kogito.process.runtime.KogitoNodeInstance;
 
 /**
  * Runtime counterpart of a split node.
@@ -52,8 +53,8 @@ public class SplitInstance extends NodeInstanceImpl {
         return (Split) getNode();
     }
 
-    public void internalTrigger(final NodeInstance from, String type) {
-        if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
+    public void internalTrigger( final KogitoNodeInstance from, String type) {
+        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                 "A Split only accepts default incoming connections!");
         }
@@ -73,7 +74,7 @@ public class SplitInstance extends NodeInstanceImpl {
         // TODO make different strategies for each type
         switch ( split.getType() ) {
             case Split.TYPE_AND :
-                triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, true);
+                triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, true);
                 break;
             case Split.TYPE_XOR :
                 List<Connection> outgoing = split.getDefaultOutgoingConnections();
@@ -197,7 +198,7 @@ public class SplitInstance extends NodeInstanceImpl {
         	        for (Connection connection: connections) {
         	        	nodeInstancesMap.put(followConnection(connection), connection.getToType());
         	        }
-        	        for (NodeInstance nodeInstance: nodeInstancesMap.keySet()) {
+        	        for (KogitoNodeInstance nodeInstance: nodeInstancesMap.keySet()) {
         	        	groupInstance.addNodeInstance(nodeInstance);
         	        }
         	        for (Map.Entry<org.jbpm.workflow.instance.NodeInstance, String> entry: nodeInstancesMap.entrySet()) {
@@ -236,7 +237,7 @@ public class SplitInstance extends NodeInstanceImpl {
     }
     
     protected boolean checkNodes(Node currentNode, final Node lookFor, Set<Long> vistedNodes) {        
-        List<Connection> connections = currentNode.getOutgoingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+        List<Connection> connections = currentNode.getOutgoingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
 
         for (Connection conn : connections) {
             Node nextNode = conn.getTo();

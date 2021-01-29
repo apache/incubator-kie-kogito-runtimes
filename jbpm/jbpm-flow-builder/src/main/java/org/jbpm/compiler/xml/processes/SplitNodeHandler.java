@@ -21,7 +21,7 @@ import java.util.Map;
 import org.drools.compiler.compiler.xml.XmlDumper;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.workflow.core.Constraint;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.node.Split;
 import org.w3c.dom.Element;
@@ -29,12 +29,12 @@ import org.xml.sax.SAXException;
 
 public class SplitNodeHandler extends AbstractNodeHandler {
 
-    protected Node createNode() {
+    protected JbpmNode createNode() {
         return new Split();
     }
 
-    public void handleNode(final Node node, final Element element, final String uri,
-            final String localName, final ExtensibleXmlParser parser)
+    public void handleNode( final JbpmNode node, final Element element, final String uri,
+                            final String localName, final ExtensibleXmlParser parser)
             throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         Split splitNode = (Split) node;
@@ -49,7 +49,7 @@ public class SplitNodeHandler extends AbstractNodeHandler {
         return Split.class;
     }
 
-	public void writeNode(Node node, StringBuilder xmlDump, boolean includeMeta) {
+	public void writeNode( JbpmNode node, StringBuilder xmlDump, boolean includeMeta) {
 		Split splitNode = (Split) node;
 		writeNode("split", splitNode, xmlDump, includeMeta);
         int type = splitNode.getType();

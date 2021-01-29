@@ -47,6 +47,7 @@ import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory;
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.impl.ConstraintImpl;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -493,7 +494,7 @@ public class ServerlessWorkflowParser {
 
                     ConstraintImpl constraintImpl = factory.splitConstraint(xorSplit.getId() + "_" + targetId,
                             "DROOLS_DEFAULT", "java", ServerlessWorkflowUtils.conditionScript(condition.getCondition()), 0, isDefaultConstraint);
-                    xorSplit.addConstraint(new ConnectionRef(xorSplit.getId() + "_" + targetId, targetId, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
+                    xorSplit.addConstraint(new ConnectionRef(xorSplit.getId() + "_" + targetId, targetId, JbpmNode.CONNECTION_DEFAULT_TYPE), constraintImpl);
 
                 }
             } else {

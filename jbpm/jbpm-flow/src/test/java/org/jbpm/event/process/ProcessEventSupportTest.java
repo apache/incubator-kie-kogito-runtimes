@@ -31,7 +31,7 @@ import org.jbpm.process.instance.impl.Action;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -86,8 +86,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         actionNode.setId(2);
         process.addNode(actionNode);
         new ConnectionImpl(
-            startNode, Node.CONNECTION_DEFAULT_TYPE,
-            actionNode, Node.CONNECTION_DEFAULT_TYPE
+            startNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+            actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         
         EndNode endNode = new EndNode();
@@ -95,8 +95,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         endNode.setId(3);
         process.addNode(endNode);
         new ConnectionImpl(
-            actionNode, Node.CONNECTION_DEFAULT_TYPE,
-            endNode, Node.CONNECTION_DEFAULT_TYPE
+            actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+            endNode, JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         
         pkg.addProcess(process);
@@ -199,13 +199,13 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         actionNode.setAction(action);
         actionNode.setId(2);
         process.addNode(actionNode);
-        new ConnectionImpl(startNode, Node.CONNECTION_DEFAULT_TYPE, actionNode, Node.CONNECTION_DEFAULT_TYPE);
+        new ConnectionImpl(startNode, JbpmNode.CONNECTION_DEFAULT_TYPE, actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE);
 
         EndNode endNode = new EndNode();
         endNode.setName("End");
         endNode.setId(3);
         process.addNode(endNode);
-        new ConnectionImpl(actionNode, Node.CONNECTION_DEFAULT_TYPE, endNode, Node.CONNECTION_DEFAULT_TYPE);
+        new ConnectionImpl(actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE, endNode, JbpmNode.CONNECTION_DEFAULT_TYPE);
 
         pkg.addProcess(process);
         List<KiePackage> pkgs = new ArrayList<KiePackage>();
@@ -285,8 +285,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         actionNode.setId(2);
         process.addNode(actionNode);
         new ConnectionImpl(
-            startNode, Node.CONNECTION_DEFAULT_TYPE,
-            actionNode, Node.CONNECTION_DEFAULT_TYPE
+            startNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+            actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         
         EventNode eventNode = new EventNode();
@@ -300,8 +300,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         eventNode.setEventFilters(filters );
         process.addNode(eventNode);
         new ConnectionImpl(
-                actionNode, Node.CONNECTION_DEFAULT_TYPE,
-                eventNode, Node.CONNECTION_DEFAULT_TYPE
+                actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+                eventNode, JbpmNode.CONNECTION_DEFAULT_TYPE
             );
         
         EndNode endNode = new EndNode();
@@ -309,8 +309,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         endNode.setId(4);
         process.addNode(endNode);
         new ConnectionImpl(
-            eventNode, Node.CONNECTION_DEFAULT_TYPE,
-            endNode, Node.CONNECTION_DEFAULT_TYPE
+            eventNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+            endNode, JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         
         pkg.addProcess(process);
@@ -423,8 +423,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         actionNode.setId(2);
         process.addNode(actionNode);
         new ConnectionImpl(
-            startNode, Node.CONNECTION_DEFAULT_TYPE,
-            actionNode, Node.CONNECTION_DEFAULT_TYPE
+            startNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+            actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         
         EndNode endNode = new EndNode();
@@ -433,8 +433,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         endNode.setTerminate(false);
         process.addNode(endNode);
         new ConnectionImpl(
-            actionNode, Node.CONNECTION_DEFAULT_TYPE,
-            endNode, Node.CONNECTION_DEFAULT_TYPE
+            actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+            endNode, JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         
         pkg.addProcess(process);
@@ -540,8 +540,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         actionNode.setId(2);
         process.addNode(actionNode);
         new ConnectionImpl(
-            startNode, Node.CONNECTION_DEFAULT_TYPE,
-            actionNode, Node.CONNECTION_DEFAULT_TYPE
+            startNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+            actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         
         EndNode endNode = new EndNode();
@@ -549,8 +549,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         endNode.setId(3);
         process.addNode(endNode);
         new ConnectionImpl(
-            actionNode, Node.CONNECTION_DEFAULT_TYPE,
-            endNode, Node.CONNECTION_DEFAULT_TYPE
+            actionNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
+            endNode, JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         
         pkg.addProcess(process);

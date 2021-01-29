@@ -19,14 +19,14 @@ package org.jbpm.bpmn2.xml;
 import org.drools.compiler.compiler.xml.XmlDumper;
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.process.core.context.exception.CompensationScope;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.xml.sax.Attributes;
 
 public class ActionNodeHandler extends AbstractNodeHandler {
 
-    protected Node createNode(Attributes attrs) {
+    protected JbpmNode createNode( Attributes attrs) {
         throw new IllegalArgumentException("Reading in should be handled by specific handlers");
     }
 
@@ -35,9 +35,9 @@ public class ActionNodeHandler extends AbstractNodeHandler {
         return ActionNode.class;
     }
 
-    public void writeNode(Node node,
-                          StringBuilder xmlDump,
-                          int metaDataType) {
+    public void writeNode( JbpmNode node,
+                           StringBuilder xmlDump,
+                           int metaDataType) {
         ActionNode actionNode = (ActionNode) node;
         DroolsConsequenceAction action = null;
         if (actionNode.getAction() instanceof DroolsConsequenceAction) {

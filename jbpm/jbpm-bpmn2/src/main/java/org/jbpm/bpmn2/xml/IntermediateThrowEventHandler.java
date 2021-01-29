@@ -32,7 +32,7 @@ import org.jbpm.process.instance.impl.actions.HandleMessageAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -61,14 +61,14 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 	private static final String TRANSFORMATION_KEY = "Transformation";
 
 	@Override
-    protected Node createNode(Attributes attrs) {
+	protected JbpmNode createNode( Attributes attrs) {
 		return new ActionNode();
 	}
 
 	@Override
     @SuppressWarnings("unchecked")
 	public Class generateNodeFor() {
-		return Node.class;
+		return JbpmNode.class;
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 		return node;
 	}
 
-	protected void handleLinkNode(Element element, Node node,
+	protected void handleLinkNode(Element element, JbpmNode node,
 			org.w3c.dom.Node xmlLinkNode, ExtensibleXmlParser parser) {
 
 		node.setName(element.getAttribute("name"));
@@ -191,9 +191,9 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 
 	}
 
-	public void handleSignalNode(final Node node, final Element element,
-			final String uri, final String localName,
-			final ExtensibleXmlParser parser) throws SAXException {
+	public void handleSignalNode( final JbpmNode node, final Element element,
+                                  final String uri, final String localName,
+                                  final ExtensibleXmlParser parser) throws SAXException {
 		ActionNode actionNode = (ActionNode) node;
 		org.w3c.dom.Node xmlNode = element.getFirstChild();
 		while (xmlNode != null) {
@@ -227,9 +227,9 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 	}
 
     @SuppressWarnings("unchecked")
-	public void handleMessageNode(final Node node, final Element element,
-			final String uri, final String localName,
-			final ExtensibleXmlParser parser) throws SAXException {
+	public void handleMessageNode( final JbpmNode node, final Element element,
+                                   final String uri, final String localName,
+                                   final ExtensibleXmlParser parser) throws SAXException {
 		ActionNode actionNode = (ActionNode) node;
 		org.w3c.dom.Node xmlNode = element.getFirstChild();
 		while (xmlNode != null) {
@@ -270,9 +270,9 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void handleEscalationNode(final Node node, final Element element,
-			final String uri, final String localName,
-			final ExtensibleXmlParser parser) throws SAXException {
+	public void handleEscalationNode( final JbpmNode node, final Element element,
+                                      final String uri, final String localName,
+                                      final ExtensibleXmlParser parser) throws SAXException {
 		ActionNode actionNode = (ActionNode) node;
 		org.w3c.dom.Node xmlNode = element.getFirstChild();
 		while (xmlNode != null) {
@@ -370,8 +370,12 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
         }
 	}
 
+<<<<<<< HEAD
 	@Override
     public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
+=======
+	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+>>>>>>> [KOGITO-4323] Kie/Kogito API unfork
 		throw new IllegalArgumentException(
 				"Writing out should be handled by action node handler");
 	}

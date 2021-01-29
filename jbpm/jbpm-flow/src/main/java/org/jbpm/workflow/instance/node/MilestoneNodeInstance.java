@@ -17,9 +17,10 @@
 package org.jbpm.workflow.instance.node;
 
 import org.drools.core.spi.KogitoProcessContext;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.MilestoneNode;
-import org.kie.api.event.process.ContextAwareEventListener;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.event.process.ContextAwareEventListener;
+import org.kie.kogito.process.runtime.KogitoNodeInstance;
 
 /**
  * Runtime counterpart of a milestone node.
@@ -33,13 +34,13 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance {
     }
 
     @Override
-    public void internalTrigger(final NodeInstance from, String type) {
+    public void internalTrigger( KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
         // if node instance was cancelled, abort
         if (getNodeInstanceContainer().getNodeInstance(getId()) == null) {
             return;
         }
-        if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                     "A MilestoneNode only accepts default incoming connections!");
         }
@@ -63,7 +64,7 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance {
     }
 
     private void addCompletionEventListener() {
-        getProcessInstance().getKnowledgeRuntime().getProcessRuntime().addEventListener(ContextAwareEventListener.using(listener -> {
+        getProcessInstance().getKnowledgeRuntime().getProcessRuntime().addEventListener( ContextAwareEventListener.using( listener -> {
             if(isCompleted()) {
                 triggerCompleted();
                 getProcessInstance().getKnowledgeRuntime().getProcessRuntime().removeEventListener(listener);

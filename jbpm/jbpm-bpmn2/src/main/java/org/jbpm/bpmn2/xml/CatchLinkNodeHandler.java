@@ -17,7 +17,7 @@
 package org.jbpm.bpmn2.xml;
 
 import org.drools.core.xml.Handler;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.CatchLinkNode;
 import org.xml.sax.Attributes;
 
@@ -29,12 +29,12 @@ public class CatchLinkNodeHandler extends AbstractNodeHandler implements
 	}
 
 	@Override
-	protected Node createNode(Attributes attrs) {
+	protected JbpmNode createNode( Attributes attrs) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
 
 		CatchLinkNode linkNode = (CatchLinkNode) node;
 		writeNode("intermediateCatchEvent", linkNode, xmlDump, metaDataType);

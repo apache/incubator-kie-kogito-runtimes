@@ -19,6 +19,7 @@ package org.jbpm.workflow.core.node;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jbpm.workflow.core.JbpmNode;
 import org.kie.api.definition.process.Node;
 import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.process.core.Context;
@@ -55,8 +56,8 @@ public class ForEachNode extends CompositeContextNode {
         split.setMetaData("UniqueId", getMetaData("Uniqueid") + ":foreach:split");
         super.addNode(split);
         super.linkIncomingConnections(
-            org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, 
-            new CompositeNode.NodeAndType(split, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE));
+            JbpmNode.CONNECTION_DEFAULT_TYPE,
+            new CompositeNode.NodeAndType(split, JbpmNode.CONNECTION_DEFAULT_TYPE));
         // Composite node
         CompositeContextNode compositeNode = new CompositeContextNode();
         compositeNode.setName("ForEachComposite");
@@ -73,15 +74,15 @@ public class ForEachNode extends CompositeContextNode {
         join.setMetaData("UniqueId", getMetaData("Uniqueid") + ":foreach:join");
         super.addNode(join);
         super.linkOutgoingConnections(
-            new CompositeNode.NodeAndType(join, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE),
-            org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+            new CompositeNode.NodeAndType(join, JbpmNode.CONNECTION_DEFAULT_TYPE),
+            JbpmNode.CONNECTION_DEFAULT_TYPE);
         new ConnectionImpl(
-            super.getNode(1), org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE,
-            getCompositeNode(), org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE
+            super.getNode(1), JbpmNode.CONNECTION_DEFAULT_TYPE,
+            getCompositeNode(), JbpmNode.CONNECTION_DEFAULT_TYPE
         );
         new ConnectionImpl(
-            getCompositeNode(), org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE,
-            super.getNode(3), org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE
+            getCompositeNode(), JbpmNode.CONNECTION_DEFAULT_TYPE,
+            super.getNode(3), JbpmNode.CONNECTION_DEFAULT_TYPE
         );
     }
     

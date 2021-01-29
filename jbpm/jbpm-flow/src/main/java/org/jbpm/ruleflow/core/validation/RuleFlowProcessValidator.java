@@ -38,6 +38,7 @@ import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.process.core.validation.ProcessValidator;
 import org.jbpm.process.core.validation.impl.ProcessValidationErrorImpl;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.NodeImpl;
@@ -755,7 +756,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         }
         if (isDynamic) {
             for (Node node : nodes) {
-                if (node.getIncomingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE).isEmpty()) {
+                if (node.getIncomingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE).isEmpty()) {
                     processNode(node,
                                 processNodes);
                 }
@@ -819,7 +820,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
     }
 
     private boolean acceptsNoOutgoingConnections(Node node) {
-        NodeContainer nodeContainer = node.getParentContainer();
+        NodeContainer nodeContainer = (( JbpmNode ) node).getParentContainer();
         return nodeContainer instanceof DynamicNode ||
                 (nodeContainer instanceof WorkflowProcess && ((WorkflowProcess) nodeContainer).isDynamic());
     }

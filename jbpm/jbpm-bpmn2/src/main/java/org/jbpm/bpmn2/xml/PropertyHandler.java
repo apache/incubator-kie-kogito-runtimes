@@ -29,7 +29,7 @@ import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -53,7 +53,7 @@ public class PropertyHandler extends BaseAbstractHandler implements Handler {
         this.validPeers.add(null);
         this.validPeers.add(Lane.class);
         this.validPeers.add(Variable.class);
-        this.validPeers.add(Node.class);
+        this.validPeers.add( JbpmNode.class);
         this.validPeers.add(SequenceFlow.class);
         this.validPeers.add(Lane.class);
         this.validPeers.add(Association.class);

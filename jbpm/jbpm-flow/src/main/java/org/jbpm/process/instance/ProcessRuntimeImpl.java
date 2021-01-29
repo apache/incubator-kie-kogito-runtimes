@@ -18,6 +18,7 @@ package org.jbpm.process.instance;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,15 @@ import org.kie.api.KieBase;
 import org.kie.api.command.ExecutableCommand;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
+import org.kie.api.event.process.MessageEvent;
+import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessEventListener;
+import org.kie.api.event.process.ProcessNodeLeftEvent;
+import org.kie.api.event.process.ProcessNodeTriggeredEvent;
+import org.kie.api.event.process.ProcessStartedEvent;
+import org.kie.api.event.process.ProcessVariableChangedEvent;
+import org.kie.api.event.process.SLAViolatedEvent;
+import org.kie.api.event.process.SignalEvent;
 import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
@@ -68,6 +77,9 @@ import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessJobDescription;
+import org.kie.kogito.process.event.KogitoProcessEventListener;
+import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.signal.SignalManager;
@@ -80,8 +92,10 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
     private ProcessInstanceManager processInstanceManager;
     private SignalManager signalManager;
     private JobsService jobService;
-    private ProcessEventSupport processEventSupport;
+    private KogitoProcessEventSupport processEventSupport;
     private UnitOfWorkManager unitOfWorkManager;
+
+    private final KogitoProcessRuntimeImpl kogitoProcessRuntime = new KogitoProcessRuntimeImpl( this );
 
     public ProcessRuntimeImpl(InternalKnowledgeRuntime kruntime) {
         this.kruntime = kruntime;
@@ -94,7 +108,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         initProcessInstanceManager();
         initSignalManager();
         unitOfWorkManager = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
-        jobService = new InMemoryJobService(this, unitOfWorkManager);
+        jobService = new InMemoryJobService(kogitoProcessRuntime, unitOfWorkManager);
         processEventSupport = new KogitoProcessEventSupport(unitOfWorkManager);
         if (isActive()) {
             initProcessEventListeners();
@@ -113,7 +127,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         initProcessInstanceManager();
         initSignalManager();
         unitOfWorkManager = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
-        jobService = new InMemoryJobService(this, unitOfWorkManager);
+        jobService = new InMemoryJobService(kogitoProcessRuntime, unitOfWorkManager);
         processEventSupport = new KogitoProcessEventSupport(unitOfWorkManager);
         if (isActive()) {
             initProcessEventListeners();
@@ -147,6 +161,11 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         signalManager = new DefaultSignalManagerFactory().createSignalManager(kruntime);
     }
 
+    @Override
+    public KogitoProcessRuntime getKogitoProcessRuntime() {
+        return kogitoProcessRuntime;
+    }
+
     private ClassLoader getRootClassLoader() {
         KieBase kbase = ((InternalKnowledgeBase) kruntime.getKieBase());
         if (kbase != null) {
@@ -159,68 +178,44 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
 
     @Override
     public ProcessInstance startProcess(String processId) {
-        return startProcess(processId, null, null, null);
+        return kogitoProcessRuntime.startProcess(processId, null, null, null);
     }
 
     @Override
     public ProcessInstance startProcess(String processId, Map<String, Object> parameters) {
-        return startProcess(processId, parameters, null, null);
+        return kogitoProcessRuntime.startProcess(processId, parameters, null, null);
     }
 
     public ProcessInstance startProcess(String processId, Map<String, Object> parameters, String trigger) {
-        return startProcess(processId, parameters, trigger, null);
+        return kogitoProcessRuntime.startProcess(processId, parameters, trigger, null);
     }
 
     @Override
     public ProcessInstance startProcess(String processId, AgendaFilter agendaFilter) {
-        return startProcess(processId, null, null, agendaFilter);
+        return kogitoProcessRuntime.startProcess(processId, null, null, agendaFilter);
     }
 
     @Override
     public ProcessInstance startProcess(String processId, Map<String, Object> parameters, AgendaFilter agendaFilter) {
-        return startProcess(processId, parameters, null, agendaFilter);
-    }
-
-    private ProcessInstance startProcess(String processId, Map<String, Object> parameters, String trigger, AgendaFilter agendaFilter) {
-        ProcessInstance processInstance = createProcessInstance(processId, parameters);
-        if ( processInstance != null ) {
-            // start process instance
-            return startProcessInstance(processInstance.getId(), trigger, agendaFilter);
-        }
-        return null;
+        return kogitoProcessRuntime.startProcess(processId, parameters, null, agendaFilter);
     }
 
     @Override
-    public ProcessInstance createProcessInstance(String processId,
+    public ProcessInstance startProcessFromNodeIds( String s, Map<String, Object> map, String... strings ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.ProcessRuntimeImpl.startProcessFromNodeIds -> TODO" );
+
+    }
+
+    @Override
+    public KogitoProcessInstance createProcessInstance(String processId,
                                                  Map<String, Object> parameters) {
         return createProcessInstance(processId, null, parameters);
     }
 
     @Override
-    public ProcessInstance startProcessInstance(String processInstanceId, String trigger) {
-        return startProcessInstance( processInstanceId, trigger, null );
-    }
+    public ProcessInstance startProcessInstance( long l ) {
+        throw new UnsupportedOperationException();
 
-    private ProcessInstance startProcessInstance(String processInstanceId, String trigger, AgendaFilter agendaFilter) {
-        try {
-            kruntime.startOperation();
-
-            ProcessInstance processInstance = getProcessInstance(processInstanceId);
-            org.jbpm.process.instance.ProcessInstance jbpmProcessInstance = (org.jbpm.process.instance.ProcessInstance) processInstance;
-
-            jbpmProcessInstance.configureSLA();
-            getProcessEventSupport().fireBeforeProcessStarted(processInstance, kruntime);
-            jbpmProcessInstance.setAgendaFilter( agendaFilter );
-            jbpmProcessInstance.start(trigger);
-            getProcessEventSupport().fireAfterProcessStarted(processInstance, kruntime);
-            return processInstance;
-        } finally {
-            kruntime.endOperation();
-        }
-    }
-
-    public ProcessInstance startProcessInstance(String processInstanceId) {
-        return startProcessInstance(processInstanceId, null);
     }
 
     @Override
@@ -233,7 +228,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
     }
 
     @Override
-    public ProcessInstance createProcessInstance(String processId, CorrelationKey correlationKey, Map<String, Object> parameters) {
+    public KogitoProcessInstance createProcessInstance( String processId, CorrelationKey correlationKey, Map<String, Object> parameters) {
         try {
             kruntime.startOperation();
 
@@ -245,6 +240,18 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         } finally {
             kruntime.endOperation();
         }
+    }
+
+    @Override
+    public ProcessInstance startProcessFromNodeIds( String s, CorrelationKey correlationKey, Map<String, Object> map, String... strings ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.ProcessRuntimeImpl.startProcessFromNodeIds -> TODO" );
+
+    }
+
+    @Override
+    public ProcessInstance getProcessInstance( CorrelationKey correlationKey ) {
+        throw new UnsupportedOperationException( "org.jbpm.process.instance.ProcessRuntimeImpl.getProcessInstance -> TODO" );
+
     }
 
     private org.jbpm.process.instance.ProcessInstance startProcess(Process process, CorrelationKey correlationKey, Map<String, Object> parameters) {
@@ -262,6 +269,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         return processInstanceManager;
     }
 
+    @Override
     public JobsService getJobsService() {
         return jobService;
     }
@@ -271,18 +279,33 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
     }
 
     public Collection<ProcessInstance> getProcessInstances() {
-        return processInstanceManager.getProcessInstances();
+        return (Collection<ProcessInstance>) (Object) processInstanceManager.getProcessInstances();
     }
 
-    public ProcessInstance getProcessInstance(String id) {
+    @Override
+    public ProcessInstance getProcessInstance( long l ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProcessInstance getProcessInstance( long l, boolean b ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void abortProcessInstance( long l ) {
+        throw new UnsupportedOperationException();
+    }
+
+    public KogitoProcessInstance getProcessInstance(String id) {
         return getProcessInstance(id, false);
     }
 
-    public ProcessInstance getProcessInstance(String id, boolean readOnly) {
-        return processInstanceManager.getProcessInstance(id, readOnly);
+    public KogitoProcessInstance getProcessInstance(String id, boolean readOnly) {
+        return (KogitoProcessInstance) processInstanceManager.getProcessInstance(id, readOnly);
     }
 
-    public void removeProcessInstance(ProcessInstance processInstance) {
+    public void removeProcessInstance(KogitoProcessInstance processInstance) {
         processInstanceManager.removeProcessInstance(processInstance);
     }
 
@@ -341,24 +364,24 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         }
     }
 
-    public ProcessEventSupport getProcessEventSupport() {
+    public KogitoProcessEventSupport getProcessEventSupport() {
         return processEventSupport;
     }
 
     public void setProcessEventSupport(ProcessEventSupport processEventSupport) {
-        this.processEventSupport = processEventSupport;
+        throw new UnsupportedOperationException();
     }
 
     public void addEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.addEventListener(listener);
+        this.processEventSupport.addEventListener( asKogitoProcessEventListener( listener ) );
     }
 
     public void removeEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.removeEventListener(listener);
+        this.processEventSupport.removeEventListener( removeKogitoProcessEventListener( listener ) );
     }
 
     public List<ProcessEventListener> getProcessEventListeners() {
-        return processEventSupport.getEventListeners();
+        return (List<ProcessEventListener>) (Object) processEventSupport.getEventListeners();
     }
 
     private void initProcessActivationListener() {
@@ -413,14 +436,6 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         startProcess(processId, params, type);
     }
 
-    public void abortProcessInstance(String processInstanceId) {
-        ProcessInstance processInstance = getProcessInstance(processInstanceId);
-        if (processInstance == null) {
-            throw new IllegalArgumentException("Could not find process instance for id " + processInstanceId);
-        }
-        ((org.jbpm.process.instance.ProcessInstance) processInstance).setState(ProcessInstance.STATE_ABORTED);
-    }
-
     public WorkItemManager getWorkItemManager() {
         return kruntime.getWorkItemManager();
     }
@@ -434,8 +449,9 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         signalManager.signalEvent(type, event);
     }
 
-    public void signalEvent(String type, Object event, String processInstanceId) {
-        signalManager.signalEvent(processInstanceId, type, event);
+    @Override
+    public void signalEvent( String s, Object o, long l ) {
+        throw new UnsupportedOperationException();
     }
 
     public void dispose() {
@@ -616,5 +632,101 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
             signalEvent(type, event);
         }
 
+    }
+
+    private final Map<ProcessEventListener, KogitoProcessEventListener> listenersMap = new IdentityHashMap<>();
+
+    private KogitoProcessEventListener asKogitoProcessEventListener( ProcessEventListener processEventListener) {
+        if (processEventListener instanceof KogitoProcessEventListener) {
+            return (( KogitoProcessEventListener ) processEventListener);
+        }
+        KogitoProcessEventListener kogitoListener = new KogitoProcessEventListenerAdapter( processEventListener );
+        listenersMap.put( processEventListener, kogitoListener );
+        return kogitoListener;
+    }
+
+    private KogitoProcessEventListener removeKogitoProcessEventListener( ProcessEventListener processEventListener) {
+        if (processEventListener instanceof KogitoProcessEventListener) {
+            return (( KogitoProcessEventListener ) processEventListener);
+        }
+        return listenersMap.remove( processEventListener );
+    }
+
+    static class KogitoProcessEventListenerAdapter implements KogitoProcessEventListener {
+        private final ProcessEventListener delegate;
+
+        KogitoProcessEventListenerAdapter( ProcessEventListener delegate ) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void beforeProcessStarted( ProcessStartedEvent processStartedEvent ) {
+            delegate.beforeProcessStarted( processStartedEvent );
+        }
+
+        @Override
+        public void afterProcessStarted( ProcessStartedEvent processStartedEvent ) {
+            delegate.afterProcessStarted( processStartedEvent );
+        }
+
+        @Override
+        public void beforeProcessCompleted( ProcessCompletedEvent processCompletedEvent ) {
+            delegate.beforeProcessCompleted( processCompletedEvent );
+        }
+
+        @Override
+        public void afterProcessCompleted( ProcessCompletedEvent processCompletedEvent ) {
+            delegate.afterProcessCompleted( processCompletedEvent );
+        }
+
+        @Override
+        public void beforeNodeTriggered( ProcessNodeTriggeredEvent processNodeTriggeredEvent ) {
+            delegate.beforeNodeTriggered( processNodeTriggeredEvent );
+        }
+
+        @Override
+        public void afterNodeTriggered( ProcessNodeTriggeredEvent processNodeTriggeredEvent ) {
+            delegate.afterNodeTriggered( processNodeTriggeredEvent );
+        }
+
+        @Override
+        public void beforeNodeLeft( ProcessNodeLeftEvent processNodeLeftEvent ) {
+            delegate.beforeNodeLeft( processNodeLeftEvent );
+        }
+
+        @Override
+        public void afterNodeLeft( ProcessNodeLeftEvent processNodeLeftEvent ) {
+            delegate.afterNodeLeft( processNodeLeftEvent );
+        }
+
+        @Override
+        public void beforeVariableChanged( ProcessVariableChangedEvent processVariableChangedEvent ) {
+            delegate.beforeVariableChanged( processVariableChangedEvent );
+        }
+
+        @Override
+        public void afterVariableChanged( ProcessVariableChangedEvent processVariableChangedEvent ) {
+            delegate.afterVariableChanged( processVariableChangedEvent );
+        }
+
+        @Override
+        public void beforeSLAViolated( SLAViolatedEvent event ) {
+            delegate.beforeSLAViolated( event );
+        }
+
+        @Override
+        public void afterSLAViolated( SLAViolatedEvent event ) {
+            delegate.afterSLAViolated( event );
+        }
+
+        @Override
+        public void onSignal( SignalEvent event ) {
+            delegate.onSignal( event );
+        }
+
+        @Override
+        public void onMessage( MessageEvent event ) {
+            delegate.onMessage( event );
+        }
     }
 }

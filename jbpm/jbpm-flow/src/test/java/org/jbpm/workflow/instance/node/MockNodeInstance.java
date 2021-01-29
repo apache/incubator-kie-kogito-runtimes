@@ -25,9 +25,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.process.runtime.KogitoNodeInstance;
 
 public class MockNodeInstance extends NodeInstanceImpl {
     
@@ -48,7 +50,7 @@ public class MockNodeInstance extends NodeInstanceImpl {
         return mockNode;
     }
     
-    public void internalTrigger(NodeInstance from, String type) {
+    public void internalTrigger( KogitoNodeInstance from, String type) {
         if (type == null) {
             throw new IllegalArgumentException(
                 "Trigger type is null!");
@@ -79,6 +81,6 @@ public class MockNodeInstance extends NodeInstanceImpl {
     }        
     
     public void triggerCompleted() {
-        triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, true);
+        triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, true);
     }
 }

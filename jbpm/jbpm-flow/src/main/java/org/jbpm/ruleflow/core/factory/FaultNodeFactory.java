@@ -17,7 +17,7 @@
 package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.FaultNode;
 
@@ -30,7 +30,7 @@ public class FaultNodeFactory extends ExtendedNodeFactory {
         super(nodeContainerFactory, nodeContainer, id);
     }
 
-    protected Node createNode() {
+    protected JbpmNode createNode() {
         return new FaultNode();
     }
 

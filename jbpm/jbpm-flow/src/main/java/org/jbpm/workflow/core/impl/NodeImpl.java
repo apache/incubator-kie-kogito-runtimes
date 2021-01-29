@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.workflow.core.Constraint;
-import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.NodeContainer;
@@ -34,7 +34,7 @@ import org.kie.api.definition.process.NodeContainer;
 /**
  * Default implementation of a node.
  */
-public abstract class NodeImpl implements Node, ContextResolver {
+public abstract class NodeImpl implements JbpmNode, ContextResolver {
 
     private static final long serialVersionUID = 510l;
 
@@ -200,7 +200,7 @@ public abstract class NodeImpl implements Node, ContextResolver {
      */
     public Connection getFrom() {
         final List<Connection> list =
-                getIncomingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                getIncomingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
         if (list.size() == 0) {
             return null;
         }
@@ -220,7 +220,7 @@ public abstract class NodeImpl implements Node, ContextResolver {
      */
     public Connection getTo() {
         final List<Connection> list =
-                getOutgoingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                getOutgoingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
         if (list.size() == 0) {
             return null;
         }
@@ -239,14 +239,14 @@ public abstract class NodeImpl implements Node, ContextResolver {
      * Helper method for nodes that have multiple default incoming connections
      */
     public List<Connection> getDefaultIncomingConnections() {
-        return getIncomingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+        return getIncomingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
     }
 
     /**
      * Helper method for nodes that have multiple default outgoing connections
      */
     public List<Connection> getDefaultOutgoingConnections() {
-        return getOutgoingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+        return getOutgoingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
     }
 
     public NodeContainer getParentContainer() {
@@ -333,4 +333,13 @@ public abstract class NodeImpl implements Node, ContextResolver {
         return Collections.unmodifiableMap(this.constraints);
     }
 
+    @Override
+    public String getNodeUniqueId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public NodeContainer getNodeContainer() {
+        throw new UnsupportedOperationException();
+    }
 }

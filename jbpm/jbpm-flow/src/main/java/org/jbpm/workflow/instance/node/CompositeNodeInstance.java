@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.jbpm.workflow.core.node.EndNode;
@@ -42,6 +43,7 @@ import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.process.runtime.KogitoNodeInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.CUSTOM_ASYNC;
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
@@ -112,10 +114,10 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     }
 
     @Override
-    public void internalTrigger(final org.kie.api.runtime.process.NodeInstance from, String type) {
+    public void internalTrigger( KogitoNodeInstance from, String type) {
     	super.internalTrigger(from, type);
     	// if node instance was cancelled, abort
-		if (getNodeInstanceContainer().getNodeInstance(getId()) == null) {
+		if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
 			return;
 		}
         CompositeNode.NodeAndType nodeAndType = getCompositeNode().internalGetLinkedIncomingNode(type);
@@ -154,7 +156,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
         }
     }
 
-    protected void internalTriggerOnlyParent(final org.kie.api.runtime.process.NodeInstance from, String type) {
+    protected void internalTriggerOnlyParent(KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
     }
 
@@ -184,7 +186,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     }
 
     public void addNodeInstance(final NodeInstance nodeInstance) {
-        if (nodeInstance.getId() == null) {
+        if (nodeInstance.getStringId() == null) {
             // assign new id only if it does not exist as it might already be set by marshalling 
             // it's important to keep same ids of node instances as they might be references e.g. exclusive group
             ((NodeInstanceImpl) nodeInstance).setId(UUID.randomUUID().toString());
@@ -198,6 +200,11 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 
     public Collection<org.kie.api.runtime.process.NodeInstance> getNodeInstances() {
         return new ArrayList<>(getNodeInstances(false));
+    }
+
+    @Override
+    public org.kie.api.runtime.process.NodeInstance getNodeInstance( long l ) {
+        throw new UnsupportedOperationException();
     }
 
     public Collection<NodeInstance> getNodeInstances(boolean recursive) {
@@ -216,7 +223,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 
 	public NodeInstance getNodeInstance(String nodeInstanceId) {
 		for (NodeInstance nodeInstance: nodeInstances) {
-			if (nodeInstance.getId().equals(nodeInstanceId)) {
+			if (nodeInstance.getStringId().equals(nodeInstanceId)) {
 				return nodeInstance;
 			}
 		}
@@ -225,7 +232,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 
 	public NodeInstance getNodeInstance(String nodeInstanceId, boolean recursive) {
 		for (NodeInstance nodeInstance: getNodeInstances(recursive)) {
-			if (nodeInstance.getId().equals(nodeInstanceId)) {
+			if (nodeInstance.getStringId().equals(nodeInstanceId)) {
 				return nodeInstance;
 			}
 		}
@@ -298,7 +305,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
                     }
                     nodeInstance.setDynamicParameters(dynamicParams);
                 }
-                nodeInstance.trigger(null, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                nodeInstance.trigger(null, JbpmNode.CONNECTION_DEFAULT_TYPE);
             }
         }
     }
@@ -331,13 +338,13 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
             return (CompositeNode.CompositeNodeStart) getNode();
         }
 
-        public void internalTrigger(org.kie.api.runtime.process.NodeInstance from, String type) {
+        public void internalTrigger(KogitoNodeInstance from, String type) {
             triggerTime = new Date();
             triggerCompleted();
         }
 
         public void triggerCompleted() {
-            super.triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, true);
+            super.triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, true);
         }
 
     }
@@ -350,7 +357,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
             return (CompositeNode.CompositeNodeEnd) getNode();
         }
 
-        public void internalTrigger(org.kie.api.runtime.process.NodeInstance from, String type) {
+        public void internalTrigger(KogitoNodeInstance from, String type) {
             triggerTime = new Date();
             triggerCompleted();
         }
@@ -390,7 +397,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 	    }
 	    if (nodeInstance instanceof FaultNodeInstance || nodeInstance instanceof EndNodeInstance || nodeInstance instanceof EventSubProcessNodeInstance ) {
             if (getCompositeNode().isAutoComplete() && nodeInstances.isEmpty()) {
-                triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE);
 
             }
 	    } else {

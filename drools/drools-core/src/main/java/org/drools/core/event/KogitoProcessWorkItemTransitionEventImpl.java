@@ -15,22 +15,22 @@
 
 package org.drools.core.event;
 
-import org.kie.api.event.process.ProcessWorkItemTransitionEvent;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.event.process.ProcessWorkItemTransitionEvent;
+import org.kie.kogito.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.workitem.Transition;
 
 public class KogitoProcessWorkItemTransitionEventImpl extends ProcessEvent implements ProcessWorkItemTransitionEvent {
 
     private static final long serialVersionUID = 510l;
 
-    private WorkItem workItem;
+    private KogitoWorkItem workItem;
     private Transition<?> transition;
 
     private boolean transitioned;
 
-    public KogitoProcessWorkItemTransitionEventImpl( final ProcessInstance instance, WorkItem workItem, Transition<?> transition, KieRuntime kruntime, boolean transitioned) {
+    public KogitoProcessWorkItemTransitionEventImpl( final ProcessInstance instance, KogitoWorkItem workItem, Transition<?> transition, KieRuntime kruntime, boolean transitioned) {
         super( instance, kruntime );
         this.workItem = workItem;
         this.transition = transition;
@@ -42,7 +42,7 @@ public class KogitoProcessWorkItemTransitionEventImpl extends ProcessEvent imple
     }
 
     @Override
-    public WorkItem getWorkItem() {
+    public KogitoWorkItem getWorkItem() {
         return workItem;
     }
 
