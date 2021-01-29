@@ -18,9 +18,10 @@ package org.kie.kogito.codegen.rules;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseResult;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.stmt.ReturnStmt;
@@ -29,12 +30,17 @@ import org.drools.compiler.compiler.DecisionTableProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.internal.utils.ServiceRegistry;
 import org.kie.kogito.codegen.AddonsConfig;
 import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.GeneratedFile;
 import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.io.CollectedResource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -185,11 +191,14 @@ public class IncrementalRuleCodegenTest {
         assertThrows(MissingDecisionTableDependencyError.class, incrementalRuleCodegen.withHotReloadMode()::generate);
     }
 
-    @Test
-    public void generateGrafanaDashboards() {
-        KogitoBuildContext context = JavaKogitoBuildContext.builder()
-                .withPackageName("com.acme")
-                .withAddonsConfig(AddonsConfig.builder().withPrometheusMonitoring(true).build())
+    @ParameterizedTest
+    @MethodSource("contextBuilders")
+    public void generateGrafanaDashboards(KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext context = contextBuilder
+                .withAddonsConfig(AddonsConfig.builder()
+                                          .withPrometheusMonitoring(true)
+                                          .withMonitoring(true)
+                                          .build())
                 .build();
 
         IncrementalRuleCodegen incrementalRuleCodegen =
@@ -202,10 +211,10 @@ public class IncrementalRuleCodegenTest {
         assertEquals(2, generatedFiles.stream().filter(x -> x.type().equals(DashboardGeneratedFileUtils.DASHBOARD_TYPE)).count());
     }
 
-    @Test
-    public void elapsedTimeMonitoringIsWrappingEveryMethod() {
-        KogitoBuildContext context = JavaKogitoBuildContext.builder()
-                .withPackageName("com.acme")
+    @ParameterizedTest
+    @MethodSource("contextBuilders")
+    public void elapsedTimeMonitoringIsWrappingEveryMethod(KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext context = contextBuilder
                 .withAddonsConfig(AddonsConfig.builder()
                                           .withPrometheusMonitoring(true)
                                           .withMonitoring(true)
@@ -220,16 +229,19 @@ public class IncrementalRuleCodegenTest {
                                 new File("src/test/resources/org/kie/kogito/codegen/unit/RuleUnitQuery.drl")));
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
 
-        String endpointClass = new String(generatedFiles
-                                                  .stream()
-                                                  .filter(x -> x.relativePath().contains("Endpoint"))
-                                                  .findFirst()
-                                                  .orElseThrow(() -> new RuntimeException("No Endpoint class has been generated."))
-                                                  .contents());
+        List<String> endpointClasses = generatedFiles
+                .stream()
+                .filter(x -> x.relativePath().contains("Endpoint"))
+                .map(x -> new String(x.contents()))
+                .collect(Collectors.toList());
 
-        JavaParser parser = new JavaParser();
-        ParseResult<CompilationUnit> parsedClass = parser.parse(endpointClass);
-        CompilationUnit cu = parsedClass.getResult().orElseThrow(() -> new RuntimeException("Could not parse generated java class"));
+        for (String endpointClass : endpointClasses) {
+            assertMonitoringEndpoints(endpointClass);
+        }
+    }
+
+    private static void assertMonitoringEndpoints(String endpointClass) {
+        CompilationUnit cu = StaticJavaParser.parse(endpointClass);
 
         ClassOrInterfaceDeclaration clazz = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
         ReturnStmt executeQueryReturnStmt = clazz.getMethodsByName("executeQuery")
@@ -272,5 +284,13 @@ public class IncrementalRuleCodegenTest {
         assertEquals(expectedRules +
                              expectedPackages * 2, // package descriptor for rules + package metadata
                      actualGeneratedFiles - 2); // ignore ProjectModel and ProjectRuntime classes
+    }
+
+    private static Stream<Arguments> contextBuilders() {
+        return Stream.of(
+                Arguments.of(JavaKogitoBuildContext.builder()),
+                Arguments.of(QuarkusKogitoBuildContext.builder()),
+                Arguments.of(SpringBootKogitoBuildContext.builder())
+        );
     }
 }
