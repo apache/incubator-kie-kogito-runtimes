@@ -156,16 +156,6 @@ public class PredictionCodegen extends AbstractGenerator {
                     try {
                         String jsonContent = new ObjectMapper().writeValueAsString(oasResult.jsonSchemaNode());
                         String jsonFile = String.format("%s.json", getSanitizedClassName(model.getName()));
-//                        switch(context().name()) {
-//                            case "Quarkus":
-//                                jsonFile = String.format("q/%s", jsonFile);
-//                                break;
-//                            case "Spring":
-//                                jsonFile = String.format("w/%s", jsonFile);
-//                                break;
-//                            default:
-//                                // noop
-//                        }
                         String jsonFilePath = String.format("META-INF/resources/%s", jsonFile);
                         storeFile(GeneratedFileType.RESOURCE, jsonFilePath, jsonContent);
                     } catch (Exception e) {

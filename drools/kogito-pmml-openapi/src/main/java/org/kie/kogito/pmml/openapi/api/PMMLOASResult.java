@@ -25,6 +25,9 @@ public interface PMMLOASResult {
     String REQUIRED = "required";
     String PROPERTIES = "properties";
     String TYPE = "type";
+    String DEFAULT = "default";
+    String ENUM = "enum";
+    String INTERVALS = "intervals";
     String OBJECT = "object";
 
     ObjectNode jsonSchemaNode();

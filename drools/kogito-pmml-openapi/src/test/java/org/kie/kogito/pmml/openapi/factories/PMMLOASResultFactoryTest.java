@@ -1,6 +1,7 @@
 package org.kie.kogito.pmml.openapi.factories;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.pmml.openapi.api.PMMLOASResult;
+import org.kie.kogito.pmml.openapi.impl.PMMLOASResultImpl;
 import org.kie.pmml.api.enums.DATA_TYPE;
 import org.kie.pmml.api.enums.FIELD_USAGE_TYPE;
 import org.kie.pmml.api.enums.OP_TYPE;
@@ -42,7 +44,7 @@ class PMMLOASResultFactoryTest {
     @Test
     void getPMMLOASResultNoMiningFieldsNoOutputFields() {
         final List<MiningField> miningFields = Collections.emptyList();
-        final List<OutputField> outputFields =Collections.emptyList();
+        final List<OutputField> outputFields = Collections.emptyList();
         final KiePMMLModel kiePMMLModel = getKiePMMLModelInternal(miningFields, outputFields);
         final PMMLOASResult retrieved = PMMLOASResultFactory.getPMMLOASResult(kiePMMLModel);
         assertNotNull(retrieved);
@@ -53,7 +55,7 @@ class PMMLOASResultFactoryTest {
         final JsonNode definitionsNode = jsonNodes.get(DEFINITIONS);
         assertFalse(definitionsNode.isEmpty());
         commonValidateInputSet(definitionsNode.get(INPUT_SET), miningFields);
-        commonValidateOutputSet(definitionsNode.get(OUTPUT_SET), outputFields);
+        assertNull(definitionsNode.get(OUTPUT_SET));
     }
 
     @Test
@@ -97,19 +99,24 @@ class PMMLOASResultFactoryTest {
         assertNotNull(toValidate.get(REQUIRED));
         assertNotNull(toValidate.get(PROPERTIES));
         final ArrayNode requiredNode = (ArrayNode) toValidate.get(REQUIRED);
-        assertEquals(miningFields.size(), requiredNode.size());
+        List<MiningField> requiredMiningFields = miningFields.stream().filter(PMMLOASResultImpl::isRequired).collect(Collectors.toList());
+        assertEquals(requiredMiningFields.size(), requiredNode.size());
         final List<JsonNode> requiredJsonNodes = getFromArrayNode(requiredNode);
         final ObjectNode propertiesNode = (ObjectNode) toValidate.get(PROPERTIES);
-        assertEquals(miningFields.size(), propertiesNode.size());
-        for (MiningField miningField : miningFields) {
+        List<MiningField> active = miningFields.stream().filter(miningField -> !PMMLOASResultImpl.isPredicted(miningField)).collect(Collectors.toList());
+        assertEquals(active.size(), propertiesNode.size());
+        for (MiningField miningField : requiredMiningFields) {
             JsonNode required = getFromJsonNodeList(requiredJsonNodes, miningField.getName());
             assertNotNull(required);
+        }
+        for (MiningField miningField : active) {
             JsonNode property = propertiesNode.get(miningField.getName());
             assertNotNull(property);
             final ObjectNode typeFieldNode = (ObjectNode) property;
             assertNotNull(typeFieldNode.get(TYPE));
             final TextNode typeNode = (TextNode) typeFieldNode.get(TYPE);
-            assertEquals(miningField.getDataType().getName(), typeNode.asText());
+            String mappedType = PMMLOASResultImpl.getMappedType(miningField.getDataType());
+            assertEquals(mappedType, typeNode.asText());
         }
     }
 
@@ -118,14 +125,14 @@ class PMMLOASResultFactoryTest {
         assertEquals(OBJECT, toValidate.get(TYPE).asText());
         assertNotNull(toValidate.get(PROPERTIES));
         final ObjectNode propertiesNode = (ObjectNode) toValidate.get(PROPERTIES);
-        assertEquals(outputFields.size(), propertiesNode.size());
         for (OutputField outputField : outputFields) {
             JsonNode property = propertiesNode.get(outputField.getName());
             assertNotNull(property);
             final ObjectNode typeFieldNode = (ObjectNode) property;
             assertNotNull(typeFieldNode.get(TYPE));
             final TextNode typeNode = (TextNode) typeFieldNode.get(TYPE);
-            assertEquals(outputField.getDataType().getName(), typeNode.asText());
+            String mappedType = PMMLOASResultImpl.getMappedType(outputField.getDataType());
+            assertEquals(mappedType, typeNode.asText());
         }
     }
 
@@ -145,7 +152,6 @@ class PMMLOASResultFactoryTest {
     private KiePMMLModel getKiePMMLModelInternal(List<MiningField> miningFields, List<OutputField> outputFields) {
         String modelName = "MODEL_NAME";
         KiePMMLModel toReturn = new KiePMMLModel(modelName, Collections.emptyList()) {
-
             @Override
             public Object evaluate(Object o, Map<String, Object> map) {
                 return null;
@@ -166,7 +172,7 @@ class PMMLOASResultFactoryTest {
         FIELD_USAGE_TYPE fieldUsageType = FIELD_USAGE_TYPE.values()[random.nextInt(FIELD_USAGE_TYPE.values().length)];
         OP_TYPE opType = OP_TYPE.values()[random.nextInt(OP_TYPE.values().length)];
         DATA_TYPE dataType = DATA_TYPE.values()[random.nextInt(DATA_TYPE.values().length)];
-        return new MiningField(fieldName, fieldUsageType, opType, dataType);
+        return new MiningField(fieldName, fieldUsageType, opType, dataType, null, null, null);
     }
 
     private List<OutputField> getRandomOutputFields() {
@@ -179,6 +185,6 @@ class PMMLOASResultFactoryTest {
         OP_TYPE opType = OP_TYPE.values()[random.nextInt(OP_TYPE.values().length)];
         DATA_TYPE dataType = DATA_TYPE.values()[random.nextInt(DATA_TYPE.values().length)];
         RESULT_FEATURE resultFeature = RESULT_FEATURE.values()[random.nextInt(RESULT_FEATURE.values().length)];
-        return new OutputField(fieldName, opType, dataType, targetField, resultFeature);
+        return new OutputField(fieldName, opType, dataType, targetField, resultFeature, Arrays.asList("A", "B", "C"));
     }
 }

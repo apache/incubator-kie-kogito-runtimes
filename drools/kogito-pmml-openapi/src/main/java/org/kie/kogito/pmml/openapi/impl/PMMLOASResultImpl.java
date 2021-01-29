@@ -40,6 +40,34 @@ public class PMMLOASResultImpl implements PMMLOASResult {
         jsonNodes.set(DEFINITIONS, definitions);
     }
 
+    public static boolean isRequired(MiningField toVerify) {
+        if (FIELD_USAGE_TYPE.PREDICTED.equals(toVerify.getUsageType()) ||
+                FIELD_USAGE_TYPE.TARGET.equals(toVerify.getUsageType())) {
+            return false;
+        }
+        return toVerify.getMissingValueReplacement() == null;
+    }
+
+    public static boolean isPredicted(MiningField toVerify) {
+        return FIELD_USAGE_TYPE.PREDICTED.equals(toVerify.getUsageType()) ||
+                FIELD_USAGE_TYPE.TARGET.equals(toVerify.getUsageType());
+    }
+
+    public static String getMappedType(DATA_TYPE toMap) {
+        switch (toMap) {
+            case DATE:
+            case DATE_TIME:
+            case STRING:
+                return "string";
+            case BOOLEAN:
+                return "boolean";
+            case INTEGER:
+                return "integer";
+            default:
+                return "number";
+        }
+    }
+
     @Override
     public ObjectNode jsonSchemaNode() {
         return jsonNodes;
@@ -55,45 +83,68 @@ public class PMMLOASResultImpl implements PMMLOASResult {
         final ObjectNode propertiesNode = JsonUtil.objectNode();
         inputSetNode.set(PROPERTIES, propertiesNode);
         toAdd.forEach(miningField -> {
-            if (!FIELD_USAGE_TYPE.PREDICTED.equals(miningField.getUsageType()) &&
-                    !FIELD_USAGE_TYPE.TARGET.equals(miningField.getUsageType())) {
+            if (isRequired(miningField)) { // A MiningField may be not predicted AND not required if it has a missingValueReplacement
                 requiredNode.add(miningField.getName());
+            }
+            if (isPredicted(miningField)) {
+                addToOutputSet(miningField.getName(), miningField.getDataType(), miningField.getAllowedValues());
+            } else {
                 final ObjectNode typeFieldNode = JsonUtil.objectNode();
                 String mappedType = getMappedType(miningField.getDataType());
                 typeFieldNode.set(TYPE, new TextNode(mappedType));
+                if (miningField.getMissingValueReplacement() != null && !miningField.getMissingValueReplacement().isEmpty()) {
+                    typeFieldNode.set(DEFAULT, new TextNode(miningField.getMissingValueReplacement()));
+                }
+                if (miningField.getAllowedValues() != null && !miningField.getAllowedValues().isEmpty()) {
+                    ArrayNode availableValues = JsonUtil.arrayNode();
+                    miningField.getAllowedValues().forEach(availableValues::add);
+                    typeFieldNode.set(ENUM, availableValues);
+                }
+                if (miningField.getIntervals() != null && !miningField.getIntervals().isEmpty()) {
+                    ArrayNode intervals = JsonUtil.arrayNode();
+                    miningField.getIntervals().forEach(intervals::add);
+                    typeFieldNode.set(INTERVALS, intervals);
+                }
                 propertiesNode.set(miningField.getName(), typeFieldNode);
             }
         });
     }
 
     protected void addOutputFields(List<OutputField> toAdd) {
-        final ObjectNode definitionsNode = (ObjectNode) jsonNodes.get(DEFINITIONS);
-        final ObjectNode outputSetNode = JsonUtil.objectNode();
-        definitionsNode.set(OUTPUT_SET, outputSetNode);
-        outputSetNode.set(TYPE, new TextNode(OBJECT));
-        final ObjectNode propertiesNode = JsonUtil.objectNode();
-        outputSetNode.set(PROPERTIES, propertiesNode);
-        toAdd.forEach(outputField -> {
-            final ObjectNode typeFieldNode = JsonUtil.objectNode();
-            String mappedType = getMappedType(outputField.getDataType());
-            typeFieldNode.set(TYPE, new TextNode(mappedType));
-            propertiesNode.set(outputField.getName(), typeFieldNode);
-        });
+        toAdd.forEach(outputField -> addToOutputSet(outputField.getName(), outputField.getDataType(), outputField.getAllowedValues()));
     }
 
-    protected String getMappedType(DATA_TYPE toMap) {
-        switch (toMap) {
-            case DATE:
-            case DATE_TIME:
-            case STRING:
-                return "string";
-            case BOOLEAN:
-                return "boolean";
-            case INTEGER:
-                return "integer";
-            default:
-                return "number";
+    protected void addToOutputSet(String fieldName, DATA_TYPE dataType, List<String> allowedValues) {
+        final ObjectNode outputSetNode = conditionallyCreateOutputSetNode();
+        final ObjectNode propertiesNode = (ObjectNode) outputSetNode.get(PROPERTIES);
+        final ObjectNode typeFieldNode = JsonUtil.objectNode();
+        String mappedType = getMappedType(dataType);
+        typeFieldNode.set(TYPE, new TextNode(mappedType));
+        propertiesNode.set(fieldName, typeFieldNode);
+        if (allowedValues != null && !allowedValues.isEmpty()) {
+            ArrayNode availableValues = conditionallyCreateEnumNode(typeFieldNode);
+            allowedValues.forEach(availableValues::add);
         }
+    }
+
+    protected ArrayNode conditionallyCreateEnumNode(final ObjectNode parent) {
+        if (parent.get(ENUM) == null) {
+            ArrayNode availableValues = JsonUtil.arrayNode();
+            parent.set(ENUM, availableValues);
+        }
+        return (ArrayNode) parent.get(ENUM);
+    }
+
+    protected ObjectNode conditionallyCreateOutputSetNode() {
+        final ObjectNode definitionsNode = (ObjectNode) jsonNodes.get(DEFINITIONS);
+        if (definitionsNode.get(OUTPUT_SET) == null) {
+            final ObjectNode outputSetNode = JsonUtil.objectNode();
+            definitionsNode.set(OUTPUT_SET, outputSetNode);
+            outputSetNode.set(TYPE, new TextNode(OBJECT));
+            final ObjectNode propertiesNode = JsonUtil.objectNode();
+            outputSetNode.set(PROPERTIES, propertiesNode);
+        }
+        return (ObjectNode) definitionsNode.get(OUTPUT_SET);
     }
 
     public static class Builder {
