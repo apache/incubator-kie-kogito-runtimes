@@ -36,12 +36,12 @@ import org.jbpm.workflow.core.node.EventNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
-import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
 import org.kie.kogito.process.event.KogitoEventListener;
+import org.kie.kogito.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.timer.TimerInstance;
 
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
@@ -83,7 +83,8 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
         }
     }
 
-    public void internalTrigger(final NodeInstance from, String type) {
+    @Override
+    public void internalTrigger( final KogitoNodeInstance from, String type) {
     	if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                 "An EventNode only accepts default incoming connections!");
@@ -110,7 +111,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
         if (slaCompliance == ProcessInstance.SLA_PENDING) {
             InternalProcessRuntime processRuntime = ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime());
             processRuntime.getProcessEventSupport().fireBeforeSLAViolated(getProcessInstance(), this, getProcessInstance().getKnowledgeRuntime());
-            logger.debug("SLA violated on node instance {}", getId());                   
+            logger.debug("SLA violated on node instance {}", getStringId());
             this.slaCompliance = ProcessInstance.SLA_VIOLATED;
             this.slaTimerId = null;
             processRuntime.getProcessEventSupport().fireAfterSLAViolated(getProcessInstance(), this, getProcessInstance().getKnowledgeRuntime());

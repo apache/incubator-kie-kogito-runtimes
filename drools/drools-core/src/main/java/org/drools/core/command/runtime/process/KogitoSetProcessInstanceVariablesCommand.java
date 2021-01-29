@@ -66,7 +66,7 @@ public class KogitoSetProcessInstanceVariablesCommand implements ExecutableComma
     }
 
     public Void execute( Context context) {
-        KogitoProcessRuntime ksession = (KogitoProcessRuntime) (( RegistryContext ) context).lookup( KieSession.class);
+        KogitoProcessRuntime ksession = KogitoProcessRuntime.asKogitoProcessRuntime( (( RegistryContext ) context).lookup( KieSession.class) );
         ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
         if (processInstance != null) {
             if (variables != null) {

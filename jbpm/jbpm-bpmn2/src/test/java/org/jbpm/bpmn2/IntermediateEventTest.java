@@ -893,8 +893,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         ksession = restoreSession(ksession, true);
         ksession.addEventListener(listener);
 
-        kruntime.signalEvent("Message-HelloMessage", null,
-                processInstance.getStringId());
+        kruntime.signalEvent("Message-HelloMessage", null, processInstance.getStringId());
         kruntime.signalEvent("Message-HelloMessage", null);
         kruntime.signalEvent("Message-HelloMessage", null);
         kruntime.signalEvent("Message-HelloMessage", null);
@@ -1879,7 +1878,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance2);
 
         // now signal the other one
-        ksession2.signalEvent("MyMessage", "SomeValue");
+        kruntime2.signalEvent("MyMessage", "SomeValue");
         assertProcessInstanceFinished(processInstance2, ksession2);
         ksession2.dispose();
     }
@@ -2424,7 +2423,10 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         parameters.put("signalName", signalVar);
         KogitoProcessInstance processInstance = kruntime.startProcess("IntermediateCatchEvent", parameters);
         assertProcessInstanceActive(processInstance);
+
         ksession = restoreSession(ksession, true);
+        kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+
         // now signal process instance
         kruntime.signalEvent(signalVar, "SomeValue", processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, ksession);
@@ -2446,6 +2448,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         ksession = restoreSession(ksession, true);
+        kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("x", "MyValue");

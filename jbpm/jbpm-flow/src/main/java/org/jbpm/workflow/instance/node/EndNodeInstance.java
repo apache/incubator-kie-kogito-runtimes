@@ -41,6 +41,7 @@ public class EndNodeInstance extends ExtendedNodeInstanceImpl {
         return (EndNode) getNode();
     }
 
+    @Override
     public void internalTrigger( KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
         if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {

@@ -309,6 +309,8 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         ksession.dispose();
 
         ksession = createKnowledgeSession(kbase);
+        kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+
         ksession.addEventListener(new RuleAwareProcessEventListener());
         params = new HashMap<String, Object>();
         params.put("person", new Person("unsupported"));

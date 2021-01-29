@@ -640,9 +640,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         if (processEventListener instanceof KogitoProcessEventListener) {
             return (( KogitoProcessEventListener ) processEventListener);
         }
-        KogitoProcessEventListener kogitoListener = new KogitoProcessEventListenerAdapter( processEventListener );
-        listenersMap.put( processEventListener, kogitoListener );
-        return kogitoListener;
+        return listenersMap.computeIfAbsent( processEventListener, KogitoProcessEventListenerAdapter::new );
     }
 
     private KogitoProcessEventListener removeKogitoProcessEventListener( ProcessEventListener processEventListener) {
