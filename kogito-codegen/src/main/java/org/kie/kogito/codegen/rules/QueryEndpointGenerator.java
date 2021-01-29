@@ -219,7 +219,6 @@ public class QueryEndpointGenerator implements FileGenerator {
             ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a return statement!"));
             statements.addFirst(parseStatement("long startTime = System.nanoTime();"));
             statements.addBefore(parseStatement("long endTime = System.nanoTime();"), returnStmt);
-            System.out.println(context == null);
             String endpoint = nameURL;
             if (context.getDependencyInjectionAnnotator() != null){
                 Optional<String> path = context.getDependencyInjectionAnnotator().getEndpointValue(md);
