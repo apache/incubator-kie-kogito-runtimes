@@ -301,7 +301,7 @@ public class DynamicUtils {
 
             eventSupport.fireAfterNodeTriggered(subProcessNodeInstance,
                                                 ksession);
-            if (subProcessInstance.getState() == org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED) {
+            if (subProcessInstance.getState() == org.kie.kogito.process.runtime.KogitoProcessInstance.STATE_COMPLETED) {
                 subProcessNodeInstance.triggerCompleted();
             } else {
 

@@ -398,7 +398,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         if (processInstance == null) {
             throw new IllegalArgumentException("Could not find process instance for id " + processInstanceId);
         }
-        ((org.jbpm.process.instance.ProcessInstance) processInstance).setState(ProcessInstance.STATE_ABORTED);
+        ((org.jbpm.process.instance.ProcessInstance) processInstance).setState(KogitoProcessInstance.STATE_ABORTED);
     }
 
     public WorkItemManager getWorkItemManager() {

@@ -199,10 +199,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void start(String trigger, String referenceId) {
-        if (this.status != ProcessInstance.STATE_PENDING) {
+        if (this.status != KogitoProcessInstance.STATE_PENDING) {
             throw new IllegalStateException("Impossible to start process instance that already was started");
         }
-        this.status = ProcessInstance.STATE_ACTIVE;
+        this.status = KogitoProcessInstance.STATE_ACTIVE;
 
         if (referenceId != null) {
             processInstance.setReferenceId(referenceId);
@@ -452,7 +452,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     protected void removeOnFinish() {
-        if (processInstance.getState() != ProcessInstance.STATE_ACTIVE && processInstance.getState() != ProcessInstance.STATE_ERROR) {
+        if (processInstance.getState() != KogitoProcessInstance.STATE_ACTIVE && processInstance.getState() != KogitoProcessInstance.STATE_ERROR) {
             removeCompletionListener();
             syncProcessInstance(processInstance);
             addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));

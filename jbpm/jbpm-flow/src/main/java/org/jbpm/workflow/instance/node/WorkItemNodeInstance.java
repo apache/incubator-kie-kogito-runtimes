@@ -79,8 +79,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.jbpm.process.core.context.variable.VariableScope.VARIABLE_SCOPE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
+import static org.kie.kogito.process.runtime.KogitoProcessInstance.STATE_ABORTED;
+import static org.kie.kogito.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 import static org.kie.api.runtime.process.WorkItem.ABORTED;
 import static org.kie.api.runtime.process.WorkItem.COMPLETED;
 

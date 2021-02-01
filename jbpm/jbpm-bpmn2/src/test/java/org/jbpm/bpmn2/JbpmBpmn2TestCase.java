@@ -270,18 +270,18 @@ public abstract class JbpmBpmn2TestCase {
 
 
     public void assertProcessInstanceCompleted(ProcessInstance processInstance) {
-        assertTrue(assertProcessInstanceState(ProcessInstance.STATE_COMPLETED, processInstance),
+        assertTrue(assertProcessInstanceState(KogitoProcessInstance.STATE_COMPLETED, processInstance),
                    "Process instance has not been completed.");
     }
 
     public void assertProcessInstanceAborted(ProcessInstance processInstance) {
-        assertTrue(assertProcessInstanceState(ProcessInstance.STATE_ABORTED, processInstance),
+        assertTrue(assertProcessInstanceState(KogitoProcessInstance.STATE_ABORTED, processInstance),
                    "Process instance has not been aborted.");
     }
 
     public void assertProcessInstanceActive(ProcessInstance processInstance) {
-        assertTrue(assertProcessInstanceState(ProcessInstance.STATE_ACTIVE, processInstance)
-                || assertProcessInstanceState(ProcessInstance.STATE_PENDING, processInstance),
+        assertTrue(assertProcessInstanceState(KogitoProcessInstance.STATE_ACTIVE, processInstance)
+                || assertProcessInstanceState(KogitoProcessInstance.STATE_PENDING, processInstance),
                    "Process instance is not active.");
     }
 

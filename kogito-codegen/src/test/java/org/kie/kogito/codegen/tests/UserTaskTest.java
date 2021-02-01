@@ -47,6 +47,7 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.VariableViolationException;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.event.DefaultKogitoProcessEventListener;
+import org.kie.kogito.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.runtime.WorkItemNotFoundException;
 import org.kie.kogito.process.workitem.InvalidTransitionException;
 import org.kie.kogito.process.workitem.NotAuthorizedException;
@@ -91,14 +92,14 @@ public class UserTaskTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(processInstance.status()).isEqualTo( KogitoProcessInstance.STATE_ACTIVE);
 
         List<WorkItem> workItems = processInstance.workItems(securityPolicy);
         assertEquals(1, workItems.size());
         assertEquals("FirstTask", workItems.get(0).getName());
 
         processInstance.completeWorkItem(workItems.get(0).getId(), null, securityPolicy);
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
 
         workItems = processInstance.workItems(securityPolicy);
         assertEquals(1, workItems.size());

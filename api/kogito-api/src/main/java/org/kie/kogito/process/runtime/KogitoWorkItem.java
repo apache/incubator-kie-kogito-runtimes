@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 JBoss Inc
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,10 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.kogito.process.workitem.Policy;
 
 public interface KogitoWorkItem extends WorkItem {
+
+    @Override
+    @Deprecated
+    long getId();
 
     String getStringId();
 

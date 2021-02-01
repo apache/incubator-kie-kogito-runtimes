@@ -38,6 +38,7 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.event.DefaultKogitoProcessEventListener;
+import org.kie.kogito.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.services.identity.StaticIdentityProvider;
 
@@ -62,7 +63,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo( KogitoProcessInstance.STATE_COMPLETED);
     }
 
     @ParameterizedTest
@@ -88,7 +89,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         boolean completed = listener.waitTillCompleted(5000);
         assertThat(completed).isTrue();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
     @ParameterizedTest
@@ -107,7 +108,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
     @ParameterizedTest
@@ -126,7 +127,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
     @ParameterizedTest
@@ -174,7 +175,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
 
@@ -209,7 +210,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
 
@@ -244,7 +245,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
 
@@ -279,7 +280,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
 
@@ -314,7 +315,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -340,7 +341,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
 
         Model result = (Model) processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
@@ -377,7 +378,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
             ProcessInstance<?> processInstance = p.createInstance(m);
             processInstance.start();
 
-            assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+            assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
 
             Model result = (Model) processInstance.variables();
             assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
@@ -435,7 +436,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
 
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
 
         List<WorkItem> workItems = processInstance.workItems(securityPolicy);
         assertEquals(1, workItems.size());
@@ -455,7 +456,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         processInstance.completeWorkItem(workItems.get(0).getId(), completionMap, securityPolicy);
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
 
         assertThat(workItemTransitionEvents).hasSize(4);
 
@@ -511,7 +512,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
 
         List<WorkItem> workItems = processInstance.workItems(securityPolicy);
         assertEquals(1, workItems.size());
@@ -525,7 +526,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         processInstance.completeWorkItem(workItems.get(0).getId(), decisionMap, securityPolicy);
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
 
 
         workItems = processInstance.workItems(securityPolicy);
@@ -534,7 +535,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         processInstance.completeWorkItem(workItems.get(0).getId(), decisionMap, securityPolicy);
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
 
         assertThat(workItemTransitionEvents).hasSize(8);
 
@@ -577,7 +578,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
 
         Model result = (Model) processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("workflowdata");
@@ -616,7 +617,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
 
         System.clearProperty("jbpm.enable.multi.con");
     }

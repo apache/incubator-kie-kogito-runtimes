@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 JBoss Inc
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,12 @@ import org.kie.kogito.process.event.KogitoEventListener;
 
 public interface KogitoProcessInstance extends ProcessInstance, KogitoEventListener {
 
-    int STATE_ERROR = 5;
+    int STATE_PENDING   = 0;
+    int STATE_ACTIVE    = 1;
+    int STATE_COMPLETED = 2;
+    int STATE_ABORTED   = 3;
+    int STATE_SUSPENDED = 4;
+    int STATE_ERROR     = 5;
 
     @Deprecated
     @Override

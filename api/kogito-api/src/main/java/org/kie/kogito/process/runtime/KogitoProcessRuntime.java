@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 JBoss Inc
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,6 @@ import org.kie.api.runtime.process.ProcessRuntime;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.kogito.jobs.JobsService;
 
-/**
- * The {@link KogitoProcessRuntime} is a super-interface for all {@link org.kie.api.runtime.KieSession}s.
- *
- * @see org.kie.api.runtime.KieSession
- */
 public interface KogitoProcessRuntime {
 
     interface Provider {

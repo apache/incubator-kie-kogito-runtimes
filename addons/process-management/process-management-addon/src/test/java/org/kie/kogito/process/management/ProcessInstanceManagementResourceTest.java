@@ -33,6 +33,7 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcess;
+import org.kie.kogito.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
@@ -99,7 +100,7 @@ public class ProcessInstanceManagementResourceTest {
         lenient().when(instances.findById(anyString())).thenReturn(Optional.of(processInstance));
         lenient().when(processInstance.error()).thenReturn(Optional.of(error));
         lenient().when(processInstance.id()).thenReturn("abc-def");
-        lenient().when(processInstance.status()).thenReturn(ProcessInstance.STATE_ACTIVE);
+        lenient().when(processInstance.status()).thenReturn( KogitoProcessInstance.STATE_ACTIVE);
         lenient().when(error.failedNodeId()).thenReturn("xxxxx");
         lenient().when(error.errorMessage()).thenReturn("Test error message");
         lenient().when(process.process()).thenReturn(mock( KogitoWorkflowProcess.class));
@@ -131,7 +132,7 @@ public class ProcessInstanceManagementResourceTest {
 
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                when(processInstance.status()).thenReturn(ProcessInstance.STATE_ACTIVE);
+                when(processInstance.status()).thenReturn(KogitoProcessInstance.STATE_ACTIVE);
                 return null;
             }
         }).when(error).retrigger();

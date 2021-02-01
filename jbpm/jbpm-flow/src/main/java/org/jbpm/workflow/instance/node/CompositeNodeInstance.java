@@ -48,8 +48,8 @@ import org.kie.kogito.process.runtime.KogitoNodeInstance;
 import static org.jbpm.ruleflow.core.Metadata.CUSTOM_ASYNC;
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
+import static org.kie.kogito.process.runtime.KogitoProcessInstance.STATE_ABORTED;
+import static org.kie.kogito.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 
 /**
  * Runtime counterpart of a composite node.
