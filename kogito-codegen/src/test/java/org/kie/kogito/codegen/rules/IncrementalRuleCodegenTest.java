@@ -39,6 +39,8 @@ import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -222,7 +224,7 @@ public class IncrementalRuleCodegenTest {
         IncrementalRuleCodegen incrementalRuleCodegen =
                 IncrementalRuleCodegen.ofCollectedResources(
                         context,
-                        CollectedResource.fromFiles(
+                        CollectedResourceProducer.fromFiles(
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/kie/kogito/codegen/unit/RuleUnitQuery.drl")));
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
