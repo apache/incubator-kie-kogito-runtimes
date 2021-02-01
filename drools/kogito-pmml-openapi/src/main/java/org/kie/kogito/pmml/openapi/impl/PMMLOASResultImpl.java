@@ -15,7 +15,10 @@
  */
 package org.kie.kogito.pmml.openapi.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -24,6 +27,7 @@ import io.smallrye.openapi.runtime.io.JsonUtil;
 import org.kie.kogito.pmml.openapi.api.PMMLOASResult;
 import org.kie.pmml.api.enums.DATA_TYPE;
 import org.kie.pmml.api.enums.FIELD_USAGE_TYPE;
+import org.kie.pmml.api.enums.ResultCode;
 import org.kie.pmml.api.models.MiningField;
 import org.kie.pmml.api.models.OutputField;
 
@@ -38,6 +42,7 @@ public class PMMLOASResultImpl implements PMMLOASResult {
         jsonNodes = JsonUtil.objectNode();
         ObjectNode definitions = JsonUtil.objectNode();
         jsonNodes.set(DEFINITIONS, definitions);
+        addOutputSet();
     }
 
     public static boolean isRequired(MiningField toVerify) {
@@ -73,6 +78,19 @@ public class PMMLOASResultImpl implements PMMLOASResult {
         return jsonNodes;
     }
 
+    protected void addOutputSet() {
+        ObjectNode definitions = (ObjectNode) jsonNodes.get(DEFINITIONS);
+        ObjectNode outputSet = createNode(definitions, OUTPUT_SET);
+        addToSetNode(CORRELATION_ID, DATA_TYPE.STRING, Collections.emptyList(), outputSet);
+        addToSetNode(SEGMENTATION_ID, DATA_TYPE.STRING, Collections.emptyList(), outputSet);
+        addToSetNode(SEGMENT_ID, DATA_TYPE.STRING, Collections.emptyList(), outputSet);
+        addToSetNode(SEGMENT_INDEX, DATA_TYPE.INTEGER, Collections.emptyList(), outputSet);
+        List<String> allowedValues =
+                Arrays.stream(ResultCode.values()).map(ResultCode::getName).collect(Collectors.toList());
+        addToSetNode(RESULT_CODE, DATA_TYPE.STRING, allowedValues, outputSet);
+        addToSetNode(RESULT_OBJECT_NAME, DATA_TYPE.STRING, Collections.emptyList(), outputSet);
+    }
+
     protected void addMiningFields(List<MiningField> toAdd) {
         final ObjectNode definitionsNode = (ObjectNode) jsonNodes.get(DEFINITIONS);
         final ObjectNode inputSetNode = JsonUtil.objectNode();
@@ -83,11 +101,13 @@ public class PMMLOASResultImpl implements PMMLOASResult {
         final ObjectNode propertiesNode = JsonUtil.objectNode();
         inputSetNode.set(PROPERTIES, propertiesNode);
         toAdd.forEach(miningField -> {
-            if (isRequired(miningField)) { // A MiningField may be not predicted AND not required if it has a missingValueReplacement
+            if (isRequired(miningField)) { // A MiningField may be not predicted AND not required if it has a
+                // missingValueReplacement
                 requiredNode.add(miningField.getName());
             }
             if (isPredicted(miningField)) {
-                addToOutputSet(miningField.getName(), miningField.getDataType(), miningField.getAllowedValues());
+                addToResultSet(miningField.getName(), miningField.getDataType(), miningField.getAllowedValues());
+                addToResultVariables(miningField.getName(), miningField.getDataType(), miningField.getAllowedValues());
             } else {
                 final ObjectNode typeFieldNode = JsonUtil.objectNode();
                 String mappedType = getMappedType(miningField.getDataType());
@@ -111,12 +131,22 @@ public class PMMLOASResultImpl implements PMMLOASResult {
     }
 
     protected void addOutputFields(List<OutputField> toAdd) {
-        toAdd.forEach(outputField -> addToOutputSet(outputField.getName(), outputField.getDataType(), outputField.getAllowedValues()));
+        toAdd.forEach(outputField -> addToResultVariables(outputField.getName(), outputField.getDataType(),
+                                                          outputField.getAllowedValues()));
     }
 
-    protected void addToOutputSet(String fieldName, DATA_TYPE dataType, List<String> allowedValues) {
-        final ObjectNode outputSetNode = conditionallyCreateOutputSetNode();
-        final ObjectNode propertiesNode = (ObjectNode) outputSetNode.get(PROPERTIES);
+    protected void addToResultSet(String fieldName, DATA_TYPE dataType, List<String> allowedValues) {
+        final ObjectNode resultSetNode = conditionallyCreateResultSetNode();
+        addToSetNode(fieldName, dataType, allowedValues, resultSetNode);
+    }
+
+    protected void addToResultVariables(String fieldName, DATA_TYPE dataType, List<String> allowedValues) {
+        final ObjectNode resultVariablesNode = conditionallyCreateResultVariablesNode();
+        addToSetNode(fieldName, dataType, allowedValues, resultVariablesNode);
+    }
+
+    protected void addToSetNode(String fieldName, DATA_TYPE dataType, List<String> allowedValues, ObjectNode setNode) {
+        final ObjectNode propertiesNode = (ObjectNode) setNode.get(PROPERTIES);
         final ObjectNode typeFieldNode = JsonUtil.objectNode();
         String mappedType = getMappedType(dataType);
         typeFieldNode.set(TYPE, new TextNode(mappedType));
@@ -135,16 +165,35 @@ public class PMMLOASResultImpl implements PMMLOASResult {
         return (ArrayNode) parent.get(ENUM);
     }
 
-    protected ObjectNode conditionallyCreateOutputSetNode() {
+    protected ObjectNode conditionallyCreateResultSetNode() {
+        return conditionallyCreateSetNode(RESULT_SET);
+    }
+
+    protected ObjectNode conditionallyCreateResultVariablesNode() {
         final ObjectNode definitionsNode = (ObjectNode) jsonNodes.get(DEFINITIONS);
-        if (definitionsNode.get(OUTPUT_SET) == null) {
-            final ObjectNode outputSetNode = JsonUtil.objectNode();
-            definitionsNode.set(OUTPUT_SET, outputSetNode);
-            outputSetNode.set(TYPE, new TextNode(OBJECT));
-            final ObjectNode propertiesNode = JsonUtil.objectNode();
-            outputSetNode.set(PROPERTIES, propertiesNode);
+        final ObjectNode outputSetNode = (ObjectNode) definitionsNode.get(OUTPUT_SET);
+        final ObjectNode propertiesNode = (ObjectNode) outputSetNode.get(PROPERTIES);
+        if (propertiesNode.get(RESULT_VARIABLES) == null) {
+            createNode(propertiesNode, RESULT_VARIABLES);
         }
-        return (ObjectNode) definitionsNode.get(OUTPUT_SET);
+        return (ObjectNode) propertiesNode.get(RESULT_VARIABLES);
+    }
+
+    protected ObjectNode conditionallyCreateSetNode(String nodeToCreate) {
+        final ObjectNode definitionsNode = (ObjectNode) jsonNodes.get(DEFINITIONS);
+        if (definitionsNode.get(nodeToCreate) == null) {
+            createNode(definitionsNode, nodeToCreate);
+        }
+        return (ObjectNode) definitionsNode.get(nodeToCreate);
+    }
+
+    protected ObjectNode createNode(final ObjectNode parentNode, String nodeToCreate) {
+        final ObjectNode setNode = JsonUtil.objectNode();
+        parentNode.set(nodeToCreate, setNode);
+        setNode.set(TYPE, new TextNode(OBJECT));
+        final ObjectNode propertiesNode = JsonUtil.objectNode();
+        setNode.set(PROPERTIES, propertiesNode);
+        return (ObjectNode) parentNode.get(nodeToCreate);
     }
 
     public static class Builder {

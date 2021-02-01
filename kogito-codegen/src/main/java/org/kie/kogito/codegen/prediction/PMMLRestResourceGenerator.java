@@ -18,13 +18,12 @@ package org.kie.kogito.codegen.prediction;
 import java.net.URLEncoder;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
@@ -123,7 +122,20 @@ public class PMMLRestResourceGenerator {
     }
 
     void setPredictionModelName(ClassOrInterfaceDeclaration template) {
-        template.getMethodsByName("pmml").get(0)
+        setResultPredictionModelName(template);
+        setDescriptivePredictionModelName(template);
+    }
+
+    void setResultPredictionModelName(ClassOrInterfaceDeclaration template) {
+        setPredictionModelName(template.getMethodsByName("result").get(0));
+    }
+
+    void setDescriptivePredictionModelName(ClassOrInterfaceDeclaration template) {
+        setPredictionModelName(template.getMethodsByName("descriptive").get(0));
+    }
+
+    void setPredictionModelName(MethodDeclaration methodDeclaration) {
+        methodDeclaration
                 .getBody().orElseThrow(() -> new RuntimeException(""))
                 .getStatement(0).asExpressionStmt().getExpression()
                 .asVariableDeclarationExpr()
@@ -136,8 +148,29 @@ public class PMMLRestResourceGenerator {
     void setOASAnnotations(ClassOrInterfaceDeclaration template) {
         String jsonFile = String.format("%s.json", getSanitizedClassName(kiePMMLModel.getName()));
         String inputRef = String.format("/%s#/definitions/InputSet", jsonFile);
+        setResultOASAnnotations(template, jsonFile, inputRef);
+        setDescriptiveOASAnnotations(template, jsonFile, inputRef);
+    }
+
+    void setResultOASAnnotations(ClassOrInterfaceDeclaration template, String jsonFile, String inputRef) {
+        String outputRef = String.format("/%s#/definitions/ResultSet", jsonFile);
+        NodeList<AnnotationExpr> annotations = template.getMethodsByName("result").get(0)
+                .getAnnotations();
+        switch(context.name()) {
+            case "Quarkus":
+                setQuarkusOASAnnotations(annotations, inputRef, outputRef);
+                break;
+            case "Spring":
+                setSpringOASAnnotations(annotations, inputRef, outputRef);
+                break;
+            default:
+                // noop
+        }
+    }
+
+    void setDescriptiveOASAnnotations(ClassOrInterfaceDeclaration template, String jsonFile, String inputRef) {
         String outputRef = String.format("/%s#/definitions/OutputSet", jsonFile);
-        NodeList<AnnotationExpr> annotations = template.getMethodsByName("pmml").get(0)
+        NodeList<AnnotationExpr> annotations = template.getMethodsByName("descriptive").get(0)
                 .getAnnotations();
         switch(context.name()) {
             case "Quarkus":

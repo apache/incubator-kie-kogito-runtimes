@@ -21,6 +21,7 @@ public interface PMMLOASResult {
 
     String DEFINITIONS = "definitions";
     String INPUT_SET = "InputSet";
+    String RESULT_SET = "ResultSet";
     String OUTPUT_SET = "OutputSet";
     String REQUIRED = "required";
     String PROPERTIES = "properties";
@@ -29,7 +30,13 @@ public interface PMMLOASResult {
     String ENUM = "enum";
     String INTERVALS = "intervals";
     String OBJECT = "object";
+    String CORRELATION_ID = "correlationId";
+    String SEGMENTATION_ID = "segmentationId";
+    String SEGMENT_ID = "segmentId";
+    String SEGMENT_INDEX = "segmentIndex";
+    String RESULT_CODE = "resultCode";
+    String RESULT_OBJECT_NAME = "resultObjectName";
+    String RESULT_VARIABLES = "resultVariables";
 
     ObjectNode jsonSchemaNode();
-
 }

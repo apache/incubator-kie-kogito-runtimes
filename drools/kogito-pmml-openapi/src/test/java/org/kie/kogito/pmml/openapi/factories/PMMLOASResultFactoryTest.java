@@ -37,6 +37,8 @@ import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.OBJECT;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.OUTPUT_SET;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.PROPERTIES;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.REQUIRED;
+import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.RESULT_SET;
+import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.RESULT_VARIABLES;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.TYPE;
 
 class PMMLOASResultFactoryTest {
@@ -55,12 +57,15 @@ class PMMLOASResultFactoryTest {
         final JsonNode definitionsNode = jsonNodes.get(DEFINITIONS);
         assertFalse(definitionsNode.isEmpty());
         commonValidateInputSet(definitionsNode.get(INPUT_SET), miningFields);
-        assertNull(definitionsNode.get(OUTPUT_SET));
+        assertNull(definitionsNode.get(RESULT_SET));
+        assertNotNull(definitionsNode.get(OUTPUT_SET));
+        assertNull(definitionsNode.get(OUTPUT_SET).get(RESULT_VARIABLES));
     }
 
     @Test
     void getPMMLOASResultMiningFieldsNoOutputFields() {
         final List<MiningField> miningFields = getRandomMiningFields();
+        final List<MiningField> predictedFields = miningFields.stream().filter(PMMLOASResultImpl::isPredicted).collect(Collectors.toList());
         final List<OutputField> outputFields = Collections.emptyList();
         final KiePMMLModel kiePMMLModel = getKiePMMLModelInternal(miningFields, outputFields);
         final PMMLOASResult retrieved = PMMLOASResultFactory.getPMMLOASResult(kiePMMLModel);
@@ -72,12 +77,16 @@ class PMMLOASResultFactoryTest {
         final JsonNode definitionsNode = jsonNodes.get(DEFINITIONS);
         assertFalse(definitionsNode.isEmpty());
         commonValidateInputSet(definitionsNode.get(INPUT_SET), miningFields);
-        commonValidateOutputSet(definitionsNode.get(OUTPUT_SET), outputFields);
+        commonValidateResultSet(definitionsNode.get(RESULT_SET), predictedFields);
+        assertNotNull(definitionsNode.get(OUTPUT_SET));
+        assertNotNull(definitionsNode.get(OUTPUT_SET).get(PROPERTIES));
+        assertNotNull(definitionsNode.get(OUTPUT_SET).get(PROPERTIES).get(RESULT_VARIABLES));
     }
 
     @Test
     void getPMMLOASResultMiningFieldsOutputFields() {
         final List<MiningField> miningFields = getRandomMiningFields();
+        final List<MiningField> predictedFields = miningFields.stream().filter(PMMLOASResultImpl::isPredicted).collect(Collectors.toList());
         final List<OutputField> outputFields = getRandomOutputFields();
         outputFields.add(getRandomOutputField(miningFields.get(miningFields.size() - 1).getName()));
         final KiePMMLModel kiePMMLModel = getKiePMMLModelInternal(miningFields, outputFields);
@@ -90,7 +99,11 @@ class PMMLOASResultFactoryTest {
         final JsonNode definitionsNode = jsonNodes.get(DEFINITIONS);
         assertFalse(definitionsNode.isEmpty());
         commonValidateInputSet(definitionsNode.get(INPUT_SET), miningFields);
-        commonValidateOutputSet(definitionsNode.get(OUTPUT_SET), outputFields);
+        commonValidateResultSet(definitionsNode.get(RESULT_SET), predictedFields);
+        assertNotNull(definitionsNode.get(OUTPUT_SET));
+        assertNotNull(definitionsNode.get(OUTPUT_SET).get(PROPERTIES));
+        assertNotNull(definitionsNode.get(OUTPUT_SET).get(PROPERTIES).get(RESULT_VARIABLES));
+        commonValidateOutputSet(definitionsNode.get(OUTPUT_SET).get(PROPERTIES).get(RESULT_VARIABLES), outputFields);
     }
 
     private void commonValidateInputSet(final JsonNode toValidate, final List<MiningField> miningFields) {
@@ -110,6 +123,22 @@ class PMMLOASResultFactoryTest {
             assertNotNull(required);
         }
         for (MiningField miningField : active) {
+            JsonNode property = propertiesNode.get(miningField.getName());
+            assertNotNull(property);
+            final ObjectNode typeFieldNode = (ObjectNode) property;
+            assertNotNull(typeFieldNode.get(TYPE));
+            final TextNode typeNode = (TextNode) typeFieldNode.get(TYPE);
+            String mappedType = PMMLOASResultImpl.getMappedType(miningField.getDataType());
+            assertEquals(mappedType, typeNode.asText());
+        }
+    }
+
+    private void commonValidateResultSet(final JsonNode toValidate, final List<MiningField> miningFields) {
+        assertNotNull(toValidate);
+        assertEquals(OBJECT, toValidate.get(TYPE).asText());
+        assertNotNull(toValidate.get(PROPERTIES));
+        final ObjectNode propertiesNode = (ObjectNode) toValidate.get(PROPERTIES);
+        for (MiningField miningField : miningFields) {
             JsonNode property = propertiesNode.get(miningField.getName());
             assertNotNull(property);
             final ObjectNode typeFieldNode = (ObjectNode) property;
@@ -163,13 +192,24 @@ class PMMLOASResultFactoryTest {
     }
 
     private List<MiningField> getRandomMiningFields() {
-        return IntStream.range(0, 4).mapToObj(i -> getRandomMiningField()).collect(Collectors.toList());
+        List<MiningField> toReturn = IntStream.range(0, 4).mapToObj(i -> getRandomMiningField()).collect(Collectors.toList());
+        toReturn.add(getRandomMiningFieldTarget());
+        return toReturn;
     }
 
     private MiningField getRandomMiningField() {
         Random random = new Random();
         String fieldName = RandomStringUtils.random(6, true, false);
         FIELD_USAGE_TYPE fieldUsageType = FIELD_USAGE_TYPE.values()[random.nextInt(FIELD_USAGE_TYPE.values().length)];
+        OP_TYPE opType = OP_TYPE.values()[random.nextInt(OP_TYPE.values().length)];
+        DATA_TYPE dataType = DATA_TYPE.values()[random.nextInt(DATA_TYPE.values().length)];
+        return new MiningField(fieldName, fieldUsageType, opType, dataType, null, null, null);
+    }
+
+    private MiningField getRandomMiningFieldTarget() {
+        Random random = new Random();
+        String fieldName = RandomStringUtils.random(6, true, false);
+        FIELD_USAGE_TYPE fieldUsageType = FIELD_USAGE_TYPE.TARGET;
         OP_TYPE opType = OP_TYPE.values()[random.nextInt(OP_TYPE.values().length)];
         DATA_TYPE dataType = DATA_TYPE.values()[random.nextInt(DATA_TYPE.values().length)];
         return new MiningField(fieldName, fieldUsageType, opType, dataType, null, null, null);
