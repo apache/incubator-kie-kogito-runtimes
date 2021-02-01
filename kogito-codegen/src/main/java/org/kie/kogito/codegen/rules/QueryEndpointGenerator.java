@@ -31,7 +31,6 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.Name;
@@ -220,9 +219,9 @@ public class QueryEndpointGenerator implements FileGenerator {
             statements.addFirst(parseStatement("long startTime = System.nanoTime();"));
             statements.addBefore(parseStatement("long endTime = System.nanoTime();"), returnStmt);
             String endpoint = nameURL;
-            if (context.hasDI()){
+            if (context.hasDI()) {
                 Optional<String> path = context.getDependencyInjectionAnnotator().getEndpointValue(md);
-                if (path.isPresent()){
+                if (path.isPresent()) {
                     endpoint += path.get();
                 }
             }

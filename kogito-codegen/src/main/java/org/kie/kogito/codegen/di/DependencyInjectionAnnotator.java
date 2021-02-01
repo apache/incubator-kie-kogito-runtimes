@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -250,8 +249,8 @@ public interface DependencyInjectionAnnotator {
     /**
      * Gets the URI path template from the framework specific annotation
      *
-     * @param md the method declaration
+     * @param node The annotated node
      * @return The URI path template value if exists
      */
-    Optional<String> getEndpointValue(MethodDeclaration md);
+    <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node);
 }

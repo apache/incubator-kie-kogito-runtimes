@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
@@ -173,14 +172,13 @@ public class SpringDependencyInjectionAnnotator implements DependencyInjectionAn
     }
 
     @Override
-    public Optional<String> getEndpointValue(MethodDeclaration md) {
-        Optional<AnnotationExpr> path = md.getAnnotationByName("PostMapping");
-        if (path.isPresent()) {
-            Optional<MemberValuePair> value = path.get().asNormalAnnotationExpr().getPairs().stream().filter(x -> x.getName().asString().equals("value")).findFirst();
-            if (value.isPresent()) {
-                return Optional.of(value.get().getValue().asStringLiteralExpr().asString());
-            }
-        }
-        return Optional.empty();
+    public <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node) {
+        Optional<AnnotationExpr> path = node.getAnnotationByName("PostMapping");
+        return path
+                .flatMap(p -> p.asNormalAnnotationExpr()
+                        .getPairs()
+                        .stream()
+                        .filter(x -> "value".equals(x.getName().asString())).findFirst())
+                .map(value -> value.getValue().asStringLiteralExpr().asString());
     }
 }
