@@ -9,7 +9,7 @@ pipeline {
         jdk 'kie-jdk11'
     }
     parameters {
-        string(description: 'The deployment URL', name: 'KIE_GROUP_DEPLOYMENT_REPO_URL')
+        string(description: 'The deployment URL', name: 'KOGITO_DEPLOYMENT_REPO_URL')
         booleanParam(description: 'Skip Tests? True as default', name: 'SKIP_TESTS', defaultValue: true)
         string(description: 'The UMB message version', name: 'UMB_VERSION', defaultValue: 'master')
         string(description: 'The product version', name: 'PRODUCT_VERSION')
@@ -60,26 +60,76 @@ pipeline {
         stage('Generate Properties Files') {
             steps {
                 script {
-                    println "TODO"
+                    def PME_BUILD_VARIABLES = env.PME_BUILD_VARIABLES.split(";").collect{ it.split("=")}.inject([:]) {map, item -> map << [(item.length == 2 ? item[0] : null): (item.length == 2 ? item[1] : null)]}
+
+                    build job: env.KOGITO_PROPERTIES_GENERATOR_PATH, parameters: [
+                        [$class: 'BooleanParameterValue', name: 'IS_PROD', value: false],
+                        [$class: 'StringParameterValue', name: 'BRANCH_NAME', value: env.BRANCH_NAME],
+                        [$class: 'StringParameterValue', name: 'KOGITO_PRODUCT_VERSION', value: env.PRODUCT_VERSION],
+                        [$class: 'StringParameterValue', name: 'OPTAPLANNER_PRODUCT_VERSION', value: env.OPTAPLANNER_PRODUCT_VERSIONPRODUCT_VERSION],
+                        [$class: 'StringParameterValue', name: 'TIME_STAMP', value: "${PME_BUILD_VARIABLES['datetimeSuffix']}"]
+                    ]
                 }
             }
         }
         stage('Upload Files to repository') {
             steps {
                 script {
-                    println "TODO"
+                    echo "[INFO] Start uploading ${env.WORKSPACE}/deployDirectory"
+                    dir("${env.WORKSPACE}/deployDirectory") {
+                        withCredentials([usernameColonPassword(credentialsId: "${env.NIGHTLY_DEPLOYMENT_CREDENTIAL}", variable: 'deploymentCredentials')]) {
+                            sh "zip -r kogito ."
+                            sh "curl --upload-file kogito.zip -u $deploymentCredentials -v ${KOGITO_DEPLOYMENT_REPO_URL}"
+                        }
+                    }
                 }
             }
         }
         stage ("Send UMB Message to QE.") {
             steps {
                 script {
-                    println "TODO"
+                    echo "[INFO] Sending KOGITO UMB message to QE."
+                    def PME_BUILD_VARIABLES = env.PME_BUILD_VARIABLES.split(";").collect{ it.split("=")}.inject([:]) {map, item -> map << [(item.length == 2 ? item[0] : null): (item.length == 2 ? item[1] : null)]}
+
+                    def propertiesFileUrl = "${env.STAGING_SERVER_URL}/kogito/KOGITO-${PME_BUILD_VARIABLES['productVersion']}.${PME_BUILD_VARIABLES['milestone']}/kogito-${PME_BUILD_VARIABLES['datetimeSuffix']}.properties"
+                    def topic = "VirtualTopic.qe.ci.ba.kogito.${env.UMB_VERSION}.nightly.trigger"
+                    def eventType = "kogito-${env.UMB_VERSION}-nightly-qe-trigger"
+
+                    echo "[INFO] Message Body: ${propertiesFileUrl}"
+                    echo "[INFO] Topic: ${topic}"
+                    echo "[INFO] Event Type: ${eventType}"
+                    build job: env.SEND_UMB_MESSAGE_JOB_PATH, parameters: [
+                            [$class: 'StringParameterValue', name: 'MESSAGE_BODY', value: propertiesFileUrl],
+                            [$class: 'StringParameterValue', name: 'TOPIC', value: topic],
+                            [$class: 'StringParameterValue', name: 'EVENT_TYPE', value: eventType]
+                    ]
+                    echo "[SUCCESS] Message was successfully sent."
                 }
             }
         }
     }
     post {
+        failure {
+            emailext body: 'Kogito ${PRODUCT_VERSION}:nightly-build #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\n' +
+                    'Please look here: ${BUILD_URL} \n' +
+                    ' \n' +
+                    '${BUILD_LOG, maxLines=750}', subject: '${PRODUCT_VERSION}:nightly-build #${BUILD_NUMBER}: ' + "${currentBuild.currentResult}", to: 'kie-jenkins-builds@redhat.com'
+        }
+        unstable {
+            emailext body: 'Kogito ${PRODUCT_VERSION}:nightly-build #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\n' +
+                    'Please look here: ${BUILD_URL} \n' +
+                    ' \n' +
+                    'Failed tests: ${BUILD_URL}/testReport \n' +
+                    ' \n' +
+                    '${BUILD_LOG, maxLines=750}', subject: '${PRODUCT_VERSION}:nightly-build #${BUILD_NUMBER}: ' + "${currentBuild.currentResult}", to: 'kie-jenkins-builds@redhat.com'
+        }
+        fixed {
+            emailext body: 'Kogito ${PRODUCT_VERSION}:nightly-build #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\n' +
+                    'Please look here: ${BUILD_URL}', subject: '${PRODUCT_VERSION}:nightly-build #${BUILD_NUMBER}: ' + "${currentBuild.currentResult}", to: 'kie-jenkins-builds@redhat.com'
+        }
+        always {
+            archiveArtifacts artifacts: '**/*.maven.log', fingerprint: false, defaultExcludes: true, caseSensitive: true, allowEmptyArchive: true
+        }
         cleanup {
             cleanWs()
         }
