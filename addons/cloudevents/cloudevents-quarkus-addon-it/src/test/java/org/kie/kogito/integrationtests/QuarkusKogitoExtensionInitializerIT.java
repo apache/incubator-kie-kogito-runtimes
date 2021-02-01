@@ -1,4 +1,4 @@
-/**
+/*
  *  Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.kie.kogito;
+package org.kie.kogito.integrationtests;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
-public class KogitoExtensionInitializerIT {
+public class QuarkusKogitoExtensionInitializerIT {
 
     @Test
     public void test() {
