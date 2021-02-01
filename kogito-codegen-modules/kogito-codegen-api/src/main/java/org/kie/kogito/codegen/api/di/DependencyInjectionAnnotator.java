@@ -253,5 +253,5 @@ public interface DependencyInjectionAnnotator {
      * @param md the method declaration
      * @return The URI path template value if exists
      */
-    Optional<String> getEndpointValue(MethodDeclaration md);
+    <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node);
 }
