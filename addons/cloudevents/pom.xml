@@ -32,9 +32,10 @@
 
   <modules>
     <module>cloudevents-utils</module>
-    <module>cloudevents-quarkus-addon</module>
-    <module>cloudevents-spring-boot-addon</module>
     <module>cloudevents-common-addon</module>
+    <module>cloudevents-quarkus-addon</module>
+    <module>cloudevents-quarkus-addon-it</module>
+    <module>cloudevents-spring-boot-addon</module>
   </modules>
 
 </project>
