@@ -176,12 +176,9 @@ public class SpringDependencyInjectionAnnotator implements DependencyInjectionAn
     @Override
     public Optional<String> getEndpointValue(MethodDeclaration md) {
         Optional<AnnotationExpr> path = md.getAnnotationByName("PostMapping");
-        if (path.isPresent()) {
-            Optional<MemberValuePair> value = path.get().asNormalAnnotationExpr().getPairs().stream().filter(x -> x.getName().asString().equals("value")).findFirst();
-            if (value.isPresent()) {
-                return Optional.of(value.get().getValue().asStringLiteralExpr().asString());
-            }
-        }
-        return Optional.empty();
+        return path.flatMap(p -> p.asNormalAnnotationExpr().getPairs().stream()
+            .filter(x -> "value".equals(x.getName().asString()).findFirst())
+        )
+        .map(value -> value.getValue().asStringLiteralExpr().asString());
     }
 }
