@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.kie.api.event.process.MessageEvent;
 import org.kie.api.event.process.ProcessCompletedEvent;
+import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
@@ -50,7 +51,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
     public KogitoProcessEventSupport() {
     }
 
-    @Override
     public void fireBeforeProcessStarted(final ProcessInstance instance, KieRuntime kruntime ) {
         final ProcessStartedEvent event = new ProcessStartedEventImpl(instance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -60,7 +60,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireAfterProcessStarted(final ProcessInstance instance, KieRuntime kruntime) {
         final ProcessStartedEvent event = new ProcessStartedEventImpl(instance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -70,7 +69,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireBeforeProcessCompleted(final ProcessInstance instance, KieRuntime kruntime) {
         final ProcessCompletedEvent event = new ProcessCompletedEventImpl(instance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -80,7 +78,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireAfterProcessCompleted(final ProcessInstance instance, KieRuntime kruntime) {
         final ProcessCompletedEvent event = new ProcessCompletedEventImpl(instance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -90,7 +87,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireBeforeNodeTriggered(final NodeInstance nodeInstance, KieRuntime kruntime) {
         final ProcessNodeTriggeredEvent event = new KogitoProcessNodeTriggeredEventImpl(nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -100,7 +96,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireAfterNodeTriggered(final NodeInstance nodeInstance, KieRuntime kruntime) {
         final ProcessNodeTriggeredEvent event = new KogitoProcessNodeTriggeredEventImpl(nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -110,7 +105,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireBeforeNodeLeft(final NodeInstance nodeInstance, KieRuntime kruntime) {
         final ProcessNodeLeftEvent event = new KogitoProcessNodeLeftEventImpl(nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -120,7 +114,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireAfterNodeLeft(final NodeInstance nodeInstance, KieRuntime kruntime) {
         final ProcessNodeLeftEvent event = new KogitoProcessNodeLeftEventImpl(nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -156,7 +149,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireBeforeSLAViolated(final ProcessInstance instance, KieRuntime kruntime ) {
         final SLAViolatedEvent event = new SLAViolatedEventImpl(instance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -166,7 +158,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireAfterSLAViolated(final ProcessInstance instance, KieRuntime kruntime) {
         final SLAViolatedEvent event = new SLAViolatedEventImpl(instance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -176,7 +167,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireBeforeSLAViolated(final ProcessInstance instance, NodeInstance nodeInstance, KieRuntime kruntime ) {
         final SLAViolatedEvent event = new SLAViolatedEventImpl(instance, nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -186,7 +176,6 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
         }));
     }
 
-    @Override
     public void fireAfterSLAViolated(final ProcessInstance instance, NodeInstance nodeInstance, KieRuntime kruntime) {
         final SLAViolatedEvent event = new SLAViolatedEventImpl(instance, nodeInstance, kruntime);
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
@@ -213,26 +202,22 @@ public class KogitoProcessEventSupport extends AbstractEventSupport<KogitoProces
                 }
             }));
     }
-    
-    public void fireOnSignal(final ProcessInstance instance, NodeInstance nodeInstance, String signalName, String signalObject, KieRuntime kruntime) {
-        final SignalEvent event = new KogitoSignalEvent(instance, kruntime, nodeInstance, signalName, signalObject);
-        unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
-            if ( hasListeners() ) {
-                notifyAllListeners( event, ( l, e1 ) -> l.onSignal( e1 ) );
-            }
-        }));
-    }
-    
-    public void fireOnMessage(final ProcessInstance instance, NodeInstance nodeInstance, String messageName, String messageObject, KieRuntime kruntime) {
-        final MessageEvent event = new KogitoMessageEvent(instance,kruntime, nodeInstance, messageName, messageObject);
-        unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
-            if ( hasListeners() ) {
-                notifyAllListeners( event, ( l, e1 ) -> l.onMessage( e1 ) );
-            }
-        }));
+
+    public void fireOnSignal(final ProcessInstance instance, NodeInstance nodeInstance, KieRuntime kruntime, String signalName, Object signalObject) {
+        if (hasListeners()) {
+            final SignalEvent event = new SignalEventImpl(instance, kruntime, nodeInstance, signalName, signalObject);
+            notifyAllListeners(event, ProcessEventListener::onSignal);
+        }
     }
 
-    @Override
+    public void fireOnMessage(final ProcessInstance instance, NodeInstance nodeInstance, KieRuntime kruntime, String messageName, Object messageObject) {
+        if (hasListeners()) {
+            final MessageEvent event = new MessageEventImpl(instance, kruntime, nodeInstance, messageName,
+                    messageObject);
+            notifyAllListeners(event, ProcessEventListener::onMessage);
+        }
+    }
+
     public void reset() {
         this.clear();
     }

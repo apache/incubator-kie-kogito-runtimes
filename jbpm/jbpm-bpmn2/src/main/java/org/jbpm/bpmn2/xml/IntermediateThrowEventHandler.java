@@ -370,12 +370,8 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
         }
 	}
 
-<<<<<<< HEAD
 	@Override
-    public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
-=======
 	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
->>>>>>> [KOGITO-4323] Kie/Kogito API unfork
 		throw new IllegalArgumentException(
 				"Writing out should be handled by action node handler");
 	}
