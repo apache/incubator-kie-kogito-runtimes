@@ -176,8 +176,8 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
     }
 
     @Override
-    public Optional<String> getEndpointValue(MethodDeclaration md) {
-        Optional<AnnotationExpr> path = md.getAnnotationByName("Path");
+    public <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node) {
+        Optional<AnnotationExpr> path = node.getAnnotationByName("Path");
         return path.map(annotationExpr -> annotationExpr.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString());
     }
 }

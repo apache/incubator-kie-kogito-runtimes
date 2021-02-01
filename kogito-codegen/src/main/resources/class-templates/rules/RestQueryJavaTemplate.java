@@ -30,6 +30,7 @@ public class $unit$Query$name$Endpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     public List<$ReturnType$> executeQuery($UnitTypeDTO$ unitDTO) {
         RuleUnitInstance<$UnitType$> instance = ruleUnit.createInstance();
+        // Do not return the result directly to allow post execution codegen (like monitoring)
         List<$ReturnType$> response = instance.executeQuery($unit$Query$name$.class);
         return response;
     }
