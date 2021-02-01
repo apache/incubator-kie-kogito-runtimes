@@ -26,7 +26,7 @@ import org.kie.kogito.rules.RuleUnitConfig;
 
 public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescription {
 
-    private final Map<String, RuleUnitVariable> varDeclarations = new HashMap<>();
+    private final Map<String, KogitoRuleUnitVariable> varDeclarations = new HashMap<>();
     private RuleUnitConfig config;
 
     @Override
@@ -61,7 +61,7 @@ public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescr
     }
 
     @Override
-    public Collection<RuleUnitVariable> getUnitVarDeclarations() {
+    public Collection<KogitoRuleUnitVariable> getUnitVarDeclarations() {
         return varDeclarations.values();
     }
 
@@ -71,7 +71,7 @@ public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescr
         return ruleUnitVariable != null && ruleUnitVariable.isDataSource();
     }
 
-    protected void putRuleUnitVariable(RuleUnitVariable varDeclaration) {
+    protected void putRuleUnitVariable(KogitoRuleUnitVariable varDeclaration) {
         varDeclarations.put(varDeclaration.getName(), varDeclaration);
     }
 
@@ -79,6 +79,7 @@ public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescr
         this.config = config;
     }
 
+    @Override
     public RuleUnitConfig getConfig() {
         return config;
     }

@@ -102,8 +102,7 @@ public class MigrateProcessInstanceCommand implements ExecutableCommand<Void>, K
             throw new IllegalArgumentException("Null process id");
         }
 
-        // TODO
-        WorkflowProcess process = null; // (WorkflowProcess) runtime.getKieBase().getProcess(processId);
+        WorkflowProcess process = (WorkflowProcess) runtime.getKieBase().getProcess(processId);
         if (process == null) {
             throw new IllegalArgumentException("Could not find process " + processId);
         }

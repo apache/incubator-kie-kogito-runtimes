@@ -71,7 +71,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
         Set<VariableInstanceEventBody> variables = new LinkedHashSet<>();
 
         for (ProcessEvent event : rawEvents) {
-            ProcessInstanceEventBody body = processInstances.computeIfAbsent( KogitoProcessInstance.adapt(event.getProcessInstance()).getStringId(), key -> create(event));
+            ProcessInstanceEventBody body = processInstances.computeIfAbsent( ((KogitoProcessInstance) event.getProcessInstance()).getStringId(), key -> create(event));
 
             if (event instanceof ProcessNodeTriggeredEvent) {
                 handleProcessNodeTriggeredEvent((ProcessNodeTriggeredEvent) event, body);
@@ -215,7 +215,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
     }
 
     protected VariableInstanceEventBody create(KogitoProcessVariableChangedEvent event) {
-        KogitoProcessInstance pi = KogitoProcessInstance.adapt( event.getProcessInstance() );
+        KogitoProcessInstance pi = (KogitoProcessInstance) event.getProcessInstance();
 
         VariableInstanceEventBody.Builder eventBuilder = VariableInstanceEventBody.create()
                 .changeDate(event.getEventDate())

@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.rules.units;
+package org.kie.kogito.process.event;
 
-import java.util.Collection;
+import org.kie.api.event.process.DefaultProcessEventListener;
 
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.rules.RuleUnitConfig;
-
-public interface KogitoRuleUnitDescription extends RuleUnitDescription {
-
-    @Override
-    Collection<KogitoRuleUnitVariable> getUnitVarDeclarations();
-
-    KogitoRuleUnitVariable getVar(String name);
-
-    RuleUnitConfig getConfig();
+public class DefaultKogitoProcessEventListener extends DefaultProcessEventListener implements KogitoProcessEventListener {
 }

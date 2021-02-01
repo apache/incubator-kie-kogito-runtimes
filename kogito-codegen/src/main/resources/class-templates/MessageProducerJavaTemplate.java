@@ -27,7 +27,7 @@ public class MessageProducer {
                                    e -> new $DataEventType$("",
                                                             e,
                                                             pi.getId(),
-                                                            pi.getParentProcessInstanceId(),
+                                                            pi.getParentProcessInstanceStringId(),
                                                             pi.getRootProcessInstanceId(),
                                                             pi.getProcessId(),
                                                             pi.getRootProcessId(),

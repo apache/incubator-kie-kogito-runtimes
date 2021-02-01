@@ -17,7 +17,6 @@
 package org.kie.kogito.process.runtime;
 
 import java.util.Date;
-import java.util.Map;
 
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.WorkItem;
@@ -83,100 +82,5 @@ public interface KogitoWorkItem extends WorkItem {
      */
     default boolean enforce( Policy<?>...policies) {
         return true;
-    }
-
-    static KogitoWorkItem adapt( WorkItem workItem ) {
-        return workItem instanceof KogitoProcessInstance ?
-                ( KogitoWorkItem ) workItem :
-                new KogitoWorkItemAdapter( workItem );
-    }
-
-    class KogitoWorkItemAdapter implements KogitoWorkItem {
-
-        private final WorkItem delegate;
-
-        public KogitoWorkItemAdapter( WorkItem delegate ) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public long getId() {
-            return delegate.getId();
-        }
-
-        @Override
-        public String getName() {
-            return delegate.getName();
-        }
-
-        @Override
-        public int getState() {
-            return delegate.getState();
-        }
-
-        @Override
-        public Object getParameter( String s ) {
-            return delegate.getParameter( s );
-        }
-
-        @Override
-        public Map<String, Object> getParameters() {
-            return delegate.getParameters();
-        }
-
-        @Override
-        public Object getResult( String s ) {
-            return delegate.getResult( s );
-        }
-
-        @Override
-        public Map<String, Object> getResults() {
-            return delegate.getResults();
-        }
-
-        @Override
-        public long getProcessInstanceId() {
-            return delegate.getProcessInstanceId();
-        }
-
-        @Override
-        public String getStringId() {
-            return "" + getId();
-        }
-
-        @Override
-        public String getProcessInstanceStringId() {
-            return "" + getProcessInstanceId();
-        }
-
-        @Override
-        public String getPhaseId() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getPhaseStatus() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Date getStartDate() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Date getCompleteDate() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public NodeInstance getNodeInstance() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public KogitoProcessInstance getProcessInstance() {
-            throw new UnsupportedOperationException();
-        }
     }
 }

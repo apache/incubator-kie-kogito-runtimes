@@ -21,10 +21,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.drools.core.event.KogitoProcessEventSupport;
+import org.drools.core.process.instance.WorkItem;
 import org.jbpm.process.instance.impl.workitem.Abort;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
@@ -76,7 +78,9 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
             handler.executeWorkItem(workItem, this);
 
             eventSupport.fireAfterWorkItemTransition(processInstance, workItem, transition, null);
-        } else throw new KogitoWorkItemHandlerNotFoundException(workItem.getName() );
+        } else {
+            throw new KogitoWorkItemHandlerNotFoundException(workItem.getName() );
+        }
     }    
 
     public void internalAddWorkItem( KogitoWorkItem workItem) {
@@ -245,7 +249,12 @@ public class LightWorkItemManager implements KogitoWorkItemManager {
        }
         
     }
-    
+
+    @Override
+    public Set<WorkItem> getWorkItems() {
+        throw new UnsupportedOperationException();
+    }
+
     private static class TransitionToActive implements Transition<Void> {
 
         @Override

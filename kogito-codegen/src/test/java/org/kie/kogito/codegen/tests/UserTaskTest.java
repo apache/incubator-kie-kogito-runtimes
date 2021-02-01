@@ -25,29 +25,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.ws.rs.Path;
 
+import javax.ws.rs.Path;
 import org.jbpm.process.instance.impl.humantask.HumanTaskTransition;
 import org.jbpm.process.instance.impl.humantask.phases.Claim;
 import org.jbpm.process.instance.impl.humantask.phases.Release;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
 import org.junit.jupiter.api.Test;
-import org.kie.api.event.process.DefaultProcessEventListener;
-import org.kie.api.event.process.ProcessWorkItemTransitionEvent;
-import org.kie.api.runtime.process.WorkItemNotFoundException;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.data.Person;
+import org.kie.kogito.event.process.ProcessWorkItemTransitionEvent;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.VariableViolationException;
 import org.kie.kogito.process.WorkItem;
+import org.kie.kogito.process.event.DefaultKogitoProcessEventListener;
+import org.kie.kogito.process.runtime.WorkItemNotFoundException;
 import org.kie.kogito.process.workitem.InvalidTransitionException;
 import org.kie.kogito.process.workitem.NotAuthorizedException;
 import org.kie.kogito.process.workitem.Policy;
@@ -69,10 +69,10 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");
         assertThat(app).isNotNull();
         final List<String> workItemTransitionEvents = new ArrayList<>();
-        app.config().get(ProcessConfig.class).processEventListeners().listeners().add(new DefaultProcessEventListener() {
+        app.config().get(ProcessConfig.class).processEventListeners().listeners().add(new DefaultKogitoProcessEventListener() {
 
             @Override
-            public void beforeWorkItemTransition(ProcessWorkItemTransitionEvent event) {
+            public void beforeWorkItemTransition( ProcessWorkItemTransitionEvent event) {
                 workItemTransitionEvents.add("BEFORE:: " + event);
             }
 
@@ -265,7 +265,7 @@ public class UserTaskTest extends AbstractCodegenTest {
         Application app = generateCodeProcessesOnly("usertask/UserTasksProcess.bpmn2");
         assertThat(app).isNotNull();
         final List<String> workItemTransitionEvents = new ArrayList<>();
-        app.config().get(ProcessConfig.class).processEventListeners().listeners().add(new DefaultProcessEventListener() {
+        app.config().get(ProcessConfig.class).processEventListeners().listeners().add(new DefaultKogitoProcessEventListener() {
 
             @Override
             public void beforeWorkItemTransition(ProcessWorkItemTransitionEvent event) {
@@ -358,7 +358,7 @@ public class UserTaskTest extends AbstractCodegenTest {
         // if user that is not authorized to work on work item both listing and getting by id should apply it
         List<WorkItem> securedWorkItems = processInstance.workItems(SecurityPolicy.of(identity));
         assertEquals(0, securedWorkItems.size());
-        assertThrows(WorkItemNotFoundException.class, () -> processInstance.workItem(wiId, SecurityPolicy.of(identity)));
+        assertThrows( WorkItemNotFoundException.class, () -> processInstance.workItem(wiId, SecurityPolicy.of(identity)));
 
         assertThrows(NotAuthorizedException.class, () ->
                 processInstance.transitionWorkItem(wiId, new HumanTaskTransition(Claim.ID, null, identity)));

@@ -38,7 +38,7 @@ public class KogitoProcessWorkItemTransitionEventImpl extends ProcessEvent imple
     }
 
     public String toString() {
-        return "==>[WorkItemTransition(id=" + getWorkItem().getId() + " phase=" + getTransition().phase() + ")]";
+        return "==>[WorkItemTransition(id=" + getWorkItem().getStringId() + " phase=" + getTransition().phase() + ")]";
     }
 
     @Override

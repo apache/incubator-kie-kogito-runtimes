@@ -26,7 +26,6 @@ import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.definitions.rule.impl.RuleImpl;
-import org.drools.core.event.KogitoProcessEventSupport;
 import org.drools.core.event.ProcessEventSupport;
 import org.drools.core.phreak.PropagationEntry;
 import org.drools.core.time.TimeUtils;
@@ -42,7 +41,6 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
-import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
@@ -57,7 +55,6 @@ import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessJobDescription;
-import org.kie.kogito.process.event.KogitoProcessEventListener;
 import org.kie.kogito.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.runtime.KogitoWorkItemManager;
@@ -65,7 +62,7 @@ import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.services.jobs.impl.InMemoryJobService;
 
-public class LightProcessRuntime implements InternalProcessRuntime {
+public class LightProcessRuntime extends AbstractProcessRuntime {
 
     private ProcessRuntimeContext runtimeContext;
     private final InternalKnowledgeRuntime knowledgeRuntime;
@@ -73,7 +70,6 @@ public class LightProcessRuntime implements InternalProcessRuntime {
     private ProcessInstanceManager processInstanceManager;
     private SignalManager signalManager;
     private JobsService jobService;
-    private KogitoProcessEventSupport processEventSupport;
     private final KogitoWorkItemManager workItemManager;
     private UnitOfWorkManager unitOfWorkManager;
 
@@ -287,22 +283,6 @@ public class LightProcessRuntime implements InternalProcessRuntime {
                 }
             }
         }
-    }
-
-    public KogitoProcessEventSupport getProcessEventSupport() {
-        return processEventSupport;
-    }
-
-    public void addEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.addEventListener(( KogitoProcessEventListener ) listener);
-    }
-
-    public void removeEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.removeEventListener(( KogitoProcessEventListener ) listener);
-    }
-
-    public List<ProcessEventListener> getProcessEventListeners() {
-        return (List<ProcessEventListener>) (Object) processEventSupport.getEventListeners();
     }
 
     private class StartProcessEventListener implements EventListener {

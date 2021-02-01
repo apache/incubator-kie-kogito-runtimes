@@ -51,6 +51,7 @@ import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.NodeInstanceContainer;
+import org.kie.kogito.process.runtime.KogitoNode;
 import org.kie.kogito.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.process.runtime.KogitoNodeInstanceContainer;
 import org.slf4j.Logger;
@@ -438,7 +439,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     
     public void triggerNode(long nodeId, boolean fireEvents) {
     	org.jbpm.workflow.instance.NodeInstance nodeInstance = ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer())
-            .getNodeInstance(getNode().getNodeContainer().getNode(nodeId));
+            .getNodeInstance( (( KogitoNode ) getNode()).getParentContainer().getNode(nodeId));
     	triggerNodeInstance(nodeInstance, JbpmNode.CONNECTION_DEFAULT_TYPE, fireEvents);
     }
     

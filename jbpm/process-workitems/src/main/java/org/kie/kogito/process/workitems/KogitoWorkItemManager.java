@@ -36,6 +36,8 @@ public interface KogitoWorkItemManager extends org.drools.core.process.instance.
 
     void retryWorkItem( String workItemID, Map<String, Object> params ) ;
 
+    Set<WorkItem> getWorkItems();
+
     @Override
     default void internalExecuteWorkItem( org.drools.core.process.instance.WorkItem workItem ) {
         throw new UnsupportedOperationException();
@@ -48,11 +50,6 @@ public interface KogitoWorkItemManager extends org.drools.core.process.instance.
 
     @Override
     default void internalAbortWorkItem( long l ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    default Set<WorkItem> getWorkItems() {
         throw new UnsupportedOperationException();
     }
 

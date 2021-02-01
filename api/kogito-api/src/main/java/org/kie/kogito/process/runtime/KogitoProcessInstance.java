@@ -18,7 +18,6 @@ package org.kie.kogito.process.runtime;
 
 import java.util.Map;
 
-import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.process.event.KogitoEventListener;
 
@@ -71,94 +70,4 @@ public interface KogitoProcessInstance extends ProcessInstance, KogitoEventListe
      * @return the process instance description
      */
     String getDescription();
-
-    static KogitoProcessInstance adapt(ProcessInstance processInstance) {
-        return processInstance instanceof KogitoProcessInstance ?
-                ( KogitoProcessInstance ) processInstance :
-                new KogitoProcessInstanceAdapter( processInstance );
-    }
-
-    class KogitoProcessInstanceAdapter implements KogitoProcessInstance {
-
-        private final ProcessInstance delegate;
-
-        public KogitoProcessInstanceAdapter( ProcessInstance delegate ) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public String getProcessId() {
-            return delegate.getProcessId();
-        }
-
-        @Override
-        public Process getProcess() {
-            return delegate.getProcess();
-        }
-
-        @Override
-        public long getId() {
-            return delegate.getId();
-        }
-
-        @Override
-        public String getProcessName() {
-            return delegate.getProcessName();
-        }
-
-        @Override
-        public int getState() {
-            return delegate.getState();
-        }
-
-        @Override
-        public long getParentProcessInstanceId() {
-            return delegate.getParentProcessInstanceId();
-        }
-
-        @Override
-        public void signalEvent( String s, Object o ) {
-            delegate.signalEvent( s, o );
-        }
-
-        @Override
-        public String[] getEventTypes() {
-            return delegate.getEventTypes();
-        }
-
-        @Override
-        public String getStringId() {
-            return "" + getId();
-        }
-
-        @Override
-        public String getParentProcessInstanceStringId() {
-            return "" + getParentProcessInstanceId();
-        }
-
-        @Override
-        public String getRootProcessInstanceId() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getRootProcessId() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Map<String, Object> getVariables() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getReferenceId() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getDescription() {
-            throw new UnsupportedOperationException();
-        }
-    }
 }

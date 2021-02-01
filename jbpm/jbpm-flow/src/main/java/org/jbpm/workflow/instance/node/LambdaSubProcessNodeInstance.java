@@ -71,7 +71,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     public void internalTrigger( KogitoNodeInstance from, String type) {
     	super.internalTrigger(from, type);
     	// if node instance was cancelled, abort
-		if (getNodeInstanceContainer().getNodeInstance(getId()) == null) {
+		if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
 			return;
 		}
         if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
@@ -86,7 +86,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         org.kie.kogito.process.ProcessInstance<?> processInstance = subProcessFactory.createInstance(o);
  
         org.kie.api.runtime.process.ProcessInstance pi = ((AbstractProcessInstance<?>)processInstance).internalGetProcessInstance();
-        ((ProcessInstanceImpl) pi).setMetaData("ParentProcessInstanceId", getProcessInstance().getId());
+        ((ProcessInstanceImpl) pi).setMetaData("ParentProcessInstanceId", getProcessInstance().getStringId());
         ((ProcessInstanceImpl) pi).setMetaData("ParentNodeInstanceId", getUniqueId());
         ((ProcessInstanceImpl) pi).setMetaData("ParentNodeId", getSubProcessNode().getUniqueId());
         ((ProcessInstanceImpl) pi).setParentProcessInstanceId(getProcessInstance().getStringId());

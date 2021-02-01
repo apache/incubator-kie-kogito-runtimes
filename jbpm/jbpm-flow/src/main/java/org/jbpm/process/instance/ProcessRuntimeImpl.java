@@ -18,7 +18,6 @@ package org.jbpm.process.instance;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,6 @@ import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.event.KogitoProcessEventSupport;
-import org.drools.core.event.ProcessEventSupport;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.phreak.PropagationEntry;
 import org.drools.core.time.TimeUtils;
@@ -50,15 +48,6 @@ import org.kie.api.KieBase;
 import org.kie.api.command.ExecutableCommand;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
-import org.kie.api.event.process.MessageEvent;
-import org.kie.api.event.process.ProcessCompletedEvent;
-import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessStartedEvent;
-import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.api.event.process.SLAViolatedEvent;
-import org.kie.api.event.process.SignalEvent;
 import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
@@ -77,7 +66,6 @@ import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessJobDescription;
-import org.kie.kogito.process.event.KogitoProcessEventListener;
 import org.kie.kogito.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
@@ -86,13 +74,12 @@ import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.services.jobs.impl.InMemoryJobService;
 
-public class ProcessRuntimeImpl implements InternalProcessRuntime {
+public class ProcessRuntimeImpl extends AbstractProcessRuntime {
 
     private InternalKnowledgeRuntime kruntime;
     private ProcessInstanceManager processInstanceManager;
     private SignalManager signalManager;
     private JobsService jobService;
-    private KogitoProcessEventSupport processEventSupport;
     private UnitOfWorkManager unitOfWorkManager;
 
     private final KogitoProcessRuntimeImpl kogitoProcessRuntime = new KogitoProcessRuntimeImpl( this );
@@ -109,7 +96,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         initSignalManager();
         unitOfWorkManager = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
         jobService = new InMemoryJobService(kogitoProcessRuntime, unitOfWorkManager);
-        processEventSupport = new KogitoProcessEventSupport(unitOfWorkManager);
+        this.processEventSupport = new KogitoProcessEventSupport(unitOfWorkManager);
         if (isActive()) {
             initProcessEventListeners();
             initStartTimers();
@@ -128,7 +115,7 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
         initSignalManager();
         unitOfWorkManager = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
         jobService = new InMemoryJobService(kogitoProcessRuntime, unitOfWorkManager);
-        processEventSupport = new KogitoProcessEventSupport(unitOfWorkManager);
+        this.processEventSupport = new KogitoProcessEventSupport(unitOfWorkManager);
         if (isActive()) {
             initProcessEventListeners();
             initStartTimers();
@@ -362,26 +349,6 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
                 }
             }
         }
-    }
-
-    public KogitoProcessEventSupport getProcessEventSupport() {
-        return processEventSupport;
-    }
-
-    public void setProcessEventSupport(ProcessEventSupport processEventSupport) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void addEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.addEventListener( asKogitoProcessEventListener( listener ) );
-    }
-
-    public void removeEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.removeEventListener( removeKogitoProcessEventListener( listener ) );
-    }
-
-    public List<ProcessEventListener> getProcessEventListeners() {
-        return (List<ProcessEventListener>) (Object) processEventSupport.getEventListeners();
     }
 
     private void initProcessActivationListener() {
@@ -632,99 +599,5 @@ public class ProcessRuntimeImpl implements InternalProcessRuntime {
             signalEvent(type, event);
         }
 
-    }
-
-    private final Map<ProcessEventListener, KogitoProcessEventListener> listenersMap = new IdentityHashMap<>();
-
-    private KogitoProcessEventListener asKogitoProcessEventListener( ProcessEventListener processEventListener) {
-        if (processEventListener instanceof KogitoProcessEventListener) {
-            return (( KogitoProcessEventListener ) processEventListener);
-        }
-        return listenersMap.computeIfAbsent( processEventListener, KogitoProcessEventListenerAdapter::new );
-    }
-
-    private KogitoProcessEventListener removeKogitoProcessEventListener( ProcessEventListener processEventListener) {
-        if (processEventListener instanceof KogitoProcessEventListener) {
-            return (( KogitoProcessEventListener ) processEventListener);
-        }
-        return listenersMap.remove( processEventListener );
-    }
-
-    static class KogitoProcessEventListenerAdapter implements KogitoProcessEventListener {
-        private final ProcessEventListener delegate;
-
-        KogitoProcessEventListenerAdapter( ProcessEventListener delegate ) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public void beforeProcessStarted( ProcessStartedEvent processStartedEvent ) {
-            delegate.beforeProcessStarted( processStartedEvent );
-        }
-
-        @Override
-        public void afterProcessStarted( ProcessStartedEvent processStartedEvent ) {
-            delegate.afterProcessStarted( processStartedEvent );
-        }
-
-        @Override
-        public void beforeProcessCompleted( ProcessCompletedEvent processCompletedEvent ) {
-            delegate.beforeProcessCompleted( processCompletedEvent );
-        }
-
-        @Override
-        public void afterProcessCompleted( ProcessCompletedEvent processCompletedEvent ) {
-            delegate.afterProcessCompleted( processCompletedEvent );
-        }
-
-        @Override
-        public void beforeNodeTriggered( ProcessNodeTriggeredEvent processNodeTriggeredEvent ) {
-            delegate.beforeNodeTriggered( processNodeTriggeredEvent );
-        }
-
-        @Override
-        public void afterNodeTriggered( ProcessNodeTriggeredEvent processNodeTriggeredEvent ) {
-            delegate.afterNodeTriggered( processNodeTriggeredEvent );
-        }
-
-        @Override
-        public void beforeNodeLeft( ProcessNodeLeftEvent processNodeLeftEvent ) {
-            delegate.beforeNodeLeft( processNodeLeftEvent );
-        }
-
-        @Override
-        public void afterNodeLeft( ProcessNodeLeftEvent processNodeLeftEvent ) {
-            delegate.afterNodeLeft( processNodeLeftEvent );
-        }
-
-        @Override
-        public void beforeVariableChanged( ProcessVariableChangedEvent processVariableChangedEvent ) {
-            delegate.beforeVariableChanged( processVariableChangedEvent );
-        }
-
-        @Override
-        public void afterVariableChanged( ProcessVariableChangedEvent processVariableChangedEvent ) {
-            delegate.afterVariableChanged( processVariableChangedEvent );
-        }
-
-        @Override
-        public void beforeSLAViolated( SLAViolatedEvent event ) {
-            delegate.beforeSLAViolated( event );
-        }
-
-        @Override
-        public void afterSLAViolated( SLAViolatedEvent event ) {
-            delegate.afterSLAViolated( event );
-        }
-
-        @Override
-        public void onSignal( SignalEvent event ) {
-            delegate.onSignal( event );
-        }
-
-        @Override
-        public void onMessage( MessageEvent event ) {
-            delegate.onMessage( event );
-        }
     }
 }

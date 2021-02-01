@@ -28,7 +28,7 @@ public class MessageProducer extends AbstractMessageProducer<$DataType$, $DataEv
                 "",
                 e,
                 pi.getId(),
-                pi.getParentProcessInstanceId(),
+                pi.getParentProcessInstanceStringId(),
                 pi.getRootProcessInstanceId(),
                 pi.getProcessId(),
                 pi.getRootProcessId(),

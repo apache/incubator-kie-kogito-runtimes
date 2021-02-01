@@ -37,7 +37,7 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance {
     public void internalTrigger( KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
         // if node instance was cancelled, abort
-        if (getNodeInstanceContainer().getNodeInstance(getId()) == null) {
+        if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
             return;
         }
         if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
@@ -65,7 +65,7 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance {
 
     private void addCompletionEventListener() {
         getProcessInstance().getKnowledgeRuntime().getProcessRuntime().addEventListener( ContextAwareEventListener.using( listener -> {
-            if(isCompleted()) {
+            if (isCompleted()) {
                 triggerCompleted();
                 getProcessInstance().getKnowledgeRuntime().getProcessRuntime().removeEventListener(listener);
             }

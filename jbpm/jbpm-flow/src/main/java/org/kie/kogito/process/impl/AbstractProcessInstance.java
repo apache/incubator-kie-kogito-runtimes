@@ -39,6 +39,7 @@ import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.definition.process.Node;
+import org.kie.api.runtime.process.ProcessRuntime;
 import org.kie.internal.process.CorrelationAwareProcessRuntime;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.process.CorrelationProperty;
@@ -82,13 +83,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     protected CompletionEventListener completionEventListener;
 
-    public AbstractProcessInstance(AbstractProcess<T> process, T variables, InternalProcessRuntime rt) {
+    public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt) {
         this(process, variables, null, rt);
     }
 
-    public AbstractProcessInstance(AbstractProcess<T> process, T variables, String businessKey, InternalProcessRuntime rt) {
+    public AbstractProcessInstance(AbstractProcess<T> process, T variables, String businessKey, ProcessRuntime rt) {
         this.process = process;
-        this.rt = rt;
+        this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
 
         setCorrelationKey(businessKey);
@@ -112,9 +113,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         unbind(variables, processInstance.getVariables());
     }
 
-    public AbstractProcessInstance(AbstractProcess<T> process, T variables, InternalProcessRuntime rt, org.kie.api.runtime.process.WorkflowProcessInstance wpi) {
+    public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt, org.kie.api.runtime.process.WorkflowProcessInstance wpi) {
         this.process = process;
-        this.rt = rt;
+        this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
         syncProcessInstance((WorkflowProcessInstance) wpi);
         reconnect();

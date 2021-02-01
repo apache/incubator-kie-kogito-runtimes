@@ -55,8 +55,6 @@ public interface JbpmNode extends KogitoNode, Contextable, Serializable {
     
     void removeOutgoingConnection(String type, Connection connection);
 
-    NodeContainer getParentContainer();
-
     void setParentContainer(NodeContainer nodeContainer);
     
     void setMetaData(String name, Object value);

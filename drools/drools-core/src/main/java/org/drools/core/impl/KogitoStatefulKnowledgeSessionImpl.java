@@ -189,8 +189,7 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
 
         @Override
         public ProcessInstance getProcessInstance(long id) {
-            if (true) throw new UnsupportedOperationException();
-            return ((KogitoStatefulKnowledgeSessionImpl)delegate).getProcessInstance(id);
+            throw new UnsupportedOperationException();
         }
 
         public ProcessInstance getProcessInstance(String id) {
