@@ -2,7 +2,7 @@
 
 pipeline {
     agent {
-        label 'kie-rhel7-priority'
+        label 'kie-rhel7 && kie-mem24g && !master'
     }
     tools {
         maven 'kie-maven-3.6.3'
@@ -13,6 +13,12 @@ pipeline {
         booleanParam(description: 'Skip Tests? True as default', name: 'SKIP_TESTS', defaultValue: true)
         string(description: 'The UMB message version', name: 'UMB_VERSION', defaultValue: 'master')
         string(description: 'The product version', name: 'PRODUCT_VERSION')
+        string(description: 'The optaplanner product version', name: 'OPTAPLANNER_PRODUCT_VERSION')
+    }
+    environment {
+        BRANCH_NAME = "master"
+        CHANGE_TARGET = "master"
+        CHANGE_BRANCH = "master"
     }
     options {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')
@@ -27,7 +33,7 @@ pipeline {
         stage('Clone build configuration repo') {
             steps {
                 script {
-                    // def currentBranch = env.BRANCH_NAME ?: env.GIT_BRANCH
+                    //def currentBranch = env.BRANCH_NAME ?: env.GIT_BRANCH
                     def currentBranch = "BXMSPROD-1115"
                     println "Checking out ${env.BUILD_CONFIGURATION_REPO_URL}:${currentBranch} into build_config folder"
                     sh "git clone -b ${currentBranch} --single-branch ${env.BUILD_CONFIGURATION_REPO_URL} build_config"
@@ -42,9 +48,11 @@ pipeline {
                     {
                         def SETTINGS_XML_ID = "5d9884a1-178a-4d67-a3ac-9735d2df2cef"
                         def projectCollection = ["kogito-runtimes", "optaplanner", "kogito-apps", "kogito-examples"]
-                        def projectVariableMap = []
-                        def additionalVariables = get7XBranchProjectVariables()
-                        pmebuild.buildProjects(projectCollection, "${SETTINGS_XML_ID}", "$WORKSPACE/build_config/kogito/nightly", "${env.PME_CLI_PATH}", projectVariableMap, additionalVariables, [:])
+                        def projectVariableMap = [:]
+                        def additionalVariables = ["optaplannerProductVersion": env.OPTAPLANNER_PRODUCT_VERSION]
+                        configFileProvider([configFile(fileId: "49737697-ebd6-4396-9c22-11f7714808eb", variable: 'PRODUCTION_PROJECT_LIST')]) {
+                            pmebuild.buildProjects(projectCollection, "${SETTINGS_XML_ID}", "$WORKSPACE/build_config/kogito/nightly", "${env.PME_CLI_PATH}", projectVariableMap, additionalVariables, [:])
+                        }
                     }, 2, 480*60)
                 }
             }
@@ -76,25 +84,4 @@ pipeline {
             cleanWs()
         }
     }
-}
-
-def get7XBranchProjectVariables() {
-    def result = [:]
-    dir("droolsjbpm-build-bootstrap") {
-        def changeAuthor = env.CHANGE_AUTHOR ?: env.ghprbPullAuthorLogin
-        def changeBranch = env.CHANGE_BRANCH ?: env.ghprbSourceBranch
-        def changeTarget = env.CHANGE_TARGET ?: env.ghprbTargetBranch
-        def currentBranch = env.BRANCH_NAME ?: env.GIT_BRANCH
-
-        println "Checking out droolsjbpm-build-bootstrap project to get 7.x branch project list"
-        githubscm.checkoutIfExists('droolsjbpm-build-bootstrap', "${changeAuthor}", "${changeBranch}", 'kiegroup', "${changeTarget}")
-        def branched7RepositoryListPath = "./script/branched-7-repository-list.txt"
-        if ('master' == currentBranch) {
-            def branched7RepositoryListFile = readFile branched7RepositoryListPath
-            branched7RepositoryListFile.readLines().each { result["${it}-scmRevision"] = '7.x' }
-        }
-        println "Checking out droolsjbpm-build-bootstrap project to get 7.x branch project list"
-    }
-    println "[INFO] get7XBranchProjectVariables result ${result}"
-    return result
 }
