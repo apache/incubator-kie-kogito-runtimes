@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import org.jbpm.workflow.core.JbpmNode;
 import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.process.Process;
@@ -35,6 +34,7 @@ import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.AbstractProcess;
+import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
@@ -58,7 +58,7 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
 
     public T doGetProcessNodes(String processId) {
         return executeOnProcess(processId, process -> {
-            List<Node> nodes = ((WorkflowProcess) ((AbstractProcess<?>) process).process()).getNodesRecursively();
+            List<Node> nodes = (( KogitoWorkflowProcess ) ((AbstractProcess<?>) process).process()).getNodesRecursively();
             List<Map<String, Object>> list = nodes.stream().map(n -> {
                 Map<String, Object> data = new HashMap<>();
                 data.put("id", n.getId());

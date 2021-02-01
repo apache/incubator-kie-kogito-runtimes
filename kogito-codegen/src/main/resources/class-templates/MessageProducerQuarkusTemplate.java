@@ -1,6 +1,6 @@
 package org.kie.kogito.test;
 
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.impl.DefaultEventMarshaller;
@@ -22,12 +22,12 @@ public class MessageProducer extends AbstractMessageProducer<$DataType$, $DataEv
                   configBean.useCloudEvents());
     }
 
-    protected $DataEventType$ dataEventTypeConstructor($DataType$ e, ProcessInstance pi, String trigger) {
+    protected $DataEventType$ dataEventTypeConstructor($DataType$ e, KogitoProcessInstance pi, String trigger) {
         return new $DataEventType$(
                 trigger,
                 "",
                 e,
-                pi.getId(),
+                pi.getStringId(),
                 pi.getParentProcessInstanceStringId(),
                 pi.getRootProcessInstanceId(),
                 pi.getProcessId(),

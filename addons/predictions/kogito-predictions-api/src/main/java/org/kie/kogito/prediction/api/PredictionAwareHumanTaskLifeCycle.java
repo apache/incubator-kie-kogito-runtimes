@@ -54,16 +54,16 @@ public class PredictionAwareHumanTaskLifeCycle extends BaseHumanTaskLifeCycle {
             
             
             PredictionOutcome outcome = predictionService.predict(workItem, workItem.getParameters());
-            logger.debug("Prediction service returned confidence level {} for work item {}", outcome.getConfidenceLevel(), humanTaskWorkItem.getId());                
+            logger.debug("Prediction service returned confidence level {} for work item {}", outcome.getConfidenceLevel(), humanTaskWorkItem.getStringId());
             
             if (outcome.isCertain()) {
                 humanTaskWorkItem.getResults().putAll(outcome.getData());
-                logger.debug("Prediction service is certain (confidence level {}) on the outputs, completing work item {}", outcome.getConfidenceLevel(), humanTaskWorkItem.getId());                
+                logger.debug("Prediction service is certain (confidence level {}) on the outputs, completing work item {}", outcome.getConfidenceLevel(), humanTaskWorkItem.getStringId());
                 (( KogitoWorkItemManager )manager).internalCompleteWorkItem(humanTaskWorkItem);
                 
                 return outcome.getData();
             } else if (outcome.isPresent()) {
-                logger.debug("Prediction service is NOT certain (confidence level {}) on the outputs, setting recommended outputs on work item {}", outcome.getConfidenceLevel(), humanTaskWorkItem.getId());                
+                logger.debug("Prediction service is NOT certain (confidence level {}) on the outputs, setting recommended outputs on work item {}", outcome.getConfidenceLevel(), humanTaskWorkItem.getStringId());
                 humanTaskWorkItem.getResults().putAll(outcome.getData());
                 
             }

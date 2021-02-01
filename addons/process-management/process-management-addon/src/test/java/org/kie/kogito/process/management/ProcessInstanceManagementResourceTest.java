@@ -23,18 +23,17 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.ext.RuntimeDelegate;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.Application;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcess;
+import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.mockito.Mock;
@@ -103,7 +102,7 @@ public class ProcessInstanceManagementResourceTest {
         lenient().when(processInstance.status()).thenReturn(ProcessInstance.STATE_ACTIVE);
         lenient().when(error.failedNodeId()).thenReturn("xxxxx");
         lenient().when(error.errorMessage()).thenReturn("Test error message");
-        lenient().when(process.process()).thenReturn(mock(WorkflowProcess.class));
+        lenient().when(process.process()).thenReturn(mock( KogitoWorkflowProcess.class));
 
         lenient().when(application.unitOfWorkManager()).thenReturn(new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
         resource = spy(new ProcessInstanceManagementResource(processes, application));

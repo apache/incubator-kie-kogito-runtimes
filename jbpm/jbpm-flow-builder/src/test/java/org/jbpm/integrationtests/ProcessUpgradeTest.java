@@ -202,7 +202,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         ksession.insert( p );
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
         
-        assertEquals(1, kruntime.getProcessInstances().size());
+        assertEquals(1, kruntime.getKogitoProcessInstances().size());
         
         String process2 = 
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

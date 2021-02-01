@@ -81,7 +81,7 @@ public class KogitoProcessRuntimeImpl implements KogitoProcessRuntime {
     }
 
     @Override
-    public Collection<KogitoProcessInstance> getProcessInstances() {
+    public Collection<KogitoProcessInstance> getKogitoProcessInstances() {
         return (Collection<KogitoProcessInstance>) (Object) delegate.getProcessInstances();
     }
 

@@ -30,7 +30,6 @@ import org.jbpm.process.instance.ProcessRuntimeServiceProvider;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.StartNode;
 import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
@@ -48,6 +47,7 @@ import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.Signal;
 import org.kie.kogito.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.process.runtime.KogitoWorkItemManager;
 
 @SuppressWarnings("unchecked")
@@ -76,22 +76,22 @@ public abstract class AbstractProcess<T extends Model> implements Process<T> {
         this(services, Collections.emptyList(), null);
     }
 
-    protected AbstractProcess(Application app, Collection<WorkItemHandler> handlers) {
+    protected AbstractProcess(Application app, Collection<KogitoWorkItemHandler> handlers) {
         this(app, handlers, null);
     }
     
-    protected AbstractProcess(Application app, Collection<WorkItemHandler> handlers, ProcessInstancesFactory factory) {
+    protected AbstractProcess(Application app, Collection<KogitoWorkItemHandler> handlers, ProcessInstancesFactory factory) {
         this(new ConfiguredProcessServices(app.config().get(ProcessConfig.class)), handlers, factory);
         this.app = app;
     }
 
-    protected AbstractProcess(ProcessRuntimeServiceProvider services, Collection<WorkItemHandler> handlers, ProcessInstancesFactory factory) {
+    protected AbstractProcess(ProcessRuntimeServiceProvider services, Collection<KogitoWorkItemHandler> handlers, ProcessInstancesFactory factory) {
         this.services = services;
         this.instances = new MapProcessInstances<>();
         this.processInstancesFactory = factory;
         KogitoWorkItemManager workItemManager = services.getWorkItemManager();
-        for (WorkItemHandler handler : handlers) {
-            workItemManager.registerWorkItemHandler(handler.getClass().getSimpleName(), handler);
+        for (KogitoWorkItemHandler handler : handlers) {
+            workItemManager.registerWorkItemHandler(handler.getName(), handler);
         }
     }
 

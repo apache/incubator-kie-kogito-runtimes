@@ -34,10 +34,10 @@ import org.kie.api.runtime.Calendars;
 import org.kie.api.runtime.Channel;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.Globals;
+import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.runtime.rule.FactHandle;
@@ -46,12 +46,15 @@ import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.kie.api.time.SessionClock;
 import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.process.runtime.KogitoWorkItemManager;
 
 /**
  * A severely limited implementation of the WorkingMemory interface.
  * It only exists for legacy reasons.
  */
-class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
+class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRuntime {
 
     private final EnvironmentImpl environment;
     private InternalProcessRuntime processRuntime;
@@ -100,6 +103,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
 
     public JobsService getJobsService() {
         return null;
+    }
+
+    @Override
+    public KieRuntime getKieRuntime() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -218,22 +226,22 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
-    public ProcessInstance startProcess(String processId) {
+    public KogitoProcessInstance startProcess( String processId) {
         return null;
     }
 
     @Override
-    public ProcessInstance startProcess(String processId, Map<String, Object> parameters) {
+    public KogitoProcessInstance startProcess(String processId, Map<String, Object> parameters) {
         return null;
     }
 
     @Override
-    public ProcessInstance startProcess( String processId, AgendaFilter agendaFilter ) {
+    public KogitoProcessInstance startProcess( String processId, AgendaFilter agendaFilter ) {
         return null;
     }
 
     @Override
-    public ProcessInstance startProcess(String processId, Map<String, Object> parameters, AgendaFilter agendaFilter) {
+    public KogitoProcessInstance startProcess(String processId, Map<String, Object> parameters, AgendaFilter agendaFilter) {
         return null;
     }
 
@@ -244,7 +252,7 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
-    public ProcessInstance createProcessInstance(String processId, Map<String, Object> parameters) {
+    public KogitoProcessInstance createProcessInstance(String processId, Map<String, Object> parameters) {
         return null;
     }
 
@@ -254,11 +262,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
 
     }
 
-    public ProcessInstance startProcessInstance(String processInstanceId) {
+    public KogitoProcessInstance startProcessInstance(String processInstanceId) {
         return null;
     }
 
-    public ProcessInstance startProcessInstance(String processInstanceId, String trigger) {
+    public KogitoProcessInstance startProcessInstance(String processInstanceId, String trigger) {
         return null;
     }
 
@@ -283,6 +291,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
+    public Collection<KogitoProcessInstance> getKogitoProcessInstances() {
+        return null;
+    }
+
+    @Override
     public ProcessInstance getProcessInstance( long l ) {
         throw new UnsupportedOperationException( "org.jbpm.process.instance.DummyKnowledgeRuntime.getProcessInstance -> TODO" );
 
@@ -300,11 +313,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
 
     }
 
-    public ProcessInstance getProcessInstance(String processInstanceId) {
+    public KogitoProcessInstance getProcessInstance(String processInstanceId) {
         return null;
     }
 
-    public ProcessInstance getProcessInstance(String processInstanceId, boolean readonly) {
+    public KogitoProcessInstance getProcessInstance(String processInstanceId, boolean readonly) {
         return null;
     }
 
@@ -313,8 +326,8 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
-    public WorkItemManager getWorkItemManager() {
-        return this.processRuntime.getWorkItemManager();
+    public KogitoWorkItemManager getWorkItemManager() {
+        return ( KogitoWorkItemManager ) this.processRuntime.getWorkItemManager();
     }
 
     @Override

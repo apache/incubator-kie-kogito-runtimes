@@ -160,7 +160,7 @@ public interface KogitoProcessRuntime {
      *
      * @return a collection of process instances currently active in the session
      */
-    Collection<KogitoProcessInstance> getProcessInstances();
+    Collection<KogitoProcessInstance> getKogitoProcessInstances();
 
     /**
      * Returns the process instance with the given id.  Note that only active process instances
