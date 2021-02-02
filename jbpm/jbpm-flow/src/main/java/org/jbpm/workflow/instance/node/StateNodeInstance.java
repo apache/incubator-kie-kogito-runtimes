@@ -26,7 +26,7 @@ import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.runtime.process.EventListener;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class StateNodeInstance extends CompositeContextNodeInstance implements EventListener {
 

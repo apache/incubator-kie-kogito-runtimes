@@ -2,7 +2,7 @@ package com.myspace.demo;
 
 import java.util.Optional;
 
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.event.impl.DefaultEventMarshaller;
 import org.kie.kogito.services.event.EventMarshaller;
 

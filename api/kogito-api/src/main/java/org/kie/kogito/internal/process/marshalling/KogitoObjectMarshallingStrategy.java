@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.marshalling;
+package org.kie.kogito.internal.process.marshalling;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

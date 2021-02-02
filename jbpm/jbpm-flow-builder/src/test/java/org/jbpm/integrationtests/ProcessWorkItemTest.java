@@ -35,10 +35,10 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
-import org.kie.kogito.process.runtime.KogitoWorkItemHandler;
-import org.kie.kogito.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

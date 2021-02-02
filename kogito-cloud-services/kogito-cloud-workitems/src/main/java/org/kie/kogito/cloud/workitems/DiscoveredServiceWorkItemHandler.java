@@ -39,7 +39,7 @@ import org.kie.kogito.cloud.kubernetes.client.DefaultKogitoKubeClient;
 import org.kie.kogito.cloud.kubernetes.client.KogitoKubeClient;
 import org.kie.kogito.cloud.workitems.service.discovery.ServiceDiscovery;
 import org.kie.kogito.cloud.workitems.service.discovery.ServiceDiscoveryFactory;
-import org.kie.kogito.process.runtime.KogitoWorkItemHandler;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

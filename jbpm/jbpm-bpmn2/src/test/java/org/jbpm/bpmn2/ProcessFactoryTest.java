@@ -27,8 +27,8 @@ import org.kie.api.KieBase;
 import org.kie.api.io.Resource;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
 import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_TIMER;

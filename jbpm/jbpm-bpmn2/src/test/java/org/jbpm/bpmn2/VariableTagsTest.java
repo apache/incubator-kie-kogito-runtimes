@@ -33,9 +33,9 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.process.VariableViolationException;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

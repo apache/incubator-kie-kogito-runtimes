@@ -35,7 +35,7 @@ import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.node.CompositeNodeInstance;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
-import org.kie.kogito.process.event.KogitoEventListener;
+import org.kie.kogito.internal.process.event.KogitoEventListener;
 
 import static org.jbpm.process.core.context.exception.CompensationScope.COMPENSATION_SCOPE;
 import static org.jbpm.process.core.context.exception.CompensationScope.IMPLICIT_COMPENSATION_PREFIX;

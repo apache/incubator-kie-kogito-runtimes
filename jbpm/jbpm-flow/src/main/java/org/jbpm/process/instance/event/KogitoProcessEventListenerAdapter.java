@@ -25,7 +25,7 @@ import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.event.process.SLAViolatedEvent;
 import org.kie.api.event.process.SignalEvent;
-import org.kie.kogito.process.event.KogitoProcessEventListener;
+import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 
 public class KogitoProcessEventListenerAdapter implements KogitoProcessEventListener {
 

@@ -20,7 +20,7 @@ package org.kie.kogito.services.event.impl;
 import java.util.Optional;
 
 import org.kie.kogito.event.CloudEventEmitter;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.kie.kogito.services.event.EventMarshaller;
 import org.slf4j.Logger;

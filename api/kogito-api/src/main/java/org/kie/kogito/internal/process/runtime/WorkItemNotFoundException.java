@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.command;
+package org.kie.kogito.internal.process.runtime;
 
-public interface KogitoProcessInstanceIdCommand {
+public class WorkItemNotFoundException extends RuntimeException {
 
-    void setProcessInstanceId(String procInstId);
+    private static final long serialVersionUID = 4684154420113683086L;
+    private String workItemId;
 
-    String getProcessInstanceId();
+    public WorkItemNotFoundException(String message,
+                                     String workItemId) {
+        super(message);
+        this.workItemId = workItemId;
+    }
+
+    public String getWorkItemId() {
+        return workItemId;
+    }
+
+    public void setWorkItemId(String workItemId) {
+        this.workItemId = workItemId;
+    }
 
 }

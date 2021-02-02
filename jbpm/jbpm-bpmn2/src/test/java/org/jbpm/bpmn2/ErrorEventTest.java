@@ -41,11 +41,11 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
-import org.kie.kogito.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.process.workitem.WorkItemExecutionError;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

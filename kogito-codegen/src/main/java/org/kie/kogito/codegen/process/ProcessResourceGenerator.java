@@ -48,7 +48,7 @@ import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.codegen.core.GeneratorConfig;
 import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
-import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 

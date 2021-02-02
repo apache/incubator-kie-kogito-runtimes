@@ -18,7 +18,7 @@ package org.jbpm.process.instance;
 
 import java.util.Collection;
 
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 public interface ProcessInstanceManager {
 

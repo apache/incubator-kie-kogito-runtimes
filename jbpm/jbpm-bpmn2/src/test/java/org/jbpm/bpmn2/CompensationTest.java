@@ -34,9 +34,9 @@ import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 public class CompensationTest extends JbpmBpmn2TestCase {
 

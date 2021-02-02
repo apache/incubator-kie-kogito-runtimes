@@ -20,7 +20,7 @@ import java.util.Set;
 
 import org.drools.core.process.instance.WorkItem;
 
-public interface KogitoWorkItemManager extends org.drools.core.process.instance.WorkItemManager, org.kie.kogito.process.runtime.KogitoWorkItemManager {
+public interface KogitoWorkItemManager extends org.drools.core.process.instance.WorkItemManager, org.kie.kogito.internal.process.runtime.KogitoWorkItemManager {
 
     void internalExecuteWorkItem( KogitoWorkItem workItem);
 

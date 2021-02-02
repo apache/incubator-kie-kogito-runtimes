@@ -33,7 +33,7 @@ import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.AbstractContext;
 import org.kie.api.io.Resource;
-import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 /**
  * Default implementation of a Process

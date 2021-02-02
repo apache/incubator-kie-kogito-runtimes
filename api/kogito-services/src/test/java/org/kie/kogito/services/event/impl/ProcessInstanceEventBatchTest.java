@@ -18,7 +18,7 @@ package org.kie.kogito.services.event.impl;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.process.flexible.Milestone;
-import org.kie.kogito.process.runtime.KogitoWorkflowProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;

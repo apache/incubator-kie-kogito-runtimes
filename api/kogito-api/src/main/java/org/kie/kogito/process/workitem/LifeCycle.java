@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 /**
  * Complete life cycle that can be applied to work items. It defines

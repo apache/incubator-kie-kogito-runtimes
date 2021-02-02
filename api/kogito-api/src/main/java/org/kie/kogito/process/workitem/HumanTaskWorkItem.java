@@ -18,7 +18,7 @@ package org.kie.kogito.process.workitem;
 
 import java.util.Set;
 
-import org.kie.kogito.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 /**
  * Dedicated extension to WorkItem to cover needs of human tasks

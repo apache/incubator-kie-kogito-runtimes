@@ -33,8 +33,8 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.kogito.cloud.kubernetes.client.KogitoKubeClient;
 import org.kie.kogito.cloud.workitems.service.discovery.ServiceDiscovery;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
-import org.kie.kogito.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;

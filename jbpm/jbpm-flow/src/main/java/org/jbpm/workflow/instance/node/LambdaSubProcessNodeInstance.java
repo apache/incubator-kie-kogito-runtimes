@@ -42,10 +42,10 @@ import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.kie.api.definition.process.Node;
-import org.kie.kogito.process.event.KogitoEventListener;
+import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

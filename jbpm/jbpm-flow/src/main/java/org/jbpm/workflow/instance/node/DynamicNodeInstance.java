@@ -28,7 +28,7 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.event.process.ContextAwareEventListener;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
 import static org.jbpm.workflow.core.JbpmNode.CONNECTION_DEFAULT_TYPE;

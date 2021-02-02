@@ -24,8 +24,8 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.command.RegistryContext;
-import org.kie.kogito.process.command.KogitoProcessInstanceIdCommand;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.command.KogitoProcessInstanceIdCommand;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
 public class KogitoSetProcessInstanceVariablesCommand implements ExecutableCommand<Void>, KogitoProcessInstanceIdCommand {
 

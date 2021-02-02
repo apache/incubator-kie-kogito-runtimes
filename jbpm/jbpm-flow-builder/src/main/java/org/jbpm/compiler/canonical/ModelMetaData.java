@@ -54,7 +54,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.process.core.context.variable.Variable;
 import org.kie.kogito.codegen.Generated;
 import org.kie.kogito.codegen.VariableInfo;
-import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;

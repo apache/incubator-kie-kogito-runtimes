@@ -47,8 +47,9 @@ import org.kie.internal.command.RegistryContext;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.process.CorrelationKeyFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
-import org.kie.kogito.process.event.KogitoProcessEventSupport;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.workitems.KogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.slf4j.Logger;
@@ -298,7 +299,7 @@ public class DynamicUtils {
 
             eventSupport.fireAfterNodeTriggered(subProcessNodeInstance,
                                                 ksession);
-            if (subProcessInstance.getState() == org.kie.kogito.process.runtime.KogitoProcessInstance.STATE_COMPLETED) {
+            if (subProcessInstance.getState() == KogitoProcessInstance.STATE_COMPLETED) {
                 subProcessNodeInstance.triggerCompleted();
             } else {
 

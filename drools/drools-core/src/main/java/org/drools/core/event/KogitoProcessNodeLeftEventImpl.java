@@ -18,7 +18,7 @@ package org.drools.core.event;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.NodeInstance;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class KogitoProcessNodeLeftEventImpl extends ProcessEvent implements ProcessNodeLeftEvent {
 

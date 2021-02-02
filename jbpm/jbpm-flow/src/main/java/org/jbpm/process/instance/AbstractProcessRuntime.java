@@ -24,8 +24,8 @@ import org.drools.core.event.KogitoProcessEventSupportImpl;
 import org.drools.core.event.ProcessEventSupport;
 import org.jbpm.process.instance.event.KogitoProcessEventListenerAdapter;
 import org.kie.api.event.process.ProcessEventListener;
-import org.kie.kogito.process.event.KogitoProcessEventListener;
-import org.kie.kogito.process.event.KogitoProcessEventSupport;
+import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
+import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 
 public abstract class AbstractProcessRuntime implements InternalProcessRuntime {
 

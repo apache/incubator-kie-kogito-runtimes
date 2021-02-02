@@ -17,8 +17,8 @@
 package org.jbpm.workflow.instance;
 
 import org.jbpm.process.instance.ProcessInstance;
-import org.kie.kogito.process.event.KogitoEventListener;
-import org.kie.kogito.process.runtime.KogitoWorkflowProcessInstance;
+import org.kie.kogito.internal.process.event.KogitoEventListener;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 
 public interface WorkflowProcessInstance extends ProcessInstance,
                                                  KogitoWorkflowProcessInstance,

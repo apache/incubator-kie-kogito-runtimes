@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.event.process;
+package org.kie.kogito.internal.process.event;
 
 import org.kie.api.event.process.ProcessEvent;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.workitem.Transition;
 
 /**

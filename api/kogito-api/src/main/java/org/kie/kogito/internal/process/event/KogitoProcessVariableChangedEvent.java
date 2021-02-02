@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.event;
+package org.kie.kogito.internal.process.event;
 
 import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public interface KogitoProcessVariableChangedEvent extends ProcessVariableChangedEvent {
 

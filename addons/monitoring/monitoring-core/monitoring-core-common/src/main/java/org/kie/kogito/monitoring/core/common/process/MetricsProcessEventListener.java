@@ -32,7 +32,7 @@ import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.SLAViolatedEvent;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
-import org.kie.kogito.process.event.DefaultKogitoProcessEventListener;
+import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

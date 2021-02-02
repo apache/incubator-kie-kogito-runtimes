@@ -19,8 +19,8 @@ import java.util.List;
 
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.process.event.KogitoProcessVariableChangedEvent;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.event.KogitoProcessVariableChangedEvent;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class KogitoProcessVariableChangedEventImpl extends ProcessVariableChangedEventImpl implements KogitoProcessVariableChangedEvent {
 

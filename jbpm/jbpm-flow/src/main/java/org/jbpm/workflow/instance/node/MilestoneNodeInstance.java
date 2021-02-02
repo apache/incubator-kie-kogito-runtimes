@@ -20,7 +20,7 @@ import org.drools.core.spi.KogitoProcessContext;
 import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.MilestoneNode;
 import org.kie.kogito.event.process.ContextAwareEventListener;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 /**
  * Runtime counterpart of a milestone node.

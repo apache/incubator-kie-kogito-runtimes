@@ -70,7 +70,7 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.kogito.process.runtime.KogitoNode;
+import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

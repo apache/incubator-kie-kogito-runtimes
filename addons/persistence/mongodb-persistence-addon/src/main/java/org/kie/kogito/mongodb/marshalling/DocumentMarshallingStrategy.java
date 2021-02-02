@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.kie.kogito.marshalling.KogitoObjectMarshallingStrategy;
+import org.kie.kogito.internal.process.marshalling.KogitoObjectMarshallingStrategy;
 import org.kie.kogito.mongodb.utils.DocumentUtils;
 
 public class DocumentMarshallingStrategy implements KogitoObjectMarshallingStrategy {

@@ -24,7 +24,7 @@ import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
 import static org.jbpm.workflow.core.node.EndNode.PROCESS_SCOPE;

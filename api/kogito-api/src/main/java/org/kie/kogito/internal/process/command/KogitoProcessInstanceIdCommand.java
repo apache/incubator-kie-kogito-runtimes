@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.event;
+package org.kie.kogito.internal.process.command;
 
-import java.util.Collections;
-import java.util.Set;
+public interface KogitoProcessInstanceIdCommand {
 
-import org.kie.api.runtime.process.EventListener;
-import org.kie.kogito.process.EventDescription;
+    void setProcessInstanceId(String procInstId);
 
-public interface KogitoEventListener extends EventListener {
+    String getProcessInstanceId();
 
-    /**
-     * Returns unique set of event descriptions that this event listener is interested in.
-     * @return returns set of event definitions awaiting or empty set
-     */
-    default Set<EventDescription<?>> getEventDescriptions() {
-        return Collections.emptySet();
-    }
 }

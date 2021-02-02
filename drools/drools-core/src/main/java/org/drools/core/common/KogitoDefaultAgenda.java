@@ -17,7 +17,7 @@ package org.drools.core.common;
 
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 public class KogitoDefaultAgenda extends DefaultAgenda implements KogitoInternalAgenda {
 

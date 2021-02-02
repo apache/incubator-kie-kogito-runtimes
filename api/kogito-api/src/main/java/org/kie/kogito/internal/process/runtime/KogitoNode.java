@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.runtime;
+package org.kie.kogito.internal.process.runtime;
 
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;

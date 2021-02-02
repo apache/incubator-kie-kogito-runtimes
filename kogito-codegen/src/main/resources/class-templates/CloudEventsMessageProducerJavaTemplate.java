@@ -2,7 +2,7 @@ package com.myspace.demo;
 
 
 
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.event.impl.DefaultEventMarshaller;
 import org.kie.kogito.events.knative.ce.decorators.MessageDecorator;
 import org.kie.kogito.events.knative.ce.decorators.MessageDecoratorFactory;

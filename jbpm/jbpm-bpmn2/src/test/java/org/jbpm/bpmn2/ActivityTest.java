@@ -88,10 +88,10 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.command.RegistryContext;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
-import org.kie.kogito.process.runtime.KogitoNodeInstanceContainer;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.process.workitems.KogitoWorkItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -440,7 +440,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("UserTask");
         assertTrue(processInstance.getState() == ProcessInstance.STATE_ACTIVE);
         ksession = restoreSession(ksession, true);
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
         kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
@@ -459,7 +459,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("UserTask");
         assertTrue(processInstance.getState() == ProcessInstance.STATE_ACTIVE);
         ksession = restoreSession(ksession, true);
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
         final String pId = processInstance.getStringId();
@@ -509,7 +509,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         Map<String, Object> params = new HashMap<String, Object>();
         KogitoProcessInstance processInstance = kruntime.startProcess("defaultPackage.InputMappingUsingValue", params);
 
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = handler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = handler.getWorkItem();
         assertNotNull(workItem);
 
         Object value = workItem.getParameter("TaskName");
@@ -556,7 +556,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertEquals("50", var5.toString());
 
 
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = handler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = handler.getWorkItem();
         assertNotNull(workItem);
 
         kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
@@ -640,7 +640,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 				((WorkflowProcessInstance) processInstance).getVariable("y"));
 
 		ksession = restoreSession(ksession, true);
-		org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+		org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
 		assertNotNull(workItem);
 		assertEquals("krisv", workItem.getParameter("ActorId"));
 		kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
@@ -807,7 +807,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
                 workItemHandler2);
         DynamicUtils.addDynamicWorkItem(processInstance, ksession, "OtherTask",
                 new HashMap<String, Object>());
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler2.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler2.getWorkItem();
         assertNotNull(workItem);
         ksession = restoreSession(ksession, true);
         kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
@@ -872,7 +872,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
                                                               new ServiceTaskHandler() {
 
                                                                   @Override
-                                                                  public void executeWorkItem( org.kie.kogito.process.runtime.KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+                                                                  public void executeWorkItem( org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem, KogitoWorkItemManager manager) {
                                                                       assertThat( workItem.getProcessInstance()).isNotNull();
                                                                       assertThat( workItem.getNodeInstance()).isNotNull();
                                                                       super.executeWorkItem(workItem, manager);
@@ -1184,7 +1184,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("ParentProcess", params);
         assertProcessInstanceActive(processInstance.getStringId(), ksession);
 
-        org.kie.kogito.process.runtime.KogitoWorkItem wi = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem wi = workItemHandler.getWorkItem();
         assertNotNull(wi);
 
         kruntime.getWorkItemManager().completeWorkItem(wi.getStringId(), null);
@@ -1209,7 +1209,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
                 .startProcess("com.sample.boolean");
         assertProcessInstanceActive(processInstance);
         ksession = restoreSession(ksession, true);
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
         HashMap<String, Object> output = new HashMap<String, Object>();
@@ -1231,7 +1231,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("UserTask");
         assertTrue(processInstance.getState() == ProcessInstance.STATE_ACTIVE);
         ksession = restoreSession(ksession, true);
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
         kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
@@ -1269,7 +1269,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         kruntime.getWorkItemManager().registerWorkItemHandler("task1", workItemHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("ParentProcess");
 
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
 
@@ -1509,7 +1509,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("UserTask");
         assertTrue(processInstance.getState() == ProcessInstance.STATE_ACTIVE);
         ksession = restoreSession(ksession, true);
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("Executing task of process instance " + processInstance.getStringId() + " as work item with Hello",
                 workItem.getParameter("Description").toString().trim());
@@ -1569,7 +1569,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         ksession = restoreSession(ksession, true);
         kruntime.getWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
 
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertProcessInstanceFinished(processInstance, ksession);
@@ -1827,7 +1827,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("UserTask", parameters);
         assertTrue(processInstance.getState() == ProcessInstance.STATE_ACTIVE);
         ksession = restoreSession(ksession, true);
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
         assertEquals("john", workItem.getParameter("personName"));
@@ -1857,7 +1857,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertEquals("new value", person.getName());
 
         ksession = restoreSession(ksession, true);
-        org.kie.kogito.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("krisv", workItem.getParameter("ActorId"));
         kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);

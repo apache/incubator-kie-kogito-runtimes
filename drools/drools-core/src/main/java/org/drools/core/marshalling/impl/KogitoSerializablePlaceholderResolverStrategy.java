@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kie.api.marshalling.ObjectMarshallingStrategyAcceptor;
-import org.kie.kogito.marshalling.KogitoObjectMarshallingStrategy;
+import org.kie.kogito.internal.process.marshalling.KogitoObjectMarshallingStrategy;
 
 public class KogitoSerializablePlaceholderResolverStrategy implements KogitoObjectMarshallingStrategy {
 

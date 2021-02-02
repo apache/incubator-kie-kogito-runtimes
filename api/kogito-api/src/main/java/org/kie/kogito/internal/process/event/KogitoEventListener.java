@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.runtime;
+package org.kie.kogito.internal.process.event;
 
-public class WorkItemNotFoundException extends RuntimeException {
+import java.util.Collections;
+import java.util.Set;
 
-    private static final long serialVersionUID = 4684154420113683086L;
-    private String workItemId;
+import org.kie.api.runtime.process.EventListener;
+import org.kie.kogito.process.EventDescription;
 
-    public WorkItemNotFoundException(String message,
-                                     String workItemId) {
-        super(message);
-        this.workItemId = workItemId;
+public interface KogitoEventListener extends EventListener {
+
+    /**
+     * Returns unique set of event descriptions that this event listener is interested in.
+     * @return returns set of event definitions awaiting or empty set
+     */
+    default Set<EventDescription<?>> getEventDescriptions() {
+        return Collections.emptySet();
     }
-
-    public String getWorkItemId() {
-        return workItemId;
-    }
-
-    public void setWorkItemId(String workItemId) {
-        this.workItemId = workItemId;
-    }
-
 }

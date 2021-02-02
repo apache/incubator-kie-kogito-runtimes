@@ -16,7 +16,7 @@
 package org.drools.core.audit.event;
 
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 public class KogitoRuleFlowNodeLogEvent extends RuleFlowNodeLogEvent {
     

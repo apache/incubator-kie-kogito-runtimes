@@ -28,8 +28,8 @@ import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.marshalling.KogitoObjectMarshallingStrategy;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.marshalling.KogitoObjectMarshallingStrategy;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 /**
  * When using this strategy, knowledge session de/marshalling process will make sure that

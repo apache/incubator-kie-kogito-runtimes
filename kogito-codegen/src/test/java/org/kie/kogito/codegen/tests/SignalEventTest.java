@@ -33,7 +33,7 @@ import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.event.KogitoProcessEventListener;
+import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.process.impl.Sig;
 import org.kie.kogito.uow.UnitOfWork;
 import org.mockito.ArgumentCaptor;

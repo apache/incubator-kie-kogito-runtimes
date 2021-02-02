@@ -24,7 +24,7 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.runtime.process.NodeInstance;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class EventSubProcessNodeInstance extends CompositeContextNodeInstance {
 

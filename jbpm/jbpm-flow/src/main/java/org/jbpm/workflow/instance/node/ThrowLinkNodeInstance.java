@@ -20,7 +20,7 @@ import java.util.Date;
 
 import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class ThrowLinkNodeInstance extends NodeInstanceImpl {
 

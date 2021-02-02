@@ -23,7 +23,7 @@ import java.util.Map;
 import org.jbpm.process.core.context.exclusive.ExclusiveGroup;
 import org.jbpm.process.instance.context.AbstractContextInstance;
 import org.kie.api.runtime.process.NodeInstance;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class ExclusiveGroupInstance extends AbstractContextInstance {
 

@@ -51,9 +51,9 @@ import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.NodeInstanceContainer;
-import org.kie.kogito.process.runtime.KogitoNode;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.process.runtime.KogitoNodeInstanceContainer;
+import org.kie.kogito.internal.process.runtime.KogitoNode;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.event;
+package org.kie.kogito.internal.process.event;
 
 import java.util.List;
 
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.workitem.Transition;
 
 public interface KogitoProcessEventSupport {

@@ -22,7 +22,7 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.kie.api.definition.process.Process;
-import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 /**
  * Utilities for unit Process generation tests

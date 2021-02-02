@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.runtime;
+package org.kie.kogito.internal.process.runtime;
 
 import java.util.Collection;
 import java.util.Map;
@@ -24,7 +24,7 @@ import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.ProcessRuntime;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.process.event.KogitoProcessEventSupport;
+import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 
 public interface KogitoProcessRuntime {
 

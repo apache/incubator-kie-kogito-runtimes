@@ -23,10 +23,10 @@ import org.kie.api.KieBase;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.process.event.KogitoProcessEventSupport;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
 public class KogitoProcessRuntimeImpl implements KogitoProcessRuntime {
 

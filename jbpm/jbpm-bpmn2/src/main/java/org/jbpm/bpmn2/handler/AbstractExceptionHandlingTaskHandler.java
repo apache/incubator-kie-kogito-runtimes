@@ -17,9 +17,9 @@
 package org.jbpm.bpmn2.handler;
 
 import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
-import org.kie.kogito.process.runtime.KogitoWorkItemHandler;
-import org.kie.kogito.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
 public abstract class AbstractExceptionHandlingTaskHandler implements KogitoWorkItemHandler {
 

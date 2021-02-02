@@ -21,7 +21,7 @@ import java.io.Serializable;
 import org.jbpm.process.core.Contextable;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.NodeContainer;
-import org.kie.kogito.process.runtime.KogitoNode;
+import org.kie.kogito.internal.process.runtime.KogitoNode;
 
 /**
  * Represents a node in a RuleFlow. 

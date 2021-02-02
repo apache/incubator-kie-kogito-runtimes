@@ -39,7 +39,7 @@ import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.kie.api.definition.process.Node;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static com.github.javaparser.StaticJavaParser.parseType;
@@ -185,7 +185,7 @@ public class TriggerMetaData {
                 Operator.ASSIGN);
         AssignExpr processInstanceAssignment = new AssignExpr(
                 new VariableDeclarationExpr(processInstance, piName),
-                new CastExpr(parseType(org.kie.kogito.process.runtime.KogitoProcessInstance.class.getCanonicalName()), new MethodCallExpr(new NameExpr("kcontext"), "getProcessInstance")),
+                new CastExpr(parseType( KogitoProcessInstance.class.getCanonicalName()), new MethodCallExpr(new NameExpr("kcontext"), "getProcessInstance")),
                 Operator.ASSIGN);
         // add onMessage listener call
         MethodCallExpr listenerMethodCall = new MethodCallExpr(

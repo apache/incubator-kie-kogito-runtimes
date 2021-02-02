@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.runtime;
+package org.kie.kogito.internal.process.runtime;
 
 import java.util.Map;
 
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.process.event.KogitoEventListener;
+import org.kie.kogito.internal.process.event.KogitoEventListener;
 
 public interface KogitoProcessInstance extends ProcessInstance, KogitoEventListener {
 

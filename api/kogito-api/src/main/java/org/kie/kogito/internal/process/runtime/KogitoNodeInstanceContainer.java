@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.event;
+package org.kie.kogito.internal.process.runtime;
 
-import org.kie.api.event.process.DefaultProcessEventListener;
+import org.kie.api.runtime.process.NodeInstanceContainer;
 
-public class DefaultKogitoProcessEventListener extends DefaultProcessEventListener implements KogitoProcessEventListener {
+public interface KogitoNodeInstanceContainer extends NodeInstanceContainer {
+
+    /**
+     * Returns the node instance with the given id, or <code>null</code>
+     * if the node instance cannot be found.
+     *
+     * @param nodeInstanceId
+     * @return the node instance with the given id
+     */
+    KogitoNodeInstance getNodeInstance(String nodeInstanceId);
 }

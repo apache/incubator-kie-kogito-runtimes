@@ -34,7 +34,7 @@ import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.AbstractProcess;
-import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;

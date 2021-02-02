@@ -35,7 +35,7 @@ import org.kie.api.runtime.Context;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.internal.command.RegistryContext;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
 @XmlRootElement(name="get-completed-tasks-command")
 @XmlAccessorType(XmlAccessType.NONE)

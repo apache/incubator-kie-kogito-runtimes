@@ -24,7 +24,7 @@ import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.kie.api.runtime.process.ProcessContext;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 import static org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED;
 

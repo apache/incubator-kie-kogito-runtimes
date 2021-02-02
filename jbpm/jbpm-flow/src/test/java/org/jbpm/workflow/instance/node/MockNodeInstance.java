@@ -29,7 +29,7 @@ import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class MockNodeInstance extends NodeInstanceImpl {
     

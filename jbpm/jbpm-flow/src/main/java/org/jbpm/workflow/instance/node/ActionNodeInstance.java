@@ -29,7 +29,7 @@ import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 /**
  * Runtime counterpart of an action node.

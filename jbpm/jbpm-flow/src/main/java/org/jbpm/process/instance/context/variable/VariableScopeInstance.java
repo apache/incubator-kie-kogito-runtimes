@@ -28,8 +28,8 @@ import org.jbpm.process.instance.context.AbstractContextInstance;
 import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.instance.node.CompositeContextNodeInstance;
 import org.kie.kogito.process.VariableViolationException;
-import org.kie.kogito.process.event.KogitoProcessEventSupport;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 /**
  * 

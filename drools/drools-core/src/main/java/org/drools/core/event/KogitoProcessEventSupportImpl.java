@@ -29,15 +29,15 @@ import org.kie.api.event.process.SignalEvent;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.event.process.ProcessWorkItemTransitionEvent;
-import org.kie.kogito.process.event.KogitoProcessEventListener;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.event.ProcessWorkItemTransitionEvent;
+import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.workitem.Transition;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.uow.WorkUnit;
 
-import org.kie.kogito.process.event.KogitoProcessEventSupport;
+import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 
 public class KogitoProcessEventSupportImpl extends AbstractEventSupport<KogitoProcessEventListener> implements KogitoProcessEventSupport {
 

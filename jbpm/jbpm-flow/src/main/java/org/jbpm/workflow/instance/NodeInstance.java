@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.jbpm.process.instance.ContextInstance;
 import org.kie.api.definition.process.Node;
-import org.kie.kogito.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 /**
  * Represents a node instance in a RuleFlow. This is the runtime counterpart

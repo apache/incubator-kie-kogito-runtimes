@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.kogito.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.workitems.KogitoWorkItem;
 
 public class KogitoWorkItemImpl implements KogitoWorkItem, Serializable {

@@ -26,7 +26,7 @@ import java.util.Set;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.kogito.prediction.api.PredictionOutcome;
 import org.kie.kogito.prediction.api.PredictionService;
-import org.kie.kogito.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

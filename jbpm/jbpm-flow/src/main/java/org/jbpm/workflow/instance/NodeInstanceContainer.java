@@ -20,7 +20,7 @@ import java.util.Collection;
 
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
-import org.kie.kogito.process.runtime.KogitoNodeInstanceContainer;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 

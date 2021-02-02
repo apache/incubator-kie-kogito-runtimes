@@ -23,7 +23,7 @@ import java.util.function.BiFunction;
 
 import org.jbpm.process.core.Process;
 import org.jbpm.process.instance.ProcessInstance;
-import org.kie.kogito.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 /**
  * Represents a RuleFlow process. 

@@ -26,7 +26,7 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.command.RegistryContext;
-import org.kie.kogito.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class GetProcessInstanceVariableCommand implements ExecutableCommand<Object>, KogitoProcessInstanceIdCommand {

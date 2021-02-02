@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.process.event;
+package org.kie.kogito.internal.process.event;
 
 import org.kie.api.event.process.ProcessEventListener;
-import org.kie.kogito.event.process.ProcessWorkItemTransitionEvent;
 
 public interface KogitoProcessEventListener extends ProcessEventListener {
 
