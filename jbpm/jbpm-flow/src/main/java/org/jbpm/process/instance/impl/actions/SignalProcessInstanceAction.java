@@ -18,7 +18,6 @@ package org.jbpm.process.instance.impl.actions;
 import java.io.Serializable;
 import java.util.function.Function;
 
-import org.jbpm.process.instance.KogitoProcessRuntimeImpl;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.process.instance.impl.util.VariableUtil;
 import org.jbpm.workflow.core.node.Transformation;
