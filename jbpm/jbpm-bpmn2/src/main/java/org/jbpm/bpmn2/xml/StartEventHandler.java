@@ -170,11 +170,9 @@ public class StartEventHandler extends AbstractNodeHandler {
                         throw new IllegalArgumentException("Could not find error " + errorRef);
                     }
                     startNode.setMetaData("FaultCode", error.getErrorCode());
-
-                    //TODO: review the paramters
-                    startNode.setMetaData(MESSAGE_TYPE, error.getId());
+                    startNode.setMetaData(MESSAGE_TYPE, error.getErrorCode());
+                    startNode.setMetaData(TRIGGER_REF, error.getErrorCode());
                     startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.Signal.name());
-                    startNode.setMetaData(TRIGGER_REF, error.getId());
 
                     addTriggerWithInMappings(startNode, "Error-" + error.getErrorCode());
                 }

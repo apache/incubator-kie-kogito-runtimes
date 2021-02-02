@@ -20,15 +20,34 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.Work;
+import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
+import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.workflow.core.Node;
@@ -60,27 +79,13 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-
 import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_ASSOCIATION;
 import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_CONNECTION;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ADD_COMPENSATION_CONTEXT;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_DYNAMIC;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ERROR_EXCEPTION_HANDLER;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_GLOBAL;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_IMPORTS;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_NAME;
@@ -137,6 +142,9 @@ public class ProcessVisitor extends AbstractVisitor {
 
         visitVariableScope(variableScope, body, visitedVariables);
         visitSubVariableScopes(process.getNodes(), body, visitedVariables);
+
+        //exception scope
+        visitExceptionScope(process, body);
 
         visitInterfaces(process.getNodes(), body);
 
@@ -282,6 +290,25 @@ public class ProcessVisitor extends AbstractVisitor {
                 String contextId = ((CompensationScope) context).getContextContainerId();
                 body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_ADD_COMPENSATION_CONTEXT, new StringLiteralExpr(contextId)));
             }
+        }
+    }
+
+    private void visitExceptionScope(Process process, BlockStmt body) {
+        Context context = ((org.jbpm.workflow.core.WorkflowProcess) process).getDefaultContext(CompensationScope.EXCEPTION_SCOPE);
+        if (context instanceof ExceptionScope) {
+            ((ExceptionScope) context).getExceptionHandlers().entrySet().stream().forEach(e -> {
+                String faultCode = e.getKey();
+                ActionExceptionHandler handler = (ActionExceptionHandler) e.getValue();
+                Optional<String> faultVariable = Optional.ofNullable(handler.getFaultVariable());
+                SignalProcessInstanceAction action =
+                        (SignalProcessInstanceAction) handler.getAction().getMetaData("Action");
+                String signalName = action.getSignalName();
+                body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_ERROR_EXCEPTION_HANDLER,
+                                                   new StringLiteralExpr(signalName),
+                                                   new StringLiteralExpr(faultCode),
+                                                   faultVariable.<Expression>map(StringLiteralExpr::new)
+                                                           .orElse(new NullLiteralExpr())));
+            });
         }
     }
 }

@@ -425,6 +425,18 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         assertNodeTriggered(processInstance.getStringId(), "Start", "User Task", "MyBoundaryErrorEvent");
     }
 
+
+    @Test
+    public void testEndErrorWithSubprocess() throws Exception {
+        KieBase kbase = createKnowledgeBase("error/EndErrorWithEventSubprocess.bpmn2");
+        ksession = createKnowledgeSession(kbase);
+
+        ProcessInstance processInstance = ksession.startProcess("EndErrorWithEventSubprocess");
+
+        assertNodeTriggered(processInstance.getId(), "start", "task", "subprocess-task");
+    }
+
+
     class ExceptionWorkItemHandler implements KogitoWorkItemHandler {
 
         @Override
