@@ -18,20 +18,17 @@ package org.kie.kogito.integrationtests;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.decision.DecisionTestUtils;
-import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
-@QuarkusTestResource(KafkaQuarkusTestResource.class)
-public class QuarkusKogitoExtensionInitializerIT {
+public class QuarkusKogitoExtensionInitializerTest {
 
     @Test
     public void test() {
