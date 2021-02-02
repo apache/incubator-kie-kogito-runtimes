@@ -17,50 +17,31 @@ package org.kie.kogito.integrationtests;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.app.KogitoSpringbootApplication;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.cloudevents.extension.KogitoExtension;
-import org.kie.kogito.decision.DecisionTestUtils;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
-public class SpringBootKogitoExtensionInitializerIT {
+public class SpringBootKogitoExtensionInitializerTest {
 
-    @Container
-    public static KafkaContainer kafkaContainer = new KafkaContainer();
-
-    @DynamicPropertySource
-    static void kafkaProperties(DynamicPropertyRegistry registry) {
-        registry.add("kogito.addon.tracing.decision.kafka.bootstrapAddress", kafkaContainer::getBootstrapServers);
-        registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
-    }
-
-    @BeforeAll
-    static void registerExtension() {
-        KogitoExtension.register();
-    }
+    private static final String MODEL_NAME = "TestModelName";
+    private static final String MODEL_NAMESPACE = "TestModelNamespace";
 
     @Test
-    public void test() {
+    public void testKogitoExtension() {
         String eventJson = "" +
                 "{\n" +
                 "  \"specversion\": \"1.0\",\n" +
                 "  \"id\": \"SomeEventId\",\n" +
                 "  \"source\": \"SomeEventSource\",\n" +
                 "  \"type\": \"SomeEventType\",\n" +
-                "  \"" + KogitoExtension.KOGITO_DMN_MODEL_NAME + "\": \"" + DecisionTestUtils.MODEL_NAME + "\",\n" +
-                "  \"" + KogitoExtension.KOGITO_DMN_MODEL_NAMESPACE + "\": \"" + DecisionTestUtils.MODEL_NAMESPACE + "\",\n" +
+                "  \"" + KogitoExtension.KOGITO_DMN_MODEL_NAME + "\": \"" + MODEL_NAME + "\",\n" +
+                "  \"" + KogitoExtension.KOGITO_DMN_MODEL_NAMESPACE + "\": \"" + MODEL_NAMESPACE + "\",\n" +
                 "  \"data\": \"{}\"" +
                 "}";
 
@@ -68,7 +49,7 @@ public class SpringBootKogitoExtensionInitializerIT {
         KogitoExtension kogitoExtension = ExtensionProvider.getInstance().parseExtension(KogitoExtension.class, event);
 
         assertNotNull(kogitoExtension, "KogitoExtension not registered, please make sure bean org.kie.kogito.addon.cloudevents.quarkus.QuarkusKogitoExtensionInitializer has been loaded");
-        assertEquals(DecisionTestUtils.MODEL_NAME, kogitoExtension.getDmnModelName());
-        assertEquals(DecisionTestUtils.MODEL_NAMESPACE, kogitoExtension.getDmnModelNamespace());
+        assertEquals(MODEL_NAME, kogitoExtension.getDmnModelName());
+        assertEquals(MODEL_NAMESPACE, kogitoExtension.getDmnModelNamespace());
     }
 }
