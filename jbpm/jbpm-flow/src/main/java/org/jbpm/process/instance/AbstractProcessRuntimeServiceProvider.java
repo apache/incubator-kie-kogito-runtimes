@@ -17,13 +17,14 @@ package org.jbpm.process.instance;
 
 import java.util.Optional;
 
-import org.drools.core.event.KogitoProcessEventSupport;
+import org.drools.core.event.KogitoProcessEventSupportImpl;
 import org.jbpm.process.instance.impl.DefaultProcessInstanceManager;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessEventListenerConfig;
 import org.kie.kogito.process.WorkItemHandlerConfig;
 import org.kie.kogito.process.event.KogitoProcessEventListener;
+import org.kie.kogito.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.signal.SignalManagerHub;
@@ -36,7 +37,7 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
     private final ProcessInstanceManager processInstanceManager;
     private final SignalManager signalManager;
     private final KogitoWorkItemManager workItemManager;
-    private final KogitoProcessEventSupport eventSupport;
+    private final KogitoProcessEventSupportImpl eventSupport;
     private final UnitOfWorkManager unitOfWorkManager;
 
     public AbstractProcessRuntimeServiceProvider(JobsService jobsService,
@@ -50,7 +51,7 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
                 id -> Optional.ofNullable(
                         processInstanceManager.getProcessInstance(id)),
                 compositeSignalManager);
-        this.eventSupport = new KogitoProcessEventSupport(this.unitOfWorkManager);
+        this.eventSupport = new KogitoProcessEventSupportImpl(this.unitOfWorkManager);
         this.jobsService = jobsService;
         this.workItemManager = new LightWorkItemManager(processInstanceManager, signalManager, eventSupport);
 

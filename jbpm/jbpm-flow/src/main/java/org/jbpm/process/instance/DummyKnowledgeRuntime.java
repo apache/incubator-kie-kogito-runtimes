@@ -46,6 +46,7 @@ import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.kie.api.time.SessionClock;
 import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.runtime.KogitoWorkItemManager;
@@ -94,6 +95,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
     @Override
     public InternalProcessRuntime getProcessRuntime() {
         return this.processRuntime;
+    }
+
+    @Override
+    public KogitoProcessEventSupport getProcessEventSupport() {
+        return ((org.jbpm.process.instance.InternalProcessRuntime) processRuntime).getProcessEventSupport();
     }
 
     @Override

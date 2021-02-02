@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.drools.core.event.KogitoProcessEventSupport;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.ContextInstanceContainer;
@@ -29,6 +28,7 @@ import org.jbpm.process.instance.context.AbstractContextInstance;
 import org.jbpm.workflow.core.JbpmNode;
 import org.jbpm.workflow.instance.node.CompositeContextNodeInstance;
 import org.kie.kogito.process.VariableViolationException;
+import org.kie.kogito.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.process.runtime.KogitoNodeInstance;
 
 /**

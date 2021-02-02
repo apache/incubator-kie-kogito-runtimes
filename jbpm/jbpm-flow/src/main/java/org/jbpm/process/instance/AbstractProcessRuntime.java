@@ -20,11 +20,12 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.core.event.KogitoProcessEventSupport;
+import org.drools.core.event.KogitoProcessEventSupportImpl;
 import org.drools.core.event.ProcessEventSupport;
 import org.jbpm.process.instance.event.KogitoProcessEventListenerAdapter;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.process.event.KogitoProcessEventListener;
+import org.kie.kogito.process.event.KogitoProcessEventSupport;
 
 public abstract class AbstractProcessRuntime implements InternalProcessRuntime {
 
@@ -41,15 +42,15 @@ public abstract class AbstractProcessRuntime implements InternalProcessRuntime {
     }
 
     public void addEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.addEventListener( asKogitoProcessEventListener( listener ) );
+        (( KogitoProcessEventSupportImpl ) this.processEventSupport).addEventListener( asKogitoProcessEventListener( listener ) );
     }
 
     public void removeEventListener(final ProcessEventListener listener) {
-        this.processEventSupport.removeEventListener( removeKogitoProcessEventListener( listener ) );
+        (( KogitoProcessEventSupportImpl ) this.processEventSupport).removeEventListener( removeKogitoProcessEventListener( listener ) );
     }
 
     public List<ProcessEventListener> getProcessEventListeners() {
-        return (List<ProcessEventListener>) (Object) processEventSupport.getEventListeners();
+        return (List<ProcessEventListener>) (Object) (( KogitoProcessEventSupportImpl ) this.processEventSupport).getEventListeners();
     }
 
 

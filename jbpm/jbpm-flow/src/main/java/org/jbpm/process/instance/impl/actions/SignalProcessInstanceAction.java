@@ -18,8 +18,7 @@ package org.jbpm.process.instance.impl.actions;
 import java.io.Serializable;
 import java.util.function.Function;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
-import org.jbpm.process.instance.InternalProcessRuntime;
+import org.jbpm.process.instance.KogitoProcessRuntimeImpl;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.process.instance.impl.util.VariableUtil;
 import org.jbpm.workflow.core.node.Transformation;
@@ -94,7 +93,7 @@ public class SignalProcessInstanceAction implements Action, Serializable {
             signal = variableName;
         }
         String signalName = VariableUtil.resolveVariable(this.signalNameTemplate, context.getNodeInstance());
-        ((InternalProcessRuntime)KogitoProcessRuntime.asKogitoProcessRuntime(context.getKieRuntime()))
+        KogitoProcessRuntime.asKogitoProcessRuntime(context.getKieRuntime())
                 .getProcessEventSupport().fireOnSignal(context.getProcessInstance(), context
                         .getNodeInstance(), context.getKieRuntime(), signalName, signal);
         

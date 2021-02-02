@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 import org.drools.core.command.impl.CommandBasedStatefulKnowledgeSession;
-import org.drools.core.event.KogitoProcessEventSupport;
 import org.drools.core.impl.KogitoStatefulKnowledgeSessionImpl;
 import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.jbpm.process.instance.InternalProcessRuntime;
@@ -48,6 +47,7 @@ import org.kie.internal.command.RegistryContext;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.process.CorrelationKeyFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.workitems.KogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
@@ -168,14 +168,11 @@ public class DynamicUtils {
     private static void executeWorkItem(StatefulKnowledgeSessionImpl ksession,
                                         KogitoWorkItemImpl workItem,
                                         WorkItemNodeInstance workItemNodeInstance) {
-        KogitoProcessEventSupport eventSupport = ((InternalProcessRuntime)
-                ksession.getProcessRuntime()).getProcessEventSupport();
-        eventSupport.fireBeforeNodeTriggered(workItemNodeInstance,
-                                             ksession);
+        KogitoProcessEventSupport eventSupport = ((InternalProcessRuntime) ksession.getProcessRuntime()).getProcessEventSupport();
+        eventSupport.fireBeforeNodeTriggered(workItemNodeInstance, ksession);
         (( KogitoWorkItemManager ) ksession.getWorkItemManager()).internalExecuteWorkItem(workItem);
         workItemNodeInstance.internalSetWorkItemId(workItem.getStringId());
-        eventSupport.fireAfterNodeTriggered(workItemNodeInstance,
-                                            ksession);
+        eventSupport.fireAfterNodeTriggered(workItemNodeInstance, ksession);
     }
 
     private static DynamicNodeInstance findDynamicContext(WorkflowProcessInstance processInstance,

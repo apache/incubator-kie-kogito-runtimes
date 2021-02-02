@@ -24,6 +24,7 @@ import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.ProcessRuntime;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.process.event.KogitoProcessEventSupport;
 
 public interface KogitoProcessRuntime {
 
@@ -32,7 +33,9 @@ public interface KogitoProcessRuntime {
     }
 
     static KogitoProcessRuntime asKogitoProcessRuntime(ProcessRuntime kogitoProcessRuntimeProvider) {
-        return ((Provider)kogitoProcessRuntimeProvider).getKogitoProcessRuntime();
+        return kogitoProcessRuntimeProvider instanceof KogitoProcessRuntime ?
+                (KogitoProcessRuntime) kogitoProcessRuntimeProvider :
+                ((Provider)kogitoProcessRuntimeProvider).getKogitoProcessRuntime();
     }
 
     /**
@@ -196,12 +199,13 @@ public interface KogitoProcessRuntime {
      */
     KogitoWorkItemManager getWorkItemManager();
 
-
     /**
      * Returns <code>JobsService</code> responsible for scheduling tasks such as timers.
      * @return the <code>JobsService</code>
      */
     JobsService getJobsService();
+
+    KogitoProcessEventSupport getProcessEventSupport();
 
     @Deprecated
     KieRuntime getKieRuntime();
