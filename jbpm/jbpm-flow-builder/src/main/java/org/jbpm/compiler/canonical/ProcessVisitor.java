@@ -294,7 +294,7 @@ public class ProcessVisitor extends AbstractVisitor {
     }
 
     private void visitExceptionScope(Process process, BlockStmt body) {
-        Context context = ((org.jbpm.workflow.core.WorkflowProcess) process).getDefaultContext(CompensationScope.EXCEPTION_SCOPE);
+        Context context = ((org.jbpm.workflow.core.WorkflowProcess) process).getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
         if (context instanceof ExceptionScope) {
             ((ExceptionScope) context).getExceptionHandlers().entrySet().stream().forEach(e -> {
                 String faultCode = e.getKey();

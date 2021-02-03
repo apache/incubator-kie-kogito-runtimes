@@ -434,6 +434,21 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         ProcessInstance processInstance = ksession.startProcess("EndErrorWithEventSubprocess");
 
         assertNodeTriggered(processInstance.getId(), "start", "task", "subprocess-task");
+
+        assertEquals(processInstance.getState(), ProcessInstance.STATE_COMPLETED);
+    }
+
+
+    @Test
+    public void testEndError() throws Exception {
+        KieBase kbase = createKnowledgeBase("error/EndError.bpmn2");
+        ksession = createKnowledgeSession(kbase);
+
+        ProcessInstance processInstance = ksession.startProcess("EndError");
+
+        assertNodeTriggered(processInstance.getId(), "start", "task");
+
+        assertEquals(processInstance.getState(), ProcessInstance.STATE_ABORTED);
     }
 
 
