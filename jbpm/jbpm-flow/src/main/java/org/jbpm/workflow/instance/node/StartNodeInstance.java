@@ -21,7 +21,7 @@ import java.util.Date;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.event.EventTransformer;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
@@ -73,6 +73,6 @@ public class StartNodeInstance extends NodeInstanceImpl {
    
     public void triggerCompleted() {
         ((org.jbpm.workflow.instance.NodeInstanceContainer)getNodeInstanceContainer()).setCurrentLevel(getLevel());
-        triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, true);
+        triggerCompleted( Node.CONNECTION_DEFAULT_TYPE, true);
     }
 }

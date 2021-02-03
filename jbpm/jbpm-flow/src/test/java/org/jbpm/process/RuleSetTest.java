@@ -28,7 +28,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.test.Person;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.test.util.AbstractBaseTest;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.RuleSetNode;
@@ -133,8 +133,8 @@ public class RuleSetTest extends AbstractBaseTest {
         return process;
     }
 
-    private void connect( JbpmNode sourceNode, JbpmNode targetNode) {
-        new ConnectionImpl(sourceNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
-                           targetNode, JbpmNode.CONNECTION_DEFAULT_TYPE);
+    private void connect( Node sourceNode, Node targetNode) {
+        new ConnectionImpl(sourceNode, Node.CONNECTION_DEFAULT_TYPE,
+                           targetNode, Node.CONNECTION_DEFAULT_TYPE);
     }
 }

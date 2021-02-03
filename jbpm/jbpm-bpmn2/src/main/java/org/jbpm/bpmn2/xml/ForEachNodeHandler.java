@@ -20,14 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.drools.compiler.compiler.xml.XmlDumper;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.jbpm.workflow.core.node.ForEachNode;
 import org.xml.sax.Attributes;
 
 public class ForEachNodeHandler extends AbstractCompositeNodeHandler {
     
-    protected JbpmNode createNode( Attributes attrs) {
+    protected Node createNode( Attributes attrs) {
     	throw new IllegalArgumentException("Reading in should be handled by end event handler");
     }
     
@@ -36,7 +36,7 @@ public class ForEachNodeHandler extends AbstractCompositeNodeHandler {
         return ForEachNode.class;
     }
 
-    public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+    public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
     	ForEachNode forEachNode = (ForEachNode) node;
     	writeNode("subProcess", forEachNode, xmlDump, metaDataType);
 		xmlDump.append(" >" + EOL);
@@ -70,7 +70,7 @@ public class ForEachNodeHandler extends AbstractCompositeNodeHandler {
         }
         xmlDump.append("      </multiInstanceLoopCharacteristics>" + EOL);
 		// nodes
-		List<JbpmNode> subNodes = getSubNodes(forEachNode);
+		List<Node> subNodes = getSubNodes(forEachNode);
 		XmlBPMNProcessDumper.INSTANCE.visitNodes(subNodes, xmlDump, metaDataType);
         
         // connections
@@ -79,14 +79,14 @@ public class ForEachNodeHandler extends AbstractCompositeNodeHandler {
 		endNode("subProcess", xmlDump);
 	}
 	
-	protected List<JbpmNode> getSubNodes( ForEachNode forEachNode) {
-    	List<JbpmNode> subNodes =
-    		new ArrayList<JbpmNode>();
+	protected List<Node> getSubNodes( ForEachNode forEachNode) {
+    	List<Node> subNodes =
+    		new ArrayList<Node>();
         for (org.kie.api.definition.process.Node subNode: forEachNode.getNodes()) {
         	// filter out composite start and end nodes as they can be regenerated
         	if ((!(subNode instanceof CompositeNode.CompositeNodeStart)) &&
     			(!(subNode instanceof CompositeNode.CompositeNodeEnd))) {
-        		subNodes.add(( JbpmNode ) subNode);
+        		subNodes.add(( Node ) subNode);
         	}
         }
         return subNodes;

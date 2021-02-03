@@ -36,7 +36,7 @@ import org.jbpm.process.test.TestWorkItemHandler;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
@@ -80,7 +80,7 @@ public class CompensationTest extends AbstractBaseTest {
      * General HELPER methods
      */
 
-    private void addCompensationScope( final JbpmNode node, final org.kie.api.definition.process.NodeContainer parentContainer,
+    private void addCompensationScope( final Node node, final org.kie.api.definition.process.NodeContainer parentContainer,
                                        final String compensationHandlerId) {
         ContextContainer contextContainer = (ContextContainer) parentContainer;
         CompensationScope scope = null;
@@ -107,14 +107,14 @@ public class CompensationTest extends AbstractBaseTest {
         node.setMetaData("isForCompensation", Boolean.TRUE);
     }
 
-    private JbpmNode findNode( RuleFlowProcess process, String nodeName) {
-        JbpmNode found = null;
+    private Node findNode( RuleFlowProcess process, String nodeName) {
+        Node found = null;
         Queue<org.kie.api.definition.process.Node> nodes = new LinkedList<org.kie.api.definition.process.Node>();
         nodes.addAll(Arrays.asList(process.getNodes()));
         while( ! nodes.isEmpty() ) { 
             org.kie.api.definition.process.Node node = nodes.poll();
             if (node.getName().equals(nodeName) ) {
-                found = ( JbpmNode ) node;
+                found = ( Node ) node;
             }
             if( node instanceof NodeContainer ) { 
                 nodes.addAll(Arrays.asList(((NodeContainer) node).getNodes()));
@@ -139,7 +139,7 @@ public class CompensationTest extends AbstractBaseTest {
         // run process
         ksession = createKieSession(process);
 
-        JbpmNode compensatedNode = findNode(process, "work1");
+        Node compensatedNode = findNode(process, "work1");
         String compensationEvent = (String) compensatedNode.getMetaData().get("UniqueId");
 
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
@@ -241,7 +241,7 @@ public class CompensationTest extends AbstractBaseTest {
 
         // Create process
         StartNode startNode = startNodeCreator.createNode("start");
-        JbpmNode lastNode = startNode;
+        Node lastNode = startNode;
         WorkItemNode[] workItemNodes = new WorkItemNode[3];
         for (int i = 0; i < 3; ++i) {
             workItemNodes[i] = workItemNodeCreator.createNode("work" + (i + 1));
@@ -268,7 +268,7 @@ public class CompensationTest extends AbstractBaseTest {
         List<String> eventList = new ArrayList<String>();
         RuleFlowProcess process = createCompensationEventSubProcessProcess(processId, workItemNames, eventList);
 
-        JbpmNode toCompensateNode = findNode(process, "sub0");
+        Node toCompensateNode = findNode(process, "sub0");
         String compensationEvent = (String) toCompensateNode.getMetaData().get("UniqueId");
         
         // run process
@@ -429,7 +429,7 @@ public class CompensationTest extends AbstractBaseTest {
         List<String> eventList = new ArrayList<String>();
         RuleFlowProcess process = createNestedCompensationEventSubProcessProcess(processId, workItemNames, eventList);
         
-        JbpmNode toCompensateNode = findNode(process, "sub1");
+        Node toCompensateNode = findNode(process, "sub1");
         String compensationEvent = (String) toCompensateNode.getMetaData().get("UniqueId");
         
         ksession = createKieSession(process);
@@ -445,7 +445,7 @@ public class CompensationTest extends AbstractBaseTest {
         List<String> eventList = new ArrayList<String>();
         RuleFlowProcess process = createNestedCompensationEventSubProcessProcess(processId, workItemNames, eventList);
 
-        JbpmNode toCompensateNode = findNode(process, "sub0");
+        Node toCompensateNode = findNode(process, "sub0");
         String compensationEvent = CompensationScope.IMPLICIT_COMPENSATION_PREFIX + toCompensateNode.getMetaData().get("UniqueId");
 
         ksession = createKieSession(process);
@@ -562,7 +562,7 @@ public class CompensationTest extends AbstractBaseTest {
         // run process
         ksession = createKieSession(process);
 
-        JbpmNode compensatedNode = findNode(process, "work-comp-1");
+        Node compensatedNode = findNode(process, "work-comp-1");
         String compensationEvent = (String) compensatedNode.getMetaData().get("UniqueId");
 
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
@@ -579,7 +579,7 @@ public class CompensationTest extends AbstractBaseTest {
         // run process
         ksession = createKieSession(process);
         
-        JbpmNode toCompensateNode = findNode(process, "sub2");
+        Node toCompensateNode = findNode(process, "sub2");
         String compensationEvent = CompensationScope.IMPLICIT_COMPENSATION_PREFIX 
                 + (String) toCompensateNode.getMetaData().get("UniqueId");
 
@@ -664,7 +664,7 @@ public class CompensationTest extends AbstractBaseTest {
             endNodeCreator.setNodeContainer(compositeNode);
             
             StartNode startNode = startNodeCreator.createNode("start");
-            JbpmNode lastNode = startNode;
+            Node lastNode = startNode;
             WorkItemNode[] workItemNodes = new WorkItemNode[3];
             for (int i = 0; i < 2; ++i) {
                 workItemNodes[i] = workItemNodeCreator.createNode("work-comp-" + (i + 1));
@@ -685,7 +685,7 @@ public class CompensationTest extends AbstractBaseTest {
     }
     
     private void createBoundaryEventCompensationHandler( org.jbpm.workflow.core.NodeContainer nodeContainer,
-                                                         JbpmNode attachedToNode, final List<String> eventList, final String id) throws Exception {
+                                                         Node attachedToNode, final List<String> eventList, final String id) throws Exception {
         
         NodeCreator<BoundaryEventNode> boundaryNodeCreator = new NodeCreator<BoundaryEventNode>(nodeContainer, BoundaryEventNode.class);
         BoundaryEventNode boundaryNode = boundaryNodeCreator.createNode("boundary" + id);

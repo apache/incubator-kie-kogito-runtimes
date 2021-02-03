@@ -16,13 +16,13 @@
 
 package org.jbpm.bpmn2.xml;
 
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.Join;
 import org.xml.sax.Attributes;
 
 public class JoinHandler extends AbstractNodeHandler {
     
-    protected JbpmNode createNode( Attributes attrs) {
+    protected Node createNode( Attributes attrs) {
     	throw new IllegalArgumentException("Reading in should be handled by gateway handler");
     }
     
@@ -31,7 +31,7 @@ public class JoinHandler extends AbstractNodeHandler {
         return Join.class;
     }
 
-	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
 		Join join = (Join) node;
 		String type = null;
 		switch (join.getType()) {

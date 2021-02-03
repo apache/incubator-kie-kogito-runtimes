@@ -23,12 +23,11 @@ import java.util.Map;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstanceManager;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.Model;
@@ -95,7 +94,7 @@ public class AbstractProcessInstanceTest {
 
         processInstance.startFrom(NODE_ID);
 
-        verify(nodeInstance).trigger(null, JbpmNode.CONNECTION_DEFAULT_TYPE);
+        verify(nodeInstance).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
         verify(unitOfWork).intercept(any());
     }
 
@@ -105,14 +104,14 @@ public class AbstractProcessInstanceTest {
 
         processInstance.triggerNode(NODE_ID);
 
-        verify(nodeInstance).trigger(null, JbpmNode.CONNECTION_DEFAULT_TYPE);
+        verify(nodeInstance).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
         verify(unitOfWork).intercept(any());
     }
 
     private NodeInstance givenExistingNode(String nodeId) {
         RuleFlowProcess process = mock(RuleFlowProcess.class);
         when(wpi.getProcess()).thenReturn(process);
-        Node node = mock(Node.class);
+        org.kie.api.definition.process.Node node = mock( org.kie.api.definition.process.Node.class);
         when(node.getMetaData()).thenReturn(Collections.singletonMap("UniqueId", nodeId));
         when(process.getNodesRecursively()).thenReturn(Arrays.asList(node));
 

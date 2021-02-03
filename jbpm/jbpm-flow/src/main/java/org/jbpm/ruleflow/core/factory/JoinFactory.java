@@ -17,7 +17,7 @@
 package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.Join;
 
@@ -29,7 +29,7 @@ public class JoinFactory extends NodeFactory {
         super(nodeContainerFactory, nodeContainer, id);
     }
 
-    protected JbpmNode createNode() {
+    protected Node createNode() {
         return new Join();
     }
 

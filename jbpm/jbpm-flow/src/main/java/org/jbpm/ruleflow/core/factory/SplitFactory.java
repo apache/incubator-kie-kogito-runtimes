@@ -19,7 +19,7 @@ package org.jbpm.ruleflow.core.factory;
 import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
 import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.impl.ConstraintImpl;
@@ -34,7 +34,7 @@ public class SplitFactory extends NodeFactory {
         super(nodeContainerFactory, nodeContainer, id);
     }
 
-    protected JbpmNode createNode() {
+    protected Node createNode() {
         return new Split();
     }
 
@@ -65,7 +65,7 @@ public class SplitFactory extends NodeFactory {
         constraintImpl.setConstraint(constraint);
         constraintImpl.setPriority(priority);
         getSplit().addConstraint(
-                new ConnectionRef(toNodeId, JbpmNode.CONNECTION_DEFAULT_TYPE), constraintImpl);
+                new ConnectionRef(toNodeId, Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
         return this;
     }
 
@@ -79,7 +79,7 @@ public class SplitFactory extends NodeFactory {
         constraintImpl.setEvaluator(evaluator);
         constraintImpl.setConstraint("expression already given as evaluator");
         getSplit().addConstraint(
-                new ConnectionRef(name, toNodeId, JbpmNode.CONNECTION_DEFAULT_TYPE), constraintImpl);
+                new ConnectionRef(name, toNodeId, Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
         return this;
     }
 }

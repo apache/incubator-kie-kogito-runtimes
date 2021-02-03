@@ -24,7 +24,7 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.Action;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
@@ -45,7 +45,7 @@ public class ActionNodeInstance extends NodeInstanceImpl {
 
     public void internalTrigger( KogitoNodeInstance from, String type) {
         triggerTime = new Date();
-        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                 "An ActionNode only accepts default incoming connections!");
         }
@@ -84,7 +84,7 @@ public class ActionNodeInstance extends NodeInstanceImpl {
     }
 
     public void triggerCompleted() {
-        triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, true);
+        triggerCompleted( Node.CONNECTION_DEFAULT_TYPE, true);
     }
 
 

@@ -41,14 +41,13 @@ import org.jbpm.process.instance.context.exclusive.ExclusiveGroupInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.process.instance.impl.ConstraintEvaluator;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.node.ActionNodeInstance;
 import org.jbpm.workflow.instance.node.CompositeNodeInstance;
 import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.NodeInstanceContainer;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
@@ -108,7 +107,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     }
     
     public String getNodeName() {
-    	Node node = getNode();
+    	org.kie.api.definition.process.Node node = getNode();
     	return node == null ? "" : node.getName();
     }
     
@@ -143,7 +142,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         }
     }
 
-    public Node getNode() {
+    public org.kie.api.definition.process.Node getNode() {
     	try {
     		return ((org.jbpm.workflow.core.NodeContainer)
 				this.nodeInstanceContainer.getNodeContainer()).internalGetNode( this.nodeId );
@@ -162,7 +161,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     public void cancel() {
         leaveTime = new Date();
         boolean hidden = false;
-        Node node = getNode();
+        org.kie.api.definition.process.Node node = getNode();
     	if (node != null && node.getMetaData().get(HIDDEN) != null) {
     		hidden = true;
     	}
@@ -255,7 +254,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     
     public void triggerCompleted(String type, boolean remove) {  
         leaveTime = new Date();
-        Node node = getNode();
+        org.kie.api.definition.process.Node node = getNode();
         if (node != null) {
 	    	String uniqueId = (String) node.getMetaData().get(UNIQUE_ID);
 	    	if( uniqueId == null ) { 
@@ -337,7 +336,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         }
         if (connections == null || connections.isEmpty() ) {
         	boolean hidden = false;
-        	Node currentNode = getNode();
+        	org.kie.api.definition.process.Node currentNode = getNode();
         	if (currentNode != null && currentNode.getMetaData().get(HIDDEN) != null) {
         		hidden = true;
         	}
@@ -440,7 +439,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     public void triggerNode(long nodeId, boolean fireEvents) {
     	org.jbpm.workflow.instance.NodeInstance nodeInstance = ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer())
             .getNodeInstance( (( KogitoNode ) getNode()).getParentContainer().getNode(nodeId));
-    	triggerNodeInstance(nodeInstance, JbpmNode.CONNECTION_DEFAULT_TYPE, fireEvents);
+    	triggerNodeInstance(nodeInstance, Node.CONNECTION_DEFAULT_TYPE, fireEvents);
     }
     
     public Context resolveContext(String contextId, Object param) {

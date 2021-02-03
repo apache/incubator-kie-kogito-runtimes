@@ -33,7 +33,7 @@ import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.event.NonAcceptingEventTypeFilter;
 import org.jbpm.process.core.impl.DataTransformerRegistry;
 import org.jbpm.process.core.timer.Timer;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ConstraintTrigger;
 import org.jbpm.workflow.core.node.EventSubProcessNode;
@@ -56,7 +56,7 @@ public class StartEventHandler extends AbstractNodeHandler {
     private DataTransformerRegistry transformerRegistry = DataTransformerRegistry.get();
 
     @Override
-    protected JbpmNode createNode( Attributes attrs) {
+    protected Node createNode( Attributes attrs) {
         return new StartNode();
     }
 
@@ -68,7 +68,7 @@ public class StartEventHandler extends AbstractNodeHandler {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void handleNode( final JbpmNode node, final Element element, final String uri,
+    protected void handleNode( final Node node, final Element element, final String uri,
                                final String localName, final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         StartNode startNode = (StartNode) node;
@@ -256,7 +256,7 @@ public class StartEventHandler extends AbstractNodeHandler {
     }
 
     @Override
-    public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+    public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
         StartNode startNode = (StartNode) node;
         writeNode("startEvent", startNode, xmlDump, metaDataType);
         xmlDump.append(" isInterrupting=\"");
@@ -363,7 +363,7 @@ public class StartEventHandler extends AbstractNodeHandler {
         endNode("startEvent", xmlDump);
     }
 
-    protected void handleTimerNode( final JbpmNode node, final Element element,
+    protected void handleTimerNode( final Node node, final Element element,
                                     final String uri, final String localName,
                                     final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);

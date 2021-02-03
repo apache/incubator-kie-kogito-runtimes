@@ -17,7 +17,7 @@
 package org.jbpm.workflow.instance.node;
 
 import org.jbpm.test.util.AbstractBaseTest;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactoryRegistry;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ public class ProcessNodeInstanceFactoryTest extends AbstractBaseTest {
     
     @Test
     public void testDefaultEntries() throws Exception {
-        JbpmNode node = new ActionNode();
+        Node node = new ActionNode();
         assertNotNull( NodeInstanceFactoryRegistry.getInstance(null).getProcessNodeInstanceFactory( node ).getClass() );
     }
     

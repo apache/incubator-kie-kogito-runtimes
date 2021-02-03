@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.workflow.core.Constraint;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.NodeContainer;
@@ -34,7 +34,7 @@ import org.kie.api.definition.process.NodeContainer;
 /**
  * Default implementation of a node.
  */
-public abstract class NodeImpl implements JbpmNode, ContextResolver {
+public abstract class NodeImpl implements Node, ContextResolver {
 
     private static final long serialVersionUID = 510l;
 
@@ -200,7 +200,7 @@ public abstract class NodeImpl implements JbpmNode, ContextResolver {
      */
     public Connection getFrom() {
         final List<Connection> list =
-                getIncomingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
+                getIncomingConnections( Node.CONNECTION_DEFAULT_TYPE);
         if (list.size() == 0) {
             return null;
         }
@@ -220,7 +220,7 @@ public abstract class NodeImpl implements JbpmNode, ContextResolver {
      */
     public Connection getTo() {
         final List<Connection> list =
-                getOutgoingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
+                getOutgoingConnections( Node.CONNECTION_DEFAULT_TYPE);
         if (list.size() == 0) {
             return null;
         }
@@ -239,14 +239,14 @@ public abstract class NodeImpl implements JbpmNode, ContextResolver {
      * Helper method for nodes that have multiple default incoming connections
      */
     public List<Connection> getDefaultIncomingConnections() {
-        return getIncomingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
+        return getIncomingConnections( Node.CONNECTION_DEFAULT_TYPE);
     }
 
     /**
      * Helper method for nodes that have multiple default outgoing connections
      */
     public List<Connection> getDefaultOutgoingConnections() {
-        return getOutgoingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE);
+        return getOutgoingConnections( Node.CONNECTION_DEFAULT_TYPE);
     }
 
     public NodeContainer getParentContainer() {

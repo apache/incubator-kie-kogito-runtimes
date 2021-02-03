@@ -26,13 +26,12 @@ import java.util.regex.Matcher;
 import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.util.PatternConstants;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.ProcessInstanceResolverFactory;
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,20 +83,20 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
         return new NodeContainerImpl();
     }
 
-    public Node[] getNodes() {
+    public org.kie.api.definition.process.Node[] getNodes() {
         return nodeContainer.getNodes();
     }
 
-    public Node getNode(final long id) {
+    public org.kie.api.definition.process.Node getNode( final long id) {
         return nodeContainer.getNode(id);
     }
 
     @Override
-    public Node getNodeByUniqueId( String s ) {
+    public org.kie.api.definition.process.Node getNodeByUniqueId( String s ) {
         throw new UnsupportedOperationException();
     }
 
-    public Node internalGetNode(long id) {
+    public org.kie.api.definition.process.Node internalGetNode( long id) {
     	try {
     		return getNode(id);
     	} catch (IllegalArgumentException e) {
@@ -109,14 +108,14 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
     	}
     }
 
-    public void removeNode(final Node node) {
+    public void removeNode(final org.kie.api.definition.process.Node node) {
         nodeContainer.removeNode(node);
-        (( JbpmNode ) node).setParentContainer(null);
+        (( Node ) node).setParentContainer(null);
     }
 
-    public void addNode(final Node node) {
+    public void addNode(final org.kie.api.definition.process.Node node) {
         nodeContainer.addNode(node);
-        (( JbpmNode ) node).setParentContainer(this);
+        (( Node ) node).setParentContainer(this);
     }
 
     public boolean isAutoComplete() {
@@ -144,17 +143,17 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
     }
 
     @Override
-    public List<Node> getNodesRecursively() {
-        List<Node> nodes = new ArrayList<>();
+    public List<org.kie.api.definition.process.Node> getNodesRecursively() {
+        List<org.kie.api.definition.process.Node> nodes = new ArrayList<>();
 
         processNodeContainer(nodeContainer, nodes);
 
         return nodes;
     }
 
-    protected void processNodeContainer(org.jbpm.workflow.core.NodeContainer nodeContainer, List<Node> nodes) {
+    protected void processNodeContainer(org.jbpm.workflow.core.NodeContainer nodeContainer, List<org.kie.api.definition.process.Node> nodes) {
 
-        for (Node node : nodeContainer.getNodes()){
+        for (org.kie.api.definition.process.Node node : nodeContainer.getNodes()){
             nodes.add(node);
             if (node instanceof org.jbpm.workflow.core.NodeContainer) {
                 processNodeContainer((org.jbpm.workflow.core.NodeContainer) node, nodes);
@@ -162,8 +161,8 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
         }
     }
 
-    protected Node getContainerNode(Node currentNode, org.jbpm.workflow.core.NodeContainer nodeContainer, long nodeId) {
-        for (Node node : nodeContainer.getNodes()) {
+    protected org.kie.api.definition.process.Node getContainerNode( org.kie.api.definition.process.Node currentNode, org.jbpm.workflow.core.NodeContainer nodeContainer, long nodeId) {
+        for (org.kie.api.definition.process.Node node : nodeContainer.getNodes()) {
             if (nodeId == node.getId()) {
                 return currentNode;
             } else {
@@ -175,12 +174,12 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
         return null;
     }
 
-    public Node getParentNode(long nodeId) {
+    public org.kie.api.definition.process.Node getParentNode( long nodeId) {
         return getContainerNode(null, nodeContainer, nodeId);
     }
 
     public List<StartNode> getTimerStart() {
-        Node[] nodes = getNodes();
+        org.kie.api.definition.process.Node[] nodes = getNodes();
 
         List<StartNode> timerStartNodes = new ArrayList<StartNode>();
         for (int i = 0; i < nodes.length; i++) {

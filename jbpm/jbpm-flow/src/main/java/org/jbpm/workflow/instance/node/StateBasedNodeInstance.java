@@ -62,7 +62,7 @@ import org.kie.kogito.timer.TimerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.jbpm.workflow.core.JbpmNode.CONNECTION_DEFAULT_TYPE;
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 
 public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl implements EventBasedNodeInstanceInterface, KogitoEventListener {
 

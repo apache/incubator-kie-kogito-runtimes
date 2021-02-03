@@ -20,7 +20,7 @@ import java.lang.reflect.Constructor;
 
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.impl.WorkImpl;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.NodeImpl;
@@ -54,10 +54,10 @@ public class NodeCreator<T extends NodeImpl> {
         this.nodeContainer = newNodeContainer;
     }
 
-    public static void connect( JbpmNode nodeOne, JbpmNode nodeTwo ) {
+    public static void connect( Node nodeOne, Node nodeTwo ) {
         new ConnectionImpl(
-                nodeOne, JbpmNode.CONNECTION_DEFAULT_TYPE,
-                nodeTwo, JbpmNode.CONNECTION_DEFAULT_TYPE
+                nodeOne, Node.CONNECTION_DEFAULT_TYPE,
+                nodeTwo, Node.CONNECTION_DEFAULT_TYPE
         );
     }
 }

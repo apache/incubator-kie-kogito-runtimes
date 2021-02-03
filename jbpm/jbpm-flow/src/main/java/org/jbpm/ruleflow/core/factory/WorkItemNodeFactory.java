@@ -23,7 +23,7 @@ import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.process.core.impl.ParameterDefinitionImpl;
 import org.jbpm.process.core.impl.WorkImpl;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.WorkItemNode;
 
@@ -38,7 +38,7 @@ public class WorkItemNodeFactory extends StateBasedNodeFactory implements Mappab
         super(nodeContainerFactory, nodeContainer, id);
     }
 
-    protected JbpmNode createNode() {
+    protected Node createNode() {
         return new WorkItemNode();
     }
 

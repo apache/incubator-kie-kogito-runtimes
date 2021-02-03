@@ -35,13 +35,12 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.SubProcessFactory;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
-import org.kie.api.definition.process.Node;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
@@ -74,7 +73,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
 		if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
 			return;
 		}
-        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                 "A SubProcess node only accepts default incoming connections!");
         }
@@ -203,7 +202,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     }
 
     public String getNodeName() {
-    	Node node = getNode();
+    	org.kie.api.definition.process.Node node = getNode();
     	if (node == null) {
     		return "[Dynamic] Sub Process";
     	}

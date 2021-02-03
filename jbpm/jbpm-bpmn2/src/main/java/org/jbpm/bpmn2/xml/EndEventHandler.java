@@ -29,7 +29,7 @@ import org.jbpm.process.instance.impl.actions.HandleMessageAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.EndNode;
@@ -46,7 +46,7 @@ import static org.jbpm.bpmn2.xml.ProcessHandler.createJavaAction;
 public class EndEventHandler extends AbstractNodeHandler {
 
     @Override
-    protected JbpmNode createNode( Attributes attrs) {
+    protected Node createNode( Attributes attrs) {
         EndNode node = new EndNode();
         node.setTerminate(false);
         return node;
@@ -62,7 +62,7 @@ public class EndEventHandler extends AbstractNodeHandler {
     public Object end(final String uri, final String localName,
             final ExtensibleXmlParser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
-        JbpmNode node = ( JbpmNode ) parser.getCurrent();
+        Node node = ( Node ) parser.getCurrent();
         // determine type of event definition, so the correct type of node
         // can be generated
         super.handleNode(node, element, uri, localName, parser);
@@ -111,7 +111,7 @@ public class EndEventHandler extends AbstractNodeHandler {
         return node;
     }
 
-    public void handleTerminateNode( final JbpmNode node, final Element element, final String uri,
+    public void handleTerminateNode( final Node node, final Element element, final String uri,
                                      final String localName, final ExtensibleXmlParser parser) throws SAXException {
         ((EndNode) node).setTerminate(true);
 
@@ -132,7 +132,7 @@ public class EndEventHandler extends AbstractNodeHandler {
         }
     }
 
-    public void handleSignalNode( final JbpmNode node, final Element element, final String uri,
+    public void handleSignalNode( final Node node, final Element element, final String uri,
                                   final String localName, final ExtensibleXmlParser parser) throws SAXException {
         EndNode endNode = (EndNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -170,7 +170,7 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public void handleMessageNode( final JbpmNode node, final Element element, final String uri,
+    public void handleMessageNode( final Node node, final Element element, final String uri,
                                    final String localName, final ExtensibleXmlParser parser) throws SAXException {
         EndNode endNode = (EndNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -247,7 +247,7 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-	public void handleErrorNode( final JbpmNode node, final Element element, final String uri,
+	public void handleErrorNode( final Node node, final Element element, final String uri,
                                  final String localName, final ExtensibleXmlParser parser) throws SAXException {
         FaultNode faultNode = (FaultNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -281,7 +281,7 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-	public void handleEscalationNode( final JbpmNode node, final Element element, final String uri,
+	public void handleEscalationNode( final Node node, final Element element, final String uri,
                                       final String localName, final ExtensibleXmlParser parser) throws SAXException {
         FaultNode faultNode = (FaultNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -320,7 +320,7 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     @Override
-    public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+    public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
         throw new IllegalArgumentException("Writing out should be handled by specific handlers");
     }
 

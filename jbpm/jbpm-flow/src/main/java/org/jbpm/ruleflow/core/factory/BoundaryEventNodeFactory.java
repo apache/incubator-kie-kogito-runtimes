@@ -26,7 +26,7 @@ import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.event.NonAcceptingEventTypeFilter;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
 
@@ -51,7 +51,7 @@ public class BoundaryEventNodeFactory extends EventNodeFactory {
     }
 
     @Override
-    protected JbpmNode createNode() {
+    protected Node createNode() {
         return new BoundaryEventNode();
     }
 

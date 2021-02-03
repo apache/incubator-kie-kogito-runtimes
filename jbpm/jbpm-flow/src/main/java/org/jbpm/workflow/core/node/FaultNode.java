@@ -16,7 +16,7 @@
 
 package org.jbpm.workflow.core.node;
 
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.kie.api.definition.process.Connection;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 
@@ -65,7 +65,7 @@ public class FaultNode extends ExtendedNodeImpl {
 	
     public void validateAddIncomingConnection(final String type, final Connection connection) {
         super.validateAddIncomingConnection(type, connection);
-        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
         	throw new IllegalArgumentException(
                     "This type of node [" + connection.getTo().getMetaData().get("UniqueId") + ", " + connection.getTo().getName() 
                     + "] only accepts default incoming connection type!");

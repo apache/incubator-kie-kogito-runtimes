@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,7 +85,7 @@ class BaseProcessInstanceManagementResourceTest {
     private KogitoWorkflowProcess wp;
     
     @Mock
-    private JbpmNode node;
+    private Node node;
 
     @Mock
     private Object variables;

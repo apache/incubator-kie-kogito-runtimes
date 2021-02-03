@@ -19,7 +19,7 @@ package org.jbpm.ruleflow.core.factory;
 import java.util.function.Predicate;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.MilestoneNode;
 import org.kie.api.runtime.process.ProcessContext;
@@ -32,7 +32,7 @@ public class MilestoneNodeFactory extends StateBasedNodeFactory {
         super(nodeContainerFactory, nodeContainer, id);
     }
 
-    protected JbpmNode createNode() {
+    protected Node createNode() {
         return new MilestoneNode();
     }
 

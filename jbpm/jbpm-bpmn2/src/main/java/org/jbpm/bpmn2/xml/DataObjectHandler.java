@@ -35,7 +35,7 @@ import org.jbpm.process.core.datatype.impl.type.FloatDataType;
 import org.jbpm.process.core.datatype.impl.type.IntegerDataType;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.core.datatype.impl.type.StringDataType;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -56,7 +56,7 @@ public class DataObjectHandler extends BaseAbstractHandler implements Handler {
         this.validPeers = new HashSet<Class<?>>();
         this.validPeers.add(null);
         this.validPeers.add(Variable.class);
-        this.validPeers.add( JbpmNode.class);
+        this.validPeers.add( Node.class);
         this.validPeers.add(SequenceFlow.class);
     }
     

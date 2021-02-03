@@ -17,7 +17,7 @@
 package org.jbpm.workflow.instance.node;
 
 import org.drools.core.spi.KogitoProcessContext;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.MilestoneNode;
 import org.kie.kogito.event.process.ContextAwareEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
@@ -40,7 +40,7 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance {
         if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
             return;
         }
-        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                     "A MilestoneNode only accepts default incoming connections!");
         }

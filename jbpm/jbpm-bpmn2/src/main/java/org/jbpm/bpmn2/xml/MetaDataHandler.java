@@ -29,7 +29,7 @@ import org.jbpm.bpmn2.core.Lane;
 import org.jbpm.process.core.ValueObject;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -39,7 +39,7 @@ public class MetaDataHandler extends BaseAbstractHandler
     public MetaDataHandler() {
         if ( (this.validParents == null) && (this.validPeers == null) ) {
             this.validParents = new HashSet();
-            this.validParents.add( JbpmNode.class );
+            this.validParents.add( Node.class );
             this.validParents.add( RuleFlowProcess.class );
             this.validParents.add( Variable.class );
             this.validParents.add( SequenceFlow.class );
@@ -89,8 +89,8 @@ public class MetaDataHandler extends BaseAbstractHandler
 			getMetaData().put(name, value);
 		}
 		public Map<String, Object> getMetaData() {
-			if (parent instanceof JbpmNode ) {
-				return (( JbpmNode ) parent).getMetaData();
+			if (parent instanceof Node ) {
+				return (( Node ) parent).getMetaData();
 			} else if (parent instanceof RuleFlowProcess) {
 				return ((RuleFlowProcess) parent).getMetaData();
 			} else if (parent instanceof Variable) {

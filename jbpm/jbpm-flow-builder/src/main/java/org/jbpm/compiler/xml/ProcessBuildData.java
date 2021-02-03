@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.kie.api.definition.process.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class ProcessBuildData {
     private static List<ProcessDataEventListenerProvider> providers = collectProviders();
 
     private List<Process> processes = new ArrayList<Process>();
-    private Map<Long, JbpmNode> nodes = new HashMap<Long, JbpmNode>();
+    private Map<Long, Node> nodes = new HashMap<Long, Node>();
     private Map<String, Object> metaData = new HashMap<String, Object>();
 
     private List<ProcessDataEventListener> listeners = new ArrayList<ProcessDataEventListener>();
@@ -67,15 +67,15 @@ public class ProcessBuildData {
         this.processes = process;
     }
 
-    public Map<Long, JbpmNode> getNodes() {
+    public Map<Long, Node> getNodes() {
         return nodes;
     }
-    public boolean addNode( JbpmNode node) {
+    public boolean addNode( Node node) {
         onNode(node);
         return( this.nodes.put( node.getId(), node ) != null );
     }
 
-    public JbpmNode getNode( Long id) {
+    public Node getNode( Long id) {
         return this.nodes.get( id );
     }
 
@@ -90,7 +90,7 @@ public class ProcessBuildData {
 
     // listener support
 
-    protected void onNode( JbpmNode node) {
+    protected void onNode( Node node) {
         for (ProcessDataEventListener listener : listeners) {
             listener.onNodeAdded(node);
         }

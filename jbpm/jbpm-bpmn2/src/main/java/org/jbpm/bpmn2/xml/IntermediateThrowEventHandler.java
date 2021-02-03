@@ -32,7 +32,7 @@ import org.jbpm.process.instance.impl.actions.HandleMessageAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -61,14 +61,14 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 	private static final String TRANSFORMATION_KEY = "Transformation";
 
 	@Override
-	protected JbpmNode createNode( Attributes attrs) {
+	protected Node createNode( Attributes attrs) {
 		return new ActionNode();
 	}
 
 	@Override
     @SuppressWarnings("unchecked")
 	public Class generateNodeFor() {
-		return JbpmNode.class;
+		return Node.class;
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 		return node;
 	}
 
-	protected void handleLinkNode(Element element, JbpmNode node,
+	protected void handleLinkNode(Element element, Node node,
 			org.w3c.dom.Node xmlLinkNode, ExtensibleXmlParser parser) {
 
 		node.setName(element.getAttribute("name"));
@@ -191,7 +191,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 
 	}
 
-	public void handleSignalNode( final JbpmNode node, final Element element,
+	public void handleSignalNode( final Node node, final Element element,
                                   final String uri, final String localName,
                                   final ExtensibleXmlParser parser) throws SAXException {
 		ActionNode actionNode = (ActionNode) node;
@@ -227,7 +227,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 	}
 
     @SuppressWarnings("unchecked")
-	public void handleMessageNode( final JbpmNode node, final Element element,
+	public void handleMessageNode( final Node node, final Element element,
                                    final String uri, final String localName,
                                    final ExtensibleXmlParser parser) throws SAXException {
 		ActionNode actionNode = (ActionNode) node;
@@ -270,7 +270,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void handleEscalationNode( final JbpmNode node, final Element element,
+	public void handleEscalationNode( final Node node, final Element element,
                                       final String uri, final String localName,
                                       final ExtensibleXmlParser parser) throws SAXException {
 		ActionNode actionNode = (ActionNode) node;
@@ -371,7 +371,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 	}
 
 	@Override
-	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
 		throw new IllegalArgumentException(
 				"Writing out should be handled by action node handler");
 	}

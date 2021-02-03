@@ -25,7 +25,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.context.AbstractContextInstance;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.node.CompositeContextNodeInstance;
 import org.kie.kogito.process.VariableViolationException;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
@@ -131,7 +131,7 @@ public class VariableScopeInstance extends AbstractContextInstance {
             }
         }
     	if (contextInstanceContainer instanceof CompositeContextNodeInstance) {
-    		this.variableIdPrefix = (( JbpmNode ) ((CompositeContextNodeInstance) contextInstanceContainer).getNode()).getUniqueId();
+    		this.variableIdPrefix = (( Node ) ((CompositeContextNodeInstance) contextInstanceContainer).getNode()).getUniqueId();
     		this.variableInstanceIdPrefix = ((CompositeContextNodeInstance) contextInstanceContainer).getUniqueId();
     	}
 	}

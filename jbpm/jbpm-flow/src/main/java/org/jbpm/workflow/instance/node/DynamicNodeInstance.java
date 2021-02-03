@@ -31,7 +31,7 @@ import org.kie.kogito.event.process.ContextAwareEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
-import static org.jbpm.workflow.core.JbpmNode.CONNECTION_DEFAULT_TYPE;
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
 
 public class DynamicNodeInstance extends CompositeContextNodeInstance {

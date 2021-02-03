@@ -45,7 +45,7 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.util.PatternConstants;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.RuleUnitFactory;
@@ -105,7 +105,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
             if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
                 return;
             }
-            if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+            if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
                 throw new IllegalArgumentException("A RuleSetNode only accepts default incoming connections!");
             }
             RuleSetNode ruleSetNode = getRuleSetNode();

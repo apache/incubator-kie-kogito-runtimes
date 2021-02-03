@@ -18,13 +18,13 @@ package org.jbpm.bpmn2.xml;
 
 import org.drools.compiler.compiler.xml.XmlDumper;
 import org.jbpm.process.core.timer.Timer;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.TimerNode;
 import org.xml.sax.Attributes;
 
 public class TimerNodeHandler extends AbstractNodeHandler {
     
-    protected JbpmNode createNode( Attributes attrs) {
+    protected Node createNode( Attributes attrs) {
         throw new IllegalArgumentException("Reading in should be handled by intermediate catch event handler");
     }
     
@@ -33,7 +33,7 @@ public class TimerNodeHandler extends AbstractNodeHandler {
         return TimerNode.class;
     }
 
-	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
 	    TimerNode timerNode = (TimerNode) node;
 		writeNode("intermediateCatchEvent", timerNode, xmlDump, metaDataType);
 		xmlDump.append(">" + EOL);

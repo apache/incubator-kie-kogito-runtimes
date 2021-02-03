@@ -72,7 +72,7 @@ import org.kie.kogito.process.impl.AbstractProcess;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
-import static org.jbpm.workflow.core.JbpmNode.CONNECTION_DEFAULT_TYPE;
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
 import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
 import static org.junit.jupiter.api.Assertions.assertEquals;

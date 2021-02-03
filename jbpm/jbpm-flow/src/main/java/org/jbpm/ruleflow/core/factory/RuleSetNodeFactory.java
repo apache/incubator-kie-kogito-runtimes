@@ -18,7 +18,7 @@ package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.RuleUnitFactory;
@@ -36,7 +36,7 @@ public class RuleSetNodeFactory extends StateBasedNodeFactory implements Mappabl
         super(nodeContainerFactory, nodeContainer, id);
     }
 
-    protected JbpmNode createNode() {
+    protected Node createNode() {
         return new RuleSetNode();
     }
 

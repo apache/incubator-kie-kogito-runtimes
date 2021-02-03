@@ -46,7 +46,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -152,9 +152,9 @@ public class ProcessVisitor extends AbstractVisitor {
         visitMetaData(process.getMetaData(), body, FACTORY_FIELD_NAME);
         visitHeader(process, body);
 
-        List<JbpmNode> processNodes = new ArrayList<>();
+        List<Node> processNodes = new ArrayList<>();
         for (org.kie.api.definition.process.Node procNode : process.getNodes()) {
-            processNodes.add(( JbpmNode ) procNode);
+            processNodes.add(( Node ) procNode);
         }
         visitNodes(processNodes, body, variableScope, metadata);
         visitConnections(process.getNodes(), body);

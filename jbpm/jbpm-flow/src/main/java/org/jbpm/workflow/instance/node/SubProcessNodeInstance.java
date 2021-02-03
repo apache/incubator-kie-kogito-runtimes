@@ -40,7 +40,7 @@ import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.process.instance.impl.util.VariableUtil;
 import org.jbpm.util.PatternConstants;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.core.node.Transformation;
@@ -48,7 +48,6 @@ import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.jbpm.workflow.instance.impl.VariableScopeResolverFactory;
 import org.kie.api.KieBase;
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.EventListener;
@@ -87,7 +86,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
             return;
         }
-        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                     "A SubProcess node only accepts default incoming connections!");
         }
@@ -360,7 +359,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
     }
 
     public String getNodeName() {
-        Node node = getNode();
+        org.kie.api.definition.process.Node node = getNode();
         if (node == null) {
             return "[Dynamic] Sub Process";
         }

@@ -24,7 +24,7 @@ import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.test.util.AbstractBaseTest;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactoryRegistry;
@@ -62,8 +62,8 @@ public class StartNodeInstanceTest extends AbstractBaseTest {
         
         mockNode.setId( 2 );
         new ConnectionImpl(
-    		startNode, JbpmNode.CONNECTION_DEFAULT_TYPE,
-    		mockNode, JbpmNode.CONNECTION_DEFAULT_TYPE);
+    		startNode, Node.CONNECTION_DEFAULT_TYPE,
+    		mockNode, Node.CONNECTION_DEFAULT_TYPE);
         
         process.addNode( startNode );
         process.addNode( mockNode );
@@ -78,7 +78,7 @@ public class StartNodeInstanceTest extends AbstractBaseTest {
         
         MockNodeInstance mockNodeInstance = mockNodeFactory.getMockNodeInstance();
         List<NodeInstance> triggeredBy =
-        	mockNodeInstance.getTriggers().get( JbpmNode.CONNECTION_DEFAULT_TYPE);
+        	mockNodeInstance.getTriggers().get( Node.CONNECTION_DEFAULT_TYPE);
         assertNotNull(triggeredBy);
         assertEquals(1, triggeredBy.size());
         assertSame(startNode.getId(), triggeredBy.get(0).getNodeId());

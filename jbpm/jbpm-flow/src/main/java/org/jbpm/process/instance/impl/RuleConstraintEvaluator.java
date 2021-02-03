@@ -22,7 +22,7 @@ import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.KogitoInternalAgenda;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.workflow.core.Constraint;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.kie.api.definition.process.Connection;
 
@@ -100,8 +100,8 @@ public class RuleConstraintEvaluator implements Constraint,
         ProcessInstance processInstance = (ProcessInstance) instance.getProcessInstance();
         InternalAgenda agenda = (InternalAgenda) processInstance.getKnowledgeRuntime().getAgenda();
         String rule = "RuleFlow-Split-" + processInstance.getProcessId() + "-" + 
-        	(( JbpmNode ) instance.getNode()).getUniqueId() + "-" +
-        	(( JbpmNode ) connection.getTo()).getUniqueId() + "-" + connection.getToType();
+        	(( Node ) instance.getNode()).getUniqueId() + "-" +
+        	(( Node ) connection.getTo()).getUniqueId() + "-" + connection.getToType();
 
         return ((KogitoInternalAgenda)agenda).isRuleActiveInRuleFlowGroup("DROOLS_SYSTEM", rule, processInstance.getStringId() );
     }

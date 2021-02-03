@@ -31,7 +31,7 @@ import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.util.PatternConstants;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.EventNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
@@ -85,7 +85,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
 
     @Override
     public void internalTrigger( final KogitoNodeInstance from, String type) {
-    	if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+    	if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                 "An EventNode only accepts default incoming connections!");
         }
@@ -157,7 +157,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
         }
         cancelSlaTimer();
         ((org.jbpm.workflow.instance.NodeInstanceContainer)getNodeInstanceContainer()).setCurrentLevel(getLevel());
-        triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, true);
+        triggerCompleted( Node.CONNECTION_DEFAULT_TYPE, true);
     }
 
     @Override

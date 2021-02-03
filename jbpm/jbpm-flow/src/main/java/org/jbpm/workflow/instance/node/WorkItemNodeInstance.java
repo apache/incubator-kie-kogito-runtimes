@@ -49,7 +49,7 @@ import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.util.PatternConstants;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.Assignment;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.Transformation;
@@ -59,7 +59,6 @@ import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.jbpm.workflow.instance.impl.WorkItemResolverFactory;
-import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.EnvironmentName;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.DataTransformer;
@@ -432,7 +431,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
             exceptionHandlingCompleted((ProcessInstance) event, null);
         } else if (type.equals("RuleFlow-Activate" + getProcessInstance().getProcessId() + "-" + getNode().getMetaData().get("UniqueId"))) {
 
-            trigger(null, JbpmNode.CONNECTION_DEFAULT_TYPE);
+            trigger(null, Node.CONNECTION_DEFAULT_TYPE);
         } else {
             super.signalEvent(type, event);
         }
@@ -462,7 +461,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
 
     @Override
     public String getNodeName() {
-        Node node = getNode();
+        org.kie.api.definition.process.Node node = getNode();
         if (node == null) {
             String nodeName = "[Dynamic]";
             KogitoWorkItem item = getWorkItem();

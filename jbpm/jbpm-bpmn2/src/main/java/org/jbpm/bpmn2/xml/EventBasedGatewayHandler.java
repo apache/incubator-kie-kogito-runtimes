@@ -16,13 +16,13 @@
 
 package org.jbpm.bpmn2.xml;
 
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.Split;
 import org.xml.sax.Attributes;
 
 public class EventBasedGatewayHandler extends AbstractNodeHandler {
     
-    protected JbpmNode createNode( Attributes attrs) {
+    protected Node createNode( Attributes attrs) {
         final String type = attrs.getValue("gatewayDirection");
         if ("Diverging".equals(type)) {
         	Split split = new Split();
@@ -37,10 +37,10 @@ public class EventBasedGatewayHandler extends AbstractNodeHandler {
     
     @SuppressWarnings("unchecked")
 	public Class generateNodeFor() {
-        return JbpmNode.class;
+        return Node.class;
     }
 
-	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
 		throw new IllegalArgumentException("Writing out should be handled by split / join handler");
 	}
 

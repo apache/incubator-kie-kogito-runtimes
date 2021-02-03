@@ -18,7 +18,7 @@ package org.jbpm.compiler.xml.processes;
 
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.w3c.dom.Element;
@@ -26,11 +26,11 @@ import org.xml.sax.SAXException;
 
 public class ActionNodeHandler extends AbstractNodeHandler {
 
-    protected JbpmNode createNode() {
+    protected Node createNode() {
         return new ActionNode();
     }
 
-    public void handleNode( final JbpmNode node, final Element element, final String uri,
+    public void handleNode( final Node node, final Element element, final String uri,
                             final String localName, final ExtensibleXmlParser parser)
             throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
@@ -48,7 +48,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
         return ActionNode.class;
     }
 
-	public void writeNode( JbpmNode node, StringBuilder xmlDump, boolean includeMeta) {
+	public void writeNode( Node node, StringBuilder xmlDump, boolean includeMeta) {
 		ActionNode actionNode = (ActionNode) node;
 		writeNode("actionNode", actionNode, xmlDump, includeMeta);
         DroolsConsequenceAction action = (DroolsConsequenceAction) actionNode.getAction();

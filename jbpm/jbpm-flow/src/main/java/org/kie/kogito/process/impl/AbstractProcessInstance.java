@@ -31,14 +31,13 @@ import java.util.stream.Collectors;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
-import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.ProcessRuntime;
 import org.kie.internal.process.CorrelationAwareProcessRuntime;
 import org.kie.internal.process.CorrelationKey;
@@ -333,15 +332,15 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         WorkflowProcessInstance wfpi = processInstance();
         RuleFlowProcess rfp = ((RuleFlowProcess) wfpi.getProcess());
 
-        Node node = rfp.getNodesRecursively()
+        org.kie.api.definition.process.Node node = rfp.getNodesRecursively()
                 .stream()
                 .filter(ni -> nodeId.equals(ni.getMetaData().get("UniqueId"))).findFirst().orElseThrow(() -> new NodeNotFoundException(this.id, nodeId));
 
-        Node parentNode = rfp.getParentNode(node.getId());
+        org.kie.api.definition.process.Node parentNode = rfp.getParentNode(node.getId());
 
         NodeInstanceContainer nodeInstanceContainerNode = parentNode == null ? wfpi : ((NodeInstanceContainer) wfpi.getNodeInstance(parentNode));
 
-        nodeInstanceContainerNode.getNodeInstance(node).trigger(null, JbpmNode.CONNECTION_DEFAULT_TYPE);
+        nodeInstanceContainerNode.getNodeInstance(node).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
 
         addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
     }
@@ -553,7 +552,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 pInstance.setState(STATE_ACTIVE);
                 pInstance.internalSetErrorNodeId(null);
                 pInstance.internalSetErrorMessage(null);
-                ni.trigger(null, JbpmNode.CONNECTION_DEFAULT_TYPE);
+                ni.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
                 removeOnFinish();
             }
 
@@ -564,7 +563,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 pInstance.setState(STATE_ACTIVE);
                 pInstance.internalSetErrorNodeId(null);
                 pInstance.internalSetErrorMessage(null);
-                ((NodeInstanceImpl) ni).triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, true);
+                ((NodeInstanceImpl) ni).triggerCompleted( Node.CONNECTION_DEFAULT_TYPE, true);
                 removeOnFinish();
             }
         };

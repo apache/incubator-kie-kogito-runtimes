@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.api.runtime.process.EventListener;
@@ -61,7 +61,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
 
     @Override
     public void internalTrigger(KogitoNodeInstance from, String type) {
-        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                     "A TimerNode only accepts default incoming connections!");
         }
@@ -96,7 +96,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
     }
 
     public void triggerCompleted(boolean remove) {
-        triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, remove);
+        triggerCompleted( Node.CONNECTION_DEFAULT_TYPE, remove);
     }
 
     @Override

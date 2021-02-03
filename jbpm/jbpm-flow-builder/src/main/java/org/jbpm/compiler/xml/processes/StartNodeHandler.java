@@ -22,7 +22,7 @@ import java.util.Map;
 import org.drools.compiler.compiler.xml.XmlDumper;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.ConstraintTrigger;
 import org.jbpm.workflow.core.node.EventTrigger;
 import org.jbpm.workflow.core.node.StartNode;
@@ -30,7 +30,7 @@ import org.jbpm.workflow.core.node.Trigger;
 
 public class StartNodeHandler extends AbstractNodeHandler {
     
-    protected JbpmNode createNode() {
+    protected Node createNode() {
         return new StartNode();
     }
     
@@ -39,7 +39,7 @@ public class StartNodeHandler extends AbstractNodeHandler {
         return StartNode.class;
     }
 
-	public void writeNode( JbpmNode node, StringBuilder xmlDump, boolean includeMeta) {
+	public void writeNode( Node node, StringBuilder xmlDump, boolean includeMeta) {
 		StartNode startNode = (StartNode) node;
 		writeNode("start", startNode, xmlDump, includeMeta);
 		List<Trigger> triggers = startNode.getTriggers();

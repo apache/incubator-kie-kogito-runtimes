@@ -19,14 +19,14 @@ package org.jbpm.bpmn2.xml;
 import java.util.Map;
 
 import org.jbpm.workflow.core.Constraint;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.node.Split;
 import org.xml.sax.Attributes;
 
 public class SplitHandler extends AbstractNodeHandler {
     
-    protected JbpmNode createNode( Attributes attrs) {
+    protected Node createNode( Attributes attrs) {
     	throw new IllegalArgumentException("Reading in should be handled by gateway handler");
     }
     
@@ -35,7 +35,7 @@ public class SplitHandler extends AbstractNodeHandler {
         return Split.class;
     }
 
-	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
 		Split split = (Split) node;
 		String type = null;
 		switch (split.getType()) {

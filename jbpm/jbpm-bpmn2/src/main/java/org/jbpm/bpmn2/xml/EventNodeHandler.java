@@ -18,13 +18,13 @@ package org.jbpm.bpmn2.xml;
 
 import org.drools.compiler.compiler.xml.XmlDumper;
 import org.jbpm.process.core.event.EventTypeFilter;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.EventNode;
 import org.xml.sax.Attributes;
 
 public class EventNodeHandler extends AbstractNodeHandler {
     
-    protected JbpmNode createNode( Attributes attrs) {
+    protected Node createNode( Attributes attrs) {
         throw new IllegalArgumentException("Reading in should be handled by intermediate catch event handler");
     }
     
@@ -33,7 +33,7 @@ public class EventNodeHandler extends AbstractNodeHandler {
         return EventNode.class;
     }
 
-	public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+	public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
 		EventNode eventNode = (EventNode) node;
 		String attachedTo = (String) eventNode.getMetaData("AttachedTo");
 		if (attachedTo == null) {

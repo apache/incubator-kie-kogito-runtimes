@@ -27,7 +27,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNode;
  * Represents a node in a RuleFlow. 
  * 
  */
-public interface JbpmNode extends KogitoNode, Contextable, Serializable {
+public interface Node extends KogitoNode, Contextable, Serializable {
 
     String CONNECTION_DEFAULT_TYPE = "DROOLS_DEFAULT";
     

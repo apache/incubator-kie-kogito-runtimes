@@ -18,7 +18,7 @@ package org.jbpm.workflow.core.node;
 
 import java.util.function.Predicate;
 
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.runtime.process.ProcessContext;
 
@@ -55,7 +55,7 @@ public class MilestoneNode extends StateBasedNode implements Constrainable {
 
     public void validateAddIncomingConnection(final String type, final Connection connection) {
         super.validateAddIncomingConnection(type, connection);
-        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throwValidationException(connection, "only accepts default incoming connection type!");
         }
         if (getFrom() != null && !Boolean.parseBoolean(System.getProperty("jbpm.enable.multi.con"))) {
@@ -65,7 +65,7 @@ public class MilestoneNode extends StateBasedNode implements Constrainable {
 
     public void validateAddOutgoingConnection(final String type, final Connection connection) {
         super.validateAddOutgoingConnection(type, connection);
-        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throwValidationException(connection, "only accepts default outgoing connection type!");
         }
         if (getTo() != null && !Boolean.parseBoolean(System.getProperty("jbpm.enable.multi.con"))) {

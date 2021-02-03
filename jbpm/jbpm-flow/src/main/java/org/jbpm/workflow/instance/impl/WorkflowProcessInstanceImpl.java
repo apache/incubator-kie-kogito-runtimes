@@ -48,7 +48,7 @@ import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
@@ -72,7 +72,6 @@ import org.jbpm.workflow.instance.node.EventNodeInstanceInterface;
 import org.jbpm.workflow.instance.node.EventSubProcessNodeInstance;
 import org.jbpm.workflow.instance.node.FaultNodeInstance;
 import org.jbpm.workflow.instance.node.StateBasedNodeInstance;
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.NodeInstanceContainer;
@@ -276,7 +275,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     @Override
-    public NodeInstance getNodeInstance(final Node node) {
+    public NodeInstance getNodeInstance(final org.kie.api.definition.process.Node node) {
         NodeInstanceFactory conf = NodeInstanceFactoryRegistry.getInstance(getKnowledgeRuntime().getEnvironment()).getProcessNodeInstanceFactory(node);
         if (conf == null) {
             throw new IllegalArgumentException("Illegal node type: "
@@ -469,13 +468,13 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             setStartDate(new Date());
             registerExternalEventNodeListeners();
             // activate timer event sub processes
-            Node[] nodes = getNodeContainer().getNodes();
-            for (Node node : nodes) {
+            org.kie.api.definition.process.Node[] nodes = getNodeContainer().getNodes();
+            for (org.kie.api.definition.process.Node node : nodes) {
                 if (node instanceof EventSubProcessNode) {
                     Map<Timer, DroolsAction> timers = ((EventSubProcessNode) node).getTimers();
                     if (timers != null && !timers.isEmpty()) {
                         EventSubProcessNodeInstance eventSubProcess = (EventSubProcessNodeInstance) getNodeInstance(node);
-                        eventSubProcess.trigger(null, JbpmNode.CONNECTION_DEFAULT_TYPE);
+                        eventSubProcess.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
                     }
                 }
             }
@@ -526,7 +525,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private void registerExternalEventNodeListeners() {
-        for (Node node : getWorkflowProcess().getNodes()) {
+        for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
             if (node instanceof EventNode && "external".equals(((EventNode) node).getScope())) {
                 addEventListener(((EventNode) node).getType(), EMPTY_EVENT_LISTENER, true);
             } else if (node instanceof EventSubProcessNode) {
@@ -545,7 +544,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private void unregisterExternalEventNodeListeners() {
-        for (Node node : getWorkflowProcess().getNodes()) {
+        for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
             if (node instanceof EventNode && "external".equals(((EventNode) node).getScope())) {
                 externalEventListeners.remove(((EventNode) node).getType());
             }
@@ -604,7 +603,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                         listener.signalEvent(type, event);
                     }
                 }
-                for (Node node : getWorkflowProcess().getNodes()) {
+                for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
                     if (node instanceof EventNodeInterface
                             && ((EventNodeInterface) node).acceptsEvent(type, event, getResolver(node, currentView))) {
                         if (node instanceof EventNode && ((EventNode) node).getFrom() == null) {
@@ -626,7 +625,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                     }
                 }
                 if (((org.jbpm.workflow.core.WorkflowProcess) getWorkflowProcess()).isDynamic()) {
-                    for (Node node : getWorkflowProcess().getNodes()) {
+                    for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
                         if (type.equals(node.getName()) && node.getIncomingConnections().isEmpty()) {
                             NodeInstance nodeInstance = getNodeInstance(node);
                             if (event != null) {
@@ -638,7 +637,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                                 }
                                 nodeInstance.setDynamicParameters(dynamicParams);
                             }
-                            nodeInstance.trigger(null, JbpmNode.CONNECTION_DEFAULT_TYPE);
+                            nodeInstance.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
                         } else if (node instanceof CompositeNode) {
                             Optional<NodeInstance> instance = this.nodeInstances.stream().filter(ni -> ni.getNodeId() == node.getId()).findFirst();
                             instance.ifPresent(n -> ((CompositeNodeInstance) n).signalEvent(type, event));
@@ -654,7 +653,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         }
     }
 
-    private Function<String, String> getResolver(Node node, List<NodeInstance> currentView) {
+    private Function<String, String> getResolver( org.kie.api.definition.process.Node node, List<NodeInstance> currentView) {
         if (node instanceof DynamicNode) {
             // special handling for dynamic node to allow to resolve variables from individual node instances of the dynamic node
             // instead of just relying on process instance's variables
@@ -806,7 +805,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 
             } else if (n instanceof EventSubProcessNode) {
                 EventSubProcessNode eventSubProcessNode = (EventSubProcessNode) n;
-                Node startNode = eventSubProcessNode.findStartNode();
+                org.kie.api.definition.process.Node startNode = eventSubProcessNode.findStartNode();
                 Map<Timer, DroolsAction> timers = eventSubProcessNode.getTimers();
                 if (timers != null && !timers.isEmpty()) {
                     getNodeInstances(eventSubProcessNode.getId()).forEach(ni -> {
@@ -857,7 +856,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     @Override
     public void nodeInstanceCompleted(NodeInstance nodeInstance, String outType) {
-        Node nodeInstanceNode = nodeInstance.getNode();
+        org.kie.api.definition.process.Node nodeInstanceNode = nodeInstance.getNode();
         if (nodeInstanceNode != null) {
             Object compensationBoolObj = nodeInstanceNode.getMetaData().get(IS_FOR_COMPENSATION);
             boolean isForCompensation = compensationBoolObj != null && (Boolean) compensationBoolObj;
@@ -883,7 +882,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         } else {
             int eventSubprocessCounter = 0;
             for (NodeInstance nodeInstance : nodeInstances) {
-                Node node = nodeInstance.getNode();
+                org.kie.api.definition.process.Node node = nodeInstance.getNode();
                 if (node instanceof EventSubProcessNode) {
                     if (((EventSubProcessNodeInstance) nodeInstance).getNodeInstances().isEmpty()) {
                         eventSubprocessCounter++;
@@ -988,7 +987,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         return this.deploymentId != null && !this.deploymentId.isEmpty();
     }
 
-    protected boolean useAsync(final Node node) {
+    protected boolean useAsync(final org.kie.api.definition.process.Node node) {
         if (!(node instanceof EventSubProcessNode) && (node instanceof ActionNode || node instanceof StateBasedNode || node instanceof EndNode)) {
             boolean asyncMode = Boolean.parseBoolean((String) node.getMetaData().get(CUSTOM_ASYNC));
             if (asyncMode) {
@@ -1111,7 +1110,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 .collect(Collectors.toSet());
     }
 
-    private <N extends Node> Stream<N> getNodesByType(Class<N> nodeClass) {
+    private <N extends org.kie.api.definition.process.Node> Stream<N> getNodesByType( Class<N> nodeClass) {
         return getWorkflowProcess().getNodesRecursively().stream().filter(nodeClass::isInstance).map(nodeClass::cast);
     }
 

@@ -25,7 +25,7 @@ import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
-import static org.jbpm.workflow.core.JbpmNode.CONNECTION_DEFAULT_TYPE;
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
 import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
 

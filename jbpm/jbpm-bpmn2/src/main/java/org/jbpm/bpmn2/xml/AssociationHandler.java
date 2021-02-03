@@ -27,7 +27,7 @@ import org.jbpm.bpmn2.core.Lane;
 import org.jbpm.bpmn2.core.SequenceFlow;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.CompositeNode;
@@ -49,7 +49,7 @@ public class AssociationHandler extends BaseAbstractHandler implements Handler {
             this.validPeers.add(null);
             this.validPeers.add(Lane.class);
             this.validPeers.add(Variable.class);
-            this.validPeers.add( JbpmNode.class);
+            this.validPeers.add( Node.class);
             this.validPeers.add(SequenceFlow.class);
             this.validPeers.add(Lane.class);
             this.validPeers.add(Association.class);

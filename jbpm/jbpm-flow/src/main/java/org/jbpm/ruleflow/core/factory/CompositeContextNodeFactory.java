@@ -23,7 +23,7 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.CompositeContextNode;
@@ -133,13 +133,13 @@ public class CompositeContextNodeFactory extends RuleFlowNodeContainerFactory {
     public RuleFlowNodeContainerFactory done() {
         if (linkedIncomingNodeId != -1) {
             getCompositeNode().linkIncomingConnections(
-                    JbpmNode.CONNECTION_DEFAULT_TYPE,
-                    linkedIncomingNodeId, JbpmNode.CONNECTION_DEFAULT_TYPE);
+                    Node.CONNECTION_DEFAULT_TYPE,
+                    linkedIncomingNodeId, Node.CONNECTION_DEFAULT_TYPE);
         }
         if (linkedOutgoingNodeId != -1) {
             getCompositeNode().linkOutgoingConnections(
-                    linkedOutgoingNodeId, JbpmNode.CONNECTION_DEFAULT_TYPE,
-                    JbpmNode.CONNECTION_DEFAULT_TYPE);
+                    linkedOutgoingNodeId, Node.CONNECTION_DEFAULT_TYPE,
+                    Node.CONNECTION_DEFAULT_TYPE);
         }
         nodeContainer.addNode(getCompositeNode());
         return nodeContainerFactory;

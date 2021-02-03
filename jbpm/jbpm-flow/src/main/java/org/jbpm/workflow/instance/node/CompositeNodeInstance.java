@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.jbpm.workflow.core.node.EndNode;
@@ -41,7 +41,6 @@ import org.jbpm.workflow.instance.impl.NodeInstanceFactory;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactoryRegistry;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
@@ -90,7 +89,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     }
 
     private void registerExternalEventNodeListeners() {
-    	for (Node node: getCompositeNode().getNodes()) {
+    	for (org.kie.api.definition.process.Node node: getCompositeNode().getNodes()) {
 			if (node instanceof EventNode) {
 				if ("external".equals(((EventNode) node).getScope())) {
 					getProcessInstance().addEventListener(
@@ -135,7 +134,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
         } else {
         	// try to search for start nodes
         	boolean found = false;
-        	for (Node node: getCompositeNode().getNodes()) {
+        	for (org.kie.api.definition.process.Node node: getCompositeNode().getNodes()) {
         		if (node instanceof StartNode) {
         			StartNode startNode = (StartNode) node;
         			if (startNode.getTriggers() == null || startNode.getTriggers().isEmpty()) {
@@ -248,7 +247,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
         return null;
     }
 
-    public NodeInstance getNodeInstance(final Node node) {
+    public NodeInstance getNodeInstance(final org.kie.api.definition.process.Node node) {
         if (node instanceof CompositeNode.CompositeNodeStart) {
             return buildCompositeNodeInstance(new CompositeNodeStartInstance(), node);
         }
@@ -267,7 +266,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
         return nodeInstance;
     }
 
-    private NodeInstance buildCompositeNodeInstance(NodeInstanceImpl nodeInstance, Node node) {
+    private NodeInstance buildCompositeNodeInstance( NodeInstanceImpl nodeInstance, org.kie.api.definition.process.Node node) {
         nodeInstance.setNodeId(node.getId());
         nodeInstance.setNodeInstanceContainer(this);
         nodeInstance.setProcessInstance(getProcessInstance());
@@ -278,7 +277,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     public void signalEvent(String type, Object event) {
         List<NodeInstance> currentView = new ArrayList<>(this.nodeInstances);
         super.signalEvent(type, event);
-        for (Node node : getCompositeNode().internalGetNodes()) {
+        for (org.kie.api.definition.process.Node node : getCompositeNode().internalGetNodes()) {
             if (node instanceof EventNodeInterface
                     && ((EventNodeInterface) node).acceptsEvent(type, event)) {
                 if (node instanceof EventNode && ((EventNode) node).getFrom() == null || node instanceof EventSubProcessNode) {
@@ -305,7 +304,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
                     }
                     nodeInstance.setDynamicParameters(dynamicParams);
                 }
-                nodeInstance.trigger(null, JbpmNode.CONNECTION_DEFAULT_TYPE);
+                nodeInstance.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
             }
         }
     }
@@ -344,7 +343,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
         }
 
         public void triggerCompleted() {
-            super.triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE, true);
+            super.triggerCompleted( Node.CONNECTION_DEFAULT_TYPE, true);
         }
 
     }
@@ -388,7 +387,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 	}
 
 	public void nodeInstanceCompleted(NodeInstance nodeInstance, String outType) {
-	    Node nodeInstanceNode = nodeInstance.getNode();
+	    org.kie.api.definition.process.Node nodeInstanceNode = nodeInstance.getNode();
 	    if( nodeInstanceNode != null ) {
 	        Object compensationBoolObj =  nodeInstanceNode.getMetaData().get(IS_FOR_COMPENSATION);
             if (compensationBoolObj != null && (Boolean) compensationBoolObj) {
@@ -397,7 +396,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 	    }
 	    if (nodeInstance instanceof FaultNodeInstance || nodeInstance instanceof EndNodeInstance || nodeInstance instanceof EventSubProcessNodeInstance ) {
             if (getCompositeNode().isAutoComplete() && nodeInstances.isEmpty()) {
-                triggerCompleted( JbpmNode.CONNECTION_DEFAULT_TYPE);
+                triggerCompleted( Node.CONNECTION_DEFAULT_TYPE);
 
             }
 	    } else {
@@ -429,7 +428,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
         return iterationLevels;
     }
 
-    protected boolean useAsync(final Node node) {
+    protected boolean useAsync(final org.kie.api.definition.process.Node node) {
         if (!(node instanceof EventSubProcessNode) && (node instanceof ActionNode || node instanceof StateBasedNode || node instanceof EndNode)) {  
             boolean asyncMode = Boolean.parseBoolean((String)node.getMetaData().get(CUSTOM_ASYNC));
             if (asyncMode) {

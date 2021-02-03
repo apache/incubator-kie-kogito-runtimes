@@ -18,7 +18,7 @@ package org.jbpm.workflow.instance.node;
 
 import java.util.Date;
 
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
@@ -35,7 +35,7 @@ public class CatchLinkNodeInstance extends NodeInstanceImpl {
 
 	public void triggerCompleted() {
 		this.triggerCompleted(
-				JbpmNode.CONNECTION_DEFAULT_TYPE, true);
+				Node.CONNECTION_DEFAULT_TYPE, true);
 	}
 
 }

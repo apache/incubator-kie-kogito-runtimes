@@ -20,7 +20,7 @@ import java.util.Date;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.instance.InternalProcessRuntime;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
@@ -44,7 +44,7 @@ public class EndNodeInstance extends ExtendedNodeInstanceImpl {
     @Override
     public void internalTrigger( KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
-        if (!JbpmNode.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                     "An EndNode only accepts default incoming connections!");
         }

@@ -31,7 +31,7 @@ import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.impl.DataTransformerRegistry;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.CatchLinkNode;
 import org.jbpm.workflow.core.node.CompositeNode;
@@ -51,7 +51,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
 
     public static final String LINK_NAME = "LinkName";
 
-    protected JbpmNode createNode( Attributes attrs) {
+    protected Node createNode( Attributes attrs) {
         return new EventNode();
     }
 
@@ -63,7 +63,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
     public Object end(final String uri, final String localName,
             final ExtensibleXmlParser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
-        JbpmNode node = ( JbpmNode ) parser.getCurrent();
+        Node node = ( Node ) parser.getCurrent();
         // determine type of event definition, so the correct type of node
         // can be generated
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -117,7 +117,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
         return node;
     }
 
-    protected void handleLinkNode(Element element, JbpmNode node,
+    protected void handleLinkNode(Element element, Node node,
             org.w3c.dom.Node xmlLinkNode, ExtensibleXmlParser parser) {
         NodeContainer nodeContainer = (NodeContainer) parser.getParent();
 
@@ -173,7 +173,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-	protected void handleSignalNode( final JbpmNode node, final Element element,
+	protected void handleSignalNode( final Node node, final Element element,
                                      final String uri, final String localName,
                                      final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
@@ -205,7 +205,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-    protected void handleMessageNode( final JbpmNode node, final Element element,
+    protected void handleMessageNode( final Node node, final Element element,
                                       final String uri, final String localName,
                                       final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
@@ -246,7 +246,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
         }
     }
 
-    protected void handleTimerNode( final JbpmNode node, final Element element,
+    protected void handleTimerNode( final Node node, final Element element,
                                     final String uri, final String localName,
                                     final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
@@ -289,7 +289,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
         }
     }
 
-    protected void handleStateNode( final JbpmNode node, final Element element,
+    protected void handleStateNode( final Node node, final Element element,
                                     final String uri, final String localName,
                                     final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
@@ -339,7 +339,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
   		}
     }
 
-    public void writeNode( JbpmNode node, StringBuilder xmlDump, int metaDataType) {
+    public void writeNode( Node node, StringBuilder xmlDump, int metaDataType) {
         throw new IllegalArgumentException(
                 "Writing out should be handled by specific handlers");
     }

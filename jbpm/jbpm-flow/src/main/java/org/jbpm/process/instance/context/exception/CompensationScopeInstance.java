@@ -27,7 +27,7 @@ import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.exception.ExceptionHandler;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.ruleflow.core.Metadata;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
 import org.jbpm.workflow.core.node.EventSubProcessNode;
@@ -37,7 +37,6 @@ import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
 import org.jbpm.workflow.instance.node.EventSubProcessNodeInstance;
-import org.kie.api.definition.process.Node;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 import static org.jbpm.process.core.context.exception.CompensationScope.IMPLICIT_COMPENSATION_PREFIX;
@@ -99,7 +98,7 @@ public class CompensationScopeInstance extends ExceptionScopeInstance  {
         if (handler instanceof CompensationHandler) {
             CompensationHandler compensationHandler = (CompensationHandler) handler;
             try {
-                Node handlerNode = compensationHandler.getnode();
+                org.kie.api.definition.process.Node handlerNode = compensationHandler.getnode();
                 if (handlerNode instanceof BoundaryEventNode ) {
                     NodeInstance compensationHandlerNodeInstance = nodeInstanceContainer.getNodeInstance(handlerNode);
                     compensationInstances.add(compensationHandlerNodeInstance); 
@@ -110,9 +109,9 @@ public class CompensationScopeInstance extends ExceptionScopeInstance  {
                 } else if (handlerNode instanceof EventSubProcessNode ) {
                     // Check that subprocess parent has completed. 
                     List<String> completedIds = processInstance.getCompletedNodeIds();
-                    if( completedIds.contains(((NodeImpl) (( JbpmNode )handlerNode).getParentContainer()).getMetaData("UniqueId")) ) {
+                    if( completedIds.contains(((NodeImpl) (( Node )handlerNode).getParentContainer()).getMetaData("UniqueId")) ) {
                         NodeInstance subProcessNodeInstance 
-                            = ((NodeInstanceContainer) nodeInstanceContainer).getNodeInstance((Node) (( JbpmNode )handlerNode).getParentContainer());
+                            = ((NodeInstanceContainer) nodeInstanceContainer).getNodeInstance(( org.kie.api.definition.process.Node ) (( Node )handlerNode).getParentContainer());
                         compensationInstances.add(subProcessNodeInstance);
                         NodeInstance compensationHandlerNodeInstance 
                             = ((NodeInstanceContainer) subProcessNodeInstance).getNodeInstance(handlerNode);

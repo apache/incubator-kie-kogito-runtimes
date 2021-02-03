@@ -26,13 +26,13 @@ import org.jbpm.compiler.xml.XmlWorkflowProcessDumper;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.CompositeNode;
 
 public class CompositeNodeHandler extends AbstractNodeHandler {
 
-    protected JbpmNode createNode() {
+    protected Node createNode() {
         CompositeContextNode result = new CompositeContextNode();
         VariableScope variableScope = new VariableScope();
         result.addContext(variableScope);
@@ -52,7 +52,7 @@ public class CompositeNodeHandler extends AbstractNodeHandler {
     	return "composite";
     }
 
-    public void writeNode( JbpmNode node, StringBuilder xmlDump, boolean includeMeta) {
+    public void writeNode( Node node, StringBuilder xmlDump, boolean includeMeta) {
     	super.writeNode(getNodeName(), node, xmlDump, includeMeta);
         CompositeNode compositeNode = (CompositeNode) node;
         writeAttributes(compositeNode, xmlDump, includeMeta);
@@ -78,9 +78,9 @@ public class CompositeNodeHandler extends AbstractNodeHandler {
     				exceptionScope.getExceptionHandlers(), xmlDump);
 	    	}
         }
-        List<JbpmNode> subNodes = getSubNodes(compositeNode);
+        List<Node> subNodes = getSubNodes(compositeNode);
         xmlDump.append("      <nodes>" + EOL);
-        for (JbpmNode subNode: subNodes) {
+        for (Node subNode: subNodes) {
     		XmlRuleFlowProcessDumper.INSTANCE.visitNode(subNode, xmlDump, includeMeta);
         }
         xmlDump.append("      </nodes>" + EOL);
@@ -108,14 +108,14 @@ public class CompositeNodeHandler extends AbstractNodeHandler {
     protected void writeAttributes(CompositeNode compositeNode, StringBuilder xmlDump, boolean includeMeta) {
     }
     
-    protected List<JbpmNode> getSubNodes( CompositeNode compositeNode) {
-    	List<JbpmNode> subNodes =
-    		new ArrayList<JbpmNode>();
+    protected List<Node> getSubNodes( CompositeNode compositeNode) {
+    	List<Node> subNodes =
+    		new ArrayList<Node>();
         for (org.kie.api.definition.process.Node subNode: compositeNode.getNodes()) {
         	// filter out composite start and end nodes as they can be regenerated
         	if ((!(subNode instanceof CompositeNode.CompositeNodeStart)) &&
     			(!(subNode instanceof CompositeNode.CompositeNodeEnd))) {
-        		subNodes.add(( JbpmNode ) subNode);
+        		subNodes.add(( Node ) subNode);
         	}
         }
         return subNodes;
@@ -126,7 +126,7 @@ public class CompositeNodeHandler extends AbstractNodeHandler {
         for (org.kie.api.definition.process.Node subNode: compositeNode.getNodes()) {
         	// filter out composite start and end nodes as they can be regenerated
             if (!(subNode instanceof CompositeNode.CompositeNodeEnd)) {
-                for (Connection connection: subNode.getIncomingConnections( JbpmNode.CONNECTION_DEFAULT_TYPE)) {
+                for (Connection connection: subNode.getIncomingConnections( Node.CONNECTION_DEFAULT_TYPE)) {
                     if (!(connection.getFrom() instanceof CompositeNode.CompositeNodeStart)) {
                         connections.add(connection);
                     }

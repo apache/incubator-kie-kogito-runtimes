@@ -24,7 +24,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.test.TestProcessEventListener;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.test.util.AbstractBaseTest;
-import org.jbpm.workflow.core.JbpmNode;
+import org.jbpm.workflow.core.Node;
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -67,8 +67,8 @@ public class NodeInnerClassesTest extends AbstractBaseTest {
         split.setMetaData("UniqueId", forEachNode.getMetaData("Uniqueid") + ":foreach:split");
         forEachNode.internalAddNode(split);
         forEachNode.linkIncomingConnections(
-            JbpmNode.CONNECTION_DEFAULT_TYPE,
-            new CompositeNode.NodeAndType(split, JbpmNode.CONNECTION_DEFAULT_TYPE));
+            Node.CONNECTION_DEFAULT_TYPE,
+            new CompositeNode.NodeAndType(split, Node.CONNECTION_DEFAULT_TYPE));
 
         process.addNode(forEachNode);
         KieSession ksession = createKieSession(process); 
