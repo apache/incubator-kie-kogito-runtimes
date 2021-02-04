@@ -75,6 +75,12 @@
             <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
             <scope>test</scope>
         </dependency>
+<!--    Required by IncrementalRuleCodegenTest.generateGrafanaDashboards    -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
