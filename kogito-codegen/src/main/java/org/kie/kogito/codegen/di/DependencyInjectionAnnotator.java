@@ -17,6 +17,7 @@ package org.kie.kogito.codegen.di;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
@@ -31,14 +32,13 @@ import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
 /**
  * Generic abstraction for dependency injection annotations that allow to
  * use different frameworks based needs.
- *
- * Currently in scope 
+ * <p>
+ * Currently in scope
  *
  * <ul>
  *  <li>CDI</li>
  *  <li>Spring</li>
  * </ul>
- *
  */
 public interface DependencyInjectionAnnotator {
 
@@ -95,7 +95,7 @@ public interface DependencyInjectionAnnotator {
      * @param node node to be annotated
      */
     default <T extends NodeWithAnnotations<?>> T withInjection(T node) {
-        return withInjection(node,false);
+        return withInjection(node, false);
     }
 
     /**
@@ -224,8 +224,9 @@ public interface DependencyInjectionAnnotator {
 
     /**
      * Returns type to be used as message emitter
+     *
      * @param dataType type of the data produces by the emitter
-     * @return fully qualified class name 
+     * @return fully qualified class name
      */
     String emitterType(String dataType);
 
@@ -238,9 +239,18 @@ public interface DependencyInjectionAnnotator {
 
     /**
      * Check if provided node has one of REST annotation
+     *
      * @param node
      * @param <T>
      * @return
      */
     <T extends NodeWithAnnotations<?>> boolean isRestAnnotated(T node);
+
+    /**
+     * Gets the URI path template from the framework specific annotation
+     *
+     * @param node The annotated node
+     * @return The URI path template value if exists
+     */
+    <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node);
 }
