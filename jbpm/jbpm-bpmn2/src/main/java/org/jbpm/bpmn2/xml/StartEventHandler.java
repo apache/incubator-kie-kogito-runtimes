@@ -150,9 +150,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     // BPMN2 spec (p.245-246, (2011-01-03)) implies that
                     //   - a <startEvent> in an Event Sub-Process
                     //    - *without* the 'isInterupting' attribute always interrupts (containing process)
-                    String errorMsg = "Error Start Events in an Event Sub-Process always interrupt the containing (sub)process(es).";
                     startNode.setInterrupting(true);
-                    //throw new IllegalArgumentException(errorMsg);
                 }
                 String errorRef = ((Element) xmlNode).getAttribute("errorRef");
                 if (errorRef != null && errorRef.trim().length() > 0) {
