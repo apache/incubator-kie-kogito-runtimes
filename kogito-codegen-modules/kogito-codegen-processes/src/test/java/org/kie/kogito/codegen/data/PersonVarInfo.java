@@ -15,7 +15,7 @@
 
 package org.kie.kogito.codegen.data;
 
-import org.kie.internal.kogito.codegen.VariableInfo;
+import org.kie.kogito.codegen.VariableInfo;
 
 import java.util.Objects;
 

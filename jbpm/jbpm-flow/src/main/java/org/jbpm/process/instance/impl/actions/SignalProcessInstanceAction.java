@@ -22,6 +22,9 @@ import org.jbpm.process.instance.impl.Action;
 import org.jbpm.process.instance.impl.util.VariableUtil;
 import org.jbpm.workflow.core.node.Transformation;
 import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.workitems.KogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 
@@ -35,7 +38,7 @@ public class SignalProcessInstanceAction implements Action, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final String signalName;
+    private final String signalNameTemplate;
     private String variableName;
     private Function<ProcessContext, Object> eventDataSupplier = (kcontext) -> null;
 
@@ -43,18 +46,18 @@ public class SignalProcessInstanceAction implements Action, Serializable {
     private Transformation transformation;
 
     public SignalProcessInstanceAction(String signalName, String variableName) {
-        this.signalName = signalName;
+        this.signalNameTemplate = signalName;
         this.variableName = variableName;
     }
 
     public SignalProcessInstanceAction(String signalName, String variableName, Transformation transformation) {
-        this.signalName = signalName;
+        this.signalNameTemplate = signalName;
         this.variableName = variableName;
         this.transformation = transformation;
     }
 
     public SignalProcessInstanceAction(String signalName, String variableName, String scope) {
-        this.signalName = signalName;
+        this.signalNameTemplate = signalName;
         this.variableName = variableName;
         if (scope != null) {
             this.scope = scope;
@@ -62,7 +65,7 @@ public class SignalProcessInstanceAction implements Action, Serializable {
     }
 
     public SignalProcessInstanceAction(String signalName, String variableName, String scope, Transformation transformation) {
-        this.signalName = signalName;
+        this.signalNameTemplate = signalName;
         this.variableName = variableName;
         if (scope != null) {
             this.scope = scope;
@@ -71,36 +74,44 @@ public class SignalProcessInstanceAction implements Action, Serializable {
     }
 
     public SignalProcessInstanceAction(String signalName, Function<ProcessContext, Object> eventDataSupplier, String scope) {
-        this.signalName = signalName;
+        this.signalNameTemplate = signalName;
         this.eventDataSupplier = eventDataSupplier;
         if (scope != null) {
             this.scope = scope;
         }
     }
 
+    @Override
     public void execute(ProcessContext context) throws Exception {
         String variableName = VariableUtil.resolveVariable(this.variableName, context.getNodeInstance());
-        Object variable = variableName == null ? eventDataSupplier.apply(context) : context.getVariable(variableName);
-
+        Object signal = variableName == null ? eventDataSupplier.apply(context) : context.getVariable(variableName);
         if (transformation != null) {
-            variable = new org.jbpm.process.core.event.EventTransformerImpl(transformation).transformEvent(context.getProcessInstance().getVariables());
+            signal = new org.jbpm.process.core.event.EventTransformerImpl(transformation).transformEvent((( KogitoProcessInstance ) context.getProcessInstance()).getVariables());
         }
+        if (signal == null) {
+            signal = variableName;
+        }
+        String signalName = VariableUtil.resolveVariable(this.signalNameTemplate, context.getNodeInstance());
+        KogitoProcessRuntime.asKogitoProcessRuntime(context.getKieRuntime())
+                .getProcessEventSupport().fireOnSignal(context.getProcessInstance(), context
+                        .getNodeInstance(), context.getKieRuntime(), signalName, signal);
+        
         if (DEFAULT_SCOPE.equals(scope)) {
-            context.getKieRuntime().signalEvent(VariableUtil.resolveVariable(signalName, context.getNodeInstance()), variable);
+            context.getKieRuntime().signalEvent(signalName, signal);
         } else if (PROCESS_INSTANCE_SCOPE.equals(scope)) {
-            context.getProcessInstance().signalEvent(VariableUtil.resolveVariable(signalName, context.getNodeInstance()), variable);
+            context.getProcessInstance().signalEvent(signalName, signal);
         } else if (EXTERNAL_SCOPE.equals(scope)) {
             KogitoWorkItemImpl workItem = new KogitoWorkItemImpl();
             workItem.setName("External Send Task");
-            workItem.setNodeInstanceId(context.getNodeInstance().getId());
-            workItem.setProcessInstanceId(context.getProcessInstance().getId());
+            workItem.setNodeInstanceId( (( KogitoNodeInstance ) context.getNodeInstance()).getStringId());
+            workItem.setProcessInstanceId( (( KogitoProcessInstance ) context.getProcessInstance()).getStringId());
             workItem.setNodeId(context.getNodeInstance().getNodeId());
-            workItem.setParameter("Signal", VariableUtil.resolveVariable(signalName, context.getNodeInstance()));
+            workItem.setParameter("Signal", signalName);
             workItem.setParameter("SignalProcessInstanceId", context.getVariable("SignalProcessInstanceId"));
             workItem.setParameter("SignalWorkItemId", context.getVariable("SignalWorkItemId"));
             workItem.setParameter("SignalDeploymentId", context.getVariable("SignalDeploymentId"));
-            if (variable == null) {
-                workItem.setParameter("Data", variable);
+            if (signal == null) {
+                workItem.setParameter("Data", signal);
             }
             (( KogitoWorkItemManager ) context.getKieRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);
         }
