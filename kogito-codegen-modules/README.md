@@ -1,22 +1,22 @@
-Kogito Codegen
-==============
+# Kogito Codegen
 
 This repository contains the shared (Maven Plug-In, Quarkus Extension, ...)
 code generation logic for Kogito: processes, rules, decisions, etc.
 
-- `ApplicationGenerator` is the main entry point. The fluent API allows to 
-configure its global behavior.
+The structure of the module is:
+- `kogito-codegen-api`: shared API necessary to implement a generator
+- `kogito-codegen-core`: common core classes used to wire the generation process together
+- `kogito-codegen-*`: module specific generator for processes, rules, etc
+- `kogito-codegen-integration-tests`: integration test modules where it is possible not only to assert on generated source code but also compile it and execute
 
-    ```java
-    ApplicationGenerator appGen =
-            new ApplicationGenerator(context)
-                    .withAddons(...);
-    ```
+| NOTE: the `kogito-codegen-integration-tests` module should be only used to test generate engine classes and it is not intended to be used for full end to end test (use `integration-tests` module instead) |
+| ---- |
 
-- Each supported component (process, rules, etc.) implements the `Generator` 
-  interface
--`Generator`s are plugged into the `ApplicationGenerator` instance
-- Upon construction, a `Generator` is given the path(s) of the directory/files 
+## API module
+- Each supported component (process, rules, etc.) implements the `Generator`
+  interface 
+- `Generator`s are plugged into the `ApplicationGenerator` instance
+- Upon construction, a `Generator` is given the path(s) of the directory/files
   that it must process. Scanning of the directory take place contextually
 - Each `Generator` may come with its own specific configuration
 
@@ -29,19 +29,34 @@ configure its global behavior.
     ```
 
 - Each `Generator` should delegate to a subcomponent, to process a single
-  component. E.g., the `ProcessCodegen` should 
+  component. E.g., the `ProcessCodegen` should
   delegate to a `ProcessGenerator` to work on a single process; `RuleCodegen`
   should delegate to a `RuleUnitGenerator`, etc.
-  
+
   note: naming convention may vary in the future
-    
+
 - The `ApplicationGenerator#generate()` method starts the code generation
   procedure, delegating to each `Generator` where appropriate.
-  
+
 - Generators **do not** write files to disk, rather return a `GeneratedFile`
   instance, with the relative file path (derived from the original path
   and further analysis on the contents of the file) and the byte array
   of the contents of the file to be dumped to disk.
+
+
+## Core module
+- `ApplicationGenerator` is the main entry point. The fluent API allows to
+  configure its global behavior.
+
+    ```java
+    ApplicationGenerator appGen =
+            new ApplicationGenerator(context)
+                    .withAddons(...);
+    ```
+
+
+### Generator wiring
+
 
 # Generated Application file
 
