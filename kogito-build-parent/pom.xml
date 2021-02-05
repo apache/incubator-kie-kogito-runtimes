@@ -1395,7 +1395,6 @@
         <formatter.goal>format</formatter.goal>
         <impsort.goal>sort</impsort.goal>
       </properties>
-
       <build>
         <plugins>
           <plugin>
@@ -1430,8 +1429,8 @@
     </profile>
 
     <profile>
-      <!-- Fail the build in CI if code does not follow the standards. -->
-      <id>validate-formatting-ci</id>
+      <!-- Fail the build if code does not follow the standards. -->
+      <id>validate-formatting</id>
       <activation>
         <property>
           <name>validate-formatting</name>
