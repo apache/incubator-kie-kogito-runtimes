@@ -23,6 +23,7 @@ import java.util.Optional;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -35,14 +36,15 @@ import org.drools.core.util.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.context.SpringBootKogitoBuildContext;
+import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.core.di.CDIDependencyInjectionAnnotator;
 import org.kie.pmml.commons.model.KiePMMLModel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -168,21 +170,13 @@ class PMMLRestResourceGeneratorTest {
 
     @Test
     void setPredictionModelName() {
-        assertEquals(1, TEMPLATE.getMethodsByName("result").size());
-        Optional<BlockStmt> retrievedOpt = TEMPLATE.getMethodsByName("result").get(0).getBody();
-        assertTrue(retrievedOpt.isPresent());
-        BlockStmt retrieved = retrievedOpt.get();
-        assertTrue(retrieved.getStatement(0) instanceof ExpressionStmt);
-        assertTrue(retrieved.getStatement(0).asExpressionStmt().getExpression() instanceof VariableDeclarationExpr);
-        VariableDeclarationExpr variableDeclarationExpr = retrieved.getStatement(0).asExpressionStmt().getExpression().asVariableDeclarationExpr();
-        Optional<Expression> expressionOpt = variableDeclarationExpr.getVariable(0).getInitializer();
-        assertTrue(expressionOpt.isPresent());
-        assertTrue(expressionOpt.get() instanceof MethodCallExpr);
-        MethodCallExpr methodCallExpr = expressionOpt.get().asMethodCallExpr();
-        assertTrue(methodCallExpr.getArgument(0) instanceof StringLiteralExpr);
+        assertTrue(TEMPLATE.getFieldByName("MODEL_NAME").isPresent());
+        final FieldDeclaration modelName = TEMPLATE.getFieldByName("MODEL_NAME").get();
+        assertFalse(modelName.getVariable(0).getInitializer().isPresent());
         pmmlRestResourceGenerator.setPredictionModelName(TEMPLATE);
         try {
-            assertEquals(KIE_PMML_MODEL.getName(), methodCallExpr.getArgument(0).asStringLiteralExpr().asString());
+            assertTrue(modelName.getVariable(0).getInitializer().isPresent());
+            assertEquals(KIE_PMML_MODEL.getName(), modelName.getVariable(0).getInitializer().get().asStringLiteralExpr().asString());
         } catch (Exception e) {
             fail(e);
         }
@@ -310,10 +304,7 @@ class PMMLRestResourceGeneratorTest {
         String expected = String.format("@Path(\"%s\")", classPrefix);
         assertTrue(retrieved.contains(expected));
         expected = StringUtils.ucFirst(classPrefix) + "Resource";
-        expected = String.format("public class %s {", expected);
-        assertTrue(retrieved.contains(expected));
-        expected = String.format("org.kie.kogito.prediction.PredictionModel prediction = application" +
-                ".get(org.kie.kogito.prediction.PredictionModels.class).getPredictionModel(\"%s\");", KIE_PMML_MODEL.getName());
+        expected = String.format("public class %s extends org.kie.kogito.pmml.AbstractPMMLRestResource {", expected);
         assertTrue(retrieved.contains(expected));
     }
 

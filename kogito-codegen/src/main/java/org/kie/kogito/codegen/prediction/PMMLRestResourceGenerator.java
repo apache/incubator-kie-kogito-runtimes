@@ -122,27 +122,10 @@ public class PMMLRestResourceGenerator {
     }
 
     void setPredictionModelName(ClassOrInterfaceDeclaration template) {
-        setResultPredictionModelName(template);
-        setDescriptivePredictionModelName(template);
-    }
-
-    void setResultPredictionModelName(ClassOrInterfaceDeclaration template) {
-        setPredictionModelName(template.getMethodsByName("result").get(0));
-    }
-
-    void setDescriptivePredictionModelName(ClassOrInterfaceDeclaration template) {
-        setPredictionModelName(template.getMethodsByName("descriptive").get(0));
-    }
-
-    void setPredictionModelName(MethodDeclaration methodDeclaration) {
-        methodDeclaration
-                .getBody().orElseThrow(() -> new RuntimeException(""))
-                .getStatement(0).asExpressionStmt().getExpression()
-                .asVariableDeclarationExpr()
+        template.getFieldByName("MODEL_NAME")
+                .orElseThrow(() -> new RuntimeException("Missing MODEL_NAME field"))
                 .getVariable(0)
-                .getInitializer().orElseThrow(() -> new RuntimeException(""))
-                .asMethodCallExpr()
-                .getArgument(0).asStringLiteralExpr().setString(kiePMMLModel.getName());
+                .setInitializer(new StringLiteralExpr(kiePMMLModel.getName()));
     }
 
     void setOASAnnotations(ClassOrInterfaceDeclaration template) {
