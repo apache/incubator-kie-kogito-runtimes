@@ -15,12 +15,12 @@
 
 package org.kie.kogito.codegen.core.utils;
 
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
 
 public class GeneratedFileValidation {
 
@@ -28,12 +28,13 @@ public class GeneratedFileValidation {
         // utility class
     }
 
-    public static void validateGeneratedFileTypes(Collection<GeneratedFile> generatedFiles, Collection<GeneratedFileType.Category> expectedTypes) {
+    public static void validateGeneratedFileTypes(Collection<GeneratedFile> generatedFiles,
+            Collection<GeneratedFileType.Category> expectedTypes) {
         Collection<GeneratedFile> unexpectedGeneratedFiles = generatedFiles.stream()
                 .filter(generatedFile -> !expectedTypes.contains(generatedFile.category()))
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        if(!unexpectedGeneratedFiles.isEmpty()) {
+        if (!unexpectedGeneratedFiles.isEmpty()) {
             throw new IllegalStateException("Found unexpected files:\n" +
                     unexpectedGeneratedFiles.stream()
                             .map(x -> x.category().name() + " " +

@@ -42,25 +42,18 @@ public class DefaultSVGProcessor extends AbstractSVGProcessor {
 
     @Override
     public void defaultCompletedTransformation(String nodeId, String completedNodeColor, String completeBorderColor) {
-        transform(summary ->
-            Optional.ofNullable(summary.getNode(nodeId)).ifPresent(node ->
-                Optional.ofNullable(node.getBackground()).ifPresent(background -> {
+        transform(summary -> Optional.ofNullable(summary.getNode(nodeId))
+                .ifPresent(node -> Optional.ofNullable(node.getBackground()).ifPresent(background -> {
                     background.setAttribute("fill", completedNodeColor);
                     setNodeBorderColor(node.getRenderType(), node.getBorder(), completeBorderColor);
-                })
-            )
-        );
+                })));
     }
 
     @Override
     public void defaultActiveTransformation(String nodeId, String activeNodeBorderColor) {
-        transform(summary ->
-            Optional.ofNullable(summary.getNode(nodeId)).ifPresent(node ->
-                Optional.ofNullable(node.getBorder()).ifPresent(border ->
-                    setNodeBorderColor(node.getRenderType(), border, activeNodeBorderColor)
-                )
-            )
-        );
+        transform(
+                summary -> Optional.ofNullable(summary.getNode(nodeId)).ifPresent(node -> Optional.ofNullable(node.getBorder())
+                        .ifPresent(border -> setNodeBorderColor(node.getRenderType(), border, activeNodeBorderColor))));
     }
 
     private void setNodeBorderColor(Optional<RenderType> renderType, Element border, String color) {
@@ -108,10 +101,12 @@ public class DefaultSVGProcessor extends AbstractSVGProcessor {
                         .filter(str -> str.split("=").length == 2)
                         .collect(Collectors.toMap(v -> v.split("=")[0], v -> v.split("=")[1]));
 
-        NodeSummary nodeSummary = summary.getNodesMap().getOrDefault(nodeId, new NodeSummary(nodeId, null, null, null, null, null));
+        NodeSummary nodeSummary =
+                summary.getNodesMap().getOrDefault(nodeId, new NodeSummary(nodeId, null, null, null, null, null));
         Element border = Objects.equals(parameters.get("shapeType"), "BORDER") ? node : nodeSummary.getBorder();
         Element background = Objects.equals(parameters.get("shapeType"), "BACKGROUND") ? node : nodeSummary.getBackground();
-        RenderType renderType = RenderType.valueOf(Optional.ofNullable(parameters.get("renderType")).orElse(nodeSummary.getRenderType().orElse(RenderType.STROKE).name()));
+        RenderType renderType = RenderType.valueOf(Optional.ofNullable(parameters.get("renderType"))
+                .orElse(nodeSummary.getRenderType().orElse(RenderType.STROKE).name()));
 
         summary.addNode(new NodeSummary(nodeId, border, background, null, null, renderType));
     }

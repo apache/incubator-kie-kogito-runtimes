@@ -30,12 +30,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.Generator;
-import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.utils.AppPaths;
+import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.core.utils.AddonsConfigDiscovery;
-import org.kie.kogito.codegen.api.utils.AppPaths;
 import org.kie.kogito.codegen.core.utils.GeneratedFileWriter;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
 
@@ -119,30 +119,37 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         return KogitoBuildContext.DEFAULT_PACKAGE_NAME;
     }
 
-    private KogitoBuildContext.Builder contextBuilder()  {
+    private KogitoBuildContext.Builder contextBuilder() {
         switch (discoverFramework()) {
-            case QUARKUS: return QuarkusKogitoBuildContext.builder();
-            case SPRING: return SpringBootKogitoBuildContext.builder();
-            default: return JavaKogitoBuildContext.builder();
+            case QUARKUS:
+                return QuarkusKogitoBuildContext.builder();
+            case SPRING:
+                return SpringBootKogitoBuildContext.builder();
+            default:
+                return JavaKogitoBuildContext.builder();
         }
     }
 
-    private enum Framework { QUARKUS, SPRING, NONE }
+    private enum Framework {
+        QUARKUS,
+        SPRING,
+        NONE
+    }
 
     private Framework discoverFramework() {
-        if ( hasDependency( "quarkus" ) ) {
+        if (hasDependency("quarkus")) {
             return Framework.QUARKUS;
         }
 
-        if ( hasDependency( "spring" ) ) {
+        if (hasDependency("spring")) {
             return Framework.SPRING;
         }
 
         return Framework.NONE;
     }
 
-    private boolean hasDependency( String dependency ) {
-        return project.getDependencies().stream().anyMatch( d -> d.getArtifactId().contains( dependency ) );
+    private boolean hasDependency(String dependency) {
+        return project.getDependencies().stream().anyMatch(d -> d.getArtifactId().contains(dependency));
     }
 
     private boolean hasClassOnClasspath(String className) {

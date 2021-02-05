@@ -50,29 +50,40 @@ public class StaticServiceRegistry implements ServiceRegistry {
         registerService("org.kie.api.io.KieResources", "org.drools.core.io.impl.ResourceFactoryServiceImpl", true);
         registerService("org.kie.api.concurrent.KieExecutors", "org.drools.core.concurrent.ExecutorProviderImpl", true);
         registerService("org.kie.api.KieServices", "org.drools.compiler.kie.builder.impl.KieServicesImpl", false);
-        registerService("org.kie.internal.builder.KnowledgeBuilderFactoryService", "org.drools.compiler.builder.impl.KnowledgeBuilderFactoryServiceImpl", true);
-        registerService("org.kie.kogito.rules.DataSource$Factory", "org.kie.kogito.rules.units.impl.DataSourceFactoryImpl", false);
-        registerService("org.kie.internal.ruleunit.RuleUnitComponentFactory", "org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl", false);
+        registerService("org.kie.internal.builder.KnowledgeBuilderFactoryService",
+                "org.drools.compiler.builder.impl.KnowledgeBuilderFactoryServiceImpl", true);
+        registerService("org.kie.kogito.rules.DataSource$Factory", "org.kie.kogito.rules.units.impl.DataSourceFactoryImpl",
+                false);
+        registerService("org.kie.internal.ruleunit.RuleUnitComponentFactory",
+                "org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl", false);
         registerService("org.kie.api.internal.assembler.KieAssemblers", "org.drools.statics.StaticKieAssemblers", true);
         registerService("org.kie.api.internal.runtime.KieRuntimes", "org.kie.internal.services.KieRuntimesImpl", true);
         registerService("org.kie.api.internal.weaver.KieWeavers", "org.kie.internal.services.KieWeaversImpl", true);
 
-        registerService("org.drools.compiler.kie.builder.impl.InternalKieModuleProvider", "org.drools.modelcompiler.CanonicalKieModuleProvider", true);
-        registerService("org.drools.compiler.compiler.DecisionTableProvider", "org.drools.decisiontable.DecisionTableProviderImpl", false);
-        registerService("org.drools.core.reteoo.KieComponentFactoryFactory", "org.drools.core.kogito.factory.KogitoComponentFactoryFactory", true);
+        registerService("org.drools.compiler.kie.builder.impl.InternalKieModuleProvider",
+                "org.drools.modelcompiler.CanonicalKieModuleProvider", true);
+        registerService("org.drools.compiler.compiler.DecisionTableProvider",
+                "org.drools.decisiontable.DecisionTableProviderImpl", false);
+        registerService("org.drools.core.reteoo.KieComponentFactoryFactory",
+                "org.drools.core.kogito.factory.KogitoComponentFactoryFactory", true);
 
-        registerService("org.drools.core.marshalling.impl.ProcessMarshallerFactoryService", "org.jbpm.marshalling.impl.ProcessMarshallerFactoryServiceImpl", false);
-        registerService("org.drools.core.runtime.process.ProcessRuntimeFactoryService", "org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl", false);
+        registerService("org.drools.core.marshalling.impl.ProcessMarshallerFactoryService",
+                "org.jbpm.marshalling.impl.ProcessMarshallerFactoryServiceImpl", false);
+        registerService("org.drools.core.runtime.process.ProcessRuntimeFactoryService",
+                "org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl", false);
 
         constructorMap.put("TimerService", SimpleInstanceCreator.constructor("org.drools.core.time.impl.JDKTimerService"));
 
         // pmml
-        registerKieRuntimeService("org.kie.pmml.api.runtime.PMMLRuntime", "org.kie.pmml.evaluator.core.service.PMMLRuntimeService", false);
+        registerKieRuntimeService("org.kie.pmml.api.runtime.PMMLRuntime",
+                "org.kie.pmml.evaluator.core.service.PMMLRuntimeService", false);
         registerKieWeaverService("org.kie.pmml.evaluator.assembler.PMMLWeaverService", false);
 
         // marshalling
-        registerService(org.kie.api.marshalling.KieMarshallers.class.getCanonicalName(), "org.drools.serialization.protobuf.MarshallerProviderImpl", false);
-        registerService("org.drools.compiler.kie.builder.impl.CompilationCacheProvider", "org.drools.serialization.protobuf.CompilationCacheProviderImpl", false);
+        registerService(org.kie.api.marshalling.KieMarshallers.class.getCanonicalName(),
+                "org.drools.serialization.protobuf.MarshallerProviderImpl", false);
+        registerService("org.drools.compiler.kie.builder.impl.CompilationCacheProvider",
+                "org.drools.serialization.protobuf.CompilationCacheProviderImpl", false);
     }
 
     private void registerService(String service, String implementation, boolean mandatory) {
@@ -85,7 +96,8 @@ public class StaticServiceRegistry implements ServiceRegistry {
 
     private void registerKieRuntimeService(String runtimeName, String kieRuntimeServiceImplementation, boolean mandatory) {
         try {
-            KieRuntimeService kieRuntimeService = (KieRuntimeService)SimpleInstanceCreator.instance(kieRuntimeServiceImplementation);
+            KieRuntimeService kieRuntimeService =
+                    (KieRuntimeService) SimpleInstanceCreator.instance(kieRuntimeServiceImplementation);
             ((KieRuntimes) serviceMap.get(KieRuntimes.class)).getRuntimes().put(runtimeName, kieRuntimeService);
         } catch (Exception e) {
             commonManageException("KieRuntimes", e, mandatory);
@@ -95,14 +107,15 @@ public class StaticServiceRegistry implements ServiceRegistry {
     private void registerKieWeaverService(String kieWeaverServiceImplementation, boolean mandatory) {
         try {
             final KieWeaversImpl kieWeavers = (KieWeaversImpl) serviceMap.get(KieWeavers.class);
-            KieWeaverService kieWeaverService = (KieWeaverService) SimpleInstanceCreator.instance(kieWeaverServiceImplementation);
+            KieWeaverService kieWeaverService =
+                    (KieWeaverService) SimpleInstanceCreator.instance(kieWeaverServiceImplementation);
             kieWeavers.accept(kieWeaverService);
         } catch (Exception e) {
             commonManageException("KieWeaverService", e, mandatory);
         }
     }
 
-    private void commonManageException(String ignoredServiceType, Exception e, boolean mandatory ) {
+    private void commonManageException(String ignoredServiceType, Exception e, boolean mandatory) {
         if (mandatory) {
             throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
         } else {
@@ -116,8 +129,8 @@ public class StaticServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public <T> List<T> getAll( Class<T> cls ) {
-        return Collections.singletonList( get(cls) );
+    public <T> List<T> getAll(Class<T> cls) {
+        return Collections.singletonList(get(cls));
     }
 
     public <T> T newInstance(String name) {

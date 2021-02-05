@@ -16,6 +16,8 @@
 
 package org.jbpm.workflow.instance.impl;
 
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -70,8 +72,6 @@ import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.NodeInstanceContainer;
 
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-
 public class NodeInstanceFactoryRegistry {
 
     private static final NodeInstanceFactoryRegistry INSTANCE = new NodeInstanceFactoryRegistry();
@@ -92,7 +92,7 @@ public class NodeInstanceFactoryRegistry {
     }
 
     public void register(Class<? extends Node> cls,
-                         NodeInstanceFactory factory) {
+            NodeInstanceFactory factory) {
         this.registry.put(cls, factory);
     }
 
@@ -183,8 +183,8 @@ public class NodeInstanceFactoryRegistry {
 
     protected NodeInstanceFactory factoryOnce(Supplier<NodeInstanceImpl> supplier) {
         return (node, processInstance, nodeInstanceContainer) -> {
-            NodeInstance result = ((org.jbpm.workflow.instance.NodeInstanceContainer)
-                    nodeInstanceContainer).getFirstNodeInstance(node.getId());
+            NodeInstance result = ((org.jbpm.workflow.instance.NodeInstanceContainer) nodeInstanceContainer)
+                    .getFirstNodeInstance(node.getId());
             if (result != null) {
                 return result;
             } else {
@@ -194,11 +194,12 @@ public class NodeInstanceFactoryRegistry {
     }
 
     protected NodeInstanceFactory factory(Supplier<NodeInstanceImpl> supplier) {
-        return (node, processInstance, nodeInstanceContainer) ->
-                createInstance(supplier.get(), node, processInstance, nodeInstanceContainer);
+        return (node, processInstance, nodeInstanceContainer) -> createInstance(supplier.get(), node, processInstance,
+                nodeInstanceContainer);
     }
 
-    private static NodeInstance createInstance(NodeInstanceImpl nodeInstance, Node node, WorkflowProcessInstance processInstance, NodeInstanceContainer nodeInstanceContainer) {
+    private static NodeInstance createInstance(NodeInstanceImpl nodeInstance, Node node,
+            WorkflowProcessInstance processInstance, NodeInstanceContainer nodeInstanceContainer) {
         nodeInstance.setNodeId(node.getId());
         nodeInstance.setNodeInstanceContainer(nodeInstanceContainer);
         nodeInstance.setProcessInstance(processInstance);

@@ -15,11 +15,11 @@
 
 package org.kie.kogito.codegen.process.persistence.proto;
 
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
-
 import java.util.Collection;
 import java.util.Date;
+
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
 
 public interface ProtoGenerator {
 
@@ -32,6 +32,7 @@ public interface ProtoGenerator {
 
     /**
      * Returns params of first constructor of persistence class
+     * 
      * @return
      */
     Collection<String> getPersistenceClassParams();

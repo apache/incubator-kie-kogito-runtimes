@@ -15,6 +15,18 @@
 
 package org.kie.persistence.filesystem;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.entry;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ERROR;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.util.Collections;
 
 import org.drools.core.io.impl.ClassPathResource;
@@ -44,18 +56,6 @@ import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.uow.UnitOfWork;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.entry;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ERROR;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 class FileSystemProcessInstancesTest {
 
     private SecurityPolicy securityPolicy = SecurityPolicy.of(new StaticIdentityProvider("john"));
@@ -82,7 +82,8 @@ class FileSystemProcessInstancesTest {
             }
         }
 
-        ProcessInstance<BpmnVariables> mutablePi = process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
+        ProcessInstance<BpmnVariables> mutablePi =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
 
         mutablePi.start();
         assertThat(mutablePi.status()).isEqualTo(STATE_ERROR);
@@ -113,7 +114,8 @@ class FileSystemProcessInstancesTest {
     @Test
     void testValuesReadMode() {
         BpmnProcess process = createProcess(null, "BPMN2-UserTask.bpmn2");
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
@@ -127,7 +129,8 @@ class FileSystemProcessInstancesTest {
     @Test
     void testBasicFlow() {
         BpmnProcess process = createProcess(null, "BPMN2-UserTask.bpmn2");
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
@@ -161,7 +164,8 @@ class FileSystemProcessInstancesTest {
     @Test
     void testBasicFlowWithStartFrom() {
         BpmnProcess process = createProcess(null, "BPMN2-UserTask.bpmn2");
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.startFrom("_2");
 
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
@@ -189,12 +193,14 @@ class FileSystemProcessInstancesTest {
     @Test
     void testBasicFlowControlledByUnitOfWork() {
         UnitOfWorkManager uowManager = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
-        ProcessConfig config = new StaticProcessConfig(new DefaultWorkItemHandlerConfig(), new DefaultProcessEventListenerConfig(), uowManager, null);
+        ProcessConfig config = new StaticProcessConfig(new DefaultWorkItemHandlerConfig(),
+                new DefaultProcessEventListenerConfig(), uowManager, null);
         BpmnProcess process = createProcess(config, "BPMN2-UserTask.bpmn2");
         process.setProcessInstancesFactory(new FileSystemProcessInstancesFactory());
         process.configure();
 
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         UnitOfWork uow = uowManager.newUnitOfWork();
         uow.start();

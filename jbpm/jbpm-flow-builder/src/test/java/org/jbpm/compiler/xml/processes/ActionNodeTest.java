@@ -16,6 +16,8 @@
 
 package org.jbpm.compiler.xml.processes;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,23 +30,21 @@ import org.kie.api.runtime.KieSession;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class ActionNodeTest extends AbstractBaseTest {
-    
+
     @Test
-    public void testSingleActionNode() throws Exception {                
+    public void testSingleActionNode() throws Exception {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( new ClassPathResource( "ActionNodeTest.xml", ActionNodeTest.class ), ResourceType.DRF );
+        kbuilder.add(new ClassPathResource("ActionNodeTest.xml", ActionNodeTest.class), ResourceType.DRF);
         KieBase kbase = kbuilder.newKieBase();
-        
+
         KieSession ksession = kbase.newKieSession();
         List<String> list = new ArrayList<String>();
-        ksession.setGlobal( "list", list );
-        
-        ksession.startProcess( "process name" );
-        
-        assertEquals( 1, list.size() );
-        assertEquals( "action node was here", list.get(0) );        
+        ksession.setGlobal("list", list);
+
+        ksession.startProcess("process name");
+
+        assertEquals(1, list.size());
+        assertEquals("action node was here", list.get(0));
     }
 }

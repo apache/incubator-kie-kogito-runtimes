@@ -24,11 +24,11 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.kie.kogito.timer.SessionClock;
 import org.kie.kogito.timer.InternalSchedulerService;
 import org.kie.kogito.timer.Job;
 import org.kie.kogito.timer.JobContext;
 import org.kie.kogito.timer.JobHandle;
+import org.kie.kogito.timer.SessionClock;
 import org.kie.kogito.timer.TimerService;
 import org.kie.kogito.timer.Trigger;
 
@@ -45,11 +45,11 @@ public class JDKTimerService
 
     private final int size;
 
-    private AtomicLong                      idCounter;
+    private AtomicLong idCounter;
 
-    protected ScheduledThreadPoolExecutor   scheduler;
+    protected ScheduledThreadPoolExecutor scheduler;
 
-    protected TimerJobFactoryManager        jobFactoryManager = DefaultTimerJobFactoryManager.instance;
+    protected TimerJobFactoryManager jobFactoryManager = DefaultTimerJobFactoryManager.instance;
 
     public JDKTimerService() {
         this(1);
@@ -79,8 +79,8 @@ public class JDKTimerService
     public void reset() {
         if (idCounter.get() != 0L) {
             this.scheduler.shutdownNow();
-            this.scheduler = new ScheduledThreadPoolExecutor( size );
-            this.idCounter.set( 0L );
+            this.scheduler = new ScheduledThreadPoolExecutor(size);
+            this.idCounter.set(0L);
         }
     }
 
@@ -144,7 +144,7 @@ public class JDKTimerService
 
     public static class JDKJobHandle extends DefaultJobHandle {
 
-        private static final long     serialVersionUID = 510l;
+        private static final long serialVersionUID = 510l;
 
         private ScheduledFuture<Void> future;
 

@@ -16,6 +16,10 @@
 
 package org.jbpm.bpmn2;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +28,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.jbpm.bpmn2.core.Association;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
@@ -40,10 +45,6 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class DataTest extends JbpmBpmn2TestCase {
 
     @Test
@@ -52,7 +53,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         ksession = createKnowledgeSession(kbase);
         ProcessInstance processInstance = ksession.startProcess("Import");
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -64,7 +65,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         ProcessInstance processInstance = ksession.startProcess("Evaluation",
                 params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -81,7 +82,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         assertEquals("employeeStore", dataStore.getName());
         assertEquals(String.class.getCanonicalName(),
                 ((ObjectDataType) dataStore.getType()).getClassName());
-        
+
     }
 
     @Test
@@ -89,14 +90,15 @@ public class DataTest extends JbpmBpmn2TestCase {
         KieBase kbase = createKnowledgeBase("BPMN2-Association.bpmn2");
         ksession = createKnowledgeSession(kbase);
         ProcessInstance processInstance = ksession.startProcess("Evaluation");
-        List<Association> associations = (List<Association>) processInstance.getProcess().getMetaData().get(ProcessHandler.ASSOCIATIONS);
+        List<Association> associations =
+                (List<Association>) processInstance.getProcess().getMetaData().get(ProcessHandler.ASSOCIATIONS);
         assertNotNull(associations);
         assertTrue(associations.size() == 1);
         Association assoc = associations.get(0);
         assertEquals("_1234", assoc.getId());
         assertEquals("_1", assoc.getSourceRef());
         assertEquals("_2", assoc.getTargetRef());
-        
+
     }
 
     @Test
@@ -112,7 +114,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         ProcessInstance processInstance = ksession.startProcess("Evaluation",
                 params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -126,7 +128,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         ProcessInstance processInstance = ksession.startProcess(
                 "com.sample.evaluation", params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -142,7 +144,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         ProcessInstance processInstance = ksession.startProcess("Evaluation",
                 params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -160,7 +162,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         ProcessInstance processInstance = ksession.startProcess("XPathProcess",
                 params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -189,7 +191,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         params.put("instanceMetadata", document.getFirstChild());
         ProcessInstance processInstance = ksession.startProcess("process",
                 params);
-        
+
     }
 
     @Test
@@ -214,7 +216,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         params.put("instanceMetadata", "hello");
         ProcessInstance processInstance = ksession.startProcess("process",
                 params);
-        
+
     }
 
     /**
@@ -260,7 +262,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         params.put("instanceMetadata", document.getFirstChild());
         ProcessInstance processInstance = ksession.startProcess("process",
                 params);
-        
+
     }
 
     @Test
@@ -283,7 +285,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                 });
         ProcessInstance processInstance = ksession
                 .startProcess("process");
-        
+
     }
 
     @Test
@@ -307,7 +309,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                 });
         ProcessInstance processInstance = ksession
                 .startProcess("process");
-        
+
     }
 
     @Test
@@ -328,13 +330,13 @@ public class DataTest extends JbpmBpmn2TestCase {
                                 .getParameter("coId")).getNodeName());
                         assertEquals("some text", ((org.w3c.dom.Node) workItem
                                 .getParameter("coId")).getFirstChild()
-                                .getTextContent());
+                                        .getTextContent());
                     }
 
                 });
         ProcessInstance processInstance = ksession
                 .startProcess("process");
-        
+
     }
 
     /**
@@ -375,7 +377,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         params.put("instanceMetadata", document.getFirstChild());
         ProcessInstance processInstance = ksession.startProcess("process",
                 params);
-        
+
     }
 
     @Test
@@ -422,7 +424,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         Map<String, Object> params = new HashMap<String, Object>();
         ProcessInstance processInstance = ksession.startProcess("process",
                 params);
-        
+
     }
 
     @Test
@@ -458,7 +460,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                 });
         ProcessInstance processInstance = ksession
                 .startProcess("process");
-        
+
     }
 
     @Test
@@ -494,7 +496,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                 });
         ProcessInstance processInstance = ksession
                 .startProcess("process");
-        
+
     }
 
 }

@@ -15,12 +15,12 @@
  */
 package org.jbpm.compiler.canonical;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ReflectionUtilsTest {
 
@@ -41,18 +41,18 @@ public class ReflectionUtilsTest {
     public void testGetMethod() throws ReflectiveOperationException {
         ServiceExample instance = new ServiceExample();
         Method m = ReflectionUtils
-            .getMethod(
-                Thread.currentThread().getContextClassLoader(),
-                ServiceExample.class,
-                "primitiveType",
-                Arrays.asList("String", "Integer"));
+                .getMethod(
+                        Thread.currentThread().getContextClassLoader(),
+                        ServiceExample.class,
+                        "primitiveType",
+                        Arrays.asList("String", "Integer"));
         assertEquals(Integer.valueOf(2), m.invoke(instance, "pepe", 2));
         m = ReflectionUtils
-            .getMethod(
-                Thread.currentThread().getContextClassLoader(),
-                ServiceExample.class,
-                "primitiveType",
-                Arrays.asList("String", "Float"));
+                .getMethod(
+                        Thread.currentThread().getContextClassLoader(),
+                        ServiceExample.class,
+                        "primitiveType",
+                        Arrays.asList("String", "Float"));
         assertEquals(Float.valueOf(2.0f), m.invoke(instance, "pepe", 2.0f));
     }
 

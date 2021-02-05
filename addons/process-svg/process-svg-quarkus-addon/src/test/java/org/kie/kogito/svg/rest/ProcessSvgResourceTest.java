@@ -16,14 +16,14 @@
 
 package org.kie.kogito.svg.rest;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.svg.service.QuarkusProcessSvgService;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 class ProcessSvgResourceTest {
 

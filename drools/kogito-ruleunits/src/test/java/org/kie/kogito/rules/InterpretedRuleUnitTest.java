@@ -14,13 +14,13 @@
  */
 package org.kie.kogito.rules;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.rules.units.InterpretedRuleUnit;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled
 public class InterpretedRuleUnitTest {

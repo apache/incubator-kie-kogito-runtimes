@@ -76,12 +76,12 @@ public class DecisionValidation {
             return;
         }
         List<DMNMessage> schemaModelValidations = DMNValidatorFactory.newValidator(Arrays.asList(new ExtendedDMNProfile()))
-                                                                     .validateUsing(DMNValidator.Validation.VALIDATE_SCHEMA,
-                                                                                    DMNValidator.Validation.VALIDATE_MODEL)
-                                                                     .theseModels(resources.stream()
-                                                                                           .map(DecisionValidation::resourceToReader)
-                                                                                           .collect(Collectors.toList())
-                                                                                           .toArray(new Reader[]{}));
+                .validateUsing(DMNValidator.Validation.VALIDATE_SCHEMA,
+                        DMNValidator.Validation.VALIDATE_MODEL)
+                .theseModels(resources.stream()
+                        .map(DecisionValidation::resourceToReader)
+                        .collect(Collectors.toList())
+                        .toArray(new Reader[] {}));
         logValidationMessages(schemaModelValidations, DecisionValidation::extractMsgPrefix, DMNMessage::getText);
         processMessagesHandleErrors(validateOption, schemaModelValidations);
     }
@@ -109,10 +109,11 @@ public class DecisionValidation {
             return ValidationOption.ENABLED; // the default;
         }
         Optional<ValidationOption> configOption = Arrays.stream(ValidationOption.values())
-                                                        .filter(e -> e.name().equalsIgnoreCase(applicationProperty.get()))
-                                                        .findAny();
+                .filter(e -> e.name().equalsIgnoreCase(applicationProperty.get()))
+                .findAny();
         if (!configOption.isPresent()) {
-            LOG.warn("Validation configuration value {} does not correspond to any valid option, will assume {}=ENABLED", applicationProperty.get(), DecisionCodegen.VALIDATION_CONFIGURATION_KEY);
+            LOG.warn("Validation configuration value {} does not correspond to any valid option, will assume {}=ENABLED",
+                    applicationProperty.get(), DecisionCodegen.VALIDATION_CONFIGURATION_KEY);
             return ValidationOption.ENABLED;
         }
         return configOption.get();
@@ -127,8 +128,8 @@ public class DecisionValidation {
     }
 
     private static void logValidationMessages(List<DMNMessage> validation,
-                                              Function<DMNMessage, String> prefixer,
-                                              Function<DMNMessage, String> computeMessage) {
+            Function<DMNMessage, String> prefixer,
+            Function<DMNMessage, String> computeMessage) {
         for (DMNMessage msg : validation) {
             Consumer<String> logFn = null;
             switch (msg.getLevel()) {
@@ -165,7 +166,8 @@ public class DecisionValidation {
         LOG.info("DMN DT Validator initialized.");
         for (DMNModel model : dmnModels) {
             LOG.info("Analysing decision tables in DMN Model '{}' ...", model.getName());
-            List<DTAnalysis> results = dmndtAnalyser.analyse(model, new HashSet<>(Arrays.asList(DMNValidator.Validation.ANALYZE_DECISION_TABLE)));
+            List<DTAnalysis> results =
+                    dmndtAnalyser.analyse(model, new HashSet<>(Arrays.asList(DMNValidator.Validation.ANALYZE_DECISION_TABLE)));
             if (results.isEmpty()) {
                 LOG.info(" no decision tables found.");
             } else {
@@ -183,14 +185,17 @@ public class DecisionValidation {
         List<DMNMessage> errors = messages.stream().filter(m -> m.getLevel() == Level.ERROR).collect(Collectors.toList());
         if (!errors.isEmpty()) {
             if (validateOption != ValidationOption.IGNORE) {
-                StringBuilder sb = new StringBuilder("DMN Validation schema and model validation contained errors").append("\n");
-                sb.append("You may configure ").append(DecisionCodegen.VALIDATION_CONFIGURATION_KEY).append("=IGNORE to ignore validation errors").append("\n");
+                StringBuilder sb =
+                        new StringBuilder("DMN Validation schema and model validation contained errors").append("\n");
+                sb.append("You may configure ").append(DecisionCodegen.VALIDATION_CONFIGURATION_KEY)
+                        .append("=IGNORE to ignore validation errors").append("\n");
                 sb.append("DMN Validation errors:").append("\n");
                 sb.append(errors.stream().map(m -> modelName(m) + ": " + m.getMessage()).collect(Collectors.joining(",\n")));
                 LOG.error(sb.toString());
                 throw new RuntimeException(sb.toString());
             } else {
-                LOG.warn("DMN Validation encountered errors but validation configuration was set to IGNORE, continuing with no blocking error.");
+                LOG.warn(
+                        "DMN Validation encountered errors but validation configuration was set to IGNORE, continuing with no blocking error.");
                 return;
             }
         }
@@ -216,11 +221,11 @@ public class DecisionValidation {
             return sourceDT.getOutputLabel();
         } else if (sourceDT.getParent() instanceof NamedElement) {
             return ((NamedElement) sourceDT.getParent()).getName();
-        } else if (sourceDT.getParent() instanceof FunctionDefinition && sourceDT.getParent().getParent() instanceof NamedElement) {
+        } else if (sourceDT.getParent() instanceof FunctionDefinition
+                && sourceDT.getParent().getParent() instanceof NamedElement) {
             return ((NamedElement) sourceDT.getParent().getParent()).getName();
         } else {
             return new StringBuilder("[ID: ").append(sourceDT.getId()).append("]").toString();
         }
     }
 }
-

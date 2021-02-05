@@ -16,6 +16,9 @@
 
 package org.jbpm.bpmn2;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 import java.io.StringReader;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -46,9 +49,6 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-
 public class StartEventTest extends JbpmBpmn2TestCase {
 
     @Test
@@ -60,9 +60,9 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
             @Override
             public void afterProcessStarted(ProcessStartedEvent event) {
-                startedInstances.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                startedInstances.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
-            
+
         });
         Person person = new Person();
         person.setName("jack");
@@ -73,7 +73,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         person.setName("john");
         ksession.insert(person);
         assertThat(startedInstances).hasSize(1);
-        
+
         assertNodeTriggered(startedInstances.get(0), "StartProcess", "Hello", "EndProcess");
     }
 
@@ -87,7 +87,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
         logger.debug("About to start ###### " + new Date());
@@ -110,7 +110,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
         assertThat(list.size()).isEqualTo(0);
@@ -139,7 +139,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
         assertThat(list.size()).isEqualTo(0);
@@ -158,7 +158,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
         assertThat(list.size()).isEqualTo(0);
@@ -177,7 +177,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
 
@@ -188,7 +188,6 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         assertThat(getNumberOfProcessInstances("Minimal")).isEqualTo(1);
 
     }
-
 
     @Test
     public void testSignalToStartProcess() throws Exception {
@@ -221,7 +220,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
         ksession.signalEvent("MySignal", "NewValue");
@@ -245,8 +244,8 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                logger.info("{}", (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                logger.info("{}", ((KogitoProcessInstance) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
         ksession.signalEvent("MySignal", "NewValue");
@@ -254,8 +253,10 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         assertThat(getNumberOfProcessInstances("Minimal")).isEqualTo(1);
         // now remove the process from kbase to make sure runtime based listeners are removed from signal manager
         kbase.removeProcess("Minimal");
-        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> { ksession.signalEvent("MySignal", "NewValue"); })
-                    .withMessageContaining("Unknown process ID: Minimal");
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
+            ksession.signalEvent("MySignal", "NewValue");
+        })
+                .withMessageContaining("Unknown process ID: Minimal");
         // must be still one as the process was removed
         assertThat(getNumberOfProcessInstances("Minimal")).isEqualTo(1);
 
@@ -273,7 +274,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
     public void testMultipleStartEventsRegularStart() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-MultipleStartEventProcessLongInterval.bpmn2");
         ksession = createKnowledgeSession(kbase);
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
                 workItemHandler);
@@ -295,7 +296,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartTimer", 2);
         KieBase kbase = createKnowledgeBase("BPMN2-MultipleStartEventProcess.bpmn2");
         ksession = createKnowledgeSession(kbase);
-       
+
         ksession.addEventListener(countDownListener);
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
@@ -303,21 +304,21 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
         assertThat(list.size()).isEqualTo(0);
         // Timer in the process takes 500ms, so after 1 second, there should be 2 process IDs in the list.
         countDownListener.waitTillCompleted();
         assertThat(getNumberOfProcessInstances("MultipleStartEvents")).isEqualTo(2);
-        
+
     }
 
     @Test
     public void testMultipleEventBasedStartEventsSignalStart() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-MultipleEventBasedStartEventProcess.bpmn2");
         ksession = createKnowledgeSession(kbase);
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
@@ -326,7 +327,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void afterProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
 
@@ -334,7 +335,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
         assertThat(list.size()).isEqualTo(1);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        String processInstanceId = (( KogitoWorkItemImpl ) workItem)
+        String processInstanceId = ((KogitoWorkItemImpl) workItem)
                 .getProcessInstanceStringId();
 
         ProcessInstance processInstance = kruntime
@@ -352,7 +353,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
     public void testMultipleEventBasedStartEventsDifferentPaths() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-MultipleStartEventProcessDifferentPaths.bpmn2");
         ksession = createKnowledgeSession(kbase);
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
@@ -361,7 +362,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void afterProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
 
@@ -369,7 +370,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
         assertThat(list.size()).isEqualTo(1);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        String processInstanceId = (( KogitoWorkItemImpl ) workItem).getProcessInstanceStringId();
+        String processInstanceId = ((KogitoWorkItemImpl) workItem).getProcessInstanceStringId();
 
         ProcessInstance processInstance = kruntime
                 .getProcessInstance(processInstanceId);
@@ -389,7 +390,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         KieBase kbase = createKnowledgeBase("BPMN2-MultipleStartEventProcessDifferentPaths.bpmn2");
         ksession = createKnowledgeSession(kbase);
         ksession.addEventListener(countDownListener);
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
@@ -398,7 +399,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
 
@@ -410,7 +411,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         List<KogitoWorkItem> workItems = workItemHandler.getWorkItems();
 
         for (KogitoWorkItem workItem : workItems) {
-            String processInstanceId = (( KogitoWorkItemImpl ) workItem).getProcessInstanceStringId();
+            String processInstanceId = ((KogitoWorkItemImpl) workItem).getProcessInstanceStringId();
 
             ProcessInstance processInstance = kruntime
                     .getProcessInstance(processInstanceId);
@@ -427,7 +428,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
     public void testMultipleEventBasedStartEventsSignalDifferentPaths() throws Exception {
         KieBase kbase = createKnowledgeBase("BPMN2-MultipleStartEventProcessDifferentPaths.bpmn2");
         ksession = createKnowledgeSession(kbase);
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
@@ -436,7 +437,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void afterProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
 
@@ -444,7 +445,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
         assertThat(list.size()).isEqualTo(1);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        String processInstanceId = (( KogitoWorkItemImpl ) workItem)
+        String processInstanceId = ((KogitoWorkItemImpl) workItem)
                 .getProcessInstanceStringId();
 
         ProcessInstance processInstance = kruntime
@@ -472,7 +473,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         final List<String> list = new ArrayList<>();
         ksession.addEventListener(new DefaultProcessEventListener() {
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                list.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
         assertThat(list.size()).isEqualTo(0);
@@ -562,7 +563,9 @@ public class StartEventTest extends JbpmBpmn2TestCase {
      */
     @Test
     public void testInvalidDateTimerStart() throws Exception {
-        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> { createKnowledgeBase("timer/BPMN2-StartTimerDateInvalid.bpmn2"); })
+        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
+            createKnowledgeBase("timer/BPMN2-StartTimerDateInvalid.bpmn2");
+        })
                 .withMessageContaining("Could not parse date 'abcdef'");
     }
 
@@ -573,7 +576,9 @@ public class StartEventTest extends JbpmBpmn2TestCase {
      */
     @Test
     public void testInvalidDurationTimerStart() throws Exception {
-        assertThatExceptionOfType(Exception.class).isThrownBy(() -> { createKnowledgeBase("timer/BPMN2-StartTimerDurationInvalid.bpmn2"); })
+        assertThatExceptionOfType(Exception.class).isThrownBy(() -> {
+            createKnowledgeBase("timer/BPMN2-StartTimerDurationInvalid.bpmn2");
+        })
                 .withMessageContaining("Could not parse delay 'abcdef'");
     }
 
@@ -584,27 +589,28 @@ public class StartEventTest extends JbpmBpmn2TestCase {
      */
     @Test
     public void testInvalidCycleTimerStart() throws Exception {
-        assertThatExceptionOfType(Exception.class).isThrownBy(() -> { createKnowledgeBase("timer/BPMN2-StartTimerCycleInvalid.bpmn2"); })
+        assertThatExceptionOfType(Exception.class).isThrownBy(() -> {
+            createKnowledgeBase("timer/BPMN2-StartTimerCycleInvalid.bpmn2");
+        })
                 .withMessageContaining("Could not parse delay 'abcdef'");
     }
-    
+
     @Test
     public void testStartithMultipleOutgoingFlows() throws Exception {
         System.setProperty("jbpm.enable.multi.con", "true");
         try {
             KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-StartEventWithMultipleOutgoingFlows.bpmn2");
             ksession = createKnowledgeSession(kbase);
-            KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+            KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
 
             KogitoProcessInstance pi = kruntime.startProcess("starteventwithmutlipleflows");
             assertProcessInstanceCompleted(pi);
-            
+
             assertNodeTriggered(pi.getStringId(), "Script 1", "Script 2");
         } finally {
             System.clearProperty("jbpm.enable.multi.con");
         }
     }
-
 
     private static class StartCountingListener extends DefaultProcessEventListener {
         private Map<String, Integer> map = new HashMap<String, Integer>();

@@ -32,8 +32,7 @@ public final class SpringBootDecisionTracingListener extends DecisionTracingList
     public SpringBootDecisionTracingListener(
             ApplicationEventPublisher eventPublisher,
             SpringBootDecisionTracingCollector collector,
-            @Value(value = "${kogito.addon.tracing.decision.asyncEnabled:true}") boolean asyncEnabled
-    ) {
+            @Value(value = "${kogito.addon.tracing.decision.asyncEnabled:true}") boolean asyncEnabled) {
         if (asyncEnabled) {
             setEventConsumer(eventPublisher::publishEvent);
         } else {

@@ -18,7 +18,6 @@ package org.jbpm.test.util;
 
 import java.util.concurrent.CountDownLatch;
 
-
 public class NodeCountDownProcessEventListener extends DefaultCountDownProcessEventListener {
 
     protected String nodeName;

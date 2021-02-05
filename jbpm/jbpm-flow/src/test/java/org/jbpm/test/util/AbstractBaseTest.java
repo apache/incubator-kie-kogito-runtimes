@@ -16,6 +16,8 @@
 
 package org.jbpm.test.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,8 +34,6 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public abstract class AbstractBaseTest {
 
     protected Logger logger;
@@ -41,11 +41,11 @@ public abstract class AbstractBaseTest {
     @BeforeEach
     public void before(TestInfo testInfo) {
         addLogger();
-        logger.debug( "> " + testInfo.getDisplayName() );
+        logger.debug("> " + testInfo.getDisplayName());
     }
-   
+
     public abstract void addLogger();
-    
+
     protected static AtomicInteger uniqueIdGen = new AtomicInteger(0);
 
     public KieSession createKieSession(Process... process) {
@@ -57,7 +57,8 @@ public abstract class AbstractBaseTest {
     }
 
     public void showEventHistory(KieSession ksession) {
-        TestProcessEventListener procEventListener = (TestProcessEventListener) ksession.getProcessEventListeners().iterator().next();
+        TestProcessEventListener procEventListener =
+                (TestProcessEventListener) ksession.getProcessEventListeners().iterator().next();
         for (String event : procEventListener.getEventHistory()) {
             System.out.println("\"" + event + "\",");
         }
@@ -65,7 +66,7 @@ public abstract class AbstractBaseTest {
 
     public void verifyEventHistory(String[] eventOrder, List<String> eventHistory) {
         int max = eventOrder.length > eventHistory.size() ? eventOrder.length : eventHistory.size();
-        logger.debug("{} | {}", "EXPECTED", "TEST" );
+        logger.debug("{} | {}", "EXPECTED", "TEST");
         for (int i = 0; i < max; ++i) {
             String expected = "", real = "";
             if (i < eventOrder.length) {

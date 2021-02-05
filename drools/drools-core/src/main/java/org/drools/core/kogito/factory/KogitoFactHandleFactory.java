@@ -24,7 +24,8 @@ import org.drools.core.reteoo.ReteooFactHandleFactory;
 public class KogitoFactHandleFactory extends ReteooFactHandleFactory {
 
     @Override
-    public InternalFactHandle newFactHandle(long id, Object object, long recency, ObjectTypeConf conf, InternalWorkingMemory workingMemory, WorkingMemoryEntryPoint wmEntryPoint) {
+    public InternalFactHandle newFactHandle(long id, Object object, long recency, ObjectTypeConf conf,
+            InternalWorkingMemory workingMemory, WorkingMemoryEntryPoint wmEntryPoint) {
         return new KogitoDefaultFactHandle(id, object, recency, wmEntryPoint != null ? wmEntryPoint : workingMemory);
     }
 }

@@ -14,14 +14,14 @@
  */
 package org.kie.kogito.codegen.core.io;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.io.CollectedResource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class CollectedResourceProducerTest {
 
