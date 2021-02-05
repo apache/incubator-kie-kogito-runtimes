@@ -46,7 +46,8 @@ public class QuarkusKogitoExtensionInitializerTest {
         CloudEvent event = CloudEventUtils.decode(eventJson).orElseThrow(IllegalStateException::new);
         KogitoExtension kogitoExtension = ExtensionProvider.getInstance().parseExtension(KogitoExtension.class, event);
 
-        assertNotNull(kogitoExtension, "KogitoExtension not registered, please make sure bean org.kie.kogito.addon.cloudevents.quarkus.QuarkusKogitoExtensionInitializer has been loaded");
+        assertNotNull(kogitoExtension, "KogitoExtension not registered, please make sure " +
+                "bean org.kie.kogito.addon.cloudevents.quarkus.QuarkusKogitoExtensionInitializer has been loaded");
         assertEquals(DecisionTestUtils.MODEL_NAME, kogitoExtension.getDmnModelName());
         assertEquals(DecisionTestUtils.MODEL_NAMESPACE, kogitoExtension.getDmnModelNamespace());
     }
