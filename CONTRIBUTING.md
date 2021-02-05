@@ -49,6 +49,8 @@ To contribute, use GitHub Pull Requests, from your **own** fork.
 
 We decided to disallow `@author` tags in the Javadoc: they are hard to maintain, especially in a very active project, and we use the Git history to track authorship. GitHub also has [this nice page with your contributions](https://github.com/kiegroup/kogito-runtimes/graphs/contributors). 
 
+Make sure you have configured your IDE according to the [project codestyle](https://github.com/kiegroup/kogito-runtimes/tree/master/kogito-ide-config).
+
 ### Tests and Documentation 
 
 Don't forget to include tests in your pull requests, and documentation (reference documentation, javadoc...). Guides and reference documentation should be submitted to the [Kogito Docs Repository](https://github.com/kiegroup/kie-docs/tree/master-kogito).
