@@ -2,7 +2,7 @@ package com.myspace.demo;
 
 
 
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.event.impl.DefaultEventMarshaller;
 import org.kie.kogito.events.knative.ce.decorators.MessageDecorator;
 import org.kie.kogito.events.knative.ce.decorators.MessageDecoratorFactory;
@@ -26,20 +26,20 @@ public class MessageProducer {
 
     }
 
-    public void produce(ProcessInstance pi, $Type$ eventData) {
+    public void produce(KogitoProcessInstance pi, $Type$ eventData) {
         if (decorator.isPresent()) {
         } else {
         }
     }
     
 
-    private String marshall(ProcessInstance pi, $Type$ eventData) {
+    private String marshall(KogitoProcessInstance pi, $Type$ eventData) {
         return marshaller.marshall(eventData, e -> new $DataEventType$(
             DataEventAttrBuilder.toType("$channel$", pi),
             DataEventAttrBuilder.toSource(pi),
             e,
-            pi.getId(),
-            pi.getParentProcessInstanceId(),
+            pi.getStringId(),
+            pi.getParentProcessInstanceStringId(),
             pi.getRootProcessInstanceId(),
             pi.getProcessId(),
             pi.getRootProcessId(),

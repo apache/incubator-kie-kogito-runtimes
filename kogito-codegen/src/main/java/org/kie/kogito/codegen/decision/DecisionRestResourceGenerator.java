@@ -49,11 +49,11 @@ import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
 import org.kie.dmn.model.api.DecisionService;
 import org.kie.dmn.openapi.model.DMNModelIOSets;
 import org.kie.dmn.openapi.model.DMNOASResult;
-import org.kie.kogito.codegen.BodyDeclarationComparator;
-import org.kie.kogito.codegen.CodegenUtils;
-import org.kie.kogito.codegen.TemplatedGenerator;
-import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.core.CodegenUtils;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,7 +200,7 @@ public class DecisionRestResourceGenerator {
             inputRef = withOASResult.getNamingPolicy().getRef(identifyInputSet);
             outputRef = withOASResult.getNamingPolicy().getRef(identifyOutputSet);
         }
-        final String DMN_DEFINITIONS_JSON = "dmnDefinitions.json";
+        final String DMN_DEFINITIONS_JSON = "/dmnDefinitions.json";
         // MP / Quarkus
         processAnnForRef(dmnMethod,
                          "org.eclipse.microprofile.openapi.annotations.parameters.RequestBody",
@@ -314,7 +314,7 @@ public class DecisionRestResourceGenerator {
                   return parent.getNameAsString().endsWith("dmnresult");
               })
               .collect(Collectors.toList());
-        dmnResultOuputTypes.forEach(type -> type.setName("org.kie.kogito.dmn.rest.DMNResult"));
+        dmnResultOuputTypes.forEach(type -> type.setName("org.kie.kogito.dmn.rest.KogitoDMNResult"));
         outputTypeOccurrences.removeAll(dmnResultOuputTypes);
 
         // then, *remaining* methods which belong to Decision Service(s) shall simply be returning Object, since strongly output typing is not supported for DS use case yet.

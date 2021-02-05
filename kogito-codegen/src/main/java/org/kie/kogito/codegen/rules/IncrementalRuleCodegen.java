@@ -55,16 +55,16 @@ import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.internal.builder.DecisionTableConfiguration;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.codegen.AbstractGenerator;
-import org.kie.kogito.codegen.ApplicationSection;
-import org.kie.kogito.codegen.DashboardGeneratedFileUtils;
-import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.GeneratedFileType;
+import org.kie.kogito.codegen.core.AbstractGenerator;
+import org.kie.kogito.codegen.api.ApplicationSection;
+import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.KogitoPackageSources;
-import org.kie.kogito.codegen.TemplatedGenerator;
-import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.context.KogitoBuildContext;
-import org.kie.kogito.codegen.io.CollectedResource;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.kogito.conf.ClockType;
@@ -72,6 +72,7 @@ import org.kie.kogito.conf.EventProcessingType;
 import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.units.AssignableChecker;
+import org.kie.kogito.rules.units.KogitoRuleUnitDescription;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -242,8 +243,8 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                         reflectConfigSource.getData()));
             }
 
-            Collection<RuleUnitDescription> ruleUnits = pkgSources.getRuleUnits();
-            for (RuleUnitDescription ruleUnit : ruleUnits) {
+            Collection<KogitoRuleUnitDescription> ruleUnits = pkgSources.getRuleUnits();
+            for (KogitoRuleUnitDescription ruleUnit : ruleUnits) {
                 String canonicalName = ruleUnit.getCanonicalName();
                 RuleUnitGenerator ruSource = new RuleUnitGenerator(context(), ruleUnit, pkgSources.getRulesFileName())
                         .withQueries(pkgSources.getQueriesInRuleUnit(canonicalName))
@@ -387,7 +388,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
     }
 
-    private void addUnitConfToKieModule(RuleUnitDescription ruleUnitDescription) {
+    private void addUnitConfToKieModule(KogitoRuleUnitDescription ruleUnitDescription) {
         KieBaseModel unitKieBaseModel = kieModuleModel.newKieBaseModel(ruleUnit2KieBaseName(ruleUnitDescription.getCanonicalName()));
         unitKieBaseModel.setEventProcessingMode(org.kie.api.conf.EventProcessingOption.CLOUD);
         unitKieBaseModel.addPackage(ruleUnitDescription.getPackageName());
@@ -411,7 +412,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         unitKieSessionModel.setType(KieSessionModel.KieSessionType.STATEFUL);
         ClockType clockType = config.getDefaultedClockType();
         if (clockType == ClockType.PSEUDO) {
-            unitKieSessionModel.setClockType(ClockTypeOption.PSEUDO);
+            unitKieSessionModel.setClockType(ClockTypeOption.get("pseudo"));
         }
     }
 
@@ -441,5 +442,10 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
 
         return new KogitoKieModuleModelImpl();
+    }
+
+    @Override
+    public int priority() {
+        return 20;
     }
 }

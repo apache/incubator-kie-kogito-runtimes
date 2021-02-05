@@ -32,8 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
-
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -48,6 +46,7 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyIgnoreWarningBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
+import javax.inject.Inject;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
@@ -57,18 +56,18 @@ import org.jboss.jandex.Index;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
 import org.kie.api.pmml.PMML4Result;
-import org.kie.internal.kogito.codegen.Generated;
-import org.kie.internal.kogito.codegen.VariableInfo;
 import org.kie.kogito.Model;
 import org.kie.kogito.UserTask;
-import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.GeneratedFileType;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.JsonSchemaGenerator;
-import org.kie.kogito.codegen.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.Generated;
+import org.kie.kogito.codegen.VariableInfo;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
-import org.kie.kogito.codegen.utils.AppPaths;
-import org.kie.kogito.codegen.utils.ApplicationGeneratorDiscovery;
-import org.kie.kogito.codegen.utils.GeneratedFileWriter;
+import org.kie.kogito.codegen.api.utils.AppPaths;
+import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
+import org.kie.kogito.codegen.core.utils.GeneratedFileWriter;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinder;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
@@ -77,7 +76,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.utils.GeneratedFileValidation.validateGeneratedFileTypes;
+import static org.kie.kogito.codegen.core.utils.GeneratedFileValidation.validateGeneratedFileTypes;
 
 /**
  * Main class of the Kogito extension

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 JBoss Inc
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.drools.core.io.impl.ByteArrayResource;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
-import org.kie.kogito.codegen.GeneratedFile;
-import org.kie.kogito.codegen.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 
 public class BigRuleSetCodegenTest {
 
