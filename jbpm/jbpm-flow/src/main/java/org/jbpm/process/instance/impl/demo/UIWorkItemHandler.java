@@ -16,7 +16,11 @@
 
 package org.jbpm.process.instance.impl.demo;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -26,7 +30,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
+import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
@@ -47,7 +56,7 @@ public class UIWorkItemHandler extends JFrame implements KogitoWorkItemHandler {
     public UIWorkItemHandler() {
         setSize(new Dimension(400, 300));
         setTitle("Work Items");
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE);
         initializeComponent();
     }
     
@@ -58,7 +67,7 @@ public class UIWorkItemHandler extends JFrame implements KogitoWorkItemHandler {
         getRootPane().add(panel, BorderLayout.CENTER);
         
         workItemsList = new JList();
-        workItemsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        workItemsList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION);
         workItemsList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
