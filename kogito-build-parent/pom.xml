@@ -388,6 +388,31 @@
         <version>${version.com.fasterxml.jackson}</version>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jdk8</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-parameter-names</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-json-provider</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-base</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-jaxb-annotations</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
         <groupId>com.jayway.jsonpath</groupId>
         <artifactId>json-path</artifactId>
         <version>${version.jayway.jsonpath}</version>
@@ -1363,6 +1388,8 @@
                               <include name="**/target/classes/**/*.class"/>
                               <!-- To avoid a complaint about duplicate classes from archetypes. -->
                               <exclude name="**/target/test-classes/**/*.class"/>
+                              <!-- To avoid a complaint about duplicate classes from archetype of Quarkus (test-compile) -->
+                              <exclude name="**/target/test-compile/**/*.class"/>
                               <!-- To avoid a complaint about duplicate classes as KogitoProcessInstancesFactory.class is required in every persistence addon that is mutually exclusive. -->
                               <exclude name="**/target/classes/org/kie/kogito/persistence/KogitoProcessInstancesFactory.class"/>
                               <!-- To avoid a complaint about duplicate classes created by code generation. -->
@@ -1377,6 +1404,8 @@
                               <exclude name="**/integration-tests/**/target/classes/**/*.class"/>
                               <exclude name="**/integration-test/**/target/classes/**/*.class"/>
                               <exclude name="**/integration-test-legacy/**/target/classes/**/*.class"/>
+                              <exclude name="**/cloudevents-quarkus-addon-it/target/classes/**/*.class"/>
+                              <exclude name="**/cloudevents-spring-boot-addon-it/target/classes/**/*.class"/>
                             </fileset>
                           </classfiles>
                           <sourcefiles encoding="UTF-8">

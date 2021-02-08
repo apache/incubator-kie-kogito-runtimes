@@ -23,11 +23,9 @@ import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.kie.api.KieBase;
 import org.kie.api.io.Resource;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.internal.io.ResourceFactory;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_TIMER;
@@ -64,10 +62,8 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
         RuleFlowProcess process = factory.validate().getProcess();
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
-        KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ksession.startProcess("org.jbpm.process");
-        ksession.dispose();
+        kruntime = createKogitoProcessRuntime(res);
+        kruntime.startProcess("org.jbpm.process");
     }
 
     @Test
@@ -111,14 +107,12 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
 
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
-        KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ProcessInstance pi = ksession.startProcess("org.jbpm.process");
+        kruntime = createKogitoProcessRuntime(res);
+        KogitoProcessInstance pi = kruntime.startProcess("org.jbpm.process");
 
-        assertEquals(ProcessInstance.STATE_COMPLETED,
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED,
                      pi.getState());
 
-        ksession.dispose();
     }
 
     @Test
@@ -164,27 +158,25 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
 
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
-        KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        kruntime = createKogitoProcessRuntime(res);
         TestWorkItemHandler testHandler = new TestWorkItemHandler();
-        ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
                                                               testHandler);
-        ksession.addEventListener(countDownListener);
+        kruntime.getProcessEventManager().addEventListener(countDownListener);
 
-        ProcessInstance pi = ksession.startProcess("org.jbpm.process");
+        KogitoProcessInstance pi = kruntime.startProcess("org.jbpm.process");
         assertProcessInstanceActive(pi);
 
         countDownListener.waitTillCompleted(); // wait for boundary timer firing
 
-        assertNodeTriggered(pi.getId(),
+        assertNodeTriggered(pi.getStringId(),
                             "End2");
         assertProcessInstanceActive(pi); // still active because CancelActivity = false
 
-        ksession.getWorkItemManager().completeWorkItem(testHandler.getWorkItem().getId(),
+        kruntime.getWorkItemManager().completeWorkItem(testHandler.getWorkItem().getStringId(),
                                                        null);
         assertProcessInstanceCompleted(pi);
 
-        ksession.dispose();
     }
 
     @Test
@@ -230,27 +222,25 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
 
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
-        KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        kruntime = createKogitoProcessRuntime(res);
         TestWorkItemHandler testHandler = new TestWorkItemHandler();
-        ksession.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
                                                               testHandler);
-        ksession.addEventListener(countDownListener);
+        kruntime.getProcessEventManager().addEventListener(countDownListener);
 
-        ProcessInstance pi = ksession.startProcess("org.jbpm.process");
+        KogitoProcessInstance pi = kruntime.startProcess("org.jbpm.process");
         assertProcessInstanceActive(pi);
 
         countDownListener.waitTillCompleted(); // wait for boundary timer firing
 
-        assertNodeTriggered(pi.getId(),
+        assertNodeTriggered(pi.getStringId(),
                             "End2");
         assertProcessInstanceActive(pi); // still active because CancelActivity = false
 
-        ksession.getWorkItemManager().completeWorkItem(testHandler.getWorkItem().getId(),
+        kruntime.getWorkItemManager().completeWorkItem(testHandler.getWorkItem().getStringId(),
                                                        null);
         assertProcessInstanceCompleted(pi);
 
-        ksession.dispose();
     }
 
     @Test
@@ -302,22 +292,21 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
 
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2"); // source path or target path must be set to be added into kbase
-        KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ProcessInstance pi = ksession.startProcess("org.jbpm.process");
+        kruntime = createKogitoProcessRuntime(res);
+
+        KogitoProcessInstance pi = kruntime.startProcess("org.jbpm.process");
 
         assertNotNull(pi);
 
-        assertEquals(ProcessInstance.STATE_ACTIVE,
+        assertEquals(KogitoProcessInstance.STATE_ACTIVE,
                      pi.getState());
 
         pi.signalEvent("testEvent",
                        null);
 
-        assertEquals(ProcessInstance.STATE_COMPLETED,
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED,
                      pi.getState());
 
-        ksession.dispose();
     }
 
     @Test
@@ -347,15 +336,14 @@ public class ProcessFactoryTest extends JbpmBpmn2TestCase {
 
         Resource res = ResourceFactory.newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
         res.setSourcePath("/tmp/processFactory.bpmn2");
-        KieBase kbase = createKnowledgeBaseFromResources(res);
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ProcessInstance pi = ksession.startProcess("org.jbpm.process");
+        kruntime = createKogitoProcessRuntime(res);
+
+        KogitoProcessInstance pi = kruntime.startProcess("org.jbpm.process");
 
         assertNotNull(pi);
 
-        assertEquals(ProcessInstance.STATE_COMPLETED,
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED,
                      pi.getState());
 
-        ksession.dispose();
     }
 }
