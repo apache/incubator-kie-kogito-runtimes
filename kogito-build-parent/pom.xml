@@ -137,7 +137,7 @@
     <version.org.keycloak>11.0.3</version.org.keycloak>
     <version.org.mockito>3.6.0</version.org.mockito>
     <version.org.mvel>2.4.12.Final</version.org.mvel>
-    <version.org.kie7>7.49.0.t20210118</version.org.kie7>
+    <version.org.kie7>7.49.0.Final</version.org.kie7>
     <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
@@ -1388,6 +1388,8 @@
                               <include name="**/target/classes/**/*.class"/>
                               <!-- To avoid a complaint about duplicate classes from archetypes. -->
                               <exclude name="**/target/test-classes/**/*.class"/>
+                              <!-- To avoid a complaint about duplicate classes from archetype of Quarkus (test-compile) -->
+                              <exclude name="**/target/test-compile/**/*.class"/>
                               <!-- To avoid a complaint about duplicate classes as KogitoProcessInstancesFactory.class is required in every persistence addon that is mutually exclusive. -->
                               <exclude name="**/target/classes/org/kie/kogito/persistence/KogitoProcessInstancesFactory.class"/>
                               <!-- To avoid a complaint about duplicate classes created by code generation. -->
@@ -1402,6 +1404,8 @@
                               <exclude name="**/integration-tests/**/target/classes/**/*.class"/>
                               <exclude name="**/integration-test/**/target/classes/**/*.class"/>
                               <exclude name="**/integration-test-legacy/**/target/classes/**/*.class"/>
+                              <exclude name="**/cloudevents-quarkus-addon-it/target/classes/**/*.class"/>
+                              <exclude name="**/cloudevents-spring-boot-addon-it/target/classes/**/*.class"/>
                             </fileset>
                           </classfiles>
                           <sourcefiles encoding="UTF-8">
