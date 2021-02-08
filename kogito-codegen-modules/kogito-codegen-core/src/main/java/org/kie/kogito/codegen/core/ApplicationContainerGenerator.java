@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen.core;
 
-import static org.kie.kogito.codegen.core.ApplicationGenerator.APPLICATION_CLASS_NAME;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +29,8 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
+
+import static org.kie.kogito.codegen.core.ApplicationGenerator.APPLICATION_CLASS_NAME;
 
 public class ApplicationContainerGenerator {
 

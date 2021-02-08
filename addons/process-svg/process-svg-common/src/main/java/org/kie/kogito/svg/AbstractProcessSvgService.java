@@ -16,8 +16,6 @@
 
 package org.kie.kogito.svg;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +32,8 @@ import org.kie.kogito.svg.dataindex.NodeInstance;
 import org.kie.kogito.svg.processor.SVGProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractProcessSvgService implements ProcessSvgService {
 

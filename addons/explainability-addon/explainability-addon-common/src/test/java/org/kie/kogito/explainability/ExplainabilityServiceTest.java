@@ -16,9 +16,6 @@
 
 package org.kie.kogito.explainability;
 
-import static java.util.Collections.singletonList;
-import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
-
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +31,9 @@ import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
+
+import static java.util.Collections.singletonList;
+import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
 
 public class ExplainabilityServiceTest {
 

@@ -16,9 +16,6 @@
 
 package org.kie.kogito.codegen.core.io;
 
-import static org.drools.core.util.IoUtils.readBytesFromInputStream;
-import static org.kie.api.io.ResourceType.determineResourceType;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -39,6 +36,9 @@ import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.drools.core.util.IoUtils.readBytesFromInputStream;
+import static org.kie.api.io.ResourceType.determineResourceType;
 
 public class CollectedResourceProducer {
 

@@ -16,8 +16,6 @@
 
 package org.jbpm.bpmn2.xml;
 
-import static org.jbpm.bpmn2.xml.ProcessHandler.createJavaAction;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +46,8 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import static org.jbpm.bpmn2.xml.ProcessHandler.createJavaAction;
 
 public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 

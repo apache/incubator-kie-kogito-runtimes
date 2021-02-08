@@ -16,8 +16,6 @@
 
 package org.kie.kogito.tracing.decision.event.trace;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +25,8 @@ import org.kie.kogito.tracing.typedvalue.TypedValue;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TraceOutputValue {

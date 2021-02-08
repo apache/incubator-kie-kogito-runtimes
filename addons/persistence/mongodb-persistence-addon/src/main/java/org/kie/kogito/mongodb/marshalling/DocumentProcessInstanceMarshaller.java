@@ -15,9 +15,6 @@
 
 package org.kie.kogito.mongodb.marshalling;
 
-import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_MARSHALLING_ERROR_MSG;
-import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_UNMARSHALLING_ERROR_MSG;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,6 +40,9 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
+
+import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_MARSHALLING_ERROR_MSG;
+import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_UNMARSHALLING_ERROR_MSG;
 
 public class DocumentProcessInstanceMarshaller {
 

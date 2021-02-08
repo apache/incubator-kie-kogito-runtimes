@@ -15,9 +15,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory.METHOD_EVENT;
-import static org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory.METHOD_KEEP_ACTIVE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -32,6 +29,9 @@ import org.kie.api.definition.process.Node;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+
+import static org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory.METHOD_EVENT;
+import static org.jbpm.ruleflow.core.factory.EventSubProcessNodeFactory.METHOD_KEEP_ACTIVE;
 
 public class EventSubProcessNodeVisitor extends CompositeContextNodeVisitor<EventSubProcessNode> {
 

@@ -16,8 +16,6 @@
 
 package org.jbpm.workflow.instance.node;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +25,8 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.jbpm.util.PatternConstants;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ParameterResolverTest extends AbstractBaseTest {
 

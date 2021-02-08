@@ -15,11 +15,6 @@
 
 package org.kie.kogito.codegen.rules;
 
-import static com.github.javaparser.StaticJavaParser.parseExpression;
-import static com.github.javaparser.ast.NodeList.nodeList;
-import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +44,11 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.TypeParameter;
+
+import static com.github.javaparser.StaticJavaParser.parseExpression;
+import static com.github.javaparser.ast.NodeList.nodeList;
+import static java.util.stream.Collectors.toList;
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
 public class RuleUnitGenerator implements RuleFileGenerator {
 

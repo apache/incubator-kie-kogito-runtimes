@@ -15,8 +15,6 @@
 
 package org.jbpm.serverless.workflow;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +44,8 @@ import io.serverlessworkflow.api.end.End;
 import io.serverlessworkflow.api.events.EventDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.produce.ProduceEvent;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class WorkflowFactoryTest extends BaseServerlessTest {
 

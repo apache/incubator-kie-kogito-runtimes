@@ -16,15 +16,6 @@
 
 package org.drools.modelcompiler;
 
-import static java.util.Arrays.asList;
-import static org.drools.model.DSL.globalOf;
-import static org.drools.model.FlowDSL.declarationOf;
-import static org.drools.model.FlowDSL.expr;
-import static org.drools.model.FlowDSL.on;
-import static org.drools.model.FlowDSL.rule;
-import static org.drools.model.FlowDSL.unitData;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 
 import org.drools.model.DSL;
@@ -42,6 +33,15 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.units.ListDataStream;
+
+import static java.util.Arrays.asList;
+import static org.drools.model.DSL.globalOf;
+import static org.drools.model.FlowDSL.declarationOf;
+import static org.drools.model.FlowDSL.expr;
+import static org.drools.model.FlowDSL.on;
+import static org.drools.model.FlowDSL.rule;
+import static org.drools.model.FlowDSL.unitData;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled
 public class RuleUnitExecModelTest {

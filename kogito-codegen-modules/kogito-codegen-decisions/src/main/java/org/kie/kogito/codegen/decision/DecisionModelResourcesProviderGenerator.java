@@ -15,9 +15,6 @@
 
 package org.kie.kogito.codegen.decision;
 
-import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
-import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMethod;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -41,6 +38,9 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+
+import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
+import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMethod;
 
 public class DecisionModelResourcesProviderGenerator {
 

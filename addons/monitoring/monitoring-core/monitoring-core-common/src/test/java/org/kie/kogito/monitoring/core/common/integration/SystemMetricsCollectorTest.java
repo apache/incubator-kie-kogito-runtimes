@@ -15,9 +15,6 @@
 
 package org.kie.kogito.monitoring.core.common.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -30,6 +27,9 @@ import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollect
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SystemMetricsCollectorTest {
 

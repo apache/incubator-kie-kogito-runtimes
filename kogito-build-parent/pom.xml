@@ -1182,6 +1182,7 @@
           <version>${version.impsort.plugin}</version>
           <configuration>
             <groups>java.,javax.,org.,com.</groups>
+            <staticAfter>true</staticAfter>
             <staticGroups>*</staticGroups>
             <!-- keep in sync with the formatter-maven-plugin -->
             <skip>${formatter.skip}</skip>

@@ -16,9 +16,6 @@
 
 package org.kie.kogito.tracing.decision.aggregator;
 
-import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE;
-import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE;
-
 import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -65,6 +62,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.cloudevents.CloudEvent;
+
+import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE;
+import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE;
 
 public class DefaultAggregator implements Aggregator {
 

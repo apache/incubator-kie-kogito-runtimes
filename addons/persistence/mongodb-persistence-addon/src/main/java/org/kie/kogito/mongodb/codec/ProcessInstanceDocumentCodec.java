@@ -15,13 +15,6 @@
 
 package org.kie.kogito.mongodb.codec;
 
-import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_ID;
-import static org.kie.kogito.mongodb.utils.DocumentConstants.NAME;
-import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE;
-import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE_ID;
-import static org.kie.kogito.mongodb.utils.DocumentConstants.STRATEGIES;
-import static org.kie.kogito.mongodb.utils.DocumentConstants.VALUE;
-
 import java.util.stream.Collectors;
 
 import org.bson.BsonReader;
@@ -36,6 +29,13 @@ import org.bson.codecs.EncoderContext;
 import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 
 import com.mongodb.MongoClientSettings;
+
+import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_ID;
+import static org.kie.kogito.mongodb.utils.DocumentConstants.NAME;
+import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE;
+import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE_ID;
+import static org.kie.kogito.mongodb.utils.DocumentConstants.STRATEGIES;
+import static org.kie.kogito.mongodb.utils.DocumentConstants.VALUE;
 
 public class ProcessInstanceDocumentCodec implements CollectibleCodec<ProcessInstanceDocument> {
 

@@ -16,11 +16,6 @@
 
 package org.jbpm.workflow.instance.impl;
 
-import static org.jbpm.ruleflow.core.Metadata.ACTION;
-import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
-import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
-import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
-
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +23,11 @@ import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+
+import static org.jbpm.ruleflow.core.Metadata.ACTION;
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
+import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
+import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
 
 public abstract class ExtendedNodeInstanceImpl extends NodeInstanceImpl {
 

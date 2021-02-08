@@ -16,16 +16,6 @@
 
 package org.jbpm.ruleflow.core;
 
-import static org.jbpm.ruleflow.core.Metadata.ACTION;
-import static org.jbpm.ruleflow.core.Metadata.ATTACHED_TO;
-import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
-import static org.jbpm.ruleflow.core.Metadata.SIGNAL_NAME;
-import static org.jbpm.ruleflow.core.Metadata.TIME_CYCLE;
-import static org.jbpm.ruleflow.core.Metadata.TIME_DATE;
-import static org.jbpm.ruleflow.core.Metadata.TIME_DURATION;
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,6 +49,16 @@ import org.kie.api.definition.process.NodeContainer;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.jbpm.ruleflow.core.Metadata.ACTION;
+import static org.jbpm.ruleflow.core.Metadata.ATTACHED_TO;
+import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
+import static org.jbpm.ruleflow.core.Metadata.SIGNAL_NAME;
+import static org.jbpm.ruleflow.core.Metadata.TIME_CYCLE;
+import static org.jbpm.ruleflow.core.Metadata.TIME_DATE;
+import static org.jbpm.ruleflow.core.Metadata.TIME_DURATION;
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
 
 public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
 

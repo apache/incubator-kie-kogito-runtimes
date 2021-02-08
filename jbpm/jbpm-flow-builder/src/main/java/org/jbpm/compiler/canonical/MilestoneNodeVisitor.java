@@ -16,8 +16,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.factory.MilestoneNodeFactory.METHOD_CONDITION;
-
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.MilestoneNodeFactory;
 import org.jbpm.workflow.core.node.MilestoneNode;
@@ -25,6 +23,8 @@ import org.jbpm.workflow.core.node.MilestoneNode;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+
+import static org.jbpm.ruleflow.core.factory.MilestoneNodeFactory.METHOD_CONDITION;
 
 public class MilestoneNodeVisitor extends AbstractNodeVisitor<MilestoneNode> {
 

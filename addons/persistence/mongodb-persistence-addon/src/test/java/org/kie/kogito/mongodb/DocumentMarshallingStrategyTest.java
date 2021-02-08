@@ -15,12 +15,6 @@
 
 package org.kie.kogito.mongodb;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +22,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.kie.api.marshalling.ObjectMarshallingStrategy.Context;
 import org.kie.kogito.mongodb.marshalling.DocumentMarshallingStrategy;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DocumentMarshallingStrategyTest {
 

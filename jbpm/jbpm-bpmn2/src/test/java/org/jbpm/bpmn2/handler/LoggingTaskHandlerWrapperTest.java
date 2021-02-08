@@ -16,8 +16,6 @@
 
 package org.jbpm.bpmn2.handler;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +25,8 @@ import org.jbpm.bpmn2.JbpmBpmn2TestCase;
 import org.jbpm.bpmn2.handler.LoggingTaskHandlerDecorator.InputParameter;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LoggingTaskHandlerWrapperTest extends JbpmBpmn2TestCase {
 

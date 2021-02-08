@@ -16,8 +16,6 @@
 
 package org.kie.kogito.maven.plugin.util;
 
-import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -40,6 +38,8 @@ import org.drools.compiler.kie.builder.impl.ZipKieModule;
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.kie.api.builder.ReleaseId;
 import org.kie.api.builder.model.KieModuleModel;
+
+import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 
 public final class MojoUtil {
 

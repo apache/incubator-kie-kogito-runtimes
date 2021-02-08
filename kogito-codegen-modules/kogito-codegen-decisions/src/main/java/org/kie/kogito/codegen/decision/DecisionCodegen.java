@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen.decision;
 
-import static java.util.stream.Collectors.toList;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,6 +57,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static java.util.stream.Collectors.toList;
 
 public class DecisionCodegen extends AbstractGenerator {
 

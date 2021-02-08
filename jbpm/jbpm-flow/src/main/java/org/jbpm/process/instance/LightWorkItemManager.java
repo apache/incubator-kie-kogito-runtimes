@@ -15,12 +15,6 @@
 
 package org.jbpm.process.instance;
 
-import static org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemHandler.transitionToPhase;
-import static org.jbpm.process.instance.impl.workitem.Abort.ID;
-import static org.jbpm.process.instance.impl.workitem.Abort.STATUS;
-import static org.kie.api.runtime.process.WorkItem.ABORTED;
-import static org.kie.api.runtime.process.WorkItem.COMPLETED;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -47,6 +41,12 @@ import org.kie.kogito.process.workitems.KogitoWorkItemHandlerNotFoundException;
 import org.kie.kogito.process.workitems.KogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.kie.kogito.signal.SignalManager;
+
+import static org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemHandler.transitionToPhase;
+import static org.jbpm.process.instance.impl.workitem.Abort.ID;
+import static org.jbpm.process.instance.impl.workitem.Abort.STATUS;
+import static org.kie.api.runtime.process.WorkItem.ABORTED;
+import static org.kie.api.runtime.process.WorkItem.COMPLETED;
 
 public class LightWorkItemManager implements KogitoWorkItemManager {
 

@@ -16,8 +16,6 @@
 
 package org.jbpm.integrationtests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +38,8 @@ import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessUpgradeTest extends AbstractBaseTest {
 

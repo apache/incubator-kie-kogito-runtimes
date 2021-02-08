@@ -14,8 +14,6 @@
  */
 package org.kie.kogito.events.knative.ce;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
@@ -30,6 +28,8 @@ import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.jackson.JsonFormat;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CloudEventConverterTest {
 

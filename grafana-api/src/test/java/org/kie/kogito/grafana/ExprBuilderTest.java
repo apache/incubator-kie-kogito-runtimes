@@ -15,8 +15,6 @@
 
 package org.kie.kogito.grafana;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -25,6 +23,8 @@ import org.kie.kogito.grafana.model.functions.ExprBuilder;
 import org.kie.kogito.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.grafana.model.functions.IncreaseFunction;
 import org.kie.kogito.grafana.model.functions.SumFunction;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExprBuilderTest {
 

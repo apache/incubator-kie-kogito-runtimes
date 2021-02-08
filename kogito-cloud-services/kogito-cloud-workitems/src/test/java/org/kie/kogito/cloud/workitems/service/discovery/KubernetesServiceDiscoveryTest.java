@@ -15,8 +15,6 @@
 
 package org.kie.kogito.cloud.workitems.service.discovery;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +31,8 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePort;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class KubernetesServiceDiscoveryTest {
 

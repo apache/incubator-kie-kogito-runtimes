@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen.rules;
 
-import static java.util.stream.Collectors.joining;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +37,8 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
+
+import static java.util.stream.Collectors.joining;
 
 public class AnnotatedClassPostProcessor {
 

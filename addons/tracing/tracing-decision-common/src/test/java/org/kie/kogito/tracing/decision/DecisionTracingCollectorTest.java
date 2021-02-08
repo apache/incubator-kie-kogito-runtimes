@@ -16,18 +16,6 @@
 
 package org.kie.kogito.tracing.decision;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.createDMNModel;
-import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_ALL_JSON_RESOURCE;
-import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_DECISION_SERVICE_JSON_RESOURCE;
-import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.readEvaluateEventsFromJsonResource;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +38,18 @@ import org.kie.kogito.tracing.decision.terminationdetector.TerminationDetector;
 import org.mockito.ArgumentCaptor;
 
 import io.cloudevents.CloudEvent;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.createDMNModel;
+import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_ALL_JSON_RESOURCE;
+import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_DECISION_SERVICE_JSON_RESOURCE;
+import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.readEvaluateEventsFromJsonResource;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class DecisionTracingCollectorTest {
 

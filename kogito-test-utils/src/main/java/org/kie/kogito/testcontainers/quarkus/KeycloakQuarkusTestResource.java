@@ -15,11 +15,6 @@
  */
 package org.kie.kogito.testcontainers.quarkus;
 
-import static java.lang.String.format;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +23,11 @@ import java.util.function.Function;
 
 import org.kie.kogito.resources.ConditionalQuarkusTestResource;
 import org.kie.kogito.testcontainers.KogitoKeycloakContainer;
+
+import static java.lang.String.format;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Keycloak quarkus resource that works within the test lifecycle.

@@ -16,8 +16,6 @@
 
 package org.jbpm.bpmn2.xml;
 
-import static org.jbpm.ruleflow.core.Metadata.COMPLETION_CONDITION;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,6 +64,8 @@ import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import static org.jbpm.ruleflow.core.Metadata.COMPLETION_CONDITION;
 
 public abstract class AbstractNodeHandler extends BaseAbstractHandler implements Handler {
 

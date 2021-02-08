@@ -15,11 +15,11 @@
 
 package org.kie.kogito.codegen.api;
 
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.codegen.api.AddonsConfig.DEFAULT;
 import static org.kie.kogito.codegen.api.AddonsConfig.builder;
-
-import org.junit.jupiter.api.Test;
 
 public class AddonsConfigTest {
 

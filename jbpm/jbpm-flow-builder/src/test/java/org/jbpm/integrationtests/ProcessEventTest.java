@@ -16,8 +16,6 @@
 
 package org.jbpm.integrationtests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -30,6 +28,8 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessEventTest extends AbstractBaseTest {
 

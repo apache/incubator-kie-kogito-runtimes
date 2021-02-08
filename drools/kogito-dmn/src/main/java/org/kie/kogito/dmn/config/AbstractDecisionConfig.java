@@ -14,8 +14,6 @@
  */
 package org.kie.kogito.dmn.config;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -24,6 +22,8 @@ import java.util.stream.StreamSupport;
 
 import org.kie.dmn.api.core.event.DMNRuntimeEventListener;
 import org.kie.kogito.decision.DecisionEventListenerConfig;
+
+import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractDecisionConfig implements org.kie.kogito.decision.DecisionConfig {
 

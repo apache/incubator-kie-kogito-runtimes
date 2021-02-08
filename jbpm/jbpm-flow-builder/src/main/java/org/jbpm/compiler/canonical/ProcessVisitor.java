@@ -16,21 +16,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_ASSOCIATION;
-import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_CONNECTION;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ADD_COMPENSATION_CONTEXT;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_DYNAMIC;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_GLOBAL;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_IMPORTS;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_NAME;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_PACKAGE_NAME;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VALIDATE;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VARIABLE;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VERSION;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VISIBILITY;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,6 +75,21 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+
+import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_ASSOCIATION;
+import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_CONNECTION;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ADD_COMPENSATION_CONTEXT;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_DYNAMIC;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_GLOBAL;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_IMPORTS;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_NAME;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_PACKAGE_NAME;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VALIDATE;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VARIABLE;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VERSION;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VISIBILITY;
 
 public class ProcessVisitor extends AbstractVisitor {
 

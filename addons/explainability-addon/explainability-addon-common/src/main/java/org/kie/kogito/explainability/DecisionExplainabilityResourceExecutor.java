@@ -16,9 +16,6 @@
 
 package org.kie.kogito.explainability;
 
-import static org.kie.kogito.explainability.Constants.SKIP_TRACING;
-import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
-
 import java.util.Map;
 
 import org.kie.dmn.api.core.DMNContext;
@@ -30,6 +27,9 @@ import org.kie.kogito.dmn.rest.KogitoDMNResult;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
+
+import static org.kie.kogito.explainability.Constants.SKIP_TRACING;
+import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
 
 public class DecisionExplainabilityResourceExecutor implements ExplainabilityResourceExecutor {
 

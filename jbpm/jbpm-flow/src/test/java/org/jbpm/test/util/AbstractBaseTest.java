@@ -16,8 +16,6 @@
 
 package org.jbpm.test.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,6 +31,8 @@ import org.kie.api.KieBase;
 import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class AbstractBaseTest {
 

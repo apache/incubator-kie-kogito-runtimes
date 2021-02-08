@@ -15,11 +15,6 @@
 
 package org.kie.kogito.codegen.process.events;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.kie.kogito.codegen.process.ProcessGenerationUtils.execModelFromProcessFile;
-import static org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator.EMITTER_PREFIX;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -34,6 +29,11 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.kie.kogito.codegen.process.ProcessGenerationUtils.execModelFromProcessFile;
+import static org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator.EMITTER_PREFIX;
 
 class CloudEventsResourceGeneratorTest {
 

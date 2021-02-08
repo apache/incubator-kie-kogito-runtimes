@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen.decision;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
@@ -27,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DecisionValidationTest {
 

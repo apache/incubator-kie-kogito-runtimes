@@ -16,20 +16,6 @@
 
 package org.kie.kogito.tracing.decision.aggregator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_DECISION_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.FIRST_DECISION_NODE_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.LAST_DECISION_NODE_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.createDMNModel;
-import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_ALL_JSON_RESOURCE;
-import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_DECISION_SERVICE_JSON_RESOURCE;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +35,20 @@ import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
 import org.kie.kogito.tracing.decision.event.trace.TraceEventType;
 
 import io.cloudevents.CloudEvent;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_DECISION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.FIRST_DECISION_NODE_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.LAST_DECISION_NODE_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.createDMNModel;
+import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_ALL_JSON_RESOURCE;
+import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_DECISION_SERVICE_JSON_RESOURCE;
 
 class DefaultAggregatorTest {
 

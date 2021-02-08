@@ -16,10 +16,6 @@
 
 package org.kie.kogito.tracing.decision;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +28,10 @@ import org.kie.kogito.decision.DecisionModelType;
 
 import io.cloudevents.CloudEvent;
 import io.reactivex.subscribers.TestSubscriber;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class QuarkusModelEventEmitterTest {
 

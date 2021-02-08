@@ -15,8 +15,6 @@
 
 package org.drools.compiler.builder.impl;
 
-import static org.drools.core.util.IoUtils.readBytesFromInputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,6 +59,8 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.security.AnyTypePermission;
+
+import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 
 public class KogitoKieModuleMarshaller {
 

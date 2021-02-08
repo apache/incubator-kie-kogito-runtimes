@@ -16,11 +16,6 @@
 
 package org.kie.api.internal.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -29,6 +24,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.kie.api.internal.assembler.KieAssemblerService;
 import org.kie.api.io.ResourceType;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ServiceDiscoveryImplTest {
 

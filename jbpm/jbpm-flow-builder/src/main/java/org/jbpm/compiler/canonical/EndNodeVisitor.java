@@ -16,15 +16,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.Metadata.CUSTOM_SCOPE;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
-import static org.jbpm.ruleflow.core.Metadata.REF;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
-import static org.jbpm.ruleflow.core.Metadata.VARIABLE;
-import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_ACTION;
-import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_TERMINATE;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,6 +35,15 @@ import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_SCOPE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
+import static org.jbpm.ruleflow.core.Metadata.REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.VARIABLE;
+import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_ACTION;
+import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_TERMINATE;
 
 public class EndNodeVisitor extends AbstractNodeVisitor<EndNode> {
 

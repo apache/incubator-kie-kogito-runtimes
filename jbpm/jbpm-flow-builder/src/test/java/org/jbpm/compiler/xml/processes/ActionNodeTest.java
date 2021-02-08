@@ -16,8 +16,6 @@
 
 package org.jbpm.compiler.xml.processes;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +27,8 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ActionNodeTest extends AbstractBaseTest {
 

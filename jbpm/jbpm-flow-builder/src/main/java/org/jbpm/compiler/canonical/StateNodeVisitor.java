@@ -15,8 +15,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.factory.StateNodeFactory.METHOD_CONSTRAINT;
-
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -31,6 +29,8 @@ import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.utils.StringEscapeUtils;
+
+import static org.jbpm.ruleflow.core.factory.StateNodeFactory.METHOD_CONSTRAINT;
 
 public class StateNodeVisitor extends CompositeContextNodeVisitor<StateNode> {
 

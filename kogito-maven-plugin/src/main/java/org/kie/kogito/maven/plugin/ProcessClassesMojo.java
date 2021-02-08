@@ -15,9 +15,6 @@
 
 package org.kie.kogito.maven.plugin;
 
-import static java.util.Arrays.asList;
-import static org.kie.kogito.codegen.core.utils.GeneratedFileValidation.validateGeneratedFileTypes;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -53,6 +50,9 @@ import org.kie.memorycompiler.JavaCompilerSettings;
 import org.kie.memorycompiler.JavaConfiguration;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
+
+import static java.util.Arrays.asList;
+import static org.kie.kogito.codegen.core.utils.GeneratedFileValidation.validateGeneratedFileTypes;
 
 @Mojo(name = "process-model-classes",
         requiresDependencyResolution = ResolutionScope.RUNTIME,

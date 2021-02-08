@@ -15,8 +15,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +35,8 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+
+import static com.github.javaparser.StaticJavaParser.parse;
 
 /*
  *

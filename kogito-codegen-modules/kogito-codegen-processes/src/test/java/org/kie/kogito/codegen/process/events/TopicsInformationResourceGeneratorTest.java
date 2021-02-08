@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen.process.events;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +31,8 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TopicsInformationResourceGeneratorTest {
 

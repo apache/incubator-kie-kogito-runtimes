@@ -16,9 +16,9 @@
 
 package org.jbpm.bpmn2;
 
-import static org.assertj.core.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class ImportClassTest extends JbpmBpmn2TestCase {
 

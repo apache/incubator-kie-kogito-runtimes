@@ -16,11 +16,6 @@
 
 package org.kie.kogito.codegen.rules;
 
-import static org.drools.core.util.StringUtils.ucFirst;
-import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
-import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
-import static org.kie.kogito.codegen.rules.QueryEndpointGenerator.setGeneric;
-
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -47,6 +42,11 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+
+import static org.drools.core.util.StringUtils.ucFirst;
+import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
+import static org.kie.kogito.codegen.rules.QueryEndpointGenerator.setGeneric;
 
 public class QueryGenerator implements RuleFileGenerator {
 

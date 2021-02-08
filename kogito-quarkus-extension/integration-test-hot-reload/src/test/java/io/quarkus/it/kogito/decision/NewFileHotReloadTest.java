@@ -16,10 +16,6 @@
 
 package io.quarkus.it.kogito.decision;
 
-import static io.restassured.RestAssured.given;
-import static java.util.Objects.requireNonNull;
-import static org.hamcrest.Matchers.is;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +29,10 @@ import io.quarkus.test.QuarkusDevModeTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
+
+import static io.restassured.RestAssured.given;
+import static java.util.Objects.requireNonNull;
+import static org.hamcrest.Matchers.is;
 
 public class NewFileHotReloadTest {
 

@@ -16,11 +16,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.factory.TimerNodeFactory.METHOD_DATE;
-import static org.jbpm.ruleflow.core.factory.TimerNodeFactory.METHOD_DELAY;
-import static org.jbpm.ruleflow.core.factory.TimerNodeFactory.METHOD_PERIOD;
-import static org.jbpm.ruleflow.core.factory.TimerNodeFactory.METHOD_TYPE;
-
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.factory.TimerNodeFactory;
@@ -30,6 +25,11 @@ import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+
+import static org.jbpm.ruleflow.core.factory.TimerNodeFactory.METHOD_DATE;
+import static org.jbpm.ruleflow.core.factory.TimerNodeFactory.METHOD_DELAY;
+import static org.jbpm.ruleflow.core.factory.TimerNodeFactory.METHOD_PERIOD;
+import static org.jbpm.ruleflow.core.factory.TimerNodeFactory.METHOD_TYPE;
 
 public class TimerNodeVisitor extends AbstractNodeVisitor<TimerNode> {
 

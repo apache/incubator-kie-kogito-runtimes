@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen.tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +28,8 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.Sig;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GatewayTest extends AbstractCodegenTest {
 

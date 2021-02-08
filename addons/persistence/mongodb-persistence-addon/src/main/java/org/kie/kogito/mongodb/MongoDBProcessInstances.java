@@ -15,10 +15,6 @@
 
 package org.kie.kogito.mongodb;
 
-import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_ID;
-import static org.kie.kogito.mongodb.utils.DocumentUtils.getCollection;
-import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +36,10 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+
+import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_ID;
+import static org.kie.kogito.mongodb.utils.DocumentUtils.getCollection;
+import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
 
 public class MongoDBProcessInstances<T extends Model> implements MutableProcessInstances<T> {
 

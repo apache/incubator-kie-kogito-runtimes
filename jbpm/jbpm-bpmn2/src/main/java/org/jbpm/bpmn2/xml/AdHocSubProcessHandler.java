@@ -16,10 +16,6 @@
 
 package org.jbpm.bpmn2.xml;
 
-import static org.jbpm.compiler.xml.processes.DynamicNodeHandler.AUTOCOMPLETE_COMPLETION_CONDITION;
-import static org.jbpm.ruleflow.core.Metadata.COMPLETION_CONDITION;
-import static org.jbpm.ruleflow.core.Metadata.CUSTOM_ACTIVATION_CONDITION;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +27,10 @@ import org.jbpm.workflow.core.node.DynamicNode;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import static org.jbpm.compiler.xml.processes.DynamicNodeHandler.AUTOCOMPLETE_COMPLETION_CONDITION;
+import static org.jbpm.ruleflow.core.Metadata.COMPLETION_CONDITION;
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_ACTIVATION_CONDITION;
 
 public class AdHocSubProcessHandler extends CompositeContextNodeHandler {
 

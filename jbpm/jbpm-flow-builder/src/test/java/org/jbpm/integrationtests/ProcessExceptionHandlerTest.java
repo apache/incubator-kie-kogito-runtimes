@@ -16,9 +16,6 @@
 
 package org.jbpm.integrationtests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -32,6 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ProcessExceptionHandlerTest extends AbstractBaseTest {
 

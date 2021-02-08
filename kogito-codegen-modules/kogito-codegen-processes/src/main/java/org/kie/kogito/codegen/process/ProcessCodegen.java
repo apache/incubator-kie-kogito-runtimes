@@ -15,9 +15,6 @@
 
 package org.kie.kogito.codegen.process;
 
-import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -64,6 +61,9 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+
+import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Entry point to process code generation

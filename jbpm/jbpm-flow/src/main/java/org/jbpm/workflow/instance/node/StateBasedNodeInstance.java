@@ -16,8 +16,6 @@
 
 package org.jbpm.workflow.instance.node;
 
-import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,6 +61,8 @@ import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.timer.TimerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 
 public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl
         implements EventBasedNodeInstanceInterface, KogitoEventListener {

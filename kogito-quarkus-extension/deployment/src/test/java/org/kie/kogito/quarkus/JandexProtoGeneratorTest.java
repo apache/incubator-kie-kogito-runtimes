@@ -15,11 +15,6 @@
 
 package org.kie.kogito.quarkus;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +30,11 @@ import org.jboss.jandex.Indexer;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
 import org.kie.kogito.quarkus.deployment.JandexProtoGenerator;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JandexProtoGeneratorTest {
 

@@ -16,8 +16,6 @@
 
 package org.jbpm.workflow.instance.impl;
 
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -71,6 +69,8 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.NodeInstanceContainer;
+
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 
 public class NodeInstanceFactoryRegistry {
 

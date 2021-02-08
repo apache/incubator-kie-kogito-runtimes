@@ -15,14 +15,14 @@
 
 package org.kie.kogito.codegen.core;
 
-import static org.kie.kogito.codegen.core.ApplicationConfigGenerator.TEMPLATE_CONFIG_FOLDER;
-
 import org.kie.kogito.codegen.api.ConfigGenerator;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
 import com.github.javaparser.ast.CompilationUnit;
+
+import static org.kie.kogito.codegen.core.ApplicationConfigGenerator.TEMPLATE_CONFIG_FOLDER;
 
 public abstract class AbstractConfigGenerator implements ConfigGenerator {
 

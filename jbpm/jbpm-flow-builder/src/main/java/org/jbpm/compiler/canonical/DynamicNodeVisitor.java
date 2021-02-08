@@ -15,10 +15,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_ACTIVATION_EXPRESSION;
-import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_COMPLETION_EXPRESSION;
-import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_LANGUAGE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -31,6 +27,10 @@ import org.jbpm.workflow.core.node.DynamicNode;
 import org.kie.api.definition.process.Node;
 
 import com.github.javaparser.ast.expr.MethodCallExpr;
+
+import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_ACTIVATION_EXPRESSION;
+import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_COMPLETION_EXPRESSION;
+import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_LANGUAGE;
 
 public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode> {
 

@@ -15,11 +15,6 @@
 
 package org.kie.kogito.codegen.process;
 
-import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
-import static org.kie.kogito.codegen.core.CodegenUtils.isApplicationField;
-import static org.kie.kogito.codegen.core.CodegenUtils.isObjectMapperField;
-import static org.kie.kogito.codegen.core.CodegenUtils.isProcessField;
-
 import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -37,6 +32,11 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+
+import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
+import static org.kie.kogito.codegen.core.CodegenUtils.isApplicationField;
+import static org.kie.kogito.codegen.core.CodegenUtils.isObjectMapperField;
+import static org.kie.kogito.codegen.core.CodegenUtils.isProcessField;
 
 public class MessageConsumerGenerator {
 

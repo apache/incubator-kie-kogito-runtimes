@@ -14,11 +14,11 @@
  */
 package org.kie.kogito.events.knative.ce.http;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ResponsesTest {
 

@@ -15,8 +15,6 @@
 
 package org.kie.kogito.monitoring.core.common.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +24,8 @@ import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.BooleanH
 import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.DecisionConstants;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BooleanHandlerTest {
 

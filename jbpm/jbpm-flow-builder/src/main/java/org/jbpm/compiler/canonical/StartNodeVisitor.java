@@ -16,15 +16,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
-import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
-import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_INTERRUPTING;
-import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_TIMER;
-import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_TRIGGER;
-
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -39,6 +30,15 @@ import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
+import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
+import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_INTERRUPTING;
+import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_TIMER;
+import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_TRIGGER;
 
 public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
 

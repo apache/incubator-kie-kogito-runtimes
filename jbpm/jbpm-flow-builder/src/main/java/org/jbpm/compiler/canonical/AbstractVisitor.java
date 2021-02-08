@@ -16,8 +16,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_METADATA;
-
 import java.util.Map;
 
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
@@ -30,6 +28,8 @@ import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.utils.StringEscapeUtils;
+
+import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_METADATA;
 
 public abstract class AbstractVisitor {
 

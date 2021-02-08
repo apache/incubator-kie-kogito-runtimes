@@ -15,8 +15,6 @@
 
 package org.kie.kogito.monitoring.core.common.integration;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.time.Period;
 
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +24,8 @@ import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.Decision
 import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.YearsAndMonthsDurationHandler;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class YearsAndMonthsDurationHandlerTest extends AbstractQuantilesTest<YearsAndMonthsDurationHandler> {
 

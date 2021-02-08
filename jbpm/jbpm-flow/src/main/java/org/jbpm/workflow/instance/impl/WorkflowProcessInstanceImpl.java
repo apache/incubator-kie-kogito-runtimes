@@ -16,20 +16,6 @@
 
 package org.jbpm.workflow.instance.impl;
 
-import static org.jbpm.ruleflow.core.Metadata.COMPENSATION;
-import static org.jbpm.ruleflow.core.Metadata.CONDITION;
-import static org.jbpm.ruleflow.core.Metadata.CORRELATION_KEY;
-import static org.jbpm.ruleflow.core.Metadata.CUSTOM_ASYNC;
-import static org.jbpm.ruleflow.core.Metadata.CUSTOM_SLA_DUE_DATE;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
-import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
-import static org.kie.kogito.process.flexible.ItemDescription.Status.ACTIVE;
-import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
-import static org.kie.kogito.process.flexible.ItemDescription.Status.COMPLETED;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -109,6 +95,20 @@ import org.kie.soup.project.datamodel.commons.util.MVELEvaluator;
 import org.mvel2.integration.VariableResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.jbpm.ruleflow.core.Metadata.COMPENSATION;
+import static org.jbpm.ruleflow.core.Metadata.CONDITION;
+import static org.jbpm.ruleflow.core.Metadata.CORRELATION_KEY;
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_ASYNC;
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_SLA_DUE_DATE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
+import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
+import static org.kie.kogito.process.flexible.ItemDescription.Status.ACTIVE;
+import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
+import static org.kie.kogito.process.flexible.ItemDescription.Status.COMPLETED;
 
 /**
  * Default implementation of a RuleFlow process instance.

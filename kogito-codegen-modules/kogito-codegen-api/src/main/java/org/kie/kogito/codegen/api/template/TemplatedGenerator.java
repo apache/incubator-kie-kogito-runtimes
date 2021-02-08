@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen.api.template;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -26,6 +24,8 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
+
+import static com.github.javaparser.StaticJavaParser.parse;
 
 /**
  * Utility class to handle multi platform template generation.

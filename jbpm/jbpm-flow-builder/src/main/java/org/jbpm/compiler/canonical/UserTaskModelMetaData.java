@@ -14,12 +14,6 @@
  */
 package org.jbpm.compiler.canonical;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
-import static org.drools.core.util.StringUtils.ucFirst;
-import static org.jbpm.ruleflow.core.Metadata.CUSTOM_AUTO_START;
-import static org.jbpm.ruleflow.core.Metadata.DATA_OUTPUTS;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +52,12 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+
+import static com.github.javaparser.StaticJavaParser.parse;
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static org.drools.core.util.StringUtils.ucFirst;
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_AUTO_START;
+import static org.jbpm.ruleflow.core.Metadata.DATA_OUTPUTS;
 
 public class UserTaskModelMetaData {
 

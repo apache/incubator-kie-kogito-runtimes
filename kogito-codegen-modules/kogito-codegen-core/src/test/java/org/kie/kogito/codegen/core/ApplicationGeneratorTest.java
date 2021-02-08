@@ -15,8 +15,6 @@
 
 package org.kie.kogito.codegen.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +33,8 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApplicationGeneratorTest {
 

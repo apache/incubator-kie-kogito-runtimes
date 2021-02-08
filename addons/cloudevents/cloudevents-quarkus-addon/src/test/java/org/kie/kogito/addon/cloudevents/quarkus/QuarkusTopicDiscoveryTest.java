@@ -15,8 +15,6 @@
 
 package org.kie.kogito.addon.cloudevents.quarkus;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +28,8 @@ import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.event.Topic;
 import org.kie.kogito.event.TopicDiscovery;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class QuarkusTopicDiscoveryTest {
 

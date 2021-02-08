@@ -15,8 +15,6 @@
 
 package org.kie.kogito.mongodb.utils;
 
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.kie.kogito.mongodb.codec.ProcessInstanceDocumentCodecProvider;
@@ -31,6 +29,8 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 
 public class DocumentUtils {
 

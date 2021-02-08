@@ -14,8 +14,6 @@
  */
 package org.kie.kogito.dmn;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 
@@ -23,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.management.GAV;
 import org.kie.kogito.decision.DecisionModelResource;
 import org.kie.kogito.decision.DecisionModelType;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultDecisionModelResourceTest {
 

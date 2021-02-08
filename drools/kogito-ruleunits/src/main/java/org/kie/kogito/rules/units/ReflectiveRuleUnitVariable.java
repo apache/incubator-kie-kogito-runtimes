@@ -14,14 +14,14 @@
  */
 package org.kie.kogito.rules.units;
 
-import static org.drools.reflective.util.ClassUtils.convertFromPrimitiveType;
-import static org.drools.reflective.util.ClassUtils.getter2property;
-import static org.kie.kogito.rules.units.StringUtils.capitalize;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
+
+import static org.drools.reflective.util.ClassUtils.convertFromPrimitiveType;
+import static org.drools.reflective.util.ClassUtils.getter2property;
+import static org.kie.kogito.rules.units.StringUtils.capitalize;
 
 public final class ReflectiveRuleUnitVariable implements KogitoRuleUnitVariable {
 

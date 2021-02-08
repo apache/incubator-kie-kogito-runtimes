@@ -16,6 +16,17 @@
 
 package org.jbpm.compiler.canonical;
 
+import java.util.Map;
+
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory;
+import org.jbpm.workflow.core.node.BoundaryEventNode;
+
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_COMPENSATION;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
@@ -28,17 +39,6 @@ import static org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory.METHOD_ATT
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_EVENT_TYPE;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_SCOPE;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_VARIABLE_NAME;
-
-import java.util.Map;
-
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory;
-import org.jbpm.workflow.core.node.BoundaryEventNode;
-
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
 
 public class BoundaryEventNodeVisitor extends AbstractNodeVisitor<BoundaryEventNode> {
 

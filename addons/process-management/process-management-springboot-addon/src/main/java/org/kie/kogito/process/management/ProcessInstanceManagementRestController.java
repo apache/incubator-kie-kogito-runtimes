@@ -16,8 +16,6 @@
 
 package org.kie.kogito.process.management;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import org.kie.kogito.Application;
 import org.kie.kogito.process.Processes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +27,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/management/processes")

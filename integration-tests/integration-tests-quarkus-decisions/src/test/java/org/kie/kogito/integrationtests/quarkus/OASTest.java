@@ -16,10 +16,6 @@
 
 package org.kie.kogito.integrationtests.quarkus;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.greaterThan;
-
 import java.net.URL;
 
 import org.junit.jupiter.api.Test;
@@ -32,6 +28,10 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.greaterThan;
 
 @QuarkusTest
 class OASTest {

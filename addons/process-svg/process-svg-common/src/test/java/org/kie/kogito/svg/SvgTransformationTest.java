@@ -15,10 +15,6 @@
 
 package org.kie.kogito.svg;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -39,6 +35,10 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.svg.processor.SVGProcessor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class SvgTransformationTest {
 

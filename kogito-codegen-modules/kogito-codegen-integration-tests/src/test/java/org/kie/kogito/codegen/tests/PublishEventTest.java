@@ -15,11 +15,6 @@
 
 package org.kie.kogito.codegen.tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.kie.kogito.process.flexible.ItemDescription.Status;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,6 +45,11 @@ import org.kie.kogito.services.event.impl.UserTaskInstanceEventBody;
 import org.kie.kogito.services.event.impl.VariableInstanceEventBody;
 import org.kie.kogito.services.identity.StaticIdentityProvider;
 import org.kie.kogito.uow.UnitOfWork;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.kie.kogito.process.flexible.ItemDescription.Status;
 
 public class PublishEventTest extends AbstractCodegenTest {
 

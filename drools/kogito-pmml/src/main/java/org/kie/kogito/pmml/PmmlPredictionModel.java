@@ -14,8 +14,6 @@
  */
 package org.kie.kogito.pmml;
 
-import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
-
 import java.util.Map;
 
 import org.kie.api.pmml.PMML4Result;
@@ -25,6 +23,8 @@ import org.kie.pmml.api.models.PMMLModel;
 import org.kie.pmml.api.runtime.PMMLContext;
 import org.kie.pmml.api.runtime.PMMLRuntime;
 import org.kie.pmml.evaluator.core.PMMLContextImpl;
+
+import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
 
 public class PmmlPredictionModel implements PredictionModel {
 
