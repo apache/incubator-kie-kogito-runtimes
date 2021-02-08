@@ -1,0 +1,18 @@
+{
+  "id": "branch1subflow",
+  "name": "branch1subflow",
+  "version": "1.0",
+  "states":[
+    {
+      "name":"InjectTestData1",
+      "type":"inject",
+      "start": true,
+      "data": {
+        "branch1data" : "testBranch1Data"
+      },
+      "end": {
+        "terminate": "true"
+      }
+    }
+  ]
+}
