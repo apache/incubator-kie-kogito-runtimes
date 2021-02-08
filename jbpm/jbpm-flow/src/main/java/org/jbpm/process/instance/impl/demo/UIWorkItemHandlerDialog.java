@@ -16,25 +16,15 @@
 
 package org.jbpm.process.instance.impl.demo;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-
-import org.kie.api.runtime.process.WorkItem;
+import javax.swing.*;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 /**
  * 
@@ -45,14 +35,14 @@ public class UIWorkItemHandlerDialog extends JDialog {
     
     private Map<String, Object> results = new HashMap<String, Object>();
     private UIWorkItemHandler handler;
-    private WorkItem workItem;
+    private KogitoWorkItem workItem;
     private JTextField resultNameTextField;
     private JTextField resultValueTextField;
     private JButton addResultButton;
     private JButton completeButton;
     private JButton abortButton;
     
-    public UIWorkItemHandlerDialog(UIWorkItemHandler handler, WorkItem workItem) {
+    public UIWorkItemHandlerDialog(UIWorkItemHandler handler, KogitoWorkItem workItem) {
         super(handler, "Execute Work Item", true);
         this.handler = handler;
         this.workItem = workItem;
