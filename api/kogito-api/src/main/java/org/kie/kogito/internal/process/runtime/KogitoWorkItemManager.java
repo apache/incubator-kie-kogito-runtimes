@@ -54,7 +54,7 @@ public interface KogitoWorkItemManager extends WorkItemManager {
      * @param handler the handler for executing work items
      */
     void registerWorkItemHandler(String workItemName,
-                                 WorkItemHandler handler);
+                                 KogitoWorkItemHandler handler);
 
     /**
      * Transition work item with given id into the next life cycle phase.
@@ -63,5 +63,10 @@ public interface KogitoWorkItemManager extends WorkItemManager {
      */
     default void transitionWorkItem(String id, Transition<?> transition) {
 
+    }
+
+    default void registerWorkItemHandler(String workItemName,
+                                         WorkItemHandler handler) {
+        registerWorkItemHandler(workItemName, (KogitoWorkItemHandler) handler);
     }
 }

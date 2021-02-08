@@ -24,7 +24,7 @@ import org.jbpm.workflow.core.node.Transformation;
 import org.kie.api.runtime.process.ProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.process.workitems.KogitoWorkItemManager;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 
 public class HandleMessageAction implements Action, Serializable {
@@ -64,7 +64,7 @@ public class HandleMessageAction implements Action, Serializable {
             workItem.setParameter("Message", variable);
         }
 
-        (( KogitoWorkItemManager ) context.getKieRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);
+        ((InternalKogitoWorkItemManager) context.getKieRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);
     }
 
 }

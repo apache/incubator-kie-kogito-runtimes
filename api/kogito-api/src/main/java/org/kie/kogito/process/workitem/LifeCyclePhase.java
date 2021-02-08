@@ -15,7 +15,7 @@
 
 package org.kie.kogito.process.workitem;
 
-import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 /**
  * Definition of the life cycle phase that work item can be connected to.
@@ -53,7 +53,7 @@ public interface LifeCyclePhase {
      * @param workitem work item that is being transitioned
      * @param transition actual transition
      */
-    default void apply(WorkItem workitem, Transition<?> transition) {
+    default void apply(KogitoWorkItem workitem, Transition<?> transition) {
         
     }
 }

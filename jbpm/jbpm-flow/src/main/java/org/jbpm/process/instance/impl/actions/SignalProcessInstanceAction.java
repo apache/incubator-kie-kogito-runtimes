@@ -25,7 +25,7 @@ import org.kie.api.runtime.process.ProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.process.workitems.KogitoWorkItemManager;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 
 public class SignalProcessInstanceAction implements Action, Serializable {
@@ -85,16 +85,17 @@ public class SignalProcessInstanceAction implements Action, Serializable {
     public void execute(ProcessContext context) throws Exception {
         String variableName = VariableUtil.resolveVariable(this.variableName, context.getNodeInstance());
         Object signal = variableName == null ? eventDataSupplier.apply(context) : context.getVariable(variableName);
+        KogitoProcessInstance processInstance = (KogitoProcessInstance) context.getProcessInstance();
+        KogitoNodeInstance nodeInstance = (KogitoNodeInstance) context.getNodeInstance();
         if (transformation != null) {
-            signal = new org.jbpm.process.core.event.EventTransformerImpl(transformation).transformEvent((( KogitoProcessInstance ) context.getProcessInstance()).getVariables());
+            signal = new org.jbpm.process.core.event.EventTransformerImpl(transformation).transformEvent(processInstance.getVariables());
         }
         if (signal == null) {
             signal = variableName;
         }
         String signalName = VariableUtil.resolveVariable(this.signalNameTemplate, context.getNodeInstance());
         KogitoProcessRuntime.asKogitoProcessRuntime(context.getKieRuntime())
-                .getProcessEventSupport().fireOnSignal(context.getProcessInstance(), context
-                        .getNodeInstance(), context.getKieRuntime(), signalName, signal);
+                .getProcessEventSupport().fireOnSignal(processInstance, nodeInstance, context.getKieRuntime(), signalName, signal);
         
         if (DEFAULT_SCOPE.equals(scope)) {
             context.getKieRuntime().signalEvent(signalName, signal);
@@ -113,7 +114,7 @@ public class SignalProcessInstanceAction implements Action, Serializable {
             if (signal == null) {
                 workItem.setParameter("Data", signal);
             }
-            (( KogitoWorkItemManager ) context.getKieRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);
+            ((InternalKogitoWorkItemManager) context.getKieRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);
         }
     }
 

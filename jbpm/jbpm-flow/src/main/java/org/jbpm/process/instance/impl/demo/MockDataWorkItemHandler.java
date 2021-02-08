@@ -19,11 +19,9 @@ package org.jbpm.process.instance.impl.demo;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kie.kogito.process.workitems.KogitoWorkItem;
 
 /**
  * Simple work item handler that allows to provide output data or supplier
@@ -31,7 +29,7 @@ import org.kie.kogito.process.workitems.KogitoWorkItem;
  * of provided input data. 
  *
  */
-public class MockDataWorkItemHandler implements WorkItemHandler {
+public class MockDataWorkItemHandler implements KogitoWorkItemHandler {
     
     private Function<Map<String, Object>, Map<String, Object>> outputDataSupplier;
     
@@ -53,12 +51,12 @@ public class MockDataWorkItemHandler implements WorkItemHandler {
     }
 
     @Override
-    public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
-        (( KogitoWorkItemManager )manager).completeWorkItem((( KogitoWorkItem )workItem).getStringId(), outputDataSupplier.apply(workItem.getParameters()));
+    public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+        manager.completeWorkItem(workItem.getStringId(), outputDataSupplier.apply(workItem.getParameters()));
     }
 
     @Override
-    public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {        
+    public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
     }
 
 }

@@ -77,7 +77,7 @@ public class ProcessEventTest extends AbstractBaseTest {
         KieSession session = createKieSession(builder.getPackages());
         
         ProcessInstance processInstance = session.startProcess("org.drools.core.event");
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals(STATE_COMPLETED, processInstance.getState());
         assertEquals("MyValue", ((VariableScopeInstance) 
     		((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
 				VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
@@ -124,12 +124,12 @@ public class ProcessEventTest extends AbstractBaseTest {
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( session );
 
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.core.event");
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(STATE_ACTIVE, processInstance.getState());
         
         session = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession(session);
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         processInstance.signalEvent("MyEvent", "MyValue");
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals(STATE_COMPLETED, processInstance.getState());
         assertEquals("MyValue", ((VariableScopeInstance) 
     		((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
 				VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
@@ -176,7 +176,7 @@ public class ProcessEventTest extends AbstractBaseTest {
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( session );
 
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.core.event");
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(STATE_ACTIVE, processInstance.getState());
         assertEquals("SomeText", ((VariableScopeInstance) 
     		((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
 				VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
@@ -184,7 +184,7 @@ public class ProcessEventTest extends AbstractBaseTest {
         session = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession(session);
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         kruntime.signalEvent("MyEvent", "MyValue");
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals(STATE_COMPLETED, processInstance.getState());
         assertEquals("MyValue", ((VariableScopeInstance) 
     		((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
 				VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
@@ -231,7 +231,7 @@ public class ProcessEventTest extends AbstractBaseTest {
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( session );
 
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.core.event");
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(STATE_ACTIVE, processInstance.getState());
         assertEquals("SomeText", ((VariableScopeInstance) 
     		((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
 				VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
@@ -239,7 +239,7 @@ public class ProcessEventTest extends AbstractBaseTest {
         session = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession(session);
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         ((InternalWorkingMemory) session).getProcessRuntime().signalEvent("MyEvent", "MyValue");
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(STATE_ACTIVE, processInstance.getState());
     }
 
     @Test
@@ -299,7 +299,7 @@ public class ProcessEventTest extends AbstractBaseTest {
         
         ProcessInstance processInstance =
             ksession.startProcess("org.drools.core.event");
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState(), "Process did not complete!");
+        assertEquals(STATE_COMPLETED, processInstance.getState(), "Process did not complete!");
         assertEquals("MyValue", ((VariableScopeInstance)
     		((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
 				VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
@@ -358,12 +358,12 @@ public class ProcessEventTest extends AbstractBaseTest {
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( session );
 
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.core.event");
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(STATE_ACTIVE, processInstance.getState());
         
         session = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession(session);
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         processInstance.signalEvent("MyEvent", "MyValue");
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals(STATE_COMPLETED, processInstance.getState());
         assertEquals("MyValue", ((VariableScopeInstance) 
     		((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
 				VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
@@ -422,12 +422,12 @@ public class ProcessEventTest extends AbstractBaseTest {
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( session );
 
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.core.event");
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(STATE_ACTIVE, processInstance.getState());
 
         session = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession(session);
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         kruntime.signalEvent("MyEvent", "MyValue");
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals(STATE_COMPLETED, processInstance.getState());
         assertEquals("MyValue", ((VariableScopeInstance) 
     		((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
 				VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
@@ -486,12 +486,12 @@ public class ProcessEventTest extends AbstractBaseTest {
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( session );
 
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.core.event");
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(STATE_ACTIVE, processInstance.getState());
 
         session = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession(session);
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         ((InternalWorkingMemory) session).getProcessRuntime().signalEvent("MyEvent", "MyValue");
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(STATE_ACTIVE, processInstance.getState());
     }
     
 }

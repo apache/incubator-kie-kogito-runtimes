@@ -87,7 +87,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
-import org.kie.kogito.process.workitems.KogitoWorkItem;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -433,7 +433,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
             KogitoProcessInstance processInstance1 = kruntimeLocal.getProcessInstance(pId);
             assertNotNull(processInstance1);
             NodeInstance nodeInstance = (( KogitoNodeInstanceContainer ) processInstance1)
-                    .getNodeInstance((( KogitoWorkItem ) workItem).getNodeInstanceStringId());
+                    .getNodeInstance(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId());
 
             assertNotNull(nodeInstance);
             assertTrue(nodeInstance instanceof WorkItemNodeInstance);
@@ -441,9 +441,9 @@ public class ActivityTest extends JbpmBpmn2TestCase {
             String nodeInstanceId = ((WorkItemNodeInstance) nodeInstance).getWorkItem().getNodeInstanceStringId();
             long nodeId = ((WorkItemNodeInstance) nodeInstance).getWorkItem().getNodeId();
 
-            assertEquals((( KogitoWorkItem ) workItem).getDeploymentId(), deploymentId);
-            assertEquals((( KogitoWorkItem ) workItem).getNodeId(), nodeId);
-            assertEquals((( KogitoWorkItem ) workItem).getNodeInstanceStringId(), nodeInstanceId);
+            assertEquals(((InternalKogitoWorkItem) workItem).getDeploymentId(), deploymentId);
+            assertEquals(((InternalKogitoWorkItem) workItem).getNodeId(), nodeId);
+            assertEquals(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId(), nodeInstanceId);
 
             return null;
         });

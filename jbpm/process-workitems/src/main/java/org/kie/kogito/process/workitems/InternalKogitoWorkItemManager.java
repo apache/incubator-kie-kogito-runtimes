@@ -20,17 +20,17 @@ import java.util.Set;
 
 import org.drools.core.process.instance.WorkItem;
 
-public interface KogitoWorkItemManager extends org.drools.core.process.instance.WorkItemManager, org.kie.kogito.internal.process.runtime.KogitoWorkItemManager {
+public interface InternalKogitoWorkItemManager extends org.drools.core.process.instance.WorkItemManager, org.kie.kogito.internal.process.runtime.KogitoWorkItemManager {
 
-    void internalExecuteWorkItem( KogitoWorkItem workItem);
+    void internalExecuteWorkItem( InternalKogitoWorkItem workItem);
 
-    void internalAddWorkItem( KogitoWorkItem workItem);
+    void internalAddWorkItem( InternalKogitoWorkItem workItem);
 
     void internalAbortWorkItem(String id);
     
-    void internalCompleteWorkItem( KogitoWorkItem workItem);
+    void internalCompleteWorkItem( InternalKogitoWorkItem workItem);
     
-    KogitoWorkItem getWorkItem( String id);
+    InternalKogitoWorkItem getWorkItem(String id);
 
     void signalEvent(String type, Object event, String processInstanceId);
 

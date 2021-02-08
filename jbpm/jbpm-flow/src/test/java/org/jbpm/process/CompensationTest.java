@@ -161,7 +161,7 @@ public class CompensationTest extends AbstractBaseTest {
 
         // complete work 1
         kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
         // call compensation on work 1, which should now fire
         kruntime.signalEvent("Compensation", compensationEvent, processInstance.getStringId());
@@ -170,7 +170,7 @@ public class CompensationTest extends AbstractBaseTest {
         // complete work 2 & 3
         kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 
     @Test
@@ -204,7 +204,7 @@ public class CompensationTest extends AbstractBaseTest {
         // complete work 1 & 2
         kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
         assertEquals(0, eventList.size(), "Compensation should not have fired yet.");
 
         // general compensation should now cause the compensation handlers to fire in reverse order
@@ -213,7 +213,7 @@ public class CompensationTest extends AbstractBaseTest {
 
         // complete work 3 and finish
         kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 
     private RuleFlowProcess createCompensationBoundaryEventProcess(String processId, String[] workItemNames,

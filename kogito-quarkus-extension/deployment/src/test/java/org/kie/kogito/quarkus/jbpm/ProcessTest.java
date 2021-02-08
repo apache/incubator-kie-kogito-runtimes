@@ -28,6 +28,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.kie.kogito.Model;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 
@@ -55,6 +56,6 @@ public class ProcessTest {
 
         ProcessInstance<?> processInstance = process.createInstance(m);
         processInstance.start();
-        assertEquals(org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED, processInstance.status());
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.status());
     }
 }

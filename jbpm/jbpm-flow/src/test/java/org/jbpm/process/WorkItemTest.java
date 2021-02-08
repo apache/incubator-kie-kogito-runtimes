@@ -106,7 +106,7 @@ public class WorkItemTest extends AbstractBaseTest {
 
         KogitoProcessInstance processInstance = kruntime.startProcess( "org.drools.actions", parameters );
         String processInstanceId = processInstance.getStringId();
-        assertEquals( ProcessInstance.STATE_ACTIVE,
+        assertEquals( KogitoProcessInstance.STATE_ACTIVE,
                            processInstance.getState() );
         kruntime.getWorkItemManager().registerWorkItemHandler( workName,
                                                                null );

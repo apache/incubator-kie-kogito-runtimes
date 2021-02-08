@@ -43,8 +43,8 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.kogito.internal.process.marshalling.KogitoObjectMarshallingStrategy;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.process.workitems.KogitoWorkItem;
-import org.kie.kogito.process.workitems.KogitoWorkItemManager;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 
 public class ProtobufProcessMarshaller
@@ -81,14 +81,8 @@ public class ProtobufProcessMarshaller
     public void writeWorkItems(MarshallerWriteContext context) throws IOException {
         ProtobufMessages.ProcessData.Builder _pdata = (ProtobufMessages.ProcessData.Builder) context.getParameterObject();
 
-        List<WorkItem> workItems = new ArrayList<WorkItem>( ((KogitoWorkItemManager) context.getWorkingMemory().getWorkItemManager()).getWorkItems() );
-        Collections.sort( workItems,
-                          new Comparator<WorkItem>() {
-                              public int compare(WorkItem o1,
-                                                 WorkItem o2) {
-                                  return (( KogitoWorkItem )o1).getStringId().compareTo((( KogitoWorkItem )o2).getStringId());
-                              }
-                          } );
+        List<WorkItem> workItems = new ArrayList<>(((InternalKogitoWorkItemManager) context.getWorkingMemory().getWorkItemManager()).getWorkItems());
+        workItems.sort(Comparator.comparing(o -> ((InternalKogitoWorkItem) o).getStringId()));
         for ( WorkItem workItem : workItems ) {
             _pdata.addExtension( JBPMMessages.workItem,
                                  writeWorkItem( context,
@@ -119,7 +113,7 @@ public class ProtobufProcessMarshaller
         for ( JBPMMessages.WorkItem _workItem : _pdata.getExtension( JBPMMessages.workItem ) ) {
             WorkItem workItem = readWorkItem( context,
                                               _workItem );
-            (( KogitoWorkItemManager ) wm.getWorkItemManager()).internalAddWorkItem( ( KogitoWorkItem ) workItem );
+            ((InternalKogitoWorkItemManager) wm.getWorkItemManager()).internalAddWorkItem( (InternalKogitoWorkItem) workItem );
         }
     }
 
@@ -127,17 +121,17 @@ public class ProtobufProcessMarshaller
                                                       WorkItem workItem,
                                                       boolean includeVariables) throws IOException {
         JBPMMessages.WorkItem.Builder _workItem = JBPMMessages.WorkItem.newBuilder()
-                .setId( (( KogitoWorkItem )workItem).getStringId() )
-                .setProcessInstancesId( (( KogitoWorkItem )workItem).getProcessInstanceStringId() )
+                .setId( ((InternalKogitoWorkItem)workItem).getStringId() )
+                .setProcessInstancesId( ((InternalKogitoWorkItem)workItem).getProcessInstanceStringId() )
                 .setName( workItem.getName() )
                 .setState( workItem.getState() );
 
-        if (workItem instanceof KogitoWorkItem) {
-        	if ((( KogitoWorkItem )workItem).getDeploymentId() != null){
-        	_workItem.setDeploymentId((( KogitoWorkItem )workItem).getDeploymentId());
+        if (workItem instanceof InternalKogitoWorkItem) {
+        	if (((InternalKogitoWorkItem)workItem).getDeploymentId() != null){
+        	_workItem.setDeploymentId(((InternalKogitoWorkItem)workItem).getDeploymentId());
         	}
-        	_workItem.setNodeId((( KogitoWorkItem )workItem).getNodeId())
-        	.setNodeInstanceId((( KogitoWorkItem )workItem).getNodeInstanceStringId());
+        	_workItem.setNodeId(((InternalKogitoWorkItem)workItem).getNodeId())
+        	.setNodeInstanceId(((InternalKogitoWorkItem)workItem).getNodeInstanceStringId());
         }
 
         if ( includeVariables ) {
@@ -297,12 +291,12 @@ public class ProtobufProcessMarshaller
     }
 
     @Override
-    public KogitoWorkItem readWorkItem( MarshallerReaderContext context) {
+    public InternalKogitoWorkItem readWorkItem(MarshallerReaderContext context) {
         try {
             ExtensionRegistry registry = PersisterHelper.buildRegistry(context, null);
             Header _header = PersisterHelper.readFromStreamWithHeaderPreloaded(context, registry);
             JBPMMessages.WorkItem _workItem = JBPMMessages.WorkItem.parseFrom(_header.getPayload(), registry);
-            return ( KogitoWorkItem ) readWorkItem(context, _workItem, persistWorkItemVars);
+            return (InternalKogitoWorkItem) readWorkItem(context, _workItem, persistWorkItemVars);
         } catch (IOException e) {
             throw new IllegalArgumentException( "IOException while fetching work item instance : " + e.getMessage(), e );
         } catch (ClassNotFoundException e) {

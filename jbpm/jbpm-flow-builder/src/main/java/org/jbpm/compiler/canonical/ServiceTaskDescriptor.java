@@ -63,7 +63,7 @@ import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kie.kogito.process.workitem.WorkItemExecutionError;
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 public class ServiceTaskDescriptor {
 
@@ -161,7 +161,7 @@ public class ServiceTaskDescriptor {
     public CompilationUnit generateHandlerClassForService() {
         CompilationUnit compilationUnit = new CompilationUnit("org.kie.kogito.handlers");
         compilationUnit.getTypes().add(classDeclaration());
-        compilationUnit.addImport(WorkItemExecutionError.class);
+        compilationUnit.addImport(WorkItemExecutionException.class);
         return compilationUnit;
     }
 
@@ -270,7 +270,7 @@ public class ServiceTaskDescriptor {
                             .addStatement(
                                 new ThrowStmt(
                                     new ObjectCreationExpr()
-                                        .setType(WorkItemExecutionError.class)
+                                        .setType(WorkItemExecutionException.class)
                                         .addArgument(new StringLiteralExpr("500"))
                                         .addArgument(new NameExpr(EXCEPTION_NAME)))))),
             null);

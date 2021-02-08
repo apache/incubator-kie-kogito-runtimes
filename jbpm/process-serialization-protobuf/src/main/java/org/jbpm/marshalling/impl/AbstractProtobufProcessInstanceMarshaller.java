@@ -71,7 +71,7 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.process.workitem.HumanTaskWorkItem;
-import org.kie.kogito.process.workitems.KogitoWorkItem;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 
 /**
@@ -520,19 +520,19 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
     public static JBPMMessages.WorkItem writeWorkItem(MarshallerWriteContext context,
                                                       WorkItem workItem) throws IOException {
 
-        KogitoWorkItem kogitoWorkItem = (KogitoWorkItem) workItem;
+        InternalKogitoWorkItem kogitoWorkItem = (InternalKogitoWorkItem) workItem;
         JBPMMessages.WorkItem.Builder _workItem = JBPMMessages.WorkItem.newBuilder()
                 .setId( kogitoWorkItem.getStringId() )
                 .setProcessInstancesId( kogitoWorkItem.getProcessInstanceStringId() )
                 .setName( workItem.getName() )
                 .setState( workItem.getState() );
 
-        if (workItem instanceof KogitoWorkItem ) {
-            if ((( KogitoWorkItem )workItem).getDeploymentId() != null){
-            _workItem.setDeploymentId((( KogitoWorkItem )workItem).getDeploymentId());
+        if (workItem instanceof InternalKogitoWorkItem) {
+            if (((InternalKogitoWorkItem)workItem).getDeploymentId() != null){
+            _workItem.setDeploymentId(((InternalKogitoWorkItem)workItem).getDeploymentId());
             }
-            _workItem.setNodeId((( KogitoWorkItem )workItem).getNodeId())
-            .setNodeInstanceId((( KogitoWorkItem )workItem).getNodeInstanceStringId());
+            _workItem.setNodeId(((InternalKogitoWorkItem)workItem).getNodeId())
+            .setNodeInstanceId(((InternalKogitoWorkItem)workItem).getNodeInstanceStringId());
             
             if (kogitoWorkItem.getPhaseId() != null) {
                 _workItem.setPhaseId(kogitoWorkItem.getPhaseId());
@@ -598,11 +598,11 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
                 .setState( workItem.getState() );
 
         
-        if ((( KogitoWorkItem )workItem).getDeploymentId() != null){
-        _workItem.setDeploymentId((( KogitoWorkItem )workItem).getDeploymentId());
+        if (((InternalKogitoWorkItem)workItem).getDeploymentId() != null){
+        _workItem.setDeploymentId(((InternalKogitoWorkItem)workItem).getDeploymentId());
         }
-        _workItem.setNodeId((( KogitoWorkItem )workItem).getNodeId())
-        .setNodeInstanceId((( KogitoWorkItem )workItem).getNodeInstanceStringId());
+        _workItem.setNodeId(((InternalKogitoWorkItem)workItem).getNodeId())
+        .setNodeInstanceId(((InternalKogitoWorkItem)workItem).getNodeInstanceStringId());
         
         if (workItem.getPhaseId() != null) {
             _workItem.setPhaseId(workItem.getPhaseId());
@@ -969,7 +969,7 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
             case HUMAN_TASK_NODE :
                 nodeInstance = new HumanTaskNodeInstance();
                 ((HumanTaskNodeInstance) nodeInstance).internalSetWorkItemId( _content.getHumanTask().getWorkItemId() );
-                ((HumanTaskNodeInstance) nodeInstance).internalSetWorkItem( ( KogitoWorkItem ) readHumanTaskWorkItem(context, _content.getHumanTask().getWorkitem()) );
+                ((HumanTaskNodeInstance) nodeInstance).internalSetWorkItem( (InternalKogitoWorkItem) readHumanTaskWorkItem(context, _content.getHumanTask().getWorkitem()) );
                 if ( _content.getHumanTask().getTimerInstanceIdCount() > 0 ) {
                     List<String> timerInstances = new ArrayList<>();
                     for ( String _timerId : _content.getHumanTask().getTimerInstanceIdList() ) {
@@ -982,7 +982,7 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
             case WORK_ITEM_NODE :
                 nodeInstance = new WorkItemNodeInstance();
                 ((WorkItemNodeInstance) nodeInstance).internalSetWorkItemId( _content.getWorkItem().getWorkItemId() );
-                ((WorkItemNodeInstance) nodeInstance).internalSetWorkItem( ( KogitoWorkItem ) readWorkItem(context, _content.getWorkItem().getWorkitem()) );
+                ((WorkItemNodeInstance) nodeInstance).internalSetWorkItem( (InternalKogitoWorkItem) readWorkItem(context, _content.getWorkItem().getWorkitem()) );
                 if ( _content.getWorkItem().getTimerInstanceIdCount() > 0 ) {
                     List<String> timerInstances = new ArrayList<>();
                     for ( String _timerId : _content.getWorkItem().getTimerInstanceIdList() ) {

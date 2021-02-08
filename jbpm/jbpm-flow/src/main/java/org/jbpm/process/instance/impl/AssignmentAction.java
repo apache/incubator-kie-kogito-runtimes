@@ -17,10 +17,10 @@
 package org.jbpm.process.instance.impl;
 
 import org.kie.api.runtime.process.ProcessContext;
-import org.kie.kogito.process.workitems.KogitoWorkItem;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
 public interface AssignmentAction {
     
-    void execute(KogitoWorkItem workItem, ProcessContext context) throws Exception;
+    void execute(InternalKogitoWorkItem workItem, ProcessContext context) throws Exception;
     
 }

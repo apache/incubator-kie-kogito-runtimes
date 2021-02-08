@@ -40,7 +40,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kie.kogito.process.workitem.WorkItemExecutionError;
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -445,7 +445,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
         @Override
         public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-            throw new WorkItemExecutionError("500");
+            throw new WorkItemExecutionException("500");
         }
 
         @Override

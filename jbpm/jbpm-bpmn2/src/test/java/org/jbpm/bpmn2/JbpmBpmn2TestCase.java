@@ -52,14 +52,10 @@ import org.kie.api.io.Resource;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSessionConfiguration;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.NodeInstanceContainer;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.internal.runtime.conf.ForceEagerActivationOption;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.*;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 import org.slf4j.Logger;
@@ -211,8 +207,8 @@ public abstract class JbpmBpmn2TestCase {
         }
         KogitoProcessInstance processInstance = kruntime
                 .getProcessInstance(processInstanceId);
-        if (processInstance instanceof WorkflowProcessInstance) {            
-            assertNodeActive((WorkflowProcessInstance) processInstance, names);            
+        if (processInstance instanceof KogitoWorkflowProcessInstance) {
+            assertNodeActive((KogitoWorkflowProcessInstance) processInstance, names);
         }
         if (!names.isEmpty()) {
             String s = names.get(0);
@@ -223,15 +219,15 @@ public abstract class JbpmBpmn2TestCase {
         }
     }
 
-    private void assertNodeActive(NodeInstanceContainer container,
-            List<String> names) {
-        for (NodeInstance nodeInstance : container.getNodeInstances()) {
+    private void assertNodeActive(KogitoNodeInstanceContainer container,
+                                  List<String> names) {
+        for (KogitoNodeInstance nodeInstance : container.getKogitoNodeInstances()) {
             String nodeName = nodeInstance.getNodeName();
             if (names.contains(nodeName)) {
                 names.remove(nodeName);
             }
-            if (nodeInstance instanceof NodeInstanceContainer) {
-                assertNodeActive((NodeInstanceContainer) nodeInstance, names);
+            if (nodeInstance instanceof KogitoNodeInstanceContainer) {
+                assertNodeActive((KogitoNodeInstanceContainer) nodeInstance, names);
             }
         }
     }
