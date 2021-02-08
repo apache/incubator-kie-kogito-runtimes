@@ -17,7 +17,9 @@ package org.kie.kogito.pmml.openapi;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
@@ -33,6 +35,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import io.smallrye.openapi.runtime.io.JsonUtil;
 import org.kie.pmml.api.enums.DATA_TYPE;
 import org.kie.pmml.api.enums.FIELD_USAGE_TYPE;
+import org.kie.pmml.api.models.Interval;
 import org.kie.pmml.api.models.MiningField;
 
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.BOOLEAN;
@@ -41,6 +44,9 @@ import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.ENUM;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.FLOAT;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.FORMAT;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.INTEGER;
+import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.INTERVALS;
+import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.MAXIMUM;
+import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.MINIMUM;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.NUMBER;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.OBJECT;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.PROPERTIES;
@@ -48,6 +54,9 @@ import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.STRING;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.TYPE;
 
 public class PMMLOASUtils {
+
+    public static final String INFINITY_SYMBOL = new String(Character.toString('\u221E').getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+
 
     private PMMLOASUtils() {
     }
@@ -88,6 +97,31 @@ public class PMMLOASUtils {
                 return FLOAT;
             default:
                 return null;
+        }
+    }
+
+    public static void addIntervals(final ObjectNode typeFieldNode, final List<Interval> intervals) {
+        if (intervals.isEmpty()) {
+            return;
+        }
+        if (intervals.size() == 1) {
+            Interval interval = intervals.get(0);
+            if (interval.getLeftMargin() != null) {
+                typeFieldNode.set(MINIMUM, getNumericNode(interval.getLeftMargin()));
+            }
+            if (interval.getRightMargin() != null) {
+                typeFieldNode.set(MAXIMUM, getNumericNode(interval.getRightMargin()));
+            }
+        } else {
+            ArrayNode intervalsNode = JsonUtil.arrayNode();
+            IntStream.range(0, intervals.size()).forEach(i -> {
+                Interval interval = intervals.get(i);
+                String leftMargin = interval.getLeftMargin() != null ? interval.getLeftMargin().toString() : "-" + INFINITY_SYMBOL;
+                String rightMargin = interval.getRightMargin() != null ? interval.getRightMargin().toString() : INFINITY_SYMBOL;
+                String formattedInterval = String.format("%s %s", leftMargin, rightMargin);
+                intervalsNode.add(new TextNode(formattedInterval));
+            });
+            typeFieldNode.set(INTERVALS, intervalsNode);
         }
     }
 

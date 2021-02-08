@@ -3,6 +3,11 @@ package org.kie.kogito.pmml.openapi;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -20,17 +25,24 @@ import io.smallrye.openapi.runtime.io.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.kie.pmml.api.enums.DATA_TYPE;
 import org.kie.pmml.api.enums.FIELD_USAGE_TYPE;
+import org.kie.pmml.api.models.Interval;
 import org.kie.pmml.api.models.MiningField;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.pmml.openapi.PMMLOASUtils.INFINITY_SYMBOL;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.BOOLEAN;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.DOUBLE;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.ENUM;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.FLOAT;
+import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.FORMAT;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.INTEGER;
+import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.INTERVALS;
+import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.MAXIMUM;
+import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.MINIMUM;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.NUMBER;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.OBJECT;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.PROPERTIES;
@@ -156,10 +168,100 @@ class PMMLOASUtilsTest {
             assertEquals(expected, PMMLOASUtils.getMappedFormat(dataType));
         });
     }
+
+    @Test
+    void addIntervals() {
+        ObjectNode typeFieldNode = JsonUtil.objectNode();
+        PMMLOASUtils.addIntervals(typeFieldNode, Collections.emptyList());
+        assertEquals(0, typeFieldNode.size());
+        //
+        Interval interval = new Interval(-34.23, null);
+        PMMLOASUtils.addIntervals(typeFieldNode, Collections.singletonList(interval));
+        assertNotNull(typeFieldNode.get(MINIMUM));
+        NumericNode numericNode = (NumericNode) typeFieldNode.get(MINIMUM);
+        assertEquals(interval.getLeftMargin().doubleValue(), numericNode.asDouble());
+        assertNull(typeFieldNode.get(MAXIMUM));
+        assertNull(typeFieldNode.get(INTERVALS));
+        //
+        typeFieldNode = JsonUtil.objectNode();
+        interval = new Interval(null, 35.0);
+        PMMLOASUtils.addIntervals(typeFieldNode, Collections.singletonList(interval));
+        assertNull(typeFieldNode.get(MINIMUM));
+        assertNotNull(typeFieldNode.get(MAXIMUM));
+        numericNode = (NumericNode) typeFieldNode.get(MAXIMUM);
+        assertEquals(interval.getRightMargin().doubleValue(), numericNode.asDouble());
+        assertNull(typeFieldNode.get(INTERVALS));
+        //
+        typeFieldNode = JsonUtil.objectNode();
+        interval = new Interval(-34.23, 35.0);
+        PMMLOASUtils.addIntervals(typeFieldNode, Collections.singletonList(interval));
+        assertNotNull(typeFieldNode.get(MINIMUM));
+        numericNode = (NumericNode) typeFieldNode.get(MINIMUM);
+        assertEquals(interval.getLeftMargin().doubleValue(), numericNode.asDouble());
+        assertNotNull(typeFieldNode.get(MAXIMUM));
+        numericNode = (NumericNode) typeFieldNode.get(MAXIMUM);
+        assertEquals(interval.getRightMargin().doubleValue(), numericNode.asDouble());
+        assertNull(typeFieldNode.get(INTERVALS));
+        //
+        typeFieldNode = JsonUtil.objectNode();
+        List<Interval> intervals = IntStream.range(0, 3)
+                .mapToObj(i -> new Interval(i*2+3, i*3+4))
+                .collect(Collectors.toList());
+        PMMLOASUtils.addIntervals(typeFieldNode, intervals);
+        assertNull(typeFieldNode.get(MINIMUM));
+        assertNull(typeFieldNode.get(MAXIMUM));
+        assertNotNull(typeFieldNode.get(INTERVALS));
+        ArrayNode intervalsNode = (ArrayNode) typeFieldNode.get(INTERVALS);
+        List<JsonNode> nodeList = StreamSupport
+                .stream(intervalsNode.spliterator(), false)
+                .collect(Collectors.toList());
+        nodeList.forEach(intervalNode -> assertTrue(intervalNode instanceof TextNode));
+        intervals.forEach(intervalValue -> {
+            String leftMargin = intervalValue.getLeftMargin() != null ? intervalValue.getLeftMargin().toString() : "-" + INFINITY_SYMBOL;
+            String rightMargin = intervalValue.getRightMargin() != null ? intervalValue.getRightMargin().toString() : INFINITY_SYMBOL;
+            String expected = String.format("%s %s", leftMargin, rightMargin);
+            assertTrue(nodeList.stream().anyMatch(node -> expected.equals(node.asText())));
+        });
+    }
+
     @Test
     void addToSetNode() {
-
-        // TODO KEEP GOING
+        String fieldName = "fieldName";
+        DATA_TYPE dataType = DATA_TYPE.DOUBLE;
+        ObjectNode setNode = PMMLOASUtils.createSetNode();
+        ObjectNode propertiesNode = (ObjectNode) setNode.get(PROPERTIES);
+        assertTrue(propertiesNode.isEmpty());
+        PMMLOASUtils.addToSetNode(fieldName, dataType, Collections.emptyList(), setNode);
+        assertNotNull(propertiesNode.get(fieldName));
+        ObjectNode fieldNameNode = (ObjectNode) propertiesNode.get(fieldName);
+        assertNotNull(fieldNameNode.get(TYPE));
+        assertEquals(NUMBER, fieldNameNode.get(TYPE).asText());
+        assertNotNull(fieldNameNode.get(FORMAT));
+        assertEquals(DOUBLE, fieldNameNode.get(FORMAT).asText());
+        assertNull(fieldNameNode.get(ENUM));
+        //
+        List<String> allowedValues = IntStream.range(0, 3)
+                .mapToObj(it -> "VALUE"+it)
+                .collect(Collectors.toList());
+        setNode = PMMLOASUtils.createSetNode();
+        propertiesNode = (ObjectNode) setNode.get(PROPERTIES);
+        assertTrue(propertiesNode.isEmpty());
+        PMMLOASUtils.addToSetNode(fieldName, dataType, allowedValues, setNode);
+        assertNotNull(propertiesNode.get(fieldName));
+        fieldNameNode = (ObjectNode) propertiesNode.get(fieldName);
+        assertNotNull(fieldNameNode.get(TYPE));
+        assertEquals(NUMBER, fieldNameNode.get(TYPE).asText());
+        assertNotNull(fieldNameNode.get(FORMAT));
+        assertEquals(DOUBLE, fieldNameNode.get(FORMAT).asText());
+        ArrayNode availableValuesNode = (ArrayNode)fieldNameNode.get(ENUM);
+        assertEquals(allowedValues.size(), availableValuesNode.size());
+        List<JsonNode> nodeList = StreamSupport
+                .stream(availableValuesNode.spliterator(), false)
+                .collect(Collectors.toList());
+        nodeList.forEach(availableValueNode -> assertTrue(availableValueNode instanceof TextNode));
+        allowedValues.forEach(allowedValue ->
+                                      assertTrue(nodeList.stream()
+                                              .anyMatch(availableValueNode -> availableValueNode.asText().equals(allowedValue))));
     }
 
     @Test

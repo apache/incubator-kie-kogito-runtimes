@@ -15,12 +15,10 @@
  */
 package org.kie.kogito.pmml.openapi.impl;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -29,15 +27,14 @@ import io.smallrye.openapi.runtime.io.JsonUtil;
 import org.kie.kogito.pmml.openapi.api.PMMLOASResult;
 import org.kie.pmml.api.enums.DATA_TYPE;
 import org.kie.pmml.api.enums.ResultCode;
-import org.kie.pmml.api.models.Interval;
 import org.kie.pmml.api.models.MiningField;
 import org.kie.pmml.api.models.OutputField;
 
+import static org.kie.kogito.pmml.openapi.PMMLOASUtils.addIntervals;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.addToSetNode;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.createSetNodeInParent;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.getMappedFormat;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.getMappedType;
-import static org.kie.kogito.pmml.openapi.PMMLOASUtils.getNumericNode;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.isPredicted;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.isRequired;
 
@@ -45,8 +42,6 @@ import static org.kie.kogito.pmml.openapi.PMMLOASUtils.isRequired;
  * Concrete implementation of <code>PMMLOASResult</code>
  */
 public class PMMLOASResultImpl implements PMMLOASResult {
-
-    private static final String INFINITY_SYMBOL = new String(Character.toString('\u221E').getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
     protected final ObjectNode jsonNodes;
 
@@ -116,28 +111,6 @@ public class PMMLOASResultImpl implements PMMLOASResult {
         });
     }
 
-    protected void addIntervals(final ObjectNode typeFieldNode, final List<Interval> intervals) {
-        ArrayNode intervalsNode = JsonUtil.arrayNode();
-        if (intervals.size() == 1) {
-            Interval interval = intervals.get(0);
-            if (interval.getLeftMargin() != null) {
-                typeFieldNode.set(MINIMUM, getNumericNode(interval.getLeftMargin()));
-            }
-            if (interval.getRightMargin() != null) {
-                typeFieldNode.set(MAXIMUM, getNumericNode(interval.getRightMargin()));
-            }
-        } else {
-            IntStream.range(0, intervals.size()).forEach(i -> {
-                Interval interval = intervals.get(i);
-                String leftMargin = interval.getLeftMargin() != null ? interval.getLeftMargin().toString() : "-" + INFINITY_SYMBOL;
-                String rightMargin = interval.getRightMargin() != null ? interval.getRightMargin().toString() : INFINITY_SYMBOL;
-                String formattedInterval = String.format("%s %s", leftMargin, rightMargin);
-                intervalsNode.add(new TextNode(formattedInterval));
-            });
-            typeFieldNode.set(INTERVALS, intervalsNode);
-        }
-    }
-
     protected void addOutputFields(List<OutputField> toAdd) {
         toAdd.forEach(outputField -> addToResultVariables(outputField.getName(), outputField.getDataType(),
                                                           outputField.getAllowedValues()));
@@ -152,23 +125,6 @@ public class PMMLOASResultImpl implements PMMLOASResult {
         final ObjectNode resultVariablesNode = conditionallyCreateResultVariablesNode();
         addToSetNode(fieldName, dataType, allowedValues, resultVariablesNode);
     }
-
-//    protected void addToSetNode(String fieldName, DATA_TYPE dataType, List<String> allowedValues, ObjectNode
-//            setNode) {
-//        final ObjectNode propertiesNode = (ObjectNode) setNode.get(PROPERTIES);
-//        final ObjectNode typeFieldNode = JsonUtil.objectNode();
-//        String mappedType = getMappedType(dataType);
-//        typeFieldNode.set(TYPE, new TextNode(mappedType));
-//        String mappedFormat = getMappedFormat(dataType);
-//        if (mappedFormat != null) {
-//            typeFieldNode.set(FORMAT, new TextNode(mappedFormat));
-//        }
-//        propertiesNode.set(fieldName, typeFieldNode);
-//        if (allowedValues != null && !allowedValues.isEmpty()) {
-//            ArrayNode availableValues = conditionallyCreateEnumNode(typeFieldNode);
-//            allowedValues.forEach(availableValues::add);
-//        }
-//    }
 
     protected ObjectNode conditionallyCreateResultSetNode() {
         return conditionallyCreateSetNode(RESULT_SET);
