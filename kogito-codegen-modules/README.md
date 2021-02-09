@@ -44,8 +44,7 @@ The structure of the module is:
 
     ```java
     ApplicationGenerator appGen =
-            new ApplicationGenerator(context)
-                    .withAddons(...);
+            new ApplicationGenerator(context);
     ```
 - The `ApplicationGenerator#generate()` method starts the code generation
   procedure, delegating to each `Generator` where appropriate.
@@ -71,6 +70,59 @@ consume `.txt` files and expose the content as REST endpoint.
 
 The example is formed by a `-runtime` module that contains the "engine" implementation (e.g. DMN runtime) and a 
 `-generator` module with the generation/wiring logic
+
+## Testing a generator
+
+A generator is a component that can produce source code or resources. The only real and final test of a generator
+is an integration test where it is possible to mimic the whole flow from file to endpoint.
+
+At the same time if there is an error in the generated code this could be quite hard to debug: it could fails during the compilation
+or follow an unexpected codepath.
+
+For this reason it is strongly suggested to also implement unit tests for each of the generator classes.
+
+You can check sample generator for a full example but in general the rules are:
+- Avoid/minimize assertions on number of files because hard to debug. If you need a similar assertion try to filter generated 
+  resources by resource type before
+- Test the generation with all the build context (Spring/Quarkus/Java): you can use `@ParameterizedTest` to help with this:
+  add following dependencies
+  ```xml
+  <dependency>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-codegen-api</artifactId>
+    <type>test-jar</type>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-params</artifactId>
+    <scope>test</scope>
+  </dependency>
+  ```
+  and use `KogitoContextTestUtils` utility
+  ```java
+  @ParameterizedTest
+  @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+  void test(KogitoBuildContext.Builder contextBuilder) {
+    KogitoBuildContext context = contextBuilder.build();
+    ...
+  }
+  ```
+- If your generator use `context.hasClassAvailable` method to introspect the classloader you can use 
+  `org.kie.kogito.codegen.KogitoBuildContextTestUtils.mockClassAvailabilityResolver` method to inject 
+  (in `KogitoBuildContext.Builder`) your expectation
+  ```java
+  contextBuilder.withClassAvailabilityResolver(
+    mockClassAvailabilityResolver(
+        includerClasses, excludedClasses));
+  ```
+- Avoid (when possible) assertion on full generated statements and prefer more general assertions like:
+  the block should contain `this` element, or the method should have an annotation with `this` value
+- You should have functional test for each engine in a different specific module outside generators, 
+  so you should not need to _execute_ generated code in this module (just write a proper integration test for that).
+  If you really want/need to do that it is possible (only for `Application` related classes) to use 
+  `kogito-codegen-integration-tests` module and extend `org.kie.kogito.codegen.AbstractCodegenTest`
+
 
 # Generated Application file
 

@@ -194,7 +194,7 @@ public class IncrementalRuleCodegenTest {
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void generateGrafanaDashboards(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder
                 .withAddonsConfig(AddonsConfig.builder()
@@ -214,7 +214,7 @@ public class IncrementalRuleCodegenTest {
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void elapsedTimeMonitoringIsWrappingEveryMethod(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder
                 .withAddonsConfig(AddonsConfig.builder()
@@ -286,13 +286,5 @@ public class IncrementalRuleCodegenTest {
         assertEquals(expectedRules +
                              expectedPackages * 2, // package descriptor for rules + package metadata
                      actualGeneratedFiles - 2); // ignore ProjectModel and ProjectRuntime classes
-    }
-
-    private static Stream<Arguments> contextBuilders() {
-        return Stream.of(
-                Arguments.of(JavaKogitoBuildContext.builder()),
-                Arguments.of(QuarkusKogitoBuildContext.builder()),
-                Arguments.of(SpringBootKogitoBuildContext.builder())
-        );
     }
 }
