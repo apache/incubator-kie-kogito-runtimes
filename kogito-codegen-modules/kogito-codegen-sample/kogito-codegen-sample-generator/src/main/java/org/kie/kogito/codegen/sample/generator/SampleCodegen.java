@@ -16,55 +16,80 @@
 package org.kie.kogito.codegen.sample.generator;
 
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.ConfigGenerator;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.sample.generator.config.SampleConfigGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-
 public class SampleCodegen implements Generator {
-
-    public static final Logger LOGGER = LoggerFactory.getLogger(SampleCodegen.class);
 
     public static String GENERATOR_NAME = "sample";
     public static Set<String> SUPPORTED_EXTENSIONS = Collections.singleton("txt");
     private final KogitoBuildContext context;
-    private final List<CollectedResource> sampleResources;
+    private final Collection<SampleResource> sampleResources;
 
     public static SampleCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
-        List<CollectedResource> sampleResources = resources.stream()
+        Collection<CollectedResource> rawSampleResource = resources.stream()
                 .filter(resource -> SUPPORTED_EXTENSIONS.stream().anyMatch(resource.resource().getSourcePath()::endsWith))
                 .collect(toList());
-        return new SampleCodegen(context, sampleResources);
+        return new SampleCodegen(context, rawSampleResource);
     }
 
-    public SampleCodegen(KogitoBuildContext context, List<CollectedResource> sampleResources) {
+    public SampleCodegen(KogitoBuildContext context, Collection<CollectedResource> rawSampleResource) {
         this.context = context;
-        this.sampleResources = sampleResources;
+        this.sampleResources = parseResources(rawSampleResource);
     }
 
     @Override
     public Optional<ApplicationSection> section() {
-        return Optional.of(new SampleContainerGenerator(context()));
+        return Optional.of(new SampleContainerGenerator(context(), sampleResources));
     }
 
     @Override
     public Collection<GeneratedFile> generate() {
-        // FIXME to fix
-        return null;
+        if (sampleResources.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        TemplatedGenerator generator = TemplatedGenerator.builder()
+                .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME)
+                .build(context(), "SampleRestResource");
+
+        CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
+
+        if (context.hasDI()) {
+            compilationUnit.findAll(FieldDeclaration.class,
+                    SampleCodegen::isSampleRuntimeField).forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
+        } else {
+            compilationUnit.findAll(FieldDeclaration.class,
+                    SampleCodegen::isSampleRuntimeField).forEach(SampleCodegen::initializeSampleRuntimeField);
+        }
+
+        return Collections.singleton(new GeneratedFile(REST_TYPE,
+                generator.generatedFilePath(),
+                compilationUnit.toString()));
     }
 
     @Override
@@ -80,5 +105,36 @@ public class SampleCodegen implements Generator {
     @Override
     public String name() {
         return GENERATOR_NAME;
+    }
+
+    public static boolean isSampleRuntimeField(FieldDeclaration fieldDeclaration) {
+        return fieldDeclaration.getElementType().asClassOrInterfaceType().getNameAsString().equals("SampleRuntime");
+    }
+
+    private static Collection<SampleResource> parseResources(Collection<CollectedResource> rawSampleResource) {
+        return rawSampleResource.stream()
+                .map(cr -> new SampleResource(removeExtension(cr.basePath().getFileName().toString()), getContent(cr.resource())))
+                .collect(toList());
+    }
+
+    private static String removeExtension(String rawPath) {
+        return rawPath.substring(0, rawPath.lastIndexOf('.'));
+    }
+
+    private static String getContent(Resource resource) {
+        try {
+            return new BufferedReader(new InputStreamReader(
+                    resource.getInputStream(), StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Impossible to read resource " + resource.getSourcePath(), e);
+        }
+    }
+
+    private static void initializeSampleRuntimeField(FieldDeclaration fd) {
+        // new SampleRuntime(new Application());
+        fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(SampleContainerGenerator.SAMPLE_RUNTIME_CLASSNAME)
+                .addArgument(new ObjectCreationExpr().setType("Application")));
     }
 }

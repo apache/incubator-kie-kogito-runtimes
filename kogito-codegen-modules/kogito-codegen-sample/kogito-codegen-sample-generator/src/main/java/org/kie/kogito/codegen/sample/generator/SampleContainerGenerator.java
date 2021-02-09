@@ -15,26 +15,56 @@
 
 package org.kie.kogito.codegen.sample.generator;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class SampleContainerGenerator implements ApplicationSection {
 
-    private final KogitoBuildContext context;
+    protected static final String SAMPLE_RUNTIME_CLASSNAME = "SampleRuntime";
+    private static final String ADD_CONTENT_STATEMENT = "content.put(\"$name$\", \"$content$\");";
 
-    public SampleContainerGenerator(KogitoBuildContext context) {
-        this.context = context;
+    private final TemplatedGenerator generator;
+    private final Collection<SampleResource> sampleResources;
+
+    public SampleContainerGenerator(KogitoBuildContext context, Collection<SampleResource> sampleResources) {
+        this.generator = TemplatedGenerator.builder()
+                .build(context, "SampleContainer");
+        this.sampleResources = sampleResources;
     }
 
     @Override
     public String sectionClassName() {
-        return "Samples";
+        return SAMPLE_RUNTIME_CLASSNAME;
     }
 
     @Override
     public CompilationUnit compilationUnit() {
-        // FIXME to fix
-        return null;
+        CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
+        MethodDeclaration loadContent = compilationUnit.findFirst(MethodDeclaration.class, md -> "loadContent".equals(md.getName().asString()))
+                .orElseThrow(() -> new InvalidTemplateException(generator, "Impossible to find method loadContent"));
+
+        BlockStmt loadContentBlock = loadContent.getBody()
+                .orElseThrow(() -> new InvalidTemplateException(generator, "loadContent method must have a body"));
+
+        Collection<Statement> loadStatements = sampleResources.stream().map(SampleContainerGenerator::toLoadStatement).collect(Collectors.toList());
+
+        loadContentBlock.getStatements().addAll(loadStatements);
+
+        return compilationUnit;
+    }
+
+    private static Statement toLoadStatement(SampleResource resource) {
+        String rawStatement = ADD_CONTENT_STATEMENT.replace("$name$", resource.getName()).replace("$content$", resource.getContent());
+        return StaticJavaParser.parseStatement(rawStatement);
     }
 }

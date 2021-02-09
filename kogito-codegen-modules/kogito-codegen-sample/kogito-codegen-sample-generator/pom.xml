@@ -18,14 +18,31 @@
         </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-codegen-sample-core</artifactId>
+            <artifactId>kogito-codegen-sample-runtime</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!-- test -->
         <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-codegen-api</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+<!--    Required because of FileSystemResource   -->
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>drools-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

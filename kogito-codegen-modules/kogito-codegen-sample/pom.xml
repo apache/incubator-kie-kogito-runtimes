@@ -15,7 +15,7 @@
     <name>Kogito :: Codegen Sample</name>
 
     <modules>
-        <module>kogito-codegen-sample-core</module>
+        <module>kogito-codegen-sample-runtime</module>
         <module>kogito-codegen-sample-generator</module>
     </modules>
 

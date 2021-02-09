@@ -15,16 +15,20 @@
 
 package org.kie.kogito.codegen.sample.generator.config;
 
+import com.github.javaparser.ast.CompilationUnit;
 import org.kie.kogito.codegen.api.ConfigGenerator;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
 public class SampleConfigGenerator implements ConfigGenerator {
 
-    private final KogitoBuildContext context;
+    private final TemplatedGenerator generator;
 
     public SampleConfigGenerator(KogitoBuildContext context) {
-        this.context = context;
+        this.generator = TemplatedGenerator.builder()
+                .withTemplateBasePath("class-templates/config")
+                .build(context, "SampleConfig");
     }
 
     @Override
@@ -34,7 +38,9 @@ public class SampleConfigGenerator implements ConfigGenerator {
 
     @Override
     public GeneratedFile generate() {
-        // FIXME to fix
-        return null;
+        CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
+        return new GeneratedFile(APPLICATION_CONFIG_TYPE,
+                generator.generatedFilePath(),
+                compilationUnit.toString());
     }
 }
