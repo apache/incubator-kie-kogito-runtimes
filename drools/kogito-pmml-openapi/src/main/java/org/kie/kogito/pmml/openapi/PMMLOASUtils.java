@@ -57,7 +57,6 @@ public class PMMLOASUtils {
 
     public static final String INFINITY_SYMBOL = new String(Character.toString('\u221E').getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
-
     private PMMLOASUtils() {
     }
 
