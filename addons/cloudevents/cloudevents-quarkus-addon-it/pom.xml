@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>cloudevents</artifactId>
-    <version>1.2.0.Final</version>
+    <version>1.2.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-cloudevents-quarkus-addon-it</artifactId>
   <name>Kogito :: Add-Ons :: CloudEvents :: Quarkus (ITs)</name>
