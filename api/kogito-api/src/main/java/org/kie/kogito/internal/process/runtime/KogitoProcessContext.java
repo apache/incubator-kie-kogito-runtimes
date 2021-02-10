@@ -67,5 +67,8 @@ public interface KogitoProcessContext {
      */
     void setVariable( String variableName, Object value );
 
+    @Deprecated
     KieRuntime getKieRuntime();
+
+    KogitoProcessRuntime getKogitoProcessRuntime();
 }
