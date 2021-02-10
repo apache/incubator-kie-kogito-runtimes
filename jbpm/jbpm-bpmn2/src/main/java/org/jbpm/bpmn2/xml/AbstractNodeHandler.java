@@ -73,8 +73,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     protected static final Logger logger = LoggerFactory.getLogger(AbstractNodeHandler.class);
 
     static final String PROCESS_INSTANCE_SIGNAL_EVENT = "kcontext.getProcessInstance().signalEvent(";
-    static final String RUNTIME_SIGNAL_EVENT = "kcontext.getKnowledgeRuntime().signalEvent(";
-    static final String RUNTIME_MANAGER_SIGNAL_EVENT = "((org.kie.api.runtime.manager.RuntimeManager)kcontext.getKnowledgeRuntime().getEnvironment().get(\"RuntimeManager\")).signalEvent(";
+    static final String RUNTIME_SIGNAL_EVENT = "kcontext.getKieRuntime().signalEvent(";
+    static final String RUNTIME_MANAGER_SIGNAL_EVENT = "((org.kie.api.runtime.manager.RuntimeManager)kcontext.getKieRuntime().getEnvironment().get(\"RuntimeManager\")).signalEvent(";
 
     protected static final String EVENT_TYPE = "EventType";
 

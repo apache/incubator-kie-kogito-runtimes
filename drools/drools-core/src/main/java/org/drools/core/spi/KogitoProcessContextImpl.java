@@ -18,11 +18,26 @@ package org.drools.core.spi;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.CaseAssignment;
 import org.kie.api.runtime.process.CaseData;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class KogitoProcessContext extends AbstractProcessContext {
+public class KogitoProcessContextImpl extends AbstractProcessContext implements KogitoProcessContext {
 
-    public KogitoProcessContext( KieRuntime kruntime ) {
+    private static Logger logger = LoggerFactory.getLogger( ProcessContext.class );
+
+    public KogitoProcessContextImpl( KieRuntime kruntime ) {
         super(kruntime);
+    }
+
+    public KogitoProcessInstance getProcessInstance() {
+        return (KogitoProcessInstance) super.getProcessInstance();
+    }
+
+    public KogitoNodeInstance getNodeInstance() {
+        return (KogitoNodeInstance) super.getNodeInstance();
     }
 
     @Override
