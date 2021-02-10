@@ -187,13 +187,10 @@ public class PMMLRestResourceGenerator {
 
     Optional<MemberValuePair> getRefMemberValuePair(NodeList<AnnotationExpr> source, String annotationName, String schemaName) {
         return getAnnotationExpr(source, annotationName)
-                .map(annExpr -> getMemberValuePairFromAnnotation(annExpr, CONTENT))
-                .filter(Optional::isPresent)
-                .map(content -> getMemberValuePairFromMemberValuePair(content.get(), SCHEMA))
-                .filter(Optional::isPresent)
-                .map(schema -> getNormalAnnotationExprFromMemberValuePair(schema.get(), schemaName))
-                .filter(Optional::isPresent)
-                .flatMap(schemaAnnotation -> getMemberValuePairFromAnnotation(schemaAnnotation.get(), REF));
+                .flatMap(annExpr -> getMemberValuePairFromAnnotation(annExpr, CONTENT))
+                .flatMap(content -> getMemberValuePairFromMemberValuePair(content, SCHEMA))
+                .flatMap(schema -> getNormalAnnotationExprFromMemberValuePair(schema, schemaName))
+                .flatMap(schemaAnnotation -> getMemberValuePairFromAnnotation(schemaAnnotation, REF));
     }
 
     Optional<NormalAnnotationExpr> getNormalAnnotationExprFromMemberValuePair(MemberValuePair source, String searched) {
