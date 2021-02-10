@@ -66,15 +66,16 @@ public abstract class AbstractMessageProducer<D, T extends AbstractProcessDataEv
     public void produce(KogitoProcessInstance pi, D eventData) {
         emitter.emit(this.marshall(pi, eventData))
                 .exceptionally(ex -> {
-                    logger.error("An error was caught while process " + pi.getProcessId() + " produced message " + eventData, ex);
+                    logger.error("An error was caught while process " + pi.getProcessId() + " produced message " + eventData,
+                            ex);
                     return null;
                 });
     }
 
     protected String marshall(KogitoProcessInstance pi, D eventData) {
         return marshaller.marshall(eventData,
-                                   e -> dataEventTypeConstructor(e, pi, trigger),
-                                   useCloudEvents);
+                e -> dataEventTypeConstructor(e, pi, trigger),
+                useCloudEvents);
     }
 
     protected abstract T dataEventTypeConstructor(D e, KogitoProcessInstance pi, String trigger);

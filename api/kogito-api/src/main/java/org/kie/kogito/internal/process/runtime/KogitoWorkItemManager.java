@@ -27,15 +27,15 @@ public interface KogitoWorkItemManager extends WorkItemManager {
 
     /**
      * Notifies the work item manager that the work item with the given
-     * id has been completed.  Results related to the execution of this
+     * id has been completed. Results related to the execution of this
      * work item can be passed.
      *
      * @param id the id of the work item that has been completed
      * @param results the results related to this work item, or <code>null</code> if there are no results
      */
     void completeWorkItem(String id,
-                          Map<String, Object> results,
-                          Policy<?>... policies);
+            Map<String, Object> results,
+            Policy<?>... policies);
 
     /**
      * Notifies the work item manager that the work item with the given
@@ -44,7 +44,7 @@ public interface KogitoWorkItemManager extends WorkItemManager {
      * @param id the id of the work item that should be aborted
      */
     void abortWorkItem(String id,
-                       Policy<?>... policies);
+            Policy<?>... policies);
 
     /**
      * Register the given handler for all work items of the given
@@ -54,10 +54,11 @@ public interface KogitoWorkItemManager extends WorkItemManager {
      * @param handler the handler for executing work items
      */
     void registerWorkItemHandler(String workItemName,
-                                 WorkItemHandler handler);
+            WorkItemHandler handler);
 
     /**
      * Transition work item with given id into the next life cycle phase.
+     * 
      * @param id work item id to be transitioned
      * @param transition actual transition to apply to work item
      */

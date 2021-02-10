@@ -14,6 +14,10 @@
  */
 package org.kie.kogito.pmml.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -21,10 +25,6 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.kie.api.pmml.PMMLRequestData;
 import org.kie.api.pmml.ParameterInfo;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PMMLUtilsTest {
 
@@ -34,7 +34,7 @@ class PMMLUtilsTest {
         final Map<String, Object> parameters = getParameters();
         final PMMLRequestData retrieved = PMMLUtils.getPMMLRequestData(modelName, parameters);
         assertNotNull(retrieved);
-        assertEquals(modelName,  retrieved.getModelName());
+        assertEquals(modelName, retrieved.getModelName());
         final Map<String, ParameterInfo> parameterInfos = retrieved.getMappedRequestParams();
         assertEquals(parameters.size(), parameterInfos.size());
         parameters.forEach((key, value) -> {

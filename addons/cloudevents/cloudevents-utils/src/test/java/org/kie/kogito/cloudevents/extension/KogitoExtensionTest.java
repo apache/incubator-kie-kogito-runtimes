@@ -16,18 +16,19 @@
 
 package org.kie.kogito.cloudevents.extension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.net.URI;
 
-import io.cloudevents.CloudEvent;
-import io.cloudevents.core.builder.CloudEventBuilder;
-import io.cloudevents.core.provider.ExtensionProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.builder.CloudEventBuilder;
+import io.cloudevents.core.provider.ExtensionProvider;
 
 public class KogitoExtensionTest {
 
@@ -89,7 +90,8 @@ public class KogitoExtensionTest {
         assertWriteExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true);
     }
 
-    private void assertWriteExtension(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
+    private void assertWriteExtension(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult,
+            Boolean dmnFilteredCtx) {
         CloudEvent event = cloudEventFromExtensionObject(dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
         assertCloudEvent(event, dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
     }
@@ -137,8 +139,10 @@ public class KogitoExtensionTest {
         assertParseExtension(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true);
     }
 
-    private void assertParseExtension(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
-        KogitoExtension extension = extensionObjectFromCloudEvent(dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
+    private void assertParseExtension(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult,
+            Boolean dmnFilteredCtx) {
+        KogitoExtension extension =
+                extensionObjectFromCloudEvent(dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
         assertExtension(extension, dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
     }
 
@@ -185,7 +189,8 @@ public class KogitoExtensionTest {
         assertWriteAndParseExtensionWithEncoding(TEST_DMN_EVALUATE_DECISION, TEST_EXECUTION_ID, true, true);
     }
 
-    private void assertWriteAndParseExtensionWithEncoding(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
+    private void assertWriteAndParseExtensionWithEncoding(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult,
+            Boolean dmnFilteredCtx) {
         CloudEvent inputEvent = cloudEventFromExtensionObject(dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
         String inputEventJson = CloudEventUtils.encode(inputEvent).orElseThrow(IllegalStateException::new);
         CloudEvent outputEvent = CloudEventUtils.decode(inputEventJson).orElseThrow(IllegalStateException::new);
@@ -193,7 +198,8 @@ public class KogitoExtensionTest {
         assertExtension(outputKogitoExt, dmnEvaluateDecision, executionId, dmnFullResult, dmnFilteredCtx);
     }
 
-    private CloudEvent cloudEventFromExtensionObject(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
+    private CloudEvent cloudEventFromExtensionObject(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult,
+            Boolean dmnFilteredCtx) {
         KogitoExtension kogitoExt = new KogitoExtension();
         kogitoExt.setDmnModelName(TEST_DMN_MODEL_NAME);
         kogitoExt.setDmnModelNamespace(TEST_DMN_MODEL_NAMESPACE);
@@ -224,7 +230,8 @@ public class KogitoExtensionTest {
                 .build();
     }
 
-    private void assertCloudEvent(CloudEvent event, String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
+    private void assertCloudEvent(CloudEvent event, String dmnEvaluateDecision, String executionId, Boolean dmnFullResult,
+            Boolean dmnFilteredCtx) {
         assertNotNull(event);
         assertEquals(TEST_DMN_MODEL_NAME, event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAME));
         assertEquals(TEST_DMN_MODEL_NAMESPACE, event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAMESPACE));
@@ -234,7 +241,8 @@ public class KogitoExtensionTest {
         assertEquals(dmnFilteredCtx, event.getExtension(KogitoExtension.KOGITO_DMN_FILTERED_CTX));
     }
 
-    private KogitoExtension extensionObjectFromCloudEvent(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
+    private KogitoExtension extensionObjectFromCloudEvent(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult,
+            Boolean dmnFilteredCtx) {
         CloudEventBuilder builder = CloudEventBuilder.v1()
                 .withId(TEST_ID)
                 .withSource(URI.create(TEST_SOURCE))
@@ -262,7 +270,8 @@ public class KogitoExtensionTest {
         return ExtensionProvider.getInstance().parseExtension(KogitoExtension.class, builder.build());
     }
 
-    private void assertExtension(KogitoExtension kogitoExtension, String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
+    private void assertExtension(KogitoExtension kogitoExtension, String dmnEvaluateDecision, String executionId,
+            Boolean dmnFullResult, Boolean dmnFilteredCtx) {
         assertNotNull(kogitoExtension);
         assertEquals(TEST_DMN_MODEL_NAME, kogitoExtension.getDmnModelName());
         assertEquals(TEST_DMN_MODEL_NAMESPACE, kogitoExtension.getDmnModelNamespace());

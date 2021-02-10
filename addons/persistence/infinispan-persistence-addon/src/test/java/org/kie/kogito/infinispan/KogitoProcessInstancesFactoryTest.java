@@ -15,6 +15,11 @@
 
 package org.kie.kogito.infinispan;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +37,6 @@ import org.kie.kogito.persistence.protobuf.marshallers.StringMessageMarshaller;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcess;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class KogitoProcessInstancesFactoryTest {
 
@@ -89,7 +89,8 @@ class KogitoProcessInstancesFactoryTest {
     }
 
     private enum TheEnum {
-        YES, NO
+        YES,
+        NO
     }
 
     private static class TheEnumMarshaller implements EnumMarshaller<TheEnum> {

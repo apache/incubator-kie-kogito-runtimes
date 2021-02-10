@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package io.quarkus.it.kogito.drools.newunit;
 
 public class Person {

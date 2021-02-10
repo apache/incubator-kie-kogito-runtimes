@@ -14,6 +14,9 @@
  */
 package org.kie.kogito.quarkus.deployment;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,22 +30,19 @@ import java.nio.file.Paths;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class MemoryClassLoaderTest  {
+public class MemoryClassLoaderTest {
 
     @Test
     public void testMemoryClassLoader() throws IOException, ReflectiveOperationException, URISyntaxException {
         final String className = "/" + MemoryClassLoaderTest.class.getName().replace('.', '/');
         URL url = MemoryClassLoaderTest.class.getResource(className.concat(".class"));
         MemoryFileSystem fs = new MemoryFileSystem();
-        try(ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            InputStream input = Files.newInputStream(Paths.get(url.toURI()))) {
+        try (ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                InputStream input = Files.newInputStream(Paths.get(url.toURI()))) {
             transferTo(input, bytes);
             fs.write(className.concat(".class"), bytes.toByteArray());
         }
-        MemoryClassLoader cl = new MemoryClassLoader(fs,null);
+        MemoryClassLoader cl = new MemoryClassLoader(fs, null);
         Class<?> clazz = cl.loadClass(MemoryClassLoaderTest.class.getName());
         assertTrue(Modifier.isPublic(clazz.getMethod("testMemoryClassLoader").getModifiers()));
         assertThrows(NoSuchFieldException.class, () -> clazz.getField("otherField"));

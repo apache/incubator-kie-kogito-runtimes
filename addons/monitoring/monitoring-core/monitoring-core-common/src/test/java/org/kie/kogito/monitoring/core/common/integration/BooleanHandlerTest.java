@@ -15,16 +15,17 @@
 
 package org.kie.kogito.monitoring.core.common.integration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.stream.IntStream;
 
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.DecisionConstants;
 import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.BooleanHandler;
+import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.DecisionConstants;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 public class BooleanHandlerTest {
 

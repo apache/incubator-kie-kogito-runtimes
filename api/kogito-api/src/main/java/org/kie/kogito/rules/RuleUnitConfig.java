@@ -32,10 +32,11 @@ public final class RuleUnitConfig {
     public RuleUnitConfig(EventProcessingType eventProcessingType, ClockType clockType, Integer sessionPool) {
         this.eventProcessingType = Optional.ofNullable(eventProcessingType);
         this.clockType = Optional.ofNullable(clockType);
-        this.sessionPool = sessionPool == null? OptionalInt.empty() : OptionalInt.of(sessionPool);
+        this.sessionPool = sessionPool == null ? OptionalInt.empty() : OptionalInt.of(sessionPool);
     }
 
-    public RuleUnitConfig(Optional<EventProcessingType> eventProcessingType, Optional<ClockType> clockType, OptionalInt sessionPool) {
+    public RuleUnitConfig(Optional<EventProcessingType> eventProcessingType, Optional<ClockType> clockType,
+            OptionalInt sessionPool) {
         this.eventProcessingType = eventProcessingType;
         this.clockType = clockType;
         this.sessionPool = sessionPool;
@@ -62,7 +63,7 @@ public final class RuleUnitConfig {
     }
 
     public OptionalInt getDefaultedSessionPool() {
-        return sessionPool.isPresent() ? sessionPool :  Default.getSessionPool();
+        return sessionPool.isPresent() ? sessionPool : Default.getSessionPool();
     }
 
     /**
@@ -73,7 +74,8 @@ public final class RuleUnitConfig {
             return this;
         }
         return new RuleUnitConfig(
-                overrides.getEventProcessingType().isPresent() ? overrides.getEventProcessingType() : this.getEventProcessingType(),
+                overrides.getEventProcessingType().isPresent() ? overrides.getEventProcessingType()
+                        : this.getEventProcessingType(),
                 overrides.getClockType().isPresent() ? overrides.getClockType() : this.getClockType(),
                 overrides.getSessionPool().isPresent() ? overrides.getSessionPool() : this.getSessionPool());
     }

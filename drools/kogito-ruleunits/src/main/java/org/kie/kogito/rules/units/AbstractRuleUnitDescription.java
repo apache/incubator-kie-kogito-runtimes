@@ -47,7 +47,7 @@ public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescr
     }
 
     @Override
-    public KogitoRuleUnitVariable getVar( String name) {
+    public KogitoRuleUnitVariable getVar(String name) {
         KogitoRuleUnitVariable ruleUnitVariable = (KogitoRuleUnitVariable) varDeclarations.get(name);
         if (ruleUnitVariable == null) {
             throw new UndefinedRuleUnitVariable(name, this.getCanonicalName());

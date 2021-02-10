@@ -15,6 +15,10 @@
 
 package org.kie.kogito.mongodb;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -24,10 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.mongodb.marshalling.DocumentUnmarshallingException;
 import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 import org.kie.kogito.mongodb.utils.ProcessInstanceMessageMapper;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ProcessInstanceMessageMapperTest {
 

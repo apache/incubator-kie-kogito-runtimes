@@ -16,6 +16,9 @@
 
 package org.kie.kogito.svg.service;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,9 +27,6 @@ import org.kie.kogito.svg.AbstractProcessSvgService;
 import org.kie.kogito.svg.ProcessSvgServiceTest;
 import org.kie.kogito.svg.dataindex.DataIndexClient;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 @ExtendWith(MockitoExtension.class)
 public class QuarkusProcessSvgServiceTest extends ProcessSvgServiceTest {
@@ -39,11 +39,10 @@ public class QuarkusProcessSvgServiceTest extends ProcessSvgServiceTest {
         dataIndexClient = mock(DataIndexClient.class);
 
         tested = spy(new QuarkusProcessSvgService(dataIndexClient,
-                                                  Optional.empty(),
-                                                  "#C0C0C0",
-                                                  "#030303",
-                                                  "#FF0000"
-        ));
+                Optional.empty(),
+                "#C0C0C0",
+                "#030303",
+                "#FF0000"));
     }
 
     @Override

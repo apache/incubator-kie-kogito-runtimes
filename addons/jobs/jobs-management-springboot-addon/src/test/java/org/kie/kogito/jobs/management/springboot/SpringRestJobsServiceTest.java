@@ -63,24 +63,25 @@ public class SpringRestJobsServiceTest {
     @Test
     void testScheduleProcessJob() {
         ProcessJobDescription processJobDescription = ProcessJobDescription.of(ExactExpirationTime.now(),
-                                                                               1,
-                                                                               "processId");
+                1,
+                "processId");
         assertThatThrownBy(() -> tested.scheduleProcessJob(processJobDescription))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
     void testScheduleProcessInstanceJob() {
-        when(restTemplate.postForEntity(any(URI.class), any(Job.class), eq(String.class))).thenReturn(ResponseEntity.ok().build());
+        when(restTemplate.postForEntity(any(URI.class), any(Job.class), eq(String.class)))
+                .thenReturn(ResponseEntity.ok().build());
         ProcessInstanceJobDescription processInstanceJobDescription = ProcessInstanceJobDescription.of(123,
-                                                                                                       ExactExpirationTime.now(),
-                                                                                                       "processInstanceId",
-                                                                                                       "processId");
+                ExactExpirationTime.now(),
+                "processInstanceId",
+                "processId");
         tested.scheduleProcessInstanceJob(processInstanceJobDescription);
         ArgumentCaptor<Job> jobArgumentCaptor = forClass(Job.class);
         verify(restTemplate).postForEntity(eq(tested.getJobsServiceUri()),
-                                           jobArgumentCaptor.capture(),
-                                           eq(String.class));
+                jobArgumentCaptor.capture(),
+                eq(String.class));
         Job job = jobArgumentCaptor.getValue();
         assertThat(job.getId()).isEqualTo(processInstanceJobDescription.id());
     }
@@ -90,26 +91,26 @@ public class SpringRestJobsServiceTest {
         tested.cancelJob("123");
         verify(restTemplate).delete(tested.getJobsServiceUri() + "/{id}", "123");
     }
-    
+
     @Test
     void testGetScheduleTime() {
-        
+
         Job job = new Job();
         job.setId("123");
         job.setExpirationTime(ZonedDateTime.now());
-        
+
         when(restTemplate.getForObject(any(), any(), anyString())).thenReturn(job);
-        
+
         ZonedDateTime scheduledTime = tested.getScheduledTime("123");
         assertThat(scheduledTime).isEqualTo(job.getExpirationTime());
         verify(restTemplate).getForObject(tested.getJobsServiceUri() + "/{id}", Job.class, "123");
     }
-    
+
     @Test
     void testGetScheduleTimeJobNotFound() {
 
         when(restTemplate.getForObject(any(), any(), anyString())).thenThrow(NotFound.class);
-        
+
         assertThatThrownBy(() -> tested.getScheduledTime("123")).isInstanceOf(JobNotFoundException.class);
         verify(restTemplate).getForObject(tested.getJobsServiceUri() + "/{id}", Job.class, "123");
     }

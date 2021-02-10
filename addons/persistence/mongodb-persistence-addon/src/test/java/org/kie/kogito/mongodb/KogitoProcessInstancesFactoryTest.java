@@ -15,14 +15,14 @@
 
 package org.kie.kogito.mongodb;
 
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.persistence.KogitoProcessInstancesFactory;
-import org.kie.kogito.process.Process;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.persistence.KogitoProcessInstancesFactory;
+import org.kie.kogito.process.Process;
 
 class KogitoProcessInstancesFactoryTest extends TestHelper {
 

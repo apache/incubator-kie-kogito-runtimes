@@ -15,21 +15,22 @@
 
 package org.jbpm.compiler.canonical;
 
+import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_ACTIVATION_EXPRESSION;
+import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_COMPLETION_EXPRESSION;
+import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_LANGUAGE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.DynamicNodeFactory;
 import org.jbpm.workflow.core.node.DynamicNode;
 import org.kie.api.definition.process.Node;
 
-import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_ACTIVATION_EXPRESSION;
-import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_COMPLETION_EXPRESSION;
-import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_LANGUAGE;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 
 public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode> {
 
@@ -66,10 +67,12 @@ public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode>
     }
 
     private MethodCallExpr getActivationConditionStatement(DynamicNode node, VariableScope scope) {
-        return getFactoryMethod(getNodeId(node), METHOD_ACTIVATION_EXPRESSION, createLambdaExpr(node.getActivationCondition(), scope));
+        return getFactoryMethod(getNodeId(node), METHOD_ACTIVATION_EXPRESSION,
+                createLambdaExpr(node.getActivationCondition(), scope));
     }
 
     private MethodCallExpr getCompletionConditionStatement(DynamicNode node, VariableScope scope) {
-        return getFactoryMethod(getNodeId(node), METHOD_COMPLETION_EXPRESSION, createLambdaExpr(node.getCompletionCondition(), scope));
+        return getFactoryMethod(getNodeId(node), METHOD_COMPLETION_EXPRESSION,
+                createLambdaExpr(node.getCompletionCondition(), scope));
     }
 }

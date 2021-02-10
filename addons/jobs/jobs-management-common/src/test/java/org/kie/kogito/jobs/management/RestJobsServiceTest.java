@@ -16,6 +16,8 @@
 
 package org.kie.kogito.jobs.management;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.net.URI;
 import java.time.ZonedDateTime;
 
@@ -23,8 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class RestJobsServiceTest {
 
@@ -59,12 +59,13 @@ public class RestJobsServiceTest {
     @Test
     void testGetCallbackEndpoint() {
         ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(123,
-                                                                                     ExactExpirationTime.now(),
-                                                                                     "processInstanceId",
-                                                                                     "processId");
+                ExactExpirationTime.now(),
+                "processInstanceId",
+                "processId");
         String callbackEndpoint = tested.getCallbackEndpoint(description);
         assertThat(callbackEndpoint)
-                .isEqualTo("http://localhost:80/management/jobs/processId/instances/processInstanceId/timers/" + description.id());
+                .isEqualTo(
+                        "http://localhost:80/management/jobs/processId/instances/processInstanceId/timers/" + description.id());
     }
 
     @Test

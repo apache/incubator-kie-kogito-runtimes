@@ -16,10 +16,10 @@
 
 package org.jbpm.bpmn2;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ResourceTest extends JbpmBpmn2TestCase {
 

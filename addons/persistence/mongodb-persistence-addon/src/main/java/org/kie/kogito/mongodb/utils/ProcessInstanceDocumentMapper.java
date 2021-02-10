@@ -15,27 +15,29 @@
 
 package org.kie.kogito.mongodb.utils;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.protobuf.util.JsonFormat;
-import org.bson.Document;
-import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
-import org.jbpm.marshalling.impl.JBPMMessages;
-import org.jbpm.marshalling.impl.JBPMMessages.ProcessInstance;
-import org.kie.kogito.mongodb.marshalling.DocumentMarshallingException;
-import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
-
 import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE_ID;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.VALUE;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.VARIABLE;
 import static org.kie.kogito.mongodb.utils.DocumentUtils.getObjectMapper;
 
-public class ProcessInstanceDocumentMapper implements BiFunction<KogitoProcessMarshallerWriteContext, JBPMMessages.ProcessInstance, ProcessInstanceDocument> {
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+import org.bson.Document;
+import org.jbpm.marshalling.impl.JBPMMessages;
+import org.jbpm.marshalling.impl.JBPMMessages.ProcessInstance;
+import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
+import org.kie.kogito.mongodb.marshalling.DocumentMarshallingException;
+import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.protobuf.util.JsonFormat;
+
+public class ProcessInstanceDocumentMapper
+        implements BiFunction<KogitoProcessMarshallerWriteContext, JBPMMessages.ProcessInstance, ProcessInstanceDocument> {
 
     @Override
     public ProcessInstanceDocument apply(KogitoProcessMarshallerWriteContext context, ProcessInstance processInstance) {
@@ -46,7 +48,8 @@ public class ProcessInstanceDocumentMapper implements BiFunction<KogitoProcessMa
             applyVariables(instanceNode, VARIABLE);
             doc.setProcessInstance(Optional.ofNullable(instanceNode).map(json -> Document.parse(json.toString())).orElse(null));
             if (context != null) {
-                doc.setStrategies(context.getUsedStrategies().entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getName(), Map.Entry::getValue)));
+                doc.setStrategies(context.getUsedStrategies().entrySet().stream()
+                        .collect(Collectors.toMap(e -> e.getKey().getName(), Map.Entry::getValue)));
             }
         } catch (Exception e) {
             throw new DocumentMarshallingException(e);

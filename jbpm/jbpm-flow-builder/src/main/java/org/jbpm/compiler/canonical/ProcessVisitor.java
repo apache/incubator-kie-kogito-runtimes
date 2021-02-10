@@ -16,6 +16,21 @@
 
 package org.jbpm.compiler.canonical;
 
+import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_ASSOCIATION;
+import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_CONNECTION;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ADD_COMPENSATION_CONTEXT;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_DYNAMIC;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_GLOBAL;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_IMPORTS;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_NAME;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_PACKAGE_NAME;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VALIDATE;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VARIABLE;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VERSION;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VISIBILITY;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,20 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.Work;
@@ -75,20 +76,20 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
-import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_ASSOCIATION;
-import static org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory.METHOD_CONNECTION;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ADD_COMPENSATION_CONTEXT;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_DYNAMIC;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_GLOBAL;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_IMPORTS;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_NAME;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_PACKAGE_NAME;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VALIDATE;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VARIABLE;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VERSION;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VISIBILITY;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public class ProcessVisitor extends AbstractVisitor {
 
@@ -127,13 +128,15 @@ public class ProcessVisitor extends AbstractVisitor {
 
         // create local variable factory and assign new fluent process to it
         VariableDeclarationExpr factoryField = new VariableDeclarationExpr(processFactoryType, FACTORY_FIELD_NAME);
-        MethodCallExpr assignFactoryMethod = new MethodCallExpr(new NameExpr(processFactoryType.getName().asString()), "createProcess");
+        MethodCallExpr assignFactoryMethod =
+                new MethodCallExpr(new NameExpr(processFactoryType.getName().asString()), "createProcess");
         assignFactoryMethod.addArgument(new StringLiteralExpr(process.getId()));
         body.addStatement(new AssignExpr(factoryField, assignFactoryMethod, AssignExpr.Operator.ASSIGN));
 
         // item definitions
         Set<String> visitedVariables = new HashSet<>();
-        VariableScope variableScope = (VariableScope) ((org.jbpm.process.core.Process) process).getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        VariableScope variableScope =
+                (VariableScope) ((org.jbpm.process.core.Process) process).getDefaultContext(VariableScope.VARIABLE_SCOPE);
 
         visitVariableScope(variableScope, body, visitedVariables);
         visitSubVariableScopes(process.getNodes(), body, visitedVariables);
@@ -143,10 +146,15 @@ public class ProcessVisitor extends AbstractVisitor {
         metadata.setDynamic(((org.jbpm.workflow.core.WorkflowProcess) process).isDynamic());
         // the process itself
         body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_NAME, new StringLiteralExpr(process.getName())))
-                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_PACKAGE_NAME, new StringLiteralExpr(process.getPackageName())))
-                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_DYNAMIC, new BooleanLiteralExpr(metadata.isDynamic())))
-                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VERSION, new StringLiteralExpr(getOrDefault(process.getVersion(), DEFAULT_VERSION))))
-                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VISIBILITY, new StringLiteralExpr(getOrDefault(((KogitoWorkflowProcess)process).getVisibility(), KogitoWorkflowProcess.PUBLIC_VISIBILITY))));
+                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_PACKAGE_NAME,
+                        new StringLiteralExpr(process.getPackageName())))
+                .addStatement(
+                        getFactoryMethod(FACTORY_FIELD_NAME, METHOD_DYNAMIC, new BooleanLiteralExpr(metadata.isDynamic())))
+                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VERSION,
+                        new StringLiteralExpr(getOrDefault(process.getVersion(), DEFAULT_VERSION))))
+                .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VISIBILITY,
+                        new StringLiteralExpr(getOrDefault(((KogitoWorkflowProcess) process).getVisibility(),
+                                KogitoWorkflowProcess.PUBLIC_VISIBILITY))));
 
         visitCompensationScope(process, body);
         visitMetaData(process.getMetaData(), body, FACTORY_FIELD_NAME);
@@ -154,7 +162,7 @@ public class ProcessVisitor extends AbstractVisitor {
 
         List<Node> processNodes = new ArrayList<>();
         for (org.kie.api.definition.process.Node procNode : process.getNodes()) {
-            processNodes.add(( Node ) procNode);
+            processNodes.add((Node) procNode);
         }
         visitNodes(processNodes, body, variableScope, metadata);
         visitConnections(process.getNodes(), body);
@@ -175,17 +183,21 @@ public class ProcessVisitor extends AbstractVisitor {
                 }
                 String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS);
                 ClassOrInterfaceType variableType = new ClassOrInterfaceType(null, ObjectDataType.class.getSimpleName());
-                ObjectCreationExpr variableValue = new ObjectCreationExpr(null, variableType, new NodeList<>(new StringLiteralExpr(variable.getType().getStringType())));
-                body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), variableValue, new StringLiteralExpr(Variable.VARIABLE_TAGS), tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr()));
+                ObjectCreationExpr variableValue = new ObjectCreationExpr(null, variableType,
+                        new NodeList<>(new StringLiteralExpr(variable.getType().getStringType())));
+                body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VARIABLE,
+                        new StringLiteralExpr(variable.getName()), variableValue, new StringLiteralExpr(Variable.VARIABLE_TAGS),
+                        tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr()));
             }
         }
     }
 
-    private void visitSubVariableScopes(org.kie.api.definition.process.Node[] nodes, BlockStmt body, Set<String> visitedVariables) {
+    private void visitSubVariableScopes(org.kie.api.definition.process.Node[] nodes, BlockStmt body,
+            Set<String> visitedVariables) {
         for (org.kie.api.definition.process.Node node : nodes) {
             if (node instanceof ContextContainer) {
-                VariableScope variableScope = (VariableScope)
-                        ((ContextContainer) node).getDefaultContext(VariableScope.VARIABLE_SCOPE);
+                VariableScope variableScope =
+                        (VariableScope) ((ContextContainer) node).getDefaultContext(VariableScope.VARIABLE_SCOPE);
                 if (variableScope != null) {
                     visitVariableScope(variableScope, body, visitedVariables);
                 }
@@ -208,7 +220,8 @@ public class ProcessVisitor extends AbstractVisitor {
             }
             if (globals != null) {
                 for (Map.Entry<String, String> global : globals.entrySet()) {
-                    body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_GLOBAL, new StringLiteralExpr(global.getKey()), new StringLiteralExpr(global.getValue())));
+                    body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_GLOBAL,
+                            new StringLiteralExpr(global.getKey()), new StringLiteralExpr(global.getValue())));
                 }
             }
         }
@@ -226,7 +239,8 @@ public class ProcessVisitor extends AbstractVisitor {
         return metaData;
     }
 
-    private <U extends org.kie.api.definition.process.Node> void visitNodes(List<U> nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+    private <U extends org.kie.api.definition.process.Node> void visitNodes(List<U> nodes, BlockStmt body,
+            VariableScope variableScope, ProcessMetaData metadata) {
         for (U node : nodes) {
             AbstractNodeVisitor<U> visitor = (AbstractNodeVisitor<U>) nodesVisitors.get(node.getClass());
             if (visitor == null) {
@@ -275,11 +289,13 @@ public class ProcessVisitor extends AbstractVisitor {
 
     private void visitCompensationScope(Process process, BlockStmt body) {
         Boolean isCompensation = (Boolean) process.getMetaData().get(Metadata.COMPENSATION);
-        if(Boolean.TRUE.equals(isCompensation)) {
-            Context context = ((org.jbpm.workflow.core.WorkflowProcess) process).getDefaultContext(CompensationScope.COMPENSATION_SCOPE);
-            if(context instanceof CompensationScope) {
+        if (Boolean.TRUE.equals(isCompensation)) {
+            Context context =
+                    ((org.jbpm.workflow.core.WorkflowProcess) process).getDefaultContext(CompensationScope.COMPENSATION_SCOPE);
+            if (context instanceof CompensationScope) {
                 String contextId = ((CompensationScope) context).getContextContainerId();
-                body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_ADD_COMPENSATION_CONTEXT, new StringLiteralExpr(contextId)));
+                body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_ADD_COMPENSATION_CONTEXT,
+                        new StringLiteralExpr(contextId)));
             }
         }
     }

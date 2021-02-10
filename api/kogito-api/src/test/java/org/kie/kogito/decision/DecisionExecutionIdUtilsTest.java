@@ -15,6 +15,8 @@
 
 package org.kie.kogito.decision;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -23,8 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNMetadata;
 import org.kie.kogito.ExecutionIdSupplier;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DecisionExecutionIdUtilsTest {
 

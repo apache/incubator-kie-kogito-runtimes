@@ -16,6 +16,9 @@
 
 package org.jbpm.integrationtests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,13 +44,10 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 public class AgendaFilterTest extends AbstractBaseTest {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AgendaFilterTest.class);
-    
+
     @Test
     public void testAgendaFilter() {
         // JBRULES-3374
@@ -101,8 +101,10 @@ public class AgendaFilterTest extends AbstractBaseTest {
                 "\n" +
                 "  <nodes>\n" +
                 "    <start id=\"1\" name=\"Start\" x=\"122\" y=\"96\" width=\"48\" height=\"48\" />\n" +
-                "    <ruleSet id=\"2\" name=\"Node1\" x=\"277\" y=\"96\" width=\"80\" height=\"48\" ruleFlowGroup=\"node1\" />\n" +
-                "    <ruleSet id=\"3\" name=\"Node2\" x=\"433\" y=\"98\" width=\"80\" height=\"48\" ruleFlowGroup=\"node2\" />\n" +
+                "    <ruleSet id=\"2\" name=\"Node1\" x=\"277\" y=\"96\" width=\"80\" height=\"48\" ruleFlowGroup=\"node1\" />\n"
+                +
+                "    <ruleSet id=\"3\" name=\"Node2\" x=\"433\" y=\"98\" width=\"80\" height=\"48\" ruleFlowGroup=\"node2\" />\n"
+                +
                 "    <end id=\"4\" name=\"End\" x=\"645\" y=\"96\" width=\"48\" height=\"48\" />\n" +
                 "  </nodes>\n" +
                 "\n" +
@@ -115,11 +117,11 @@ public class AgendaFilterTest extends AbstractBaseTest {
                 "</process>";
 
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL );
-        kbuilder.add( ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF );
+        kbuilder.add(ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL);
+        kbuilder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
 
-        if ( kbuilder.hasErrors() ) {
-            fail( kbuilder.getErrors().toString() );
+        if (kbuilder.hasErrors()) {
+            fail(kbuilder.getErrors().toString());
         }
 
         KieSession ksession = createKieSession(kbuilder.getKnowledgePackages().toArray(new KiePackage[0]));
@@ -130,7 +132,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
         message.setStatus(Message.HELLO);
         ksession.insert(message);
         ksession.startProcess("process-test");
-        
+
         assertEquals("Goodbye cruel world", message.getMessage());
     }
 
@@ -165,14 +167,14 @@ public class AgendaFilterTest extends AbstractBaseTest {
         private Integer currentSalience = null;
 
         public boolean accept(Match activation) {
-            RuleImpl rule = (RuleImpl)activation.getRule();
+            RuleImpl rule = (RuleImpl) activation.getRule();
 
-            if (currentSalience == null){
+            if (currentSalience == null) {
                 currentSalience = rule.getSalience() != null ? Integer.valueOf(rule.getSalience().toString()) : 0;
             }
             boolean nocancel = currentSalience >= Integer.valueOf(rule.getSalience().toString());
 
-            if(!nocancel){
+            if (!nocancel) {
                 logger.info("cancelling -> {}", rule.getName());
             }
 
@@ -232,11 +234,13 @@ public class AgendaFilterTest extends AbstractBaseTest {
                 "    <start id=\"1\" name=\"Start\" x=\"16\" y=\"16\" width=\"48\" height=\"48\" />\n" +
                 "    <ruleSet id=\"2\" name=\"Rule\" x=\"208\" y=\"16\" width=\"80\" height=\"48\" ruleFlowGroup=\"rfg\" />\n" +
                 "    <actionNode id=\"3\" name=\"Script\" x=\"320\" y=\"16\" width=\"80\" height=\"48\" >\n" +
-                "        <action type=\"expression\" dialect=\"java\" >System.out.println(\"Finishing process...\");</action>\n" +
+                "        <action type=\"expression\" dialect=\"java\" >System.out.println(\"Finishing process...\");</action>\n"
+                +
                 "    </actionNode>\n" +
                 "    <end id=\"4\" name=\"End\" x=\"432\" y=\"16\" width=\"48\" height=\"48\" />\n" +
                 "    <actionNode id=\"5\" name=\"Script\" x=\"96\" y=\"16\" width=\"80\" height=\"48\" >\n" +
-                "        <action type=\"expression\" dialect=\"java\" >System.out.println(\"Starting process...\");</action>\n" +
+                "        <action type=\"expression\" dialect=\"java\" >System.out.println(\"Starting process...\");</action>\n"
+                +
                 "    </actionNode>\n" +
                 "  </nodes>\n" +
                 "  <connections>\n" +
@@ -248,15 +252,15 @@ public class AgendaFilterTest extends AbstractBaseTest {
                 "</process>";
 
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL );
-        kbuilder.add( ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF );
+        kbuilder.add(ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL);
+        kbuilder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
 
-        if ( kbuilder.hasErrors() ) {
-            fail( kbuilder.getErrors().toString() );
+        if (kbuilder.hasErrors()) {
+            fail(kbuilder.getErrors().toString());
         }
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addPackages( kbuilder.getKnowledgePackages() );
+        kbase.addPackages(kbuilder.getKnowledgePackages());
         KieSession ksession = kbase.newKieSession();
 
         ksession.addEventListener(new DebugAgendaEventListener());
