@@ -219,13 +219,13 @@ public class LoggingTaskHandlerDecorator extends AbstractExceptionHandlingTaskHa
                 inputList.add((String) workItem.getParameter("Operation"));
                 inputList.add(cause.getClass().getSimpleName());
                 inputList.add(handlerMethodStem);
-                inputList.add(String.valueOf(workItem.getId()));
-                inputList.add(String.valueOf(workItem.getProcessInstanceId()));
+                inputList.add(workItem.getStringId());
+                inputList.add(workItem.getProcessInstanceStringId());
 
             } else {
                 // {0} thrown when work item {1} ({2}) was {3}ed in process instance {4}.
                 inputList.add(cause.getClass().getSimpleName());
-                inputList.add(String.valueOf(workItem.getId()));
+                inputList.add(workItem.getStringId());
                 inputList.add(workItem.getName());
                 inputList.add(handlerMethodStem);
                 inputList.add(String.valueOf(workItem.getProcessInstanceId()));
@@ -244,7 +244,7 @@ public class LoggingTaskHandlerDecorator extends AbstractExceptionHandlingTaskHa
                     inputList.add(onExecute ? "execut" : "abort");
                     break;
                 case WORK_ITEM_ID:
-                    inputList.add(String.valueOf(workItem.getId()));
+                    inputList.add(workItem.getStringId());
                     break;
                 case WORK_ITEM_NAME:
                     inputList.add(workItem.getName());
