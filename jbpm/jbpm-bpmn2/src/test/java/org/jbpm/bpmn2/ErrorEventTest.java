@@ -427,28 +427,24 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testEndErrorWithSubprocess() throws Exception {
-        KieBase kbase = createKnowledgeBase("error/EndErrorWithEventSubprocess.bpmn2");
-        ksession = createKnowledgeSession(kbase);
+        kruntime = createKogitoProcessRuntime("error/EndErrorWithEventSubprocess.bpmn2");
 
-        KogitoProcessInstance processInstance = KogitoProcessRuntime.asKogitoProcessRuntime(ksession)
-                .startProcess("EndErrorWithEventSubprocess");
+        KogitoProcessInstance processInstance = kruntime.startProcess("EndErrorWithEventSubprocess");
 
         assertNodeTriggered(processInstance.getStringId(), "start", "task", "subprocess-task");
 
-        assertEquals(processInstance.getState(), ProcessInstance.STATE_COMPLETED);
+        assertEquals(processInstance.getState(), KogitoProcessInstance.STATE_COMPLETED);
     }
 
     @Test
     public void testEndError() throws Exception {
-        KieBase kbase = createKnowledgeBase("error/EndError.bpmn2");
-        ksession = createKnowledgeSession(kbase);
+        kruntime = createKogitoProcessRuntime("error/EndError.bpmn2");
 
-        KogitoProcessInstance processInstance = KogitoProcessRuntime.asKogitoProcessRuntime(ksession)
-                .startProcess("EndError");
+        KogitoProcessInstance processInstance = kruntime.startProcess("EndError");
 
         assertNodeTriggered(processInstance.getStringId(), "start", "task");
 
-        assertEquals(processInstance.getState(), ProcessInstance.STATE_ABORTED);
+        assertEquals(processInstance.getState(), KogitoProcessInstance.STATE_ABORTED);
     }
 
 
