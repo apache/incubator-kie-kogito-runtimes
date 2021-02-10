@@ -32,7 +32,7 @@
     <project.root.dir>${maven.multiModuleProjectDirectory}</project.root.dir>
     <tests.surefire.include>**/*Test.java</tests.surefire.include>
     <tests.failsafe.include>**/*IT.java</tests.failsafe.include>
-    <formatter.skip>true</formatter.skip>
+    <formatter.skip>false</formatter.skip>
     <formatter.goal>format</formatter.goal>
     <impsort.goal>sort</impsort.goal>
 
@@ -1181,6 +1181,7 @@
           <artifactId>impsort-maven-plugin</artifactId>
           <version>${version.impsort.plugin}</version>
           <configuration>
+            <!-- keep in sync with kogito-ide-config/src/main/resources/eclipse.importorder -->
             <groups>java.,javax.,org.,com.</groups>
             <staticGroups>*</staticGroups>
             <!-- keep in sync with the formatter-maven-plugin -->
