@@ -14,6 +14,10 @@
  */
 package org.drools.statics;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.kie.api.internal.assembler.KieAssemblerService;
 import org.kie.api.internal.assembler.KieAssemblers;
 import org.kie.api.io.Resource;
@@ -22,10 +26,6 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.io.ResourceWithConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class StaticKieAssemblers implements KieAssemblers {
 
@@ -38,6 +38,10 @@ public class StaticKieAssemblers implements KieAssemblers {
         // this is an ad-interim solution
         // e.g. assemblers.put(ResourceType.DMN, (KieAssemblerService)
         //         instance("org.kie.dmn.core.assembler.DMNAssemblerService"));
+    }
+
+    @Override
+    public void addResourceBeforeRules( Object o, Resource resource, ResourceType resourceType, ResourceConfiguration resourceConfiguration ) throws Exception {
     }
 
     @Override
