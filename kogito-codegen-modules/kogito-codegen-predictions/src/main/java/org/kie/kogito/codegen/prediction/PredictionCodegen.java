@@ -159,7 +159,7 @@ public class PredictionCodegen extends AbstractGenerator {
                         String jsonFilePath = String.format("META-INF/resources/%s", jsonFile);
                         storeFile(GeneratedFileType.RESOURCE, jsonFilePath, jsonContent);
                     } catch (Exception e) {
-                        System.out.println("Failed to write OAS schema");
+                        LOGGER.warn("Failed to write OAS schema");
                     }
             }
             if (model instanceof HasNestedModels) {

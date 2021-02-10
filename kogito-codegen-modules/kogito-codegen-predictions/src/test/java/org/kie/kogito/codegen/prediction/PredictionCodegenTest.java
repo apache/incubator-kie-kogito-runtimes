@@ -31,14 +31,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PredictionCodegenTest {
+class PredictionCodegenTest {
 
     private static final String SOURCE = "prediction/test_regression.pmml";
     private static final Path BASE_PATH = Paths.get("src/test/resources/").toAbsolutePath();
     private static final Path FULL_SOURCE = BASE_PATH.resolve(SOURCE);
 
     @Test
-    public void generateAllFiles() {
+    void generateAllFiles() {
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 JavaKogitoBuildContext.builder().build(),
                 CollectedResourceProducer.fromFiles(BASE_PATH, FULL_SOURCE.toFile()));

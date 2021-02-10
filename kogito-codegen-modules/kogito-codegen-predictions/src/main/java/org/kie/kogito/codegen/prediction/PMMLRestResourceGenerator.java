@@ -192,7 +192,8 @@ public class PMMLRestResourceGenerator {
                 .map(content -> getMemberValuePairFromMemberValuePair(content.get(), SCHEMA))
                 .filter(Optional::isPresent)
                 .map(schema -> getNormalAnnotationExprFromMemberValuePair(schema.get(), schemaName))
-                .filter(Optional::isPresent).flatMap(schemaAnnotation -> getMemberValuePairFromAnnotation(schemaAnnotation.get(), REF));
+                .filter(Optional::isPresent)
+                .flatMap(schemaAnnotation -> getMemberValuePairFromAnnotation(schemaAnnotation.get(), REF));
     }
 
     Optional<NormalAnnotationExpr> getNormalAnnotationExprFromMemberValuePair(MemberValuePair source, String searched) {
