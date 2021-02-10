@@ -58,25 +58,25 @@ The wiring of the generators can be done manually invoking the `setupGenerator` 
     
     appGen.setupGenerator(ProcessCodegen.ofPath(context, processSourceDirectory));
 ```
-Or can be done via SPI using `ApplicationGeneratorDiscovery` utility class that 
-automatically loads `ApplicationGenerator` and the generators
+Or it can be done via SPI using `ApplicationGeneratorDiscovery` utility class that
+automatically loads the main `ApplicationGenerator` and the generators for the available components.
 
 | NOTE: both Spring and Quarkus integration use SPI and `ApplicationGeneratorDiscovery` for automatic wiring |
 | ---- |
 
 ## Sample generator
 This generator is intended to be a prototype/reference implementation of a simple generator that
-consume `.txt` files and expose the content as REST endpoint.
+consumes `.txt` files and exposes the content as REST endpoint.
 
 The example is formed by a `-runtime` module that contains the "engine" implementation (e.g. DMN runtime) and a 
 `-generator` module with the generation/wiring logic
 
 ## Testing a generator
 
-A generator is a component that can produce source code or resources. The only real and final test of a generator
+A generator is a component that produces source code or resources. The only real and final test of a generator
 is an integration test where it is possible to mimic the whole flow from file to endpoint.
 
-At the same time if there is an error in the generated code this could be quite hard to debug: it could fails during the compilation
+At the same time if there is an error in the generated code this could be quite hard to debug: it could fail during the compilation
 or follow an unexpected codepath.
 
 For this reason it is strongly suggested to also implement unit tests for each of the generator classes.

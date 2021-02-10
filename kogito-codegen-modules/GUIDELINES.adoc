@@ -9,10 +9,10 @@
 
 ## Templates
 
-- A *Template* is a Java class named `<Something><Context>Template.java`.
+- A *Template* is a Java class named `<Something><Runtime>Template.java`.
 Templates are located under `src/main/resources/class-templates/`.
 - A template should/must be parsed using `org.kie.kogito.codegen.api.template.TemplatedGenerator` utility class
-- `<Context>` is to have platform specific templates: `Quarkus`/`Spring`/`Java`
+- `<Runtime>` is to have platform specific templates: `Quarkus`/`Spring`/`Java`
 - A Template class may contain *placeholders*. 
 - By convention a placeholder is a string delimited by $-marks. `$PlaceHolder$`.
 
@@ -31,7 +31,7 @@ public class $ClassName$ {
 ----
 
 Code-generators may load templates from the resource class-path, and parse them to an AST using JavaParser. JavaParser methods
-can be used to navigate and replace placeholders. e.g.
+can be used to navigate and replace placeholders. It is also possible to define a `fallbackContext` to specify which a default `Runtime` template to use if the specific one is not available. e.g.
 
 
 .GenerateMyClass.java: 
