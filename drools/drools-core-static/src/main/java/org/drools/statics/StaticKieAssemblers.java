@@ -41,7 +41,17 @@ public class StaticKieAssemblers implements KieAssemblers {
     }
 
     @Override
-    public void addResourceBeforeRules( Object o, Resource resource, ResourceType resourceType, ResourceConfiguration resourceConfiguration ) throws Exception {
+    public void addResourceBeforeRules(Object knowledgeBuilder, Resource resource, ResourceType type, ResourceConfiguration configuration) throws Exception {
+        KieAssemblerService assembler = assemblers.get(type);
+        if (assembler != null) {
+            assembler.addResourceBeforeRules(knowledgeBuilder,
+                                             resource,
+                                             type,
+                                             configuration);
+        } else {
+            throw new RuntimeException("Unknown resource type: " + type);
+        }
+    
     }
 
     @Override
