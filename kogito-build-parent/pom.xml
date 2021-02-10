@@ -909,7 +909,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${version.org.apache.commons-lang3}</version>
-        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
